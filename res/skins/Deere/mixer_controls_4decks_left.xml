@@ -80,8 +80,8 @@
     <ObjectName>MixerStrip_4Decks</ObjectName>
     <Layout>vertical</Layout>
     <Connection>
-      <ConfigKey>[Skin],highlight_deck<Variable name="i"/></ConfigKey>
-      <BindProperty>highlight_deck</BindProperty>
+      <ConfigKey>[Skin],highlight_[Channel<Variable name="i"/>]</ConfigKey>
+      <BindProperty>highlight_channel</BindProperty>
     </Connection>
     <Connection>
       <ConfigKey>[Skin],highlight_input_allow</ConfigKey>

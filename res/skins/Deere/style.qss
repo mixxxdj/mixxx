@@ -133,10 +133,10 @@
   border-color: #222;
 }
 
-#Deck1[highlight_input_allow="1"][highlight_deck="1"],
-#Deck2[highlight_input_allow="1"][highlight_deck="1"],
-#Deck3[highlight_input_allow="1"][highlight_deck="1"],
-#Deck4[highlight_input_allow="1"][highlight_deck="1"] {
+#Deck1[highlight_input_allow="1"][highlight_channel="1"],
+#Deck2[highlight_input_allow="1"][highlight_channel="1"],
+#Deck3[highlight_input_allow="1"][highlight_channel="1"],
+#Deck4[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #FF6600;
 }
 
@@ -1521,7 +1521,7 @@ WNumberRate {
 #MixerStrip_4Decks[highlight_input_allow="1"] {
   border: 1px solid #333333;
 }
-#MixerStrip_4Decks[highlight_input_allow="1"][highlight_deck="1"] {
+#MixerStrip_4Decks[highlight_input_allow="1"][highlight_channel="1"] {
   border: 1px solid #FF6600;
 }
 

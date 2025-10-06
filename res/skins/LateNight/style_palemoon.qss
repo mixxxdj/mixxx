@@ -73,23 +73,23 @@
   margin: 0 1px;
   padding: 2px;
 }
-#Deck1[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact1[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini1[highlight_input_allow="1"][highlight_deck="1"],
-#Deck3[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact3[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini3[highlight_input_allow="1"][highlight_deck="1"] {
+#Deck1[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact1[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini1[highlight_input_allow="1"][highlight_channel="1"],
+#Deck3[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact3[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini3[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #960000;
     background-color: #181818;
     border-radius: 5px;
 }
 
-#Deck2[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact2[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini2[highlight_input_allow="1"][highlight_deck="1"],
-#Deck4[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact4[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini4[highlight_input_allow="1"][highlight_deck="1"] {
+#Deck2[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact2[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini2[highlight_input_allow="1"][highlight_channel="1"],
+#Deck4[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact4[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini4[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #960000;
     background-color: #181818;
     border-radius: 5px;
@@ -552,10 +552,10 @@ WTrackProperty[selected="true"],
   margin: 0 3px;
 
 }
-#WaveformBox1[highlight_input_allow="1"][highlight_deck="1"],
-#WaveformBox2[highlight_input_allow="1"][highlight_deck="1"],
-#WaveformBox3[highlight_input_allow="1"][highlight_deck="1"],
-#WaveformBox4[highlight_input_allow="1"][highlight_deck="1"] {
+#WaveformBox1[highlight_input_allow="1"][highlight_channel="1"],
+#WaveformBox2[highlight_input_allow="1"][highlight_channel="1"],
+#WaveformBox3[highlight_input_allow="1"][highlight_channel="1"],
+#WaveformBox4[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #960000;
     border-radius: 10px;
 }
@@ -684,12 +684,12 @@ WTrackProperty[selected="true"],
   margin: 0 1px;
   padding: 2px;
 }
-#MixerChannel_4Decks[highlight_input_allow="1"][highlight_deck="1"] {
+#MixerChannel_4Decks[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #960000;
     background-color: #181818;
     border-radius: 5px;
 }
-#MixerChannel_4Decks[highlight_input_allow="1"][highlight_deck="0"] {
+#MixerChannel_4Decks[highlight_input_allow="1"][highlight_channel="0"] {
     border-color: #1e1e20;
 }
 

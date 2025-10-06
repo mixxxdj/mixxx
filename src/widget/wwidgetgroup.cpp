@@ -233,8 +233,8 @@ int WWidgetGroup::getHighlight() const {
 int WWidgetGroup::getHighlightInputAllow() const {
     return m_highlight_input_allow;
 }
-int WWidgetGroup::getHighlightDeck() const {
-    return m_highlight_deck;
+int WWidgetGroup::getHighlightChannel() const {
+    return m_highlight_channel;
 }
 
 void WWidgetGroup::setHighlight(int highlight) {
@@ -256,13 +256,13 @@ void WWidgetGroup::setHighlightInputAllow(int highlight_input_allow) {
     emit highlightInputAllowChanged(m_highlight_input_allow);
     event(new QEvent(QEvent::StyleChange));
 }
-void WWidgetGroup::setHighlightDeck(int highlight_deck) {
-    if (m_highlight_deck == highlight_deck) {
+void WWidgetGroup::setHighlightChannel(int highlight_channel) {
+    if (m_highlight_channel == highlight_channel) {
         return;
     }
-    m_highlight_deck = highlight_deck;
+    m_highlight_channel = highlight_channel;
     style()->polish(this);
     update();
-    emit highlightDeckChanged(m_highlight_deck);
+    emit highlightChannelChanged(m_highlight_channel);
     event(new QEvent(QEvent::StyleChange));
 }

@@ -94,18 +94,18 @@ WLibrary,
   border-color: #0a0a0a;
 }
 
-#Deck1[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact1[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini1[highlight_input_allow="1"][highlight_deck="1"],
-#Deck2[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact2[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini2[highlight_input_allow="1"][highlight_deck="1"],
-#Deck3[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact3[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini3[highlight_input_allow="1"][highlight_deck="1"],
-#Deck4[highlight_input_allow="1"][highlight_deck="1"],
-#DeckCompact4[highlight_input_allow="1"][highlight_deck="1"],
-#DeckMini4[highlight_input_allow="1"][highlight_deck="1"] {
+#Deck1[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact1[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini1[highlight_input_allow="1"][highlight_channel="1"],
+#Deck2[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact2[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini2[highlight_input_allow="1"][highlight_channel="1"],
+#Deck3[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact3[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini3[highlight_input_allow="1"][highlight_channel="1"],
+#Deck4[highlight_input_allow="1"][highlight_channel="1"],
+#DeckCompact4[highlight_input_allow="1"][highlight_channel="1"],
+#DeckMini4[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #cf9200;
     border-radius: 5px;
 }
@@ -478,10 +478,10 @@ WLibrary {
   border-width: 1px 5px 1px 5px;
   border-style: solid;
 }
-#WaveformBox1[highlight_input_allow="1"][highlight_deck="1"],
-#WaveformBox2[highlight_input_allow="1"][highlight_deck="1"],
-#WaveformBox3[highlight_input_allow="1"][highlight_deck="1"],
-#WaveformBox4[highlight_input_allow="1"][highlight_deck="1"] {
+#WaveformBox1[highlight_input_allow="1"][highlight_channel="1"],
+#WaveformBox2[highlight_input_allow="1"][highlight_channel="1"],
+#WaveformBox3[highlight_input_allow="1"][highlight_channel="1"],
+#WaveformBox4[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #cf9200;
     border-radius: 5px;
 }
@@ -745,7 +745,7 @@ WLibrary {
     border-style: solid;
     border-color: #1e1e1e;
   }
-  #MixerChannel_4Decks[highlight_input_allow="1"][highlight_deck="1"] {
+  #MixerChannel_4Decks[highlight_input_allow="1"][highlight_channel="1"] {
     border-color: #cf9200;
     border-radius: 5px;
   }
