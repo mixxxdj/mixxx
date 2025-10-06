@@ -1297,6 +1297,12 @@ WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
+/* Workaround for https://github.com/mixxxdj/mixxx/issues/15351, happening with Qt 6.9.2 on Linux:
+   #Deck1 #Keytext { color: ...;} won't be applied if #Keytext or WStarRating are in SingletonContainers.
+   Only `color` seems to be affected.
+   Just set the font by widget type for all decks here and override below with working Qt versions. */
+WKey, WStarRating,
+/* end fix */
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
@@ -3072,17 +3078,20 @@ WTrackPropertyEditor {
 WTrackTableViewHeader {
   border-bottom-right-radius: 1px solid #000;
   outline: none;
+  /*qproperty-fontToHeightFactor: 1.1;*/
 }
 
 WTrackTableViewHeader::section {
-/* Setting an image causes QHeaderView to reserve space for the sort indicator,
-   i.e. column titles are truncated, even where no indicators are shown.
-   The arrow width and padding are set in style.qss (0.8em + .15em),
-   so let's set a negative padding-right to shift the text. This will push the
-   reserved space out of the visible region, but the actual arrow will still be visible.
-   Now the arrow overlaps the column title again like in Qt5 (bug), so the arrow images
-   could use a background-color to cover the text, or a gradient to fade it out gently. */
-  padding: 2px -0.95em 0px 3px;
+/* Setting an icon for sort arrows causes QHeaderView to reserve space for it
+   even where no indicators are shown (column titles are truncated).
+   Earlier we fixed this here by setting a negative padding-right in order to shift
+   the text (push the reserved space out of the visible region). The arrow will still
+   be painted correctly.
+   Now that the arrow overlaps the column title, up-/down-arrow need a background in
+   order to cover the text underneath. */
+/* This is now fixed in c++ in WTrackTableViewHeader::paintSection() so we can set
+   the usual padding with absolute px values here. */
+  padding: 2px;
   outline: none;
   border-width: 1px 2px 1px 1px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
@@ -3091,7 +3100,7 @@ WTrackTableViewHeader::section {
 WTrackTableViewHeader::up-arrow,
 WTrackTableViewHeader::down-arrow {
   outline: none;
-  /* horizontal gradient to fade out the text */
+  /* horizontal gradient to fade out the text underneath */
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 transparent,
     stop: 0.2 #171719,
