@@ -271,6 +271,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+    checkBox_show_vdj->setChecked(true);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -307,6 +308,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowRekordboxLibrary"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
+    checkBox_show_vdj->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "ShowVdjLibrary"), true));
 
     switch (m_pConfig->getValue<int>(
             kTrackDoubleClickActionConfigKey,
@@ -547,6 +550,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowVdjLibrary"),
+            ConfigValue((int)checkBox_show_vdj->isChecked()));
 
     int coverartfetcherquality_status;
     if (radioButton_cover_art_fetcher_highest->isChecked()) {
