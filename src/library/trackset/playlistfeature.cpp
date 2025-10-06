@@ -62,6 +62,8 @@ void PlaylistFeature::onRightClickChild(
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
+    m_pShufflePlaylistAction->setEnabled(!locked);
+    m_pImportPlaylistAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
