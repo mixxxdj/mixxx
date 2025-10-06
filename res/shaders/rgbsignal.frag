@@ -61,23 +61,11 @@ void main(void) {
       new_currentData.y *= midGain;
       new_currentData.z *= highGain;
 
-      //(vrince) debug see pre-computed signal
-      //gl_FragColor = new_currentData;
-      //return;
-
-      // Represents the [-1, 1] distance of this pixel. Subtracting this from
-      // the signal data in new_currentData, we can tell if a signal band should
-      // show in this pixel if the component is > 0.
+      // ourDistance represents the [0, 1] distance of this pixel from the
+      // center line. If ourDistance is smaller than the signalDistance, show
+      // the pixel.
       float ourDistance = abs((uv.y - 0.5) * 2.0);
-
-      // Since the magnitude of the (low, mid, high) vector is used as the
-      // waveform height, re-scale the maximum height to 1.
-      const float scaleFactor = 1.0 / sqrt(3.0);
-
-      float signalDistance = sqrt(new_currentData.x * new_currentData.x +
-                                  new_currentData.y * new_currentData.y +
-                                  new_currentData.z * new_currentData.z) *
-                             scaleFactor;
+      float signalDistance = new_currentData.w;
       showing = (signalDistance - ourDistance) >= 0.0;
 
       // Linearly combine the low, mid, and high colors according to the low,
@@ -97,8 +85,8 @@ void main(void) {
     // rendered even when the waveform is fairly short.  Really this
     // value should be based on the size of the widget.
     if (abs(framebufferSize.y / 2 - pixel.y) <= 4) {
-      outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-      outputColor.w = 1.0;
+        outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
+        outputColor.w = 1.0;
     }
 
     if (showing) {

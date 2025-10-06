@@ -88,7 +88,8 @@ void WaveformRendererRGB::draw(
     const int breadth = m_waveformRenderer->getBreadth();
     const float halfBreadth = static_cast<float>(breadth) / 2.0f;
 
-    const float heightFactor = allGain * halfBreadth / sqrtf(255 * 255 * 3);
+    // A reference full scale pink noise has value 60 for each band
+    float heightFactor = allGain * halfBreadth / 255;
 
     // Draw reference line
     painter->setPen(m_waveformRenderer->getWaveformSignalColors()->getAxesColor());
@@ -139,13 +140,9 @@ void WaveformRendererRGB::draw(
             maxLow  = math_max3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
             maxMid  = math_max3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
             maxHigh = math_max3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
-            float all = static_cast<float>(pow(waveformData.filtered.low * lowGain, 2) +
-                    pow(waveformData.filtered.mid * midGain, 2) +
-                    pow(waveformData.filtered.high * highGain, 2));
+            float all = waveformData.filtered.all;
             maxAll = math_max(maxAll, all);
-            float allNext = static_cast<float>(pow(waveformDataNext.filtered.low * lowGain, 2) +
-                    pow(waveformDataNext.filtered.mid * midGain, 2) +
-                    pow(waveformDataNext.filtered.high * highGain, 2));
+            float allNext = waveformDataNext.filtered.all;
             maxAllNext = math_max(maxAllNext, allNext);
         }
 
@@ -174,20 +171,23 @@ void WaveformRendererRGB::draw(
             switch (m_alignment) {
                 case Qt::AlignBottom:
                 case Qt::AlignRight:
-                    painter->drawLine(
-                        x, breadth,
-                        x, breadth - (int)(heightFactor * sqrtf(math_max(maxAll, maxAllNext))));
+                    painter->drawLine(x,
+                            breadth,
+                            x,
+                            breadth -
+                                    (int)(heightFactor *
+                                            math_max(maxAll, maxAllNext)));
                     break;
                 case Qt::AlignTop:
                 case Qt::AlignLeft:
                     painter->drawLine(
-                        x, 0,
-                        x, (int)(heightFactor * sqrtf(math_max(maxAll, maxAllNext))));
+                            x, 0, x, (int)(heightFactor * math_max(maxAll, maxAllNext)));
                     break;
                 default:
-                    painter->drawLine(
-                        x, (int)(halfBreadth - heightFactor * sqrtf(maxAll)),
-                        x, (int)(halfBreadth + heightFactor * sqrtf(maxAllNext)));
+                    painter->drawLine(x,
+                            (int)(halfBreadth - heightFactor * maxAll),
+                            x,
+                            (int)(halfBreadth + heightFactor * maxAllNext));
             }
         }
     }
