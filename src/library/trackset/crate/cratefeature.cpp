@@ -666,6 +666,13 @@ void CrateFeature::slotImportPlaylist() {
 }
 
 void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId crateId) {
+    Crate crate;
+    if (!m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
+        return;
+    }
+    if (crate.isLocked()) {
+        return;
+    }
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
