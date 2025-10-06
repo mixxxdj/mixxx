@@ -90,24 +90,6 @@ void main(void) {
       float showingMax = max(showingColor.x, max(showingColor.y, showingColor.z));
       showingColor = showingColor / showingMax;
       showingColor.w = 1.0;
-
-      // Now do it all over again for the unscaled version of the waveform,
-      // which we will draw at very low opacity.
-      float signalDistanceUnscaled = sqrt(new_currentDataUnscaled.x * new_currentDataUnscaled.x +
-                                          new_currentDataUnscaled.y * new_currentDataUnscaled.y +
-                                          new_currentDataUnscaled.z * new_currentDataUnscaled.z) * scaleFactor;
-      showingUnscaled = (signalDistanceUnscaled - ourDistance) >= 0.0;
-
-      // Linearly combine the low, mid, and high colors according to the
-      // original low, mid, and high components.
-      showingUnscaledColor = lowColor * new_currentDataUnscaled.x +
-                             midColor * new_currentDataUnscaled.y +
-                             highColor * new_currentDataUnscaled.z;
-
-      // Re-scale the color by the maximum component.
-      float showingUnscaledMax = max(showingUnscaledColor.x, max(showingUnscaledColor.y, showingUnscaledColor.z));
-      showingUnscaledColor = showingUnscaledColor / showingUnscaledMax;
-      showingUnscaledColor.w = 1.0;
     }
 
     // Draw the axes color as the lowest item on the screen.
@@ -119,16 +101,10 @@ void main(void) {
       outputColor.w = 1.0;
     }
 
-    if (showingUnscaled) {
-      float alpha = 0.4;
-      outputColor.xyz = mix(outputColor.xyz, showingUnscaledColor.xyz, alpha);
-      outputColor.w = 1.0;
-    }
-
     if (showing) {
-      float alpha = 0.8;
-      outputColor.xyz = mix(outputColor.xyz, showingColor.xyz, alpha);
-      outputColor.w = 1.0;
+        float alpha = 1.0;
+        outputColor.xyz = mix(outputColor.xyz, showingColor.xyz, alpha);
+        outputColor.w = 1.0;
     }
     gl_FragColor = outputColor;
 
