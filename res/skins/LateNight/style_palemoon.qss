@@ -1241,6 +1241,12 @@ WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
+/* Workaround for https://github.com/mixxxdj/mixxx/issues/15351, happening with Qt 6.9.2 on Linux:
+   #Deck1 #Keytext { color: ...;} won't be applied if #Keytext or WStarRating are in SingletonContainers.
+   Only `color` seems to be affected.
+   Just set the font by widget type for all decks here and override below with working Qt versions. */
+WKey, WStarRating,
+/* end fix */
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,

@@ -16,14 +16,34 @@
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
-HeaderViewState::HeaderViewState(const QHeaderView& headers) {
+HeaderViewState::HeaderViewState(const WTrackTableViewHeader& headers) {
     QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
         int li = headers.logicalIndex(vi);
         mixxx::library::HeaderViewState::HeaderState* header_state =
                 m_view_state.add_header_state();
         header_state->set_hidden(headers.isSectionHidden(li));
-        header_state->set_size(headers.sectionSize(li));
+        // Unfortunately sectionSize() is always 0 for hidden columns. Though,
+        // QHeaderView keeps track of hidden sizes internally, and we do the same.
+        int size = headers.sectionSize(li);
+        if (headers.isSectionHidden(li) && size == 0) {
+            size = headers.getWidthOfHiddenColumn(li);
+            if (size == 0) {
+                // Indicates a hidden column we didn't enable yet, hence didn't
+                // store its previous width when hiding it.
+                // Let's get the default width from the track model.
+                // If this also returns 0 for some reason, we'll reset to minimum
+                // width when restoring the header.
+                auto* pTrackModel = headers.model();
+                DEBUG_ASSERT(pTrackModel);
+                size = pTrackModel->headerData(
+                                          li,
+                                          headers.orientation(),
+                                          TrackModel::kHeaderWidthRole)
+                               .toInt();
+            }
+        }
+        header_state->set_size(size);
         header_state->set_logical_index(li);
         header_state->set_visual_index(vi);
         const QString column_name = model->headerData(
@@ -66,7 +86,7 @@ QString HeaderViewState::saveState() const {
     return QString(array.toBase64());
 }
 
-void HeaderViewState::restoreState(QHeaderView* pHeaders) {
+void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
     const int max_columns =
             math_min(pHeaders->count(), m_view_state.header_state_size());
 
@@ -107,7 +127,13 @@ void HeaderViewState::restoreState(QHeaderView* pHeaders) {
                 m_view_state.header_state(vi);
         const int li = header.logical_index();
         pHeaders->setSectionHidden(li, header.hidden());
-        pHeaders->resizeSection(li, header.size());
+        // If the stored size is 0 or less than the minimum column width,
+        // we use the latter. This might happen if  WTTVH_MINIMUM_SECTION_SIZE
+        // has been increased by us or the header state from database was corrupted.
+        // Note: setting the size works even if the column is hidden. Size is stored
+        // by QHeaderView internally and is applied once the column is shown.
+        int size = math_max(header.size(), WTTVH_MINIMUM_SECTION_SIZE);
+        pHeaders->resizeSection(li, size);
         pHeaders->moveSection(pHeaders->visualIndex(li), vi);
     }
     if (m_view_state.sort_indicator_shown()) {
@@ -158,6 +184,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
     }
 
     // Restore saved header state to get sizes, column positioning, etc. back.
+    m_hiddenColumnSizes.clear();
     restoreHeaderState();
 
     // Here we can override values to prevent restoring corrupt values from database
@@ -216,12 +243,6 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
                 });
         m_menu.addAction(pAction);
 
-        // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE
-        if (sectionSize(i) <  WTTVH_MINIMUM_SECTION_SIZE) {
-            // This might happen if  WTTVH_MINIMUM_SECTION_SIZ has changed or
-            // the header state from database was corrupt
-            resizeSection(i,WTTVH_MINIMUM_SECTION_SIZE);
-        }
     }
 
     m_menu.addSeparator();
@@ -319,18 +340,31 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
     QCheckBox* pCheckBox = it.value();
     if (pCheckBox->isChecked()) {
         showSection(column);
+        VERIFY_OR_DEBUG_ASSERT(sectionSize(column) >= WTTVH_MINIMUM_SECTION_SIZE) {
+            resizeSection(column, WTTVH_MINIMUM_SECTION_SIZE);
+        }
+        m_hiddenColumnSizes.remove(column);
     } else {
-        // If the user hides every column then the table will disappear. This
-        // guards against that. NB: hiddenCount reflects checked QAction's so
-        // size-hiddenCount will be zero the moment they uncheck the last
+        // If the user hides every column, the table will disappear. This guards
+        // against that. Note: hiddenCount reflects number of checked QActions,
+        // so size - hiddenCount will be zero the moment they uncheck the last
         // section.
         if (m_columnCheckBoxes.size() - hiddenCount() > 0) {
+            m_hiddenColumnSizes.insert(column, sectionSize(column));
             hideSection(column);
         } else {
             // Otherwise, ignore the request and re-check this QAction.
             pCheckBox->setChecked(true);
         }
     }
+}
+
+int WTrackTableViewHeader::getWidthOfHiddenColumn(int column) const {
+    const auto& it = m_hiddenColumnSizes.find(column);
+    if (it != m_hiddenColumnSizes.constEnd()) {
+        return it.value();
+    }
+    return 0;
 }
 
 int WTrackTableViewHeader::hiddenCount() {

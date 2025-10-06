@@ -84,17 +84,15 @@
             <SetVariable name="color">green</SetVariable>
           </Template>
 
-          <Template src="skin:left_right_1state_button.xml">
-            <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
+          <Template src="skin:left_right_2state_button.xml">
+            <SetVariable name="TooltipId">sync_enabled</SetVariable>
             <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
             <SetVariable name="MinimumSize">32,22</SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy">me,f</SetVariable>
             <SetVariable name="state_0_text">Sync</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,beatsync</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
+            <SetVariable name="state_1_text">Sync</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
           </Template>
 
           <Template src="skin:crossfader_orientation_button.xml">
