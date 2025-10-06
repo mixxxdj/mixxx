@@ -554,9 +554,9 @@ QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) co
     QSqlQuery query(m_database);
     query.prepare(
             mixxx::DbConnection::collateLexicographically(
-                    QString("SELECT id, name FROM Playlists "
-                            "WHERE hidden = %1 "
-                            "ORDER BY name")
+                    QStringLiteral("SELECT id, name FROM Playlists "
+                                   "WHERE hidden = %1 "
+                                   "ORDER BY name")
                             .arg(hidden)));
 
     QList<QPair<int, QString>> playlists;
@@ -598,6 +598,31 @@ QList<QPair<int, QString>> PlaylistDAO::getUnlockedPlaylists(const HiddenType hi
         playlists.append(qMakePair(id, name));
     }
     return playlists;
+}
+
+QList<int> PlaylistDAO::getPlaylistIdsByType(const HiddenType hidden) const {
+    // qDebug() << "PlaylistDAO::getPlaylistIds(hidden =" << hidden
+    //          << QThread::currentThread() << m_database.connectionName();
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            mixxx::DbConnection::collateLexicographically(
+                    QStringLiteral("SELECT id FROM Playlists "
+                                   "WHERE hidden = %1")
+                            .arg(hidden)));
+
+    QList<int> playlistIds;
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return playlistIds;
+    }
+
+    while (query.next()) {
+        const int id = query.value(0).toInt();
+        playlistIds.append(id);
+    }
+    return playlistIds;
 }
 
 int PlaylistDAO::getPlaylistId(const int index) const {
@@ -656,6 +681,15 @@ bool PlaylistDAO::isHidden(const int playlistId) const {
         return false;
     }
     return true;
+}
+
+void PlaylistDAO::removeHiddenTracksFromPlaylists() {
+    // Remove tracks from Playlists, keep in AutoDJ and History
+    const QList<int> ids = getPlaylistIdsByType(HiddenType::PLHT_NOT_HIDDEN);
+
+    for (int id : std::as_const(ids)) {
+        removeHiddenTracks(id);
+    }
 }
 
 void PlaylistDAO::removeHiddenTracks(const int playlistId) {

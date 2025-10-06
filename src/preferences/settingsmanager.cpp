@@ -7,7 +7,8 @@
 #include "util/assert.h"
 
 SettingsManager::SettingsManager(const QString& settingsPath)
-        : m_bShouldRescanLibrary(false) {
+        : m_bShouldRescanLibrary(false),
+          m_upgradedFrom21OrEarlier(false) {
     // First make sure the settings path exists. If we don't then other parts of
     // Mixxx (such as the library) will produce confusing errors.
     if (!QDir(settingsPath).exists()) {
@@ -22,6 +23,8 @@ SettingsManager::SettingsManager(const QString& settingsPath)
         m_pSettings = UserSettingsPointer(new UserSettings(""));
     }
     m_bShouldRescanLibrary = upgrader.rescanLibrary();
+
+    m_upgradedFrom21OrEarlier = upgrader.upgradedFrom21OrEarlier();
 
     ControlDoublePrivate::setUserConfig(m_pSettings);
 
