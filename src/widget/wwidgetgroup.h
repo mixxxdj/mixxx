@@ -43,7 +43,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     //    <IsEqual>2<IsEqual>
     //   <Transform>
     //  </Connection>
-    // </HighlightingGroup>
+    // </WidgetGroup>
 
     // The highlight property is used to restyle the widget with CSS.
     // The declaration #MyGroup[highlight="1"] { } will define the style
