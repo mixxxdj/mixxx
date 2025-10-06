@@ -225,6 +225,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         pOldheader->saveHeaderState();
     }
 
+    // TODO Check if this is still true. If not, we can probably simplify this
+    // a lot by reusing the old header. Just need to update the menu and stuff.
+    //
     // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
     // different columns than the old model, we have to create a new horizontal
     // header. Also, for some reason the WTrackTableView has to be hidden or
