@@ -575,10 +575,9 @@ DDJ200.Deck = class extends components.Deck {
             });
         }
 
-        this.reconnectComponents(function(c) {
-            if (c.group === undefined) {
-                c.group = this.currentDeck;
-            };
+        // this is required, otherwise there is one connection too much per Component
+        this.forEachComponent(function(component) {
+            component.disconnect();
         });
     }
 
