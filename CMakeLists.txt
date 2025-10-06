@@ -2573,6 +2573,95 @@ elseif(BUILD_BENCH AND NOT BUILD_TESTING)
   message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
 endif()
 
+# FFmpeg support
+# FFmpeg is multimedia library that can be found http://ffmpeg.org/
+find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
+default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
+if(FFMPEG)
+  if(NOT FFMPEG_FOUND)
+    message(FATAL_ERROR "FFMPEG was not found")
+  endif()
+
+  # Check minimum required versions
+  # Minimum library versions according to <https://ffmpeg.org/download.html>
+  # Windows: Version numbers are not available!?
+  # macOS: Untested
+  if(
+    FFMPEG_libavcodec_VERSION
+    AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION})."
+    )
+  endif()
+  if(
+    FFMPEG_libavformat_VERSION
+    AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION})."
+    )
+  endif()
+  if(
+    FFMPEG_libavutil_VERSION
+    AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION})."
+    )
+  endif()
+  if(
+    FFMPEG_libswresample_VERSION
+    AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION})."
+    )
+  endif()
+
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
+  target_compile_definitions(
+    mixxx-lib
+    PUBLIC
+      __FFMPEG__
+      # Needed to build new FFmpeg
+      __STDC_CONSTANT_MACROS
+      __STDC_LIMIT_MACROS
+      __STDC_FORMAT_MACROS
+  )
+  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
+endif()
+
+# STEM file support
+default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+if(STEM)
+  if(NOT FFMPEG)
+    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __STEM__)
+  list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/sources/soundsourcestem.cpp
+      src/track/steminfoimporter.cpp
+      src/track/steminfo.cpp
+      src/widget/wtrackstemmenu.cpp
+      src/widget/wstemlabel.cpp
+  )
+  if(QOPENGL)
+    target_sources(
+      mixxx-lib
+      PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+endif()
+
 if(BUILD_TESTING)
   set(
     src-mixxx-test
@@ -2691,6 +2780,15 @@ if(BUILD_TESTING)
     src/util/moc_included_test.cpp
     src/test/helpers/log_test.cpp
   )
+  if(STEM)
+    set(
+      src-mixxx-test
+      ${src-mixxx-test}
+      src/test/stemtest.cpp
+      src/test/steminfotest.cpp
+      src/test/stemcontrolobjecttest.cpp
+    )
+  endif()
   if(BUILD_BENCH)
     set(
       src-mixxx-test
@@ -3600,6 +3698,16 @@ if(QML)
       src/util/autofilereloader.cpp
   )
 
+  if(STEM)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
+    target_sources(
+      mixxx-qml-lib
+      PRIVATE
+        src/waveform/renderers/allshader/waveformrendererstem.cpp
+        src/qml/qmlstemsmodel.cpp
+    )
+  endif()
+
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
@@ -4462,114 +4570,6 @@ elseif(WIN32)
     install(FILES ${FDK_AAC_DLL} DESTINATION ${MIXXX_INSTALL_BINDIR})
   else()
     message(STATUS "Could NOT find fdk-aac.dll")
-  endif()
-endif()
-
-# FFmpeg support
-# FFmpeg is multimedia library that can be found http://ffmpeg.org/
-find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
-if(FFMPEG)
-  if(NOT FFMPEG_FOUND)
-    message(FATAL_ERROR "FFMPEG was not found")
-  endif()
-
-  # Check minimum required versions
-  # Minimum library versions according to <https://ffmpeg.org/download.html>
-  # Windows: Version numbers are not available!?
-  # macOS: Untested
-  if(
-    FFMPEG_libavcodec_VERSION
-    AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION})."
-    )
-  endif()
-  if(
-    FFMPEG_libavformat_VERSION
-    AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION})."
-    )
-  endif()
-  if(
-    FFMPEG_libavutil_VERSION
-    AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION})."
-    )
-  endif()
-  if(
-    FFMPEG_libswresample_VERSION
-    AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION})."
-    )
-  endif()
-
-  target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
-  target_compile_definitions(
-    mixxx-lib
-    PUBLIC
-      __FFMPEG__
-      # Needed to build new FFmpeg
-      __STDC_CONSTANT_MACROS
-      __STDC_LIMIT_MACROS
-      __STDC_FORMAT_MACROS
-  )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
-  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
-endif()
-
-# STEM file support
-default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
-if(STEM)
-  if(NOT FFMPEG)
-    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
-  endif()
-  target_compile_definitions(mixxx-lib PUBLIC __STEM__)
-  if(BUILD_TESTING)
-    target_compile_definitions(mixxx-test PUBLIC __STEM__)
-    target_sources(
-      mixxx-test
-      PUBLIC
-        src/test/stemtest.cpp
-        src/test/steminfotest.cpp
-        src/test/stemcontrolobjecttest.cpp
-    )
-  endif()
-  list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/sources/soundsourcestem.cpp
-      src/track/steminfoimporter.cpp
-      src/track/steminfo.cpp
-      src/widget/wtrackstemmenu.cpp
-      src/widget/wstemlabel.cpp
-  )
-  if(QOPENGL)
-    target_sources(
-      mixxx-lib
-      PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
-    )
-  endif()
-  if(QML)
-    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
-    target_sources(
-      mixxx-qml-lib
-      PRIVATE
-        src/waveform/renderers/allshader/waveformrendererstem.cpp
-        src/qml/qmlstemsmodel.cpp
-    )
   endif()
 endif()
 

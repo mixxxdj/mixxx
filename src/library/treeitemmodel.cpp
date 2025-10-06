@@ -176,7 +176,10 @@ void TreeItemModel::insertTreeItemRows(
     }
 
     TreeItem* pParentItem = getItem(parent);
-    DEBUG_ASSERT(pParentItem != nullptr);
+    VERIFY_OR_DEBUG_ASSERT(pParentItem != nullptr) {
+        qWarning() << "TreeItemModel::insertTreeItemRows: parent item invalid, abort.";
+        return;
+    }
 
     beginInsertRows(parent, position, position + static_cast<int>(rows.size()) - 1);
     pParentItem->insertChildren(position, std::move(rows));

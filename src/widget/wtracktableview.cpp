@@ -364,6 +364,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // haven't been able to get it to stop us from using a model as a drag
     // target though, so my hacks above may not be completely unjustified.
 
+    // Now also apply the current font to the new header
+    pHeader->setFont(font());
+
     setVisible(true);
 
     // trigger restoring scrollBar position, selection etc.
