@@ -386,6 +386,7 @@ void CrateFeature::onRightClickChild(
 
     m_pDeleteCrateAction->setEnabled(!crate.isLocked());
     m_pRenameCrateAction->setEnabled(!crate.isLocked());
+    m_pImportPlaylistAction->setEnabled(!crate.isLocked());
 
     m_pAutoDjTrackSourceAction->setChecked(crate.isAutoDjSource());
 
@@ -403,9 +404,7 @@ void CrateFeature::onRightClickChild(
     menu.addSeparator();
     menu.addAction(m_pAnalyzeCrateAction.get());
     menu.addSeparator();
-    if (!crate.isLocked()) {
-        menu.addAction(m_pImportPlaylistAction.get());
-    }
+    menu.addAction(m_pImportPlaylistAction.get());
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
 #ifdef __ENGINEPRIME__
