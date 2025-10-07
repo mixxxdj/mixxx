@@ -5,12 +5,15 @@
 #include <QMenu>
 
 #include "proto/headers.pb.h"
+#include "util/parented_ptr.h"
 
 class TrackModel;
 class QAction;
 class QCheckBox;
 class QContextMenuEvent;
 class QWidget;
+class QWidgetAction;
+class WMenuCheckBox;
 class WTrackTableViewHeader;
 
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
@@ -65,9 +68,6 @@ class WTrackTableViewHeader : public QHeaderView {
     void saveHeaderState();
     void restoreHeaderState();
     void loadDefaultHeaderState();
-    // Try to load the saved common header state.
-    void loadCommonHeaderState();
-    void storeAsCommonHeaderState();
 
     // Returns false if the header state is not stored in the database (on first time usage)
     bool hasPersistedHeaderState();
@@ -101,13 +101,23 @@ class WTrackTableViewHeader : public QHeaderView {
   private:
     int hiddenCount();
     void updateMenu();
+    void updateCommonHeaderActions();
     bool shouldSyncWithCommonHeaderState();
+    // Try to load the saved common header state.
+    void loadCommonHeaderState();
+    void storeAsCommonHeaderState();
     TrackModel* getTrackModel();
 
     void setHeightForFont();
 
-    QMenu m_menu;
+    parented_ptr<QMenu> m_pMenu;
     QMap<int, QCheckBox*> m_columnCheckBoxes;
+
+    parented_ptr<QAction> m_pStoreAsCommontHeaderAction;
+    parented_ptr<QAction> m_pLoadCommonHeaderAction;
+    parented_ptr<WMenuCheckBox> m_pSyncCheckBox;
+    parented_ptr<QWidgetAction> m_pSyncAction;
+    parented_ptr<QAction> m_pShuffleAction;
 
     int m_preferredHeight;
     QMap<int, int> m_hiddenColumnSizes;
