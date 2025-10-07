@@ -431,7 +431,8 @@ DDJ200.Deck = class extends components.Deck {
             jogCounter: 0,
             deck: deckNumbers[0],
             inputSeek: function(_channel, _control, value, _status, _group) {
-                if (DDJ200.decks.left.shiftButton.pressed) {
+                if ((engine.getSetting("useLeftShiftAsLibraryScroll") && DDJ200.decks.left.shiftButton.pressed) ||
+                    (engine.getSetting("useRightShiftAsLibraryScroll") && DDJ200.decks.right.shiftButton.pressed)) {
                     this.jogCounter += this.inValueScale(value);
                     if (this.jogCounter > 9) {
                         engine.setValue("[Library]", "MoveDown", true);
@@ -459,6 +460,9 @@ DDJ200.Deck = class extends components.Deck {
             input: function(_channel, _control, value, _status, _g) {
                 this.pressed = value;
                 if (value) {
+                    if (DDJ200.decks.left.shiftButton.pressed && DDJ200.decks.right.shiftButton.pressed) {
+                        engine.setValue("[Library]", "MoveFocusForward", true);
+                    }
                     DDJ200.decks.shift();
                 } else {
                     DDJ200.decks.unshift();

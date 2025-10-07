@@ -56,6 +56,30 @@
         There is no hardware "Gain" knob on the Pioneer DDJ-200. When enabled, the "Quick Effect" knob can be used to control the gain of the respective deck instead.
       </description>
     </option>
+    <option variable="useLeftShiftAsLibraryScroll"
+      type="boolean"
+      label="Use Left Shift and Jog Wheel (Top) to scroll through Library"
+      default="false">
+      <description>
+        Usually pressing shift will allow you to scratch through your track faster. When enabled, the Left Shift together with Jog Wheel (top) can be used to scroll through your library.
+      </description>
+    </option>
+    <option variable="useRightShiftAsLibraryScroll"
+      type="boolean"
+      label="Use Right Shift and Jog Wheel (Top) to scroll through Library"
+      default="false">
+      <description>
+        Usually pressing shift will allow you to scratch through your track faster. When enabled, the Right Shift together with Jog Wheel (top) can be used to scroll through your library.
+      </description>
+    </option>
+    <option variable="useSuperAsGain"
+      type="boolean"
+      label="Use Quick Effect Controller Button as Gain Knob"
+      default="false">
+      <description>
+        There is no hardware "Gain" knob on the Pioneer DDJ-200. When enabled, the "Quick Effect" knob can be used to control the gain of the respective deck instead.
+      </description>
+    </option>
   </settings>
   <controller id="DDJ-200 ALT">
     <scriptfiles>
