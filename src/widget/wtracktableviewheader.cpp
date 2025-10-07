@@ -98,6 +98,7 @@ QString HeaderViewState::saveState() const {
 ///   and Timestamp columns
 /// * re-sort by the saved state's sort column/order
 void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders, bool restoreCommonState) {
+    qWarning() << "   State: restore state";
     const int max_columns =
             math_min(pHeaders->count(), m_view_state.header_state_size());
 
@@ -164,6 +165,7 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
           m_pShuffleAction(nullptr),
           m_preferredHeight(-1),
           m_hoveredSection(-1) {
+    qWarning() << "   # new header";
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
@@ -173,6 +175,7 @@ void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
 
 void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
     TrackModel* pOldTrackModel = getTrackModel();
+    qWarning() << " --- setModel";
 
     if (dynamic_cast<QAbstractItemModel*>(pOldTrackModel) == pModel) {
         // If the models are the same, do nothing but the redundant call.
@@ -210,6 +213,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
 
     updateMenu();
 
+    qWarning() << " --- -> check columns";
     // Safety check against someone getting stuck with all columns hidden
     // (produces an empty library table). Just re-show them all.
     int columns = pModel->columnCount();
@@ -218,9 +222,11 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
             showSection(i);
         }
     }
+    qWarning() << " --- done";
 }
 
 void WTrackTableViewHeader::updateMenu() {
+    qWarning() << "     update menu";
     // The QActions are parented to the menu, so clearing deletes them. Since
     // they are deleted we don't have to disconnect their signals from the
     // mapper.
@@ -245,6 +251,7 @@ void WTrackTableViewHeader::updateMenu() {
     //   not just hovered by mouse pointer)
     // * toggle and close by pressing Return on a selected box
     int columns = pModel->columnCount();
+    qWarning() << "     -> create column checkboxes";
     for (int i = 0; i < columns; ++i) {
         if (pTrackModel->isColumnInternal(i)) {
             continue;
@@ -293,6 +300,7 @@ void WTrackTableViewHeader::updateMenu() {
     // Or, the other way around, only present in incompatible models.
     if (pTrackModel->canLoadTrackSetColumns()) {
         if (!m_pStoreAsCommontHeaderAction) {
+            qWarning() << "     -> create store action";
             m_pStoreAsCommontHeaderAction =
                     make_parented<QAction>(tr("Save columns layout"), this);
             connect(m_pStoreAsCommontHeaderAction,
@@ -302,6 +310,7 @@ void WTrackTableViewHeader::updateMenu() {
         }
 
         if (!m_pLoadCommonHeaderAction) {
+            qWarning() << "     -> create load action";
             m_pLoadCommonHeaderAction =
                     make_parented<QAction>(tr("Load saved columns layout"), this);
             connect(m_pLoadCommonHeaderAction,
@@ -311,6 +320,7 @@ void WTrackTableViewHeader::updateMenu() {
         }
 
         if (!m_pSyncCheckBox) {
+            qWarning() << "     -> create sync checkbox";
             // Custom QCheckBox with fixed hover behavior
             m_pSyncCheckBox = make_parented<WMenuCheckBox>(
                     tr("Sync with saved columns layout"), this);
@@ -323,6 +333,7 @@ void WTrackTableViewHeader::updateMenu() {
                     });
         }
         if (!m_pSyncAction) {
+            qWarning() << "     -> create sync action";
             m_pSyncAction = make_parented<QWidgetAction>(this);
             m_pSyncAction->setDefaultWidget(m_pSyncCheckBox.get());
             // Pressing Return triggers the action but that would not toggle the
@@ -337,8 +348,11 @@ void WTrackTableViewHeader::updateMenu() {
         }
 
         m_pMenu->addSeparator();
+        qWarning() << "     --> add Store action";
         m_pMenu->addAction(m_pStoreAsCommontHeaderAction);
+        qWarning() << "     --> add Load action";
         m_pMenu->addAction(m_pLoadCommonHeaderAction);
+        qWarning() << "     --> add Sync actions";
         m_pMenu->addAction(m_pSyncAction);
 
         updateCommonHeaderActions();
@@ -347,6 +361,7 @@ void WTrackTableViewHeader::updateMenu() {
     // Only show the shuffle action in models that allow sorting.
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Sorting)) {
         if (!m_pShuffleAction) {
+            qWarning() << "     -> create shuffle action";
             m_pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), this);
             connect(m_pShuffleAction,
                     &QAction::triggered,
@@ -354,18 +369,23 @@ void WTrackTableViewHeader::updateMenu() {
                     &WTrackTableViewHeader::shuffle,
                     /*signal-to-signal*/ Qt::DirectConnection);
         }
+        qWarning() << "     --> add Shuffle action";
         m_pMenu->addSeparator();
         m_pMenu->addAction(m_pShuffleAction);
     }
+    qWarning() << "     /update menu";
 }
 
 void WTrackTableViewHeader::updateCommonHeaderActions() {
+    qWarning() << "     updateCommonHeaderActions";
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
+        qWarning() << "     -> NO track model, return";
         return;
     }
 
     if (!pTrackModel->canLoadTrackSetColumns()) {
+        qWarning() << "     -> track model can't load trackset columns, return";
         return;
     }
 
@@ -373,6 +393,7 @@ void WTrackTableViewHeader::updateCommonHeaderActions() {
             m_pLoadCommonHeaderAction &&
             m_pSyncCheckBox &&
             m_pSyncAction) {
+        qWarning() << "     -> Common Header actions not created";
         // Shouldn't happen. Recreate the menu.
         // Will call this function again
         updateMenu();
@@ -390,6 +411,8 @@ void WTrackTableViewHeader::updateCommonHeaderActions() {
         }
     }
 
+    qWarning() << "     -> hasCommonHeaderState:" << hasCommonHeaderState;
+
     m_pLoadCommonHeaderAction->setEnabled(hasCommonHeaderState);
     // This also enables/disables the checkbox
     m_pSyncAction->setEnabled(hasCommonHeaderState);
@@ -403,6 +426,7 @@ void WTrackTableViewHeader::saveHeaderState() {
     if (!pTrackModel) {
         return;
     }
+    qWarning() << "     save header state";
 
     if (shouldSyncWithCommonHeaderState()) {
         storeAsCommonHeaderState();
@@ -420,25 +444,32 @@ void WTrackTableViewHeader::restoreHeaderState() {
     if (!pTrackModel) {
         return;
     }
+    qWarning() << "     restore headerState";
 
     QString headerStateString;
     bool shouldSync = shouldSyncWithCommonHeaderState();
     if (shouldSync) {
+        qWarning() << "     -> use common header state";
         headerStateString = pTrackModel->getCommonHeaderState();
     } else {
+        qWarning() << "     -> use own header state";
         headerStateString = pTrackModel->getModelSetting(kHeaderStateKey);
     }
 
     if (headerStateString.isNull()) {
+        qWarning() << "     --> is NULL, load default state";
         loadDefaultHeaderState();
     } else {
+        qWarning() << "     --> load saved state";
         // Load the previous header state (stored as serialized protobuf).
         // Decode it and restore it.
         //qDebug() << "Restoring header state from proto" << headerStateString;
         HeaderViewState view_state(headerStateString);
         if (!view_state.healthy()) {
+            qWarning() << "     ---> not healthy, load default";
             loadDefaultHeaderState();
         } else {
+            qWarning() << "     ---> healthy, restore state";
             view_state.restoreState(this, shouldSync);
         }
     }
@@ -458,6 +489,7 @@ void WTrackTableViewHeader::loadDefaultHeaderState() {
 }
 
 void WTrackTableViewHeader::loadCommonHeaderState() {
+    qWarning() << "     load common header";
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -477,6 +509,7 @@ void WTrackTableViewHeader::loadCommonHeaderState() {
 }
 
 void WTrackTableViewHeader::toggleSyncCommonHeaderState(bool checked) {
+    qWarning() << "     toggle Sync header" << checked;
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -491,6 +524,7 @@ void WTrackTableViewHeader::toggleSyncCommonHeaderState(bool checked) {
 }
 
 void WTrackTableViewHeader::storeAsCommonHeaderState() {
+    qWarning() << "     store as common header";
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
