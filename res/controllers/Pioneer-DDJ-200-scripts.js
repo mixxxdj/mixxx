@@ -346,6 +346,7 @@ DDJ200.init = function() {
                     DDJ200.decks.forEachComponentContainer(deck => {
                         if (deck.syncButton.blinkConnection) {
                             deck.syncButton.blinkConnection.disconnect();
+                            deck.syncButton.send(deck.syncButton.off);
                         };
                     }, false);
                 };
@@ -495,6 +496,7 @@ DDJ200.Deck = class extends components.Deck {
                             });
                         } else if (this.blinkConnection) {
                             this.blinkConnection.disconnect();
+                            theDeck.syncButton.send(theDeck.syncButton.off);
                         };
                     } else {
                         const currentRange = engine.getValue(this.group, "rateRange");
