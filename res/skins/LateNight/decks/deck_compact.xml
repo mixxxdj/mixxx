@@ -9,7 +9,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Connection>
-          <ConfigKey>[Skin],highlight_[Channel<Variable name="ChanNum"/>]</ConfigKey>
+          <ConfigKey>[Skin],highlight_<Variable name="Group"/></ConfigKey>
           <BindProperty>highlight_channel</BindProperty>
         </Connection>
         <Connection>

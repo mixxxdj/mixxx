@@ -80,7 +80,7 @@
     <ObjectName>MixerStrip_4Decks</ObjectName>
     <Layout>vertical</Layout>
     <Connection>
-      <ConfigKey>[Skin],highlight_[Channel<Variable name="i"/>]</ConfigKey>
+      <ConfigKey>[Skin],highlight_<Variable name="group"/></ConfigKey>
       <BindProperty>highlight_channel</BindProperty>
     </Connection>
     <Connection>

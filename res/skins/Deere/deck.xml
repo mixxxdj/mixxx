@@ -13,7 +13,7 @@
     <SizePolicy>me,me</SizePolicy>
     <MinimumSize>-1,150</MinimumSize>
     <Connection>
-      <ConfigKey>[Skin],highlight_[Channel<Variable name="i"/>]</ConfigKey>
+      <ConfigKey>[Skin],highlight_<Variable name="group"/></ConfigKey>
       <BindProperty>highlight_channel</BindProperty>
     </Connection>
     <Connection>

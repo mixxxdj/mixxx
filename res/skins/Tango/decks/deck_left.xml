@@ -18,7 +18,7 @@ Variables:
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Connection>
-      <ConfigKey>[Skin],highlight_[Channel<Variable name="chanNum"/>]</ConfigKey>
+      <ConfigKey>[Skin],highlight_<Variable name="group"/></ConfigKey>
       <BindProperty>highlight_channel</BindProperty>
     </Connection>
     <Connection>
