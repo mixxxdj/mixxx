@@ -90,7 +90,14 @@ QString HeaderViewState::saveState() const {
     return QString(array.toBase64());
 }
 
-void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders, bool sort) {
+/// bool restoreCommonState means we intend to load a state saved by another
+/// track model and available columns may vary.
+/// If true we DON'T want to
+/// * force-show columns that are in the model but not in saved state,
+///   eg. restoring a Tracks state would force-show playlists' # (track position)
+///   and Timestamp columns
+/// * re-sort by the saved state's sort column/order
+void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders, bool restoreCommonState) {
     const int max_columns =
             math_min(pHeaders->count(), m_view_state.header_state_size());
 
@@ -107,7 +114,7 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders, bool sort) {
         auto it = map.find(pHeaders->model()->headerData(
                                                     li, Qt::Horizontal, TrackModel::kHeaderNameRole)
                         .toString());
-        if (it == map.end()) {
+        if (!restoreCommonState && it == map.end()) {
             // This is a column for which the stored state doesn't have a record,
             // so this is likely a new column, added by last update.
             // Enforce visible so it can be discovered.
@@ -119,7 +126,7 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders, bool sort) {
                                                  li, Qt::Horizontal, TrackModel::kHeaderNameRole)
                                 .toString(); // internal name
             hidden = false;
-        } else {
+        } else if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
         pHeaders->setSectionHidden(li, hidden);
@@ -140,7 +147,7 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders, bool sort) {
         pHeaders->resizeSection(li, size);
         pHeaders->moveSection(pHeaders->visualIndex(li), vi);
     }
-    if (sort && m_view_state.sort_indicator_shown()) {
+    if (!restoreCommonState && m_view_state.sort_indicator_shown()) {
         pHeaders->setSortIndicator(
                 m_view_state.sort_indicator_section(),
                 static_cast<Qt::SortOrder>(m_view_state.sort_order()));
@@ -415,7 +422,8 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
 
     QString headerStateString;
-    if (shouldSyncWithCommonHeaderState()) {
+    bool shouldSync = shouldSyncWithCommonHeaderState();
+    if (shouldSync) {
         headerStateString = pTrackModel->getCommonHeaderState();
     } else {
         headerStateString = pTrackModel->getModelSetting(kHeaderStateKey);
@@ -431,7 +439,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
         if (!view_state.healthy()) {
             loadDefaultHeaderState();
         } else {
-            view_state.restoreState(this);
+            view_state.restoreState(this, shouldSync);
         }
     }
 }
@@ -463,7 +471,7 @@ void WTrackTableViewHeader::loadCommonHeaderState() {
     if (!view_state.healthy()) {
         return;
     }
-    view_state.restoreState(this, false);
+    view_state.restoreState(this, true);
 
     updateMenu();
 }

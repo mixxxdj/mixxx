@@ -37,7 +37,7 @@ class HeaderViewState {
     // Apply the state to the provided view. The data in the object may be
     // changed if the header format has changed.
     // Don't sort if explicitly disabled, for example when cloning the Tracks header.
-    void restoreState(WTrackTableViewHeader* pHeaders, bool sort = true);
+    void restoreState(WTrackTableViewHeader* pHeaders, bool restoreCommonState);
 
     // returns false if no headers are listed to be shown.
     bool healthy() const {
@@ -66,8 +66,6 @@ class WTrackTableViewHeader : public QHeaderView {
     void setModel(QAbstractItemModel* model) override;
 
     void saveHeaderState();
-    void restoreHeaderState();
-    void loadDefaultHeaderState();
 
     // Returns false if the header state is not stored in the database (on first time usage)
     bool hasPersistedHeaderState();
@@ -103,6 +101,8 @@ class WTrackTableViewHeader : public QHeaderView {
     void updateMenu();
     void updateCommonHeaderActions();
     bool shouldSyncWithCommonHeaderState();
+    void restoreHeaderState();
+    void loadDefaultHeaderState();
     // Try to load the saved common header state.
     void loadCommonHeaderState();
     void storeAsCommonHeaderState();
