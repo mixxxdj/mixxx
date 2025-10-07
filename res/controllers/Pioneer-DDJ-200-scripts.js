@@ -71,12 +71,14 @@ DDJ200.PadMode = class extends components.ComponentContainer {
 
 DDJ200.PadModeContainers = {
     Hotcue: class extends DDJ200.PadMode {
-        constructor(deckOffset) {
+        constructor(deckOffset, group) {
             super();
 
             super.constructPads(i => new components.HotcueButton({
                 midi: [0x97 + deckOffset, i],
                 number: i + 1,
+                group,
+                outConnect: false,
             })
             );
 
@@ -84,7 +86,7 @@ DDJ200.PadModeContainers = {
         }
     },
     Loop: class extends DDJ200.PadMode {
-        constructor(deckOffset) {
+        constructor(deckOffset, group) {
             super();
 
             const theContainer = this;
@@ -100,6 +102,8 @@ DDJ200.PadModeContainers = {
                 },
                 on: 0x7F,
                 off: 0x00,
+                group,
+                outConnect: false,
                 loopSize: Math.pow(2, theContainer.currentBaseLoopSize + i),
                 input: function(_channel, _control, value, _status, _mode) {
                     if (value) {
@@ -138,6 +142,8 @@ DDJ200.PadModeContainers = {
                     return new components.SamplerButton({
                         midi: [0x97 + deckOffset, i],
                         number: deckOffset * 2 + i + 1,
+                        group,
+                        outConnect: false,
                     });
                 } else if (i < 7) {
                     return new components.Button({
@@ -145,6 +151,7 @@ DDJ200.PadModeContainers = {
                         group: `[EffectRack1_EffectUnit${script.deckFromGroup(group)}_Effect${i - 3}]`,
                         inKey: "enabled",
                         outKey: "loaded",
+                        outConnect: false,
                         type: components.Button.prototype.types.toggle,
                         unshift: function() {
                             if (this.connections) {
@@ -164,6 +171,8 @@ DDJ200.PadModeContainers = {
                 } else {
                     return new components.Button({
                         midi: [0x97 + deckOffset, i],
+                        group,
+                        outConnect: false,
                         indicateButtonPress: function(value) {
                             this.output(value, null, null);
                         },
@@ -180,7 +189,7 @@ DDJ200.PadModeContainers = {
         }
     },
     Jump: class extends DDJ200.PadMode {
-        constructor(deckOffset) {
+        constructor(deckOffset, group) {
             super();
 
             const theContainer = this;
@@ -196,6 +205,8 @@ DDJ200.PadModeContainers = {
                 },
                 on: 0x7F,
                 off: 0x00,
+                group,
+                outConnect: false,
                 beatJumpSize: Math.pow(2, theContainer.currentBaseBeatJumpSize + i),
                 input: function(_channel, _control, value, _status, _mode) {
                     engine.setValue(this.group, "beatjump_size", this.beatJumpSize);
@@ -243,23 +254,11 @@ DDJ200.PadModeContainers.ModeSelector = class extends components.ComponentContai
         super();
         const deckOffset = (((script.deckFromGroup(group) - 1) % 2) * 2);
 
-        this.choosenPadInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset);
-
+        this.choosenPadInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset, group);
         this.padInstancesBuffer = new DDJ200.DoubleRingBuffer(
-            [this.choosenPadInstance, new DDJ200.PadModeContainers.Loop(deckOffset), new DDJ200.PadModeContainers.Effect(deckOffset, group)],
-            [new DDJ200.PadModeContainers.Jump(deckOffset)]
+            [this.choosenPadInstance, new DDJ200.PadModeContainers.Loop(deckOffset, group), new DDJ200.PadModeContainers.Effect(deckOffset, group)],
+            [new DDJ200.PadModeContainers.Jump(deckOffset, group)]
         );
-
-        this.connectPadInstance = padInstance => {
-            padInstance.forEachComponent(function(component) {
-                if (component.group === undefined) {
-                    component.group = group;
-                }
-                component.connect();
-                component.trigger();
-            });
-        };
-        this.connectPadInstance(this.choosenPadInstance);
     }
 
     setPads(newPadInstance) {
@@ -270,7 +269,10 @@ DDJ200.PadModeContainers.ModeSelector = class extends components.ComponentContai
             component.disconnect();
         });
         this.choosenPadInstance = newPadInstance;
-        this.connectPadInstance(this.choosenPadInstance);
+        this.choosenPadInstance.forEachComponent(function(component) {
+            component.connect();
+            component.trigger();
+        });
     }
 
     changePadMode(isShifted) {
@@ -580,7 +582,6 @@ DDJ200.Deck = class extends components.Deck {
             if (component.group === undefined) {
                 component.group = this.currentDeck;
             };
-            component.disconnect();
         });
     }
 
