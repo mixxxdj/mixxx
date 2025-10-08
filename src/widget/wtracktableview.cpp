@@ -48,6 +48,7 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
         : WLibraryTableView(pParent, pConfig),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
+          m_pHeader(make_parented<WTrackTableViewHeader>(this)),
           m_backgroundColorOpacity(backgroundColorOpacity),
           // Default color for the focus border of TableItemDelegates
           m_focusBorderColor(kDefaultFocusBorderColor),
@@ -60,6 +61,8 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_dropRow(-1) {
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
+
+    setHorizontalHeader(m_pHeader);
 
     m_pCOTGuiTick = new ControlProxy(
             QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
@@ -80,12 +83,10 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
 }
 
 WTrackTableView::~WTrackTableView() {
-    WTrackTableViewHeader* pHeader =
-            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
-    if (pHeader) {
-        pHeader->saveHeaderState();
-    }
+    DEBUG_ASSERT(m_pHeader);
+    m_pHeader->saveHeaderState();
 }
+
 #ifdef __LINUX__
 void WTrackTableView::currentChanged(
         const QModelIndex& current,
@@ -219,63 +220,34 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
         pCurrModel->maybeStopModelPopulation();
     }
 
-    setVisible(false);
+    DEBUG_ASSERT(m_pHeader);
 
-    // Save the previous track model's header state
-    WTrackTableViewHeader* pOldheader =
-            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
-    if (pOldheader) {
-        pOldheader->saveHeaderState();
-    }
+    // Save the old model's header state
+    m_pHeader->saveHeaderState();
 
-    // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
-    // different columns than the old model, we have to create a new horizontal
-    // header. Also, for some reason the WTrackTableView has to be hidden or
-    // else problems occur. Since we parent the WtrackTableViewHeader's to the
-    // WTrackTableView, they are automatically deleted.
-    auto* pHeader = new WTrackTableViewHeader(Qt::Horizontal, this);
-
-    // WTF(rryan) The following saves on unnecessary work on the part of
-    // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
-    // current horizontal header. If this happens on the old
-    // WTrackTableViewHeader, then it will save its old state, AND do the work
-    // of initializing its menus on the new model. We create a new
-    // WTrackTableViewHeader, so this is wasteful. Setting a temporary
-    // QHeaderView here saves on setModel() calls. Since we parent the
-    // QHeaderView to the WTrackTableView, it is automatically deleted.
-    auto* tempHeader = new QHeaderView(Qt::Horizontal, this);
-    // Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
-    // Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
-    // For some reason this will cause 4 select statements in series
-    // from which 3 are redundant --> expensive at all
-    //
-    // Sorting columns, however, is possible because we
-    // enable clickable sorting indicators some lines below.
-    // Furthermore, we connect signal 'sortIndicatorChanged'.
-    //
-    // Fixes Bug https://github.com/mixxxdj/mixxx/issues/5643
-
+    // Disconnect sort slots and disable sorting so we don't sort (yet) when
+    // restoring the new header's state via setModel()
+    // (just in case that was sorted previously??)
+    disconnect(m_pHeader,
+            &QHeaderView::sortIndicatorChanged,
+            this,
+            &WTrackTableView::slotSortingChanged);
+    disconnect(m_pHeader,
+            &WTrackTableViewHeader::shuffle,
+            this,
+            &WTrackTableView::slotRandomSorting);
     setSortingEnabled(false);
-    setHorizontalHeader(tempHeader);
 
+    // This also calls horizontalHeader->setModel(), and WTrackTableViewHeader::setModel()
+    // restores the header state, if possible.
     setModel(pNewModel);
-    setHorizontalHeader(pHeader);
-    pHeader->setSectionsMovable(true);
-    pHeader->setSectionsClickable(true);
-    // Setting this to true would render all column labels BOLD as soon as the
-    // tableview is focused -- and would not restore the previous style when
-    // it's unfocused. This can not be overwritten with qss, so it can screw up
-    // the skin design. Also, due to selectionModel()->selectedRows() it is not
-    // even useful to indicate the focused column because all columns are highlighted.
-    pHeader->setHighlightSections(false);
-    pHeader->setSortIndicatorShown(m_sorting);
-    pHeader->setDefaultAlignment(Qt::AlignLeft);
+    // Now set maybe enable sorting
+    m_pHeader->setSortIndicatorShown(m_sorting);
 
     // Initialize all column-specific things
     for (int i = 0; i < pNewModel->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        QAbstractItemDelegate* delegate =
-                pNewTrackModel->delegateForColumn(i, this);
+        QAbstractItemDelegate* delegate = pNewTrackModel->delegateForColumn(i, this);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
@@ -286,41 +258,40 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
         // Show or hide the column based on whether it should be shown or not.
         if (pNewTrackModel->isColumnInternal(i)) {
             //qDebug() << "Hiding column" << i;
-            horizontalHeader()->hideSection(i);
+            m_pHeader->hideSection(i);
         }
         // If Mixxx starts the first time or the header states have been cleared
         // due to database schema evolution we gonna hide all columns that may
         // contain a potential large number of NULL values.  This will hide the
         // key column by default unless the user brings it to front
         if (pNewTrackModel->isColumnHiddenByDefault(i) &&
-                !pHeader->hasPersistedHeaderState()) {
+                !m_pHeader->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
-            horizontalHeader()->hideSection(i);
+            m_pHeader->hideSection(i);
         }
     }
 
     if (m_sorting) {
-        // NOTE: Should be a UniqueConnection but that requires Qt 4.6
-        // But Qt::UniqueConnections do not work for lambdas, non-member functions
-        // and functors; they only apply to connecting to member functions.
-        // https://doc.qt.io/qt-5/qobject.html#connect
-        connect(horizontalHeader(),
+        // FIXME: Instead of repetitive disconnect/connect, just refuse to sort
+        // in the slots in m_sorting == false ??
+        connect(m_pHeader,
                 &QHeaderView::sortIndicatorChanged,
                 this,
                 &WTrackTableView::slotSortingChanged,
-                Qt::AutoConnection);
-        connect(pHeader,
+                Qt::UniqueConnection);
+        connect(m_pHeader,
                 &WTrackTableViewHeader::shuffle,
                 this,
-                &WTrackTableView::slotRandomSorting);
+                &WTrackTableView::slotRandomSorting,
+                Qt::UniqueConnection);
 
         Qt::SortOrder sortOrder;
         TrackModel::SortColumnId sortColumn =
                 pNewTrackModel->sortColumnIdFromColumnIndex(
-                        horizontalHeader()->sortIndicatorSection());
+                        m_pHeader->sortIndicatorSection());
         if (sortColumn != TrackModel::SortColumnId::Invalid) {
             // Sort by the saved sort section and order.
-            sortOrder = horizontalHeader()->sortIndicatorOrder();
+            sortOrder = m_pHeader->sortIndicatorOrder();
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
             sortColumn = pNewTrackModel->sortColumnIdFromColumnIndex(
@@ -362,17 +333,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     } else {
         setDragDropMode(QAbstractItemView::DragOnly);
     }
-
-    // Possible giant fuckup alert - It looks like Qt has something like these
-    // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
-    // the flags(...) function that we're already using in LibraryTableModel. I
-    // haven't been able to get it to stop us from using a model as a drag
-    // target though, so my hacks above may not be completely unjustified.
-
-    // Now also apply the current font to the new header
-    pHeader->setFont(font());
-
-    setVisible(true);
 
     // trigger restoring scrollBar position, selection etc.
     if (restoreState) {

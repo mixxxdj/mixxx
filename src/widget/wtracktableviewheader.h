@@ -56,7 +56,7 @@ private:
 class WTrackTableViewHeader : public QHeaderView {
     Q_OBJECT
   public:
-    explicit WTrackTableViewHeader(Qt::Orientation orientation, QWidget* pParent = nullptr);
+    explicit WTrackTableViewHeader(QWidget* pParent = nullptr);
 
     void contextMenuEvent(QContextMenuEvent* event) override;
     void setModel(QAbstractItemModel* model) override;
