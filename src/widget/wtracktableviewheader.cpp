@@ -143,13 +143,30 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
     }
 }
 
-WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
-        QWidget* pParent)
-        : QHeaderView(orientation, pParent),
+WTrackTableViewHeader::WTrackTableViewHeader(QWidget* pParent)
+        : QHeaderView(Qt::Horizontal, pParent),
           m_menu(tr("Show or hide columns."), this),
           m_preferredHeight(-1),
           m_hoveredSection(-1),
           m_previousHoveredSection(-1) {
+    // Here we can override values to prevent restoring corrupt values from database
+    setSectionsMovable(true);
+
+    // Setting true in the next line causes https://github.com/mixxxdj/mixxx/issues/6265
+    // at least with Qt 4.6.1
+    setCascadingSectionResizes(false);
+
+    setSectionsClickable(true);
+
+    // Setting this to true would render all column labels BOLD as soon as the
+    // tableview is focused -- and would not restore the previous style when
+    // it's unfocused. This can not be overwritten with qss, so it can screw up
+    // the skin design. Also, it wouldn't even be useful since WLibraryTableView's
+    // setSelectionBehavior is QAbstractItemView::SelectRows = all columns
+    // would be highlighted.
+    setHighlightSections(false);
+
+    setDefaultAlignment(Qt::AlignLeft);
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
@@ -166,14 +183,12 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         return;
     }
 
-    // Won't happen in practice since the WTrackTableView new's a new
-    // WTrackTableViewHeader each time a new TrackModel is loaded.
-    // if (pOldTrackModel) {
-    //     saveHeaderState();
-    // }
+    // WTrackTableView calls saveHeaderState(), there's just too much interference
+    // with there and our sorting
 
     // First clear all the context menu actions for the old model.
     clearActions();
+    m_hiddenColumnSizes.clear();
 
     // Now set the header view to show the new model
     QHeaderView::setModel(pModel);
@@ -186,14 +201,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
     }
 
     // Restore saved header state to get sizes, column positioning, etc. back.
-    m_hiddenColumnSizes.clear();
     restoreHeaderState();
-
-    // Here we can override values to prevent restoring corrupt values from database
-    setSectionsMovable(true);
-
-    // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
-    setCascadingSectionResizes(false);
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
 
