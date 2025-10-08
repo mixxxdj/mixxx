@@ -1728,7 +1728,7 @@ WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"]
+#FxUnit4 #FxToggleButton[displayValue="1"],
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
