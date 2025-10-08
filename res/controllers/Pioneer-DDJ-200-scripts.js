@@ -142,8 +142,6 @@ DDJ200.PadModeContainers = {
                     return new components.SamplerButton({
                         midi: [0x97 + deckOffset, i],
                         number: deckOffset * 2 + i + 1,
-                        group,
-                        outConnect: false,
                     });
                 } else if (i < 7) {
                     return new components.Button({
