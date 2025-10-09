@@ -206,7 +206,7 @@ void WTrackTableView::pasteFromSidebar() {
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restoreState) {
-    qDebug() << "WTrackTableView::loadTrackModel()" << pNewModel;
+    qWarning() << "WTTV loadTrackModel()" << pNewModel;
 
     VERIFY_OR_DEBUG_ASSERT(pNewModel) {
         return;
@@ -222,6 +222,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     // which would cause a small GUI freeze
     TrackModel* pCurrModel = getTrackModel();
     if (pCurrModel == pNewTrackModel) {
+        qWarning() << "-> model already loaded. sort, restore state, return.";
         // Re-sort the table even if the track model is the same. This triggers
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection(),
@@ -240,10 +241,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     // This also calls horizontalHeader()->setModel(). WTrackTableViewHeader::setModel()
     // saves the old model's header state and tries to restores the saved state
     // of the new model.
+    qWarning() << "-> set model";
     setModel(pNewModel);
     // Now show/hide the header sort indicator (eg. Auto DJ doesn't show/need it)
     // This is just the visual aspect -- clicks on header sections do always
     // emit sort signals, and our sort slots act or don't depending on m_sorting.
+    qWarning() << "-> enable header sort indicator?" << m_sorting;
     m_pHeader->setSortIndicatorShown(m_sorting);
 
     // Initialize all column-specific things
@@ -274,6 +277,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     }
 
     if (m_sorting) {
+        qWarning() << "-> sorting enabled: apply sort column/order from header";
         Qt::SortOrder sortOrder;
         TrackModel::SortColumnId sortColumn =
                 pNewTrackModel->sortColumnIdFromColumnIndex(
@@ -281,13 +285,16 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
         if (sortColumn != TrackModel::SortColumnId::Invalid) {
             // Sort by the saved sort section and order.
             sortOrder = m_pHeader->sortIndicatorOrder();
+            qWarning() << "-> sort column valid, sort order from header:" << sortOrder;
         } else {
+            qWarning() << "-> ! sort column invalid, try model's default sort settings";
             // No saved order is present. Use the TrackModel's default sort order.
             sortColumn = pNewTrackModel->sortColumnIdFromColumnIndex(
                     pNewTrackModel->defaultSortColumn());
             sortOrder = pNewTrackModel->defaultSortOrder();
 
             if (sortColumn == TrackModel::SortColumnId::Invalid) {
+                qWarning() << "-> ! model's default sort column invalid, try another one";
                 // If the TrackModel has an invalid or internal column as its default
                 // sort, find the first valid sort column and sort by that.
                 // avoid endless while loop
