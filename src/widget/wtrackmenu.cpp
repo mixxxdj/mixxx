@@ -681,8 +681,10 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
-        m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
+        m_pMetadataMenu->addMenu(m_pCoverMenu);
+
+        m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
 
         for (const auto& updateInExternalTrackCollection :
                 std::as_const(m_updateInExternalTrackCollections)) {
@@ -707,7 +709,6 @@ void WTrackMenu::setupActions() {
                     });
         }
 
-        m_pMetadataMenu->addMenu(m_pCoverMenu);
         if (featureIsEnabled(Feature::FindOnWeb)) {
             m_pMetadataMenu->addMenu(m_pFindOnWebMenu);
         }
@@ -1115,7 +1116,6 @@ void WTrackMenu::updateMenus() {
         // We use the last selected track for the cover art context to be
         // consistent with selectionChanged above.
         m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
-        m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
