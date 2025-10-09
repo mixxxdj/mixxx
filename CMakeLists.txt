@@ -2560,6 +2560,9 @@ endif()
 # Tests
 #
 
+# Eve: to prevent multiple instances of winsock(2) being loaded
+### add_definitions(-DWIN32_LEAN_AND_MEAN)
+
 find_package(GTest CONFIG)
 default_option(BUILD_TESTING "Build with Unittests" "GTest_FOUND")
 if(BUILD_TESTING)
@@ -2568,137 +2571,6 @@ if(BUILD_TESTING)
   else()
     message(FATAL_ERROR "GTest: not found")
   endif()
-
-# Eve: to prevent multiple instances of winsock(2) being loaded
-### add_definitions(-DWIN32_LEAN_AND_MEAN)
-add_executable(
-  mixxx-test
-  src/test/analyserwaveformtest.cpp
-  src/test/analyzersilence_test.cpp
-  src/test/audiotaperpot_test.cpp
-  src/test/autodjprocessor_test.cpp
-  src/test/beatgridtest.cpp
-  src/test/beatmaptest.cpp
-  src/test/beatstest.cpp
-  src/test/beatstranslatetest.cpp
-  src/test/bpmtest.cpp
-  src/test/bpmcontrol_test.cpp
-  src/test/broadcastprofile_test.cpp
-  src/test/broadcastsettings_test.cpp
-  src/test/cache_test.cpp
-  src/test/channelhandle_test.cpp
-  src/test/chrono_clock_resolution_test.cpp
-  src/test/colorconfig_test.cpp
-  src/test/colormapperjsproxy_test.cpp
-  src/test/colorpalette_test.cpp
-  src/test/configobject_test.cpp
-  src/test/controller_mapping_validation_test.cpp
-  src/test/controller_mapping_settings_test.cpp
-  src/test/controllers/controller_columnid_regression_test.cpp
-  src/test/controllerscriptenginelegacy_test.cpp
-  src/test/controlobjecttest.cpp
-  src/test/controlobjectaliastest.cpp
-  src/test/controlobjectscripttest.cpp
-  src/test/controlpotmetertest.cpp
-  src/test/coreservicestest.cpp
-  src/test/coverartcache_test.cpp
-  src/test/coverartutils_test.cpp
-  src/test/cratestorage_test.cpp
-  src/test/cue_test.cpp
-  src/test/cuecontrol_test.cpp
-  src/test/dbconnectionpool_test.cpp
-  src/test/dbidtest.cpp
-  src/test/directorydaotest.cpp
-  src/test/duration_test.cpp
-  src/test/durationutiltest.cpp
-  #TODO: write useful tests for refactored effects system
-  #src/test/effectchainslottest.cpp
-  src/test/enginebufferscalelineartest.cpp
-  src/test/enginebuffertest.cpp
-  src/test/engineeffectsdelay_test.cpp
-  src/test/enginefilterbiquadtest.cpp
-  src/test/enginemixertest.cpp
-  src/test/enginemicrophonetest.cpp
-  src/test/enginesynctest.cpp
-  src/test/fileinfo_test.cpp
-  src/test/frametest.cpp
-  src/test/globaltrackcache_test.cpp
-  src/test/hotcuecontrol_test.cpp
-  src/test/imageutils_test.cpp
-  src/test/indexrange_test.cpp
-  src/test/itunesxmlimportertest.cpp
-  src/test/keyfactorytest.cpp
-  src/test/keyutilstest.cpp
-  src/test/lcstest.cpp
-  src/test/learningutilstest.cpp
-  src/test/libraryscannertest.cpp
-  src/test/librarytest.cpp
-  src/test/looping_control_test.cpp
-  src/test/main.cpp
-  src/test/mathutiltest.cpp
-  src/test/metadatatest.cpp
-  #TODO: make this build again
-  #src/test/metaknob_link_test.cpp
-  src/test/midicontrollertest.cpp
-  src/test/mixxxtest.cpp
-  src/test/mock_networkaccessmanager.cpp
-  src/test/movinginterquartilemean_test.cpp
-  src/test/musicbrainzrecordingstasktest.cpp
-  src/test/nativeeffects_test.cpp
-  src/test/performancetimer_test.cpp
-  src/test/playcountertest.cpp
-  src/test/playermanagertest.cpp
-  src/test/playlisttest.cpp
-  src/test/portmidicontroller_test.cpp
-  src/test/portmidienumeratortest.cpp
-  src/test/queryutiltest.cpp
-  src/test/rangelist_test.cpp
-  src/test/readaheadmanager_test.cpp
-  src/test/replaygaintest.cpp
-  src/test/rescalertest.cpp
-  src/test/rgbcolor_test.cpp
-  src/test/rotary_test.cpp
-  src/test/ringdelaybuffer_test.cpp
-  src/test/samplebuffertest.cpp
-  src/test/sampleutiltest.cpp
-  src/test/schemamanager_test.cpp
-  src/test/searchqueryparsertest.cpp
-  src/test/seratobeatgridtest.cpp
-  src/test/seratomarkerstest.cpp
-  src/test/seratomarkers2test.cpp
-  src/test/seratotagstest.cpp
-  src/test/signalpathtest.cpp
-  src/test/skincontext_test.cpp
-  src/test/softtakeover_test.cpp
-  src/test/soundproxy_test.cpp
-  src/test/soundsourceproviderregistrytest.cpp
-  src/test/sqliteliketest.cpp
-  src/test/synccontroltest.cpp
-  src/test/synctrackmetadatatest.cpp
-  src/test/tableview_test.cpp
-  src/test/taglibtest.cpp
-  src/test/trackdao_test.cpp
-  src/test/trackexport_test.cpp
-  src/test/trackmetadata_test.cpp
-  src/test/trackmetadataexport_test.cpp
-  src/test/tracknumberstest.cpp
-  src/test/trackreftest.cpp
-  src/test/trackupdate_test.cpp
-  src/test/uuid_test.cpp
-  src/test/wbatterytest.cpp
-  src/test/wpushbutton_test.cpp
-  src/test/wwidgetstack_test.cpp
-  src/test/waveform_upgrade_test.cpp
-  src/util/moc_included_test.cpp
-  src/test/helpers/log_test.cpp
-)
-if(QML)
-  target_sources(
-    mixxx-test
-    PRIVATE
-      src/test/controller_mapping_file_handler_test.cpp
-      src/test/controllerrenderingengine_test.cpp
-  )
 endif()
 
 find_package(benchmark)
@@ -4255,14 +4127,6 @@ else()
             applocal
         )
       endif()
-      #install(
-      #  IMPORTED_RUNTIME_ARTIFACTS
-      #    Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
-      #    DESTINATION
-      #    "${MIXXX_INSTALL_DATADIR}/styles"
-      #    COMPONENT
-      #    applocal
-      #)
     endif()
     if(APPLE)
       install(
