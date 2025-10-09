@@ -36,12 +36,6 @@ FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& tra
     pFindOnWebMenu->addMenu(this);
     addSeparator();
     if (!artist.isEmpty()) {
-        const QUrl lastfmUrlArtist = composeLastfmUrl(kSearchUrlArtist, artist);
-        addActionToServiceMenu(
-                composeActionText(tr("Artist"), artist),
-                lastfmUrlArtist);
-    }
-    if (!trackTitle.isEmpty()) {
         if (!artist.isEmpty()) {
             const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl lastfmUrlArtistWithTrackTitle =
@@ -51,24 +45,32 @@ FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& tra
                             tr("Artist + Title"), artistWithTrackTitle),
                     lastfmUrlArtistWithTrackTitle);
         }
-        const QUrl lastfmUrlTrackTitle = composeLastfmUrl(kSearchUrlTitle, trackTitle);
-        addActionToServiceMenu(
-                composeActionText(tr("Title"), trackTitle),
-                lastfmUrlTrackTitle);
-    }
-    if (!album.isEmpty()) {
-        if (!artist.isEmpty()) {
+
+        if (!album.isEmpty()) {
             const QString artistWithAlbum = composeSearchQuery(artist, album);
             const QUrl lastfmUrlArtistWithAlbum =
                     composeLastfmUrl(kSearchUrlAlbum, artistWithAlbum);
             addActionToServiceMenu(
                     composeActionText(tr("Artist + Album"), artistWithAlbum),
                     lastfmUrlArtistWithAlbum);
-        } else {
-            const QUrl lastfmUrlAlbum = composeLastfmUrl(kSearchUrlAlbum, album);
-            addActionToServiceMenu(
-                    composeActionText(tr("Album"), album),
-                    lastfmUrlAlbum);
         }
+
+        const QUrl lastfmUrlArtist = composeLastfmUrl(kSearchUrlArtist, artist);
+        addActionToServiceMenu(
+                composeActionText(tr("Artist"), artist),
+                lastfmUrlArtist);
+    }
+
+    if (!album.isEmpty() && artist.isEmpty()) {
+        const QUrl lastfmUrlAlbum = composeLastfmUrl(kSearchUrlAlbum, album);
+        addActionToServiceMenu(
+                composeActionText(tr("Album"), album),
+                lastfmUrlAlbum);
+    }
+    if (!trackTitle.isEmpty()) {
+        const QUrl lastfmUrlTrackTitle = composeLastfmUrl(kSearchUrlTitle, trackTitle);
+        addActionToServiceMenu(
+                composeActionText(tr("Title"), trackTitle),
+                lastfmUrlTrackTitle);
     }
 }

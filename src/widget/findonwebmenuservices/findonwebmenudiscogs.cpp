@@ -38,13 +38,7 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
     pFindOnWebMenu->addMenu(this);
     addSeparator();
     if (!artist.isEmpty()) {
-        const QUrl discogsUrlArtist = composeDiscogsUrl(kSearchUrl, artist, kQueryTypeArtist);
-        addActionToServiceMenu(
-                composeActionText(tr("Artist"), artist),
-                discogsUrlArtist);
-    }
-    if (!trackTitle.isEmpty()) {
-        if (!artist.isEmpty()) {
+        if (!trackTitle.isEmpty()) {
             const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl discogsUrlArtistWithTrackTitle = composeDiscogsUrl(
                     kSearchUrl, artistWithTrackTitle, kQueryTypeRelease);
@@ -53,25 +47,32 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
                             tr("Artist + Title"), artistWithTrackTitle),
                     discogsUrlArtistWithTrackTitle);
         }
-        const QUrl discogsUrlTrackTitle =
-                composeDiscogsUrl(kSearchUrl, trackTitle, kQueryTypeRelease);
-        addActionToServiceMenu(
-                composeActionText(tr("Title"), trackTitle),
-                discogsUrlTrackTitle);
-    }
-    if (!album.isEmpty()) {
-        if (!artist.isEmpty()) {
+
+        if (!album.isEmpty()) {
             const QString artistWithAlbum = composeSearchQuery(artist, album);
             const QUrl discogsUrlArtistWithAlbum = composeDiscogsUrl(
                     kSearchUrl, artistWithAlbum, kQueryTypeRelease);
             addActionToServiceMenu(
                     composeActionText(tr("Artist + Album"), artistWithAlbum),
                     discogsUrlArtistWithAlbum);
-        } else {
-            const QUrl discogsUrlAlbum = composeDiscogsUrl(kSearchUrl, album, kQueryTypeRelease);
-            addActionToServiceMenu(
-                    composeActionText(tr("Album"), album),
-                    discogsUrlAlbum);
         }
+
+        const QUrl discogsUrlArtist = composeDiscogsUrl(kSearchUrl, artist, kQueryTypeArtist);
+        addActionToServiceMenu(
+                composeActionText(tr("Artist"), artist),
+                discogsUrlArtist);
+    }
+    if (!album.isEmpty() && artist.isEmpty()) {
+        const QUrl discogsUrlAlbum = composeDiscogsUrl(kSearchUrl, album, kQueryTypeRelease);
+        addActionToServiceMenu(
+                composeActionText(tr("Album"), album),
+                discogsUrlAlbum);
+    }
+    if (!trackTitle.isEmpty()) {
+        const QUrl discogsUrlTrackTitle =
+                composeDiscogsUrl(kSearchUrl, trackTitle, kQueryTypeRelease);
+        addActionToServiceMenu(
+                composeActionText(tr("Title"), trackTitle),
+                discogsUrlTrackTitle);
     }
 }
