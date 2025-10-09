@@ -5,8 +5,10 @@
 #include <QMimeData>
 #include <QScreen>
 #include <QtGlobal>
+#include <utility>
 
 #include "library/coverartcache.h"
+#include "library/dao/cuedao.h"
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
@@ -22,9 +24,11 @@
 #include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetracktablemodel.cpp"
+#include "track/cue.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
@@ -598,6 +602,19 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+        // Eve: show the hotcue overview for in tooltips for following fields:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TITLE:
+        case ColumnCache::COLUMN_LIBRARYTABLE_ARTIST:
+        case ColumnCache::COLUMN_LIBRARYTABLE_ALBUM:
+        case ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST:
+        case ColumnCache::COLUMN_LIBRARYTABLE_GENRE:
+        case ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER:
+        case ColumnCache::COLUMN_LIBRARYTABLE_GROUPING:
+        case ColumnCache::COLUMN_LIBRARYTABLE_COMMENT:
+            if (role == Qt::ToolTipRole) {
+                return composeHotCueTooltip(index, rawValue.toString());
+            }
+            break;
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -1180,4 +1197,156 @@ QVariant BaseTrackTableModel::getFieldVariant(
 QString BaseTrackTableModel::getFieldString(
         const QModelIndex& index, ColumnCache::Column column) const {
     return getFieldVariant(index, column).toString();
+}
+
+QString BaseTrackTableModel::composeHotCueTooltip(
+        const QModelIndex& index, const QString& columnValue) const {
+    TrackPointer pTrack = getTrack(index);
+    if (!pTrack || !pTrack->getId().isValid()) {
+        return columnValue;
+    }
+
+    // Get hotcues for this track
+    QList<CuePointer> cues = m_pTrackCollectionManager
+                                     ->internalCollection()
+                                     ->getCueDAO()
+                                     .getCuesForTrack(pTrack->getId());
+
+    // only hotcues
+    QList<CuePointer> hotCues;
+    for (const auto& pCue : std::as_const(cues)) {
+        if (pCue && pCue->getHotCue() != Cue::kNoHotCue) {
+            hotCues.append(pCue);
+        }
+    }
+
+    // No hotcues -> column value
+    if (hotCues.isEmpty()) {
+        return columnValue;
+    }
+
+    // Sort hotcues by number
+    std::sort(hotCues.begin(), hotCues.end(), [](const CuePointer& a, const CuePointer& b) {
+        return a->getHotCue() < b->getHotCue();
+    });
+
+    double sampleRate = pTrack->getSampleRate();
+
+    return formatHotCueTooltip(columnValue, hotCues, sampleRate);
+}
+
+QString BaseTrackTableModel::formatHotCueTooltip(const QString& columnValue,
+        const QList<CuePointer>& cues,
+        double sampleRate) const {
+    QString tooltip;
+
+    // Start HTML
+    tooltip += "<html><body style='white-space: pre; font-family: monospace; font-size: 15pt;'>";
+
+    // Always show the column value (title, artist, composer, etc.)
+    if (!columnValue.isEmpty()) {
+        tooltip += QString("<b>%1</b>").arg(columnValue.toHtmlEscaped());
+    }
+
+    // Only add hotcues when there are
+    if (!cues.isEmpty()) {
+        if (!tooltip.isEmpty()) {
+            tooltip += "<br><br>";
+        }
+        tooltip += "<b>Hot Cues:</b>";
+
+        for (const auto& pCue : std::as_const(cues)) {
+            if (!pCue) {
+                continue;
+            }
+
+            tooltip += "<br>";
+
+            QString cueLine =
+                    QString("  #%1 - %2")
+                            .arg(pCue->getHotCue() + 1)
+                            .arg(formatCuePosition(
+                                    pCue->getPosition().value(), sampleRate));
+
+            // Add label if present
+            QString label = pCue->getLabel();
+            if (!label.isEmpty() && !label.isNull()) {
+                cueLine += QString(" - %1").arg(label.toHtmlEscaped());
+            }
+
+            // Add type
+            QString typeString;
+            switch (pCue->getType()) {
+            case mixxx::CueType::HotCue:
+                typeString = "Hot Cue";
+                break;
+            case mixxx::CueType::MainCue:
+                typeString = "MainCue";
+                break;
+            case mixxx::CueType::Beat:
+                typeString = "BeatCue";
+                break;
+            case mixxx::CueType::Loop:
+                typeString = "Loop";
+                break;
+            case mixxx::CueType::Jump:
+                typeString = "Jump";
+                break;
+            case mixxx::CueType::Intro:
+                typeString = "Intro";
+                break;
+            case mixxx::CueType::Outro:
+                typeString = "Outro";
+                break;
+            case mixxx::CueType::N60dBSound:
+                typeString = "&lt; 60db Beginning / End Cue";
+                break;
+            default:
+                typeString = "Unknown";
+                break;
+            }
+            cueLine += QString(" [%1]").arg(typeString);
+
+            // Add duration for loops
+            if (pCue->getType() == mixxx::CueType::Loop && pCue->getLengthFrames() > 0) {
+                cueLine += QString(" (%1)").arg(
+                        formatCueDuration(pCue->getLengthFrames(), sampleRate));
+            }
+
+            // Wrap the entire line in the cue's color
+            QString hexColor =
+                    QString("#%1")
+                            .arg(static_cast<uint32_t>(pCue->getColor()),
+                                    6,
+                                    16,
+                                    QChar('0'))
+                            .toUpper();
+            cueLine = QString("<span style='color: %1;'>%2</span>").arg(hexColor, cueLine);
+
+            tooltip += cueLine;
+        }
+    }
+
+    // Close HTML
+    tooltip += "</body></html>";
+
+    return tooltip;
+}
+
+QString BaseTrackTableModel::formatCuePosition(double position, double sampleRate) const {
+    if (sampleRate <= 0) {
+        // if no sampleRate -> 44.1kHz
+        sampleRate = 44100.0;
+    }
+    double seconds = position / sampleRate;
+    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
+}
+
+QString BaseTrackTableModel::formatCueDuration(double duration, double sampleRate) const {
+    if (sampleRate <= 0) {
+        // if no sampleRate -> 44.1kHz
+        sampleRate = 44100.0;
+    }
+    double seconds = duration / sampleRate;
+    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
 }

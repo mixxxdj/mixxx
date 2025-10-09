@@ -7,10 +7,12 @@
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
+#include "track/cue.h"
 #include "track/track_decl.h"
 #include "util/color/colorpalette.h"
 
 class TrackCollectionManager;
+class CuePointer;
 
 /// Base class for tabular track list views.
 ///
@@ -307,4 +309,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static std::optional<ColorPalette> s_keyColorPalette;
 
     static bool s_bApplyPlayedTrackColor;
+    QString composeHotCueTooltip(const QModelIndex& index, const QString& columnValue) const;
+    QString formatHotCueTooltip(const QString& trackTitle,
+            const QList<CuePointer>& cues,
+            double sampleRate) const;
+    QString formatCuePosition(double position, double sampleRate) const;
+    QString formatCueDuration(double duration, double sampleRate) const;
 };
