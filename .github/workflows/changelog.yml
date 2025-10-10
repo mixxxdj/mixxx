@@ -14,7 +14,7 @@ jobs:
       - name: Get current branch name
         uses: nelonoel/branch-name@v1.0.1
       - name: Start workflow run on manual repository
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         if: env.MIXXXBOT_TOKEN != null
         with:
           token: ${{ env.MIXXXBOT_TOKEN }}
