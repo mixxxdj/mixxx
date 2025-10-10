@@ -269,20 +269,6 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::FindOnWeb)) {
         DEBUG_ASSERT(!m_pFindOnWebMenu);
         m_pFindOnWebMenu = make_parented<QMenu>(tr("Find on Web"), this);
-        connect(m_pFindOnWebMenu,
-                &QMenu::aboutToShow,
-                this,
-                [this] {
-                    m_pFindOnWebMenu->clear();
-                    const auto pTrack = getFirstTrackPointer();
-                    if (pTrack) {
-                        mixxx::library::createFindOnWebSubmenus(
-                                m_pFindOnWebMenu,
-                                *pTrack);
-                    }
-                    m_pFindOnWebMenu->setEnabled(
-                            !m_pFindOnWebMenu->isEmpty());
-                });
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
@@ -1238,8 +1224,15 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
+        // We have a new Track
+        m_pFindOnWebMenu->clear();
         const auto pTrack = getFirstTrackPointer();
         const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
+        if (enableMenu) {
+            mixxx::library::createFindOnWebSubmenus(
+                    m_pFindOnWebMenu,
+                    *pTrack);
+        }
         m_pFindOnWebMenu->setEnabled(enableMenu);
     }
 }
