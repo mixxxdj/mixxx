@@ -8,7 +8,7 @@
 #include "util/desktophelper.h"
 
 WFindOnWebMenu::WFindOnWebMenu(QWidget* parent)
-        : QMenu(tr("Find on Web"), parent) {
+        : QMenu(parent) {
 }
 
 bool WFindOnWebMenu::hasEntriesForTrack(const Track& track) {

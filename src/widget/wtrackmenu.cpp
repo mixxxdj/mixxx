@@ -268,7 +268,7 @@ void WTrackMenu::createMenus() {
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
         DEBUG_ASSERT(!m_pFindOnWebMenu);
-        m_pFindOnWebMenu = make_parented<WFindOnWebMenu>(this);
+        m_pFindOnWebMenu = make_parented<QMenu>(tr("Find on Web"), this);
         connect(m_pFindOnWebMenu,
                 &QMenu::aboutToShow,
                 this,
