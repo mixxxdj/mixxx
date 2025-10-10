@@ -29,7 +29,11 @@ declare type MixxxControlName = {
 };
 
 declare type MixxxGroup = keyof MixxxControlName | (string & {});
-declare type MixxxControl<TGroup> = TGroup extends keyof MixxxControlName ? MixxxControlName[TGroup] : string;
+declare type MixxxControl<TGroup> = 0 extends 1 & TGroup // is any check
+    ? string
+    : TGroup extends keyof MixxxControlName
+    ? MixxxControlName[TGroup]
+    : string;
 /*
  * Values
  */
