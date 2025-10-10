@@ -171,6 +171,7 @@ void DlgPrefLibrary::slotShow() {
 }
 
 void DlgPrefLibrary::slotHide() {
+    resetLibraryFont();
     if (!m_bAddedDirectory) {
         return;
     }
@@ -348,6 +349,7 @@ void DlgPrefLibrary::slotUpdate() {
             kEnableSearchHistoryShortcutsConfigKey,
             WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 
+    // Library reads font from config during construction
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBox_row_height->setValue(m_iOriginalTrackTableRowHeight);
@@ -384,6 +386,10 @@ void DlgPrefLibrary::slotUpdate() {
 }
 
 void DlgPrefLibrary::slotCancel() {
+    resetLibraryFont();
+}
+
+void DlgPrefLibrary::resetLibraryFont() {
     // Undo any changes in the library font or row height.
     m_pLibrary->setFont(m_originalTrackTableFont);
     m_pLibrary->setRowHeight(m_iOriginalTrackTableRowHeight);
@@ -572,12 +578,14 @@ void DlgPrefLibrary::slotApply() {
     if (m_originalTrackTableFont != font) {
         m_pConfig->set(ConfigKey("[Library]", "Font"),
                        ConfigValue(font.toString()));
+        m_originalTrackTableFont = font;
     }
 
     int rowHeight = spinBox_row_height->value();
     if (m_iOriginalTrackTableRowHeight != rowHeight) {
         m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
+        m_iOriginalTrackTableRowHeight = rowHeight;
     }
 
     BaseTrackTableModel::setApplyPlayedTrackColor(
