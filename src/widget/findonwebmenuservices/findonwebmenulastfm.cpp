@@ -46,25 +46,16 @@ FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& tra
                     lastfmUrlArtistWithTrackTitle);
         }
 
-        if (!album.isEmpty()) {
-            const QString artistWithAlbum = composeSearchQuery(artist, album);
-            const QUrl lastfmUrlArtistWithAlbum =
-                    composeLastfmUrl(kSearchUrlAlbum, artistWithAlbum);
-            addActionToServiceMenu(
-                    composeActionText(tr("Artist + Album"), artistWithAlbum),
-                    lastfmUrlArtistWithAlbum);
-        }
-
         const QUrl lastfmUrlArtist = composeLastfmUrl(kSearchUrlArtist, artist);
         addActionToServiceMenu(
                 composeActionText(tr("Artist"), artist),
                 lastfmUrlArtist);
     }
 
-    if (!album.isEmpty() && artist.isEmpty()) {
+    if (!album.isEmpty()) {
         const QUrl lastfmUrlAlbum = composeLastfmUrl(kSearchUrlAlbum, album);
         addActionToServiceMenu(
-                composeActionText(tr("Album"), album),
+                tr("Album"),
                 lastfmUrlAlbum);
     }
     if (!trackTitle.isEmpty()) {
