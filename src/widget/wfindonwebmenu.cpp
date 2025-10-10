@@ -26,10 +26,6 @@ void WFindOnWebMenu::addActionToServiceMenu(
             });
 }
 
-QString WFindOnWebMenu::composeActionText(const QString& prefix, const QString& trackProperty) {
-    return prefix + QStringLiteral(" | ") + trackProperty;
-}
-
 QString WFindOnWebMenu::composeSearchQuery(
         const QString& artist, const QString& trackAlbumOrTitle) {
     return artist + QStringLiteral(" ") + trackAlbumOrTitle;

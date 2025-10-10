@@ -37,37 +37,31 @@ FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
     addSeparator();
     if (!artist.isEmpty()) {
         if (!trackTitle.isEmpty()) {
-            const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl SoundcloudUrlArtistWithTrackTitle =
-                    composeSoundcloudUrl(kSearchUrlTitle, artistWithTrackTitle);
+                    composeSoundcloudUrl(kSearchUrlTitle, composeSearchQuery(artist, trackTitle));
             addActionToServiceMenu(
-                    composeActionText(
-                            tr("Artist + Title"), artistWithTrackTitle),
+                    tr("Artist + Title"),
                     SoundcloudUrlArtistWithTrackTitle);
         }
         if (!album.isEmpty()) {
-            const QString artistWithAlbum = composeSearchQuery(artist, album);
             const QUrl SoundcloudUrlArtistWithAlbum =
-                    composeSoundcloudUrl(kSearchUrlAlbum, artistWithAlbum);
+                    composeSoundcloudUrl(kSearchUrlAlbum, composeSearchQuery(artist, album));
             addActionToServiceMenu(
-                    composeActionText(tr("Artist + Album"), artistWithAlbum),
+                    tr("Artist + Album"),
                     SoundcloudUrlArtistWithAlbum);
         }
         const QUrl SoundcloudUrlArtist = composeSoundcloudUrl(kSearchUrlArtist, artist);
         addActionToServiceMenu(
-                composeActionText(tr("Artist"), artist),
-                SoundcloudUrlArtist);
+                tr("Artist"), SoundcloudUrlArtist);
     }
     if (!album.isEmpty() && artist.isEmpty()) {
         const QUrl SoundcloudUrlAlbum = composeSoundcloudUrl(kSearchUrlAlbum, album);
         addActionToServiceMenu(
-                composeActionText(tr("Album"), album),
-                SoundcloudUrlAlbum);
+                tr("Album"), SoundcloudUrlAlbum);
     }
     if (!trackTitle.isEmpty()) {
         const QUrl SoundcloudUrlTrackTitle = composeSoundcloudUrl(kSearchUrlTitle, trackTitle);
         addActionToServiceMenu(
-                composeActionText(tr("Title"), trackTitle),
-                SoundcloudUrlTrackTitle);
+                tr("Title"), SoundcloudUrlTrackTitle);
     }
 }

@@ -39,40 +39,34 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
     addSeparator();
     if (!artist.isEmpty()) {
         if (!trackTitle.isEmpty()) {
-            const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl discogsUrlArtistWithTrackTitle = composeDiscogsUrl(
-                    kSearchUrl, artistWithTrackTitle, kQueryTypeRelease);
+                    kSearchUrl, composeSearchQuery(artist, trackTitle), kQueryTypeRelease);
             addActionToServiceMenu(
-                    composeActionText(
-                            tr("Artist + Title"), artistWithTrackTitle),
+                    tr("Artist + Title"),
                     discogsUrlArtistWithTrackTitle);
         }
 
         if (!album.isEmpty()) {
-            const QString artistWithAlbum = composeSearchQuery(artist, album);
             const QUrl discogsUrlArtistWithAlbum = composeDiscogsUrl(
-                    kSearchUrl, artistWithAlbum, kQueryTypeRelease);
+                    kSearchUrl, composeSearchQuery(artist, album), kQueryTypeRelease);
             addActionToServiceMenu(
-                    composeActionText(tr("Artist + Album"), artistWithAlbum),
+                    tr("Artist + Album"),
                     discogsUrlArtistWithAlbum);
         }
 
         const QUrl discogsUrlArtist = composeDiscogsUrl(kSearchUrl, artist, kQueryTypeArtist);
         addActionToServiceMenu(
-                composeActionText(tr("Artist"), artist),
-                discogsUrlArtist);
+                tr("Artist"), discogsUrlArtist);
     }
     if (!album.isEmpty() && artist.isEmpty()) {
         const QUrl discogsUrlAlbum = composeDiscogsUrl(kSearchUrl, album, kQueryTypeRelease);
         addActionToServiceMenu(
-                composeActionText(tr("Album"), album),
-                discogsUrlAlbum);
+                tr("Album"), discogsUrlAlbum);
     }
     if (!trackTitle.isEmpty()) {
         const QUrl discogsUrlTrackTitle =
                 composeDiscogsUrl(kSearchUrl, trackTitle, kQueryTypeRelease);
         addActionToServiceMenu(
-                composeActionText(tr("Title"), trackTitle),
-                discogsUrlTrackTitle);
+                tr("Title"), discogsUrlTrackTitle);
     }
 }
