@@ -1648,6 +1648,7 @@ add_library(
   src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
+  src/widget/findonweblast.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp

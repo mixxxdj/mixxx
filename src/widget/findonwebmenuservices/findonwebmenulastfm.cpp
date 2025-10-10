@@ -27,8 +27,10 @@ const QUrl composeLastfmUrl(const QString& serviceSearchUrl,
 
 } //namespace
 
-FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu) {
+FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu,
+        FindOnWebLast* pFindOnWebLast,
+        const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu, pFindOnWebLast) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();

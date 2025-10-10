@@ -27,8 +27,8 @@ const QUrl composeSoundcloudUrl(const QString& serviceSearchUrl,
 } // namespace
 
 FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
-        QMenu* pFindOnWebMenu, const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu) {
+        QMenu* pFindOnWebMenu, FindOnWebLast* pFindOnWebLast, const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu, pFindOnWebLast) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();

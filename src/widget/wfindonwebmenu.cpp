@@ -6,9 +6,11 @@
 #include "moc_wfindonwebmenu.cpp"
 #include "track/track.h"
 #include "util/desktophelper.h"
+#include "widget/findonweblast.h"
 
-WFindOnWebMenu::WFindOnWebMenu(QWidget* parent)
-        : QMenu(parent) {
+WFindOnWebMenu::WFindOnWebMenu(QWidget* parent, FindOnWebLast* pFindOnWebLast)
+        : QMenu(parent),
+          m_pFindOnWebLast(pFindOnWebLast) {
 }
 
 bool WFindOnWebMenu::hasEntriesForTrack(const Track& track) {
@@ -23,9 +25,11 @@ void WFindOnWebMenu::addActionToServiceMenu(
         const QUrl& serviceUrl) {
     addAction(actionText,
             this,
-            [this, serviceUrl] {
+            [this, actionId, actionText, serviceUrl] {
                 openInBrowser(serviceUrl);
+                m_pFindOnWebLast->update(actionId, actionText, serviceUrl);
             });
+    m_pFindOnWebLast->init(actionId, actionText, serviceUrl);
 }
 
 QString WFindOnWebMenu::composeSearchQuery(

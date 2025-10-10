@@ -41,6 +41,7 @@
 #include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "util/widgethelper.h"
+#include "widget/findonweblast.h"
 #include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
@@ -269,6 +270,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::FindOnWeb)) {
         DEBUG_ASSERT(!m_pFindOnWebMenu);
         m_pFindOnWebMenu = make_parented<QMenu>(tr("Find on Web"), this);
+        m_pFindOnWebLastAct = make_parented<FindOnWebLast>(this, m_pConfig);
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
@@ -696,6 +698,7 @@ void WTrackMenu::setupActions() {
         }
 
         if (featureIsEnabled(Feature::FindOnWeb)) {
+            m_pMetadataMenu->addAction(m_pFindOnWebLastAct);
             m_pMetadataMenu->addMenu(m_pFindOnWebMenu);
         }
 
@@ -1226,14 +1229,16 @@ void WTrackMenu::updateMenus() {
     if (featureIsEnabled(Feature::FindOnWeb)) {
         // We have a new Track
         m_pFindOnWebMenu->clear();
+        m_pFindOnWebLastAct->setVisible(false);
         const auto pTrack = getFirstTrackPointer();
         const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
         if (enableMenu) {
             mixxx::library::createFindOnWebSubmenus(
                     m_pFindOnWebMenu,
+                    m_pFindOnWebLastAct,
                     *pTrack);
         }
-        m_pFindOnWebMenu->setEnabled(enableMenu);
+        m_pFindOnWebMenu->setEnabled(!m_pFindOnWebMenu->isEmpty());
     }
 }
 

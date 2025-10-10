@@ -3,11 +3,12 @@
 #include <QMenu>
 
 class Track;
+class FindOnWebLast;
 
 class WFindOnWebMenu : public QMenu {
     Q_OBJECT
   public:
-    explicit WFindOnWebMenu(QWidget* pParent);
+    explicit WFindOnWebMenu(QWidget* pParent, FindOnWebLast* pFindOnWebLast);
     ~WFindOnWebMenu() override = default;
 
     void addActionToServiceMenu(
@@ -20,4 +21,7 @@ class WFindOnWebMenu : public QMenu {
   protected:
     QString composeSearchQuery(const QString& artist, const QString& trackAlbumOrTitle);
     void openInBrowser(const QUrl& url);
+
+  private:
+    FindOnWebLast* m_pFindOnWebLast;
 };

@@ -29,8 +29,10 @@ const QUrl composeDiscogsUrl(const QString& serviceDefaultUrl,
 }
 } //namespace
 
-FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu) {
+FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu,
+        FindOnWebLast* pFindOnWebLast,
+        const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu, pFindOnWebLast) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();

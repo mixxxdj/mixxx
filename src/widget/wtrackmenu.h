@@ -22,6 +22,7 @@ class DlgTrackInfo;
 class DlgTrackInfoMulti;
 //class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
+class FindOnWebLast;
 class Library;
 class TrackModel;
 class WColorPickerAction;
@@ -298,6 +299,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<WCoverArtMenu> m_pCoverMenu;
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<QMenu> m_pFindOnWebMenu;
+    parented_ptr<FindOnWebLast> m_pFindOnWebLastAct;
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QMenu* m_pRemoveFromDiskMenu{};
 #endif
