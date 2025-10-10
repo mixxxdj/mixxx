@@ -577,9 +577,16 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
         return;
     }
 
+    bool anyTracksRemoved = false;
     while (query.next()) {
         int position = query.value(query.record().indexOf("position")).toInt();
         removeTracksFromPlaylistInner(playlistId, position);
+        anyTracksRemoved = true;
+    }
+
+    // Avoid no-op select() if we didn't remove any tracks
+    if (!anyTracksRemoved) {
+        return;
     }
 
     transaction.commit();
