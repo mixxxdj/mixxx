@@ -132,7 +132,7 @@ declare namespace engine {
      * @param name Name of the setting (as specified in the XML file of the mapping)
      * @returns Value of the setting, or undefined in failure case
      */
-    function getSetting(name: MixxxGroup): SettingValue | undefined;
+    function getSetting(name: string): SettingValue | undefined;
 
     /**
      * Gets the control value
