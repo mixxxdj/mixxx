@@ -91,6 +91,8 @@ void PlaylistFeature::onRightClickChild(
     m_pOrderByCurrentPosAction->setEnabled(!locked && isChildIndexSelectedInSidebar(index));
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
+    m_pShufflePlaylistAction->setEnabled(!locked);
+    m_pImportPlaylistAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
