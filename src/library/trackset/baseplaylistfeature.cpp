@@ -467,6 +467,11 @@ void BasePlaylistFeature::slotImportPlaylist() {
     if (playlistId == kInvalidPlaylistId) {
         return;
     }
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        qDebug() << "Can't import a playlist into locked playlist" << playlistId
+                 << m_playlistDao.getPlaylistName(playlistId);
+        return;
+    }
 
     // Update the import/export playlist directory
     QFileInfo fileDirectory(playlistFile);
@@ -479,6 +484,11 @@ void BasePlaylistFeature::slotImportPlaylist() {
 void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
         int playlistId) {
     if (playlistFile.isEmpty()) {
+        return;
+    }
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        qDebug() << "Can't import a playlist into locked playlist" << playlistId
+                 << m_playlistDao.getPlaylistName(playlistId);
         return;
     }
     // The user has picked a new directory via a file dialog. This means the
