@@ -11,6 +11,7 @@ class WFindOnWebMenu : public QMenu {
     ~WFindOnWebMenu() override = default;
 
     void addActionToServiceMenu(
+            const QString& actionId,
             const QString& actionText,
             const QUrl& serviceUrl);
 

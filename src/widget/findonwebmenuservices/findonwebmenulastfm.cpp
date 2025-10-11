@@ -40,12 +40,14 @@ FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& tra
             const QUrl lastfmUrlArtistWithTrackTitle =
                     composeLastfmUrl(kSearchUrlTitle, composeSearchQuery(artist, trackTitle));
             addActionToServiceMenu(
+                    kServiceTitle + QStringLiteral(",Artist,Title"),
                     tr("Artist + Title"),
                     lastfmUrlArtistWithTrackTitle);
         }
 
         const QUrl lastfmUrlArtist = composeLastfmUrl(kSearchUrlArtist, artist);
         addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Artist"),
                 tr("Artist"),
                 lastfmUrlArtist);
     }
@@ -53,12 +55,15 @@ FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& tra
     if (!album.isEmpty()) {
         const QUrl lastfmUrlAlbum = composeLastfmUrl(kSearchUrlAlbum, album);
         addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Album"),
                 tr("Album"),
                 lastfmUrlAlbum);
     }
     if (!trackTitle.isEmpty()) {
         const QUrl lastfmUrlTrackTitle = composeLastfmUrl(kSearchUrlTitle, trackTitle);
         addActionToServiceMenu(
-                tr("Title"), lastfmUrlTrackTitle);
+                kServiceTitle + QStringLiteral(",Title"),
+                tr("Title"),
+                lastfmUrlTrackTitle);
     }
 }

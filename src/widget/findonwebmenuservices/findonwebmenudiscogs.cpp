@@ -42,6 +42,7 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
             const QUrl discogsUrlArtistWithTrackTitle = composeDiscogsUrl(
                     kSearchUrl, composeSearchQuery(artist, trackTitle), kQueryTypeRelease);
             addActionToServiceMenu(
+                    kServiceTitle + QStringLiteral(",Artist,Title"),
                     tr("Artist + Title"),
                     discogsUrlArtistWithTrackTitle);
         }
@@ -50,23 +51,30 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
             const QUrl discogsUrlArtistWithAlbum = composeDiscogsUrl(
                     kSearchUrl, composeSearchQuery(artist, album), kQueryTypeRelease);
             addActionToServiceMenu(
+                    kServiceTitle + QStringLiteral(",Artist,Album"),
                     tr("Artist + Album"),
                     discogsUrlArtistWithAlbum);
         }
 
         const QUrl discogsUrlArtist = composeDiscogsUrl(kSearchUrl, artist, kQueryTypeArtist);
         addActionToServiceMenu(
-                tr("Artist"), discogsUrlArtist);
+                kServiceTitle + QStringLiteral(",Artist"),
+                tr("Artist"),
+                discogsUrlArtist);
     }
     if (!album.isEmpty() && artist.isEmpty()) {
         const QUrl discogsUrlAlbum = composeDiscogsUrl(kSearchUrl, album, kQueryTypeRelease);
         addActionToServiceMenu(
-                tr("Album"), discogsUrlAlbum);
+                kServiceTitle + QStringLiteral(",Artist,Album"),
+                tr("Album"),
+                discogsUrlAlbum);
     }
     if (!trackTitle.isEmpty()) {
         const QUrl discogsUrlTrackTitle =
                 composeDiscogsUrl(kSearchUrl, trackTitle, kQueryTypeRelease);
         addActionToServiceMenu(
-                tr("Title"), discogsUrlTrackTitle);
+                kServiceTitle + QStringLiteral(",Title"),
+                tr("Title"),
+                discogsUrlTrackTitle);
     }
 }

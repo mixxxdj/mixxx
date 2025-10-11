@@ -18,7 +18,9 @@ bool WFindOnWebMenu::hasEntriesForTrack(const Track& track) {
 }
 
 void WFindOnWebMenu::addActionToServiceMenu(
-        const QString& actionText, const QUrl& serviceUrl) {
+        const QString& actionId,
+        const QString& actionText,
+        const QUrl& serviceUrl) {
     addAction(actionText,
             this,
             [this, serviceUrl] {
