@@ -548,7 +548,7 @@ WTrackProperty[selected="true"],
 #WaveformBox4[highlight_input_allow="1"] {
   border-width: 0 5px;
   border-style: solid;
-  padding: 1px;
+  padding: 0 1px;
   margin: 0 3px;
 
 }
