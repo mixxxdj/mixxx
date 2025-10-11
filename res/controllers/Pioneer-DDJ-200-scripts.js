@@ -458,7 +458,7 @@ DDJ200.Deck = class extends components.Deck {
             input: function(_channel, _control, value, _status, _g) {
                 this.pressed = value;
                 if (value) {
-                    if (DDJ200.decks.left.shiftButton.pressed && DDJ200.decks.right.shiftButton.pressed) {
+                    if (theDeck.bothShift()) {
                         engine.setValue("[Library]", "MoveFocusForward", true);
                     }
                     DDJ200.decks.shift();
@@ -490,7 +490,7 @@ DDJ200.Deck = class extends components.Deck {
             },
             shiftedInput: function(_channel, _control, value, _status, _g) {
                 if (value) {
-                    if (engine.getValue("[Skin]", "show_4decks")) {
+                    if (engine.getValue("[Skin]", "show_4decks") && !theDeck.bothShift()) {
                         theDeck.toggle();
                         if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
                             this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
@@ -592,5 +592,9 @@ DDJ200.Deck = class extends components.Deck {
     setCurrentDeck(newGroup) {
         this.padUnit.setCurrentDeck(newGroup);
         super.setCurrentDeck(newGroup);
+    }
+
+    bothShift() {
+        return (DDJ200.decks.left.shiftButton.pressed && DDJ200.decks.right.shiftButton.pressed);
     }
 };
