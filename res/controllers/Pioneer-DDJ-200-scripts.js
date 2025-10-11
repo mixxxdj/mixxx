@@ -455,11 +455,19 @@ DDJ200.Deck = class extends components.Deck {
 
         this.shiftButton = new components.Button({
             pressed: 0,
+            clickTime: 0,
             input: function(_channel, _control, value, _status, _g) {
                 this.pressed = value;
                 if (value) {
-                    if (theDeck.bothShift()) {
-                        engine.setValue("[Library]", "MoveFocusForward", true);
+                    if (engine.getValue("[Skin]", "show_4decks") && ((Date.now() - this.clickTime) < 500)) { // double-click
+                        this.clickTime = 0;
+                        theDeck.toggle();
+                        theDeck.syncButton.indicateDeck();
+                    } else {
+                        this.clickTime = Date.now();
+                        if (theDeck.bothShift()) {
+                            engine.setValue("[Library]", "MoveFocusForward", true);
+                        }
                     }
                     DDJ200.decks.shift();
                 } else {
@@ -488,22 +496,20 @@ DDJ200.Deck = class extends components.Deck {
                     this.inSetValue(1);
                 };
             },
+            indicateDeck: function() {
+                if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
+                    this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
+                        theDeck.syncButton.send(theDeck.syncButton.on * value);
+                    });
+                } else if (this.blinkConnection) {
+                    this.blinkConnection.disconnect();
+                    theDeck.syncButton.send(theDeck.syncButton.off);
+                };
+            },
             shiftedInput: function(_channel, _control, value, _status, _g) {
                 if (value) {
-                    if (engine.getValue("[Skin]", "show_4decks") && !theDeck.bothShift()) {
-                        theDeck.toggle();
-                        if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
-                            this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
-                                theDeck.syncButton.send(theDeck.syncButton.on * value);
-                            });
-                        } else if (this.blinkConnection) {
-                            this.blinkConnection.disconnect();
-                            theDeck.syncButton.send(theDeck.syncButton.off);
-                        };
-                    } else {
-                        const currentRange = engine.getValue(this.group, "rateRange");
-                        engine.setValue(this.group, "rateRange", (currentRange > 0.9) ? 0.1 : currentRange + 0.1);
-                    };
+                    const currentRange = engine.getValue(this.group, "rateRange");
+                    engine.setValue(this.group, "rateRange", (currentRange > 0.9) ? 0.1 : currentRange + 0.1);
                 };
             },
         });
