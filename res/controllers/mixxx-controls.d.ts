@@ -3,18 +3,31 @@ declare namespace MixxxControls {
      * Public
      */
     export type MixxxGroup = keyof MixxxControlReadWrite | (string & {});
+
+    // All controls
     export type MixxxControl<TGroup> =
+        | (string & {})
+        | (0 extends 1 & TGroup // is any check
+              ? string
+              : TGroup extends keyof MixxxControlReadWrite | keyof ReadOnly.MixxxControlReadOnly
+              ?
+                    | (TGroup extends keyof MixxxControlReadWrite ? MixxxControlReadWrite[TGroup] : never)
+                    | (TGroup extends keyof ReadOnly.MixxxControlReadOnly
+                          ? ReadOnly.MixxxControlReadOnly[TGroup]
+                          : never)
+              : string);
+
+    // Controls that are read & write at the same time
+    export type MixxxControlReadAndWrite<TGroup> =
         | (string & {})
         | (0 extends 1 & TGroup // is any check
               ? string
               : TGroup extends keyof MixxxControlReadWrite
               ? MixxxControlReadWrite[TGroup]
-              : TGroup extends keyof ReadOnly.MixxxControlReadOnly
-              ? ReadOnly.MixxxControlReadOnly[TGroup]
               : string);
 
     /*
-     * group <-> control linking
+     * Group <-> control linking
      */
     type MixxxControlReadWrite = {
         "[App]": MixxxAppControl;
@@ -28,7 +41,6 @@ declare namespace MixxxControls {
         "[Shoutcast]": MixxxShoutcastControl;
         "[Playlist]": MixxxPlaylistControl;
         "[Controls]": MixxxControlsControl;
-
         "[Skin]": MixxxSkinControl;
     } & {
         [key: `[Channel${number}]`]: MixxxChannelControl;
@@ -37,8 +49,8 @@ declare namespace MixxxControls {
         [key: `[Microphone${number}]`]: MixxxMicrophoneControl;
         [key: `[Auxiliary${number}]`]: MixxxAuxiliaryControl;
         [key: `[EffectRack1_EffectUnit${number}]`]: MixxxEffectRack1UnitControl;
-        [key: `[EqualizerRack1_[Channel${number}]]`]: EffectEqualizerQuickEffectRack1Control;
-        [key: `[QuickEffectRack1_[Channel${number}]]`]: EffectEqualizerQuickEffectRack1Control;
+        [key: `[EqualizerRack1_[Channel${number}]]`]: MixxxEffectEqualizerQuickEffectRack1Control;
+        [key: `[QuickEffectRack1_[Channel${number}]]`]: MixxxEffectEqualizerQuickEffectRack1Control;
         [key: `[EffectRack1_EffectUnit${number}_Effect${number}]`]: MixxxEffectEqualizerQuickEffectRack1EffectControl;
         [key: `[EqualizerRack1_[Channel${number}]_Effect1]`]: MixxxEffectEqualizerQuickEffectRack1EffectControl;
         [key: `[QuickEffectRack1_[Channel${number}]_Effect1]`]: MixxxEffectEqualizerQuickEffectRack1EffectControl;
@@ -359,11 +371,8 @@ declare namespace MixxxControls {
     // [Control] controls
     type MixxxControlsControl = "touch_shift" | "AutoHotcueColors" | "ShowDurationRemaining";
 
-    // [EffectRack1] && [EqualizerRack1] && [QuickEffectRack1] controls
-    type EffectEqualizerQuickEffectRack1ControlReadOnly = "loaded" | "num_chain_presets" | "num_effectslots";
-
     // [EffectRack1_EffectUnitN] && [EqualizerRack1_[ChannelI]] && [QuickEffectRack1_[ChannelI]] controls
-    type EffectEqualizerQuickEffectRack1Control =
+    type MixxxEffectEqualizerQuickEffectRack1Control =
         | "num_effectunits"
         | "chain_preset_selector"
         | "clear"
@@ -380,33 +389,24 @@ declare namespace MixxxControls {
 
     // [EffectRack1_EffectUnitN] controls
     type MixxxEffectRack1UnitControl =
-        | EffectEqualizerQuickEffectRack1Control
+        | MixxxEffectEqualizerQuickEffectRack1Control
         | "group_[Headphone]_enable"
         | "group_[Master]_enable"
         | `group_[Sampler${number}]_enable`;
 
-    // [EffectRack1_EffectUnitN_EffectM] && [EqualizerRack1_[ChannelI]_Effect1] && [QuickEffectRack1_[ChannelI]_Effect1]
+    // [EffectRack1_EffectUnitN_EffectM] && [EqualizerRack1_[ChannelI]_Effect1] && [QuickEffectRack1_[ChannelI]_Effect1] controls
     type MixxxEffectEqualizerQuickEffectRack1EffectControl =
         | "clear"
         | "effect_selector"
         | "enabled"
-        | "loaded"
         | "loaded_effect"
         | "next_effect"
-        | "num_parameters"
-        | "num_parameterslots"
-        | "num_button_parameters"
-        | "num_button_parameterslots"
         | "meta"
         | "prev_effect"
         | `parameter${number}`
         | `parameter${number}_link_inverse`
         | `parameter${number}_link_type`
-        | `parameter${number}_loaded`
-        | `parameter${number}_type`
-        | `button_parameter${number}`
-        | `button_parameter${number}_loaded`
-        | `button_parameter${number}_type`;
+        | `button_parameter${number}`;
 
     // [Skin] controls
     type MixxxSkinControl =
@@ -416,21 +416,19 @@ declare namespace MixxxControls {
         | "show_samplers"
         | "show_vinylcontrol";
 
-    export namespace ReadOnly {
-        export type MixxxControlRO<TGroup> =
-            | (string & {})
-            | (0 extends 1 & TGroup // is any check
-                  ? string
-                  : TGroup extends keyof MixxxControlReadOnly
-                  ? MixxxControlReadOnly[TGroup]
-                  : string);
-
-        type MixxxControlReadOnly = {
+    /*
+     *  Read-only controls
+     */
+    namespace ReadOnly {
+        /*
+         * group <-> read-only control linking
+         */
+        export type MixxxControlReadOnly = {
             "[App]": MixxxAppControlReadOnly;
             "[Master]": MixxxMasterControlReadOnly;
-            "[EffectRack1]": MixxxEffectEqualizerQuickEffectRack1ControlReadOnly;
-            "[EqualizerRack1]": MixxxEffectEqualizerQuickEffectRack1ControlReadOnly;
-            "[QuickEffectRack1]": MixxxEffectEqualizerQuickEffectRack1ControlReadOnly;
+            "[EffectRack1]": MixxxRack1ControlReadOnly;
+            "[EqualizerRack1]": MixxxRack1ControlReadOnly;
+            "[QuickEffectRack1]": MixxxRack1ControlReadOnly;
         } & {
             [key: `[Channel${number}]`]: MixxxChannelControlReadOnly;
             [key: `[PreviewDeck${number}]`]: MixxxChannelPreviewSamplerControlReadOnly;
@@ -477,6 +475,21 @@ declare namespace MixxxControls {
             | MixxxChannelMicrophoneAuxiliaryControlReadOnly;
 
         //  [EffectRack1] && [EqualizerRack1] && [QuickEffectRack1] read-only controls
-        type MixxxEffectEqualizerQuickEffectRack1ControlReadOnly = "num_effectunits";
+        type MixxxRack1ControlReadOnly = "num_effectunits";
+
+        // [EffectRack1_EffectUnitN] && [EqualizerRack1_[ChannelI]] && [QuickEffectRack1_[ChannelI]] read-only controls
+        type MixxxEffectEqualizerQuickEffectRack1ControlReadOnly = "loaded" | "num_chain_presets" | "num_effectslots";
+
+        // [EffectRack1_EffectUnitN_EffectM] && [EqualizerRack1_[ChannelI]_Effect1] && [QuickEffectRack1_[ChannelI]_Effect1] read-only controls
+        type MixxxEffectEqualizerQuickEffectRack1EffectControlReadOnly =
+            | "loaded"
+            | "num_parameters"
+            | "num_parameterslots"
+            | "num_button_parameters"
+            | "num_button_parameterslots"
+            | `parameter${number}_loaded`
+            | `parameter${number}_type`
+            | `button_parameter${number}_loaded`
+            | `button_parameter${number}_type`;
     }
 }
