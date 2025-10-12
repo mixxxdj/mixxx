@@ -3,6 +3,7 @@
 #include <QMenu>
 
 #include "findonwebmenuservices/findonwebmenudiscogs.h"
+#include "findonwebmenuservices/findonwebmenugenius.h"
 #include "findonwebmenuservices/findonwebmenulastfm.h"
 #include "findonwebmenuservices/findonwebmenusoundcloud.h"
 #include "findonwebmenuservices/findonwebmenuspotify.h"
@@ -23,6 +24,7 @@ void createFindOnWebSubmenus(const QPointer<QMenu>& pFindOnWebMenu,
     make_parented<FindOnWebMenuWikipedia>(pFindOnWebMenu, pFindOnWebLast, track);
     make_parented<FindOnWebMenuYouTubeMusic>(pFindOnWebMenu, pFindOnWebLast, track);
     make_parented<FindOnWebMenuSpotify>(pFindOnWebMenu, pFindOnWebLast, track);
+    make_parented<FindOnWebMenuGenius>(pFindOnWebMenu, pFindOnWebLast, track);
 }
 
 } // namespace library
