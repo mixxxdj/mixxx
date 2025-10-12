@@ -5,6 +5,7 @@
 #include "findonwebmenuservices/findonwebmenudiscogs.h"
 #include "findonwebmenuservices/findonwebmenulastfm.h"
 #include "findonwebmenuservices/findonwebmenusoundcloud.h"
+#include "findonwebmenuservices/findonwebmenuwikipedia.h"
 #include "util/parented_ptr.h"
 
 namespace mixxx {
@@ -17,6 +18,7 @@ void createFindOnWebSubmenus(const QPointer<QMenu>& pFindOnWebMenu,
     make_parented<FindOnWebMenuDiscogs>(pFindOnWebMenu, pFindOnWebLast, track);
     make_parented<FindOnWebMenuLastfm>(pFindOnWebMenu, pFindOnWebLast, track);
     make_parented<FindOnWebMenuSoundcloud>(pFindOnWebMenu, pFindOnWebLast, track);
+    make_parented<FindOnWebMenuWikipedia>(pFindOnWebMenu, pFindOnWebLast, track);
 }
 
 } // namespace library
