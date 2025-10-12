@@ -118,6 +118,7 @@ declare interface Player {
 declare namespace engine {
     type Group = MixxxControls.MixxxGroup;
     type Control<TGroup> = MixxxControls.MixxxControl<TGroup>;
+    type ControlRW<TGroup> = MixxxControls.MixxxControlReadAndWrite<TGroup>;
 
     /**
      * Obtain the player associated with this deck.
@@ -155,7 +156,7 @@ declare namespace engine {
      * @param newValue Value to be set (within it's range according Mixxx Controls manual page:
      *                 https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
-    function setValue<TGroup extends Group>(group: TGroup, name: Control<TGroup>, newValue: number): void;
+    function setValue<TGroup extends Group>(group: TGroup, name: ControlRW<TGroup>, newValue: number): void;
 
     /**
      * Gets the control value normalized to a range of 0..1
@@ -173,7 +174,7 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set, normalized to a range of 0..1
      */
-    function setParameter<TGroup extends Group>(group: TGroup, name: Control<TGroup>, newValue: number): void;
+    function setParameter<TGroup extends Group>(group: TGroup, name: ControlRW<TGroup>, newValue: number): void;
 
     /**
      * Normalizes a specified value using the range of the given control,
@@ -275,7 +276,7 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      */
-    function trigger<TGroup extends Group>(group: TGroup, name: Control<TGroup>): void;
+    function trigger<TGroup extends Group>(group: TGroup, name: ControlRW<TGroup>): void;
 
     /**
      * @param message string to be logged
