@@ -1278,7 +1278,7 @@ QString BaseTrackTableModel::formatHotCueTooltip(const QString& columnValue,
             QString typeString;
             switch (pCue->getType()) {
             case mixxx::CueType::HotCue:
-                typeString = "Hot Cue";
+                typeString = "Hotcue";
                 break;
             case mixxx::CueType::MainCue:
                 typeString = "MainCue";
