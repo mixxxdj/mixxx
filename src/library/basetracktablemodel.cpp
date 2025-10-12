@@ -33,6 +33,7 @@
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/clipboard.h"
+#include "util/color/color.h"
 #include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/datetime.h"
@@ -1241,7 +1242,7 @@ QString BaseTrackTableModel::formatHotCueTooltip(const QString& columnValue,
     QString tooltip;
 
     // Start HTML
-    tooltip += "<html><body style='white-space: pre; font-family: monospace; font-size: 15pt;'>";
+    tooltip += "<html><body>";
 
     // Always show the column value (title, artist, composer, etc.)
     if (!columnValue.isEmpty()) {
@@ -1261,27 +1262,49 @@ QString BaseTrackTableModel::formatHotCueTooltip(const QString& columnValue,
             }
 
             tooltip += "<br>";
+            const QString num = QString::number(pCue->getHotCue() + 1);
+            QColor cueColor = mixxx::RgbColor::toQColor(pCue->getColor());
+            // contrasting color, like in skins
+            const QColor textColor = Color::chooseColorByBrightness(
+                    cueColor,
+                    Qt::white,
+                    Qt::black,
+                    128);
+            // Add colored square for cue color. Qt RichText/Html only supports
+            // a subset of Richtext/Html. For example we need to fake padding with
+            // whitespaces.
+            const QString colorBox = QStringLiteral(
+                    "<span style='display:inline-block; "
+                    "background-color: %1; "
+                    "color: %2; "
+                    "font-weight: bold; "
+                    "vertical-align: middle; "
+                    "border: 1px solid #444; "
+                    "padding: 0.2em;'>&nbsp;%3&nbsp;</span>")
+                                             .arg(cueColor.name(),
+                                                     textColor.name(),
+                                                     num);
+            qWarning() << "tooltip hotcue" << int(pCue->getHotCue() + 1)
+                       << "color:" << cueColor.name() << textColor.name() << colorBox;
+            tooltip += colorBox;
 
-            QString cueLine =
-                    QString("  #%1 - %2")
-                            .arg(pCue->getHotCue() + 1)
-                            .arg(formatCuePosition(
-                                    pCue->getPosition().value(), sampleRate));
+            tooltip += QStringLiteral(" %1")
+                               .arg(formatCuePosition(pCue->getPosition().value(), sampleRate));
 
             // Add label if present
-            QString label = pCue->getLabel();
-            if (!label.isEmpty() && !label.isNull()) {
-                cueLine += QString(" - %1").arg(label.toHtmlEscaped());
+            const QString label = pCue->getLabel();
+            if (!label.isEmpty()) {
+                tooltip += QString(" - %1").arg(label.toHtmlEscaped());
             }
 
             // Add type
             QString typeString;
             switch (pCue->getType()) {
             case mixxx::CueType::HotCue:
-                typeString = "Hotcue";
+                typeString = "Hot Cue";
                 break;
             case mixxx::CueType::MainCue:
-                typeString = "Cue";
+                typeString = "MainCue";
                 break;
             case mixxx::CueType::Beat:
                 typeString = "BeatCue";
@@ -1305,25 +1328,13 @@ QString BaseTrackTableModel::formatHotCueTooltip(const QString& columnValue,
                 typeString = "Unknown";
                 break;
             }
-            cueLine += QString(" [%1]").arg(typeString);
+            tooltip += QString(" [%1]").arg(typeString);
 
             // Add duration for loops
             if (pCue->getType() == mixxx::CueType::Loop && pCue->getLengthFrames() > 0) {
-                cueLine += QString(" (%1)").arg(
+                tooltip += QString(" (%1)").arg(
                         formatCueDuration(pCue->getLengthFrames(), sampleRate));
             }
-
-            // Wrap the entire line in the cue's color
-            QString hexColor =
-                    QString("#%1")
-                            .arg(static_cast<uint32_t>(pCue->getColor()),
-                                    6,
-                                    16,
-                                    QChar('0'))
-                            .toUpper();
-            cueLine = QString("<span style='color: %1;'>%2</span>").arg(hexColor, cueLine);
-
-            tooltip += cueLine;
         }
     }
 
