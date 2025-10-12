@@ -46,11 +46,13 @@ declare namespace MixxxControls {
         [key: `[Channel${number}]`]: MixxxChannelControl;
         [key: `[PreviewDeck${number}]`]: MixxxDeckControl;
         [key: `[Sampler${number}]`]: MixxxSamplerControl;
+        // [key: `[Channel${number}_Stem${number}]`]: MixxxChannelStemControl;
         [key: `[Microphone${number}]`]: MixxxMicrophoneControl;
         [key: `[Auxiliary${number}]`]: MixxxAuxiliaryControl;
         [key: `[EffectRack1_EffectUnit${number}]`]: MixxxEffectRack1UnitControl;
         [key: `[EqualizerRack1_[Channel${number}]]`]: MixxxEffectEqualizerQuickEffectRack1Control;
         [key: `[QuickEffectRack1_[Channel${number}]]`]: MixxxEffectEqualizerQuickEffectRack1Control;
+        // [key: `[QuickEffectRack1_[Channel${number}_Stem${number}]]`]: MixxxEffectEqualizerQuickEffectStemRack1Control;
         [key: `[EffectRack1_EffectUnit${number}_Effect${number}]`]: MixxxEffectEqualizerQuickEffectRack1EffectControl;
         [key: `[EqualizerRack1_[Channel${number}]_Effect1]`]: MixxxEffectEqualizerQuickEffectRack1EffectControl;
         [key: `[QuickEffectRack1_[Channel${number}]_Effect1]`]: MixxxEffectEqualizerQuickEffectRack1EffectControl;
@@ -59,6 +61,18 @@ declare namespace MixxxControls {
     /*
      * Values
      */
+    type ControlPotMeterSuffix =
+        | ""
+        | "_up"
+        | "_down"
+        | "_up_small"
+        | "_down_small"
+        | "_set_one"
+        | "_set_minus_one"
+        | "_set_default"
+        | "_set_zero"
+        | "_toggle"
+        | "_minus_toggle";
 
     // [App] controls
     type MixxxAppControl =
@@ -71,35 +85,31 @@ declare namespace MixxxControls {
 
     // [Master] controls
     type MixxxMasterControl =
-        | "audio_latency_usage"
-        | "audio_latency_overload"
+        | `audio_latency_usage${ControlPotMeterSuffix}`
+        | `audio_latency_overload${ControlPotMeterSuffix}`
         | "audio_latency_overload_count"
-        | "balance"
+        | `balance${ControlPotMeterSuffix}`
         | "booth_enabled"
-        | "booth_gain"
-        | "crossfader"
-        | "crossfader_down"
-        | "crossfader_down_small"
-        | "crossfader_up"
-        | "crossfader_up_small"
-        | "duckStrength"
+        | `booth_gain${ControlPotMeterSuffix}`
+        | `crossfader${ControlPotMeterSuffix}`
+        | `duckStrength${ControlPotMeterSuffix}`
         | "enabled"
-        | "gain"
+        | `gain${ControlPotMeterSuffix}`
         | "headEnabled"
-        | "headGain"
-        | "headMix"
+        | `headGain${ControlPotMeterSuffix}`
+        | `headMix${ControlPotMeterSuffix}`
         | "headSplit"
         | "latency"
         | "talkoverDucking";
 
     // [Main] controls
     type MixxxMainControl =
-        | "peak_indicator"
-        | "peak_indicator_l"
-        | "peak_indicator_r"
-        | "vu_meter"
-        | "vu_meter_l"
-        | "vu_meter_r";
+        | `peak_indicator${ControlPotMeterSuffix}`
+        | `peak_indicator_l${ControlPotMeterSuffix}`
+        | `peak_indicator_r${ControlPotMeterSuffix}`
+        | `vu_meter${ControlPotMeterSuffix}`
+        | `vu_meter_l${ControlPotMeterSuffix}`
+        | `vu_meter_r${ControlPotMeterSuffix}`;
 
     // [ChannelN] && [PreviewDeckN] && [SamplerN] controls
     type MixxxChannelPreviewSamplerControl =
@@ -138,7 +148,7 @@ declare namespace MixxxControls {
         | "beatsync"
         | "beatsync_phase"
         | "beatsync_tempo"
-        | "bpm"
+        | `bpm${ControlPotMeterSuffix}`
         | "bpm_tap"
         | "tempo_tap"
         | "CloneFromDeck"
@@ -220,20 +230,18 @@ declare namespace MixxxControls {
         | "outro_start_position"
         | "outro_start_set"
         | "passthrough"
-        | "peak_indicator"
-        | "peak_indicator_l"
-        | "peak_indicator_r"
+        | `peak_indicator${ControlPotMeterSuffix}`
+        | `peak_indicator_l${ControlPotMeterSuffix}`
+        | `peak_indicator_r${ControlPotMeterSuffix}`
         | "pfl"
-        | "pitch"
-        | "pitch_up"
-        | "pitch_down"
-        | "pitch_adjust"
+        | `pitch${ControlPotMeterSuffix}`
+        | `pitch_adjust${ControlPotMeterSuffix}`
         | "play"
         | "play_stutter"
-        | "playposition"
-        | "pregain"
+        | `playposition${ControlPotMeterSuffix}`
+        | `pregain${ControlPotMeterSuffix}`
         | "quantize"
-        | "rate"
+        | `rate${ControlPotMeterSuffix}`
         | "rate_dir"
         | "rate_perm_down"
         | "rate_perm_down_small"
@@ -243,8 +251,8 @@ declare namespace MixxxControls {
         | "rate_temp_down_small"
         | "rate_temp_up"
         | "rate_temp_up_small"
-        | "rateRange"
-        | "rateSearch"
+        | `rateRange${ControlPotMeterSuffix}`
+        | `rateSearch${ControlPotMeterSuffix}`
         | "rateEngine"
         | "reloop_andstop"
         | "reloop_toggle"
@@ -267,7 +275,7 @@ declare namespace MixxxControls {
         | "sync_mode"
         | "sync_key"
         | "track_color"
-        | "volume"
+        | `volume${ControlPotMeterSuffix}`
         | "mute"
         | "update_replaygain_from_pregain"
         | "vinylcontrol_enabled"
@@ -275,10 +283,10 @@ declare namespace MixxxControls {
         | "vinylcontrol_mode"
         | "visual_bpm"
         | "visual_key"
-        | "visual_key_distance"
-        | "vu_meter"
-        | "vu_meter_l"
-        | "vu_meter_r"
+        | `visual_key_distance${ControlPotMeterSuffix}`
+        | `vu_meter${ControlPotMeterSuffix}`
+        | `vu_meter_l${ControlPotMeterSuffix}`
+        | `vu_meter_r${ControlPotMeterSuffix}`
         | "waveform_zoom"
         | "waveform_zoom_up"
         | "waveform_zoom_down"
@@ -291,20 +299,23 @@ declare namespace MixxxControls {
     // [SamplerN] controls
     type MixxxSamplerControl = MixxxChannelPreviewSamplerControl | "SaveSamplerBank" | "LoadSamplerBank";
 
+    // [ChannelN_StemM] controls
+    type MixxxChannelStemControl = "TODO";
+
     // [ChannelN] && [Microphone] && [MicrophoneN] && [AuxiliaryN] controls
     type MixxxChannelMicrophoneAuxiliaryControl =
         | "main_mix"
-        | "peak_indicator"
-        | "peak_indicator_l"
-        | "peak_indicator_r"
+        | `peak_indicator${ControlPotMeterSuffix}`
+        | `peak_indicator_l${ControlPotMeterSuffix}`
+        | `peak_indicator_r${ControlPotMeterSuffix}`
         | "pfl"
         | "talkover"
-        | "volume"
-        | "pregain"
+        | `volume${ControlPotMeterSuffix}`
+        | `pregain${ControlPotMeterSuffix}`
         | "mute"
-        | "vu_meter"
-        | "vu_meter_l"
-        | "vu_meter_r";
+        | `vu_meter${ControlPotMeterSuffix}`
+        | `vu_meter_l${ControlPotMeterSuffix}`
+        | `vu_meter_r${ControlPotMeterSuffix}`;
 
     // [ChannelN] controls
     type MixxxChannelControl =
@@ -380,12 +391,12 @@ declare namespace MixxxControls {
         | "focused_effect"
         | `group_[Channel${number}]_enable`
         | "loaded_chain_preset"
-        | "mix"
+        | `mix${ControlPotMeterSuffix}`
         | "next_chain_preset"
         | "prev_chain_preset"
         | "show_focus"
         | "show_parameters"
-        | "super1";
+        | `super1${ControlPotMeterSuffix}`;
 
     // [EffectRack1_EffectUnitN] controls
     type MixxxEffectRack1UnitControl =
@@ -401,9 +412,9 @@ declare namespace MixxxControls {
         | "enabled"
         | "loaded_effect"
         | "next_effect"
-        | "meta"
+        | `meta${ControlPotMeterSuffix}`
         | "prev_effect"
-        | `parameter${number}`
+        | `parameter${number}${ControlPotMeterSuffix}`
         | `parameter${number}_link_inverse`
         | `parameter${number}_link_type`
         | `button_parameter${number}`;
