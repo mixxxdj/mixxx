@@ -1729,6 +1729,7 @@ add_library(
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/findonwebmenuservices/findonwebmenuwikipedia.cpp
+  src/widget/findonwebmenuservices/findonwebmenuyoutubemusic.cpp
   src/widget/hexspinbox.cpp
   src/widget/hotcuedrag.cpp
   src/widget/paintable.cpp
