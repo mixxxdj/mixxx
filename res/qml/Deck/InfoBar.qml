@@ -15,7 +15,7 @@ Rectangle {
     required property string group
     required property int rightColumnWidth
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
-    readonly property var currentTrack: deckPlayer.currentTrack
+    readonly property var currentTrack: deckPlayer?.currentTrack
     property color lineColor: Theme.deckLineColor
 
     property bool editMode: false
@@ -29,7 +29,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         width: height
-        source: root.currentTrack.coverArtUrl
+        source: root.currentTrack?.coverArtUrl
         visible: false
         asynchronous: true
     }
@@ -39,13 +39,13 @@ Rectangle {
 
         anchors.fill: coverArt
         radius: 4
-        visible: !root.deckPlayer.isLoaded && !root.minimized
+        visible: !root.deckPlayer?.isLoaded && !root.minimized
         color: Theme.deckEmptyCoverArt
     }
 
     OpacityMask {
         id: coverArtMask
-        visible: root.deckPlayer.isLoaded && !root.minimized
+        visible: root.deckPlayer?.isLoaded && !root.minimized
         anchors.fill: coverArt
         source: coverArt
         maskSource: coverArtCircle
@@ -60,7 +60,7 @@ Rectangle {
 
         required property int index
         property alias item: data
-        property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer.isLoaded
+        property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer?.isLoaded
         readonly property bool isTop: !!parent.isTop
 
         Layout.fillWidth: index == 0
@@ -70,7 +70,7 @@ Rectangle {
         Skin.EmbeddedText {
             id: data
             anchors.fill: parent
-            visible: root.deckPlayer.isLoaded
+            visible: root.deckPlayer?.isLoaded
             horizontalAlignment: index == 0 ? Text.AlignLeft : Text.AlignHCenter
             font.bold: isTop
             font.pixelSize: isTop ? 18 : Theme.textFontPixelSize
@@ -106,20 +106,20 @@ Rectangle {
             Cell {
                 item.visible: true
                 item.font.bold: false
-                item.font.weight: root.deckPlayer.isLoaded ? Font.DemiBold : Font.Thin
-                item.text: root.deckPlayer.isLoaded ? root.currentTrack.title : "No track loaded"
+                item.font.weight: root.deckPlayer?.isLoaded ? Font.DemiBold : Font.Thin
+                item.text: root.deckPlayer?.isLoaded ? root.currentTrack?.title : "No track loaded"
             }
         }
         DelegateChoice {
             roleValue: "artist"
             Cell {
-                item.text: root.currentTrack.artist
+                item.text: root.currentTrack?.artist
             }
         }
         DelegateChoice {
             roleValue: "year"
             Cell {
-                item.text: root.currentTrack.year
+                item.text: root.currentTrack?.year
             }
         }
         DelegateChoice {
@@ -150,7 +150,7 @@ Rectangle {
                 id: cell
 
                 required property int index
-                property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer.isLoaded
+                property bool showSeparator: index != parent.model.count - 1 && root.deckPlayer?.isLoaded
 
                 property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
 
@@ -167,7 +167,7 @@ Rectangle {
 
                 Row {
                     id: stars
-                    visible: root.deckPlayer.isLoaded
+                    visible: root.deckPlayer?.isLoaded
                     anchors.centerIn: parent
                     spacing: 0
                     Repeater {
@@ -180,7 +180,7 @@ Rectangle {
                             width: 16
                             height: 14
                             ShapePath {
-                                fillColor: mouse.containsMouse && !(mouse.pressedButtons & Qt.RightButton) && mouse.mouseX > star.x + stars.x ? "#3a60be" : (!mouse.containsMouse || mouse.pressedButtons & Qt.RightButton) && root.currentTrack.stars > index ? (mouse.containsMouse ? "#7D3B3B" : '#D9D9D9') : '#96d9d9d9'
+                                fillColor: mouse.containsMouse && !(mouse.pressedButtons & Qt.RightButton) && mouse.mouseX > star.x + stars.x ? "#3a60be" : (!mouse.containsMouse || mouse.pressedButtons & Qt.RightButton) && root.currentTrack?.stars > index ? (mouse.containsMouse ? "#7D3B3B" : '#D9D9D9') : '#96d9d9d9'
                                 strokeColor: 'transparent'
                                 startX: 8; startY: 0
                                 PathLine { x: 9.78701; y: 5.18237; }
@@ -203,12 +203,14 @@ Rectangle {
                     hoverEnabled: true
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: (event) => {
+                        if (!root.currentTrack) {
+                            return;
+                        }
                         let selectedStars = Math.ceil((mouseX - stars.x)/16);
                         if (event.button === Qt.RightButton) {
                             root.currentTrack.stars = 0
                         } else if (selectedStars >= 0 && selectedStars <= 5) {
                             root.currentTrack.stars = selectedStars;
-                            console.warn(root.currentTrack.stars)
                         }
                     }
                 }
@@ -246,10 +248,12 @@ Rectangle {
             type: "title"
         }
         ListElement {
-            type: "year"
+            type: "none"
+            // type: "year"
         }
         ListElement {
-            type: "remaining"
+            type: "none"
+            // type: "remaining"
         }
     }
 
@@ -329,11 +333,11 @@ Rectangle {
         GradientStop {
             position: 0
             color: {
-                const trackColor = root.currentTrack.color;
+                const trackColor = root.currentTrack?.color;
                 if (!trackColor.valid)
                     return Theme.deckInfoBarBackgroundColor;
 
-                return Qt.darker(root.currentTrack.color, 2);
+                return Qt.darker(root.currentTrack?.color, 2);
             }
         }
 

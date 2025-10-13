@@ -70,9 +70,11 @@ Item {
                                                     }, {
                                                         "type": "row",
                                                         "items": [{
-                                                                "type": "hotcueAndStem"
+                                                                "type": "hotcueAndStem",
+                                                                "minWidth": 520
                                                             }, {
-                                                                "type": "beatjump"
+                                                                "type": "beatjump",
+                                                                "minWidth": 650
                                                             }, {
                                                                 "type": "loop"
                                                             }
@@ -85,6 +87,7 @@ Item {
                                 ]
                             }, {
                                 "type": "column",
+                                "minWidth": 800,
                                 "items": [{
                                         "type": "spinny"
                                     }, {
@@ -92,7 +95,8 @@ Item {
                                     }
                                 ]
                             }, {
-                                "type": "tempo"
+                                "type": "tempo",
+                                "minWidth": 270
                             }
                         ]
                     }
@@ -161,6 +165,7 @@ Item {
 
     ListModel {
         id: itemModel
+        dynamicRoles: true
     }
 
     ListModel {
@@ -219,8 +224,7 @@ Item {
         property var beginDrag: null
         property var move: null
 
-        required property var items
-        required property int index
+        visible: minWidth ? minWidth < root.width : true
 
         property var disposition: GridLayout.TopToBottom
         property bool selected: false
@@ -325,6 +329,8 @@ Item {
 
         Drag.active: mouseArea.drag.active
         Drag.hotSpot: Qt.point(width/2, height/2)
+
+        visible: minWidth ? minWidth < root.width : true
 
         property alias innerItem: content
         default property alias children: content.children

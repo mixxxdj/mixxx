@@ -45,6 +45,8 @@ Item {
     Skin.Button {
         id: beatgridButton
 
+        visible: root.width > 165
+
         implicitHeight: 22
         anchors.right: keylockButton.left
         anchors.rightMargin: 5
@@ -53,6 +55,8 @@ Item {
     }
     Skin.Button {
         id: keylockButton
+
+        visible: root.width > 105
 
         implicitHeight: 22
         anchors.right: ejectButton.left
