@@ -1640,6 +1640,26 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             [this, trackId]() {
                 emit mixxx::thisAsNonConst(this)->waveformSummaryUpdated(trackId);
             });
+    connect(pTrack.get(), &Track::cuesUpdated, this, [this, trackId]() {
+        // count hotcues from in-memory track object via sender()
+        auto* pTrack = qobject_cast<Track*>(sender());
+        if (!pTrack) {
+            return;
+        }
+        int hotcueCount = 0;
+        const auto cuePoints = pTrack->getCuePoints();
+        for (const auto& pCue : cuePoints) {
+            if (pCue->getType() == mixxx::CueType::HotCue &&
+                    pCue->getHotCue() >= 0) {
+                ++hotcueCount;
+            }
+        }
+        // update database synchronously
+        m_cueDao.updateTrackHotcueCount(trackId, hotcueCount);
+        // do NOT emit tracksChanged - Track::changed will handle it
+        // to avoid double-resort when sorted by hotcue count
+    },
+            Qt::DirectConnection);
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding

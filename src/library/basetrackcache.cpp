@@ -401,6 +401,18 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
         return QVariant{static_cast<int>(pTrack->getCoverInfo().type)};
     }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_HOTCUE_COUNT) == column) {
+        // count hotcues from in-memory track object
+        int hotcueCount = 0;
+        const auto cuePoints = pTrack->getCuePoints();
+        for (const auto& pCue : cuePoints) {
+            if (pCue->getType() == mixxx::CueType::HotCue &&
+                    pCue->getHotCue() >= 0) {
+                ++hotcueCount;
+            }
+        }
+        return QVariant{hotcueCount};
+    }
     return QVariant{};
 }
 
