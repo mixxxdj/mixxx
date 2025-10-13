@@ -29,6 +29,11 @@
         <file>images/library/ic_library_traktor.svg</file>
         <file>images/library/ic_library_rekordbox.svg</file>
         <file>images/library/ic_library_serato.svg</file>
+      <!-- icons for hotcue overview in tooltip -->
+        <file>images/library/ic_loop_active_w.svg</file>
+        <file>images/library/ic_loop_active_bl.svg</file>
+        <file>images/library/ic_beatjump_right_active_w.svg</file>
+        <file>images/library/ic_beatjump_right_active_bl.svg</file>
       <!-- logo and icons for 'About' dialog -->
         <file>images/mixxx_logo.svg</file>
         <file>images/icons/scalable/apps/mixxx.svg</file>

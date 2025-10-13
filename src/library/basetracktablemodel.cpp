@@ -78,6 +78,19 @@ QSqlDatabase cloneDatabase(
             pTrackCollectionManager->internalCollection()->database());
 }
 
+// For hotcue tooltip
+inline QString posOrLengthToSeconds(double posOrLength, double sampleRate) {
+    if (sampleRate <= 0) {
+        // if no sampleRate -> 44.1kHz
+
+        sampleRate = 44100.0;
+    }
+
+    double seconds = posOrLength / sampleRate;
+
+    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
+}
+
 } // anonymous namespace
 
 // static
@@ -1207,157 +1220,130 @@ QString BaseTrackTableModel::composeHotCueTooltip(
         return columnValue;
     }
 
-    // Get hotcues for this track
-    QList<CuePointer> cues = m_pTrackCollectionManager
-                                     ->internalCollection()
-                                     ->getCueDAO()
-                                     .getCuesForTrack(pTrack->getId());
-
-    // only hotcues
-    QList<CuePointer> hotCues;
+    // Get all cue points for this track
+    const QList<CuePointer> cues = pTrack->getCuePoints();
+    // Collect only hotcues
+    QList<CuePointer> hotcues;
     for (const auto& pCue : std::as_const(cues)) {
         if (pCue && pCue->getHotCue() != Cue::kNoHotCue) {
-            hotCues.append(pCue);
+            hotcues.append(pCue);
         }
     }
 
     // No hotcues -> column value
-    if (hotCues.isEmpty()) {
+    if (hotcues.isEmpty()) {
         return columnValue;
     }
 
     // Sort hotcues by number
-    std::sort(hotCues.begin(), hotCues.end(), [](const CuePointer& a, const CuePointer& b) {
+    std::sort(hotcues.begin(), hotcues.end(), [](const CuePointer& a, const CuePointer& b) {
         return a->getHotCue() < b->getHotCue();
     });
 
     double sampleRate = pTrack->getSampleRate();
 
-    return formatHotCueTooltip(columnValue, hotCues, sampleRate);
-}
-
-QString BaseTrackTableModel::formatHotCueTooltip(const QString& columnValue,
-        const QList<CuePointer>& cues,
-        double sampleRate) const {
-    QString tooltip;
-
     // Start HTML
-    tooltip += "<html><body>";
+    QString tooltip = QStringLiteral("<html><body>");
 
     // Always show the column value (title, artist, composer, etc.)
     if (!columnValue.isEmpty()) {
-        tooltip += QString("<b>%1</b>").arg(columnValue.toHtmlEscaped());
+        tooltip += QStringLiteral("<b>%1</b>").arg(columnValue.toHtmlEscaped());
     }
 
-    // Only add hotcues when there are
-    if (!cues.isEmpty()) {
-        if (!tooltip.isEmpty()) {
-            tooltip += "<br><br>";
+    if (!tooltip.isEmpty()) {
+        tooltip += QStringLiteral("<br><br>");
+    }
+    tooltip += QStringLiteral("<b>Hot Cues:</b>");
+    // In order to keep all properties aligned vertically we construct a html table.
+    // That means we need to wrap each field in <td></td> tags.
+    tooltip += QStringLiteral("<table><style>td {padding-right: 0.2em;}</style>");
+
+    for (const auto& pHotcue : std::as_const(hotcues)) {
+        tooltip += QStringLiteral("<tr>"); // start table row
+
+        // Make the cue appear like a colored hotcue button.
+        QColor cueColor = mixxx::RgbColor::toQColor(pHotcue->getColor());
+        // Pick a contrasting color for the label, like in skins
+        // FIXME Use the skin's custoom dark/bright threshold?
+        const QColor textColor = Color::chooseColorByBrightness(
+                cueColor,
+                Qt::white,
+                Qt::black,
+                127);
+        tooltip += QStringLiteral(
+                "<td align=right>"
+                "<span style='display:inline-block; "
+                "background-color: %1; "
+                "color: %2; "
+                "font-weight: bold; "
+                "vertical-align: middle; "
+                "border: 1px solid #444;'>"
+                // Qt RichText/Html only supports a subset of Html, so we
+                // need to fake left/right padding with whitespaces.
+                "&nbsp;%3&nbsp;"
+                "</span></td>")
+                           .arg(cueColor.name(),
+                                   textColor.name(),
+                                   QString::number(pHotcue->getHotCue() + 1));
+        // Cue position
+        tooltip += QStringLiteral("<td>%1</td>")
+                           .arg(posOrLengthToSeconds(pHotcue->getPosition().value(), sampleRate));
+
+        // Add label if present
+        const QString label = pHotcue->getLabel();
+        if (!label.isEmpty()) {
+            tooltip += QStringLiteral("<td>%1</td>").arg(label.toHtmlEscaped());
         }
-        tooltip += "<b>Hot Cues:</b>";
 
-        for (const auto& pCue : std::as_const(cues)) {
-            if (!pCue) {
-                continue;
-            }
-
-            tooltip += "<br>";
-            const QString num = QString::number(pCue->getHotCue() + 1);
-            QColor cueColor = mixxx::RgbColor::toQColor(pCue->getColor());
-            // contrasting color, like in skins
-            const QColor textColor = Color::chooseColorByBrightness(
-                    cueColor,
-                    Qt::white,
-                    Qt::black,
-                    128);
-            // Add colored square for cue color. Qt RichText/Html only supports
-            // a subset of Richtext/Html. For example we need to fake padding with
-            // whitespaces.
-            const QString colorBox = QStringLiteral(
-                    "<span style='display:inline-block; "
-                    "background-color: %1; "
-                    "color: %2; "
-                    "font-weight: bold; "
-                    "vertical-align: middle; "
-                    "border: 1px solid #444; "
-                    "padding: 0.2em;'>&nbsp;%3&nbsp;</span>")
-                                             .arg(cueColor.name(),
-                                                     textColor.name(),
-                                                     num);
-            qWarning() << "tooltip hotcue" << int(pCue->getHotCue() + 1)
-                       << "color:" << cueColor.name() << textColor.name() << colorBox;
-            tooltip += colorBox;
-
-            tooltip += QStringLiteral(" %1")
-                               .arg(formatCuePosition(pCue->getPosition().value(), sampleRate));
-
-            // Add label if present
-            const QString label = pCue->getLabel();
-            if (!label.isEmpty()) {
-                tooltip += QString(" - %1").arg(label.toHtmlEscaped());
-            }
-
-            // Add type
-            QString typeString;
-            switch (pCue->getType()) {
-            case mixxx::CueType::HotCue:
-                typeString = "Hot Cue";
-                break;
-            case mixxx::CueType::MainCue:
-                typeString = "MainCue";
-                break;
-            case mixxx::CueType::Beat:
-                typeString = "BeatCue";
-                break;
-            case mixxx::CueType::Loop:
-                typeString = "Loop";
-                break;
-            case mixxx::CueType::Jump:
-                typeString = "Jump";
-                break;
-            case mixxx::CueType::Intro:
-                typeString = "Intro";
-                break;
-            case mixxx::CueType::Outro:
-                typeString = "Outro";
-                break;
-            case mixxx::CueType::N60dBSound:
-                typeString = "&lt; 60db Beginning / End Cue";
-                break;
-            default:
-                typeString = "Unknown";
-                break;
-            }
-            tooltip += QString(" [%1]").arg(typeString);
-
-            // Add duration for loops
-            if (pCue->getType() == mixxx::CueType::Loop && pCue->getLengthFrames() > 0) {
-                tooltip += QString(" (%1)").arg(
-                        formatCueDuration(pCue->getLengthFrames(), sampleRate));
-            }
+        // Add type icon
+        // Icons are copied from LateNight Palemoon to images/library
+        // white icons were created from the original black icons
+        // still need to detect the background
+        QString iconHtml;
+        switch (pHotcue->getType()) {
+        case mixxx::CueType::Loop:
+            // white
+            iconHtml =
+                    "<img src=':/images/library/ic_loop_active_w.svg' "
+                    "width='16' height='16' 'title='Loop'>";
+            // black
+            // iconHtml = "<img src=':/images/library/ic_loop_active_w.svg'
+            // width='16' height='16' title='Loop'>";
+            break;
+        case mixxx::CueType::Jump:
+            // white
+            iconHtml =
+                    "<img "
+                    "src=':/images/library/ic_beatjump_right_active_w.svg' "
+                    "width='16' height='16' title='Jump'>";
+            // black
+            // iconHtml = "<img
+            // src=':/images/library/ic_beatjump_right_active_bl.svg' width='16'
+            // height='16' title='Jump'>";
+            break;
+        default:
+            iconHtml = "";
+            break;
         }
+
+        if (!iconHtml.isEmpty()) {
+            tooltip += QStringLiteral("<td>%1</td>").arg(iconHtml);
+        } else {
+            // Add empty cell for alignment when no icon
+            tooltip += QStringLiteral("<td></td>");
+        }
+
+        // Add duration for saved loops/jumps
+        const auto length = pHotcue->getLengthFrames();
+        if (length > 0) {
+            tooltip += QStringLiteral("<td>(%1)</td>")
+                               .arg(posOrLengthToSeconds(length, sampleRate));
+        }
+        tooltip += QStringLiteral("</tr>"); // end table row
     }
 
-    // Close HTML
-    tooltip += "</body></html>";
+    // Close table and HTML
+    tooltip += QStringLiteral("</table></body></html>");
 
     return tooltip;
-}
-
-QString BaseTrackTableModel::formatCuePosition(double position, double sampleRate) const {
-    if (sampleRate <= 0) {
-        // if no sampleRate -> 44.1kHz
-        sampleRate = 44100.0;
-    }
-    double seconds = position / sampleRate;
-    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
-}
-
-QString BaseTrackTableModel::formatCueDuration(double duration, double sampleRate) const {
-    if (sampleRate <= 0) {
-        // if no sampleRate -> 44.1kHz
-        sampleRate = 44100.0;
-    }
-    double seconds = duration / sampleRate;
-    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
 }
