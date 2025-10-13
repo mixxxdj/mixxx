@@ -11,15 +11,36 @@ ApplicationWindow {
     id: root
 
     property alias maximizeLibrary: maximizeLibraryButton.checked
-    property alias show4decks: show4DecksButton.checked
+    readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
     property alias editDeck: editDeckButton.checked
 
     color: Theme.backgroundColor
-    height: 1080
+
+    width: 1792
+    height: 1008
     visible: true
-    width: 1920
+
+    minimumWidth: 680
+    minimumHeight: 300
+
+    onWidthChanged: {
+        console.warn(`Size: ${width}x${height}`)
+    }
+    onHeightChanged: {
+        console.warn(`Size: ${width}x${height}`)
+    }
+
+    Mixxx.ControlProxy {
+        id: numDecksControl
+
+        group: "[App]"
+        key: "num_decks"
+        Component.onCompleted: {
+            value = 4
+        }
+    }
 
     Column {
         id: content
@@ -47,6 +68,7 @@ ApplicationWindow {
                     activeColor: Theme.white
                     checkable: true
                     text: "4 Decks"
+                    visible: root.height > 515
                 }
                 Skin.Button {
                     id: maximizeLibraryButton
@@ -160,7 +182,8 @@ ApplicationWindow {
 
             Item {
                 id: waveforms
-                SplitView.preferredHeight: root.maximizeLibrary ? 120 : 240
+                SplitView.preferredHeight: library.visible ? 120 : undefined
+                SplitView.fillHeight: !library.visible
                 visible: !root.maximizeLibrary
                 Skin.WaveformDisplay {
                     id: deck3waveform
@@ -258,7 +281,9 @@ ApplicationWindow {
             }
 
             Item {
-                SplitView.fillHeight: true
+                SplitView.fillHeight: library.visible
+                SplitView.minimumHeight: mixer.height
+                SplitView.maximumHeight: library.visible ? undefined : mixer.height
                 Deck {
                     id: deck1
 
@@ -433,7 +458,6 @@ ApplicationWindow {
                 // }
                 Skin.Library {
                     id: library
-                    height: parent.height - y
                     anchors {
                         top: mixer.bottom
                         bottom: parent.bottom
@@ -448,6 +472,10 @@ ApplicationWindow {
                         State {
                             when: root.maximizeLibrary && !root.show4decks
                             AnchorChanges { target: library; anchors.top: deck1.bottom}
+                        },
+                        State {
+                            when: !root.maximizeLibrary && root.height - mixer.height < 400
+                            PropertyChanges { target: library; visible: false}
                         }
                     ]
                 }
@@ -456,9 +484,9 @@ ApplicationWindow {
     }
     Skin.Settings {
         id: settingsPopup
-        height: Math.max(840, parent.height * 0.7)
+        height: Math.min(840, parent.height)
         modal: true
-        width: Math.max(1400, parent.width * 0.8)
+        width: Math.min(1400, parent.width)
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
 

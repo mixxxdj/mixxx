@@ -197,7 +197,7 @@ Rectangle {
                 return;
             }
             for (let c = 0; c < model.columns.length; c++) {
-                if (model.columns[c].hidden) {
+                if (model.columns[c].hidden || model.columns[c].autoHideWidth > view.width) {
                     continue
                 } else if (model.columns[c].preferredWidth > 0) {
                     usedWidth += model.columns[c].preferredWidth;
@@ -212,10 +212,18 @@ Rectangle {
         property int usedWidth: 0
         property int dynamicColumnCount: 0
 
+        onWidthChanged: {
+            view.updateColumnSize()
+            view.forceLayout()
+        }
+
         columnWidthProvider: function(column) {
             const columnDef = view.model.columns[column]
             if (columnDef.hidden) {
                 return 0;
+            }
+            if (columnDef.autoHideWidth > 0 && columnDef.autoHideWidth > view.width) {
+                return 0
             }
             if (columnDef.preferredWidth >= 0) {
                 return columnDef.preferredWidth;
