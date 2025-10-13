@@ -86,6 +86,13 @@ inline QString posOrLengthToSeconds(double posOrLength, double sampleRate) {
     return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
 }
 
+inline int posOrLengthToBeats(
+        mixxx::BeatsPointer pBeats,
+        mixxx::audio::FramePos end,
+        mixxx::audio::FramePos start = mixxx::audio::FramePos(0)) {
+    return pBeats->numBeatsInRange(start, end);
+}
+
 } // anonymous namespace
 
 // static
@@ -1337,6 +1344,7 @@ QString BaseTrackTableModel::composeHotCueTooltip(
         const auto type = pHotcue->getType();
         const auto pos = pHotcue->getPosition();
         const auto posEnd = pHotcue->getEndPosition();
+        auto pBeats = pTrack->getBeats();
         // Note: unicode arrow and loop chars may be rendered bold if font supports it
         if (type == mixxx::CueType::Loop) { // ↺
             tooltip += QStringLiteral("<td align=center><b>\u21BA</b></td>");
@@ -1354,11 +1362,20 @@ QString BaseTrackTableModel::composeHotCueTooltip(
         }
 
         // Cue position - End is jump position, position is target
-        double position = type == mixxx::CueType::Jump
-                ? posEnd.value()
-                : pos.value();
-        tooltip += QStringLiteral("<td>%1</td>")
-                           .arg(posOrLengthToSeconds(position, sampleRate));
+        // Show in beats if track has beats
+        if (pBeats) {
+            mixxx::audio::FramePos position = type == mixxx::CueType::Jump
+                    ? posEnd
+                    : pos;
+            tooltip += QStringLiteral("<td>%1</td>")
+                               .arg(posOrLengthToBeats(pBeats, position));
+        } else {
+            double position = type == mixxx::CueType::Jump
+                    ? posEnd.value()
+                    : pos.value();
+            tooltip += QStringLiteral("<td>%1</td>")
+                               .arg(posOrLengthToSeconds(position, sampleRate));
+        }
 
         // Add label if present
         // FIXME Add empty cell or --- placeholder if label is mepty
@@ -1374,12 +1391,22 @@ QString BaseTrackTableModel::composeHotCueTooltip(
             // VERIFY ??
             const auto length = pHotcue->getLengthFrames();
             if (length > 0) {
-                tooltip += QStringLiteral("<td>(%1)</td>")
-                                   .arg(posOrLengthToSeconds(length, sampleRate));
+                if (pBeats) {
+                    tooltip += QStringLiteral("<td>(%1)</td>")
+                                       .arg(posOrLengthToBeats(pBeats, pos, posEnd));
+                } else {
+                    tooltip += QStringLiteral("<td>(%1)</td>")
+                                       .arg(posOrLengthToSeconds(length, sampleRate));
+                }
             }
         } else if (type == mixxx::CueType::Jump) { // Jump target
-            tooltip += QStringLiteral("<td>(%1)</td>")
-                               .arg(posOrLengthToSeconds(pos.value(), sampleRate));
+            if (pBeats) {
+                tooltip += QStringLiteral("<td>(%1)</td>")
+                                   .arg(posOrLengthToBeats(pBeats, pos));
+            } else {
+                tooltip += QStringLiteral("<td>(%1)</td>")
+                                   .arg(posOrLengthToSeconds(pos.value(), sampleRate));
+            }
         }
 
         tooltip += QStringLiteral("</tr>"); // end table row
