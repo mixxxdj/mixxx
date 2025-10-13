@@ -1103,29 +1103,32 @@ void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
         return;
     }
 
-    int destRow = 0;
-    if (top) {
-        destRow = 0;
-    } else if (bottom || ((bottom || down || pageDown) && lastSelRow == rowCount - 1)) {
-        // In case of End or non-continuous and lastSelRow already at the end
-        // we simply paste at the end by invalidating the index.
+    int destRow = 0; // for Home (top)
+    if (bottom || ((down || pageDown) && lastSelRow == rowCount - 1)) {
+        // In case of End, or non-continuous selection and lastSelRow already
+        // at the end, we simply paste at the end by invalidating the index.
         destRow = -1;
     } else if (up || pageUp) {
         // currentIndex can be anywhere inside or outside the selection.
-        // Set it top or bottom of the selection, then pass through the key event
+        // Set it to first selected row, then pass through the key event
         // to get us the desired destination index.
         setCurrentIndex(model()->index(firstSelRow, currentIndex().column()));
         QTableView::keyPressEvent(event);
         destRow = currentIndex().row();
-    } else {
-        // Same when moving down.
+        if (destRow >= lastSelRow) {
+            // Multiple Up presses caused moveCursor() to wrap around.
+            // Paste at the top.
+            destRow = 0;
+        }
+    } else if (down || pageDown) {
+        // Same when moving down, set index to last selected row.
         setCurrentIndex(model()->index(lastSelRow, currentIndex().column()));
         QTableView::keyPressEvent(event);
         destRow = currentIndex().row() + 1;
-        if (pageDown && destRow >= rowCount) {
-            // PageDown hit the end of the list. Explicitly paste at the
+        if ((pageDown && destRow >= rowCount) || destRow <= firstSelRow) {
+            // PageDown hit the end of the list, or moveCursor() wrapped around.
+            // Explicitly paste at the end.
             destRow = -1;
-        } else {
         }
     }
 
