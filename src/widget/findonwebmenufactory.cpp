@@ -11,8 +11,8 @@ namespace mixxx {
 
 namespace library {
 
-void createFindOnWebSubmenus(QMenu* pFindOnWebMenu,
-        FindOnWebLast* pFindOnWebLast,
+void createFindOnWebSubmenus(const QPointer<QMenu>& pFindOnWebMenu,
+        const QPointer<FindOnWebLast>& pFindOnWebLast,
         const Track& track) {
     make_parented<FindOnWebMenuDiscogs>(pFindOnWebMenu, pFindOnWebLast, track);
     make_parented<FindOnWebMenuLastfm>(pFindOnWebMenu, pFindOnWebLast, track);

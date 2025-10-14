@@ -8,9 +8,10 @@
 #include "util/desktophelper.h"
 #include "widget/findonweblast.h"
 
-WFindOnWebMenu::WFindOnWebMenu(QWidget* parent, FindOnWebLast* pFindOnWebLast)
-        : QMenu(parent),
-          m_pFindOnWebLast(pFindOnWebLast) {
+WFindOnWebMenu::WFindOnWebMenu(
+        const QPointer<QMenu>& pParent, QPointer<FindOnWebLast> pFindOnWebLast)
+        : QMenu(pParent),
+          m_pFindOnWebLast(std::move(pFindOnWebLast)) {
 }
 
 bool WFindOnWebMenu::hasEntriesForTrack(const Track& track) {

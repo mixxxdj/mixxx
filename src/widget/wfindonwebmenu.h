@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMenu>
+#include <QPointer>
 
 class Track;
 class FindOnWebLast;
@@ -8,7 +9,7 @@ class FindOnWebLast;
 class WFindOnWebMenu : public QMenu {
     Q_OBJECT
   public:
-    explicit WFindOnWebMenu(QWidget* pParent, FindOnWebLast* pFindOnWebLast);
+    explicit WFindOnWebMenu(const QPointer<QMenu>& pParent, QPointer<FindOnWebLast> pFindOnWebLast);
     ~WFindOnWebMenu() override = default;
 
     void addActionToServiceMenu(
@@ -23,5 +24,5 @@ class WFindOnWebMenu : public QMenu {
     void openInBrowser(const QUrl& url);
 
   private:
-    FindOnWebLast* m_pFindOnWebLast;
+    const QPointer<FindOnWebLast> m_pFindOnWebLast;
 };

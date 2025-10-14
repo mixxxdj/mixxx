@@ -8,7 +8,7 @@ class FindOnWebLast;
 class FindOnWebMenuSoundcloud : public WFindOnWebMenu {
     Q_OBJECT
   public:
-    FindOnWebMenuSoundcloud(QMenu* pFindOnWebMenu,
-            FindOnWebLast* pFindOnWebLast,
+    FindOnWebMenuSoundcloud(const QPointer<QMenu>& pFindOnWebMenu,
+            QPointer<FindOnWebLast> pFindOnWebLast,
             const Track& track);
 };

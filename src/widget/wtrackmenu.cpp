@@ -1234,8 +1234,8 @@ void WTrackMenu::updateMenus() {
         const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
         if (enableMenu) {
             mixxx::library::createFindOnWebSubmenus(
-                    m_pFindOnWebMenu,
-                    m_pFindOnWebLastAct,
+                    m_pFindOnWebMenu.toWeakRef(),
+                    m_pFindOnWebLastAct.toWeakRef(),
                     *pTrack);
         }
         m_pFindOnWebMenu->setEnabled(!m_pFindOnWebMenu->isEmpty());

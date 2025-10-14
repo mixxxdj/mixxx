@@ -6,6 +6,7 @@
 #include "moc_findonwebmenusoundcloud.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "widget/findonweblast.h"
 
 namespace {
 const QString kServiceTitle = QStringLiteral("Soundcloud");
@@ -27,8 +28,10 @@ const QUrl composeSoundcloudUrl(const QString& serviceSearchUrl,
 } // namespace
 
 FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
-        QMenu* pFindOnWebMenu, FindOnWebLast* pFindOnWebLast, const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu, pFindOnWebLast) {
+        const QPointer<QMenu>& pFindOnWebMenu,
+        QPointer<FindOnWebLast> pFindOnWebLast,
+        const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu, std::move(pFindOnWebLast)) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();

@@ -6,6 +6,7 @@
 #include "moc_findonwebmenulastfm.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "widget/findonweblast.h"
 
 namespace {
 const QString kServiceTitle = QStringLiteral("LastFm");
@@ -27,10 +28,10 @@ const QUrl composeLastfmUrl(const QString& serviceSearchUrl,
 
 } //namespace
 
-FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu,
-        FindOnWebLast* pFindOnWebLast,
+FindOnWebMenuLastfm::FindOnWebMenuLastfm(const QPointer<QMenu>& pFindOnWebMenu,
+        QPointer<FindOnWebLast> pFindOnWebLast,
         const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu, pFindOnWebLast) {
+        : WFindOnWebMenu(pFindOnWebMenu, std::move(pFindOnWebLast)) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();

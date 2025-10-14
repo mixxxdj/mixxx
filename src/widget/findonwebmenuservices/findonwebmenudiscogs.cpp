@@ -6,6 +6,7 @@
 #include "moc_findonwebmenudiscogs.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "widget/findonweblast.h"
 
 namespace {
 const QString kServiceTitle = QStringLiteral("Discogs");
@@ -29,10 +30,10 @@ const QUrl composeDiscogsUrl(const QString& serviceDefaultUrl,
 }
 } //namespace
 
-FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu,
-        FindOnWebLast* pFindOnWebLast,
+FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(const QPointer<QMenu>& pFindOnWebMenu,
+        QPointer<FindOnWebLast> pFindOnWebLast,
         const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu, pFindOnWebLast) {
+        : WFindOnWebMenu(pFindOnWebMenu, std::move(pFindOnWebLast)) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();

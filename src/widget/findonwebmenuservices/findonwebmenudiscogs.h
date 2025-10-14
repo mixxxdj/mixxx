@@ -9,5 +9,7 @@ class FindOnWebLast;
 class FindOnWebMenuDiscogs : public WFindOnWebMenu {
     Q_OBJECT
   public:
-    FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, FindOnWebLast* pFindOnWebLast, const Track& track);
+    FindOnWebMenuDiscogs(const QPointer<QMenu>& pFindOnWebMenu,
+            QPointer<FindOnWebLast> pFindOnWebLast,
+            const Track& track);
 };
