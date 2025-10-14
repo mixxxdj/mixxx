@@ -42,15 +42,15 @@
      * @param {ComponentOptions | [number, number]} options Component configuration
      * @class
      */
-    const Component = function(options) {
+    const Component = function(options = {}) {
         this.normalizeMidi = (midiBytesVar) => {
             if (!Array.isArray(midiBytesVar)) {
                 return [];
             }
 
-            const [first, second] = midiBytesVar;
+            const isArrayOfArrays = midiBytesVar.every(Array.isArray);
 
-            if (Array.isArray(first) && Array.isArray(second)) { // long form
+            if (isArrayOfArrays) {
                 return midiBytesVar;
             } else {
                 return [midiBytesVar];
@@ -188,7 +188,7 @@
                 this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.input.bind(this)));
             }
         },
-        connect: function() {
+        connect() {
             this.connectMidiIn();
             this.connectMidiOut();
         },
@@ -217,11 +217,12 @@
             if (this.midiOut.length <= 0) {
                 return;
             }
-            for (const [midiStatus, midino] in this.midiOut) {
+            for (const [midiStatus, midino] of this.midiOut) {
                 midi.sendShortMsg(midiStatus, midino, value);
             }
 
             if (this.sendShifted) {
+                console.assert(this.midiOut.length === 1, "use nested `midiOut: [[...], [...], ...]` instead of `sendShifted`!");
                 if (this.shiftChannel) {
                     midi.sendShortMsg(this.midiOut[0][0] + this.shiftOffset, this.midiOut[0][1], value);
                 } else if (this.shiftControl) {
@@ -570,7 +571,19 @@
                 this._firstLSB = value;
             }
         },
-        connect: function() {
+        connectMidiIn() {
+            if (this.midiIn.length >= 1) {
+                const [midiStatus, midino] = this.midiIn[0];
+                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.inputMSB.bind(this)));
+            }
+            if (this.midiIn.length === 2) {
+                const [midiStatus, midino] = this.midiIn[1];
+                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.inputLSB.bind(this)));
+            }
+        },
+        connect() {
+            this.connectMidiIn();
+            this.connectMidiOut();
             if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
@@ -1348,7 +1361,7 @@
             this.effectFocusButton.trigger();
 
             this.enableOnChannelButtons.forEachComponent(function(button) {
-                if (button.midiOut !== undefined) {
+                if (button.midiOut.length > 0) {
                     button.disconnect();
                     button.connect();
                     button.trigger();
