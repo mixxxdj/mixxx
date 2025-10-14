@@ -2016,10 +2016,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
   }
   #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
+  }
   #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__1_loop_dark.svg) no-repeat center center;
   }
   #Hotcue1 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue1 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
@@ -2058,10 +2060,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
   }
   #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
+  }
   #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__2_loop_dark.svg) no-repeat center center;
   }
   #Hotcue2 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue2 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
@@ -2100,10 +2104,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
   }
   #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
+  }
   #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__3_loop_dark.svg) no-repeat center center;
   }
   #Hotcue3 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue3 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
@@ -2142,10 +2148,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
   }
   #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
+  }
   #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__4_loop_dark.svg) no-repeat center center;
   }
   #Hotcue4 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue4 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
@@ -2184,10 +2192,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
   }
   #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
+  }
   #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__5_loop_dark.svg) no-repeat center center;
   }
   #Hotcue5 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue5 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
@@ -2226,10 +2236,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
   }
   #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
+  }
   #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__6_loop_dark.svg) no-repeat center center;
   }
   #Hotcue6 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue6 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
@@ -2268,10 +2280,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
   }
   #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
+  }
   #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__7_loop_dark.svg) no-repeat center center;
   }
   #Hotcue7 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue7 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
@@ -2310,10 +2324,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
   }
   #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
+  }
   #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__8_loop_dark.svg) no-repeat center center;
   }
   #Hotcue8 WPushButton[type="jump"][displayValue="1"][direction="forward"][dark="false"][active="true"],
   #Hotcue8 WPushButton[type="jump"][displayValue="2"][direction="forward"][dark="false"][active="true"],
