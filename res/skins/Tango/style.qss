@@ -472,19 +472,19 @@ WWidgetGroup {
   margin-left: -350px;  */
 }
 
-#BeatgridButtonToggler {
+#BeatgridButtonToggler, #StemButtonToggler {
   background-color: #333;
   }
-  #BeatgridButtonToggler[displayValue="0"] {
+  #BeatgridButtonToggler[displayValue="0"], #StemButtonToggler[displayValue="1"] {
     image: url(skin:/../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
   }
-  #BeatgridButtonToggler[displayValue="0"]:hover {
+  #BeatgridButtonToggler[displayValue="0"]:hover, #StemButtonToggler[displayValue="1"]:hover {
     image: url(skin:/../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
   }
-#BeatgridButtonToggler[displayValue="1"] {
+#BeatgridButtonToggler[displayValue="1"], #StemButtonToggler[displayValue="0"] {
   image: url(skin:/../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
 }
-  #BeatgridButtonToggler[displayValue="1"]:hover {
+  #BeatgridButtonToggler[displayValue="1"]:hover, #StemButtonToggler[displayValue="0"]:hover {
     image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
   }
 
@@ -1392,24 +1392,24 @@ WLabel#TrackComment {
   margin: 0px 4px 0px 2px;
 }
 
-#EQKillButton {
+#EQKillButton, #StemMuteButton {
   margin: 1px 0px 2px 0px;
   }
-  #EQKillButton[displayValue="0"] {
+  #EQKillButton[displayValue="0"], #StemMuteButton[displayValue="0"] {
     background-color: #585858;
     }
-    #EQKillButton[displayValue="0"]:hover {
+    #EQKillButton[displayValue="0"]:hover, #StemMuteButton[displayValue="0"]:hover {
       border: 1px solid #ff0000;
     }
-  #EQKillButton[displayValue="1"] {
+  #EQKillButton[displayValue="1"], #StemMuteButton[displayValue="1"] {
     background-color: #a90000;
     }
-    #EQKillButton[displayValue="1"]:hover {
+    #EQKillButton[displayValue="1"]:hover, #StemMuteButton[displayValue="1"]:hover {
       border: 1px solid #aaaaaa;
     }
 
 /* Kill indicators underneath EQ knobs */
-#EQKilledUnderlay[displayValue="1"] {
+#EQKilledUnderlay[displayValue="1"], #StemMutedUnderlay[displayValue="1"] {
   image: url(skin:/../Tango/knobs_sliders/knob_eq_killed.svg) no-repeat center center;
 }
 #QuickFxDisabledUnderlay[displayValue="0"] {
