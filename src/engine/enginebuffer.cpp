@@ -441,7 +441,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
 
 void EngineBuffer::requestSyncMode(SyncMode mode) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "EngineBuffer::requestSyncMode";
+        kLogger.trace() << "requestSyncMode" << getGroup();
     }
     if (m_playButton->get() == 0.0) {
         // If we're not playing, the queued event won't get processed so do it now.
@@ -466,7 +466,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 // the engine callback!
 void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << position;
+        kLogger.trace() << "setNewPlaypos" << m_group << position;
     }
 
     m_playPos = position;
@@ -536,7 +536,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         mixxx::audio::SampleRate trackSampleRate,
         double trackNumSamples) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
+        kLogger.trace() << "slotTrackLoaded" << getGroup();
     }
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
@@ -592,7 +592,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, may fix https://github.com/mixxxdj/mixxx/issues/8000
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineBuffer::ejectTrack()";
+        kLogger.trace() << "ejectTrack()";
     }
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
@@ -1358,20 +1358,20 @@ void EngineBuffer::processSeek(bool paused) {
 
     if (!paused && (seekType & SEEK_PHASE)) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
+            kLogger.trace() << "processSeek" << getGroup() << "Seeking phase";
         }
         const mixxx::audio::FramePos syncPosition =
                 m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(position, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_playPos
+                    << "processSeek" << getGroup() << "seek info:" << m_playPos
                     << "->" << position;
         }
     }
     if (position != m_playPos) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
+            kLogger.trace() << "processSeek" << getGroup() << "Seek to" << position;
         }
         setNewPlaypos(position);
         m_previousBufferSeek = true;
@@ -1393,7 +1393,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // which Syncable is leader or could cause Syncables to try to match
     // beat distances. During these calls those values are inconsistent.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
+        kLogger.trace() << "postProcess" << getGroup();
     }
     const mixxx::Bpm localBpm = m_pBpmControl->getLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
