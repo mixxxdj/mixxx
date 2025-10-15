@@ -549,12 +549,14 @@ DDJ200.Deck = class extends components.Deck {
 
         this.pflButton = new components.Button({
             midi: [0x8F + midiChannel, 0x54],
+            sendShifted: false,
             key: "pfl",
             type: components.Button.prototype.types.toggle,
         });
 
         this.loadTrack = new components.Button({
             midi: [0x8F + midiChannel, 0x68],
+            sendShifted: false,
             inKey: "LoadSelectedTrack",
         });
 
