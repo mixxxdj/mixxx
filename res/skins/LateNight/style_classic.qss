@@ -1975,6 +1975,10 @@ WPushButton#BpmLockToggle[value="1"] {
     image: url(skins:LateNight/classic/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
   }
 
+#NoStemLabel {
+  color: #f0bb2b;
+}
+
   #BpmLockToggle[value="1"] {
     image: url(skins:LateNight/classic/buttons/btn__bpm_locked.svg);
     }
