@@ -22,7 +22,7 @@
         </Connection>
       </KnobComposed>
       <Label>
-        <Size>30min,10f</Size>
+        <Size><Variable name="label_width"/>,10f</Size>
         <ObjectName>KnobLabelH</ObjectName>
         <Text><Variable name="label"/></Text>
         <Alignment>left</Alignment>
