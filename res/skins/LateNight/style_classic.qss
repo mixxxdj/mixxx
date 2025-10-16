@@ -72,6 +72,7 @@ WLibrary,
 #PreviewDeck,
 #LibExpandBox,
 #LibrarySplitter::handle,
+#LibraryMainSplitter::handle,
 #SearchLineBox {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
@@ -155,9 +156,11 @@ WSearchLineEdit,
 }
 
 /* Some tweaks to create a frameless library table */
+#LibraryMainSplitter,
 #LibrarySplitter {
   border-width: 0px;
   }
+  #LibraryMainSplitter::handle,
   #LibrarySplitter::handle {
     border-width: 1px 0px 0px 0px;
     border-top-right-radius: 0px;
@@ -2613,12 +2616,14 @@ WSearchLineEdit {
 /* LibrarySplitter
   (the splitter itself is vertical)
   Used to split Library sidebar & Tracks table */
+#LibraryMainSplitter::handle,
 #LibrarySplitter::handle {
   /* 'height' works although it's actually the width of the handle */
   height: 6px;
   image: url(skins:LateNight/classic/style/splitter_handle_vertical.png);
   background-color: #1e1e1e;
   }
+  #LibraryMainSplitter::handle:pressed,
   #LibrarySplitter::handle:pressed {
     image: url(skins:LateNight/classic/style/splitter_handle_vertical_pressed.png);
   }
