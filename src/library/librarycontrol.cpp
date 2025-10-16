@@ -15,6 +15,7 @@
 #include "moc_librarycontrol.cpp"
 #include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
@@ -91,6 +92,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_focusedWidget(FocusWidget::None),
           m_prevFocusedWidget(FocusWidget::None),
           m_pLibraryWidget(nullptr),
+          m_pLibraryPreparationWindowWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_pSearchbox(nullptr),
           m_numDecks(kAppGroup, QStringLiteral("num_decks"), this),
@@ -176,6 +178,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
+    m_pFocusOnPreparationWindow = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "FocusOnPreparationWindow"));
+    m_pFocusOnPreparationWindow->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("FocusOnPreparationWindow")));
+    m_pFocusOnLibraryWindow = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "FocusOnLibraryWindow"));
+    m_pFocusOnLibraryWindow->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("FocusOnLibraryWindow")));
 #ifdef MIXXX_USE_QML
     if (!CmdlineArgs::Instance().isQml())
 #endif
@@ -192,6 +202,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 &ControlEncoder::valueChanged,
                 this,
                 &LibraryControl::slotMoveFocus);
+        connect(m_pFocusOnPreparationWindow.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotFocusOnPreparationWindow);
+        connect(m_pFocusOnLibraryWindow.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotFocusOnLibraryWindow);
     }
 
     // Controls to move tracks on playlist
@@ -612,6 +630,20 @@ void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFi
             &LibraryControl::libraryWidgetDeleted);
 }
 
+void LibraryControl::bindLibraryPreparationWindowWidget(
+        WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
+        KeyboardEventFilter* pKeyboard) {
+    Q_UNUSED(pKeyboard);
+    if (m_pLibraryPreparationWindowWidget) {
+        disconnect(m_pLibraryPreparationWindowWidget, nullptr, this, nullptr);
+    }
+    m_pLibraryPreparationWindowWidget = pLibraryPreparationWindowWidget;
+    connect(m_pLibraryPreparationWindowWidget,
+            &WLibraryPreparationWindow::destroyed,
+            this,
+            &LibraryControl::libraryPreparationWindowWidgetDeleted);
+}
+
 void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     if (m_pSearchbox) {
         disconnect(m_pSearchbox, nullptr, this, nullptr);
@@ -627,6 +659,10 @@ void LibraryControl::libraryWidgetDeleted() {
     m_pLibraryWidget = nullptr;
 }
 
+void LibraryControl::libraryPreparationWindowWidgetDeleted() {
+    m_pLibraryPreparationWindowWidget = nullptr;
+}
+
 void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = nullptr;
 }
@@ -639,6 +675,20 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
     m_pShowTrackMenu->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
+WTrackTableView* LibraryControl::getFocusedTrackTableView() const {
+    if (m_pLibraryPreparationWindowWidget &&
+            m_pLibraryPreparationWindowWidget->getCurrentTrackTableView() &&
+            m_pLibraryPreparationWindowWidget->getCurrentTrackTableView()->hasFocus()) {
+        return m_pLibraryPreparationWindowWidget->getCurrentTrackTableView();
+    } else if (m_pLibraryWidget &&
+            m_pLibraryWidget->getCurrentTrackTableView() &&
+            m_pLibraryWidget->getCurrentTrackTableView()->hasFocus()) {
+        return m_pLibraryWidget->getCurrentTrackTableView();
+    }
+    // fallback to library window if nothing has focus
+    return m_pLibraryWidget ? m_pLibraryWidget->getCurrentTrackTableView() : nullptr;
+}
+
 #ifdef __STEM__
 void LibraryControl::slotLoadSelectedTrackToGroup(
         const QString& group, mixxx::StemChannelSelection stemMask, bool play) {
@@ -649,7 +699,7 @@ void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool pla
         return;
     }
 
-    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    WTrackTableView* pTrackTableView = getFocusedTrackTableView();
     if (pTrackTableView) {
 #ifdef __STEM__
         pTrackTableView->loadSelectedTrackToGroup(group, stemMask, play);
@@ -720,7 +770,7 @@ void LibraryControl::slotSelectTrack(double v) {
         return;
     }
 
-    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    WTrackTableView* pTrackTableView = getFocusedTrackTableView();
     if (pTrackTableView) {
         int i = (int)v;
         pTrackTableView->moveSelection(i);
@@ -844,6 +894,55 @@ void LibraryControl::slotMoveFocusBackward(double v) {
     }
 }
 
+void LibraryControl::slotFocusOnPreparationWindow(double v) {
+    // qDebug() << "[LibraryControl] -> slotFocusOnPreparationWindow called width value: " << v;
+    if (v <= 0) {
+        return;
+    }
+
+    if (!m_pLibrary) {
+        qWarning() << "[LibraryControl] -> No library available";
+        return;
+    }
+
+    auto* prepWindow = m_pLibrary->preparationWindow();
+    if (prepWindow && prepWindow->getActiveView()) {
+        prepWindow->activateWindow();
+        prepWindow->raise();
+
+        auto* view = prepWindow->getActiveView();
+        view->setFocus();
+
+        // qDebug() << "[LibraryControl] -> slotFocusOnPreparationWindow -> focussed set";
+    } else {
+        qWarning() << "[LibraryControl] -> No view available in PreparationWindow to focus on";
+    }
+}
+
+void LibraryControl::slotFocusOnLibraryWindow(double v) {
+    // qDebug() << "[LibraryControl] -> FocusOnLibraryWindow called width value: " << v;
+    if (v <= 0) {
+        return;
+    }
+
+    if (!m_pLibrary) {
+        qWarning() << "[LibraryControl] -> No library available";
+        return;
+    }
+
+    if (m_pLibraryWidget) {
+        m_pLibraryWidget->activateWindow();
+        m_pLibraryWidget->raise();
+
+        if (auto* view = m_pLibraryWidget->getActiveView()) {
+            view->setFocus();
+            // qDebug() << "[LibraryControl] -> FocusOnLibraryWindow -> focussed set";
+        } else {
+            qWarning() << "[LibraryControl] -> No view available in LibraryWindow to focus on";
+        }
+    }
+}
+
 void LibraryControl::slotMoveFocus(double v) {
     // Don't use Key_Tab + ShiftModifier for moving focus backwards!
     // This would indeed move the focus, though it has a significant side-effect
@@ -948,6 +1047,9 @@ FocusWidget LibraryControl::getFocusedWidget() {
     } else if (m_pSidebarWidget && m_pSidebarWidget->hasFocus()) {
         return FocusWidget::Sidebar;
     } else if (m_pLibraryWidget && m_pLibraryWidget->getActiveView()->hasFocus()) {
+        return FocusWidget::TracksTable;
+    } else if (m_pLibraryPreparationWindowWidget &&
+            m_pLibraryPreparationWindowWidget->getActiveView()->hasFocus()) {
         return FocusWidget::TracksTable;
     } else {
         // Unknown widget, for example Clear button in WSearcLineEdit,
