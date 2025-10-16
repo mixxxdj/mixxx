@@ -804,7 +804,7 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     bool play = ControlObject::toBool(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play"));
     slotLoadTrack(pTrack,
 #ifdef __STEM__
-            mixxx::StemChannelSelection(),
+            pChannel->getEngineBuffer()->getStemMask(),
 #endif
             play);
 }

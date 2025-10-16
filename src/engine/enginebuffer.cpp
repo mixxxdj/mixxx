@@ -98,7 +98,11 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pCrossfadeBuffer(SampleUtil::alloc(
                   kMaxEngineFrames * mixxx::kMaxEngineChannelInputCount)),
           m_bCrossfadeReady(false),
-          m_lastBufferSize(0) {
+          m_lastBufferSize(0),
+#ifdef __STEM__
+          m_stemMask()
+#endif
+{
     // This should be a static assertion, but isValid() is not constexpr.
     DEBUG_ASSERT(kInitialPlayPosition.isValid());
 
@@ -1589,6 +1593,7 @@ void EngineBuffer::loadTrack(TrackPointer pTrack,
         m_bPlayAfterLoading = play;
 #ifdef __STEM__
         m_pReader->newTrack(pTrack, stemMask);
+        m_stemMask = stemMask;
 #else
         m_pReader->newTrack(pTrack);
 #endif

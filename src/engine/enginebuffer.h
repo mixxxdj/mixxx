@@ -225,6 +225,10 @@ class EngineBuffer : public EngineObject {
             mixxx::StemChannelSelection stemMask,
             bool play,
             EngineChannel* pChannelToCloneFrom);
+
+    mixxx::StemChannelSelection getStemMask() const {
+        return m_stemMask;
+    }
 #else
     void loadTrack(TrackPointer pTrack,
             bool play,
@@ -503,6 +507,10 @@ class EngineBuffer : public EngineObject {
     std::size_t m_lastBufferSize;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
+
+#ifdef __STEM__
+    mixxx::StemChannelSelection m_stemMask;
+#endif
 };
 
 Q_DECLARE_METATYPE(EngineBuffer::KeylockEngine)
