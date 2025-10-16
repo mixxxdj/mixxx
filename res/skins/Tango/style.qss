@@ -125,20 +125,26 @@ WWidgetGroup {
 /* splitters between
     - waveforms & lower skin part
     - treeview & library table */
-#LibrarySplitter::handle:horizontal {
+#LibrarySplitter::handle:horizontal,
+#LibraryMainSplitter::handle:horizontal {
   image: url(skin:/../Tango/graphics/splitterHori_handle.svg);
   }
   #LibrarySplitter::handle:horizontal:hover,
-  #LibrarySplitter::handle:horizontal:pressed {
+  #LibrarySplitter::handle:horizontal:pressed,
+  #LibraryMainSplitter::handle:horizontal:hover,
+  #LibraryMainSplitter::handle:horizontal:pressed {
     image: url(skin:/../Tango/graphics/splitterHori_handle_pressed.svg);
   }
   /* splitter between coverArt and tree view */
   #LibrarySplitter::handle:vertical,
+  #LibraryMainSplitter::handle:vertical,
   #WaveformSplitter::handle:vertical {
     image: url(skin:/../Tango/graphics/splitterVert_handle.svg);
     }
     #LibrarySplitter::handle:vertical:hover,
     #LibrarySplitter::handle:vertical:pressed,
+    #LibraryMainSplitter::handle:vertical:hover,
+    #LibraryMainSplitter::handle:vertical:pressed,
     #WaveformSplitter::handle:vertical:hover,
     #WaveformSplitter::handle:vertical:pressed {
       image: url(skin:/../Tango/graphics/splitterVert_handle_pressed.svg);
