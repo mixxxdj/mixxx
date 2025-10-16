@@ -58,6 +58,9 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
     if (precision == Precision::CENTISECONDS) {
         DEBUG_ASSERT(durationString.length() >= 1);
         durationString = durationString.left(durationString.length() - 1);
+    } else if (precision == Precision::DECISECONDS) {
+        DEBUG_ASSERT(durationString.length() >= 2);
+        durationString = durationString.left(durationString.length() - 2);
     }
 
     return durationString;
@@ -72,7 +75,9 @@ QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
 
     QString durationString;
 
-    if (precision == Precision::CENTISECONDS) {
+    if (precision == Precision::DECISECONDS) {
+        durationString = QString::number(dSeconds, 'f', 1);
+    } else if (precision == Precision::CENTISECONDS) {
         durationString = QString::number(dSeconds, 'f', 2);
     } else if (precision == Precision::MILLISECONDS) {
         durationString = QString::number(dSeconds, 'f', 3);
@@ -92,7 +97,10 @@ QString DurationBase::formatSecondsLong(double dSeconds, Precision precision) {
 
     QString durationString;
 
-    if (precision == Precision::CENTISECONDS) {
+    if (precision == Precision::DECISECONDS) {
+        durationString = QString::number(dSeconds, 'f', 1)
+                                 .rightJustified(6, QLatin1Char('0'));
+    } else if (precision == Precision::CENTISECONDS) {
         durationString = QString::number(dSeconds, 'f', 2)
             .rightJustified(6, QLatin1Char('0'));
     } else if (Precision::MILLISECONDS == precision) {
@@ -131,6 +139,9 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     if (precision == Precision::CENTISECONDS) {
         DEBUG_ASSERT(durationString.length() >= 1);
         durationString = durationString.left(durationString.length() - 1);
+    } else if (precision == Precision::DECISECONDS) {
+        DEBUG_ASSERT(durationString.length() >= 2);
+        durationString = durationString.left(durationString.length() - 2);
     }
 
     return durationString;
