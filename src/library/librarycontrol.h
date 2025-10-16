@@ -231,9 +231,9 @@ class LibraryControl : public QObject {
 
     // Library widgets
     WLibrary* m_pLibraryWidget;
+    WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget;
     WLibrarySidebar* m_pSidebarWidget;
     WSearchLineEdit* m_pSearchbox;
-    WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget;
 
     // Other variables
     ControlProxy m_numDecks;
