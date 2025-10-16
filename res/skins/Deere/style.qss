@@ -488,21 +488,25 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
 }
 
 /* QSplitter between WLibrarySidebar and WTrackTableView */
-#LibrarySplitter::handle {
+#LibrarySplitter::handle,
+#LibraryMainSplitter::handle {
   image: url(skin:/../Deere/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
-#LibrarySplitter::handle:pressed {
+#LibrarySplitter::handle:pressed,
+#LibraryMainSplitter::handle:pressed {
   image: url(skin:/../Deere/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
-#LibrarySplitter::handle:horizontal {
+#LibrarySplitter::handle:horizontal,
+#LibraryMainSplitter::handle:horizontal {
   width: 6px;
 }
 
-#LibrarySplitter::handle:vertical {
+#LibrarySplitter::handle:vertical,
+#LibraryMainSplitter::handle:vertical {
   height: 6px;
 }
 
@@ -1615,7 +1619,8 @@ WStarRating {
   padding-top: 2px;
 }
 
-#LibrarySplitter {
+#LibrarySplitter,
+#LibraryMainSplitter {
   background-color: #222222;
 }
 
