@@ -42,7 +42,7 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
 
     QString formatString =
             (t.hour() > 0 && days < 1 ? QStringLiteral("hh:mm:ss") : QStringLiteral("mm:ss")) +
-            (Precision::SECONDS == precision ? QString() : QStringLiteral(".zzz"));
+            (precision == Precision::SECONDS ? QString() : QStringLiteral(".zzz"));
 
     QString durationString = t.toString(formatString);
     if (days > 0) {
@@ -55,8 +55,8 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
 
     // The format string gives us milliseconds but we want
     // centiseconds. Slice one character off.
-    if (Precision::CENTISECONDS == precision) {
-        DEBUG_ASSERT(1 <= durationString.length());
+    if (precision == Precision::CENTISECONDS) {
+        DEBUG_ASSERT(durationString.length() >= 1);
         durationString = durationString.left(durationString.length() - 1);
     }
 
@@ -72,9 +72,9 @@ QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
 
     QString durationString;
 
-    if (Precision::CENTISECONDS == precision) {
+    if (precision == Precision::CENTISECONDS) {
         durationString = QString::number(dSeconds, 'f', 2);
-    } else if (Precision::MILLISECONDS == precision) {
+    } else if (precision == Precision::MILLISECONDS) {
         durationString = QString::number(dSeconds, 'f', 3);
     } else {
         durationString = QString::number(dSeconds, 'f', 0);
@@ -92,7 +92,7 @@ QString DurationBase::formatSecondsLong(double dSeconds, Precision precision) {
 
     QString durationString;
 
-    if (Precision::CENTISECONDS == precision) {
+    if (precision == Precision::CENTISECONDS) {
         durationString = QString::number(dSeconds, 'f', 2)
             .rightJustified(6, QLatin1Char('0'));
     } else if (Precision::MILLISECONDS == precision) {
@@ -122,14 +122,14 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
                     QString::number(kilos),
                     QString(kDecimalSeparator),
                     QString::number(seconds).rightJustified(3, QLatin1Char('0')));
-    if (Precision::SECONDS != precision) {
-            durationString += kKiloGroupSeparator % QString::number(subs, 'f', 3).right(3);
+    if (precision != Precision::SECONDS) {
+        durationString += kKiloGroupSeparator % QString::number(subs, 'f', 3).right(3);
     }
 
     // The format string gives us milliseconds but we want
     // centiseconds. Slice one character off.
-    if (Precision::CENTISECONDS == precision) {
-        DEBUG_ASSERT(1 <= durationString.length());
+    if (precision == Precision::CENTISECONDS) {
+        DEBUG_ASSERT(durationString.length() >= 1);
         durationString = durationString.left(durationString.length() - 1);
     }
 
