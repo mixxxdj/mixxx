@@ -14,6 +14,7 @@
 #include "util/parented_ptr.h"
 
 // forward declaration(s)
+class ControlObject;
 class Library;
 class WLibrarySidebar;
 class QAction;
@@ -36,6 +37,9 @@ class CrateFeature : public BaseTrackSetFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
+            KeyboardEventFilter* keyboard) override;
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* libraryPreparationWindowWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
@@ -75,6 +79,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotTrackSelected(TrackId trackId);
     void slotResetSelectedTrack();
     void slotUpdateCrateLabels(const QSet<CrateId>& updatedCrateIds);
+    void slotShowInPreparationWindow();
 
   private:
     void initActions();
@@ -130,6 +135,7 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pExportCrateAction;
 #endif
     parented_ptr<QAction> m_pAnalyzeCrateAction;
+    parented_ptr<QAction> m_pShowTrackModelInPreparationWindowAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
