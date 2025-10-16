@@ -25,6 +25,9 @@ EngineDeck::EngineDeck(
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),
+#ifdef __STEM__
+          m_stemClonedState(false),
+#endif
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
@@ -88,13 +91,14 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
         return;
     }
     if (m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
+                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true) &&
+            !m_stemClonedState) {
         for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
-            ;
         }
     }
+    m_stemClonedState = false;
     if (pNewTrack) {
         int stemCount = pNewTrack->getStemInfo().size();
         m_pStemCount->forceSet(stemCount);
@@ -211,6 +215,7 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
     }
+    m_stemClonedState = true;
 }
 #endif
 
