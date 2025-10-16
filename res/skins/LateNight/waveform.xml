@@ -131,6 +131,15 @@
               <WidgetGroup>
                 <Size>1me,3f</Size>
               </WidgetGroup>
+              <!-- WaveformMinSizeConstrain -->
+              <WidgetGroup>
+                <Size>0f,110f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],keep_consistent_waveform_heights</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- /WaveformMinSizeConstrain -->
             </Children>
             <Connection>
               <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
