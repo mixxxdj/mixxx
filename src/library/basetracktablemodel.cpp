@@ -83,7 +83,9 @@ inline QString posOrLengthToSeconds(double posOrLength, double sampleRate) {
         sampleRate = 44100.0;
     }
     double seconds = posOrLength / sampleRate;
-    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
+    // We don't need centiseconds precision in the overview, it just adds noise.
+    // Deciseconds are sufficient to distinguish very close hotcues.
+    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::DECISECONDS);
 }
 
 inline int posOrLengthToBeats(
