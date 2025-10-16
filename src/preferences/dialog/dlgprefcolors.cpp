@@ -123,6 +123,7 @@ void DlgPrefColors::slotUpdate() {
                     paletteIcon);
         }
     }
+    updateKeyColorsCombobox();
 
     const QSet<QString> colorPaletteNames = m_colorPaletteSettings.getColorPaletteNames();
     for (const auto& paletteName : colorPaletteNames) {
@@ -227,6 +228,7 @@ void DlgPrefColors::slotResetToDefaults() {
     comboBoxLoopDefaultColor->setCurrentIndex(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 1);
     checkboxKeyColorsEnabled->setChecked(BaseTrackTableModel::kKeyColorsEnabledDefault);
+    updateKeyColorsCombobox();
     comboBoxJumpDefaultColor->setCurrentIndex(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 2);
 }
@@ -468,7 +470,13 @@ void DlgPrefColors::slotKeyColorsEnabled(int i) {
     m_bKeyColorsEnabled = static_cast<bool>(i);
 #endif
     BaseTrackTableModel::setKeyColorsEnabled(m_bKeyColorsEnabled);
-    m_pConfig->setValue(kKeyColorsEnabledConfigKey, checkboxKeyColorsEnabled->checkState());
+
+    updateKeyColorsCombobox();
+    m_pConfig->setValue(kKeyColorsEnabledConfigKey, m_bKeyColorsEnabled);
+}
+
+void DlgPrefColors::updateKeyColorsCombobox() {
+    comboBoxKeyColors->setEnabled(checkboxKeyColorsEnabled->isChecked());
 }
 
 void DlgPrefColors::openColorPaletteEditor(
