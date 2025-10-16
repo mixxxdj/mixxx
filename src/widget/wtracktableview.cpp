@@ -386,13 +386,13 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         // this.)
         setDragEnabled(true);
 
-        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-            setDragDropMode(QAbstractItemView::DragDrop);
-            setDropIndicatorShown(true);
-            // viewport()->setAcceptDrops(true);
-        } else {
-            setDragDropMode(QAbstractItemView::DragOnly);
-        }
+        // if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        //     setDragDropMode(QAbstractItemView::DragDrop);
+        //     setDropIndicatorShown(true);
+        //     // viewport()->setAcceptDrops(true);
+        // } else {
+        //     setDragDropMode(QAbstractItemView::DragOnly);
+        // }
 
         // Possible giant fuckup alert - It looks like Qt has something like these
         // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
@@ -1026,6 +1026,11 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
         }
     } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
                        "library",
+                       true,
+                       true)) {
+        event->acceptProposedAction();
+    } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
+                       "preparationwindow",
                        true,
                        true)) {
         event->acceptProposedAction();
