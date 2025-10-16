@@ -131,7 +131,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         // Since 3-band is by far the most common, stick with that.
         const int kMaxEqs = 3;
         for (int deck = 1; deck <= iNumDecks; ++deck) {
-            QMenu* pDeckMenu = addSubmenu(QString("Deck %1").arg(deck), pEqMenu);
+            //: %1 is the deck number 1 ... 4
+            QMenu* pDeckMenu = addSubmenu(tr("Deck %1").arg(deck), pEqMenu);
             for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
                 const QString group = EqualizerEffectChain::formatEffectSlotGroup(
                         QString("[Channel%1]").arg(deck));
@@ -143,11 +144,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         tr("Adjust %1").arg(eqNames[effect]),
                         pBandMenu,
                         true,
+                        //: %1 is the deck number 1 ... 4
                         tr("Deck %1").arg(deck));
 
                 control = "button_parameter%1";
                 addControl(group,
                         control.arg(effect + 1),
+                        //: %1 is "Low EQ" "Mid EQ" or "High EQ"
                         tr("Kill %1").arg(eqNames[effect]),
                         tr("Kill %1").arg(eqNames[effect]),
                         pBandMenu,
