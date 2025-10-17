@@ -97,8 +97,9 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pCrossfadeBuffer(SampleUtil::alloc(
                   kMaxEngineFrames * mixxx::kMaxEngineChannelInputCount)),
           m_bCrossfadeReady(false),
-          m_lastBufferSize(0),
+          m_lastBufferSize(0)
 #ifdef __STEM__
+          ,
           m_stemMask()
 #endif
 {
