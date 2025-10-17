@@ -44,3 +44,9 @@ jobs:
         env:
           # PAT setup with content:write and pull_request:write
           GITHUB_TOKEN: ${{ secrets.MIXXX_SOFTFIX_PAT }}
+  benchmark:
+    name: Benchmark run
+    if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/benchmark')
+    uses: ./.github/workflows/benchmark.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}

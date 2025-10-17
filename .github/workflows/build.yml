@@ -374,14 +374,6 @@ jobs:
           CTEST_PARALLEL_LEVEL: 1
           CTEST_OUTPUT_ON_FAILURE: 1
 
-      - name: Benchmark
-        if: matrix.crosscompile != true
-        run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
-        working-directory: build
-        env:
-          # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
-
       - name: "[Windows] Sign executables"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

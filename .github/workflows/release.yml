@@ -45,6 +45,11 @@ jobs:
       NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
       RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
+  benchmark:
+    uses: ./.github/workflows/benchmark.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}
+
   sync:
     if: ${{ github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
     uses: ./.github/workflows/sync_branches.yml
