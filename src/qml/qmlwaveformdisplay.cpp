@@ -127,7 +127,7 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
 #else
             // It is expected for the stem renderer to return a null value in
             // case STEM are not enabled.
-            if (!renderer.renderer)
+            if (!renderer.renderer) {
 #endif
                 continue;
             }
