@@ -106,7 +106,7 @@ double InternalClock::getBeatDistance() const {
 
 void InternalClock::updateLeaderBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::updateLeaderBeatDistance" << beatDistance;
+        kLogger.trace() << "updateLeaderBeatDistance" << beatDistance;
     }
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
@@ -124,7 +124,7 @@ mixxx::Bpm InternalClock::getBpm() const {
 
 void InternalClock::updateLeaderBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::setBpm" << bpm;
+        kLogger.trace() << "setBpm" << bpm;
     }
     if (!bpm.isValid()) {
         return;
@@ -135,7 +135,7 @@ void InternalClock::updateLeaderBpm(mixxx::Bpm bpm) {
 
 void InternalClock::updateInstantaneousBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::setInstantaneousBpm" << bpm;
+        kLogger.trace() << "setInstantaneousBpm" << bpm;
     }
     // Do nothing.
     Q_UNUSED(bpm);
@@ -146,7 +146,7 @@ void InternalClock::notifyLeaderParamSource() {
 
 void InternalClock::reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::reinitLeaderParams" << beatDistance << baseBpm << bpm;
+        kLogger.trace() << "reinitLeaderParams" << beatDistance << baseBpm << bpm;
     }
     if (!bpm.isValid() || !baseBpm.isValid()) {
         return;
