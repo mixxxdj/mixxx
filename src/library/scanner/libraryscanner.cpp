@@ -575,17 +575,6 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
             this,
             &LibraryScanner::slotAddNewTrack);
 
-    // Progress signals.
-    // Pass directly to the main thread
-    connect(pTask,
-            &ScannerTask::progressLoading,
-            this,
-            &LibraryScanner::progressLoading);
-    connect(pTask,
-            &ScannerTask::progressHashing,
-            this,
-            &LibraryScanner::progressHashing);
-
     m_pool.start(pTask);
 }
 
