@@ -1,5 +1,6 @@
 #include "util/cmdlineargs.h"
 
+#include <qglobal.h>
 #include <stdio.h>
 #ifndef __WINDOWS__
 #include <unistd.h>
@@ -280,10 +281,20 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(developer);
 
 #ifdef MIXXX_USE_QML
-    const QCommandLineOption qml(QStringLiteral("qml"),
-            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
-                                      "Loads experimental QML GUI instead of legacy QWidget skin")
-                            : QString());
+    const QCommandLineOption qml(QStringLiteral("new-ui"),
+            forUserFeedback
+                    ? QCoreApplication::translate("CmdlineArgs",
+                              "Loads the highly unstable 3.0 Mixxx interface, "
+                              "based on QML. You need to use a new setting "
+                              "profile, or run with "
+                              "'allow-dangerous-data-corruption-risk' to use "
+                              "with the current one. We highly recommend "
+                              "backing up your data if you do so.")
+                    : QString());
+    QCommandLineOption qmlDeprecated(
+            QStringLiteral("qml"));
+    qmlDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(qmlDeprecated);
     parser.addOption(qml);
     const QCommandLineOption awareOfRisk(
             QStringLiteral("allow-dangerous-data-corruption-risk"),
@@ -467,6 +478,11 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_developer = parser.isSet(developer);
 #ifdef MIXXX_USE_QML
     m_qml = parser.isSet(qml);
+    if (parser.isSet(qmlDeprecated)) {
+        m_qml |= true;
+        qWarning() << "The argument '--qml' is deprecated and will be soon "
+                      "removed. Please use '--new-ui' instead!";
+    }
     m_awareOfRisk = parser.isSet(awareOfRisk);
 #endif
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
