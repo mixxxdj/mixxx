@@ -1,22 +1,56 @@
 import os
+import re
 
 from pathlib import Path
 from docutils import nodes
 from sphinx import addnodes
 from dataclasses import dataclass
-from collections.abc import Iterator
+from collections import defaultdict
 from sphinx.application import Sphinx
+from collections.abc import Iterator, Callable
 from docutils.nodes import document, Node, field_list
 
-manual_dir = (
-    Path(os.path.dirname(os.path.realpath(__file__))) / ".." / "manual"
-).resolve()
+mixxx_dir = Path(os.path.dirname(os.path.realpath(__file__))) / ".."
+manual_dir = (mixxx_dir / ".." / "manual").resolve()
 docname_to_parse = "chapters/appendix/mixxx_controls"
-
+output = mixxx_dir / "res" / "controllers" / "_mixxx-controls.ts"
 
 # ======================================
 # Read Mixxx controls from documentation
 # ======================================
+
+
+@dataclass
+class Control:
+    group: str
+    name: str
+    description: str
+    range: str | None
+    is_read_only: bool
+    feedback: str | None
+    deprecated_since: str | None
+
+    @staticmethod
+    def from_node(node: document) -> "Control":
+        signature: document = next(node.findall(addnodes.desc_signature))
+        content: document = next(node.findall(addnodes.desc_content))
+        description: str = "\n".join(
+            [d.astext() for d in filter_children(content, "paragraph")]
+        )
+        fl = next(content.findall(nodes.field_list), None)
+        fb_range = field_content(fl, "Range")
+        is_read_only = fb_range is not None and "read-only" in fb_range
+        feedback, deprecated_since = feeback_and_deprecated(fl)
+
+        return Control(
+            signature["group"],
+            signature["control"],
+            description,
+            fb_range,
+            is_read_only,
+            feedback,
+            deprecated_since,
+        )
 
 
 def read_doc(doc_rel_path: str) -> document:
@@ -49,69 +83,133 @@ def field_list_find(fl: field_list, name: str) -> document | None:
     return None
 
 
-def field_content(fl: field_list | None, name: str) -> str:
+def field_content(fl: field_list | None, name: str) -> str | None:
     if fl is None:
-        return ""
+        return None
     field = field_list_find(fl, name)
     if field is None:
-        return ""
+        return None
     body = next(filter_children(field, "field_body"), None)
     if body:
         return body.astext()
-    return ""
-
-
-def deprecated(fl: field_list | None) -> str | None:
-    if fl is None:
-        return None
-    fb = field_list_find(fl, "Feedback")
-    if fb is None:
-        return None
-    deprecated = next(fb.findall(addnodes.versionmodified), None)
-    if deprecated:
-        return deprecated.astext()
     return None
 
 
-@dataclass
-class Control:
-    group: str
-    name: str
-    description: str
-    range: str
-    feedback: str
-    is_read_only: bool
-    deprecated_since: str | None
-
-    @staticmethod
-    def from_node(node: document) -> "Control":
-        signature: document = next(node.findall(addnodes.desc_signature))
-        content: document = next(node.findall(addnodes.desc_content))
-        description: str = "\n".join(
-            [d.astext() for d in filter_children(content, "paragraph")]
+def feeback_and_deprecated(fl: field_list | None) -> tuple[str | None, str | None]:
+    if fl is None:
+        return None, None
+    fb = field_list_find(fl, "Feedback")
+    if fb is None:
+        return None, None
+    deprecated = next(fb.findall(addnodes.versionmodified), None)
+    if deprecated:
+        feedback = next(filter_children(fb, "paragraph"), None)
+        return feedback.astext() if feedback else None, deprecated.astext().replace(
+            "Deprecated since", ""
         )
-        fl = next(content.findall(nodes.field_list), None)
-        fb_range = field_content(fl, "Range")
-        feedback = field_content(fl, "Feedback")
-        is_read_only = "read-only" in fb_range
-        deprecated_since = deprecated(fl)
-
-        return Control(
-            signature["group"],
-            signature["control"],
-            description,
-            fb_range,
-            feedback,
-            is_read_only,
-            deprecated_since,
-        )
+    return None, None
 
 
 # ====================================
 # Generate TypeScript type definitions
 # ====================================
 
-# TODO
+type GroupedControls = dict[str, dict[str, Control]]
+
+
+def ts_doc_comment(control: Control) -> str:
+    lines = ["\n/**"]
+
+    if control.description:
+        for line in control.description.split("\n"):
+            lines.append(f" * {line}")
+    else:
+        lines.append(" * (No description)")
+
+    lines.append(" *")
+    lines.append(f" * @name {control.name}")
+    lines.append(f" * @group {control.group}")
+
+    if control.range:
+        lines.append(f" * @range {control.range}")
+    if control.feedback:
+        lines.append(f" * @feedback {control.feedback}")
+    if control.is_read_only:
+        lines.append(" * @readonly")
+    if control.deprecated_since:
+        lines.append(f" * @deprecated since {control.deprecated_since}")
+
+    lines.append(" */")
+
+    return "\n".join(lines)
+
+
+def filter_controls(
+    groupControls: GroupedControls, filter: Callable[[Control], bool]
+) -> GroupedControls:
+    filtered_controls = {}
+    for group, c in groupControls.items():
+        f_c = {k: v for k, v in c.items() if filter(v)}
+        if len(f_c) > 0:
+            filtered_controls[group] = f_c
+    return filtered_controls
+
+
+def tabs(count: int) -> str:
+    return "".join(["   " for _ in range(count)])
+
+
+def create_control_types_str(
+    groupControls: dict[str, dict[str, Control]], indent: int
+) -> str:
+    lines: list[str] = []
+    for group, controls in groupControls.items():
+        lines.append(f"{tabs(indent)}type {re.sub(r'[\[\]]', '', group)}Controls = ")
+        for name, control in controls.items():
+            lines.append(ts_doc_comment(control))
+            lines.append(f'{tabs(indent + 1)}| "{name}"')
+        lines.append(f"{tabs(indent)};\n")
+    return "\n".join(lines)
+
+
+def export_ts_types(output: Path, controls: list[Control]):
+    grouped_controls = defaultdict(dict)
+    for control in controls:
+        grouped_controls[control.group][control.name] = control
+    grouped_controls: GroupedControls = dict(grouped_controls)
+
+    ts_str: str = ""
+
+    # read/write controls
+    rw_controls = filter_controls(
+        grouped_controls,
+        lambda c: c.deprecated_since is None and not c.is_read_only,
+    )
+    ts_str += create_control_types_str(rw_controls, 1)
+
+    # read-only controls
+    ts_str += "   namespace ReadOnly {\n\n"
+    r_controls = filter_controls(
+        grouped_controls, lambda c: c.deprecated_since is None and c.is_read_only
+    )
+    ts_str += create_control_types_str(r_controls, 2) + "\n   }\n\n"
+
+    # deprecated controls
+    ts_str += "   namespace Deprecated {\n\n"
+    l_controls = filter_controls(
+        grouped_controls, lambda c: c.deprecated_since is not None
+    )
+    ts_str += create_control_types_str(l_controls, 2) + "\n   }\n\n"
+
+    # Write file
+    with open(output, "w") as f:
+        f.write(f"""// Mixxx control types
+// Generated file, don't change anything by hand
+
+declare namespace MixxxControls {{ 
+    {ts_str} 
+}}
+""")
 
 
 if __name__ == "__main__":
@@ -124,4 +222,4 @@ if __name__ == "__main__":
         control = Control.from_node(node)
         controls.append(control)
 
-    print(len(controls))
+    export_ts_types(output, controls)
