@@ -184,7 +184,16 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
         if (!pLoadedTrackWaveformSummary.isNull()) {
             // get track duration and cue info from the Track object
             const double trackDurationMillis = pTrack->getDuration() * 1000.0;
-            const QList<mixxx::CueInfo> cueInfos = pTrack->getCueInfos();
+            const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
+
+            // convert cue points to cue infos
+            QList<mixxx::CueInfo> cueInfos;
+            const QList<CuePointer> cuePoints = pTrack->getCuePoints();
+            for (const auto& pCue : cuePoints) {
+                if (pCue) {
+                    cueInfos.append(pCue->getCueInfo(sampleRate));
+                }
+            }
 
             QImage image = waveformOverviewRenderer::render(
                     pLoadedTrackWaveformSummary,
