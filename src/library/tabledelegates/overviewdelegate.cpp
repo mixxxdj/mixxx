@@ -167,7 +167,10 @@ void OverviewDelegate::paintItem(QPainter* painter,
     } else {
         // We have a cached pixmap, paint it
         pixmap.setDevicePixelRatio(scaleFactor);
+        // disable smooth transform to preserve marker opacity
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, false);
         painter->drawPixmap(option.rect, pixmap);
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
     }
 
     // Draw a border if the cover art cell has focus
