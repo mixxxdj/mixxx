@@ -1,16 +1,13 @@
 #pragma once
 
-#include <QWidget>
+#include <QDialog>
 
 #include "util/performancetimer.h"
 
-class QString;
-
-class LibraryScannerDlg : public QWidget {
+class LibraryScannerDlg : public QDialog {
     Q_OBJECT
   public:
-    LibraryScannerDlg(QWidget* parent = NULL, Qt::WindowFlags f = Qt::Dialog);
-    virtual ~LibraryScannerDlg();
+    LibraryScannerDlg(QWidget* pParent = nullptr);
 
   public slots:
     void slotUpdate(const QString& path);

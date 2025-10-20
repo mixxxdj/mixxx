@@ -8,8 +8,8 @@
 #include "defs_urls.h"
 #include "moc_libraryscannerdlg.cpp"
 
-LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
-        : QWidget(parent, f),
+LibraryScannerDlg::LibraryScannerDlg(QWidget* pParent)
+        : QDialog(pParent),
           m_bCancelled(false) {
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
@@ -34,9 +34,6 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
     connect(this, &LibraryScannerDlg::progress, pCurrent, &QLabel::setText);
     pLayout->addWidget(pCurrent);
     setLayout(pLayout);
-}
-
-LibraryScannerDlg::~LibraryScannerDlg() {
 }
 
 void LibraryScannerDlg::slotUpdate(const QString& path) {

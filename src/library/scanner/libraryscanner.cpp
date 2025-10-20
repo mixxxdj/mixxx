@@ -103,6 +103,7 @@ LibraryScanner::LibraryScanner(
           m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
+          m_pProgressDlg(std::make_unique<LibraryScannerDlg>()),
           m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
@@ -118,35 +119,34 @@ LibraryScanner::LibraryScanner(
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
 
-    m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this,
             &LibraryScanner::progressLoading,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(this,
             &LibraryScanner::progressHashing,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(this,
             &LibraryScanner::scanStarted,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotScanStarted);
     connect(this,
             &LibraryScanner::scanFinished,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotScanFinished);
-    connect(m_pProgressDlg.data(),
+    connect(m_pProgressDlg.get(),
             &LibraryScannerDlg::scanCancelled,
             this,
             &LibraryScanner::slotCancel,
             Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::progressVerifyTracksOutside,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(&m_trackDao,
             &TrackDAO::progressCoverArt,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdateCover);
 }
 
