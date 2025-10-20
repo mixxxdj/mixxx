@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "util/color/color.h"
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"
@@ -12,7 +13,9 @@ namespace waveformOverviewRenderer {
 QImage render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
-        bool mono) {
+        bool mono,
+        const QList<HotcueInfo>& hotcues,
+        double trackDurationMillis) {
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 0) {
         return QImage();
@@ -47,6 +50,8 @@ QImage render(ConstWaveformPointer pWaveform,
                 mono);
     }
 
+    // markers are drawn after normalization for maximum visibility
+
     // Evaluate waveform ratio peak
     float peak = 1;
     for (int i = 0; i < dataSize; i += 2) {
@@ -72,6 +77,75 @@ QImage render(ConstWaveformPointer pWaveform,
     QImage normImage = croppedImage.scaled(image.size(),
             Qt::IgnoreAspectRatio,
             Qt::SmoothTransformation);
+
+    // now draw markers on the final normalized image for maximum visibility
+    if (trackDurationMillis > 0) {
+        // ensure image format supports proper alpha channel handling
+        if (normImage.format() != QImage::Format_ARGB32_Premultiplied) {
+            normImage = normImage.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+        }
+
+        QPainter markerPainter(&normImage);
+        markerPainter.setRenderHint(QPainter::Antialiasing, false);
+        const int imageWidth = normImage.width();
+        const int imageHeight = normImage.height();
+
+        // draw minute markers - make them taller and brighter
+        const int markerHeight = static_cast<int>(imageHeight * 0.2);
+        const int lowerMarkerYPos = static_cast<int>(imageHeight * 0.8);
+
+        // use pure opaque white
+        QColor minuteColor(255, 255, 255, 255);
+
+        for (double currentMarkerMillis = 60000; currentMarkerMillis < trackDurationMillis;
+                currentMarkerMillis += 60000) {
+            const int x = static_cast<int>(
+                    (currentMarkerMillis / trackDurationMillis) * imageWidth);
+
+            if (x >= 0 && x < imageWidth) {
+                // draw 2px wide for visibility
+                markerPainter.setCompositionMode(QPainter::CompositionMode_Source);
+                markerPainter.fillRect(x, 0, 2, markerHeight, minuteColor);
+                markerPainter.fillRect(x,
+                        lowerMarkerYPos,
+                        2,
+                        imageHeight - lowerMarkerYPos,
+                        minuteColor);
+                markerPainter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+            }
+        }
+
+        // draw hotcue markers
+        if (!hotcues.isEmpty()) {
+            for (const auto& hotcue : hotcues) {
+                if (hotcue.positionMillis <= 0 || hotcue.positionMillis > trackDurationMillis) {
+                    continue;
+                }
+
+                const int x = static_cast<int>(
+                        (hotcue.positionMillis / trackDurationMillis) * imageWidth);
+
+                if (x < 0 || x >= imageWidth) {
+                    continue;
+                }
+
+                QColor baseColor = QColor::fromRgb(hotcue.colorCode);
+
+                // make it VERY bright and saturated for maximum visibility
+                QColor fillColor = baseColor.lighter(160);
+                fillColor.setAlpha(255);
+
+                // use CompositionMode_Source to completely overwrite pixels
+                markerPainter.setCompositionMode(QPainter::CompositionMode_Source);
+
+                // draw extra wide solid marker (10px wide)
+                markerPainter.fillRect(x - 4, 0, 10, imageHeight, fillColor);
+
+                // reset composition mode
+                markerPainter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+            }
+        }
+    }
 
     return normImage;
 }

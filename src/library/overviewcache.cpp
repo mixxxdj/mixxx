@@ -3,10 +3,15 @@
 #include <QFutureWatcher>
 #include <QPixmapCache>
 #include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QtConcurrentRun>
 
 #include "library/dao/analysisdao.h"
+#include "library/dao/cuedao.h"
+#include "library/dao/trackschema.h"
 #include "moc_overviewcache.cpp"
+#include "track/cueinfo.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
@@ -161,9 +166,10 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
     }
 
     mixxx::DbConnectionPooler dbConnectionPooler(pDbConnectionPool);
+    QSqlDatabase database = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     AnalysisDao analysisDao(pConfig);
-    analysisDao.initialize(mixxx::DbConnectionPooled(pDbConnectionPool));
+    analysisDao.initialize(database);
 
     QList<AnalysisDao::AnalysisInfo> analyses =
             analysisDao.getAnalysesForTrackByType(
@@ -174,11 +180,52 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
                 WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
 
         if (!pLoadedTrackWaveformSummary.isNull()) {
+            // load track duration and sample rate from library table
+            double trackDurationMillis = 0.0;
+            int sampleRate = 44100; // default fallback
+            QSqlQuery query(database);
+            query.prepare(QStringLiteral("SELECT " LIBRARY_TABLE ".") +
+                    LIBRARYTABLE_DURATION + QStringLiteral(", " LIBRARY_TABLE ".") +
+                    LIBRARYTABLE_SAMPLERATE +
+                    QStringLiteral(" FROM " LIBRARY_TABLE " WHERE " LIBRARY_TABLE ".id=:id"));
+            query.bindValue(":id", trackId.toVariant());
+            if (query.exec() && query.next()) {
+                trackDurationMillis = query.value(0).toDouble() *
+                        1000.0; // convert seconds to milliseconds
+                sampleRate = query.value(1).toInt();
+                if (sampleRate <= 0) {
+                    sampleRate = 44100; // fallback if invalid
+                }
+            }
+
+            // load hotcues for the track
+            QList<waveformOverviewRenderer::HotcueInfo> hotcues;
+            CueDAO cueDao;
+            cueDao.initialize(database);
+            QList<CuePointer> cues = cueDao.getCuesForTrack(trackId);
+
+            for (const auto& cue : std::as_const(cues)) {
+                if (cue->getType() == mixxx::CueType::HotCue) {
+                    waveformOverviewRenderer::HotcueInfo hotcueInfo;
+                    // convert frame position to milliseconds using track's sample rate
+                    // FramePos is in frames (stereo pairs)
+                    // to get milliseconds: (frames / (sampleRate / channels)) * 1000
+                    const double framePos = cue->getPosition().value();
+                    hotcueInfo.positionMillis =
+                            (framePos * mixxx::kEngineChannelOutputCount / sampleRate) * 1000.0;
+                    hotcueInfo.colorCode = static_cast<mixxx::RgbColor::code_t>(cue->getColor());
+                    hotcueInfo.label = cue->getLabel();
+                    hotcues.append(hotcueInfo);
+                }
+            }
+
             QImage image = waveformOverviewRenderer::render(
                     pLoadedTrackWaveformSummary,
                     type,
                     signalColors,
-                    true /* mono, bottom-aligned */);
+                    true /* mono, bottom-aligned */,
+                    hotcues,
+                    trackDurationMillis);
 
             if (!image.isNull()) {
                 image = resizeImageSize(image, desiredSize);
