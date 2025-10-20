@@ -11,14 +11,6 @@ class WaveformSignalColors;
 
 namespace waveformOverviewRenderer {
 
-// MARK: DATA STRUCTURES FOR HOTCUE RENDERING
-
-struct HotcueInfo {
-    double positionMillis;
-    mixxx::RgbColor::code_t colorCode;
-    QString label;
-};
-
 // MARK: MAIN RENDER FUNCTION
 
 /// This returns the normalized fullsize image
@@ -27,7 +19,7 @@ QImage render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         bool mono = false,
-        const QList<HotcueInfo>& hotcues = QList<HotcueInfo>(),
+        const QList<mixxx::CueInfo>& cueInfos = QList<mixxx::CueInfo>(),
         double trackDurationMillis = 0.0);
 
 /// These paint methods return the fullsize image

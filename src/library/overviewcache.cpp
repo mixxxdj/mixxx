@@ -98,9 +98,14 @@ QPixmap OverviewCache::requestCachedOverview(
 QPixmap OverviewCache::requestUncachedOverview(
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
-        TrackId trackId,
+        TrackPointer pTrack,
         const QObject* pRequester,
         QSize desiredSize) {
+    if (!pTrack) {
+        return QPixmap();
+    }
+
+    TrackId trackId = pTrack->getId();
     if (!trackId.isValid()) {
         return QPixmap();
     }
@@ -112,8 +117,6 @@ QPixmap OverviewCache::requestUncachedOverview(
     if (m_tracksWithoutOverview.contains(trackId)) {
         return QPixmap();
     }
-
-    // kLogger.info() << "requestUncachedOverview()" << trackId << pRequester << desiredSize;
 
     const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
     QPixmap pixmap;
@@ -132,7 +135,7 @@ QPixmap OverviewCache::requestUncachedOverview(
             m_pDbConnectionPool,
             type,
             signalColors,
-            trackId,
+            pTrack,
             pRequester,
             desiredSize);
     connect(watcher,
@@ -150,18 +153,17 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
         const mixxx::DbConnectionPoolPtr pDbConnectionPool,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
-        TrackId trackId,
+        TrackPointer pTrack,
         const QObject* pRequester,
         QSize desiredSize) {
-    // kLogger.warning() << "prepareOverview" << trackId;
     FutureResult result;
-    result.trackId = trackId;
+    result.trackId = pTrack ? pTrack->getId() : TrackId();
     result.type = type;
     result.requester = pRequester;
     result.image = QImage();
     result.resizedToSize = desiredSize;
 
-    if (!trackId.isValid() || desiredSize.isEmpty()) {
+    if (!pTrack || !result.trackId.isValid() || desiredSize.isEmpty()) {
         return result;
     }
 
@@ -173,58 +175,23 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
 
     QList<AnalysisDao::AnalysisInfo> analyses =
             analysisDao.getAnalysesForTrackByType(
-                    trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
+                    result.trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
 
     if (!analyses.isEmpty()) {
         ConstWaveformPointer pLoadedTrackWaveformSummary = ConstWaveformPointer(
                 WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
 
         if (!pLoadedTrackWaveformSummary.isNull()) {
-            // load track duration and sample rate from library table
-            double trackDurationMillis = 0.0;
-            int sampleRate = 44100; // default fallback
-            QSqlQuery query(database);
-            query.prepare(QStringLiteral("SELECT " LIBRARY_TABLE ".") +
-                    LIBRARYTABLE_DURATION + QStringLiteral(", " LIBRARY_TABLE ".") +
-                    LIBRARYTABLE_SAMPLERATE +
-                    QStringLiteral(" FROM " LIBRARY_TABLE " WHERE " LIBRARY_TABLE ".id=:id"));
-            query.bindValue(":id", trackId.toVariant());
-            if (query.exec() && query.next()) {
-                trackDurationMillis = query.value(0).toDouble() *
-                        1000.0; // convert seconds to milliseconds
-                sampleRate = query.value(1).toInt();
-                if (sampleRate <= 0) {
-                    sampleRate = 44100; // fallback if invalid
-                }
-            }
-
-            // load hotcues for the track
-            QList<waveformOverviewRenderer::HotcueInfo> hotcues;
-            CueDAO cueDao;
-            cueDao.initialize(database);
-            QList<CuePointer> cues = cueDao.getCuesForTrack(trackId);
-
-            for (const auto& cue : std::as_const(cues)) {
-                if (cue->getType() == mixxx::CueType::HotCue) {
-                    waveformOverviewRenderer::HotcueInfo hotcueInfo;
-                    // convert frame position to milliseconds using track's sample rate
-                    // FramePos is in frames (stereo pairs)
-                    // to get milliseconds: (frames / (sampleRate / channels)) * 1000
-                    const double framePos = cue->getPosition().value();
-                    hotcueInfo.positionMillis =
-                            (framePos * mixxx::kEngineChannelOutputCount / sampleRate) * 1000.0;
-                    hotcueInfo.colorCode = static_cast<mixxx::RgbColor::code_t>(cue->getColor());
-                    hotcueInfo.label = cue->getLabel();
-                    hotcues.append(hotcueInfo);
-                }
-            }
+            // get track duration and cue info from the Track object
+            const double trackDurationMillis = pTrack->getDuration() * 1000.0;
+            const QList<mixxx::CueInfo> cueInfos = pTrack->getCueInfos();
 
             QImage image = waveformOverviewRenderer::render(
                     pLoadedTrackWaveformSummary,
                     type,
                     signalColors,
                     true /* mono, bottom-aligned */,
-                    hotcues,
+                    cueInfos,
                     trackDurationMillis);
 
             if (!image.isNull()) {
