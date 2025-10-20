@@ -5,6 +5,7 @@
 #include "util/color/color.h"
 #include "util/colorcomponents.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 #include "util/timer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 
@@ -14,7 +15,7 @@ QImage render(ConstWaveformPointer pWaveform,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         bool mono,
-        const QList<HotcueInfo>& hotcues,
+        const QList<mixxx::CueInfo>& cueInfos,
         double trackDurationMillis) {
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 0) {
@@ -116,33 +117,48 @@ QImage render(ConstWaveformPointer pWaveform,
         }
 
         // draw hotcue markers
-        if (!hotcues.isEmpty()) {
-            for (const auto& hotcue : hotcues) {
-                if (hotcue.positionMillis <= 0 || hotcue.positionMillis > trackDurationMillis) {
+        if (!cueInfos.isEmpty()) {
+            PainterScope painterScope(&markerPainter);
+            for (const auto& cueInfo : cueInfos) {
+                if (cueInfo.getType() != mixxx::CueType::HotCue) {
+                    continue;
+                }
+
+                auto positionMillis = cueInfo.getStartPositionMillis();
+                if (!positionMillis.has_value()) {
+                    continue;
+                }
+
+                // allow negative positions (preroll)
+                if (*positionMillis > trackDurationMillis) {
                     continue;
                 }
 
                 const int x = static_cast<int>(
-                        (hotcue.positionMillis / trackDurationMillis) * imageWidth);
+                        (*positionMillis / trackDurationMillis) * imageWidth);
 
                 if (x < 0 || x >= imageWidth) {
                     continue;
                 }
 
-                QColor baseColor = QColor::fromRgb(hotcue.colorCode);
+                // use same rendering style as deck overview:
+                // contrasting border line + bright fill line
+                auto color = cueInfo.getColor();
+                if (!color.has_value()) {
+                    continue;
+                }
 
-                // make it VERY bright and saturated for maximum visibility
-                QColor fillColor = baseColor.lighter(160);
-                fillColor.setAlpha(255);
+                QColor fillColor = QColor::fromRgb(*color).lighter(110);
+                QColor borderColor = Color::chooseContrastColor(
+                        QColor::fromRgb(*color), 120);
 
-                // use CompositionMode_Source to completely overwrite pixels
-                markerPainter.setCompositionMode(QPainter::CompositionMode_Source);
+                // draw border/shadow line (1px wide, offset by -1)
+                markerPainter.setPen(borderColor);
+                markerPainter.drawLine(x - 1, 0, x - 1, imageHeight);
 
-                // draw extra wide solid marker (10px wide)
-                markerPainter.fillRect(x - 4, 0, 10, imageHeight, fillColor);
-
-                // reset composition mode
-                markerPainter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+                // draw main bright marker line (1px wide)
+                markerPainter.setPen(fillColor);
+                markerPainter.drawLine(x, 0, x, imageHeight);
             }
         }
     }

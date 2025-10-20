@@ -157,11 +157,15 @@ void OverviewDelegate::paintItem(QPainter* painter,
             // non-cache we can request an update.
             m_cacheMissIds.insert(trackId);
         } else {
-            pixmap = m_pCache->requestUncachedOverview(m_type,
-                    m_signalColors,
-                    trackId,
-                    this,
-                    option.rect.size() * scaleFactor);
+            // get track to access cues and duration
+            TrackPointer pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                pixmap = m_pCache->requestUncachedOverview(m_type,
+                        m_signalColors,
+                        pTrack,
+                        this,
+                        option.rect.size() * scaleFactor);
+            }
         }
         paintItemBackground(painter, option, index);
     } else {
