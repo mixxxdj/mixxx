@@ -3,6 +3,7 @@
 #include "library/coverartutils.h"
 #include "library/library_decl.h"
 #include "library/queryutil.h"
+#include "library/scanner/importfilestask.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/scannertask.h"
@@ -553,6 +554,21 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
         m_pool.clear();
         return;
     }
+
+    // Fetch number of files to be processed and add them to the total tasks
+    // for the progress dialog to set the value of the progress bar later on.
+    // Note that there may also be an unknown number of tasks for files
+    // outside the library directories. We deal with that in DlgLibraryScanProgress.
+    ImportFilesTask* pFileTask = qobject_cast<ImportFilesTask*>(pTask);
+    if (pFileTask) {
+        // Track and cover files
+        int numFiles = pFileTask->numFilesToImport();
+        m_pProgressDlg->addQueuedTasks(numFiles);
+    } else {
+        // RecursiveScanDirectoryTask, queues exactly one directory
+        m_pProgressDlg->addQueuedTasks(1);
+    }
+
     m_scannerGlobal->getTaskWatcher().watchTask();
     connect(pTask,
             &ScannerTask::queueTask,
