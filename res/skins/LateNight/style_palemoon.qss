@@ -2401,6 +2401,10 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
   }
 
+#NoStemLabel {
+  color: #444;
+}
+
 #BeatgridControlsToggle[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
   }

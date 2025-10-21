@@ -242,27 +242,49 @@ Description:
                     <SetVariable name="Width">190me</SetVariable>
                   </Template>
 
-                  <!-- Cue shift buttons in beatgrid editing section -->
                   <WidgetGroup>
                     <ObjectName>SkinSettingsCategory</ObjectName>
                     <SizePolicy>me,f</SizePolicy>
-                    <Layout>stacked</Layout>
+                    <Layout>vertical</Layout>
                     <Children>
-                      <!-- translucent cover when waveforms are hidden -->
-                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
-                        <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
-                      </Template>
 
-                      <!-- translucent cover when beatgrid controls are hidden -->
-                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
-                        <SetVariable name="Setting">[Skin],show_beatgrid_controls</SetVariable>
-                      </Template>
+                      <!-- Cue shift buttons in beatgrid editing section -->
+                      <WidgetGroup>
+                        <Layout>stacked</Layout>
+                        <Size>-1me,18f</Size>
+                        <Children>
+                          <!-- translucent cover when waveforms are hidden -->
+                          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
+                          </Template>
+                          <!-- translucent cover when beatgrid controls are hidden -->
+                          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[Skin],show_beatgrid_controls</SetVariable>
+                          </Template>
+                          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                            <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                            <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
 
-                      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
-                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
-                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
-                      </Template>
+                      <!-- Keep same height for all waveforms -->
+                      <WidgetGroup>
+                        <Layout>stacked</Layout>
+                        <Size>-1me,18f</Size>
+                        <Children>
+                          <!-- translucent cover when waveforms are hidden -->
+                          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
+                          </Template>
+                          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                            <SetVariable name="TooltipId">keep_consistent_waveform_heights</SetVariable>
+                            <SetVariable name="Text">Enforce equal heights</SetVariable>
+                            <SetVariable name="Setting">[Skin],keep_consistent_waveform_heights</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
 
                     </Children>
                   </WidgetGroup>
