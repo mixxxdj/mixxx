@@ -24,7 +24,11 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget* pParent)
             &QPushButton::clicked,
             this,
             &LibraryScannerDlg::slotCancel);
-    pLayout->addWidget(pCancel);
+    // Also cancel when closing by click on X window button
+    connect(this,
+            &QDialog::rejected,
+            this,
+            &LibraryScannerDlg::slotCancel);
 
     QLabel* pCurrent = new QLabel(this);
     pCurrent->setAlignment(Qt::AlignTop);
