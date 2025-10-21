@@ -3518,6 +3518,10 @@ if(QT6)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
+    # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
+    list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
+  endif()
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
@@ -4778,9 +4782,44 @@ if(MEDIAFOUNDATION)
   )
 endif()
 
-# Modplug support
-find_package(Modplug)
-default_option(MODPLUG "Modplug module decoder support" "Modplug_FOUND")
+# tracker module support (openmpt preferred, modplug fallback)
+find_package(OpenMPT)
+default_option(OPENMPT "OpenMPT module decoder support" "OpenMPT_FOUND")
+
+# only search for modplug as fallback if openmpt is not available
+if(NOT OpenMPT_FOUND)
+  message(
+    STATUS
+    "libopenmpt not found, checking for fallback library libmodplug..."
+  )
+  find_package(Modplug)
+  default_option(MODPLUG "Modplug module decoder support (legacy)" "OFF")
+endif()
+
+if(OPENMPT OR MODPLUG)
+  # shared tracker DSP and preferences
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/preferences/dialog/dlgprefmodplugdlg.ui
+      src/preferences/dialog/dlgprefmodplug.cpp
+      src/sources/trackerdsp.cpp
+  )
+endif()
+
+if(OPENMPT)
+  if(NOT OpenMPT_FOUND)
+    message(
+      FATAL_ERROR
+      "OpenMPT module decoder support requires libopenmpt and its development headers."
+    )
+  endif()
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourceopenmpt.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __OPENMPT__)
+  target_link_libraries(mixxx-lib PRIVATE OpenMPT::OpenMPT)
+  message(STATUS "using libopenmpt for tracker module support")
+endif()
+
 if(MODPLUG)
   if(NOT Modplug_FOUND)
     message(
@@ -4788,15 +4827,14 @@ if(MODPLUG)
       "Modplug module decoder support requires libmodplug and its development headers."
     )
   endif()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/preferences/dialog/dlgprefmodplugdlg.ui
-      src/sources/soundsourcemodplug.cpp
-      src/preferences/dialog/dlgprefmodplug.cpp
-  )
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourcemodplug.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __MODPLUG__)
   target_link_libraries(mixxx-lib PRIVATE Modplug::Modplug)
+  if(OPENMPT)
+    message(STATUS "libmodplug available as fallback (libopenmpt preferred)")
+  else()
+    message(STATUS "using libmodplug for tracker module support")
+  endif()
 endif()
 
 find_package(Microsoft.GSL CONFIG)
