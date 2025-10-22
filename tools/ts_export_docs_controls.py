@@ -15,6 +15,7 @@ manual_dir = (mixxx_dir / ".." / "manual").resolve()
 docname_to_parse = "chapters/appendix/mixxx_controls"
 output = mixxx_dir / "res" / "controllers" / "_mixxx-controls.ts"
 
+
 # ======================================
 # Read Mixxx controls from documentation
 # ======================================
@@ -29,6 +30,7 @@ class Control:
     is_read_only: bool
     feedback: str | None
     deprecated_since: str | None
+    is_pot_meter: bool
 
     @staticmethod
     def from_node(node: document) -> "Control":
@@ -50,6 +52,7 @@ class Control:
             is_read_only,
             feedback,
             deprecated_since,
+            is_pot_meter(content),
         )
 
 
@@ -110,6 +113,51 @@ def feeback_and_deprecated(fl: field_list | None) -> tuple[str | None, str | Non
     return None, None
 
 
+def read_table(node: nodes.table) -> list[list[str]]:
+    table_data = []
+
+    for row_elem in node.findall(nodes.row):
+        row_content = []
+
+        for entry_elem in row_elem.findall(nodes.entry):
+            all_text_parts = entry_elem.astext()
+            cell_text = " ".join("".join(all_text_parts).split())
+            row_content.append(cell_text)
+
+        if row_content:
+            table_data.append(tuple(row_content))
+
+    return table_data
+
+
+@dataclass
+class PotMeterSuffix:
+    suffix: str
+    description: str
+
+
+def read_pot_meter_suffixes(doc: document) -> list[PotMeterSuffix]:
+    cpms_table: nodes.table = next(
+        doc.findall(
+            lambda n: isinstance(n, nodes.table) and "Control Suffix" in n.astext()
+        )
+    )  # type: ignore
+    return [PotMeterSuffix(cpms[0], cpms[1]) for cpms in read_table(cpms_table)[1:]]
+
+
+def is_pot_meter(content: document) -> bool:
+    return (
+        next(
+            content.findall(
+                lambda n: isinstance(n, addnodes.pending_xref)
+                and "controlpotmeter" in n["reftarget"]  # type: ignore
+            ),
+            None,
+        )
+        is not None
+    )
+
+
 # ====================================
 # Generate TypeScript type definitions
 # ====================================
@@ -118,30 +166,26 @@ type GroupedControls = dict[str, dict[str, Control]]
 
 
 def ts_doc_comment(control: Control) -> str:
-    lines = ["\n/**"]
+    lines = []
 
     if control.description:
         for line in control.description.split("\n"):
-            lines.append(f" * {line}")
+            lines.append(line)
     else:
-        lines.append(" * (No description)")
-
-    lines.append(" *")
-    lines.append(f" * @name {control.name}")
-    lines.append(f" * @groups {', '.join(control.groups)}")
+        lines.append("(No description)")
+    lines.append("")
+    lines.append(f"@groups {', '.join(control.groups)}")
 
     if control.range:
-        lines.append(f" * @range {control.range}")
+        lines.append(f"@range {control.range}")
     if control.feedback:
-        lines.append(f" * @feedback {control.feedback}")
+        lines.append(f"@feedback {control.feedback}")
     if control.is_read_only:
-        lines.append(" * @readonly")
+        lines.append("@readonly")
     if control.deprecated_since:
-        lines.append(f" * @deprecated since {control.deprecated_since}")
+        lines.append(f"@deprecated since {control.deprecated_since}")
 
-    lines.append(" */")
-
-    return "\n".join(lines)
+    return "\n".join(comment_lines(lines))
 
 
 def filter_controls(
@@ -159,8 +203,15 @@ def tabs(count: int) -> str:
     return "".join(["   " for _ in range(count)])
 
 
-def group_var_name(name: str) -> str:
+def group_var(name: str) -> str:
     return re.sub(r"[\[\]\_]", "", name) + "Control"
+
+
+def control_var(name: str, is_pot_meter: bool) -> str:
+    pattern = r"([A-Z])(?=\]|$|_)"
+    name, n = re.subn(pattern, r"${number}", name)
+    pm_str = "${PotMeterSuffix}" if is_pot_meter else ""
+    return f"`{name}{pm_str}`" if n > 0 or is_pot_meter else f'"{name}"'
 
 
 def create_control_types_str(
@@ -169,16 +220,16 @@ def create_control_types_str(
     lines: list[str] = []
     ctls: list[Control] = [c for gc in groupControls.values() for c in gc.values()]
     for group, controls in groupControls.items():
-        lines.append(f"type {prefix}{group_var_name(group)} = ")
+        lines.append(f"type {prefix}{group_var(group)} = ")
 
         # controls
         for name, control in controls.items():
             lines.append(ts_doc_comment(control))
-            lines.append(f'| "{name}"')
+            lines.append(f"| {control_var(name, control.is_pot_meter)}")
 
         # parent groups
         lines.extend(
-            [f"| {prefix}{group_var_name(p)}" for p in find_group_parents(group, ctls)]
+            [f"| {prefix}{group_var(p)}" for p in find_group_parents(group, ctls)]
         )
         lines.append(";\n")
     lines.extend(create_combined_types(ctls, prefix))
@@ -201,13 +252,29 @@ def create_combined_types(controls: list[Control], prefix: str) -> list[str]:
 
         parents = find_group_parents(group, controls)
         if len(parents) > 0:
-            parents_str = " | ".join([prefix + group_var_name(p) for p in parents])
-            lines.append(f"type {prefix}{group_var_name(group)} = {parents_str};\n")
+            parents_str = " | ".join([prefix + group_var(p) for p in parents])
+            lines.append(f"type {prefix}{group_var(group)} = {parents_str};\n")
     return lines
 
 
-def export_ts_types(output: Path, controls: list[Control]):
-    lines: list[str] = []
+def comment_lines(lines: list[str]) -> list[str]:
+    lines = [f" * {line}" for line in lines]
+    return ["\n/**"] + lines + [" */"]
+
+
+def create_pot_meter_suffixes(pm_suffixes: list[PotMeterSuffix]) -> list[str]:
+    lines = ["type PotMeterSuffix = ", '| ""']
+    for pms in pm_suffixes:
+        lines.extend(comment_lines([pms.description]))
+        lines.append(f'| "{pms.suffix}"')
+    lines.append(";\n")
+    return lines
+
+
+def export_ts_types(
+    output: Path, controls: list[Control], pm_suffixes: list[PotMeterSuffix]
+):
+    lines: list[str] = create_pot_meter_suffixes(pm_suffixes)
 
     grouped_controls = defaultdict(dict)
     for control in controls:
@@ -226,20 +293,20 @@ def export_ts_types(output: Path, controls: list[Control]):
     )
 
     # read-only controls
-    lines.append("   namespace ReadOnly {\n")
+    lines.append("\tnamespace ReadOnly {\n")
     r_controls = filter_controls(
         grouped_controls, lambda c: c.deprecated_since is None and c.is_read_only
     )
     lines.extend(create_control_types_str(r_controls, "ReadOnly"))
-    lines.append("\n   }\n")
+    lines.append("\n\t}\n")
 
     # deprecated controls
-    lines.append("   namespace Deprecated {\n")
+    lines.append("\tnamespace Deprecated {\n")
     l_controls = filter_controls(
         grouped_controls, lambda c: c.deprecated_since is not None
     )
     lines.extend(create_control_types_str(l_controls, "Deprecated"))
-    lines.append("\n   }\n")
+    lines.append("\n\t}\n")
 
     # Write file
     with open(output, "w") as f:
@@ -247,13 +314,16 @@ def export_ts_types(output: Path, controls: list[Control]):
 // Generated file, don't change anything by hand
 
 declare namespace MixxxControls {{ 
-    {"\n".join(lines)} 
+\t{"\n\t".join(lines)} 
 }}
 """)
 
 
 if __name__ == "__main__":
     doc = read_doc(docname_to_parse)
+
+    pm_suffixes = read_pot_meter_suffixes(doc)
+
     controls: list[Control] = []
 
     for node in doc.findall(addnodes.desc):
@@ -262,4 +332,4 @@ if __name__ == "__main__":
         control = Control.from_node(node)
         controls.append(control)
 
-    export_ts_types(output, controls)
+    export_ts_types(output, controls, pm_suffixes)
