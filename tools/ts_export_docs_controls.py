@@ -22,8 +22,8 @@ output = mixxx_dir / "res" / "controllers" / "_mixxx-controls.ts"
 
 @dataclass
 class Control:
-    group: str
     name: str
+    groups: set[str]
     description: str
     range: str | None
     is_read_only: bool
@@ -32,7 +32,7 @@ class Control:
 
     @staticmethod
     def from_node(node: document) -> "Control":
-        signature: document = next(node.findall(addnodes.desc_signature))
+        signatures: list[document] = list(node.findall(addnodes.desc_signature))
         content: document = next(node.findall(addnodes.desc_content))
         description: str = "\n".join(
             [d.astext() for d in filter_children(content, "paragraph")]
@@ -43,8 +43,8 @@ class Control:
         feedback, deprecated_since = feeback_and_deprecated(fl)
 
         return Control(
-            signature["group"],
-            signature["control"],
+            signatures[0]["control"],
+            set(map(lambda s: s["group"], signatures)),
             description,
             fb_range,
             is_read_only,
@@ -128,7 +128,7 @@ def ts_doc_comment(control: Control) -> str:
 
     lines.append(" *")
     lines.append(f" * @name {control.name}")
-    lines.append(f" * @group {control.group}")
+    lines.append(f" * @groups {', '.join(control.groups)}")
 
     if control.range:
         lines.append(f" * @range {control.range}")
@@ -159,47 +159,87 @@ def tabs(count: int) -> str:
     return "".join(["   " for _ in range(count)])
 
 
+def group_var_name(name: str) -> str:
+    return re.sub(r"[\[\]\_]", "", name) + "Control"
+
+
 def create_control_types_str(
-    groupControls: dict[str, dict[str, Control]], indent: int
-) -> str:
+    groupControls: dict[str, dict[str, Control]], prefix=""
+) -> list[str]:
     lines: list[str] = []
+    ctls: list[Control] = [c for gc in groupControls.values() for c in gc.values()]
     for group, controls in groupControls.items():
-        lines.append(f"{tabs(indent)}type {re.sub(r'[\[\]]', '', group)}Controls = ")
+        lines.append(f"type {prefix}{group_var_name(group)} = ")
+
+        # controls
         for name, control in controls.items():
             lines.append(ts_doc_comment(control))
-            lines.append(f'{tabs(indent + 1)}| "{name}"')
-        lines.append(f"{tabs(indent)};\n")
-    return "\n".join(lines)
+            lines.append(f'| "{name}"')
+
+        # parent groups
+        lines.extend(
+            [f"| {prefix}{group_var_name(p)}" for p in find_group_parents(group, ctls)]
+        )
+        lines.append(";\n")
+    lines.extend(create_combined_types(ctls, prefix))
+    return lines
+
+
+def find_group_parents(group: str, controls: list[Control]) -> set[str]:
+    return {
+        "".join(c.groups) for c in controls if len(c.groups) > 1 and group in c.groups
+    }
+
+
+def create_combined_types(controls: list[Control], prefix: str) -> list[str]:
+    lines = []
+    groups = {el for c in controls for el in c.groups}
+    for group in groups:
+        # If group has it's own controls, it should already exist
+        if any(len(c.groups) == 1 and group in c.groups for c in controls):
+            continue
+
+        parents = find_group_parents(group, controls)
+        if len(parents) > 0:
+            parents_str = " | ".join([prefix + group_var_name(p) for p in parents])
+            lines.append(f"type {prefix}{group_var_name(group)} = {parents_str};\n")
+    return lines
 
 
 def export_ts_types(output: Path, controls: list[Control]):
+    lines: list[str] = []
+
     grouped_controls = defaultdict(dict)
     for control in controls:
-        grouped_controls[control.group][control.name] = control
+        grouped_controls["".join(control.groups)][control.name] = control
     grouped_controls: GroupedControls = dict(grouped_controls)
-
-    ts_str: str = ""
 
     # read/write controls
     rw_controls = filter_controls(
         grouped_controls,
         lambda c: c.deprecated_since is None and not c.is_read_only,
     )
-    ts_str += create_control_types_str(rw_controls, 1)
+    lines.extend(
+        create_control_types_str(
+            rw_controls,
+        )
+    )
 
     # read-only controls
-    ts_str += "   namespace ReadOnly {\n\n"
+    lines.append("   namespace ReadOnly {\n")
     r_controls = filter_controls(
         grouped_controls, lambda c: c.deprecated_since is None and c.is_read_only
     )
-    ts_str += create_control_types_str(r_controls, 2) + "\n   }\n\n"
+    lines.extend(create_control_types_str(r_controls, "ReadOnly"))
+    lines.append("\n   }\n")
 
     # deprecated controls
-    ts_str += "   namespace Deprecated {\n\n"
+    lines.append("   namespace Deprecated {\n")
     l_controls = filter_controls(
         grouped_controls, lambda c: c.deprecated_since is not None
     )
-    ts_str += create_control_types_str(l_controls, 2) + "\n   }\n\n"
+    lines.extend(create_control_types_str(l_controls, "Deprecated"))
+    lines.append("\n   }\n")
 
     # Write file
     with open(output, "w") as f:
@@ -207,7 +247,7 @@ def export_ts_types(output: Path, controls: list[Control]):
 // Generated file, don't change anything by hand
 
 declare namespace MixxxControls {{ 
-    {ts_str} 
+    {"\n".join(lines)} 
 }}
 """)
 
