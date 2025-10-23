@@ -25,20 +25,20 @@ output = mixxx_dir / "res" / "controllers" / "_mixxx-controls.ts"
 class Control:
     name: str
     groups: set[str]
-    description: str
-    range: str | None
+    description: list[str]
+    range: list[str]
     is_read_only: bool
     feedback: str | None
     deprecated_since: str | None
     is_pot_meter: bool
 
     @staticmethod
-    def from_node(node: document) -> "Control":
-        signatures: list[document] = list(node.findall(addnodes.desc_signature))
-        content: document = next(node.findall(addnodes.desc_content))
-        description: str = "\n".join(
-            [d.astext() for d in filter_children(content, "paragraph")]
+    def from_node(node: addnodes.desc) -> "Control":
+        signatures: list[addnodes.desc_signature] = list(
+            node.findall(addnodes.desc_signature)
         )
+        content = next(node.findall(addnodes.desc_content))
+        description = text_content(content)
         fl = next(content.findall(nodes.field_list), None)
         fb_range = field_content(fl, "Range")
         is_read_only = fb_range is not None and "read-only" in fb_range
@@ -74,6 +74,34 @@ def read_doc(doc_rel_path: str) -> document:
     return app.env.get_doctree(doc_rel_path)
 
 
+def markdown_row(row: list[str], fillchar: str = " ") -> str:
+    row_str = "|".join([row[i].ljust(3, fillchar) for i in range(len(row))])
+    return "|" + row_str + "|"
+
+
+def markdown_table(table: list[list[str]]) -> list[str]:
+    lines = [""]
+    header = table[0]
+
+    lines.append(markdown_row(header))
+    lines.append(markdown_row(["---" for _ in range(len(header))], "-"))
+    lines.extend([markdown_row(row) for row in table[1:]])
+
+    return lines
+
+
+def text_content(node: nodes.Element) -> list[str]:
+    lines: list[str] = []
+    for c in node.children:
+        if isinstance(c, nodes.table):
+            table = read_table(c)
+            lines.extend(markdown_table(table))
+        elif isinstance(c, nodes.paragraph):
+            lines.extend(c.astext().split("\n"))
+
+    return lines
+
+
 def filter_children(n: Node, tagname: str) -> Iterator[document]:
     return filter(lambda n: hasattr(n, "tagname") and n.tagname == tagname, n.children)  # type: ignore
 
@@ -86,16 +114,16 @@ def field_list_find(fl: field_list, name: str) -> document | None:
     return None
 
 
-def field_content(fl: field_list | None, name: str) -> str | None:
+def field_content(fl: field_list | None, name: str) -> list[str]:
     if fl is None:
-        return None
+        return []
     field = field_list_find(fl, name)
     if field is None:
-        return None
+        return []
     body = next(filter_children(field, "field_body"), None)
     if body:
-        return body.astext()
-    return None
+        return text_content(body)
+    return []
 
 
 def feeback_and_deprecated(fl: field_list | None) -> tuple[str | None, str | None]:
@@ -145,7 +173,7 @@ def read_pot_meter_suffixes(doc: document) -> list[PotMeterSuffix]:
     return [PotMeterSuffix(cpms[0], cpms[1]) for cpms in read_table(cpms_table)[1:]]
 
 
-def is_pot_meter(content: document) -> bool:
+def is_pot_meter(content: addnodes.desc_content) -> bool:
     return (
         next(
             content.findall(
@@ -168,20 +196,25 @@ type GroupedControls = dict[str, dict[str, Control]]
 def ts_doc_comment(control: Control) -> str:
     lines = []
 
-    if control.description:
-        for line in control.description.split("\n"):
-            lines.append(line)
+    if len(control.description) > 0:
+        lines.extend(control.description)
     else:
         lines.append("(No description)")
     lines.append("")
     lines.append(f"@groups {', '.join(control.groups)}")
 
-    if control.range:
-        lines.append(f"@range {control.range}")
+    if len(control.range) > 0:
+        if len(control.range) < 1:
+            lines.append("@range")
+            lines.extend(control.range)
+        else:
+            lines.append(f"@range {control.range[0]}")
     if control.feedback:
-        lines.append(f"@feedback {control.feedback}")
+        lines.append(f"@returns {control.feedback}")
     if control.is_read_only:
         lines.append("@readonly")
+    if control.is_pot_meter:
+        lines.append("@kind pot meter control")
     if control.deprecated_since:
         lines.append(f"@deprecated since {control.deprecated_since}")
 
