@@ -62,6 +62,52 @@ declare namespace MixxxControls {
 
 	type AppControl =
 		/**
+		 * A throttled timer that provides the time elapsed in seconds since Mixxx was started.
+		 * This control is updated at a rate of 20 Hz (every 50 milliseconds). It is the preferred timer for scripting animations in controller mappings (like VU meters or spinning animations) as it provides a smooth visual result without the performance overhead of [App],gui_tick_full_period_s.
+		 * Only available when using the legacy GUI (not the QML interface).
+		 *
+		 * @groups [App]
+		 * @range 0.0 .. n, read-only
+		 */
+		| "gui_tick_50ms_period_s"
+
+		/**
+		 * A high-resolution timer that provides the elapsed time in seconds since Mixxx was started.
+		 * This control is updated on every GUI tick, which corresponds to the waveform rendering frame rate. It is suitable for very smooth, high-framerate animations in scripts. However, for most use cases like VU meters, consider using [App],gui_tick_50ms_period_s to improve performance by reducing the script execution rate.
+		 * Only available when using the legacy GUI (not the QML interface).
+		 *
+		 * @groups [App]
+		 * @range 0.0 .. n, read-only
+		 */
+		| "gui_tick_full_period_s"
+
+		/**
+		 * Alternates between 0.0 and 1.0 every 250 milliseconds.
+		 * This control may be used to implement a blinking LED in JavaScript and is
+		 * guaranteed to light up at the same time as
+		 * [ChannelN],cue_indicator and
+		 * [ChannelN],play_indicator when these are blinking (depending
+		 * on the currently chosen cue mode).
+		 *
+		 * @groups [App]
+		 * @range binary, read-only
+		 */
+		| "indicator_250ms"
+
+		/**
+		 * Alternates between 0.0 and 1.0 every 500 milliseconds.
+		 * This control may be used to implement a blinking LED in JavaScript and is
+		 * guaranteed to light up at the same time as
+		 * [ChannelN],cue_indicator and
+		 * [ChannelN],play_indicator when these are blinking (depending
+		 * on the currently chosen cue mode).
+		 *
+		 * @groups [App]
+		 * @range binary, read-only
+		 */
+		| "indicator_500ms"
+
+		/**
 		 * The number of decks currently enabled.
 		 *
 		 * @groups [App]
@@ -116,6 +162,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range 0 .. 25 %
+		 * @kind pot meter control
 		 */
 		| `audio_latency_usage${PotMeterSuffix}`
 
@@ -125,6 +172,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `audio_latency_overload${PotMeterSuffix}`
 
@@ -142,6 +190,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range -1.0..1.0
+		 * @kind pot meter control
 		 */
 		| `balance${PotMeterSuffix}`
 
@@ -159,6 +208,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range 0.0…1.0…5.0
+		 * @kind pot meter control
 		 */
 		| `booth_gain${PotMeterSuffix}`
 
@@ -168,6 +218,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range -1.0..1.0
+		 * @kind pot meter control
 		 */
 		| `crossfader${PotMeterSuffix}`
 
@@ -209,6 +260,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range 0.0..1.0
+		 * @kind pot meter control
 		 */
 		| `duckStrength${PotMeterSuffix}`
 
@@ -226,6 +278,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range 0.0..1.0..5.0
+		 * @kind pot meter control
 		 */
 		| `gain${PotMeterSuffix}`
 
@@ -243,6 +296,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range 0.0..1.0..5.0
+		 * @kind pot meter control
 		 */
 		| `headGain${PotMeterSuffix}`
 
@@ -252,6 +306,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `headMix${PotMeterSuffix}`
 
@@ -272,11 +327,20 @@ declare namespace MixxxControls {
 		| "latency"
 
 		/**
+		 * The number of available effects that can be selected in an effect slot.
+		 *
+		 * @groups [Master]
+		 * @range integer, read-only
+		 */
+		| "num_effectsavailable"
+
+		/**
 		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) (composite).
 		 * This is a ControlPotMeter control.
 		 *
 		 * @groups [Master]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${PotMeterSuffix}`
 
@@ -286,6 +350,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${number}${PotMeterSuffix}`
 
@@ -295,6 +360,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${number}${PotMeterSuffix}`
 
@@ -312,6 +378,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${PotMeterSuffix}`
 
@@ -321,6 +388,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${number}${PotMeterSuffix}`
 
@@ -330,8 +398,25 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [Master]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${number}${PotMeterSuffix}`
+
+		/**
+		 * A throttled timer that provides the time elapsed in seconds since Mixxx was started.
+		 *
+		 * @groups [Master]
+		 * @range 0.0 .. n, read-only
+		 */
+		| "guiTick50ms"
+
+		/**
+		 * A high-resolution timer that provides the elapsed time in seconds since Mixxx was started.
+		 *
+		 * @groups [Master]
+		 * @range 0.0 .. n, read-only
+		 */
+		| "guiTickTime"
 
 		/**
 		 * The number of decks currently enabled.
@@ -397,11 +482,11 @@ declare namespace MixxxControls {
 		 */
 		| "maximize_library";
 
-	type PreviewDeckNSamplerNChannelNControl =
+	type PreviewDeckNChannelNSamplerNControl =
 		/**
 		 * Fast rewind (REW)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "back"
@@ -409,15 +494,30 @@ declare namespace MixxxControls {
 		/**
 		 * Toggle the beatgrid/BPM lock state.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "bpmlock"
 
 		/**
+		 * Indicates, depending on the play direction, how the player is currently positioned to the closest beat.
+		 * An LED controlled by beat_active can be used for beat matching or for finding a beat using jog or control vinyl.
+		 *
+		 * |Value|Play direction|Position|
+		 * |---|---|---|
+		 * |0  |   |Set when play direction changes or +-20% of the distance to the previous/next beat is reached|
+		 * |1  |Forward|Set at a beat|
+		 * |2  |Reverse|Set at a beat|
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range real number, read-only
+		 */
+		| "beat_active"
+
+		/**
 		 * Its value is set to the sample position of the closest beat of the active beat and is used for updating the beat LEDs.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -1, 0.0, real-valued
 		 */
 		| "beat_closest"
@@ -425,7 +525,7 @@ declare namespace MixxxControls {
 		/**
 		 * Outputs the relative position of the play marker in the section between the the previous and next beat marker.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 0.0 - 1.0, real-valued
 		 */
 		| "beat_distance"
@@ -434,7 +534,7 @@ declare namespace MixxxControls {
 		 * Jump forward (positive) or backward (negative) by N beats. If a loop is active, the loop is moved by X beats.
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range any real number within the range, see [ChannelN],beatloop_X_activate
 		 */
 		| "beatjump"
@@ -444,7 +544,7 @@ declare namespace MixxxControls {
 		 * /beatjump_backward.
 		 * If the loaded track has no beat grid, this value is treated as seconds instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive real number
 		 */
 		| "beatjump_size"
@@ -452,7 +552,7 @@ declare namespace MixxxControls {
 		/**
 		 * Halve the value of beatjump_size.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatjump_size_halve"
@@ -460,7 +560,7 @@ declare namespace MixxxControls {
 		/**
 		 * Double the value of beatjump_size.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatjump_size_double"
@@ -470,7 +570,7 @@ declare namespace MixxxControls {
 		 * If a loop is active, the loop is moved forward by X beats.
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatjump_forward"
@@ -480,7 +580,7 @@ declare namespace MixxxControls {
 		 * If a loop is active, the loop is moved backward by X beats.
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatjump_backward"
@@ -491,7 +591,7 @@ declare namespace MixxxControls {
 		 * If a loop is active, the loop is moved forward by X beats.
 		 * If the loaded track has no beat grid, this value is treated as seconds instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatjump_${number}_forward`
@@ -502,7 +602,7 @@ declare namespace MixxxControls {
 		 * If a loop is active, the loop is moved backward by X beats.
 		 * If the loaded track has no beat grid, this value is treated as seconds instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatjump_${number}_backward`
@@ -513,7 +613,7 @@ declare namespace MixxxControls {
 		 * Depending on the state of loop_anchor the loop is created forwards
 		 * or backwards from the current position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatloop_activate"
@@ -525,7 +625,7 @@ declare namespace MixxxControls {
 		 * Depending on the state of loop_anchor the loop is created forwards
 		 * or backwards from the current position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatloop_${number}_activate`
@@ -535,7 +635,7 @@ declare namespace MixxxControls {
 		 * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatloop_r${number}_activate`
@@ -548,7 +648,7 @@ declare namespace MixxxControls {
 		 * beatloop_size.
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive real number
 		 */
 		| "beatloop_size"
@@ -560,7 +660,7 @@ declare namespace MixxxControls {
 		 * Depending on the state of loop_anchor the loop is created forwards
 		 * or backwards from the current position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatloop_${number}_toggle`
@@ -568,7 +668,7 @@ declare namespace MixxxControls {
 		/**
 		 * 1 if beatloop X is enabled, 0 if not.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatloop_${number}_enabled`
@@ -580,7 +680,7 @@ declare namespace MixxxControls {
 		 * Depending on the state of loop_anchor, the loop is created forwards
 		 * or backwards from the current position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatlooproll_activate"
@@ -593,7 +693,7 @@ declare namespace MixxxControls {
 		 * Depending on the state of loop_anchor, the loop is created forwards
 		 * or backwards from the current position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatlooproll_${number}_activate`
@@ -605,7 +705,7 @@ declare namespace MixxxControls {
 		 * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `beatlooproll_r${number}_activate`
@@ -613,7 +713,7 @@ declare namespace MixxxControls {
 		/**
 		 * Adjust the average BPM up by +0.01
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beats_adjust_faster"
@@ -621,7 +721,7 @@ declare namespace MixxxControls {
 		/**
 		 * Adjust the average BPM down by -0.01.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beats_adjust_slower"
@@ -629,7 +729,7 @@ declare namespace MixxxControls {
 		/**
 		 * Adjust beatgrid so closest beat is aligned with the current playposition.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beats_translate_curpos"
@@ -637,7 +737,7 @@ declare namespace MixxxControls {
 		/**
 		 * Adjust beatgrid to match another playing deck.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beats_translate_match_alignment"
@@ -645,7 +745,7 @@ declare namespace MixxxControls {
 		/**
 		 * Move beatgrid to an earlier position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beats_translate_earlier"
@@ -653,7 +753,7 @@ declare namespace MixxxControls {
 		/**
 		 * Move beatgrid to a later position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beats_translate_later"
@@ -661,7 +761,7 @@ declare namespace MixxxControls {
 		/**
 		 * (No description)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "shift_cues_earlier"
@@ -669,7 +769,7 @@ declare namespace MixxxControls {
 		/**
 		 * (No description)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "shift_cues_later"
@@ -677,7 +777,7 @@ declare namespace MixxxControls {
 		/**
 		 * (No description)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "shift_cues_earlier_small"
@@ -685,7 +785,7 @@ declare namespace MixxxControls {
 		/**
 		 * (No description)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "shift_cues_later_small"
@@ -695,7 +795,7 @@ declare namespace MixxxControls {
 		 * The undo stack holds up to ten beatgrid states. For changes done in quick succession
 		 * (less than 800 milliseconds between actions), e.g. repeated beats_translate_earlier, only the first state is stored.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beats_undo_adjustment"
@@ -703,14 +803,14 @@ declare namespace MixxxControls {
 		/**
 		 * Syncs the tempo and phase (depending on quantize) to that of the other track (if BPM is detected on both).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| "beatsync"
 
 		/**
 		 * Syncs the phase to that of the other track (if BPM is detected on both).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatsync_phase"
@@ -718,7 +818,7 @@ declare namespace MixxxControls {
 		/**
 		 * Syncs the tempo to that of the other track (if BPM is detected on both).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "beatsync_tempo"
@@ -727,15 +827,16 @@ declare namespace MixxxControls {
 		 * Reflects the perceived (rate-adjusted) BPM of the loaded file.
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range real-valued
+		 * @kind pot meter control
 		 */
 		| `bpm${PotMeterSuffix}`
 
 		/**
 		 * When tapped repeatedly, adjusts the BPM of the track on the deck (not the tempo slider!) to match the taps.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "bpm_tap"
@@ -743,7 +844,7 @@ declare namespace MixxxControls {
 		/**
 		 * When tapped repeatedly, adjusts the rate/tempo of the deck to match the taps.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "tempo_tap"
@@ -751,7 +852,7 @@ declare namespace MixxxControls {
 		/**
 		 * Clone the given deck number, copying the play state, position, rate, and key. If 0 or a negative number is given, Mixxx will attempt to select the first playing deck as the source for the clone.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range integer between 1 and [Master],num_decks (inclusive)
 		 */
 		| "CloneFromDeck"
@@ -759,7 +860,7 @@ declare namespace MixxxControls {
 		/**
 		 * Clone the given sampler number, copying the play state, position, rate, and key.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range integer between 1 and [App],num_samplers (inclusive)
 		 */
 		| "CloneFromSampler"
@@ -767,7 +868,7 @@ declare namespace MixxxControls {
 		/**
 		 * Load the track currently loaded to the given deck number.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range integer between 1 and [App],num_decks (inclusive)
 		 */
 		| "LoadTrackFromDeck"
@@ -775,7 +876,7 @@ declare namespace MixxxControls {
 		/**
 		 * Load the track currently loaded to the given sampler number.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range integer between 1 and [App],num_samplers (inclusive)
 		 */
 		| "LoadTrackFromSampler"
@@ -783,7 +884,7 @@ declare namespace MixxxControls {
 		/**
 		 * Represents a Cue button that is always in CDJ mode.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_cdj"
@@ -791,7 +892,7 @@ declare namespace MixxxControls {
 		/**
 		 * Deletes the already set cue point and sets [ChannelN],cue_point to -1.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_clear"
@@ -799,7 +900,7 @@ declare namespace MixxxControls {
 		/**
 		 * If the cue point is set, recalls the cue point.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_goto"
@@ -807,7 +908,7 @@ declare namespace MixxxControls {
 		/**
 		 * In CDJ mode, when playing, returns to the cue point and pauses. If stopped, sets a cue point at the current location. If stopped and at a cue point, plays from that point until released (set to 0.)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_default"
@@ -815,7 +916,7 @@ declare namespace MixxxControls {
 		/**
 		 * If the cue point is set, seeks the player to it and starts playback.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_gotoandplay"
@@ -823,7 +924,7 @@ declare namespace MixxxControls {
 		/**
 		 * If the cue point is set, seeks the player to it and stops.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_gotoandstop"
@@ -831,53 +932,23 @@ declare namespace MixxxControls {
 		/**
 		 * Indicates the blinking pattern of the CUE button (i.e. 1.0 if the button is illuminated, 0.0 otherwise), depending on the chosen cue mode.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_indicator"
 
 		/**
- * Represents the currently chosen cue mode.
- * 
- * @groups [PreviewDeckN], [SamplerN], [ChannelN]
- * @range 
-
-
-
-Value
-
-compatible hardware
-
-0.0
-
-Mixxx mode (default)
-
-1.0
-
-Pioneer mode
-
-2.0
-
-Denon mode
-
-3.0
-
-Numark mode
-
-4.0
-
-Mixxx mode (no blinking)
-
-5.0
-
-CUP (Cue + Play) mode
- */
+		 * Represents the currently chosen cue mode.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range
+		 */
 		| "cue_mode"
 
 		/**
 		 * Go to cue point and play after release (CUP button behavior). If stopped, sets a cue point at the current location.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_play"
@@ -885,7 +956,7 @@ CUP (Cue + Play) mode
 		/**
 		 * The current position of the cue point in samples.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range absolute value
 		 */
 		| "cue_point"
@@ -893,7 +964,7 @@ CUP (Cue + Play) mode
 		/**
 		 * Plays from the current cue point.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_preview"
@@ -901,7 +972,7 @@ CUP (Cue + Play) mode
 		/**
 		 * Sets a cue point at the current location.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_set"
@@ -909,7 +980,7 @@ CUP (Cue + Play) mode
 		/**
 		 * If the player is not playing, set the cue point at the current location otherwise seek to the cue point.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "cue_simple"
@@ -917,7 +988,7 @@ CUP (Cue + Play) mode
 		/**
 		 * Outputs the length of the current song in seconds
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range absolute value
 		 */
 		| "duration"
@@ -927,7 +998,7 @@ CUP (Cue + Play) mode
 		 * (of any deck) is reloaded.
 		 * Double-press to reload the last replaced track. If no track is loaded the second-last ejected track is reloaded.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "eject"
@@ -935,15 +1006,39 @@ CUP (Cue + Play) mode
 		/**
 		 * Jump to end of track
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "end"
 
 		/**
+		 * Switches to 1 if the play position is within the end range defined in Preferences ‣ Waveforms ‣ End of track warning.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "end_of_track"
+
+		/**
+		 * The detected BPM of the loaded track.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range positive value, read-only
+		 */
+		| "file_bpm"
+
+		/**
+		 * The detected key of the loaded track.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range ?, read-only
+		 */
+		| "file_key"
+
+		/**
 		 * Fast forward (FF)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "fwd"
@@ -959,7 +1054,7 @@ CUP (Cue + Play) mode
 		 * After resetting the control to 0, playback will usually be stopped and the player will seek to the hotcue position.
 		 * If play is set to 1 while previewing is active, the playback will continue and no seek occurs.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `hotcue_${number}_activate`
@@ -968,7 +1063,7 @@ CUP (Cue + Play) mode
 		 * Identical to hotcue_X_activate, but this always sets a regular cue point, regardless of whether a loop is enabled or not.
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_activatecue`
 
@@ -978,7 +1073,7 @@ CUP (Cue + Play) mode
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_activateloop`
 
@@ -989,14 +1084,14 @@ CUP (Cue + Play) mode
 		 * In case the hotcue is not set, this control will set a regular cue point at the current position and start a beatloop.
 		 * This control can be used to map the primary action of the “Cue Loop” performance pad mode on Serato-style controllers.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_cueloop`
 
 		/**
 		 * If hotcue X is set, clears its hotcue status.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `hotcue_${number}_clear`
@@ -1004,7 +1099,7 @@ CUP (Cue + Play) mode
 		/**
 		 * Color of hotcue X or -1 if the hotcue is not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 3-Byte RGB color code (or -1)
 		 */
 		| `hotcue_${number}_color`
@@ -1012,21 +1107,21 @@ CUP (Cue + Play) mode
 		/**
 		 * Indicates if hotcue slot X is set, active or empty.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_status`
 
 		/**
 		 * Indicates the type of the hotcue in hotcue slot X.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_type`
 
 		/**
 		 * If hotcue X is set, seeks the player to hotcue X’s position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `hotcue_${number}_goto`
@@ -1034,7 +1129,7 @@ CUP (Cue + Play) mode
 		/**
 		 * If hotcue X is set, seeks the player to hotcue X’s position and starts playback.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `hotcue_${number}_gotoandplay`
@@ -1045,7 +1140,7 @@ CUP (Cue + Play) mode
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 * This control can be used to map the secondary action of the “Cue Loop” performance pad mode on Serato-style controllers.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `hotcue_${number}_gotoandloop`
@@ -1053,7 +1148,7 @@ CUP (Cue + Play) mode
 		/**
 		 * If hotcue X is set, seeks the player to hotcue X’s position and stops.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `hotcue_${number}_gotoandstop`
@@ -1061,7 +1156,7 @@ CUP (Cue + Play) mode
 		/**
 		 * The position of hotcue X in samples, -1 if not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer
 		 */
 		| `hotcue_${number}_position`
@@ -1070,7 +1165,7 @@ CUP (Cue + Play) mode
 		 * Set a hotcue at the current play position and saves it as hotcue X of type “Hotcue”.
 		 * In case a loop is currently enabled (i.e. if [ChannelN],loop_enabled is set to 1), the loop will be saved as hotcue X instead and hotcue_X_type will be set to “Loop”.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `hotcue_${number}_set`
@@ -1079,7 +1174,7 @@ CUP (Cue + Play) mode
 		 * Identical to hotcue_X_set, but this always sets a regular cue point (i.e. hotcue_X_type “Hotcue”), regardless of whether a loop is enabled or not.
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_setcue`
 
@@ -1089,14 +1184,14 @@ CUP (Cue + Play) mode
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_setloop`
 
 		/**
 		 * Contains the number of the most recently used hotcue (or -1 if no hotcue was used).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer (or -1)
 		 */
 		| "hotcue_focus"
@@ -1104,7 +1199,7 @@ CUP (Cue + Play) mode
 		/**
 		 * If there is a focused hotcue, sets its color to the previous color in the palette.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "hotcue_focus_color_prev"
@@ -1112,7 +1207,7 @@ CUP (Cue + Play) mode
 		/**
 		 * If there is a focused hotcue, sets its color to the next color in the palette.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "hotcue_focus_color_next"
@@ -1120,7 +1215,7 @@ CUP (Cue + Play) mode
 		/**
 		 * If the intro end cue is set, seeks the player to the intro end position. If the intro end is not set, sets the intro end to the current play position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "intro_end_activate"
@@ -1128,15 +1223,23 @@ CUP (Cue + Play) mode
 		/**
 		 * If the intro end cue is set, clears its status.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "intro_end_clear"
 
 		/**
+		 * 1 if intro end cue is set, (position is not -1), 0 otherwise.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "intro_end_enabled"
+
+		/**
 		 * The position of the intro end in samples, -1 if not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer
 		 */
 		| "intro_end_position"
@@ -1144,7 +1247,7 @@ CUP (Cue + Play) mode
 		/**
 		 * Set intro end to the current play position. If intro end was previously set, it is moved to the new position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "intro_end_set"
@@ -1152,7 +1255,7 @@ CUP (Cue + Play) mode
 		/**
 		 * If the intro start cue is set, seeks the player to the intro start position. If the intro start is not set, sets the intro start to the current play position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "intro_start_activate"
@@ -1160,15 +1263,23 @@ CUP (Cue + Play) mode
 		/**
 		 * If the intro start cue is set, clears its status.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "intro_start_clear"
 
 		/**
+		 * 1 if intro start cue is set, (position is not -1), 0 otherwise.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "intro_start_enabled"
+
+		/**
 		 * The position of the intro start in samples, -1 if not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer
 		 */
 		| "intro_start_position"
@@ -1176,229 +1287,23 @@ CUP (Cue + Play) mode
 		/**
 		 * Set intro start to the current play position. If intro start was previously set, it is moved to the new position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "intro_start_set"
 
 		/**
- * Current key of the track
- * 
- * @groups [PreviewDeckN], [SamplerN], [ChannelN]
- * @range 
-
-
-
-
-
-
-
-Value
-
-OpenKey
-
-Lancelot
-
-Traditional
-
-1
-
-1d
-
-8b
-
-C
-
-2
-
-8d
-
-3b
-
-D♭
-
-3
-
-3d
-
-10b
-
-D
-
-4
-
-10d
-
-5b
-
-E♭
-
-5
-
-5d
-
-12b
-
-E
-
-6
-
-12d
-
-7b
-
-F
-
-7
-
-7d
-
-2b
-
-F♯/G♭
-
-8
-
-2d
-
-9b
-
-G
-
-9
-
-9d
-
-4b
-
-A♭
-
-10
-
-4d
-
-11b
-
-A
-
-11
-
-11d
-
-6b
-
-B♭
-
-12
-
-6d
-
-1b
-
-B
-
-13
-
-10m
-
-5a
-
-Cm
-
-14
-
-5m
-
-12a
-
-C♯m
-
-15
-
-12m
-
-7a
-
-Dm
-
-16
-
-7m
-
-2a
-
-D♯m/E♭m
-
-17
-
-2m
-
-9a
-
-Em
-
-18
-
-9m
-
-4a
-
-Fm
-
-19
-
-4m
-
-11a
-
-F♯m
-
-20
-
-11m
-
-6a
-
-Gm
-
-21
-
-6m
-
-1a
-
-G♯m
-
-22
-
-1m
-
-8a
-
-Am
-
-23
-
-8m
-
-3a
-
-B♭m
-
-24
-
-3m
-
-10a
-
-Bm
- */
+		 * Current key of the track
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range
+		 */
 		| "key"
 
 		/**
 		 * Enable key-lock for the specified deck (rate changes only affect tempo, not key)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "keylock"
@@ -1406,7 +1311,7 @@ Bm
 		/**
 		 * Loads the currently highlighted track into the deck
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "LoadSelectedTrack"
@@ -1415,7 +1320,7 @@ Bm
 		 * Loads the currently highlighted track into the deck and starts playing.
 		 * If the player is a preview deck and the selected track is already loaded, toggle play/pause.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "LoadSelectedTrackAndPlay"
@@ -1423,40 +1328,26 @@ Bm
 		/**
 		 * Reflects the average bpm around the current play position of the loaded file.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive value
 		 */
 		| "local_bpm"
 
 		/**
- * Adjusts whether loops created with [ChannelN],beatloop_X_activate,
- * [ChannelN],beatloop_X_toggle or [ChannelN],beatloop_rX_activate
- * span forward or backward from the current play position.
- * 
- * @groups [PreviewDeckN], [SamplerN], [ChannelN]
- * @range 
-
-
-
-Value
-
-Direction
-
-0
-
-forward
-
-1
-
-backward
- */
+		 * Adjusts whether loops created with [ChannelN],beatloop_X_activate,
+		 * [ChannelN],beatloop_X_toggle or [ChannelN],beatloop_rX_activate
+		 * span forward or backward from the current play position.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range
+		 */
 		| "loop_anchor"
 
 		/**
 		 * Doubles beatloop_size. If beatloop_size equals the size of the loop, the loop is resized.
 		 * If a saved loop is currently enabled, the modification is saved to the hotcue slot immediately.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_double"
@@ -1464,7 +1355,7 @@ backward
 		/**
 		 * Indicates whether or not a loop is enabled.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_enabled"
@@ -1474,7 +1365,7 @@ backward
 		 * loop_out, reloop_toggle and related
 		 * controls. It does not affect saved loops.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_remove"
@@ -1482,7 +1373,7 @@ backward
 		/**
 		 * The player loop-out position in samples, -1 if not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer
 		 */
 		| "loop_end_position"
@@ -1491,7 +1382,7 @@ backward
 		 * Halves beatloop_size. If beatloop_size equals the size of the loop, the loop is resized.
 		 * If a saved loop is currently enabled, the modification is saved to the hotcue slot immediately.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_halve"
@@ -1499,7 +1390,7 @@ backward
 		/**
 		 * If loop is disabled, sets the player loop in position to the current play position. If loop is enabled, press and hold to move loop in position to the current play position. If quantize is enabled, beatloop_size will be updated to reflect the new loop size.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_in"
@@ -1507,7 +1398,7 @@ backward
 		/**
 		 * Seek to the loop in point.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_in_goto"
@@ -1515,7 +1406,7 @@ backward
 		/**
 		 * If loop is disabled, sets the player loop out position to the current play position. If loop is enabled, press and hold to move loop out position to the current play position. If quantize is enabled, beatloop_size will be updated to reflect the new loop size.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_out"
@@ -1523,7 +1414,7 @@ backward
 		/**
 		 * Seek to the loop out point.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "loop_out_goto"
@@ -1533,7 +1424,7 @@ backward
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 * If a saved loop is currently enabled, the modification is saved to the hotcue slot immediately.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range real number
 		 */
 		| "loop_move"
@@ -1544,7 +1435,7 @@ backward
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 * If a saved loop is currently enabled, the modification is saved to the hotcue slot immediately.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `loop_move_${number}_forward`
@@ -1555,7 +1446,7 @@ backward
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 * If a saved loop is currently enabled, the modification is saved to the hotcue slot immediately.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| `loop_move_${number}_backward`
@@ -1565,7 +1456,7 @@ backward
 		 * beatloop_size is not updated to reflect the change.
 		 * If a saved loop is currently enabled, the modification is saved to the hotcue slot immediately.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 0.0 - infinity
 		 */
 		| "loop_scale"
@@ -1573,41 +1464,23 @@ backward
 		/**
 		 * The player loop-in position in samples, -1 if not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer
 		 */
 		| "loop_start_position"
 
 		/**
- * Set channel orientation for the crossfader.
- * 
- * @groups [PreviewDeckN], [SamplerN], [ChannelN]
- * @range 
-
-
-
-Value
-
-Meaning
-
-0
-
-Left side of crossfader
-
-1
-
-Center (not affected by crossfader)
-
-2
-
-Right side of crossfader
- */
+		 * Set channel orientation for the crossfader.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range
+		 */
 		| "orientation"
 
 		/**
 		 * If the outro end cue is set, seeks the player to the outro end position. If the outro end is not set, sets the outro end to the current play position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "outro_end_activate"
@@ -1615,15 +1488,23 @@ Right side of crossfader
 		/**
 		 * If the outro end cue is set, clears its status.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "outro_end_clear"
 
 		/**
+		 * 1 if outro end cue is set, (position is not -1), 0 otherwise.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "outro_end_enabled"
+
+		/**
 		 * The position of the outro end in samples, -1 if not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer
 		 */
 		| "outro_end_position"
@@ -1631,7 +1512,7 @@ Right side of crossfader
 		/**
 		 * Set outro end to the current play position. If outro end was previously set, it is moved to the new position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "outro_end_set"
@@ -1639,7 +1520,7 @@ Right side of crossfader
 		/**
 		 * If the outro start cue is set, seeks the player to the outro start position. If the outro start is not set, sets the outro start to the current play position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "outro_start_activate"
@@ -1647,15 +1528,23 @@ Right side of crossfader
 		/**
 		 * If the outro start cue is set, clears its status.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "outro_start_clear"
 
 		/**
+		 * 1 if outro start cue is set, (position is not -1), 0 otherwise.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "outro_start_enabled"
+
+		/**
 		 * The position of the outro start in samples, -1 if not set.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive integer
 		 */
 		| "outro_start_position"
@@ -1663,7 +1552,7 @@ Right side of crossfader
 		/**
 		 * Set outro start to the current play position. If outro start was previously set, it is moved to the new position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "outro_start_set"
@@ -1671,7 +1560,7 @@ Right side of crossfader
 		/**
 		 * Connects the vinyl control input for vinyl control on that deck to the channel output. Allows to mix external media into DJ sets.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "passthrough"
@@ -1680,8 +1569,9 @@ Right side of crossfader
 		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${PotMeterSuffix}`
 
@@ -1689,8 +1579,9 @@ Right side of crossfader
 		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${number}${PotMeterSuffix}`
 
@@ -1698,15 +1589,16 @@ Right side of crossfader
 		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${number}${PotMeterSuffix}`
 
 		/**
 		 * Toggles headphone cueing (PFL).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "pfl"
@@ -1715,15 +1607,16 @@ Right side of crossfader
 		 * The total adjustment to the track’s pitch, including changes from the rate slider if keylock is off as well as pitch_adjust.
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -6.0..6.0 semitones
+		 * @kind pot meter control
 		 */
 		| `pitch${PotMeterSuffix}`
 
 		/**
 		 * Changes the track pitch up one half step, independent of the tempo.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "pitch_up"
@@ -1731,7 +1624,7 @@ Right side of crossfader
 		/**
 		 * Changes the track pitch down one half step, independent of the tempo.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "pitch_down"
@@ -1740,8 +1633,9 @@ Right side of crossfader
 		 * Adjusts the pitch in addition to the tempo slider pitch and keylock. It is reset after loading a new track.
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -3.0..3.0 semitones
+		 * @kind pot meter control
 		 */
 		| `pitch_adjust${PotMeterSuffix}`
 
@@ -1749,15 +1643,31 @@ Right side of crossfader
 		 * Toggles playing or pausing the track.
 		 * The value is set to 1 when the track is playing or when previewing from cue points and when the play command is adopted and track will be played after loading.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "play"
 
 		/**
+		 * Provides information to be bound with the a Play/Pause button e.g blinking when play is possible
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "play_indicator"
+
+		/**
+		 * This is set to 1 when the track is playing, but not when previewing (see play).
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "play_latched"
+
+		/**
 		 * A play button without pause. Pushing while playing, starts play at cue point again (Stutter).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "play_stutter"
@@ -1766,8 +1676,9 @@ Right side of crossfader
 		 * Sets the absolute position in the track.
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -0.14 to 1.14 (0 = beginning -> Midi 14, 1 = end -> Midi 114)
+		 * @kind pot meter control
 		 */
 		| `playposition${PotMeterSuffix}`
 
@@ -1775,15 +1686,16 @@ Right side of crossfader
 		 * Adjusts the pre-fader gain of the track (to avoid clipping)
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 0.0..1.0..4.0
+		 * @kind pot meter control
 		 */
 		| `pregain${PotMeterSuffix}`
 
 		/**
 		 * Aligns Hot-cues and Loop In & Out to the next beat from the current position.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "quantize"
@@ -1792,15 +1704,16 @@ Right side of crossfader
 		 * Speed control
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -1.0..1.0
+		 * @kind pot meter control
 		 */
 		| `rate${PotMeterSuffix}`
 
 		/**
 		 * Indicates orientation of speed slider.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -1 or 1
 		 */
 		| "rate_dir"
@@ -1808,7 +1721,7 @@ Right side of crossfader
 		/**
 		 * Sets the speed one step lower (4 % default) lower
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_perm_down"
@@ -1816,7 +1729,7 @@ Right side of crossfader
 		/**
 		 * Sets the speed one small step lower (1 % default)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_perm_down_small"
@@ -1824,7 +1737,7 @@ Right side of crossfader
 		/**
 		 * Sets the speed one step higher (4 % default)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_perm_up"
@@ -1832,7 +1745,7 @@ Right side of crossfader
 		/**
 		 * Sets the speed one small step higher (1 % default)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_perm_up_small"
@@ -1840,7 +1753,7 @@ Right side of crossfader
 		/**
 		 * Holds the speed one step lower while active
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_temp_down"
@@ -1848,7 +1761,7 @@ Right side of crossfader
 		/**
 		 * Holds the speed one small step lower while active
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_temp_down_small"
@@ -1856,7 +1769,7 @@ Right side of crossfader
 		/**
 		 * Holds the speed one step higher while active
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_temp_up"
@@ -1864,7 +1777,7 @@ Right side of crossfader
 		/**
 		 * Holds the speed one small step higher while active
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "rate_temp_up_small"
@@ -1873,8 +1786,9 @@ Right side of crossfader
 		 * Sets the range of the Speed slider (0.08 = 8%)
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 0.0..4.0
+		 * @kind pot meter control
 		 */
 		| `rateRange${PotMeterSuffix}`
 
@@ -1882,22 +1796,23 @@ Right side of crossfader
 		 * Seeks forward (positive values) or backward (negative values) at a speed determined by the value
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -300..300
+		 * @kind pot meter control
 		 */
 		| `rateSearch${PotMeterSuffix}`
 
 		/**
 		 * Actual rate (used in visuals, not for control)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| "rateEngine"
 
 		/**
 		 * Activate current loop, jump to its loop in point, and stop playback.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "reloop_andstop"
@@ -1905,7 +1820,7 @@ Right side of crossfader
 		/**
 		 * Toggles the current loop on or off. If the loop is ahead of the current play position, the track will keep playing normally until it reaches the loop.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "reloop_toggle"
@@ -1913,7 +1828,7 @@ Right side of crossfader
 		/**
 		 * Enable repeat-mode for the specified deck
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "repeat"
@@ -1921,7 +1836,7 @@ Right side of crossfader
 		/**
 		 * Resets the key to the original track key.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "reset_key"
@@ -1929,7 +1844,7 @@ Right side of crossfader
 		/**
 		 * Toggles playing the track backwards
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "reverse"
@@ -1937,7 +1852,7 @@ Right side of crossfader
 		/**
 		 * Enables reverse and slip mode while held (Censor)
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "reverseroll"
@@ -1945,7 +1860,7 @@ Right side of crossfader
 		/**
 		 * Affects absolute play speed & direction whether currently playing or not when [ChannelN],scratch2_enable is active. (multiplicative). Use JavaScript engine.scratch functions to manipulate in controller mappings.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -3.0..3.0
 		 */
 		| "scratch2"
@@ -1953,7 +1868,7 @@ Right side of crossfader
 		/**
 		 * Takes over play speed & direction for [ChannelN],scratch2.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "scratch2_enable"
@@ -1961,7 +1876,7 @@ Right side of crossfader
 		/**
 		 * Toggles slip mode. When active, the playback continues muted in the background during a loop, scratch etc. Once disabled, the audible playback will resume where the track would have been.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "slip_enabled"
@@ -1969,7 +1884,7 @@ Right side of crossfader
 		/**
 		 * Increase the rating of the currently loaded track (if the skin has star widgets in the decks section).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "stars_up"
@@ -1977,7 +1892,7 @@ Right side of crossfader
 		/**
 		 * Decrease the rating of the currently loaded track (if the skin has star widgets in the decks section).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "stars_down"
@@ -1985,7 +1900,7 @@ Right side of crossfader
 		/**
 		 * Jump to start of track
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "start"
@@ -1993,7 +1908,7 @@ Right side of crossfader
 		/**
 		 * Start playback from the beginning of the deck.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "start_play"
@@ -2001,7 +1916,7 @@ Right side of crossfader
 		/**
 		 * Seeks a player to the start and then stops it.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "start_stop"
@@ -2009,7 +1924,7 @@ Right side of crossfader
 		/**
 		 * Stops a player.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "stop"
@@ -2017,7 +1932,7 @@ Right side of crossfader
 		/**
 		 * Syncs the tempo and phase (depending on quantize) to that of the other track (if BPM is detected on both). Click and hold for at least one second activates sync lock on that deck.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "sync_enabled"
@@ -2025,65 +1940,72 @@ Right side of crossfader
 		/**
 		 * Sets deck as leader clock.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "sync_leader"
 
 		/**
- * (No description)
- * 
- * @groups [PreviewDeckN], [SamplerN], [ChannelN]
- * @range 
-
-
-
-Value
-
-Meaning
-
-0
-
-Sync lock disabled for that deck
-
-1
-
-Deck is sync follower
-
-2
-
-Deck is sync leader
- */
+		 * (No description)
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range
+		 */
 		| "sync_mode"
 
 		/**
 		 * Match musical key.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| "sync_key"
 
 		/**
 		 * Color of the currently loaded track or -1 if no track is loaded or the track has no color.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 3-Byte RGB color code (or -1)
 		 */
 		| "track_color"
 
 		/**
+		 * Whether a track is loaded in the specified deck
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range binary, read-only
+		 */
+		| "track_loaded"
+
+		/**
+		 * Sample rate of the track loaded on the specified deck
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range absolute value, read-only
+		 */
+		| "track_samplerate"
+
+		/**
+		 * Number of sound samples in the track loaded on the specified deck
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range absolute value, read-only
+		 */
+		| "track_samples"
+
+		/**
 		 * Adjusts the channel volume fader
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `volume${PotMeterSuffix}`
 
 		/**
 		 * Mutes the channel
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "mute"
@@ -2095,7 +2017,7 @@ Deck is sync leader
 		 * value for the deck will be centered so that there is no audible difference in
 		 * track volume, so this operation is safe to use during performance, if the controller mapping uses soft-takeover for the pregain knob.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "update_replaygain_from_pregain"
@@ -2103,69 +2025,39 @@ Deck is sync leader
 		/**
 		 * Toggles whether a deck is being controlled by digital vinyl.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "vinylcontrol_enabled"
 
 		/**
- * Determines how cue points are treated in vinyl control relative mode.
- * 
- * @groups [PreviewDeckN], [SamplerN], [ChannelN]
- * @range 
-
-
-
-Value
-
-Meaning
-
-0
-
-Cue points ignored
-
-1
-
-One Cue - If needle is dropped after the cue point, track will seek to that cue point
-
-2
-
-Hot Cue - Track will seek to nearest previous hotcue
- */
+		 * Determines how cue points are treated in vinyl control relative mode.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range
+		 */
 		| "vinylcontrol_cueing"
 
 		/**
- * Determines how vinyl control interprets needle information.
- * 
- * @groups [PreviewDeckN], [SamplerN], [ChannelN]
- * @range 
-
-
-
-Value
-
-Meaning
-
-0
-
-Absolute Mode (track position equals needle position and speed)
-
-1
-
-Relative Mode (track tempo equals needle speed regardless of needle position)
-
-2
-
-Constant Mode (track tempo equals last known-steady tempo regardless of needle input
-
-See Control Mode for details.
- */
+		 * Determines how vinyl control interprets needle information.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range
+		 */
 		| "vinylcontrol_mode"
+
+		/**
+		 * Provides visual feedback with regards to vinyl control status.
+		 *
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
+		 * @range 0.0-3.0, read-only
+		 */
+		| "vinylcontrol_status"
 
 		/**
 		 * BPM to display in the GUI (updated more slowly than the actual BPM).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range ?
 		 */
 		| "visual_bpm"
@@ -2173,7 +2065,7 @@ See Control Mode for details.
 		/**
 		 * Current musical key after pitch shifting to display in the GUI using the notation selected in the preferences
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range ?
 		 */
 		| "visual_key"
@@ -2182,8 +2074,9 @@ See Control Mode for details.
 		 * The distance to the nearest key measured in cents
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -0.5..0.5
+		 * @kind pot meter control
 		 */
 		| `visual_key_distance${PotMeterSuffix}`
 
@@ -2191,8 +2084,9 @@ See Control Mode for details.
 		 * Outputs the current instantaneous deck volume
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${PotMeterSuffix}`
 
@@ -2200,8 +2094,9 @@ See Control Mode for details.
 		 * Outputs the current instantaneous deck volume for the left channel
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${number}${PotMeterSuffix}`
 
@@ -2209,15 +2104,16 @@ See Control Mode for details.
 		 * Outputs the current instantaneous deck volume for the right channel
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${number}${PotMeterSuffix}`
 
 		/**
 		 * Zooms the waveform to look ahead or back as needed.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 1.0 - 10.0
 		 */
 		| "waveform_zoom"
@@ -2225,7 +2121,7 @@ See Control Mode for details.
 		/**
 		 * Waveform Zoom Out
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range ?
 		 */
 		| "waveform_zoom_up"
@@ -2233,7 +2129,7 @@ See Control Mode for details.
 		/**
 		 * Waveform Zoom In
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range ?
 		 */
 		| "waveform_zoom_down"
@@ -2241,7 +2137,7 @@ See Control Mode for details.
 		/**
 		 * Return to default waveform zoom level
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range ?
 		 */
 		| "waveform_zoom_set_default"
@@ -2249,7 +2145,7 @@ See Control Mode for details.
 		/**
 		 * Affects relative playback speed and direction persistently (additive offset & must manually be undone).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -3.0..3.0
 		 */
 		| "wheel"
@@ -2257,14 +2153,14 @@ See Control Mode for details.
 		/**
 		 * Indicates if hotcue slot X is set, active or empty.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 */
 		| `hotcue_${number}_enabled`
 
 		/**
 		 * Sets deck as leader clock.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "sync_master"
@@ -2273,7 +2169,7 @@ See Control Mode for details.
 		 * Setup a loop over the set number of beats.
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range positive real number
 		 */
 		| "beatloop"
@@ -2281,7 +2177,7 @@ See Control Mode for details.
 		/**
 		 * Toggles the current loop on or off. If the loop is ahead of the current play position, the track will keep playing normally until it reaches the loop.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "reloop_exit"
@@ -2289,7 +2185,7 @@ See Control Mode for details.
 		/**
 		 * Affects relative playback speed and direction for short instances (additive & is automatically reset to 0).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -3.0..3.0
 		 */
 		| "jog"
@@ -2297,7 +2193,7 @@ See Control Mode for details.
 		/**
 		 * Affects playback speed and direction (differently whether currently playing or not) (multiplicative).
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range -3.0..3.0
 		 */
 		| "scratch"
@@ -2305,7 +2201,7 @@ See Control Mode for details.
 		/**
 		 * Toggles the filter effect.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "filter"
@@ -2313,7 +2209,7 @@ See Control Mode for details.
 		/**
 		 * Adjusts the intensity of the filter effect.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range default
 		 */
 		| "filterDepth"
@@ -2321,7 +2217,7 @@ See Control Mode for details.
 		/**
 		 * Adjusts the gain of the low EQ filter.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 0.0..1.0..4.0
 		 */
 		| "filterLow"
@@ -2329,7 +2225,7 @@ See Control Mode for details.
 		/**
 		 * Holds the gain of the low EQ to -inf while active
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "filterLowKill"
@@ -2337,7 +2233,7 @@ See Control Mode for details.
 		/**
 		 * Adjusts the gain of the mid EQ filter..
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 0.0..1.0..4.0
 		 */
 		| "filterMid"
@@ -2345,7 +2241,7 @@ See Control Mode for details.
 		/**
 		 * Holds the gain of the mid EQ to -inf while active.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "filterMidKill"
@@ -2353,7 +2249,7 @@ See Control Mode for details.
 		/**
 		 * Adjusts the gain of the high EQ filter.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range 0.0..1.0..4.0
 		 */
 		| "filterHigh"
@@ -2361,7 +2257,7 @@ See Control Mode for details.
 		/**
 		 * Holds the gain of the high EQ to -inf while active.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range binary
 		 */
 		| "filterHighKill"
@@ -2370,30 +2266,30 @@ See Control Mode for details.
 		 * Setup a loop over X beats. A control exists for X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64
 		 * If the loaded track has no beat grid, seconds are used instead of beats.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN]
 		 * @range toggle
 		 */
 		| `beatloop_${number}`;
 
-	type PreviewDeckNSamplerNChannelNAuxiliaryNControl =
+	type PreviewDeckNChannelNSamplerNAuxiliaryNControl =
 		/**
 		 * Assign channel to the center of the crossfader.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN], [AuxiliaryN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN], [AuxiliaryN]
 		 */
 		| "orientation_center"
 
 		/**
 		 * Assign channel to the left side of the crossfader.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN], [AuxiliaryN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN], [AuxiliaryN]
 		 */
 		| "orientation_left"
 
 		/**
 		 * Assign channel to the right side of the crossfader.
 		 *
-		 * @groups [PreviewDeckN], [SamplerN], [ChannelN], [AuxiliaryN]
+		 * @groups [PreviewDeckN], [ChannelN], [SamplerN], [AuxiliaryN]
 		 */
 		| "orientation_right";
 
@@ -2457,8 +2353,9 @@ See Control Mode for details.
 		 * @groups [ChannelN]
 		 */
 		| "transform"
-		| PreviewDeckNSamplerNChannelNAuxiliaryNControl
-		| PreviewDeckNSamplerNChannelNControl;
+		| PreviewDeckNChannelNSamplerNControl
+		| ChannelNAuxiliaryNMicrophoneNControl
+		| PreviewDeckNChannelNSamplerNAuxiliaryNControl;
 
 	type SamplerControl =
 		/**
@@ -2477,6 +2374,17 @@ See Control Mode for details.
 		 */
 		| "LoadSamplerBank";
 
+	type ChannelNAuxiliaryNMicrophoneNControl =
+		/**
+		 * 1 if there is input is configured for this channel, 0 if not.
+		 * In the case of [ChannelN] it corresponds to
+		 * Vinyl Control. A configured input is required to enable [ChannelN],passthrough
+		 *
+		 * @groups [ChannelN], [AuxiliaryN], [MicrophoneN]
+		 * @range binary, read-only
+		 */
+		"input_configured";
+
 	type MicrophoneNAuxiliaryNControl =
 		/**
 		 * Hold value at 1 to mix channel input into the main output.
@@ -2494,6 +2402,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${PotMeterSuffix}`
 
@@ -2503,6 +2412,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${number}${PotMeterSuffix}`
 
@@ -2512,6 +2422,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range binary
+		 * @kind pot meter control
 		 */
 		| `PeakIndicator${number}${PotMeterSuffix}`
 
@@ -2539,6 +2450,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `volume${PotMeterSuffix}`
 
@@ -2548,6 +2460,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range 0.0..1.0..4.0
+		 * @kind pot meter control
 		 */
 		| `pregain${PotMeterSuffix}`
 
@@ -2565,6 +2478,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${PotMeterSuffix}`
 
@@ -2574,6 +2488,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${number}${PotMeterSuffix}`
 
@@ -2583,6 +2498,7 @@ See Control Mode for details.
 		 *
 		 * @groups [MicrophoneN], [AuxiliaryN]
 		 * @range default
+		 * @kind pot meter control
 		 */
 		| `VuMeter${number}${PotMeterSuffix}`
 
@@ -2606,30 +2522,15 @@ See Control Mode for details.
 
 	type AuxiliaryNControl =
 		/**
- * Set channel orientation for the crossfader.
- * 
- * @groups [AuxiliaryN]
- * @range 
-
-
-
-Value
-
-Meaning
-
-0
-
-Left side of crossfader
-
-1
-
-Center (not affected by crossfader)
-
-2
-
-Right side of crossfader
- */
-		"orientation" | PreviewDeckNSamplerNChannelNAuxiliaryNControl | MicrophoneNAuxiliaryNControl;
+		 * Set channel orientation for the crossfader.
+		 *
+		 * @groups [AuxiliaryN]
+		 * @range
+		 */
+		| "orientation"
+		| ChannelNAuxiliaryNMicrophoneNControl
+		| MicrophoneNAuxiliaryNControl
+		| PreviewDeckNChannelNSamplerNAuxiliaryNControl;
 
 	type VinylControlControl =
 		/**
@@ -2667,29 +2568,11 @@ Right side of crossfader
 		| "toggle_recording"
 
 		/**
- * Indicates whether Mixxx is currently recording.
- * 
- * @groups [Recording]
- * @range 
-
-
-
-Value
-
-Meaning
-
-0
-
-Recording Stopped
-
-1
-
-Initialize Recording
-
-2
-
-Recording Active
- */
+		 * Indicates whether Mixxx is currently recording.
+		 *
+		 * @groups [Recording]
+		 * @range
+		 */
 		| "status";
 
 	type AutoDJControl =
@@ -2831,71 +2714,30 @@ Recording Active
 		| "MoveFocus"
 
 		/**
- * Read this control to know which library widget is currently focused, or write in order to focus a specific library widget.
- * This control can be used in controller scripts to trigger context-specific actions. For example, if the
- * tracks table has focus, pressing a button loads the selected track to a specific deck, while the same
- * button would clear the search if the search bar is focused.
- * Note: This control is useful only if a Mixxx window has keyboard focus, otherwise it always returns 0.
- * 
- * @groups [Library]
- * @range 
-
-
-
-
-
-Value
-
-writeable
-
-Widget
-
-0
-
-
-
-none
-
-1
-
-X
-
-Search bar
-
-2
-
-X
-
-Tree view
-
-3
-
-X
-
-Tracks table or root views of library features
-
-4
-
-
-
-Context menu (menus of library widgets or other editable widgets, or main menu bar)
-
-5
-
-
-
-Dialog (any confirmation or error popup, preferences, track properties or cover art window)
-
-6
-
-
-
-Unknown (widgets that don’t fit into any of the above categories)
- */
+		 * Read this control to know which library widget is currently focused, or write in order to focus a specific library widget.
+		 * This control can be used in controller scripts to trigger context-specific actions. For example, if the
+		 * tracks table has focus, pressing a button loads the selected track to a specific deck, while the same
+		 * button would clear the search if the search bar is focused.
+		 * Note: This control is useful only if a Mixxx window has keyboard focus, otherwise it always returns 0.
+		 *
+		 * @groups [Library]
+		 * @range
+		 */
 		| "focused_widget"
 
 		/**
 		 * Triggers different actions, depending on which interface element currently has keyboard focus:
+		 *
+		 * |Search bar|
+		 * |---|
+		 * |text box|moves focus to tracks table|
+		 * |Clear button|clears search text|
+		 * |Sidebar|
+		 * |collapsed node|expands the item (except Tracks and Auto DJ)|
+		 * |leaf node|moves focus to tracks table|
+		 * |Tracks table|Performs the action selected in Preferences ‣ Library ‣ Track Double-Click Action (default is “Load selected track”). Also see Preferences ‣ Decks ‣ Playing track protection|
+		 * |Context menus|presses Enter|
+		 * |Dialogs / popups|presses Enter. Note: the Move.. controls allow to move button focus.|
 		 *
 		 * @groups [Library]
 		 * @range Binary
@@ -2940,405 +2782,11 @@ Unknown (widgets that don’t fit into any of the above categories)
 		| "font_size_knob"
 
 		/**
- * Indicates the sorting column the track table
- * 
- * @groups [Library]
- * @range 
-
-
-
-
-
-
-
-
-
-
-
-Value
-
-Description
-
-Library
-
-Playlist
-
-Crate
-
-Browse
-
-1
-
-Artist
-
-X
-
-X
-
-X
-
-X
-
-2
-
-Title
-
-X
-
-X
-
-X
-
-X
-
-3
-
-Album
-
-X
-
-X
-
-X
-
-X
-
-4
-
-Albumartist
-
-X
-
-X
-
-X
-
-X
-
-5
-
-Year
-
-X
-
-X
-
-X
-
-X
-
-6
-
-Genre
-
-X
-
-X
-
-X
-
-X
-
-7
-
-Composer
-
-X
-
-X
-
-X
-
-X
-
-8
-
-Grouping
-
-X
-
-X
-
-X
-
-X
-
-9
-
-Tracknumber
-
-X
-
-X
-
-X
-
-X
-
-10
-
-Filetype
-
-X
-
-X
-
-X
-
-X
-
-11
-
-Native Location
-
-X
-
-X
-
-X
-
-X
-
-12
-
-Comment
-
-X
-
-X
-
-X
-
-X
-
-13
-
-Duration
-
-X
-
-X
-
-X
-
-X
-
-14
-
-Bitrate
-
-X
-
-X
-
-X
-
-X
-
-15
-
-BPM
-
-X
-
-X
-
-X
-
-X
-
-16
-
-ReplayGain
-
-X
-
-X
-
-X
-
-X
-
-17
-
-Datetime Added
-
-X
-
-X
-
-X
-
-X
-
-18
-
-Times Played
-
-X
-
-X
-
-X
-
-X
-
-19
-
-Rating
-
-X
-
-X
-
-X
-
-X
-
-20
-
-Key
-
-X
-
-X
-
-X
-
-X
-
-21
-
-Preview
-
-X
-
-X
-
-X
-
-X
-
-22
-
-Coverart
-
-X
-
-X
-
-X
-
-
-
-23
-
-Position
-
-
-
-X
-
-
-
-
-
-24
-
-Playlist ID
-
-
-
-X
-
-
-
-
-
-25
-
-Location
-
-
-
-X
-
-
-
-
-
-26
-
-Filename
-
-
-
-
-
-
-
-X
-
-27
-
-File Modified Time
-
-
-
-
-
-
-
-X
-
-28
-
-File Creation Time
-
-
-
-
-
-
-
-X
-
-29
-
-Sample Rate
-
-
-
-
-
-
-
-
-
-30
-
-Track Color
-
-X
-
-X
-
-X
-
-
-
-31
-
-Last Played
-
-X
-
-X
-
-X
-
-
- */
+		 * Indicates the sorting column the track table
+		 *
+		 * @groups [Library]
+		 * @range
+		 */
 		| "sort_column"
 
 		/**
@@ -3537,44 +2985,34 @@ X
 		| "AutoHotcueColors"
 
 		/**
- * Represents the current state of the remaining time duration display of the loaded track.
- * 
- * @groups [Controls]
- * @range 
-
-
-
-Value
-
-Meaning
-
-0
-
-currently showing elapsed time, sets to remaining time
-
-1
-
-currently showing remaining time , sets to elapsed time
-
-2
-
-currently showing both (that means we are showing remaining, set to elapsed
- */
+		 * Represents the current state of the remaining time duration display of the loaded track.
+		 *
+		 * @groups [Controls]
+		 * @range
+		 */
 		| "ShowDurationRemaining";
 
-	type EffectRack1QuickEffectRack1EqualizerRack1Control =
+	type QuickEffectRack1EffectRack1EqualizerRack1Control =
+		/**
+		 * The number of EffectUnits in this rack
+		 *
+		 * @groups [QuickEffectRack1], [EffectRack1], [EqualizerRack1]
+		 * @range integer, read-only
+		 */
+		| "num_effectunits"
+
 		/**
 		 * Clear the Effect Rack
 		 *
-		 * @groups [EffectRack1], [QuickEffectRack1], [EqualizerRack1]
+		 * @groups [QuickEffectRack1], [EffectRack1], [EqualizerRack1]
 		 */
-		"clear";
+		| "clear";
 
-	type QuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl =
+	type QuickEffectRack1ChannelIEqualizerRack1ChannelIEffectRack1EffectUnitNControl =
 		/**
 		 * Select EffectChain preset. > 0 goes one forward; < 0 goes one backward.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range +1/-1
 		 */
 		| "chain_preset_selector"
@@ -3582,7 +3020,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * Clear the currently loaded EffectChain in this EffectUnit.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range binary
 		 */
 		| "clear"
@@ -3590,7 +3028,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * If true, the EffectChain in this EffectUnit will be processed. Meant to allow the user a quick toggle for the effect unit.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range binary, default true
 		 */
 		| "enabled"
@@ -3598,7 +3036,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * 0 indicates no effect is focused; > 0 indicates the index of the focused effect. Focusing an effect only does something if a controller mapping changes how it behaves when an effect is focused.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range 0..num_effectslots
 		 */
 		| "focused_effect"
@@ -3606,16 +3044,24 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * Whether or not this EffectChain applies to Deck I
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range binary
 		 */
 		| `group_[Channel${number}]_enable`
 
 		/**
+		 * Whether an EffectChain is loaded into the EffectUnit
+		 *
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
+		 * @range binary, read-only
+		 */
+		| "loaded"
+
+		/**
 		 * 0-based index of the currently loaded EffectChain preset. 0 is the empty/passthrough
 		 * preset, -1 indicates an unsaved preset (default state of [EffectRack1_EffectUnitN]).
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range integer, -1 .. [num_chain_presets - 1]
 		 */
 		| "loaded_chain_preset"
@@ -3624,23 +3070,41 @@ currently showing both (that means we are showing remaining, set to elapsed
 		 * The dry/wet mixing ratio for this EffectChain with the EngineChannels it is mixed with
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range 0.0..1.0
+		 * @kind pot meter control
 		 */
 		| `mix${PotMeterSuffix}`
 
 		/**
 		 * Cycle to the next EffectChain preset after the currently loaded preset.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range binary
 		 */
 		| "next_chain_preset"
 
 		/**
+		 * The number of effect chain presets available in this EffectUnit, including the
+		 * empty/passthrough preset “---”.
+		 *
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
+		 * @range integer, read-only, >=1
+		 */
+		| "num_chain_presets"
+
+		/**
+		 * The number of effect slots available in this EffectUnit.
+		 *
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
+		 * @range integer, read-only
+		 */
+		| "num_effectslots"
+
+		/**
 		 * Cycle to the previous EffectChain preset before the currently loaded preset.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range binary
 		 */
 		| "prev_chain_preset"
@@ -3648,7 +3112,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * Whether to show focus buttons and draw a border around the focused effect in skins. This should not be manipulated by skins; it should only be changed by controller mappings.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range binary
 		 */
 		| "show_focus"
@@ -3656,7 +3120,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * Whether to show all the parameters of each effect in skins or only show metaknobs.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range binary
 		 */
 		| "show_parameters"
@@ -3665,29 +3129,30 @@ currently showing both (that means we are showing remaining, set to elapsed
 		 * The EffectChain superknob. Moves the metaknobs for each effect in the chain.
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 * @range 0.0..1.0
+		 * @kind pot meter control
 		 */
 		| `super1${PotMeterSuffix}`
 
 		/**
 		 * Cycle to the next EffectChain preset after the currently loaded preset.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 */
 		| "next_chain"
 
 		/**
 		 * Cycle to the next EffectChain preset after the currently loaded preset.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 */
 		| "prev_chain"
 
 		/**
 		 * Select EffectChain preset. > 0 goes one forward; < 0 goes one backward.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
+		 * @groups [QuickEffectRack1_[ChannelI]], [EqualizerRack1_[ChannelI]], [EffectRack1_EffectUnitN]
 		 */
 		| "chain_selector";
 
@@ -3715,13 +3180,13 @@ currently showing both (that means we are showing remaining, set to elapsed
 		 * @range binary
 		 */
 		| `group_[Sampler${number}]_enable`
-		| QuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl;
+		| QuickEffectRack1ChannelIEqualizerRack1ChannelIEffectRack1EffectUnitNControl;
 
-	type QuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl =
+	type EffectRack1EffectUnitNEffectMQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1Control =
 		/**
 		 * Clear the currently loaded Effect in this Effect slot from the EffectUnit.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range binary
 		 */
 		| "clear"
@@ -3729,7 +3194,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * Select Effect – >0 goes one forward, <0 goes one backward.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range +1/-1
 		 */
 		| "effect_selector"
@@ -3737,16 +3202,24 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * If true, the effect in this slot will be processed. Meant to allow the user a quick toggle for this effect.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range binary, default true
 		 */
 		| "enabled"
 
 		/**
+		 * Whether an Effect is loaded into this EffectSlot
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range binary, read-only
+		 */
+		| "loaded"
+
+		/**
 		 * 0-based index of the currently loaded effect preset, including the
 		 * empty/passthrough preset “---”.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range integer, 0 .. [num_effectsavailable - 1]
 		 */
 		| "loaded_effect"
@@ -3754,24 +3227,57 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * Cycle to the next effect after the currently loaded effect.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range binary
 		 */
 		| "next_effect"
 
 		/**
+		 * The number of parameters the currently loaded effect has.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range integer, read-only,  0 if no effect is loaded
+		 */
+		| "num_parameters"
+
+		/**
+		 * The number of parameter slots available.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range integer, read-only
+		 */
+		| "num_parameterslots"
+
+		/**
+		 * The number of button parameters the currently loaded effect has.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range integer, read-only, 0 if no effect is loaded
+		 */
+		| "num_button_parameters"
+
+		/**
+		 * The number of button parameter slots available.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range integer, read-only
+		 */
+		| "num_button_parameterslots"
+
+		/**
 		 * Controls the parameters that are linked to the metaknob.
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range 0..1
+		 * @kind pot meter control
 		 */
 		| `meta${PotMeterSuffix}`
 
 		/**
 		 * Cycle to the previous effect before the currently loaded effect.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range binary
 		 */
 		| "prev_effect"
@@ -3781,15 +3287,16 @@ currently showing both (that means we are showing remaining, set to elapsed
 		 * See the Parameter Values section for more information.
 		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range double
+		 * @kind pot meter control
 		 */
 		| `parameter${number}${PotMeterSuffix}`
 
 		/**
 		 * The link direction of the Kth parameter to the effect’s metaknob.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range bool
 		 */
 		| `parameter${number}_link_inverse`
@@ -3797,18 +3304,50 @@ currently showing both (that means we are showing remaining, set to elapsed
 		/**
 		 * The link type of the Kth parameter to the effects’s metaknob.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range enum
 		 */
 		| `parameter${number}_link_type`
 
 		/**
+		 * Whether or not the Kth parameter slot has an effect parameter loaded into it.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range binary, read-only
+		 */
+		| `parameter${number}_loaded`
+
+		/**
+		 * The type of the Kth parameter value. See the Parameter Value Types table.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range integer, read-only
+		 */
+		| `parameter${number}_type`
+
+		/**
 		 * The value of the Kth parameter. See the Parameter Values section for more information.
 		 *
-		 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
 		 * @range double
 		 */
-		| `button_parameter${number}`;
+		| `button_parameter${number}`
+
+		/**
+		 * Whether or not the Kth parameter slot has an effect parameter loaded into it.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range binary, read-only
+		 */
+		| `button_parameter${number}_loaded`
+
+		/**
+		 * The type of the Kth parameter value. See the Parameter Value Types table.
+		 *
+		 * @groups [EffectRack1_EffectUnitN_EffectM], [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1]
+		 * @range integer, read-only
+		 */
+		| `button_parameter${number}_type`;
 
 	type SkinControl =
 		/**
@@ -3867,7 +3406,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		 * @groups [EffectRack1]
 		 * @range binary
 		 */
-		"show" | EffectRack1QuickEffectRack1EqualizerRack1Control;
+		"show" | QuickEffectRack1EffectRack1EqualizerRack1Control;
 
 	type MicrophoneNControl =
 		/**
@@ -3875,7 +3414,7 @@ currently showing both (that means we are showing remaining, set to elapsed
 		 *
 		 * @groups [MicrophoneN]
 		 */
-		"orientation" | MicrophoneNAuxiliaryNControl;
+		"orientation" | ChannelNAuxiliaryNMicrophoneNControl | MicrophoneNAuxiliaryNControl;
 
 	type FlangerControl =
 		/**
@@ -3899,404 +3438,28 @@ currently showing both (that means we are showing remaining, set to elapsed
 		 */
 		| "lfoPeriod";
 
-	type PreviewDeckNControl = PreviewDeckNSamplerNChannelNAuxiliaryNControl | PreviewDeckNSamplerNChannelNControl;
-
-	type EqualizerRack1ChannelIEffect1Control =
-		QuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl;
-
-	type EqualizerRack1Control = EffectRack1QuickEffectRack1EqualizerRack1Control;
-
-	type QuickEffectRack1ChannelIEffect1Control =
-		QuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl;
-
-	type SamplerNControl = PreviewDeckNSamplerNChannelNAuxiliaryNControl | PreviewDeckNSamplerNChannelNControl;
-
-	type QuickEffectRack1Control = EffectRack1QuickEffectRack1EqualizerRack1Control;
-
-	type QuickEffectRack1ChannelIControl = QuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl;
+	type EqualizerRack1ChannelIControl = QuickEffectRack1ChannelIEqualizerRack1ChannelIEffectRack1EffectUnitNControl;
 
 	type EffectRack1EffectUnitNEffectMControl =
-		QuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl;
+		EffectRack1EffectUnitNEffectMQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1Control;
 
-	type EqualizerRack1ChannelIControl = QuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl;
+	type EqualizerRack1Control = QuickEffectRack1EffectRack1EqualizerRack1Control;
 
-	namespace ReadOnly {
-		type ReadOnlyAppControl =
-			/**
-			 * A throttled timer that provides the time elapsed in seconds since Mixxx was started.
-			 * This control is updated at a rate of 20 Hz (every 50 milliseconds). It is the preferred timer for scripting animations in controller mappings (like VU meters or spinning animations) as it provides a smooth visual result without the performance overhead of [App],gui_tick_full_period_s.
-			 * Only available when using the legacy GUI (not the QML interface).
-			 *
-			 * @groups [App]
-			 * @range 0.0 .. n, read-only
-			 * @readonly
-			 */
-			| "gui_tick_50ms_period_s"
+	type PreviewDeckNControl = PreviewDeckNChannelNSamplerNControl | PreviewDeckNChannelNSamplerNAuxiliaryNControl;
 
-			/**
-			 * A high-resolution timer that provides the elapsed time in seconds since Mixxx was started.
-			 * This control is updated on every GUI tick, which corresponds to the waveform rendering frame rate. It is suitable for very smooth, high-framerate animations in scripts. However, for most use cases like VU meters, consider using [App],gui_tick_50ms_period_s to improve performance by reducing the script execution rate.
-			 * Only available when using the legacy GUI (not the QML interface).
-			 *
-			 * @groups [App]
-			 * @range 0.0 .. n, read-only
-			 * @readonly
-			 */
-			| "gui_tick_full_period_s"
+	type SamplerNControl = PreviewDeckNChannelNSamplerNControl | PreviewDeckNChannelNSamplerNAuxiliaryNControl;
 
-			/**
-			 * Alternates between 0.0 and 1.0 every 250 milliseconds.
-			 * This control may be used to implement a blinking LED in JavaScript and is
-			 * guaranteed to light up at the same time as
-			 * [ChannelN],cue_indicator and
-			 * [ChannelN],play_indicator when these are blinking (depending
-			 * on the currently chosen cue mode).
-			 *
-			 * @groups [App]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "indicator_250ms"
+	type QuickEffectRack1ChannelIEffect1Control =
+		EffectRack1EffectUnitNEffectMQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1Control;
 
-			/**
-			 * Alternates between 0.0 and 1.0 every 500 milliseconds.
-			 * This control may be used to implement a blinking LED in JavaScript and is
-			 * guaranteed to light up at the same time as
-			 * [ChannelN],cue_indicator and
-			 * [ChannelN],play_indicator when these are blinking (depending
-			 * on the currently chosen cue mode).
-			 *
-			 * @groups [App]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "indicator_500ms";
+	type QuickEffectRack1ChannelIControl = QuickEffectRack1ChannelIEqualizerRack1ChannelIEffectRack1EffectUnitNControl;
 
-		type ReadOnlyMasterControl =
-			/**
-			 * The number of available effects that can be selected in an effect slot.
-			 *
-			 * @groups [Master]
-			 * @range integer, read-only
-			 * @readonly
-			 */
-			| "num_effectsavailable"
+	type EqualizerRack1ChannelIEffect1Control =
+		EffectRack1EffectUnitNEffectMQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1Control;
 
-			/**
-			 * A throttled timer that provides the time elapsed in seconds since Mixxx was started.
-			 *
-			 * @groups [Master]
-			 * @range 0.0 .. n, read-only
-			 * @readonly
-			 */
-			| "guiTick50ms"
+	type QuickEffectRack1Control = QuickEffectRack1EffectRack1EqualizerRack1Control;
 
-			/**
-			 * A high-resolution timer that provides the elapsed time in seconds since Mixxx was started.
-			 *
-			 * @groups [Master]
-			 * @range 0.0 .. n, read-only
-			 * @readonly
-			 */
-			| "guiTickTime";
-
-		type ReadOnlyPreviewDeckNSamplerNChannelNControl =
-			/**
-			 * Indicates, depending on the play direction, how the player is currently positioned to the closest beat.
-			 * An LED controlled by beat_active can be used for beat matching or for finding a beat using jog or control vinyl.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range real number, read-only
-			 * @readonly
-			 */
-			| "beat_active"
-
-			/**
-			 * Switches to 1 if the play position is within the end range defined in Preferences ‣ Waveforms ‣ End of track warning.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "end_of_track"
-
-			/**
-			 * The detected BPM of the loaded track.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range positive value, read-only
-			 * @readonly
-			 */
-			| "file_bpm"
-
-			/**
-			 * The detected key of the loaded track.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range ?, read-only
-			 * @readonly
-			 */
-			| "file_key"
-
-			/**
-			 * 1 if intro end cue is set, (position is not -1), 0 otherwise.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "intro_end_enabled"
-
-			/**
-			 * 1 if intro start cue is set, (position is not -1), 0 otherwise.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "intro_start_enabled"
-
-			/**
-			 * 1 if outro end cue is set, (position is not -1), 0 otherwise.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "outro_end_enabled"
-
-			/**
-			 * 1 if outro start cue is set, (position is not -1), 0 otherwise.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "outro_start_enabled"
-
-			/**
-			 * Provides information to be bound with the a Play/Pause button e.g blinking when play is possible
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "play_indicator"
-
-			/**
-			 * This is set to 1 when the track is playing, but not when previewing (see play).
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "play_latched"
-
-			/**
-			 * Whether a track is loaded in the specified deck
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "track_loaded"
-
-			/**
-			 * Sample rate of the track loaded on the specified deck
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range absolute value, read-only
-			 * @readonly
-			 */
-			| "track_samplerate"
-
-			/**
-			 * Number of sound samples in the track loaded on the specified deck
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range absolute value, read-only
-			 * @readonly
-			 */
-			| "track_samples"
-
-			/**
-			 * Provides visual feedback with regards to vinyl control status.
-			 *
-			 * @groups [PreviewDeckN], [SamplerN], [ChannelN]
-			 * @range 0.0-3.0, read-only
-			 * @readonly
-			 */
-			| "vinylcontrol_status";
-
-		type ReadOnlyMicrophoneNChannelNAuxiliaryNControl =
-			/**
-			 * 1 if there is input is configured for this channel, 0 if not.
-			 * In the case of [ChannelN] it corresponds to
-			 * Vinyl Control. A configured input is required to enable [ChannelN],passthrough
-			 *
-			 * @groups [MicrophoneN], [ChannelN], [AuxiliaryN]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			"input_configured";
-
-		type ReadOnlyEffectRack1QuickEffectRack1EqualizerRack1Control =
-			/**
-			 * The number of EffectUnits in this rack
-			 *
-			 * @groups [EffectRack1], [QuickEffectRack1], [EqualizerRack1]
-			 * @range integer, read-only
-			 * @readonly
-			 */
-			"num_effectunits";
-
-		type ReadOnlyQuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl =
-			/**
-			 * Whether an EffectChain is loaded into the EffectUnit
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "loaded"
-
-			/**
-			 * The number of effect chain presets available in this EffectUnit, including the
-			 * empty/passthrough preset “---”.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
-			 * @range integer, read-only, >=1
-			 * @readonly
-			 */
-			| "num_chain_presets"
-
-			/**
-			 * The number of effect slots available in this EffectUnit.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]], [EffectRack1_EffectUnitN], [EqualizerRack1_[ChannelI]]
-			 * @range integer, read-only
-			 * @readonly
-			 */
-			| "num_effectslots";
-
-		type ReadOnlyQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl =
-			/**
-			 * Whether an Effect is loaded into this EffectSlot
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| "loaded"
-
-			/**
-			 * The number of parameters the currently loaded effect has.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range integer, read-only,  0 if no effect is loaded
-			 * @readonly
-			 */
-			| "num_parameters"
-
-			/**
-			 * The number of parameter slots available.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range integer, read-only
-			 * @readonly
-			 */
-			| "num_parameterslots"
-
-			/**
-			 * The number of button parameters the currently loaded effect has.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range integer, read-only, 0 if no effect is loaded
-			 * @readonly
-			 */
-			| "num_button_parameters"
-
-			/**
-			 * The number of button parameter slots available.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range integer, read-only
-			 * @readonly
-			 */
-			| "num_button_parameterslots"
-
-			/**
-			 * Whether or not the Kth parameter slot has an effect parameter loaded into it.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| `parameter${number}_loaded`
-
-			/**
-			 * The type of the Kth parameter value. See the Parameter Value Types table.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range integer, read-only
-			 * @readonly
-			 */
-			| `parameter${number}_type`
-
-			/**
-			 * Whether or not the Kth parameter slot has an effect parameter loaded into it.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range binary, read-only
-			 * @readonly
-			 */
-			| `button_parameter${number}_loaded`
-
-			/**
-			 * The type of the Kth parameter value. See the Parameter Value Types table.
-			 *
-			 * @groups [QuickEffectRack1_[ChannelI]_Effect1], [EqualizerRack1_[ChannelI]_Effect1], [EffectRack1_EffectUnitN_EffectM]
-			 * @range integer, read-only
-			 * @readonly
-			 */
-			| `button_parameter${number}_type`;
-
-		type ReadOnlyPreviewDeckNControl = ReadOnlyPreviewDeckNSamplerNChannelNControl;
-
-		type ReadOnlyEqualizerRack1ChannelIControl =
-			ReadOnlyQuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl;
-
-		type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
-			ReadOnlyQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl;
-
-		type ReadOnlyEqualizerRack1ChannelIEffect1Control =
-			ReadOnlyQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl;
-
-		type ReadOnlySamplerNControl = ReadOnlyPreviewDeckNSamplerNChannelNControl;
-
-		type ReadOnlyChannelNControl =
-			| ReadOnlyMicrophoneNChannelNAuxiliaryNControl
-			| ReadOnlyPreviewDeckNSamplerNChannelNControl;
-
-		type ReadOnlyAuxiliaryNControl = ReadOnlyMicrophoneNChannelNAuxiliaryNControl;
-
-		type ReadOnlyEqualizerRack1Control = ReadOnlyEffectRack1QuickEffectRack1EqualizerRack1Control;
-
-		type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1QuickEffectRack1EqualizerRack1Control;
-
-		type ReadOnlyQuickEffectRack1ChannelIControl =
-			ReadOnlyQuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl;
-
-		type ReadOnlyMicrophoneNControl = ReadOnlyMicrophoneNChannelNAuxiliaryNControl;
-
-		type ReadOnlyQuickEffectRack1Control = ReadOnlyEffectRack1QuickEffectRack1EqualizerRack1Control;
-
-		type ReadOnlyEffectRack1EffectUnitNControl =
-			ReadOnlyQuickEffectRack1ChannelIEffectRack1EffectUnitNEqualizerRack1ChannelIControl;
-
-		type ReadOnlyEffectRack1EffectUnitNEffectMControl =
-			ReadOnlyQuickEffectRack1ChannelIEffect1EqualizerRack1ChannelIEffect1EffectRack1EffectUnitNEffectMControl;
-	}
+	namespace ReadOnly {}
 
 	namespace Deprecated {
 		type DeprecatedMasterControl =
