@@ -114,37 +114,50 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         // handle this -- bkgood
         return QObject::tr("Invalid");
     case AudioPathType::Main:
+        //: Audio path indetifier
         return QObject::tr("Main");
     case AudioPathType::Headphones:
+        //: Audio path indetifier
         return QObject::tr("Headphones");
     case AudioPathType::Booth:
+        //: Audio path indetifier
         return QObject::tr("Booth");
     case AudioPathType::Bus:
         switch (index) {
         case EngineChannel::LEFT:
+            //: Audio path indetifier
             return QObject::tr("Left Bus");
         case EngineChannel::CENTER:
+            //: Audio path indetifier
             return QObject::tr("Center Bus");
         case EngineChannel::RIGHT:
+            //: Audio path indetifier
             return QObject::tr("Right Bus");
         default:
+            //: Audio path indetifier
             return QObject::tr("Invalid Bus");
         }
     case AudioPathType::Deck:
+        //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Deck"),
                                     QString::number(index + 1));
     case AudioPathType::VinylControl:
+        //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
                                     QString::number(index + 1));
     case AudioPathType::Microphone:
+        //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Microphone"),
                                     QString::number(index + 1));
     case AudioPathType::Auxiliary:
+        //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Auxiliary"),
                                     QString::number(index + 1));
     case AudioPathType::RecordBroadcast:
+        //: Audio path indetifier
         return QObject::tr("Record/Broadcast");
     }
+    //: Audio path
     return QObject::tr("Unknown path type %1").arg(static_cast<int>(type));
 }
 

@@ -32,7 +32,7 @@ EngineSync::~EngineSync() {
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+        kLogger.trace() << "requestSyncMode" << pSyncable->getGroup() << mode;
     }
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     VERIFY_OR_DEBUG_ASSERT(pSyncable) {
@@ -116,7 +116,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     if (pParamsSyncable) {
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "EngineSync::requestSyncMode setting leader params from "
+                    << "requestSyncMode setting leader params from "
                     << pParamsSyncable->getGroup();
         }
         reinitLeaderParams(pParamsSyncable);
@@ -133,7 +133,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
         return;
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::activateFollower: "
+        kLogger.trace() << "activateFollower: "
                         << pSyncable->getGroup();
     }
 
@@ -154,7 +154,7 @@ void EngineSync::activateLeader(Syncable* pSyncable, SyncMode leaderType) {
         qWarning() << "WARNING: Logic Error: Called activateLeader with non-leader mode";
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::activateLeader: "
+        kLogger.trace() << "activateLeader: "
                         << pSyncable->getGroup() << "type: "
                         << leaderType;
     }
@@ -190,7 +190,7 @@ void EngineSync::activateLeader(Syncable* pSyncable, SyncMode leaderType) {
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::deactivateSync" << pSyncable->getGroup();
+        kLogger.trace() << "deactivateSync" << pSyncable->getGroup();
     }
     bool wasLeader = isSyncLeader(pSyncable);
     if (wasLeader) {
@@ -218,13 +218,13 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 
 Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::pickLeader";
+        kLogger.trace() << "pickLeader";
     }
     if (m_pLeaderSyncable &&
             m_pLeaderSyncable->getSyncMode() == SyncMode::LeaderExplicit &&
             m_pLeaderSyncable->getBaseBpm().isValid()) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineSync::pickLeader(): explicit leader found ";
+            kLogger.trace() << "pickLeader(): explicit leader found ";
         }
         return m_pLeaderSyncable;
     }
@@ -398,7 +398,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 
 void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyPlayingAudible"
+        kLogger.trace() << "notifyPlayingAudible"
                         << pSyncable->getGroup() << playingAudible;
     }
     // For now we don't care if the deck is now playing or stopping.
@@ -462,7 +462,7 @@ void EngineSync::notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position
 
 void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
     }
 
     if (isSyncLeader(pSyncable)) {
@@ -472,7 +472,7 @@ void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyRateChanged" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "notifyRateChanged" << pSyncable->getGroup() << bpm;
     }
 
     updateLeaderBpm(pSyncable, bpm);
@@ -480,7 +480,7 @@ void EngineSync::notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "requestBpmUpdate" << pSyncable->getGroup() << bpm;
     }
 
     mixxx::Bpm leaderBaseBpm;
@@ -505,7 +505,7 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged"
+        kLogger.trace() << "notifyInstantaneousBpmChanged"
                         << pSyncable->getGroup() << bpm;
     }
     if (pSyncable != m_pInternalClock) {
@@ -519,7 +519,7 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm b
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyBeatDistanceChanged"
+        kLogger.trace() << "notifyBeatDistanceChanged"
                         << pSyncable->getGroup() << beatDistance;
     }
     if (pSyncable != m_pInternalClock) {
@@ -683,7 +683,7 @@ void EngineSync::updateLeaderInstantaneousBpm(Syncable* pSource, mixxx::Bpm bpm)
 
 void EngineSync::updateLeaderBeatDistance(Syncable* pSource, double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::updateLeaderBeatDistance"
+        kLogger.trace() << "updateLeaderBeatDistance"
                         << (pSource ? pSource->getGroup() : "null")
                         << beatDistance;
     }
@@ -739,7 +739,7 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
         }
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "BaseSyncableListener::reinitLeaderParams, source is"
+        kLogger.trace() << "reinitLeaderParams, source is"
                         << pSource->getGroup() << beatDistance << baseBpm << bpm;
     }
     if (pSource != m_pInternalClock) {
