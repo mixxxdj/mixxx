@@ -24,7 +24,7 @@ output = mixxx_dir / "res" / "controllers" / "_mixxx-controls.ts"
 @dataclass
 class Control:
     name: str
-    groups: set[str]
+    groups: list[str]
     description: list[str]
     val_range: list[str]
     version_added: str | None
@@ -44,7 +44,7 @@ class Control:
 
         return Control(
             signatures[0]["control"],
-            set(map(lambda s: s["group"], signatures)),
+            list(sorted(map(lambda s: s["group"], signatures))),
             text_content(content),
             val_range,
             get_version_added(content),
@@ -291,12 +291,14 @@ def create_control_types_str(
     groupControls: dict[str, dict[str, Control]], prefix=""
 ) -> list[str]:
     lines: list[str] = []
-    ctls: list[Control] = [c for gc in groupControls.values() for c in gc.values()]
-    for group, controls in groupControls.items():
+    ctls: list[Control] = sorted(
+        [c for gc in groupControls.values() for c in gc.values()], key=lambda c: c.name
+    )
+    for group, controls in sorted(groupControls.items()):
         lines.append(f"type {prefix}{group_var(group)} = ")
 
         # controls
-        for name, control in controls.items():
+        for name, control in sorted(controls.items()):
             lines.append(ts_doc_comment(control))
             lines.append(f"| {control_var(name, control.is_pot_meter)}")
 
@@ -399,10 +401,17 @@ if __name__ == "__main__":
 
     controls: list[Control] = []
 
-    for node in doc.findall(addnodes.desc):
-        if "mixxx" not in node["classes"] or "control" not in node["classes"]:
+    for section in doc.findall(nodes.section):
+        print("Section ids", section["ids"])
+        if "removed-controls" in section["ids"] or "mixxx-controls" in section["ids"]:
+            print("STOP")
             continue
-        control = Control.from_node(node)
-        controls.append(control)
+        for node in section.findall(addnodes.desc):
+            if "mixxx" not in node["classes"] or "control" not in node["classes"]:
+                continue
+            control = Control.from_node(node)
+            if control.name == "flanger":
+                print("FLANGER", control)
+            controls.append(control)
 
     export_ts_types(output, controls, pm_suffixes)
