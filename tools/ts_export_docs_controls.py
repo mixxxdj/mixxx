@@ -26,7 +26,7 @@ class Control:
     name: str
     groups: set[str]
     description: list[str]
-    range: list[str]
+    val_range: list[str]
     is_read_only: bool
     feedback: str | None
     deprecated_since: str | None
@@ -38,17 +38,16 @@ class Control:
             node.findall(addnodes.desc_signature)
         )
         content = next(node.findall(addnodes.desc_content))
-        description = text_content(content)
         fl = next(content.findall(nodes.field_list), None)
-        fb_range = field_content(fl, "Range")
-        is_read_only = fb_range is not None and "read-only" in fb_range
+
+        val_range, is_read_only = range_and_readonly(fl)
         feedback, deprecated_since = feeback_and_deprecated(fl)
 
         return Control(
             signatures[0]["control"],
             set(map(lambda s: s["group"], signatures)),
-            description,
-            fb_range,
+            text_content(content),
+            val_range,
             is_read_only,
             feedback,
             deprecated_since,
@@ -80,7 +79,7 @@ def markdown_row(row: list[str], fillchar: str = " ") -> str:
 
 
 def markdown_table(table: list[list[str]]) -> list[str]:
-    lines = [""]
+    lines = []
     header = table[0]
 
     lines.append(markdown_row(header))
@@ -126,18 +125,37 @@ def field_content(fl: field_list | None, name: str) -> list[str]:
     return []
 
 
+def range_and_readonly(fl: nodes.field_list | None) -> tuple[list[str], bool]:
+    if fl is None:
+        return [], False
+
+    val_range = field_content(fl, "Range")
+    is_read_only = False
+
+    for i in range(len(val_range)):
+        Line_cleaned, count = re.subn(", read-only", "", val_range[i])
+        if count > 0:
+            is_read_only = True
+            val_range[i] = Line_cleaned
+
+    return val_range, is_read_only
+
+
 def feeback_and_deprecated(fl: field_list | None) -> tuple[str | None, str | None]:
     if fl is None:
         return None, None
+
     fb = field_list_find(fl, "Feedback")
     if fb is None:
         return None, None
+
     deprecated = next(fb.findall(addnodes.versionmodified), None)
     if deprecated:
         feedback = next(filter_children(fb, "paragraph"), None)
         return feedback.astext() if feedback else None, deprecated.astext().replace(
             "Deprecated since", ""
         )
+
     return None, None
 
 
@@ -203,14 +221,14 @@ def ts_doc_comment(control: Control) -> str:
     lines.append("")
     lines.append(f"@groups {', '.join(control.groups)}")
 
-    if len(control.range) > 0:
-        if len(control.range) < 1:
-            lines.append("@range")
-            lines.extend(control.range)
+    if len(control.val_range) > 0:
+        if len(control.val_range) == 1:
+            lines.append(f"@range {control.val_range[0]}")
         else:
-            lines.append(f"@range {control.range[0]}")
+            lines.append("@range")
+            lines.extend(control.val_range)
     if control.feedback:
-        lines.append(f"@returns {control.feedback}")
+        lines.append(f"@feedback {control.feedback}")
     if control.is_read_only:
         lines.append("@readonly")
     if control.is_pot_meter:
