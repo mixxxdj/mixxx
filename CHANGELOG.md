@@ -333,6 +333,83 @@
 * Fix: import proper QtQml.Models module instead of qmllabs [#14675](https://github.com/mixxxdj/mixxx/pull/14675)
 * qmlwaveform: Fix moc in Qt 6.9.0 [#14649](https://github.com/mixxxdj/mixxx/pull/14649)
 
+## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (unreleased)
+
+### Controller Mappings
+
+* Numark-NS6II: fix typo in NS6II.PadMode [#15428](https://github.com/mixxxdj/mixxx/pull/15428)
+* Pioneer DJ CDJ: fix broken initiatlisation
+  [#15363](https://github.com/mixxxdj/mixxx/pull/15363)
+  [#15343](https://github.com/mixxxdj/mixxx/issues/15343)
+  [#14731](https://github.com/mixxxdj/mixxx/issues/14731)
+* Components JogwheelBasic: Disable scratching when leaving `vinylMode` [#15336](https://github.com/mixxxdj/mixxx/pull/15336)
+
+### Skins
+
+* LateNight PaleMoon: add icons for dark hotcue loops, optimize light SVGs
+  [#15448](https://github.com/mixxxdj/mixxx/pull/15448)
+  [#15339](https://github.com/mixxxdj/mixxx/issues/15339)
+* LateNight: fix color of effect toggle buttons [#15467](https://github.com/mixxxdj/mixxx/pull/15467)
+* Improve and unify sampler sync button behaviour across all skins [#15399](https://github.com/mixxxdj/mixxx/pull/15399)
+* LateNight: work around style bug in Qt 6.9.2 causing black key button text
+  [#15404](https://github.com/mixxxdj/mixxx/pull/15404)
+  [#15351](https://github.com/mixxxdj/mixxx/issues/15351)
+* LateNight: revert xfader buttons to one (cycling) toggle [#15395](https://github.com/mixxxdj/mixxx/pull/15395)
+
+### Library
+
+* Playlists: polish code for moving selected Tracks [#15454](https://github.com/mixxxdj/mixxx/pull/15454)
+* Playlists: disable all modifying actions when locked [#15456](https://github.com/mixxxdj/mixxx/pull/15456)
+* Playlists: improve performance when activating a playlist [#15465](https://github.com/mixxxdj/mixxx/pull/15465)
+* Track view header: avoid narrow columns after restoring header with hidden columns
+  [#15331](https://github.com/mixxxdj/mixxx/pull/15331)
+  [#10325](https://github.com/mixxxdj/mixxx/issues/10325)
+* Computer: fix "Refresh directory tree" action [#15301](https://github.com/mixxxdj/mixxx/pull/15301)
+* Computer: parse artist+title from filename if both tags are empty [#15302](https://github.com/mixxxdj/mixxx/pull/15302)
+* Library scanner: make Cancel button work again
+  [#15320](https://github.com/mixxxdj/mixxx/pull/15320)
+  [#14940](https://github.com/mixxxdj/mixxx/issues/14940)
+* Library scanner: fix an issue when verifying remaining tracks [#15346](https://github.com/mixxxdj/mixxx/pull/15346)
+* Sidebar: expand items to full width to maximize click-responsive area [#15330](https://github.com/mixxxdj/mixxx/pull/15330)
+
+### Preferences
+
+* Library: reset library font/row height when closing without apply [#15455](https://github.com/mixxxdj/mixxx/pull/15455)
+* Decks: fix Restore Defaults for rate slider direction and track time display
+  [#15443](https://github.com/mixxxdj/mixxx/pull/15443)
+  [#15444](https://github.com/mixxxdj/mixxx/pull/15444)
+* Sound Hardware: don't allow closing preferences with faulty Sound Hardware config
+  [#14576](https://github.com/mixxxdj/mixxx/pull/14576)
+  [#6077](https://github.com/mixxxdj/mixxx/issues/6077)
+* Library: fix display of font style [#15382](https://github.com/mixxxdj/mixxx/pull/15382)
+* Waveforms: fix handling of invalid overview config type [#15422](https://github.com/mixxxdj/mixxx/pull/15422)
+
+### Target support
+
+* Upload all 2.5 builds to "Patch Builds" ppa:mixxx/mixxxpatches [#15436](https://github.com/mixxxdj/mixxx/pull/15436)
+* Update macOS (Intel) runner for building Mixxx to macOS Sequoia 15 [#15391](https://github.com/mixxxdj/mixxx/pull/15391)
+* CMakeLists.txt: fix handling of custom CMAKE_OSX_DEPLOYMENT_TARGET [#15356](https://github.com/mixxxdj/mixxx/pull/15356)
+* debian_buildenv.sh: assert for bash
+  [#15274](https://github.com/mixxxdj/mixxx/pull/15274)
+  [#15273](https://github.com/mixxxdj/mixxx/issues/15273)
+* debian_buildenv.sh: use /etc/os-release instead of the obsolete /etc/lsb-release [#15298](https://github.com/mixxxdj/mixxx/pull/15298)
+* debian_buildenv.sh: fix for Ubuntu Noble (24.10) [#15292](https://github.com/mixxxdj/mixxx/pull/15292)
+* Fix building without an X Window screensaver [#15297](https://github.com/mixxxdj/mixxx/pull/15297)
+* Fix building with FLAC V 1.5
+
+### Misc
+
+* Cover Art: Fix a rare issue causing an infinite loop and high CPU load when fetching a cover art from metadata failed unexpectedly
+  [#15451](https://github.com/mixxxdj/mixxx/pull/15451)
+  [#15199](https://github.com/mixxxdj/mixxx/issues/15199)
+* Network Clock: fix writing wrong number of silence after a long underrun [#15400](https://github.com/mixxxdj/mixxx/pull/15400)
+* Engine: tidy debug log messages in case of sample cache misses [#14793](https://github.com/mixxxdj/mixxx/pull/14793)
+* Engine: use the correct number of channels for underflow compensation [#15394](https://github.com/mixxxdj/mixxx/pull/15394)
+* Menu bar: fix showing/hiding via Alt broken for Qt 6.9
+  [#15352](https://github.com/mixxxdj/mixxx/pull/15352)
+  [#15350](https://github.com/mixxxdj/mixxx/issues/15350)
+* Fix Menu checkbox behaviour, consistency & cleanup [#15365](https://github.com/mixxxdj/mixxx/pull/15365)
+
 ## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (2025-09-02)
 
 ### Controller Mappings

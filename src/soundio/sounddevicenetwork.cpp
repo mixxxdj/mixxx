@@ -334,7 +334,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         } else if (writeExpected < outChunkSize / 2) {
             // We will overshoot by more than a half of the new frames
             if (pWorker->outputDrift()) {
-                // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() "
+                // kLogger.debug() << "workerWriteProcess() "
                 //                    "skip one frame"
                 //                 << (float)writeAvailable / outChunkSize
                 //                 << (float)readAvailable / outChunkSize;
