@@ -1442,10 +1442,10 @@ WEffectChainPresetButton::menu-indicator {
   background-color: #333333;
 }
 
-WWidget, WLabel {
-  /* All labels should default to a grey that is readable on black. */
+WWidget, WLabel,
+#ToolBar WWidget, #ToolBar WLabel {
+  /* All labels in toolbar should default to a grey that is readable on black. */
   color: #D2D2D2;
-  font-size: 12px;
 }
 
 /* Track text, etc. should be in the deck color. */
@@ -1483,12 +1483,15 @@ WNumberRate {
   margin: 1px;
 }
 
-#EQKillButton[value="1"] {
+#EQKillButton[value="1"], #StemMuteButton[value="0"] {
   background-color: #bb0000;
   }
-  #EQKillButton[value="1"]:hover {
+  #EQKillButton[value="1"]:hover, #StemMuteButton[value="1"]:hover {
     background-color: #e30000;
   }
+#StemMuteButton[value="0"]:hover {
+  background-color: #0080BE;
+}
 
 #SmallCircleButton {
   border: 2px solid #333333;

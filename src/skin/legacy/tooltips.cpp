@@ -1018,6 +1018,12 @@ void Tooltips::addStandardTooltips() {
     add("show_intro_outro_cues")
             << tr("Show/hide intro & outro markers and associated buttons.");
 
+    add("keep_consistent_waveform_heights") << tr(
+            "Ensure all waveforms to have the same height across all channels. "
+            "By default, when displaying the stem controls, waveform for "
+            "channel that have no stem may render with a shorter height in "
+            "order to honor the waveform container size you have requested..");
+
     add("intro_start")
             << tr("Intro Start Marker")
             << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))

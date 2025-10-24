@@ -21,6 +21,19 @@ Variables:
     <ObjectName>WaveformContainer<Variable name="chanNum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Children>
+      <WidgetGroup><!-- Stem -->
+        <Layout>vertical</Layout>
+        <SizePolicy>15f,min</SizePolicy>
+        <Children>
+          <Template src="skins:Tango/stem_control.xml">
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Stem -->
+
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <ObjectName>Waveform</ObjectName>
