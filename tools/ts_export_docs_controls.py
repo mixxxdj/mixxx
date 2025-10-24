@@ -280,9 +280,13 @@ def group_var(name: str) -> str:
     return re.sub(r"[\[\]\_]", "", name) + "Control"
 
 
+def replace_dynamics(name: str) -> tuple[str, int]:
+    # Search for every big letter at the end or before ] or _, exception DJ
+    return re.subn(r"([A-IK-Z]|(?<!D)J)(?=\]|$|_)", r"${number}", name)
+
+
 def control_var(name: str, is_pot_meter: bool) -> str:
-    pattern = r"([A-Z])(?=\]|$|_)"
-    name, n = re.subn(pattern, r"${number}", name)
+    name, n = replace_dynamics(name)
     pm_str = "${PotMeterSuffix}" if is_pot_meter else ""
     return f"`{name}{pm_str}`" if n > 0 or is_pot_meter else f'"{name}"'
 
@@ -346,6 +350,45 @@ def create_pot_meter_suffixes(pm_suffixes: list[PotMeterSuffix]) -> list[str]:
     return lines
 
 
+def create_group_control_linking(groups: list[str], type_prefix: str = "") -> list[str]:
+    lines = [f"type {type_prefix}Controls = {{"]
+    groups_and_count = [replace_dynamics(group) for group in groups]
+    prefix = "" if type_prefix == "" else f"{type_prefix}.{type_prefix}"
+
+    # static groups
+    lines.extend(
+        [
+            f'"{group}": {prefix}{group_var(group)};'
+            for group, count in groups_and_count
+            if count == 0
+        ]
+    )
+
+    # dynamic groups
+    dynamics = [
+        f"[key: `{groups_and_count[i][0]}`]: {prefix}{group_var(groups[i])};"
+        for i in range(len(groups_and_count))
+        if groups_and_count[i][1] > 0
+    ]
+    if dynamics:
+        lines.append("} & {")
+        lines.extend(dynamics)
+
+    lines.append("};")
+    return lines
+
+
+def extract_groups(grouped_controls: GroupedControls) -> list[str]:
+    return sorted(
+        {
+            group
+            for controls in grouped_controls.values()
+            for c in controls.values()
+            for group in c.groups
+        }
+    )
+
+
 def export_ts_types(
     output: Path, controls: list[Control], pm_suffixes: list[PotMeterSuffix]
 ):
@@ -361,18 +404,16 @@ def export_ts_types(
         grouped_controls,
         lambda c: c.deprecated_since is None and not c.is_read_only,
     )
-    lines.extend(
-        create_control_types_str(
-            rw_controls,
-        )
-    )
+    lines.extend(create_control_types_str(rw_controls))
 
     # read-only controls
     lines.append("\tnamespace ReadOnly {\n")
-    r_controls = filter_controls(
+    lines.append("\t\t// Read-only controls")
+    ro_controls = filter_controls(
         grouped_controls, lambda c: c.deprecated_since is None and c.is_read_only
     )
-    lines.extend(create_control_types_str(r_controls, "ReadOnly"))
+    lines.extend(create_group_control_linking(extract_groups(ro_controls), "ReadOnly"))
+    lines.extend(create_control_types_str(ro_controls, "ReadOnly"))
     lines.append("\n\t}\n")
 
     # deprecated controls
@@ -389,6 +430,43 @@ def export_ts_types(
 // Generated file, don't change anything by hand
 
 declare namespace MixxxControls {{ 
+    /*
+     * Public
+     */
+    export type MixxxGroup = keyof Controls | (string & {{}});
+
+    // All controls
+    export type MixxxControl<TGroup> =
+        | (string & {{}})
+        | (0 extends 1 & TGroup // is any check
+              ? string
+              : TGroup extends keyof Controls | keyof ReadOnly.ReadOnlyControls
+              ?
+                    | (TGroup extends keyof Controls ? Controls[TGroup] : never)
+                    | (TGroup extends keyof ReadOnly.ReadOnlyControls
+                          ? ReadOnly.ReadOnlyControls[TGroup]
+                          : never)
+              : string);
+
+    // Controls that are read & write at the same time
+    export type MixxxControlReadAndWrite<TGroup> =
+        | (string & {{}})
+        | (0 extends 1 & TGroup // is any check
+              ? string
+              : TGroup extends keyof Controls
+              ? Controls[TGroup]
+              : string);
+
+    /*
+     * Group <-> control linking
+     */
+
+    // Read/Write controls
+    {"\n".join(create_group_control_linking(extract_groups(rw_controls)))} 
+
+    /*
+     * Values
+     */
 \t{"\n\t".join(lines)} 
 }}
 """)
@@ -402,16 +480,12 @@ if __name__ == "__main__":
     controls: list[Control] = []
 
     for section in doc.findall(nodes.section):
-        print("Section ids", section["ids"])
         if "removed-controls" in section["ids"] or "mixxx-controls" in section["ids"]:
-            print("STOP")
             continue
         for node in section.findall(addnodes.desc):
             if "mixxx" not in node["classes"] or "control" not in node["classes"]:
                 continue
             control = Control.from_node(node)
-            if control.name == "flanger":
-                print("FLANGER", control)
             controls.append(control)
 
     export_ts_types(output, controls, pm_suffixes)
