@@ -27,6 +27,7 @@ class Control:
     groups: set[str]
     description: list[str]
     val_range: list[str]
+    version_added: str | None
     is_read_only: bool
     feedback: str | None
     deprecated_since: str | None
@@ -39,18 +40,17 @@ class Control:
         )
         content = next(node.findall(addnodes.desc_content))
         fl = next(content.findall(nodes.field_list), None)
-
         val_range, is_read_only = range_and_readonly(fl)
-        feedback, deprecated_since = feeback_and_deprecated(fl)
 
         return Control(
             signatures[0]["control"],
             set(map(lambda s: s["group"], signatures)),
             text_content(content),
             val_range,
+            get_version_added(content),
             is_read_only,
-            feedback,
-            deprecated_since,
+            get_feedback(fl),
+            get_deprecated(content),
             is_pot_meter(content),
         )
 
@@ -105,23 +105,27 @@ def filter_children(n: Node, tagname: str) -> Iterator[document]:
     return filter(lambda n: hasattr(n, "tagname") and n.tagname == tagname, n.children)  # type: ignore
 
 
-def field_list_find(fl: field_list, name: str) -> document | None:
+def field_list_find(fl: field_list, name: str) -> nodes.field | None:
     for f in filter_children(fl, "field"):
         fn = next(filter_children(f, "field_name"), None)
         if fn is not None and fn.astext() == name:
-            return f
+            return f  # type: ignore
     return None
 
 
-def field_content(fl: field_list | None, name: str) -> list[str]:
+def field_content(field: nodes.field | None) -> nodes.field_body | None:
+    if field is None:
+        return None
+    return next(filter_children(field, "field_body"), None)  # type: ignore
+
+
+def field_text(fl: field_list | None, name: str) -> list[str]:
     if fl is None:
         return []
-    field = field_list_find(fl, name)
-    if field is None:
-        return []
-    body = next(filter_children(field, "field_body"), None)
-    if body:
-        return text_content(body)
+    field_body = field_content(field_list_find(fl, name))
+
+    if field_body:
+        return text_content(field_body)
     return []
 
 
@@ -129,7 +133,7 @@ def range_and_readonly(fl: nodes.field_list | None) -> tuple[list[str], bool]:
     if fl is None:
         return [], False
 
-    val_range = field_content(fl, "Range")
+    val_range = field_text(fl, "Range")
     is_read_only = False
 
     for i in range(len(val_range)):
@@ -141,22 +145,38 @@ def range_and_readonly(fl: nodes.field_list | None) -> tuple[list[str], bool]:
     return val_range, is_read_only
 
 
-def feeback_and_deprecated(fl: field_list | None) -> tuple[str | None, str | None]:
+def get_feedback(fl: field_list | None) -> str | None:
     if fl is None:
-        return None, None
+        return None
 
-    fb = field_list_find(fl, "Feedback")
-    if fb is None:
-        return None, None
+    field = field_list_find(fl, "Feedback")
+    if field is None:
+        return None
 
-    deprecated = next(fb.findall(addnodes.versionmodified), None)
-    if deprecated:
-        feedback = next(filter_children(fb, "paragraph"), None)
-        return feedback.astext() if feedback else None, deprecated.astext().replace(
-            "Deprecated since", ""
-        )
+    feedback = field_content(field)
 
-    return None, None
+    return "".join(text_content(feedback)) if feedback else None
+
+
+def get_version_modified_tag(
+    content: nodes.Element, attr: str, attr_val: str
+) -> addnodes.versionmodified | None:
+    tags = content.findall(addnodes.versionmodified)
+    return next(filter(lambda t: t[attr] == attr_val, tags), None)
+
+
+def get_deprecated(content: nodes.Element) -> str | None:
+    dep_tag = get_version_modified_tag(content, "type", "deprecated")
+    if dep_tag:
+        return dep_tag.astext().replace("Deprecated since", "")
+    return None
+
+
+def get_version_added(content: nodes.Element) -> str | None:
+    dep_tag = get_version_modified_tag(content, "type", "versionadded")
+    if dep_tag:
+        return dep_tag.astext()
+    return None
 
 
 def read_table(node: nodes.table) -> list[list[str]]:
@@ -229,6 +249,8 @@ def ts_doc_comment(control: Control) -> str:
             lines.extend(control.val_range)
     if control.feedback:
         lines.append(f"@feedback {control.feedback}")
+    if control.version_added:
+        lines.append(f"@since {control.version_added}")
     if control.is_read_only:
         lines.append("@readonly")
     if control.is_pot_meter:
