@@ -460,6 +460,7 @@ void WOverview::slotTypeControlChanged(double v) {
 
     m_type = type;
     m_pWaveform.clear();
+    m_waveformSourceImage = QImage();
     slotWaveformSummaryUpdated();
 }
 
