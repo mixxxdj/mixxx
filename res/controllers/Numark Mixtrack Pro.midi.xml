@@ -2,14 +2,14 @@
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.5+">
     <info>
         <name>Numark MixTrack Pro</name>
-        <author>Vespadj, Josh Patten<!-- codespell:ignore patten -->, Matteo (matteo@magm3.com), James Ralston, and D. J. Freije (dario2004@gmail.com)</author>
+        <author>Matteo (matteo@magm3.com), James Ralston, and D. J. Freije (dario2004@gmail.com), Josh Patten<!-- codespell:ignore patten -->, Vespadj</author>
         <description>version v2.5 (2025)</description>
         <forums>https://mixxx.discourse.group/t/numark-mixtrack-pro-by-vespadj/32635</forums>
     </info>
     <settings>
         <group label="Alternative Mapping">
             <option
-                variable="numarkMixTrackPro_BrakeEnabled"
+                variable="numarkMixTrackPro_brakeEnabled"
                 type="boolean"
                 default="false"
                 label='Play/Pause performs Brake and Soft Start if "SCRATCH LED" is on. [Require Mixxx v.2.6+]'>
@@ -33,7 +33,7 @@
                 label="PITCH BEND buttons">
                 <value label="Rate temp up/down (already available by external wheel)">rate_temp</value>
                 <value label="Beat jump" default="true">beatjump</value>
-                <value label="Pitch up/down">pitch</value>
+                <value label="Pitch-Key up/down">pitch</value>
                 <description>Assaign function to "PITCH BEND" buttons.</description>
             </option>
         </group>
@@ -47,7 +47,7 @@
                 <value label="SHIFT (VIEW / TICK / DELETE)">shift</value>
                 <value label="EFFECT">effect</value>
                 <description>Active Quick Effect Super knob (filter is the default) on MID knob when
-                    this modifiers is on and the relative LED is on.</description>
+                    this modifier is on and the relative LED is on.</description>
             </option>
             <row orientation="vertical">
             </row>
