@@ -93,6 +93,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     const UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     const bool m_isMainDeck;
+    bool m_isComment;
     TrackPointer m_pCurrentTrack;
 
     QString m_displayProperty;

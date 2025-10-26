@@ -29,6 +29,7 @@ WTrackProperty::WTrackProperty(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_isMainDeck(isMainDeck),
+          m_isComment(false),
           m_propertyIsWritable(false),
           m_pSelectedClickTimer(nullptr),
           m_bSelected(false),
@@ -65,6 +66,9 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
             return;
         }
         m_editProperty = m_displayProperty;
+        if (m_editProperty == QStringLiteral("comment")) {
+            m_isComment = true;
+        }
     }
     m_propertyIsWritable = true;
 }
@@ -97,6 +101,10 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
 void WTrackProperty::slotTrackChanged(TrackId trackId) {
     Q_UNUSED(trackId);
     updateLabel();
+    if (m_pEditor && m_pEditor->isVisible()) {
+        // Close and discard new text
+        m_pEditor->hide();
+    }
 }
 
 void WTrackProperty::updateLabel() {
@@ -165,6 +173,14 @@ void WTrackProperty::mousePressEvent(QMouseEvent* pEvent) {
         QString editText = getPropertyStringFromTrack(m_editProperty);
         if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
             editText = tr("title");
+        } else if (m_isComment) {
+            // For comments we only load the first line,
+            // ie. truncate track text at first linebreak.
+            // On commit we replace the first line with the edited text.
+            int firstLB = editText.indexOf('\n');
+            if (firstLB >= 0) {
+                editText.truncate(firstLB);
+            }
         }
         m_pEditor->setText(editText);
         m_pEditor->selectAll();
@@ -309,14 +325,34 @@ void WTrackProperty::slotShowTrackMenuChangeRequest(bool show) {
 }
 
 void WTrackProperty::slotCommitEditorData(const QString& text) {
-    // use real track data instead of text() to be independent from display text
-    if (m_pCurrentTrack && text != getPropertyStringFromTrack(m_editProperty)) {
-        const QVariant var(QVariant::fromValue(text));
-        m_pCurrentTrack->setProperty(
-                m_editProperty.toUtf8().constData(),
-                var);
-        // Track::changed() will update label
+    if (!m_pCurrentTrack) {
+        return;
     }
+
+    // use real track data instead of text() to be independent from display text
+    const QString trackText = getPropertyStringFromTrack(m_editProperty);
+    QString editorText = text;
+    if (m_isComment) {
+        // For multi-line comments, the editor received only the first line.
+        // In order to keep the other lines, we need to replace
+        // the first line of the original text with the editor text.
+        // (which may add new linebreaks)
+        // Note: assumes the comment didn't change while we were editing it.
+        int firstLB = trackText.indexOf('\n');
+        if (firstLB >= 0) { // has linebreak
+            QString trackTSliced = trackText;
+            trackTSliced = trackTSliced.sliced(firstLB);
+            editorText.append(trackTSliced);
+        }
+    }
+    if (editorText == trackText) {
+        return;
+    }
+    const QVariant var(QVariant::fromValue(editorText));
+    m_pCurrentTrack->setProperty(
+            m_editProperty.toUtf8().constData(),
+            var);
+    // Track::changed() will update label
 }
 
 void WTrackProperty::resetSelectedState() {
