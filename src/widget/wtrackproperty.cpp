@@ -23,13 +23,15 @@ WTrackProperty::WTrackProperty(
         UserSettingsPointer pConfig,
         Library* pLibrary,
         const QString& group,
-        bool isMainDeck)
+        bool isMainDeck,
+        int deckNum)
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_isMainDeck(isMainDeck),
           m_isComment(false),
+          m_mainDeckNum(deckNum),
           m_propertyIsWritable(false),
           m_pSelectedClickTimer(nullptr),
           m_bSelected(false),
@@ -69,6 +71,31 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
         if (m_editProperty == QStringLiteral("comment")) {
             m_isComment = true;
         }
+    }
+
+    // Create a QAction with a hotkey which allows us to open the editor without
+    // having to use the mouse
+    if (m_isComment && m_isMainDeck && m_mainDeckNum > 0) {
+        parented_ptr<QAction> pEditCommentAction = make_parented<QAction>("edit comment", this);
+        pEditCommentAction->setShortcut(QKeySequence(tr("Alt+%1").arg(m_mainDeckNum)));
+        connect(pEditCommentAction.get(),
+                &QAction::triggered,
+                this,
+                [this]() {
+                    // Assumes only one comment label is visible.
+                    // If there are more, Qt _should_ trigger the first QAction
+                    // in the internal list and throw a warning for the others
+                    // "QAction::event: Ambiguous shortcut overload: [shortcut]"
+                    // Anyways, as soon as one editor is opened (gets focus),
+                    // others will receive a focusOut event and close.
+                    if (isVisible() &&
+                            (!m_pEditor || (m_pEditor && !m_pEditor->isVisible()))) {
+                        // Note: if the editor is already visible, this would
+                        // reload/reset the comment from the track
+                        openEditor();
+                    }
+                });
+        addAction(pEditCommentAction);
     }
     m_propertyIsWritable = true;
 }
@@ -157,36 +184,7 @@ void WTrackProperty::mousePressEvent(QMouseEvent* pEvent) {
                 this, &WTrackProperty::resetSelectedState);
     } else if (m_pSelectedClickTimer->isActive()) {
         resetSelectedState();
-        // create the persistent editor, populate & connect
-        if (!m_pEditor) {
-            m_pEditor = make_parented<WTrackPropertyEditor>(this);
-            connect(m_pEditor,
-                    // use custom signal. editingFinished() doesn't suit since it's
-                    // also emitted weh pressing Esc (which should cancel editing)
-                    &WTrackPropertyEditor::commitEditorData,
-                    this,
-                    &WTrackProperty::slotCommitEditorData);
-        }
-        // Don't let the editor expand beyond its initial size
-        m_pEditor->setFixedSize(size());
-
-        QString editText = getPropertyStringFromTrack(m_editProperty);
-        if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
-            editText = tr("title");
-        } else if (m_isComment) {
-            // For comments we only load the first line,
-            // ie. truncate track text at first linebreak.
-            // On commit we replace the first line with the edited text.
-            int firstLB = editText.indexOf('\n');
-            if (firstLB >= 0) {
-                editText.truncate(firstLB);
-            }
-        }
-        m_pEditor->setText(editText);
-        m_pEditor->selectAll();
-        m_pEditor->show();
-        m_pEditor->setFocus();
-        return;
+        openEditor();
     }
     // start timer
     m_pSelectedClickTimer->start();
@@ -322,6 +320,34 @@ void WTrackProperty::slotShowTrackMenuChangeRequest(bool show) {
             QPoint(),
             mapToGlobal(rect().center()));
     contextMenuEvent(pEvent);
+}
+
+void WTrackProperty::openEditor() {
+    resetSelectedState();
+    if (!m_pCurrentTrack) {
+        return;
+    }
+    // create the persistent editor, populate & connect
+    if (!m_pEditor) {
+        m_pEditor = make_parented<WTrackPropertyEditor>(this);
+        connect(m_pEditor,
+                // use custom signal. editingFinished() doesn't suit since it's
+                // also emitted weh pressing Esc (which should cancel editing)
+                &WTrackPropertyEditor::commitEditorData,
+                this,
+                &WTrackProperty::slotCommitEditorData);
+    }
+    // Don't let the editor expand beyond its initial size
+    m_pEditor->setFixedSize(size());
+
+    QString editText = getPropertyStringFromTrack(m_editProperty);
+    if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
+        editText = tr("title");
+    }
+    m_pEditor->setText(editText);
+    m_pEditor->selectAll();
+    m_pEditor->show();
+    m_pEditor->setFocus();
 }
 
 void WTrackProperty::slotCommitEditorData(const QString& text) {

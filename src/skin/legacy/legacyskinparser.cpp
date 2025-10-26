@@ -1176,13 +1176,15 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
         return nullptr;
     }
 
-    bool isMainDeck = PlayerManager::isDeckGroup(group);
+    int mainDeckNum = 0;
+    bool isMainDeck = PlayerManager::isDeckGroup(group, &mainDeckNum);
     WTrackProperty* pTrackProperty = new WTrackProperty(
             m_pParent,
             m_pConfig,
             m_pLibrary,
             group,
-            isMainDeck);
+            isMainDeck,
+            mainDeckNum);
     setupLabelWidget(node, pTrackProperty);
 
     // Ensure 'show_track_menu' control is created for each main deck and
