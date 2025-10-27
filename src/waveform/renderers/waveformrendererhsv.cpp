@@ -182,20 +182,29 @@ void WaveformRendererHSV::draw(
             switch (m_alignment) {
                 case Qt::AlignBottom :
                 case Qt::AlignRight :
-                    painter->drawLine(
-                        x, breadth,
-                        x, breadth - (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));
+                    painter->drawLine(x,
+                            breadth,
+                            x,
+                            breadth -
+                                    static_cast<int>(heightFactor *
+                                            (float)math_max(
+                                                    maxAll[0], maxAll[1])));
                     break;
                 case Qt::AlignTop :
                 case Qt::AlignLeft :
-                    painter->drawLine(
-                        x, 0,
-                        x, (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));
+                    painter->drawLine(x,
+                            0,
+                            x,
+                            static_cast<int>(heightFactor *
+                                    (float)math_max(maxAll[0], maxAll[1])));
                     break;
                 default :
-                    painter->drawLine(
-                        x, (int)(halfBreadth - heightFactor * (float)maxAll[0]),
-                        x, (int)(halfBreadth + heightFactor * (float)maxAll[1]));
+                    painter->drawLine(x,
+                            static_cast<int>(halfBreadth -
+                                    heightFactor * (float)maxAll[0]),
+                            x,
+                            static_cast<int>(halfBreadth +
+                                    heightFactor * (float)maxAll[1]));
             }
         }
     }

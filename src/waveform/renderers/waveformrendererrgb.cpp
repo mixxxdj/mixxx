@@ -175,19 +175,19 @@ void WaveformRendererRGB::draw(
                             breadth,
                             x,
                             breadth -
-                                    (int)(heightFactor *
+                                    static_cast<int>(heightFactor *
                                             math_max(maxAll, maxAllNext)));
                     break;
                 case Qt::AlignTop:
                 case Qt::AlignLeft:
                     painter->drawLine(
-                            x, 0, x, (int)(heightFactor * math_max(maxAll, maxAllNext)));
+                            x, 0, x, static_cast<int>(heightFactor * math_max(maxAll, maxAllNext)));
                     break;
                 default:
                     painter->drawLine(x,
-                            (int)(halfBreadth - heightFactor * maxAll),
+                            static_cast<int>(halfBreadth - heightFactor * maxAll),
                             x,
-                            (int)(halfBreadth + heightFactor * maxAllNext));
+                            static_cast<int>(halfBreadth + heightFactor * maxAllNext));
             }
         }
     }
