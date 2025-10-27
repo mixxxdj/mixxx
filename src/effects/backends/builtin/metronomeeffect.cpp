@@ -113,7 +113,7 @@ void MetronomeEffect::processChannel(
         // Sync enabled and have a track with beats
         if (groupFeatures.beat_length.has_value() &&
                 groupFeatures.beat_length->scratch_rate != 0.0) {
-            double beatLength = groupFeatures.beat_length->frames /
+            double beatLength = groupFeatures.beat_length->seconds * engineParameters.sampleRate() /
                     groupFeatures.beat_length->scratch_rate;
             double beatToBufferEnd;
             if (beatLength > 0) {
