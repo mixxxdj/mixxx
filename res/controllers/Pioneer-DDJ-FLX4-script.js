@@ -212,7 +212,10 @@ PioneerDDJFLX4.stemsPadsModesStatus = {
 };
 
 // Stems (KEY SHIFT) pad 1 control (pad control = [this value] + [pad  number] - 1)
-PioneerDDJFLX4.stemsPadsFirstControl = 0x70;
+PioneerDDJFLX4.stemMutePadsFirstControl = 0x70;
+
+// Stems (KEY SHIFT) pad 5 control (pad control = [this value] + [pad  number] - 1)
+PioneerDDJFLX4.stemFxPadsFirstControl = 0x74;
 
 PioneerDDJFLX4.quickJumpSize = 32;
 
@@ -228,40 +231,6 @@ PioneerDDJFLX4.trackLoadedLED = function(value, group, _control) {
         group.match(script.channelRegEx)[1] - 1,
         value > 0 ? 0x7F : 0x00
     );
-};
-
-PioneerDDJFLX4.stemCountChanged = function(value, group, _control) {
-    for (let pad=1; pad<=8; pad++) {
-        for (let i=0; i<PioneerDDJFLX4.stemsPadsModesStatus[group].length; i++) {
-            midi.sendShortMsg(
-                PioneerDDJFLX4.stemsPadsModesStatus[group][i],
-                PioneerDDJFLX4.stemsPadsFirstControl + pad -1,
-                pad<=value ? 0x7f : 0x00,
-            );
-        }
-    }
-};
-
-PioneerDDJFLX4.stemMuteChanged = function(value, group, _control) {
-    const channelStem = group.match(/\[Channel(\d+)_Stem(\d+)\]/);
-    const deck = Number(channelStem[1]);
-    const stem = Number(channelStem[2]);
-    const channel = `[Channel${deck}]`;
-
-    const nbStems = engine.getValue(channel, "stem_count");
-
-    let code = 0x00;
-    if (stem <= nbStems && value <= 0.5) {
-        code = 0x7f;
-    }
-
-    for (let i=0; i<PioneerDDJFLX4.stemsPadsModesStatus[channel].length; i++) {
-        midi.sendShortMsg(
-            PioneerDDJFLX4.stemsPadsModesStatus[channel][i],
-            PioneerDDJFLX4.stemsPadsFirstControl + stem -1,
-            code,
-        );
-    }
 };
 
 PioneerDDJFLX4.toggleLight = function(midiIn, active) {
@@ -318,18 +287,11 @@ PioneerDDJFLX4.init = function() {
     engine.makeConnection("[Channel1]", "stem_count", PioneerDDJFLX4.stemCountChanged);
     engine.makeConnection("[Channel2]", "stem_count", PioneerDDJFLX4.stemCountChanged);
 
-    // Register callbacks for each stems of each decks, to change pad lights when muted/unmuted
-    // Iterate until the makeConnection fails, to allow Mixx to change
-    // the maximum number of supported stems up to 8 (it is 4 at the time of writing)
-    // It unfortunately generates a warning in the log when reaching the first non-supported stem number
-    mainStemsLoop:
-    for (let stem=1; stem<=8; stem++) {
+    // Register callbacks for each stems of each decks, to change pad lights when muted/unmuted/FX
+    for (let stem=1; stem<=4; stem++) {
         for (let deck=1; deck<=2; deck++) {
-            const tst=engine.makeConnection(`[Channel${deck}_Stem${stem}]`, "mute", PioneerDDJFLX4.stemMuteChanged);
-            console.log(tst);
-            if (!tst) {
-                break mainStemsLoop;
-            };
+            engine.makeConnection(`[Channel${deck}_Stem${stem}]`, "mute", PioneerDDJFLX4.stemMuteChanged);
+            engine.makeConnection(`[QuickEffectRack1_[Channel${deck}_Stem${stem}]]`, "enabled", PioneerDDJFLX4.stemFxChanged);
         }
     }
 
@@ -800,46 +762,6 @@ PioneerDDJFLX4.samplerPadShiftPressed = function(_channel, _control, value, _sta
     }
 };
 
-PioneerDDJFLX4.keyShiftPadPressed = function(_channel, control, value, _status, group) {
-    if (value !== 0x7f) {
-        return;
-    }
-
-    const nbStems = engine.getValue(group, "stem_count");
-    if (control - PioneerDDJFLX4.stemsPadsFirstControl + 1 > nbStems) {
-        return;
-    }
-
-    const stemGroup = `[${group.substring(1, group.length-1)}_Stem${control - PioneerDDJFLX4.stemsPadsFirstControl + 1}]`;
-
-    if (engine.getValue(stemGroup, "mute")) {
-        engine.setValue(stemGroup, "mute", 0);
-    } else {
-        engine.setValue(stemGroup, "mute", 1);
-    }
-};
-
-PioneerDDJFLX4.keyShiftPadShiftPressed = function(_channel, control, value, _status, group) {
-    if (value !== 0x7f) {
-        return;
-    }
-
-    const nbStems = engine.getValue(group, "stem_count");
-    if (control - PioneerDDJFLX4.stemsPadsFirstControl + 1 > nbStems) {
-        return;
-    }
-
-    for (let i=1; i<=nbStems; i++) {
-        const stemGroup = `[${group.substring(1, group.length-1)}_Stem${i}]`;
-
-        if (i + PioneerDDJFLX4.stemsPadsFirstControl - 1 === control) {
-            engine.setValue(stemGroup, "mute", 0);
-        } else {
-            engine.setValue(stemGroup, "mute", 1);
-        }
-    }
-};
-
 PioneerDDJFLX4.startSamplerBlink = function(channel, control, group) {
     let val = 0x7f;
 
@@ -890,6 +812,139 @@ PioneerDDJFLX4.quickJumpForward = function(_channel, _control, value, _status, g
 PioneerDDJFLX4.quickJumpBack = function(_channel, _control, value, _status, group) {
     if (value) {
         engine.setValue(group, "beatjump", -PioneerDDJFLX4.quickJumpSize);
+    }
+};
+
+//
+// Stems mode
+//
+
+PioneerDDJFLX4.stemMutePadPressed = function(_channel, control, value, _status, group) {
+    if (value !== 0x7f) {
+        return;
+    }
+
+    const nbStems = engine.getValue(group, "stem_count");
+    if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > nbStems) {
+        return;
+    }
+
+    const stemGroup = `[${group.substring(1, group.length-1)}_Stem${control - PioneerDDJFLX4.stemMutePadsFirstControl + 1}]`;
+
+    if (engine.getValue(stemGroup, "mute")) {
+        engine.setValue(stemGroup, "mute", 0);
+    } else {
+        engine.setValue(stemGroup, "mute", 1);
+    }
+};
+
+PioneerDDJFLX4.stemMutePadShiftPressed = function(_channel, control, value, _status, group) {
+    if (value !== 0x7f) {
+        return;
+    }
+
+    const nbStems = engine.getValue(group, "stem_count");
+    if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > nbStems) {
+        return;
+    }
+
+    for (let i=1; i<=nbStems; i++) {
+        const stemGroup = `[${group.substring(1, group.length-1)}_Stem${i}]`;
+
+        if (i + PioneerDDJFLX4.stemMutePadsFirstControl - 1 === control) {
+            engine.setValue(stemGroup, "mute", 0);
+        } else {
+            engine.setValue(stemGroup, "mute", 1);
+        }
+    }
+};
+
+PioneerDDJFLX4.stemFxPadPressed = function(_channel, control, value, _status, group) {
+    if (value !== 0x7f) {
+        return;
+    }
+
+    if (control - PioneerDDJFLX4.stemFxPadsFirstControl + 1 > 4) {
+        return;
+    }
+
+    const stemGroup = `[QuickEffectRack1_[${group.substring(1, group.length-1)}_Stem${control - PioneerDDJFLX4.stemFxPadsFirstControl + 1}]]`;
+
+    if (engine.getValue(stemGroup, "enabled")) {
+        engine.setValue(stemGroup, "enabled", 0);
+    } else {
+        engine.setValue(stemGroup, "enabled", 1);
+    }
+};
+
+PioneerDDJFLX4.stemFxPadShiftPressed = function(_channel, control, value, _status, group) {
+    if (value !== 0x7f) {
+        return;
+    }
+
+    if (control - PioneerDDJFLX4.stemFxPadsFirstControl + 1 > 4) {
+        return;
+    }
+
+    const stemGroup = `[QuickEffectRack1_[${group.substring(1, group.length-1)}_Stem${control - PioneerDDJFLX4.stemFxPadsFirstControl + 1}]]`;
+
+    engine.setValue(stemGroup, "next_chain_preset", 1);
+};
+
+PioneerDDJFLX4.stemCountChanged = function(value, group, _control) {
+
+    for (let stem=1; stem<=4; stem++) {
+        // Stem mute pads
+        PioneerDDJFLX4.stemMuteChanged(
+            engine.getValue(`[${group.substring(1, group.length-1)}_Stem${stem}]`, "mute"),
+            `[${group.substring(1, group.length-1)}_Stem${stem}]`,
+            _control,
+        );
+
+        // Stem FX pads
+        PioneerDDJFLX4.stemFxChanged(
+            engine.getValue(`[QuickEffectRack1_[${group.substring(1, group.length-1)}_Stem${stem}]]`, "enabled"),
+            `[QuickEffectRack1_[${group.substring(1, group.length-1)}_Stem${stem}]]`,
+            _control,
+        );
+    }
+};
+
+PioneerDDJFLX4.stemMuteChanged = function(value, group, _control) {
+    const channelStem = group.match(/\[Channel(\d+)_Stem(\d+)\]/);
+    const deck = Number(channelStem[1]);
+    const stem = Number(channelStem[2]);
+    const channel = `[Channel${deck}]`;
+
+    const nbStems = engine.getValue(channel, "stem_count");
+
+    let code = 0x00;
+    if (stem <= nbStems && value <= 0.5) {
+        code = 0x7f;
+    }
+
+    for (let i=0; i<PioneerDDJFLX4.stemsPadsModesStatus[channel].length; i++) {
+        midi.sendShortMsg(
+            PioneerDDJFLX4.stemsPadsModesStatus[channel][i],
+            PioneerDDJFLX4.stemMutePadsFirstControl + stem -1,
+            code,
+        );
+    }
+};
+
+PioneerDDJFLX4.stemFxChanged = function(value, group, _control) {
+    const channelStem = group.match(/\[QuickEffectRack1_\[Channel(\d+)_Stem(\d+)\]\]/);
+    const deck = Number(channelStem[1]);
+    const stem = Number(channelStem[2]);
+    const channel = `[Channel${deck}]`;
+
+    console.log(`value=0x${value.toString(16)}, group=${group}, deck=${deck}, stem=${stem}, channel=${channel}`);
+    for (let i=0; i<PioneerDDJFLX4.stemsPadsModesStatus[channel].length; i++) {
+        midi.sendShortMsg(
+            PioneerDDJFLX4.stemsPadsModesStatus[channel][i],
+            PioneerDDJFLX4.stemFxPadsFirstControl + stem -1,
+            value <= 0.5 ? 0x00 : 0x7f,
+        );
     }
 };
 
