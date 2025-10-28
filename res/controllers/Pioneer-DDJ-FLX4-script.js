@@ -824,7 +824,8 @@ PioneerDDJFLX4.stemMutePadPressed = function(_channel, control, value, _status, 
         return;
     }
 
-    const stemCount = engine.getValue(group, "stem_count");
+    const stemCount = Math.min(engine.getValue(group, "stem_count"), 4);
+
     if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > stemCount) {
         return;
     }
@@ -843,7 +844,8 @@ PioneerDDJFLX4.stemMutePadShiftPressed = function(_channel, control, value, _sta
         return;
     }
 
-    const stemCount = engine.getValue(group, "stem_count");
+    const stemCount = Math.min(engine.getValue(group, "stem_count"), 4);
+
     if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > stemCount) {
         return;
     }
@@ -891,7 +893,7 @@ PioneerDDJFLX4.stemFxPadShiftPressed = function(_channel, control, value, _statu
     engine.setValue(stemGroup, "next_chain_preset", 1);
 };
 
-PioneerDDJFLX4.stemCountChanged = function(value, group, _control) {
+PioneerDDJFLX4.stemCountChanged = function(_value, group, _control) {
 
     for (let stem=1; stem<=4; stem++) {
         // Stem mute pads
@@ -916,6 +918,10 @@ PioneerDDJFLX4.stemMuteChanged = function(value, group, _control) {
     const stem = Number(channelStem[2]);
     const channel = `[Channel${deck}]`;
 
+    if (stem > 4) {
+        return;
+    }
+
     const stemCount = engine.getValue(channel, "stem_count");
 
     let code = 0x00;
@@ -937,6 +943,10 @@ PioneerDDJFLX4.stemFxChanged = function(value, group, _control) {
     const deck = Number(channelStem[1]);
     const stem = Number(channelStem[2]);
     const channel = `[Channel${deck}]`;
+
+    if (stem > 4) {
+        return;
+    }
 
     for (let i=0; i<PioneerDDJFLX4.stemsPadsModesStatus[channel].length; i++) {
         midi.sendShortMsg(
