@@ -824,8 +824,8 @@ PioneerDDJFLX4.stemMutePadPressed = function(_channel, control, value, _status, 
         return;
     }
 
-    const nbStems = engine.getValue(group, "stem_count");
-    if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > nbStems) {
+    const stemCount = engine.getValue(group, "stem_count");
+    if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > stemCount) {
         return;
     }
 
@@ -843,15 +843,15 @@ PioneerDDJFLX4.stemMutePadShiftPressed = function(_channel, control, value, _sta
         return;
     }
 
-    const nbStems = engine.getValue(group, "stem_count");
-    if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > nbStems) {
+    const stemCount = engine.getValue(group, "stem_count");
+    if (control - PioneerDDJFLX4.stemMutePadsFirstControl + 1 > stemCount) {
         return;
     }
 
-    for (let i=1; i<=nbStems; i++) {
-        const stemGroup = `[${group.substring(1, group.length-1)}_Stem${i}]`;
+    for (let stemIdx=1; stemIdx<=stemCount; stemIdx++) {
+        const stemGroup = `[${group.substring(1, group.length-1)}_Stem${stemIdx}]`;
 
-        if (i + PioneerDDJFLX4.stemMutePadsFirstControl - 1 === control) {
+        if (stemIdx + PioneerDDJFLX4.stemMutePadsFirstControl - 1 === control) {
             engine.setValue(stemGroup, "mute", 0);
         } else {
             engine.setValue(stemGroup, "mute", 1);
@@ -916,10 +916,10 @@ PioneerDDJFLX4.stemMuteChanged = function(value, group, _control) {
     const stem = Number(channelStem[2]);
     const channel = `[Channel${deck}]`;
 
-    const nbStems = engine.getValue(channel, "stem_count");
+    const stemCount = engine.getValue(channel, "stem_count");
 
     let code = 0x00;
-    if (stem <= nbStems && value <= 0.5) {
+    if (stem <= stemCount && value <= 0.5) {
         code = 0x7f;
     }
 
@@ -938,7 +938,6 @@ PioneerDDJFLX4.stemFxChanged = function(value, group, _control) {
     const stem = Number(channelStem[2]);
     const channel = `[Channel${deck}]`;
 
-    console.log(`value=0x${value.toString(16)}, group=${group}, deck=${deck}, stem=${stem}, channel=${channel}`);
     for (let i=0; i<PioneerDDJFLX4.stemsPadsModesStatus[channel].length; i++) {
         midi.sendShortMsg(
             PioneerDDJFLX4.stemsPadsModesStatus[channel][i],
