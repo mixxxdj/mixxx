@@ -1,7 +1,5 @@
 #include "controllers/hid/hiddevice.h"
 
-#include <hidapi.h>
-
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"
@@ -52,6 +50,30 @@ DeviceInfo::DeviceInfo(const hid_device_info& device_info)
                   device_info.product_string, kDeviceInfoStringMaxLength)),
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
+}
+
+const std::vector<uint8_t>& DeviceInfo::fetchRawReportDescriptor(hid_device* pHidDevice) {
+    if (!pHidDevice) {
+        static const std::vector<uint8_t> emptyDescriptor;
+        return emptyDescriptor;
+    }
+    if (!m_reportDescriptor.empty()) {
+        //
+        return m_reportDescriptor;
+    }
+
+    uint8_t tempReportDescriptor[HID_API_MAX_REPORT_DESCRIPTOR_SIZE];
+    int descriptorSize = hid_get_report_descriptor(pHidDevice,
+            tempReportDescriptor,
+            HID_API_MAX_REPORT_DESCRIPTOR_SIZE);
+    if (descriptorSize <= 0) {
+        static const std::vector<uint8_t> emptyDescriptor;
+        return emptyDescriptor;
+    }
+    m_reportDescriptor = std::vector<uint8_t>(tempReportDescriptor,
+            tempReportDescriptor + descriptorSize);
+
+    return m_reportDescriptor;
 }
 
 QString DeviceInfo::formatName() const {
