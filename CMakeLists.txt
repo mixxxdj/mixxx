@@ -2595,8 +2595,12 @@ if(BUILD_UI_TEST)
   )
   set(SPIX_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libspix-install")
   set(
-    SPIX_LIBRARY
-    "${CMAKE_STATIC_LIBRARY_PREFIX}Spix${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    SPIX_QTQUICK_LIBRARY
+    "${CMAKE_STATIC_LIBRARY_PREFIX}SpixCore${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  )
+  set(
+    SPIX_CORE_LIBRARY
+    "${CMAKE_STATIC_LIBRARY_PREFIX}SpixQtQuick${CMAKE_STATIC_LIBRARY_SUFFIX}"
   )
   ExternalProject_Add(
     libspix
@@ -2616,7 +2620,9 @@ if(BUILD_UI_TEST)
       -DAnyRPC_LIBRARIES=${ANYRPC_INSTALL_DIR}/lib -DQt6Core_DIR=${Qt6Core_DIR}
       -DQt6Gui_DIR=${Qt6Gui_DIR} -DQt6_DIR=${Qt6_DIR}
       -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-    BUILD_BYPRODUCTS <INSTALL_DIR>/${SPIX_LIBRARY}
+    BUILD_BYPRODUCTS
+      <INSTALL_DIR>/${SPIX_QTQUICK_LIBRARY}
+      <INSTALL_DIR>/${SPIX_CORE_LIBRARY}
     EXCLUDE_FROM_ALL TRUE
   )
   add_dependencies(libspix libanyrpc)
@@ -2891,15 +2897,23 @@ if(BUILD_TESTING)
       PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/lib/libspix-install/
     )
     # Assemble a library based on the external project.
-    add_library(Spix STATIC IMPORTED)
+    add_library(SpixCore STATIC IMPORTED)
     set_target_properties(
-      Spix
+      SpixCore
       PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${SPIX_INSTALL_DIR}"
-        IMPORTED_LOCATION "${SPIX_INSTALL_DIR}/${SPIX_LIBRARY}"
+        IMPORTED_LOCATION "${SPIX_INSTALL_DIR}/${SPIX_QTQUICK_LIBRARY}"
+    )
+    add_library(SpixQtQuick STATIC IMPORTED)
+    set_target_properties(
+      SpixQtQuick
+      PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${SPIX_INSTALL_DIR}"
+        IMPORTED_LOCATION "${SPIX_INSTALL_DIR}/${SPIX_CORE_LIBRARY}"
     )
 
-    target_link_libraries(mixxx-test PRIVATE Spix)
+    target_link_libraries(mixxx-test PRIVATE SpixCore)
+    target_link_libraries(mixxx-test PRIVATE SpixQtQuick)
   endif()
 
   if(BUILD_BENCH)
