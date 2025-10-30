@@ -86,7 +86,7 @@ jobs:
       - git
       - build
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request'
     steps:
       - name: Fetch all UI results artifacts
         id: generateCommentBody
@@ -114,6 +114,7 @@ jobs:
 
       - name: "[UI tests] Update existing comment or create a new one"
         uses: peter-evans/create-or-update-comment@fffe59ea229327e73edca9d31f0b578bf04152a9
+        id: steps.generateCommentBody.outputs.commentBody != ''
         with:
           comment-id: ${{ steps.find-tests-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -124,4 +125,10 @@ jobs:
           edit-mode: replace
 
       - name: Ready to go
+        id: ready
+        if: needs.pre-commit.outcome == 'success' && needs.checks.outcome == 'success' && needs.git.outcome == 'success' && needs.build.outcome == 'success'
         run: "exit 0"
+
+      - name: Not ready
+        if: steps.ready.outcome == 'skipped'
+        run: "exit 1"
