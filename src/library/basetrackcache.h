@@ -64,6 +64,7 @@ class BaseTrackCache : public QObject {
     QString columnNameForFieldIndex(int index) const;
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
+    int endFieldIndex() const;
     virtual void filterAndSort(const QSet<TrackId>& trackIds,
                                const QString& query,
                                const QString& extraFilter,
@@ -105,13 +106,6 @@ class BaseTrackCache : public QObject {
             Qt::SortOrder sortOrder,
             const QVariant& val1,
             const QVariant& val2) const;
-    bool trackMatches(const TrackPointer& pTrack,
-            const QRegularExpression& matcher) const;
-    bool trackMatchesNumeric(const TrackPointer& pTrack,
-                             const QStringList& numberMatchers) const;
-    bool trackMatchesNamedString(const TrackPointer& pTrack,
-                             const QStringList& numberMatchers) const;
-    bool evaluateNumeric(const int value, const QString& expression) const;
 
     const QString m_tableName;
     const QString m_idColumn;

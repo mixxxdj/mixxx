@@ -33,6 +33,9 @@ constexpr int kDragOutsideLimitX = 100;
 constexpr int kDragOutsideLimitY = 50;
 } // anonymous namespace
 
+// for mixxx::OverviewType
+using namespace mixxx;
+
 WOverview::WOverview(
         const QString& group,
         PlayerManager* pPlayerManager,
@@ -41,7 +44,7 @@ WOverview::WOverview(
         : WWidget(parent),
           m_group(group),
           m_pConfig(pConfig),
-          m_type(mixxx::OverviewType::RGB),
+          m_type(OverviewType::RGB),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -105,16 +108,22 @@ WOverview::WOverview(
     // changed in the preferences.
     WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
     connect(pWidgetFactory,
-            &WaveformWidgetFactory::overviewNormalizeChanged,
+            &WaveformWidgetFactory::overviewScalingChanged,
             this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    connect(pWidgetFactory,
-            &WaveformWidgetFactory::visualGainChanged,
-            this,
-            &WOverview::slotNormalizeOrVisualGainChanged);
-    // Also listen to ReplayGain changes to scale the waveform
-    m_pReplayGain = make_parented<ControlProxy>(m_group, "replaygain", this);
-    m_pReplayGain->connectValueChanged(this, &WOverview::slotNormalizeOrVisualGainChanged);
+            &WOverview::slotScalingChanged);
+    // Also update when the ReplayGain and related options have been changed
+    m_pReplayGain = make_parented<ControlProxy>(m_group, QStringLiteral("replaygain"), this);
+    m_pReplayGainEnabled = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainEnabled"), this);
+    m_pReplayGainBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainBoost"), this);
+    m_pReplayGainDefaultBoost = make_parented<ControlProxy>(
+            QStringLiteral("[ReplayGain]"), QStringLiteral("DefaultBoost"), this);
+
+    m_pReplayGain->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainEnabled->connectValueChanged(this, &WOverview::slotScalingChanged);
+    m_pReplayGainDefaultBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
 
     m_pPassthroughLabel = make_parented<QLabel>(this);
 
@@ -186,6 +195,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_marks.connectSamplePositionChanged(this, &WOverview::onMarkChanged);
     m_marks.connectSampleEndPositionChanged(this, &WOverview::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WOverview::onMarkChanged);
+    m_marks.connectTypeChanged(this, &WOverview::onMarkChanged);
+    m_marks.connectStatusChanged(this, &WOverview::onMarkChanged);
 
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
@@ -443,8 +454,8 @@ void WOverview::onPassthroughChange(double v) {
 
 void WOverview::slotTypeControlChanged(double v) {
     // Assert that v is in enum range to prevent UB.
-    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
-    mixxx::OverviewType type = static_cast<mixxx::OverviewType>(static_cast<int>(v));
+    DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<OverviewType>().keyCount());
+    OverviewType type = static_cast<OverviewType>(static_cast<int>(v));
     if (type == m_type) {
         return;
     }
@@ -458,7 +469,7 @@ void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
 
-void WOverview::slotNormalizeOrVisualGainChanged() {
+void WOverview::slotScalingChanged() {
     update();
 }
 
@@ -475,7 +486,8 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
             int hotcueNumber = currentCue->getHotCue();
             if ((currentCue->getType() == mixxx::CueType::HotCue ||
-                        currentCue->getType() == mixxx::CueType::Loop) &&
+                        currentCue->getType() == mixxx::CueType::Loop ||
+                        currentCue->getType() == mixxx::CueType::Jump) &&
                     hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
@@ -733,42 +745,56 @@ void WOverview::drawAxis(QPainter* pPainter) {
 }
 
 void WOverview::drawWaveformPixmap(QPainter* pPainter) {
-    if (!m_waveformSourceImage.isNull()) {
-        WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
-        float diffGain;
-        bool normalize = pWidgetFactory->isOverviewNormalized();
-        if (normalize && m_pixmapDone && m_waveformPeak > 1) {
-            diffGain = 255 - m_waveformPeak - 1;
-        } else {
-            DEBUG_ASSERT(m_pCurrentTrack);
-            const auto replayGain = m_pCurrentTrack->getReplayGain();
-            const auto visualGain = static_cast<float>(
-                    pWidgetFactory->getVisualGain(BandIndex::AllBand) *
-                    (replayGain.hasRatio()
-                                    ? replayGain.getRatio()
-                                    : 1.0));
-            diffGain = 255.0f - (255.0f / visualGain);
-        }
-
-        if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
-            QRect sourceRect(0,
-                    static_cast<int>(diffGain),
-                    m_waveformSourceImage.width(),
-                    m_waveformSourceImage.height() -
-                            2 * static_cast<int>(diffGain));
-            QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
-            if (m_orientation == Qt::Vertical) {
-                // Rotate pixmap
-                croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
-            }
-            m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
-                    Qt::IgnoreAspectRatio,
-                    Qt::SmoothTransformation);
-            m_diffGain = diffGain;
-        }
-
-        pPainter->drawImage(rect(), m_waveformImageScaled);
+    if (m_waveformSourceImage.isNull()) {
+        return;
     }
+
+    WaveformWidgetFactory* pWidgetFactory = WaveformWidgetFactory::instance();
+    float diffGain;
+    bool normalize = pWidgetFactory->isOverviewNormalized();
+    if (normalize && m_pixmapDone && m_waveformPeak > 1) {
+        diffGain = 255 - m_waveformPeak - 1;
+    } else {
+        // Try to get same visual gain like in the scrolling waveforms.
+        // Note: there the gain still varies per renderer :|
+        // This essentially repeats the calculations of EnginePregain::process(),
+        // just without `pregain`.
+        CSAMPLE_GAIN trackGainRatio = 1;
+        if (m_pReplayGainEnabled->toBool()) {
+            auto replayGain = static_cast<CSAMPLE_GAIN>(m_pReplayGain->get());
+            if (replayGain == 0) {
+                // Not analyzed yet or cleared manually. Use default boost
+                trackGainRatio =
+                        static_cast<CSAMPLE_GAIN>(m_pReplayGainDefaultBoost->get());
+            } else {
+                // ReplayGain boost
+                trackGainRatio =
+                        replayGain * static_cast<CSAMPLE_GAIN>(m_pReplayGainBoost->get());
+            }
+        }
+        const auto visualGain = static_cast<float>(trackGainRatio *
+                pWidgetFactory->getVisualGain(BandIndex::AllBand));
+        diffGain = 255.0f - (255.0f / visualGain);
+    }
+
+    if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
+        const QRect sourceRect(0,
+                static_cast<int>(diffGain),
+                m_waveformSourceImage.width(),
+                m_waveformSourceImage.height() -
+                        2 * static_cast<int>(diffGain));
+        QImage croppedImage = m_waveformSourceImage.copy(sourceRect);
+        if (m_orientation == Qt::Vertical) {
+            // Rotate pixmap
+            croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
+        }
+        m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                Qt::IgnoreAspectRatio,
+                Qt::SmoothTransformation);
+        m_diffGain = diffGain;
+    }
+
+    pPainter->drawImage(rect(), m_waveformImageScaled);
 }
 
 void WOverview::drawMinuteMarkers(QPainter* pPainter) {
@@ -971,6 +997,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 offset + static_cast<float>(samplePosition) * gain,
                 0.0f,
                 static_cast<float>(width()));
+        float markStartPosition = markPosition;
         pMark->m_linePosition = markPosition;
 
         QLineF line;
@@ -986,15 +1013,22 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         QRectF rect;
         double sampleEndPosition = pMark->getSampleEndPosition();
         if (sampleEndPosition > 0) {
-            const float markEndPosition = math_clamp(
+            float markEndPosition = math_clamp(
                     offset + static_cast<float>(sampleEndPosition) * gain,
                     0.0f,
                     static_cast<float>(width()));
 
+            // If it's a Jump cue, end is later than start for a forward jump,
+            // so swap positions in this case to get a valid rect for
+            // painting the range.
+            if (pMark->isJump() &&
+                    markEndPosition < markStartPosition) {
+                std::swap(markStartPosition, markEndPosition);
+            }
             if (m_orientation == Qt::Horizontal) {
-                rect.setCoords(markPosition, 0, markEndPosition, height());
+                rect.setCoords(markStartPosition, 0, markEndPosition, height());
             } else {
-                rect.setCoords(0, markPosition, width(), markEndPosition);
+                rect.setCoords(0, markStartPosition, width(), markEndPosition);
             }
         }
 
@@ -1005,9 +1039,18 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         pPainter->drawLine(line);
 
         if (rect.isValid()) {
-            QColor loopColor = pMark->fillColor();
-            loopColor.setAlphaF(0.5f);
-            pPainter->fillRect(rect, loopColor);
+            QColor rangeColor = pMark->fillColor();
+            // Less opacity for inactive jump cues to not unnecessarily obstruct
+            // the waveform image.
+            // TODO Use played color for forward jumps to clarify we'll skip that region?
+            if (pMark->getType() == mixxx::CueType::Jump && pMark->isActive()) {
+                rangeColor.setAlphaF(0.5f);
+            } else {
+                rangeColor.setAlphaF(0.2f);
+            }
+            // TODO Instead of uniform painting, use different types of gradients
+            // loops, jump, intro/outro
+            pPainter->fillRect(rect, rangeColor);
         }
 
         if (!pMark->m_text.isEmpty()) {
@@ -1422,21 +1465,21 @@ bool WOverview::drawNextPixmapPart() {
                 static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
-    if (m_type == mixxx::OverviewType::Filtered) {
+    if (m_type == OverviewType::Filtered) {
         waveformOverviewRenderer::drawWaveformPartLMH(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else if (m_type == mixxx::OverviewType::HSV) {
+    } else if (m_type == OverviewType::HSV) {
         waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
-    } else { // mixxx::OverviewType::RGB:
+    } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,

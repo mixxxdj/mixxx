@@ -103,6 +103,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     std::unique_ptr<ControlObject> m_pStemCount;
     std::vector<std::unique_ptr<ControlPotmeter>> m_stemGain;
     std::vector<std::unique_ptr<ControlPushButton>> m_stemMute;
+    bool m_stemClonedState;
 #endif
 
     // Begin vinyl passthrough fields

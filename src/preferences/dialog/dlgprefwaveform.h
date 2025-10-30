@@ -35,25 +35,22 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformEnabled(bool checked);
     void slotSetWaveformAcceleration(bool checked);
 #ifdef MIXXX_USE_QOPENGL
-    void slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option option, bool enabled);
+    void slotSetWaveformOptions(WaveformRendererSignalBase::Option option, bool enabled);
     void slotSetWaveformOptionSplitStereoSignal(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::
+        slotSetWaveformOptions(WaveformRendererSignalBase::Option::
                                        SplitStereoSignal,
                 checked);
     }
     void slotSetWaveformOptionHighDetail(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
+        slotSetWaveformOptions(WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
-    void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
     void slotSetVisualGainLow(double gain);
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
-    void slotSetNormalizeOverview(bool normalize);
-    void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotWaveformMeasured(float frameRate, int droppedFrames);
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
@@ -63,6 +60,13 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
     void slotSetUntilMarkTextHeightLimit(int index);
+    void slotStemOpacity(float value);
+    void slotStemReorderOnChange(bool value);
+    void slotStemOutlineOpacity(float value);
+    // overview options
+    void slotSetWaveformOverviewType();
+    void slotSetOverviewMinuteMarkers(bool minuteMarkers);
+    void slotSetOverviewScaling();
 
   private:
     void initWaveformControl();
@@ -71,11 +75,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void updateEnableUntilMark();
     void updateWaveformTypeOptions(bool useWaveform,
             WaveformWidgetBackend backend,
-            allshader::WaveformRendererSignalBase::Options currentOption);
+            WaveformRendererSignalBase::Options currentOption);
     void updateWaveformAcceleration(
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
+    void updateStemOptionsEnabled();
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;

@@ -89,6 +89,17 @@
        </widget>
       </item>
 
+      <item row="4" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_library_scan_summary">
+        <property name="text">
+         <string>Show scan summary dialog</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item>
@@ -671,6 +682,7 @@
   <tabstop>pushButton_relocate_dir</tabstop>
   <tabstop>pushButton_remove_dir</tabstop>
   <tabstop>checkBox_library_scan</tabstop>
+  <tabstop>checkBox_library_scan_summary</tabstop>
   <tabstop>checkBox_sync_track_metadata</tabstop>
   <tabstop>checkBox_serato_metadata_export</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>

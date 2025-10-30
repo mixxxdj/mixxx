@@ -17,12 +17,15 @@ namespace {
 
 constexpr int kHotcueDefaultColorIndex = -1;
 constexpr int kLoopDefaultColorIndex = -1;
+constexpr int kJumpDefaultColorIndex = -1;
 constexpr QSize kPalettePreviewSize = QSize(108, 16);
 const ConfigKey kAutoHotcueColorsConfigKey("[Controls]", "auto_hotcue_colors");
 const ConfigKey kAutoLoopColorsConfigKey("[Controls]", "auto_loop_colors");
+const ConfigKey kAutoJumpColorsConfigKey("[Controls]", "auto_jump_colors");
 const ConfigKey kHotcueDefaultColorIndexConfigKey("[Controls]", "HotcueDefaultColorIndex");
 const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorIndex");
 const ConfigKey kKeyColorsEnabledConfigKey("[Config]", "key_colors_enabled");
+const ConfigKey kJumpDefaultColorIndexConfigKey("[Controls]", "jump_default_color_index");
 
 } // anonymous namespace
 
@@ -120,6 +123,7 @@ void DlgPrefColors::slotUpdate() {
                     paletteIcon);
         }
     }
+    updateKeyColorsCombobox();
 
     const QSet<QString> colorPaletteNames = m_colorPaletteSettings.getColorPaletteNames();
     for (const auto& paletteName : colorPaletteNames) {
@@ -184,6 +188,24 @@ void DlgPrefColors::slotUpdate() {
         comboBoxLoopDefaultColor->setCurrentIndex(
                 loopDefaultColorIndex + 1);
     }
+
+    bool autoJumpColors = m_pConfig->getValue(kAutoJumpColorsConfigKey, false);
+    if (autoJumpColors) {
+        comboBoxJumpDefaultColor->setCurrentIndex(0);
+    } else {
+        int jumpDefaultColorIndex = m_pConfig->getValue(
+                kJumpDefaultColorIndexConfigKey, kJumpDefaultColorIndex);
+        if (jumpDefaultColorIndex < 0 ||
+                jumpDefaultColorIndex >= hotcuePalette.size()) {
+            jumpDefaultColorIndex =
+                    hotcuePalette.size() - 3; // default to third last color
+            if (jumpDefaultColorIndex < 0) {
+                jumpDefaultColorIndex = 0;
+            }
+        }
+        comboBoxJumpDefaultColor->setCurrentIndex(
+                jumpDefaultColorIndex + 1);
+    }
 }
 
 // Set the default values for all the widgets
@@ -206,6 +228,9 @@ void DlgPrefColors::slotResetToDefaults() {
     comboBoxLoopDefaultColor->setCurrentIndex(
             mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 1);
     checkboxKeyColorsEnabled->setChecked(BaseTrackTableModel::kKeyColorsEnabledDefault);
+    updateKeyColorsCombobox();
+    comboBoxJumpDefaultColor->setCurrentIndex(
+            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 2);
 }
 
 // Apply and save any changes made in the dialog
@@ -275,6 +300,15 @@ void DlgPrefColors::slotApply() {
     }
 
     m_pConfig->setValue(kKeyColorsEnabledConfigKey, checkboxKeyColorsEnabled->checkState());
+    int jumpColorIndex = comboBoxJumpDefaultColor->currentIndex();
+
+    if (jumpColorIndex > 0) {
+        m_pConfig->setValue(kAutoJumpColorsConfigKey, false);
+        m_pConfig->setValue(kJumpDefaultColorIndexConfigKey, jumpColorIndex - 1);
+    } else {
+        m_pConfig->setValue(kAutoJumpColorsConfigKey, true);
+        m_pConfig->setValue(kJumpDefaultColorIndexConfigKey, -1);
+    }
 }
 
 void DlgPrefColors::slotReplaceCueColorClicked() {
@@ -357,6 +391,9 @@ void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
     int defaultLoopColor = comboBoxLoopDefaultColor->currentIndex();
     comboBoxLoopDefaultColor->clear();
 
+    int defaultJumpColor = comboBoxJumpDefaultColor->currentIndex();
+    comboBoxJumpDefaultColor->clear();
+
     QIcon paletteIcon = drawHotcueColorByPaletteIcon(paletteName);
 
     comboBoxHotcueDefaultColor->addItem(tr("By hotcue number"), -1);
@@ -364,6 +401,9 @@ void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
 
     comboBoxLoopDefaultColor->addItem(tr("By hotcue number"), -1);
     comboBoxLoopDefaultColor->setItemIcon(0, paletteIcon);
+
+    comboBoxJumpDefaultColor->addItem(tr("By hotcue number"), -1);
+    comboBoxJumpDefaultColor->setItemIcon(0, paletteIcon);
 
     QPixmap pixmap(16, 16);
     for (int i = 0; i < palette.size(); ++i) {
@@ -378,6 +418,9 @@ void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
 
         comboBoxLoopDefaultColor->addItem(item, i);
         comboBoxLoopDefaultColor->setItemIcon(i + 1, icon);
+
+        comboBoxJumpDefaultColor->addItem(item, i);
+        comboBoxJumpDefaultColor->setItemIcon(i + 1, icon);
     }
 
     if (comboBoxHotcueDefaultColor->count() > defaultHotcueColor) {
@@ -392,6 +435,13 @@ void DlgPrefColors::slotHotcuePaletteIndexChanged(int paletteIndex) {
     } else {
         comboBoxLoopDefaultColor->setCurrentIndex(
                 comboBoxLoopDefaultColor->count() - 1);
+    }
+
+    if (comboBoxJumpDefaultColor->count() > defaultJumpColor) {
+        comboBoxJumpDefaultColor->setCurrentIndex(defaultJumpColor);
+    } else {
+        comboBoxJumpDefaultColor->setCurrentIndex(
+                comboBoxJumpDefaultColor->count() - 1);
     }
 }
 
@@ -420,7 +470,13 @@ void DlgPrefColors::slotKeyColorsEnabled(int i) {
     m_bKeyColorsEnabled = static_cast<bool>(i);
 #endif
     BaseTrackTableModel::setKeyColorsEnabled(m_bKeyColorsEnabled);
-    m_pConfig->setValue(kKeyColorsEnabledConfigKey, checkboxKeyColorsEnabled->checkState());
+
+    updateKeyColorsCombobox();
+    m_pConfig->setValue(kKeyColorsEnabledConfigKey, m_bKeyColorsEnabled);
+}
+
+void DlgPrefColors::updateKeyColorsCombobox() {
+    comboBoxKeyColors->setEnabled(checkboxKeyColorsEnabled->isChecked());
 }
 
 void DlgPrefColors::openColorPaletteEditor(
@@ -453,18 +509,28 @@ void DlgPrefColors::trackPaletteUpdated(const QString& trackColors) {
     QString hotcueColors = comboBoxHotcueColors->currentData().toString();
     int defaultHotcueColor = comboBoxHotcueDefaultColor->currentIndex();
     int defaultLoopColor = comboBoxLoopDefaultColor->currentIndex();
+    int defaultJumpColor = comboBoxJumpDefaultColor->currentIndex();
 
     slotUpdate();
-    restoreComboBoxes(hotcueColors, trackColors, defaultHotcueColor, defaultLoopColor);
+    restoreComboBoxes(hotcueColors,
+            trackColors,
+            defaultHotcueColor,
+            defaultLoopColor,
+            defaultJumpColor);
 }
 
 void DlgPrefColors::hotcuePaletteUpdated(const QString& hotcueColors) {
     QString trackColors = comboBoxTrackColors->currentData().toString();
     int defaultHotcueColor = comboBoxHotcueDefaultColor->currentIndex();
     int defaultLoopColor = comboBoxLoopDefaultColor->currentIndex();
+    int defaultJumpColor = comboBoxJumpDefaultColor->currentIndex();
 
     slotUpdate();
-    restoreComboBoxes(hotcueColors, trackColors, defaultHotcueColor, defaultLoopColor);
+    restoreComboBoxes(hotcueColors,
+            trackColors,
+            defaultHotcueColor,
+            defaultLoopColor,
+            defaultJumpColor);
 }
 
 void DlgPrefColors::palettesUpdated() {
@@ -472,16 +538,22 @@ void DlgPrefColors::palettesUpdated() {
     QString trackColors = comboBoxTrackColors->currentData().toString();
     int defaultHotcueColor = comboBoxHotcueDefaultColor->currentIndex();
     int defaultLoopColor = comboBoxLoopDefaultColor->currentIndex();
+    int defaultJumpColor = comboBoxJumpDefaultColor->currentIndex();
 
     slotUpdate();
-    restoreComboBoxes(hotcueColors, trackColors, defaultHotcueColor, defaultLoopColor);
+    restoreComboBoxes(hotcueColors,
+            trackColors,
+            defaultHotcueColor,
+            defaultLoopColor,
+            defaultJumpColor);
 }
 
 void DlgPrefColors::restoreComboBoxes(
         const QString& hotcueColors,
         const QString& trackColors,
         int defaultHotcueColor,
-        int defaultLoopColor) {
+        int defaultLoopColor,
+        int defaultJumpColor) {
     comboBoxHotcueColors->setCurrentText(QCoreApplication::translate(
             "PredefinedColorPalettes", qPrintable(hotcueColors)));
     comboBoxTrackColors->setCurrentText(QCoreApplication::translate(
@@ -497,5 +569,11 @@ void DlgPrefColors::restoreComboBoxes(
     } else {
         comboBoxLoopDefaultColor->setCurrentIndex(
                 comboBoxLoopDefaultColor->count() - 1);
+    }
+    if (comboBoxJumpDefaultColor->count() > defaultJumpColor) {
+        comboBoxJumpDefaultColor->setCurrentIndex(defaultJumpColor);
+    } else {
+        comboBoxJumpDefaultColor->setCurrentIndex(
+                comboBoxJumpDefaultColor->count() - 2);
     }
 }

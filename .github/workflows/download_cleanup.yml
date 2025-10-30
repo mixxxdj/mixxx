@@ -27,70 +27,20 @@ jobs:
           mkdir empty_folder
           echo 2.5.1 >> include_file.txt
           echo 2.5.1/manifest.json >> include_file.txt
-          echo 2.5.1/mixxx-2.6-alpha-174-g2c2dda9781-win64* >> include_file.txt
-          echo AzureCodeSigning >> include_file.txt
-          echo AzureCodeSigning/manifest.json >> include_file.txt
-          echo AzureCodeSigning/mixxx-2.6-alpha-* >> include_file.txt
-          echo CAStreamBasicDescription >> include_file.txt
-          echo CAStreamBasicDescription/manifest.json >> include_file.txt
-          echo CAStreamBasicDescription/mixxx-2.4.1-46-* >> include_file.txt
-          echo PR_13709 >> include_file.txt
-          echo PR_13709/manifest.json >> include_file.txt
-          echo PR_13709/mixxx-2.4.1-81-* >> include_file.txt
-          echo azure_signing_update >> include_file.txt
-          echo azure_signing_update/manifest.json >> include_file.txt
-          echo azure_signing_update/mixxx-2.4.1-61-* >> include_file.txt
-          echo chore >> include_file.txt
-          echo chore/upgrade-macos13-xcode15.2 >> include_file.txt
-          echo chore/upgrade-macos13-xcode15.2/manifest.json >> include_file.txt
-          echo chore/upgrade-macos13-xcode15.2/mixxx-2.6-alpha-76-* >> include_file.txt
-          echo daschuer-patch-1 >> include_file.txt
-          echo daschuer-patch-1/manifest.json >> include_file.txt
-          echo daschuer-patch-1/mixxx-2.6-alpha-284-* >> include_file.txt
-          echo dependabot >> include_file.txt
-          echo dependabot/github_actions >> include_file.txt
-          echo dependabot/github_actions/actions >> include_file.txt
-          echo dependabot/github_actions/actions/stale-6 >> include_file.txt
-          echo dependabot/github_actions/actions/stale-6/manifest.json >> include_file.txt
-          echo dependabot/github_actions/actions/stale-6/mixxx-2.4-alpha-1318-* >> include_file.txt
-          echo dependabot/github_actions/actions/upload-artifact-3.1.2 >> include_file.txt
-          echo dependabot/github_actions/actions/upload-artifact-3.1.2/manifest.json >> include_file.txt
-          echo dependabot/github_actions/actions/upload-artifact-3.1.2/mixxx-2.3.3-117-* >> include_file.txt
-          echo fix-14326 >> include_file.txt
-          echo fix-14326/manifest.json >> include_file.txt
-          echo fix-14326/mixxx-2.5.0-68-* >> include_file.txt
-          echo inpulse >> include_file.txt
-          echo inpulse/manifest.json >> include_file.txt
-          echo inpulse/mixxx-2.* >> include_file.txt
-          echo pr >> include_file.txt
-          echo pr/13709 >> include_file.txt
-          echo pr/13709/manifest.json >> include_file.txt
-          echo pr/13709/mixxx-2.4.1-81-* >> include_file.txt
-          echo resolve-from-urls-2.5 >> include_file.txt
-          echo resolve-from-urls-2.5/manifest.json >> include_file.txt
-          echo resolve-from-urls-2.5/mixxx-2.5-beta-100-* >> include_file.txt
-          echo revert-13208-gh13206 >> include_file.txt
-          echo revert-13208-gh13206/mixxx-2.4.1-5-gc71a48b76e-* >> include_file.txt
-          echo revert-13271-revert-13208-gh13206 >> include_file.txt
-          echo revert-13271-revert-13208-gh13206/mixxx-2.4.1-6-* >> include_file.txt
-          echo rg-use-opengl-node-and-add-shaders >> include_file.txt
-          echo rg-use-opengl-node-and-add-shaders/manifest.json >> include_file.txt
-          echo rg-use-opengl-node-and-add-shaders/mixxx-2.6-alpha-* >> include_file.txt
-          echo traktor-s3-updates >> include_file.txt
-          echo traktor-s3-updates/manifest.json >> include_file.txt
-          echo traktor-s3-updates/mixxx-2.6-alpha-* >> include_file.txt
-          echo ts_source_copy_check >> include_file.txt
-          echo ts_source_copy_check/manifest.json >> include_file.txt
-          echo ts_source_copy_check/mixxx-2.4.1-42-* >> include_file.txt
-          echo tsan-fix-13893 >> include_file.txt
-          echo tsan-fix-13893/manifest.json >> include_file.txt
-          echo tsan-fix-13893/mixxx-2.5-beta-83-* >> include_file.txt
-          echo tsan-fix-13895 >> include_file.txt
-          echo tsan-fix-13895/manifest.json >> include_file.txt
-          echo tsan-fix-13895/mixxx-2.5-beta-83-* >> include_file.txt
-          echo waveformwidgetinfo >> include_file.txt
-          echo waveformwidgetinfo/mixxx-2.5-alpha-3* >> include_file.txt
           rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/snapshots/"
+        env:
+          DESTDIR: public_html/downloads
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+
+      - name: Move manifest
+        if: env.SSH_AUTH_SOCK != null
+        run: |
+          ssh "${SSH_USER}@${SSH_HOST}" "
+            set -euo pipefail
+            mv ${DESTDIR}/releases/2.5.3-3-g7a940a8588/manifest.json ${DESTDIR}/releases/2.5.3/manifest.json
+            rm -rf ${DESTDIR}/releases/2.5.3-3-g7a940a8588
+          "
         env:
           DESTDIR: public_html/downloads
           SSH_HOST: downloads-hostgator.mixxx.org

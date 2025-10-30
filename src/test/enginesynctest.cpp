@@ -2141,9 +2141,11 @@ TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {
 }
 
 TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
+    // Turn off quantize for both decks
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 0);
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 0);
     // If we press play on a sync deck, we will only sync phase to a non-sync
     // deck if there are no sync decks and the non-sync deck is playing.
-
     auto pButtonSyncEnabled1 =
             std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
@@ -2596,6 +2598,8 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
 }
 
 TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
+    ControlObject::set(ConfigKey(m_sGroup1, QStringLiteral("quantize")), 0);
+    ControlObject::set(ConfigKey(m_sGroup2, QStringLiteral("quantize")), 0);
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonBeatsync1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync");
     auto pButtonBeatsyncPhase1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync_phase");

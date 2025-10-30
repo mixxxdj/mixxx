@@ -1,0 +1,76 @@
+<Template>
+  <SetVariable name="stemGroup">[Channel<Variable name="chanNum"/>_Stem<Variable name="stemNum"/>]</SetVariable>
+  <SetVariable name="quickFxStemGroup">[QuickEffectRack1_<Variable name="stemGroup"/>]</SetVariable>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>StemChannel_ControlContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,f</SizePolicy>
+    <Children>
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+      <!-- Mute button -->
+      <WidgetGroup>
+        <ObjectName>StemMuteButtonWG</ObjectName>
+        <Size>12f,23f</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">StemMuteButton</SetVariable>
+            <SetVariable name="ObjectName">StemMuteButton</SetVariable>
+            <SetVariable name="Size">12f,23f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="stemGroup"/>,mute</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+      <StemLabel>
+        <TooltipId>StemLabel</TooltipId>
+        <ObjectName>StemLabel</ObjectName>
+        <Group><Variable name="group"/></Group>
+        <StemNum><Variable name="stemNum"/></StemNum>
+        <Alignment>left</Alignment>
+        <Elide>right</Elide>
+        <Size>50,26</Size>
+        <Text></Text>
+      </StemLabel>
+
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>stacked</Layout>
+        <Children>
+          <Template src="skins:Tango/controls/knob_textless.xml">
+            <SetVariable name="TooltipId">StemVolumeKnob</SetVariable>
+            <SetVariable name="Size">30f,26f</SetVariable>
+            <SetVariable name="Color">yellow</SetVariable>
+            <SetVariable name="group"><Variable name="stemGroup"/></SetVariable>
+            <SetVariable name="ConfigKey">volume</SetVariable>
+          </Template>
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="ObjectName">StemMutedUnderlay</SetVariable>
+            <SetVariable name="Size">20,26</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="stemGroup"/>,mute</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+      <EffectChainPresetSelector>
+        <ObjectName>StemQuickEffectSelector</ObjectName>
+        <Size>85f,18f</Size>
+        <EffectUnitGroup>[QuickEffectRack1_<Variable name="stemGroup"/>]</EffectUnitGroup>
+      </EffectChainPresetSelector>
+
+      <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+      <!-- Quick Effect -->
+      <Template src="skins:Tango/mixer/quick_fx_knob_left.xml">
+        <SetVariable name="group"><Variable name="stemGroup"/></SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -5,6 +5,7 @@
 #include "mixer/playermanager.h"
 #include "moc_qmlplayermanagerproxy.cpp"
 #include "qml/qmlplayerproxy.h"
+#include "track/track_decl.h"
 
 namespace mixxx {
 namespace qml {
@@ -32,6 +33,20 @@ QmlPlayerProxy* QmlPlayerManagerProxy::getPlayer(const QString& group) {
                 loadLocationToPlayer(trackLocation, group, play);
             });
     connect(pPlayerProxy,
+            &QmlPlayerProxy::loadTrackRequested,
+            this,
+            [this, group](TrackPointer track,
+#ifdef __STEM__
+                    mixxx::StemChannelSelection stemSelection,
+#endif
+                    bool play) {
+                loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        stemSelection,
+#endif
+                        play);
+            });
+    connect(pPlayerProxy,
             &QmlPlayerProxy::cloneFromGroup,
             this,
             [this, group](const QString& sourceGroup) {
@@ -57,6 +72,19 @@ void QmlPlayerManagerProxy::loadLocationUrlIntoNextAvailableDeck(
 void QmlPlayerManagerProxy::loadLocationToPlayer(
         const QString& location, const QString& group, bool play) {
     m_pPlayerManager->slotLoadLocationToPlayer(location, group, play);
+}
+
+void QmlPlayerManagerProxy::loadTrackToPlayer(TrackPointer track,
+        const QString& group,
+#ifdef __STEM__
+        mixxx::StemChannelSelection stemSelection,
+#endif
+        bool play) {
+    m_pPlayerManager->slotLoadTrackToPlayer(track, group,
+#ifdef __STEM__
+            stemSelection,
+#endif
+            play);
 }
 
 // static

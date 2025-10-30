@@ -232,9 +232,13 @@ class PlateX2
                            const sample_t previousSend);
 
         void init(float sampleRate) {
-            fs = sampleRate;
             PlateStub::init();
-            PlateStub::activate();
+            setSamplerate(sampleRate);
+        }
+
+        void setSamplerate(float sampleRate) {
+            fs = sampleRate;
+            activate();
         }
  };
 

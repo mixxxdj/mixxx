@@ -299,23 +299,23 @@
                 <Size>204f,32f</Size>
                 <Children>
                   <PushButton>
-                    <TooltipId>beatsync_beatsync_tempo</TooltipId>
-                    <NumberStates>1</NumberStates>
+                    <TooltipId>sync_enabled</TooltipId>
+                    <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
+                      <Pressed>skin:/btn/btn_sync_sampler_down.png</Pressed>
                       <Unpressed>skin:/btn/btn_sync_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_sampler_over.png</Unpressed>
                     </State>
                     <Pos>3,4</Pos>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
 

@@ -1,8 +1,9 @@
-#include <set>
-#include <QtDebug>
-
 #include "waveformmarkset.h"
-#include "engine/controls/cuecontrol.h"
+
+#include <QtDebug>
+#include <set>
+
+#include "util/defs.h"
 
 WaveformMarkSet::WaveformMarkSet() {
 }
@@ -14,8 +15,8 @@ WaveformMarkSet::~WaveformMarkSet() {
 void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                             const SkinContext& context,
                             const WaveformSignalColors& signalColors) {
-
-    m_marks.reserve(NUM_HOT_CUES + 3); // + 3 for cue_point, loop_start_position and loop_end_position
+    // + 3 for cue_point, loop_start_position and loop_end_position
+    m_marks.reserve(kMaxNumberOfHotcues + 3);
     // Note: m_hotCueMarks does not support reserving space
 
     std::set<QString> controlItemSet;
@@ -52,7 +53,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     // check if there is a default mark and compare declared
     // and to create all missing hot_cues
     if (hasDefaultMark) {
-        for (int i = 0; i < NUM_HOT_CUES; ++i) {
+        for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
             if (m_hotCueMarks.value(i).isNull()) {
                 // qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
                 auto pMark = WaveformMarkPointer::create(
@@ -68,7 +69,6 @@ void WaveformMarkSet::setDefault(const QString& group,
         const DefaultMarkerStyle& model,
         const WaveformSignalColors& signalColors) {
     m_pDefaultMark = WaveformMarkPointer::create(
-
             group,
             model.positionControl,
             model.visibilityControl,
@@ -81,10 +81,9 @@ void WaveformMarkSet::setDefault(const QString& group,
             0,
             Cue::kNoHotCue,
             signalColors);
-    for (int i = 0; i < NUM_HOT_CUES; ++i) {
+    for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
         if (m_hotCueMarks.value(i).isNull()) {
             auto pMark = WaveformMarkPointer::create(
-
                     group,
                     model.positionControl,
                     model.visibilityControl,
@@ -96,7 +95,11 @@ void WaveformMarkSet::setDefault(const QString& group,
                     model.color,
                     i,
                     i,
-                    signalColors);
+                    signalColors,
+                    model.endPixmapPath,
+                    model.endIconPath,
+                    model.enabledOpacity,
+                    model.disabledOpacity);
             m_marks.push_front(pMark);
             m_hotCueMarks.insert(pMark->getHotCue(), pMark);
         }

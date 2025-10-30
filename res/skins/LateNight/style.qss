@@ -13,6 +13,7 @@ WTrackProperty,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -30,7 +31,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
 WTrackTableViewHeader,
 WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
-  as "Open Sans".
+  as "Open Sans" and we need to set the `font-weight`.
   On Windows however, the semi-bold variant is identified as
   "Open Sans Semibold", so look for that first. */
   font-family: "Open Sans Semibold", "Open Sans";
@@ -314,19 +315,24 @@ WRecordingDuration {
 }
 
 WTrackTableViewHeader::item {
-  /* Don't set a font size to pick up the system font size. */
   border-bottom: 1px solid #000;
   }
-  WTrackTableViewHeader::section {
+/* This is now set in c++ WTrackTableViewHeader::paintSection()
+   which also works around a Qt bug with the sort indicator */
+/*WTrackTableViewHeader::section {
     height: 1.1em;
     border: 0;
     padding: 0.1em;
-  }
-  WTrackTableViewHeader::up-arrow,
+  }*/
+  /*WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
     width: 0.8em;
-    padding: 0 0.15em;
-  }
+    padding: 0 0.3em;
+  }*/
+  /*WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
+    padding: 0 1px;
+  }*/
 
 /* Prevent OS-style checkbox from being rendered underneath the custom style. */
 #LibraryBPMButton::item,
@@ -476,14 +482,9 @@ WSpinny { /*
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
-#BpmRateTapContainer {
-  margin: 1px;
-}
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-}
-#RateSliderBoxCompactSync {
   margin-left: 5px;
 }
 
@@ -493,6 +494,18 @@ WTrackProperty[selected="false"] {
   border: 0px solid transparent;
   border-radius: 1px;
 }
+
+#BpmClickOverlay,
+#BpmTapButton,
+#BpmTapButton:focus {
+  background-color: transparent;
+}
+WBpmEditor,
+#BpmClickOverlay {
+  border: none;
+}
+
+
 /************** Decks  ********************************************************/
 
 

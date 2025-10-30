@@ -1,14 +1,10 @@
-<svg width="48" height="48" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-		<g fill="none" stroke="#000001" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
-				<path d="m5 7.3636 6.955 4.6367-6.955 4.6367z"/>
-				<path d="M 19,7.3633 12.045,12 19,16.6367 Z"/>
-		</g>
-		<g transform="translate(1 -.9997)" fill="none">
-				<path d="M 4,8.3633 10.955,13 4,17.6367 V 8.3633"/>
-				<path d="M 18,8.3633 11.045,13 18,17.6367 V 8.3633"/>
-		</g>
-		<g fill="#d2d2d1">
-				<path d="m5 7.3636 6.955 4.6367-6.955 4.6367z"/>
-				<path d="M 19,7.3633 12.045,12 19,16.6367 Z"/>
-		</g>
+<svg width="48" height="48" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" stroke="#000001" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+    <path d="m5 7.3636 6.955 4.6367-6.955 4.6367z"/>
+    <path d="M 19,7.3633 12.045,12 19,16.6367 Z"/>
+  </g>
+  <g fill="#d2d2d1">
+    <path d="m5 7.3636 6.955 4.6367-6.955 4.6367z"/>
+    <path d="M 19,7.3633 12.045,12 19,16.6367 Z"/>
+  </g>
 </svg>

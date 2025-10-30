@@ -39,7 +39,7 @@
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
-#include "library/overviewcache.h"
+#include "library/library_prefs.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -97,6 +97,10 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #ifndef __APPLE__
           m_prevState(Qt::WindowNoState),
 #endif
+          m_noVinylInputDialog(nullptr),
+          m_noPassthroughInputDialog(nullptr),
+          m_noMicInputDialog(nullptr),
+          m_noAuxInputDialog(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
@@ -203,6 +207,10 @@ void MixxxMainWindow::initialize() {
             &Library::exportCrate,
             m_pLibraryExporter.get(),
             &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
+    connect(m_pCoreServices->getLibrary().get(),
+            &Library::exportPlaylist,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExportWithInitialPlaylist);
 #endif
 
     // Turn on fullscreen mode
@@ -283,18 +291,6 @@ void MixxxMainWindow::initialize() {
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
-    // Connect OverviewCache so we can clear and re-render overviews in the library
-    // when "OverviewNormalized" or "VisualGain_0" (all) have been changed in the
-    // preferences.
-    auto* pOverviewCache = OverviewCache::instance();
-    connect(WaveformWidgetFactory::instance(),
-            &WaveformWidgetFactory::visualGainChanged,
-            pOverviewCache,
-            &OverviewCache::onNormalizeOrVisualGainChanged);
-    connect(WaveformWidgetFactory::instance(),
-            &WaveformWidgetFactory::overviewNormalizeChanged,
-            pOverviewCache,
-            &OverviewCache::onNormalizeOrVisualGainChanged);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,
@@ -450,6 +446,12 @@ void MixxxMainWindow::initialize() {
     if (CmdlineArgs::Instance().getStartAutoDJ()) {
         qDebug("Enabling Auto DJ from CLI flag.");
         ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+        // Switch to Auto DJ feature
+        auto* pLibrary = m_pCoreServices->getLibrary().get();
+        // Note: auto-scroll is disabled but that doesn't really matter here
+        // because the sidebar is still in its initial state (top feature visible,
+        // AutoDj is second from the top by default, all features collapsed).
+        pLibrary->showAutoDJ();
     }
 }
 
@@ -976,6 +978,11 @@ void MixxxMainWindow::connectMenuBar() {
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreatePlaylist,
                 Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::showAutoDJ,
+                m_pCoreServices->getLibrary().get(),
+                &Library::showAutoDJ,
+                Qt::UniqueConnection);
     }
 
 #ifdef __ENGINEPRIME__
@@ -1106,56 +1113,108 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::warning(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this vinyl control.\n"
-               "Please select an input device in the sound hardware preferences first."),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noVinylInputDialog && m_noVinylInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noVinylInputDialog) {
+        m_noVinylInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this vinyl control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noVinylInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noVinylInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noVinylInputDialog->exec();
+    if (m_noVinylInputDialog->clickedButton() ==
+            m_noVinylInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::warning(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this passthrough control.\n"
-               "Please select an input device in the sound hardware preferences first."),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noPassthroughInputDialog && m_noPassthroughInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noPassthroughInputDialog) {
+        m_noPassthroughInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this passthrough control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noPassthroughInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noPassthroughInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noPassthroughInputDialog->exec();
+    if (m_noPassthroughInputDialog->clickedButton() ==
+            m_noPassthroughInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::question(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this microphone.\n"
-               "Do you want to select an input device?"),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noMicInputDialog && m_noMicInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noMicInputDialog) {
+        m_noMicInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this microphone.\n"
+                   "Do you want to select an input device?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noMicInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noMicInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noMicInputDialog->exec();
+    if (m_noMicInputDialog->clickedButton() ==
+            m_noMicInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::question(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this auxiliary.\n"
-               "Do you want to select an input device?"),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noAuxInputDialog && m_noAuxInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noAuxInputDialog) {
+        m_noAuxInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this auxiliary.\n"
+                   "Do you want to select an input device?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noAuxInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noAuxInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noAuxInputDialog->exec();
+    if (m_noAuxInputDialog->clickedButton() ==
+            m_noAuxInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
@@ -1167,6 +1226,11 @@ void MixxxMainWindow::slotHelpAbout() {
 }
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
+    if (!m_pCoreServices->getSettings()->getValue<bool>(
+                mixxx::library::prefs::kShowScanSummaryConfigKey, true)) {
+        return;
+    }
+
     // Don't show the report dialog when the scan is run during startup and no
     // noteworthy changes have been detected.
     if (result.autoscan &&
@@ -1195,7 +1259,7 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         if (result.numNewMissingTracks != 0) {
             summary += tr("%1 tracks are missing (%2 total)")
                                .arg(QString::number(result.numNewMissingTracks),
-                                       result.numMissingTracks);
+                                       QString::number(result.numMissingTracks));
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
@@ -1334,28 +1398,38 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 
 /// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
-    // Always show tooltips if Ctrl is held down
-    if (event->type() == QEvent::ToolTip &&
-            !QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+    if (event->type() == QEvent::ToolTip) {
+        // Always show tooltips if Ctrl is held down
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips for cue type buttons in the Cue menu
+        if (QLatin1String(obj->metaObject()->className()) == "CueMenuPushButton") {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips in Preferences
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
-                QLatin1String(activeWindow->metaObject()->className()) !=
+                QLatin1String(activeWindow->metaObject()->className()) ==
                         "DlgPreferences") {
-            // return true for no tool tips
-            switch (m_toolTipsCfg) {
-            case mixxx::preferences::Tooltips::OnlyInLibrary:
-                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
-                    return true;
-                }
-                break;
-            case mixxx::preferences::Tooltips::On:
-                break;
-            case mixxx::preferences::Tooltips::Off:
-                return true;
-            default:
-                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return QMainWindow::eventFilter(obj, event);
+        }
+
+        // For all other we follow the tooltip sett8ing.
+        // Return true for no tool tips
+        switch (m_toolTipsCfg) {
+        case mixxx::preferences::Tooltips::OnlyInLibrary:
+            if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                 return true;
             }
+            break;
+        case mixxx::preferences::Tooltips::On:
+            break;
+        case mixxx::preferences::Tooltips::Off:
+            return true;
+        default:
+            DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return true;
         }
     } else if (event->type() == QEvent::WindowStateChange) {
 #ifndef __APPLE__

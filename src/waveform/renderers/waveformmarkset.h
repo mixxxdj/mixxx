@@ -18,8 +18,12 @@ class WaveformMarkSet {
         QString markAlign;
         QString text;
         QString pixmapPath;
+        QString endPixmapPath;
         QString iconPath;
+        QString endIconPath;
         QColor color;
+        float enabledOpacity;
+        float disabledOpacity;
     };
 
     WaveformMarkSet();
@@ -56,6 +60,24 @@ class WaveformMarkSet {
         }
     }
 
+    template<typename Receiver, typename Slot>
+    void connectTypeChanged(Receiver receiver, Slot slot) const {
+        for (const auto& pMark : std::as_const(m_marks)) {
+            if (pMark->isValid()) {
+                pMark->connectTypeChanged(receiver, slot);
+            }
+        }
+    }
+
+    template<typename Receiver, typename Slot>
+    void connectStatusChanged(Receiver receiver, Slot slot) const {
+        for (const auto& pMark : std::as_const(m_marks)) {
+            if (pMark->isValid()) {
+                pMark->connectStatusChanged(receiver, slot);
+            }
+        }
+    }
+
     inline QList<WaveformMarkPointer>::const_iterator begin() const {
         return m_marksToRender.begin();
     }
@@ -69,7 +91,7 @@ class WaveformMarkSet {
         return m_marksToRender.cend();
     }
 
-    // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
+    // hotCue must be valid (>= 0 and < kMaxNumberOfHotcues)
     WaveformMarkPointer getHotCueMark(int hotCue) const;
     WaveformMarkPointer getDefaultMark() const;
     WaveformMarkPointer findHoveredMark(QPoint point, Qt::Orientation orientation) const;

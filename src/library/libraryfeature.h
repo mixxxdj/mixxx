@@ -165,7 +165,7 @@ class LibraryFeature : public QObject {
     // emit this signal if the foreign music collection has been imported/parsed.
     void featureLoadingFinished(LibraryFeature*s);
     // emit this signal to select pFeature
-    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
+    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index, bool scrollTo = true);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);

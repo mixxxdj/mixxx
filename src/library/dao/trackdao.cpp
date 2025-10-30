@@ -1044,7 +1044,7 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     }
 
     QList<TrackRef> trackRefs;
-    const int idColumn = query.record().indexOf(LIBRARYTABLE_MIXXXDELETED);
+    const int idColumn = query.record().indexOf(LIBRARYTABLE_ID);
     const int locationColumn = query.record().indexOf(LIBRARYTABLE_LOCATION);
     while (query.next()) {
         const auto trackId = TrackId(query.value(idColumn));
@@ -2124,9 +2124,10 @@ bool TrackDAO::verifyRemainingTracks(
     // check if it exists.
     // TODO(kain88) check if all others are marked with 0 again
     query.setForwardOnly(true);
-    query.prepare("SELECT location "
-                  "FROM track_locations "
-                  "WHERE needs_verification = 1");
+    query.prepare(
+            "SELECT location, fs_deleted "
+            "FROM track_locations "
+            "WHERE needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");

@@ -15,7 +15,7 @@ jobs:
       pull-requests: write # for actions/stale to close stale PRs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v10
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           stale-pr-message: "This PR is marked as stale because it has been open 90 days with no activity."
