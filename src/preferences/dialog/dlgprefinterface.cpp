@@ -425,6 +425,8 @@ void DlgPrefInterface::slotSetTooltips() {
         m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
         m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
+    } else if (radioButtonTooltipsOnlyKbdShortcuts->isChecked()) {
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyKbdShortcuts;
     }
 }
 
