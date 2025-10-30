@@ -86,6 +86,42 @@ jobs:
       - git
       - build
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
+      - name: Fetch all UI results artifacts
+        id: generateCommentBody
+        run: |
+          commentBody=""
+          for result in `gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq '.artifacts[] | select(.name | test("^ui-test")) | .name + "|" + .url' -r`; do
+            label=$(echo $result | cut -d'|' -f 1)
+            outcome=$(echo $result | cut -d'-' -f 2)
+            label=$(echo $label | cut -d'-' -f 1)
+            url=$(echo $result | cut -d'|' -f 2)
+            if [ "$outcome" = "failed" ]; then
+              commentBody="$commentBody- :x: $label - ([view results]($url))\n"
+            else
+              commentBody="$commentBody- :white_check_mark: $label - ([view results]($url))\n"
+            fi
+          done
+          echo "comment_body=${commentBody}" >> "${GITHUB_OUTPUT}"
+
+      - name: "[UI tests] Find existing comment"
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad
+        id: find-tests-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: "## QML UI test results"
+
+      - name: "[UI tests] Update existing comment or create a new one"
+        uses: peter-evans/create-or-update-comment@fffe59ea229327e73edca9d31f0b578bf04152a9
+        with:
+          comment-id: ${{ steps.find-tests-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## QML UI test results
+
+            ${{ steps.generateCommentBody.outputs.commentBody }}
+          edit-mode: replace
+
       - name: Ready to go
         run: "exit 0"

@@ -454,7 +454,7 @@ jobs:
         if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest_windows.outcome != 'skipped')
         uses: actions/upload-artifact@v4.6.0
         with:
-          name: ui-tests-${{ runner.os }}
+          name: UI Tests for ${{ matrix.name }} - ${{ steps.uitest_linux.outcome || steps.uitest_windows.outcome }}
           path: |
             build/screenshots
             build/output.mkv
