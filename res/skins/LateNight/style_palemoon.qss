@@ -60,28 +60,22 @@
 
 /* borders of highlighted containers */
 #Deck1[highlight_input_allow="1"],
-#Deck3[highlight_input_allow="1"] {
-  border-width: 1px 1px 1px 5px;
-  border-style: solid;
-  margin: 0 1px;
-  padding: 2px;
-}
 #Deck2[highlight_input_allow="1"],
+#Deck3[highlight_input_allow="1"],
 #Deck4[highlight_input_allow="1"] {
-  border-width: 1px 5px 1px 1px;
+  border-width: 1px;
   border-style: solid;
   margin: 0 1px;
   padding: 2px;
 }
+
 #Deck1[highlight_input_allow="1"][highlight_channel="1"],
 #DeckCompact1[highlight_input_allow="1"][highlight_channel="1"],
 #DeckMini1[highlight_input_allow="1"][highlight_channel="1"],
 #Deck3[highlight_input_allow="1"][highlight_channel="1"],
 #DeckCompact3[highlight_input_allow="1"][highlight_channel="1"],
 #DeckMini3[highlight_input_allow="1"][highlight_channel="1"] {
-    border-color: #960000;
-    background-color: #181818;
-    border-radius: 5px;
+    border-color: #b2421c;
 }
 
 #Deck2[highlight_input_allow="1"][highlight_channel="1"],
@@ -90,9 +84,7 @@
 #Deck4[highlight_input_allow="1"][highlight_channel="1"],
 #DeckCompact4[highlight_input_allow="1"][highlight_channel="1"],
 #DeckMini4[highlight_input_allow="1"][highlight_channel="1"] {
-    border-color: #960000;
-    background-color: #181818;
-    border-radius: 5px;
+    border-color: #b2421c;
 }
 /* dim 1st-level containers */
 #ToolBar,
@@ -546,7 +538,7 @@ WTrackProperty[selected="true"],
 #WaveformBox2[highlight_input_allow="1"],
 #WaveformBox3[highlight_input_allow="1"],
 #WaveformBox4[highlight_input_allow="1"] {
-  border-width: 0 5px;
+  border-width: 1px;
   border-style: solid;
   padding: 0 1px;
   margin: 0 3px;
@@ -556,8 +548,7 @@ WTrackProperty[selected="true"],
 #WaveformBox2[highlight_input_allow="1"][highlight_channel="1"],
 #WaveformBox3[highlight_input_allow="1"][highlight_channel="1"],
 #WaveformBox4[highlight_input_allow="1"][highlight_channel="1"] {
-    border-color: #960000;
-    border-radius: 10px;
+    border-color: #b2421c;
 }
 
 /************** Decks *********************************************************/
@@ -679,15 +670,13 @@ WTrackProperty[selected="true"],
 }
 
 #MixerChannel_4Decks[highlight_input_allow="1"] {
-  border-width: 5px 1px 1px 1px;
+  border-width: 1px;
   border-style: solid;
   margin: 0 1px;
   padding: 2px;
 }
 #MixerChannel_4Decks[highlight_input_allow="1"][highlight_channel="1"] {
-    border-color: #960000;
-    background-color: #181818;
-    border-radius: 5px;
+    border-color: #b2421c;
 }
 #MixerChannel_4Decks[highlight_input_allow="1"][highlight_channel="0"] {
     border-color: #1e1e20;
