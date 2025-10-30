@@ -8,10 +8,19 @@
   <WidgetGroup><!-- Parallel Waveforms -->
     <ObjectName>Waveforms</ObjectName>
     <Layout>vertical</Layout>
+    <Connection>
+      <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
+      <BindProperty>highlight_input_allow</BindProperty>
+    </Connection>
     <Children>
 
       <WidgetGroup>
+        <ObjectName>Waveform3</ObjectName>
         <Layout>horizontal</Layout>
+        <Connection>
+          <ConfigKey>[Skin],highlight_waveform_[Channel3]</ConfigKey>
+          <BindProperty>highlight_waveform</BindProperty>
+        </Connection>
         <Children>
           <Template src="skins:Deere/deck_spinny.xml">
             <SetVariable name="cover">true</SetVariable>
@@ -29,7 +38,12 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>Waveform1</ObjectName>
         <Layout>horizontal</Layout>
+        <Connection>
+          <ConfigKey>[Skin],highlight_waveform_[Channel1]</ConfigKey>
+          <BindProperty>highlight_waveform</BindProperty>
+        </Connection>
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -67,7 +81,12 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>Waveform2</ObjectName>
         <Layout>horizontal</Layout>
+        <Connection>
+          <ConfigKey>[Skin],highlight_waveform_[Channel2]</ConfigKey>
+          <BindProperty>highlight_waveform</BindProperty>
+        </Connection>
         <Children>
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -105,7 +124,12 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>Waveform4</ObjectName>
         <Layout>horizontal</Layout>
+        <Connection>
+          <ConfigKey>[Skin],highlight_waveform_[Channel4]</ConfigKey>
+          <BindProperty>highlight_waveform</BindProperty>
+        </Connection>
         <Children>
           <Template src="skins:Deere/deck_spinny.xml">
             <SetVariable name="cover">true</SetVariable>

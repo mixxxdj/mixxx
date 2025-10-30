@@ -21,8 +21,8 @@ Variables:
     <ObjectName>WaveformContainer<Variable name="chanNum"/></ObjectName>
     <Layout>horizontal</Layout>
     <Connection>
-      <ConfigKey>[Skin],highlight_<Variable name="Group"/></ConfigKey>
-      <BindProperty>highlight_channel</BindProperty>
+      <ConfigKey>[Skin],highlight_waveform_<Variable name="Group"/></ConfigKey>
+      <BindProperty>highlight_waveform</BindProperty>
     </Connection>
     <Connection>
       <ConfigKey>[Skin],highlight_input_allow</ConfigKey>

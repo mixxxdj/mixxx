@@ -133,10 +133,10 @@
   border-color: #222;
 }
 
-#Deck1[highlight_input_allow="1"][highlight_channel="1"],
-#Deck2[highlight_input_allow="1"][highlight_channel="1"],
-#Deck3[highlight_input_allow="1"][highlight_channel="1"],
-#Deck4[highlight_input_allow="1"][highlight_channel="1"] {
+#Deck1[highlight_input_allow="1"][highlight_deck="1"],
+#Deck2[highlight_input_allow="1"][highlight_deck="1"],
+#Deck3[highlight_input_allow="1"][highlight_deck="1"],
+#Deck4[highlight_input_allow="1"][highlight_deck="1"] {
     border-color: #FF6600;
 }
 
@@ -966,6 +966,22 @@ WOverview #PassthroughLabel {
   background-color: #333;
 }
 
+#Waveforms[highlight_input_allow="1"] #Waveform1[highlight_waveform="0"],
+#Waveforms[highlight_input_allow="1"] #Waveform2[highlight_waveform="0"],
+#Waveforms[highlight_input_allow="1"] #Waveform3[highlight_waveform="0"],
+#Waveforms[highlight_input_allow="1"] #Waveform4[highlight_waveform="0"]
+{
+  border: 1px solid #333;
+}
+#Waveforms[highlight_input_allow="1"] #Waveform1[highlight_waveform="1"],
+#Waveforms[highlight_input_allow="1"] #Waveform2[highlight_waveform="1"],
+#Waveforms[highlight_input_allow="1"] #Waveform3[highlight_waveform="1"],
+#Waveforms[highlight_input_allow="1"] #Waveform4[highlight_waveform="1"]
+{
+  border: 1px solid #FF6600;
+}
+
+
 #WaveformZoomContainer {
   background-color: #333333;
   padding: 1px;
@@ -1521,7 +1537,7 @@ WNumberRate {
 #MixerStrip_4Decks[highlight_input_allow="1"] {
   border: 1px solid #333333;
 }
-#MixerStrip_4Decks[highlight_input_allow="1"][highlight_channel="1"] {
+#MixerStrip_4Decks[highlight_input_allow="1"][highlight_mixer="1"] {
   border: 1px solid #FF6600;
 }
 

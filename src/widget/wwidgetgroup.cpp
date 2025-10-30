@@ -233,8 +233,14 @@ int WWidgetGroup::getHighlight() const {
 int WWidgetGroup::getHighlightInputAllow() const {
     return m_highlight_input_allow;
 }
-int WWidgetGroup::getHighlightChannel() const {
-    return m_highlight_channel;
+int WWidgetGroup::getHighlightMixer() const {
+    return m_highlight_mixer;
+}
+int WWidgetGroup::getHighlightDeck() const {
+    return m_highlight_deck;
+}
+int WWidgetGroup::getHighlightWaveform() const {
+    return m_highlight_waveform;
 }
 
 void WWidgetGroup::setHighlight(int highlight) {
@@ -256,13 +262,33 @@ void WWidgetGroup::setHighlightInputAllow(int highlight_input_allow) {
     emit highlightInputAllowChanged(m_highlight_input_allow);
     event(new QEvent(QEvent::StyleChange));
 }
-void WWidgetGroup::setHighlightChannel(int highlight_channel) {
-    if (m_highlight_channel == highlight_channel) {
+void WWidgetGroup::setHighlightMixer(int highlight_mixer) {
+    if (m_highlight_mixer == highlight_mixer) {
         return;
     }
-    m_highlight_channel = highlight_channel;
+    m_highlight_mixer = highlight_mixer;
     style()->polish(this);
     update();
-    emit highlightChannelChanged(m_highlight_channel);
+    emit highlightMixerChanged(m_highlight_mixer);
+    event(new QEvent(QEvent::StyleChange));
+}
+void WWidgetGroup::setHighlightDeck(int highlight_deck) {
+    if (m_highlight_deck == highlight_deck) {
+        return;
+    }
+    m_highlight_deck = highlight_deck;
+    style()->polish(this);
+    update();
+    emit highlightDeckChanged(m_highlight_deck);
+    event(new QEvent(QEvent::StyleChange));
+}
+void WWidgetGroup::setHighlightWaveform(int highlight_waveform) {
+    if (m_highlight_waveform == highlight_waveform) {
+        return;
+    }
+    m_highlight_waveform = highlight_waveform;
+    style()->polish(this);
+    update();
+    emit highlightWaveformChanged(m_highlight_waveform);
     event(new QEvent(QEvent::StyleChange));
 }

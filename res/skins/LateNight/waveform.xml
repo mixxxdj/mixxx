@@ -15,8 +15,8 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Connection>
-          <ConfigKey>[Skin],highlight_<Variable name="Group"/></ConfigKey>
-          <BindProperty>highlight_channel</BindProperty>
+          <ConfigKey>[Skin],highlight_waveform_<Variable name="Group"/></ConfigKey>
+          <BindProperty>highlight_waveform</BindProperty>
         </Connection>
         <Connection>
           <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
