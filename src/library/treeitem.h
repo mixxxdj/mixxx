@@ -38,6 +38,19 @@ class TreeItem final {
 
     ~TreeItem();
 
+    /////////////////////////////////////////////////////////////////////////
+    // Full Path Accessors
+    /////////////////////////////////////////////////////////////////////////
+
+    // Set the full path
+    void setFullPath(const QString& fullPath) {
+        m_fullPath = fullPath;
+    }
+
+    // Get the full path
+    QString fullPath() const {
+        return m_fullPath;
+    }
 
     /////////////////////////////////////////////////////////////////////////
     // Feature
@@ -49,7 +62,6 @@ class TreeItem final {
                 m_pParent->m_pFeature == m_pFeature);
         return m_pFeature;
     }
-
 
     /////////////////////////////////////////////////////////////////////////
     // Parent
@@ -68,6 +80,10 @@ class TreeItem final {
     // or kInvalidRow if this is a root item without a parent.
     int parentRow() const;
 
+    // Eve
+    int getRow() const;
+    int childCount() const;
+    // EVE
 
     /////////////////////////////////////////////////////////////////////////
     // Children
@@ -147,4 +163,5 @@ class TreeItem final {
     QVariant m_data;
     QIcon m_icon;
     bool m_bold;
+    QString m_fullPath;
 };

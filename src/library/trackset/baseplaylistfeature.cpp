@@ -503,6 +503,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
     std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
             std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
+                    m_pConfig,
                     "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(
@@ -600,6 +601,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
             std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
+                    m_pConfig,
                     "mixxx.db.model.playlist_export",
                     m_keepHiddenTracks);
 
@@ -647,6 +649,7 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
             std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
+                    m_pConfig,
                     "mixxx.db.model.playlist_export");
 
     emit saveModelState();

@@ -272,6 +272,9 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+
+    checkBox_grouped_playlists_enable->setChecked(false);
+    checkBox_grouped_playlists_replace->setChecked(false);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -343,6 +346,31 @@ void DlgPrefLibrary::slotUpdate() {
         break;
     }
 
+    checkBox_grouped_playlists_enable->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedPlaylistsEnabled"), true));
+    checkBox_grouped_playlists_replace->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedPlaylistsReplace"), true));
+    int GroupedPlaylistsLength = m_pConfig->getValue<int>(
+            ConfigKey("[Library]", "GroupedPlaylistsLength"));
+
+    if (GroupedPlaylistsLength == 0) {
+        radioButton_grouped_playlists_fixed_length->setChecked(true);
+    } else if (GroupedPlaylistsLength == 1) {
+        radioButton_grouped_playlists_var_mask->setChecked(true);
+    }
+    spinBox_grouped_playlists_fixed_length->setValue(m_pConfig->getValue<int>(
+            ConfigKey("[Library]", "GroupedPlaylistsFixedLength")));
+    spinBox_grouped_playlists_fixed_length->setToolTip(
+            tr("Select the number of characters at the beginning of your "
+               "playlistnames representing the group"));
+    lineEdit_grouped_playlists_var_mask->setText(m_pConfig->getValue(
+            ConfigKey("[Library]", "GroupedPlaylistsVarLengthMask")));
+    lineEdit_grouped_playlists_var_mask->setToolTip(
+            tr("Enter the mask you want to use between the groupname(s) and "
+               "the playlistname.") +
+            "\n" +
+            tr("Don't use spaces around the delimiter (or around the mask), "
+               "these can break the detection process."));
     bool editMetadataSelectedClick = m_pConfig->getValue(
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);
@@ -597,6 +625,23 @@ void DlgPrefLibrary::slotApply() {
                        ConfigValue(rowHeight));
         m_iOriginalTrackTableRowHeight = rowHeight;
     }
+
+    m_pConfig->set(ConfigKey("[Library]", "GroupedPlaylistsEnabled"),
+            ConfigValue((int)checkBox_grouped_playlists_enable->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "GroupedPlaylistsReplace"),
+            ConfigValue((int)checkBox_grouped_playlists_replace->isChecked()));
+
+    if (radioButton_grouped_playlists_fixed_length->isChecked()) {
+        m_pConfig->set(ConfigKey("[Library]", "GroupedPlaylistsLength"),
+                ConfigValue(0));
+    } else if (radioButton_grouped_playlists_var_mask->isChecked()) {
+        m_pConfig->set(ConfigKey("[Library]", "GroupedPlaylistsLength"),
+                ConfigValue(1));
+    }
+    m_pConfig->set(ConfigKey("[Library]", "GroupedPlaylistsFixedLength"),
+            ConfigValue(spinBox_grouped_playlists_fixed_length->value()));
+    m_pConfig->set(ConfigKey("[Library]", "GroupedPlaylistsVarLengthMask"),
+            ConfigValue(lineEdit_grouped_playlists_var_mask->text()));
 
     BaseTrackTableModel::setApplyPlayedTrackColor(
             checkbox_played_track_color->isChecked());
