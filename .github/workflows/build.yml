@@ -110,7 +110,7 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
             qt_qpa_platform: offscreen
-            qml: ON
+            qml: OFF
           - name: Windows 2022 x64
             os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
