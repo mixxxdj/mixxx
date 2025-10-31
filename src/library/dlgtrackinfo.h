@@ -13,6 +13,7 @@
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 #include "widget/wcolorpickeraction.h"
+#include "widget/wgenretaginput.h"
 
 class TrackModel;
 class WColorPickerAction;
@@ -20,6 +21,7 @@ class WStarRating;
 class WCoverArtMenu;
 class WCoverArtLabel;
 class DlgTagFetcher;
+class TrackCollection;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -40,6 +42,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void loadTrack(TrackPointer pTrack);
     void loadTrack(const QModelIndex& index);
     void focusField(const QString& property);
+    void setTrackCollection(TrackCollection* pTrackCollection);
 
   signals:
     void next();
@@ -83,6 +86,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
             const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
+    void slotGenresChanged();
 
   private:
     void loadNextTrack();
@@ -96,6 +100,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void updateKeyText();
     void displayKeyText();
+
+    void setupGenreWidget();
 
     void updateFromTrack(const Track& track);
 
@@ -133,6 +139,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;
     parented_ptr<WStarRating> m_pWStarRating;
     parented_ptr<WColorPickerAction> m_pColorPicker;
+    parented_ptr<WGenreTagInput> m_pGenreWidget;
+
+    TrackCollection* m_pTrackCollection;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 };
