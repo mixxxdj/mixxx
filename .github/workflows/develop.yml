@@ -94,10 +94,10 @@ jobs:
           commentBody=""
           for result in `gh api -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts | jq '.artifacts[] | select(.name | test("^UI Tests for")) | .name + "|" + .url' -r`; do
             label=$(echo $result | cut -d'|' -f 1)
-            outcome=$(echo $result | cut -d'-' -f 2)
+            outcome=$(echo $result | rev | awk '{print $1}' | rev)
             label=$(echo $label | cut -d'-' -f 1)
             url=$(echo $result | cut -d'|' -f 2)
-            if [ "$outcome" = " failure" ]; then
+            if [ "$outcome" = "failure" ]; then
               commentBody="$commentBody- :x: $label - ([view results]($url))\n"
             else
               commentBody="$commentBody- :white_check_mark: $label - ([view results]($url))\n"
