@@ -335,25 +335,29 @@ DDJ200.init = function() {
         outValueScale: function(value) {
             return value >= 0 ? this.on : this.off;
         },
+        indicateDeck: function(show_4decks, _group, _control) {
+            if (!show_4decks) {
+                DDJ200.decks.left.setCurrentDeck("[Channel1]");
+                DDJ200.decks.right.setCurrentDeck("[Channel2]");
+                DDJ200.decks.forEachComponentContainer(deck => {
+                    if (deck.syncButton.blinkConnection) {
+                        deck.syncButton.blinkConnection.disconnect();
+                        deck.syncButton.send(deck.syncButton.off);
+                    };
+                }, false);
+            };
+        },
         shiftedInput: function(_channel, _control, value, _status, _g) {
             if (value) {
                 engine.setValue("[Skin]", "show_4decks", !engine.getValue("[Skin]", "show_4decks"));
-                if (!engine.getValue("[Skin]", "show_4decks")) {
-                    DDJ200.decks.left.setCurrentDeck("[Channel1]");
-                    DDJ200.decks.right.setCurrentDeck("[Channel2]");
-                    DDJ200.decks.forEachComponentContainer(deck => {
-                        if (deck.syncButton.blinkConnection) {
-                            deck.syncButton.blinkConnection.disconnect();
-                            deck.syncButton.send(deck.syncButton.off);
-                        };
-                    }, false);
-                };
             };
         },
         shutdown: function() {
             this.send(this.off);
         }
     });
+    engine.makeConnection("[Skin]", "show_4decks", this.headMixButton.indicateDeck);
+
 
     this.transFxButton = new components.Button({
         midi: [0x96, 0x59],
