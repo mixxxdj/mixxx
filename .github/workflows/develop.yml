@@ -103,7 +103,8 @@ jobs:
               commentBody="$commentBody- :white_check_mark: $label - ([view results]($url))\n"
             fi
           done
-          echo "commentBody=${commentBody}" >> "${GITHUB_OUTPUT}"
+          echo "comment-body=${commentBody}" >> "${GITHUB_OUTPUT}"
+          cat "${GITHUB_OUTPUT}"
 
       - name: "[UI tests] Find existing comment"
         uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad
@@ -121,7 +122,7 @@ jobs:
           body: |
             ## QML UI test results
 
-            ${{ steps.generateCommentBody.outputs.commentBody }}
+            ${{ steps.generateCommentBody.outputs.comment-body }}
           edit-mode: replace
 
       - name: Ready to go
