@@ -50,6 +50,15 @@ class HidIoThread : public QThread {
     void sendFeatureReport(quint8 reportID, const QByteArray& reportData);
     QByteArray getFeatureReport(quint8 reportID);
 
+#ifdef Q_OS_ANDROID
+    // On Android, we open a connection to the device in JNI. we must keep the
+    // object alive and referenced to prevent GC and file descriptor being
+    // closed
+    void setDeviceConnection(QJniObject&& connection) {
+        m_androidConnection = connection;
+    }
+#endif
+
   signals:
     /// Signals that a HID InputReport received by Interrupt triggered from HID device
     void receive(const QByteArray& data, mixxx::Duration timestamp);
@@ -104,4 +113,7 @@ class HidIoThread : public QThread {
 
     /// Semaphore with capacity 1, which is left acquired, as long as the run loop of the thread runs
     QSemaphore m_runLoopSemaphore;
+#ifdef Q_OS_ANDROID
+    QJniObject m_androidConnection;
+#endif
 };

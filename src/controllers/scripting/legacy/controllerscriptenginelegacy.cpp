@@ -54,6 +54,9 @@ ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
 }
 
 void ControllerScriptEngineLegacy::watchFilePath(const QString& path) {
+#ifdef __ANDROID__
+    return;
+#endif
     if (m_fileWatcher.files().contains(path) || m_fileWatcher.directories().contains(path)) {
         qCDebug(m_logger) << "File" << path << "is already being watch for controller auto-reload";
         return;

@@ -69,10 +69,12 @@ CmdlineArgs::CmdlineArgs()
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
           m_logMaxFileSize(mixxx::kLogMaxFileSizeDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see #8090
+#if defined(__LINUX__)
 #ifdef MIXXX_SETTINGS_PATH
           m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH))
-#elif defined(__LINUX__)
+#else
 #error "We are not ready to switch to XDG folders under Linux"
+#endif
 #elif defined(Q_OS_IOS)
           // On iOS we intentionally use a user-accessible subdirectory of the sandbox
           // documents directory rather than the default app data directory. Specifically
