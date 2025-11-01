@@ -26,28 +26,6 @@ jobs:
     outputs:
       result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
     steps:
-      - name: "[UI tests] Fetch all artifacts"
-        id: generateCommentBody
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const { data } = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId
-            });
-            console.log(JSON.stringify(data));
-            console.log(`There is ${data.artifacts.length} artifacts on this run`);
-            return data.artifacts.filter(artifact => artifact.name.match(/^UI Tests for/)).map(artifact => {
-              const words = artifact.name.split(' ');
-              const label = words.slice(0, -2).join(' ');
-              const outcome = words.slice(-1);
-
-              if (outcome === "failure")
-                return `- :x: ${label} - ([view results](${artifact.url}))\n`
-              else
-                return `- :white_check_mark: ${label} - ([view results](${artifact.url}))\n`
-            }).join('\n');
       - name: Check if there is an open PR for this branch
         id: stop-build
         if: ${{ github.event_name == 'push' }}
@@ -143,14 +121,14 @@ jobs:
 
       - name: "[UI tests] Update existing comment or create a new one"
         uses: peter-evans/create-or-update-comment@fffe59ea229327e73edca9d31f0b578bf04152a9
-        if: steps.generateCommentBody.outputs.commentBody != ''
+        if: steps.generateCommentBody.outputs.result != ''
         with:
           comment-id: ${{ steps.find-tests-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ## QML UI test results
 
-            ${{ steps.generateCommentBody.outputs.comment-body }}
+            ${{ steps.generateCommentBody.outputs.result }}
           edit-mode: replace
 
       - name: Ready to go
