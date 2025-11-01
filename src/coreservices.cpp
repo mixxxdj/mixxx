@@ -518,6 +518,7 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(30, tr("audio interface"));
     // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
     // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
+    // m_pSoundManager is used by the preferences GUI.
     m_pSoundManager = std::make_shared<SoundManager>(pConfig, m_pEngine.get());
     m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
 
@@ -649,7 +650,6 @@ void CoreServices::initialize(QApplication* pApp) {
     // Initialize controller sub-system,
     // but do not set up controllers until the end of the application startup
     // (long)
-    qDebug() << "Creating ControllerManager";
     m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
 
     // Scan the library for new files and directories

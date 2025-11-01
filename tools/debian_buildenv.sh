@@ -105,6 +105,7 @@ case "$1" in
             libshout-idjc-dev \
             libsndfile1-dev \
             libsoundtouch-dev \
+            libsamplerate0-dev \
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
