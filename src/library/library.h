@@ -4,6 +4,7 @@
 #include <QList>
 #include <QObject>
 #include <QPointer>
+#include <QtGlobal>
 
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/library_decl.h"
@@ -113,6 +114,13 @@ class Library: public QObject {
     bool requestAddDir(const QString& directory);
     bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     bool requestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
+
+#ifdef Q_OS_IOS
+    /// Updates the iOS sandbox path prefix on all music directories.
+    /// This prefix may change after reinstalls or updates, therefore
+    /// this method is called during startup.
+    void requestRelocateIOSSandboxDirs();
+#endif
 
 #ifdef __ENGINEPRIME__
     std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
