@@ -26,6 +26,28 @@ jobs:
     outputs:
       result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
     steps:
+      - name: "[UI tests] Fetch all artifacts"
+        id: generateCommentBody
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId
+            });
+            console.log(JSON.stringify(data));
+            console.log(`There is ${data.artifacts.length} artifacts on this run`);
+            return data.artifacts.filter(artifact => artifact.name.match(/^UI Tests for/)).map(artifact => {
+              const words = artifact.name.split(' ');
+              const label = words.slice(0, -2).join(' ');
+              const outcome = words.slice(-1);
+
+              if (outcome === "failure")
+                return `- :x: ${label} - ([view results](${artifact.url}))\n`
+              else
+                return `- :white_check_mark: ${label} - ([view results](${artifact.url}))\n`
+            }).join('\n');
       - name: Check if there is an open PR for this branch
         id: stop-build
         if: ${{ github.event_name == 'push' }}
@@ -94,21 +116,22 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const { artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+            const { data } = await github.rest.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              run_id: github.runId
+              run_id: context.runId
             });
-            console.log(`There is ${artifacts.length} artifacts on this run`);
-            return artifacts.filter(artifact => artifact.name.match(/^UI Tests for/)).map(artifact => {
+            console.log(JSON.stringify(data));
+            console.log(`There is ${data.artifacts.length} artifacts on this run`);
+            return data.artifacts.filter(artifact => artifact.name.match(/^UI Tests for/)).map(artifact => {
               const words = artifact.name.split(' ');
               const label = words.slice(0, -2).join(' ');
-              const outcome = words.slice(-1)
+              const outcome = words.slice(-1);
 
               if (outcome === "failure")
-                return `- :x: ${label} - ([view results](${artifact.url}))\n"
+                return `- :x: ${label} - ([view results](${artifact.url}))`
               else
-                return `- :white_check_mark: ${label} - ([view results](${artifact.url}))\n"
+                return `- :white_check_mark: ${label} - ([view results](${artifact.url}))`
             }).join('\n');
 
       - name: "[UI tests] Find existing comment"
