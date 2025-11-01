@@ -4,9 +4,10 @@
 
 class QMenu;
 class Track;
+class FindOnWebLast;
 
 class FindOnWebMenuLastfm : public WFindOnWebMenu {
     Q_OBJECT
   public:
-    FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& track);
+    FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, FindOnWebLast* pFindOnWebLast, const Track& track);
 };
