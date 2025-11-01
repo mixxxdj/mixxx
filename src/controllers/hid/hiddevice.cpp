@@ -1,10 +1,13 @@
 #include "controllers/hid/hiddevice.h"
 
+#include <hidapi.h>
+
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"
 #include "util/string.h"
 
+#ifndef Q_OS_ANDROID
 namespace {
 
 constexpr std::size_t kDeviceInfoStringMaxLength = 512;
@@ -25,11 +28,13 @@ PhysicalTransportProtocol hidapiBusType2PhysicalTransportProtocol(hid_bus_type b
 }
 
 } // namespace
+#endif
 
 namespace mixxx {
 
 namespace hid {
 
+#ifndef Q_OS_ANDROID
 DeviceInfo::DeviceInfo(const hid_device_info& device_info)
         : vendor_id(device_info.vendor_id),
           product_id(device_info.product_id),
@@ -51,6 +56,26 @@ DeviceInfo::DeviceInfo(const hid_device_info& device_info)
           m_serialNumber(mixxx::convertWCStringToQString(
                   m_serialNumberRaw.data(), m_serialNumberRaw.size())) {
 }
+#else
+DeviceInfo::DeviceInfo(
+        const QJniObject& usbDevice, const QJniObject& usbInterface)
+        : m_androidUsbDevice(usbDevice),
+          m_physicalTransportProtocol(PhysicalTransportProtocol::USB) {
+    vendor_id = static_cast<unsigned short>(usbDevice.callMethod<jint>("getVendorId"));
+    product_id = static_cast<unsigned short>(usbDevice.callMethod<jint>("getProductId"));
+    m_manufacturerString = usbDevice.callMethod<jstring>("getManufacturerName").toString();
+    m_productString = usbDevice.callMethod<jstring>("getProductName").toString();
+    m_serialNumber = usbDevice.callMethod<jstring>("getSerialNumber").toString();
+
+    if (m_serialNumber.isEmpty()) {
+        // Android won't allow reading serial number if permission wasn't
+        // granted previously. Is this an issue?
+        m_serialNumber = "N/A";
+    }
+
+    m_usbInterfaceNumber = usbInterface.callMethod<jint>("getId");
+}
+#endif
 
 const std::vector<uint8_t>& DeviceInfo::fetchRawReportDescriptor(hid_device* pHidDevice) {
     if (!pHidDevice) {
@@ -144,11 +169,16 @@ bool DeviceInfo::matchProductInfo(
     }
 
     // Optionally check against m_usbInterfaceNumber / usage_page && usage
-    if (m_usbInterfaceNumber >= 0) {
+#ifndef Q_OS_ANDROID
+    if (m_usbInterfaceNumber >= 0)
+#endif
+    {
         if (m_usbInterfaceNumber != product.interface_number.toInt(&ok, 16) || !ok) {
             return false;
         }
-    } else {
+    }
+#ifndef Q_OS_ANDROID
+    else {
         if (usage_page != product.usage_page.toInt(&ok, 16) || !ok) {
             return false;
         }
@@ -156,6 +186,7 @@ bool DeviceInfo::matchProductInfo(
             return false;
         }
     }
+#endif
     // Match found
     return true;
 }

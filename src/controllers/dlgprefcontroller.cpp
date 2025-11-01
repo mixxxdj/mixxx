@@ -18,7 +18,7 @@
 #endif
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgcontrollerlearning.h"
-#ifdef __HID__
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
 #include "controllers/hid/hidcontroller.h"
 #endif
 #include "controllers/midi/legacymidicontrollermapping.h"
@@ -91,7 +91,7 @@ DlgPrefController::DlgPrefController(
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
           m_screensTabIndex(-1)
-#ifdef __HID__
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
           ,
           m_hidReportTabsManager(nullptr) {
     qRegisterMetaType<const hid::reportDescriptor::Control*>();
@@ -204,7 +204,7 @@ DlgPrefController::DlgPrefController(
         m_ui.labelUsbInterfaceNumberValue->setVisible(false);
     }
 
-#ifdef __HID__
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
     // Display HID UsagePage and Usage if the controller is an HidController
     if (auto* hidController = qobject_cast<HidController*>(m_pController)) {
         m_ui.labelHidUsagePageValue->setText(QStringLiteral("%1 (%2)")
