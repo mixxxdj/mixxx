@@ -341,8 +341,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        # Pinned to commit, to fix a caching issue https://github.com/Azure/trusted-signing-action/issues/62
-        uses: azure/trusted-signing-action@0d74250c661747df006298d0fb49944c10f16e03
+        uses: azure/trusted-signing-action@v0.5.10
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
