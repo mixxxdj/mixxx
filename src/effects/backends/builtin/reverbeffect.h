@@ -33,6 +33,9 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
 
     static QString getId();
     static EffectManifestPointer getManifest();
+    bool isReadyForDisable() override {
+        return m_isReadyForDisable;
+    };
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
@@ -50,6 +53,8 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
         return getId();
     }
 
+    bool m_isReadyForDisable = false;
+
     EngineEffectParameterPointer m_pDecayParameter;
     EngineEffectParameterPointer m_pBandWidthParameter;
     EngineEffectParameterPointer m_pDampingParameter;
@@ -57,3 +62,8 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };
+
+float averageSampleDifferenceEnergy(const SINT samplesPerBuffer,
+        const CSAMPLE* buffer_in,
+        const CSAMPLE* buffer_out,
+        const SINT tailCheckLength);

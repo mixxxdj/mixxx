@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/echoeffect.h"
 
+#include <span>
+
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
@@ -118,6 +120,14 @@ void EchoEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
+float averageSampleEnergy(std::span<const CSAMPLE> delay_buffer) {
+    float differenceSum = 0.0f;
+    for (const CSAMPLE sample : delay_buffer.span()) {
+        differenceSum += std::abs(sample);
+    }
+    return differenceSum / delay_buffer.size();
+}
+
 void EchoEffect::processChannel(
         EchoGroupState* pGroupState,
         const CSAMPLE* pInput,
@@ -127,9 +137,15 @@ void EchoEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
-    const auto send_current = static_cast<CSAMPLE_GAIN>(m_pSendParameter->value());
+    const auto send_current = enableState == EffectEnableState::Disabling
+            ? 0
+            : static_cast<CSAMPLE_GAIN>(m_pSendParameter->value());
     const auto feedback_current = static_cast<CSAMPLE_GAIN>(m_pFeedbackParameter->value());
     const auto pingpong_frac = static_cast<CSAMPLE_GAIN>(m_pPingPongParameter->value());
+
+    if (enableState == EffectEnableState::Enabling) {
+        m_isReadyForDisable = false;
+    }
 
     int delay_frames;
     if (groupFeatures.beat_length.has_value()) {
@@ -236,16 +252,17 @@ void EchoEffect::processChannel(
             pGroupState->ping_pong = 0;
         }
     }
-
-    // The ramping of the send parameter handles ramping when enabling, so
-    // this effect must handle ramping to dry when disabling itself (instead
-    // of being handled by EngineEffect::process).
+    pGroupState->prev_send = send_current;
     if (enableState == EffectEnableState::Disabling) {
-        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
-        pGroupState->delay_buf.clear();
         pGroupState->prev_send = 0;
-    } else {
-        pGroupState->prev_send = send_current;
+        const SINT delayBufferSize = pGroupState->delay_buf.size();
+        // Calculate if the delayline-buffer is approx. zero/empty.
+        const float avgSampleEnergy = averageSampleEnergy(pGroupState->delay_buf.span().first(engineParameters.sampleRate()));
+        // If echo tail fully faded
+        if (avgSampleEnergy < (0.00001f / delayBufferSize)) {
+            m_isReadyForDisable = true;
+            pGroupState->delay_buf.clear();
+        }
     }
 
     pGroupState->prev_feedback = feedback_current;
