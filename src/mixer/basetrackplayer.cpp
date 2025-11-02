@@ -490,6 +490,14 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
 
     m_pPlay->set(0.0);
 
+#ifdef __STEM__
+    if (m_pStemColors.size()) {
+        for (const auto& stemColorCo : m_pStemColors) {
+            stemColorCo->forceSet(kNoTrackColor);
+        }
+    }
+#endif
+
     TrackPointer pUnloadedTrack(std::move(m_pLoadedTrack));
     DEBUG_ASSERT(!m_pLoadedTrack);
     emit trackUnloaded(pUnloadedTrack);
@@ -721,19 +729,17 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         }
 
 #ifdef __STEM__
-        if (m_pStemColors.size()) {
-            const auto& stemInfo = m_pLoadedTrack->getStemInfo();
-            DEBUG_ASSERT(stemInfo.size() <= mixxx::kMaxSupportedStems);
-            int stemIdx = 0;
-            for (const auto& stemColorCo : m_pStemColors) {
-                auto color = kNoTrackColor;
-                if (stemIdx < stemInfo.size()) {
-                    color = trackColorToDouble(mixxx::RgbColor::fromQColor(
-                            stemInfo.at(stemIdx).getColor()));
-                }
-                stemColorCo->forceSet(color);
-                stemIdx++;
+        const auto& stemInfo = pNewTrack->getStemInfo();
+        DEBUG_ASSERT(stemInfo.empty() ||
+                static_cast<size_t>(stemInfo.size()) == m_pStemColors.size());
+
+        for (size_t stemIdx = 0; stemIdx < m_pStemColors.size(); stemIdx++) {
+            auto color = kNoTrackColor;
+            if (stemIdx < static_cast<size_t>(stemInfo.size())) {
+                color = trackColorToDouble(mixxx::RgbColor::fromQColor(
+                        stemInfo.at(stemIdx).getColor()));
             }
+            m_pStemColors[stemIdx]->forceSet(color);
         }
 #endif
 
