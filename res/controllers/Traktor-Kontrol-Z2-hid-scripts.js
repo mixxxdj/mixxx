@@ -30,7 +30,7 @@ class DeckClass {
         this.parent = parent;
         this.deckNumber = deckNumber;
         this.group = group;
-        this.activeChannel = "[Channel" + deckNumber + "]";
+        this.activeChannel = `[Channel${  deckNumber  }]`;
 
         // Timer states to distinguish short and long press
         this.syncPressedTimerId = 0;
@@ -108,25 +108,25 @@ class DeckClass {
             switch (padNumber) {
             case 1 :
                 engine.setValue(
-                    sideChannel[chIdx], "intro_start" + action, field.value);
+                    sideChannel[chIdx], `intro_start${  action}`, field.value);
                 break;
             case 2 :
                 engine.setValue(
-                    sideChannel[chIdx], "intro_end" + action, field.value);
+                    sideChannel[chIdx], `intro_end${  action}`, field.value);
                 break;
             case 3 :
                 engine.setValue(
-                    sideChannel[chIdx], "outro_start" + action, field.value);
+                    sideChannel[chIdx], `outro_start${  action}`, field.value);
                 break;
             case 4 :
                 engine.setValue(
-                    sideChannel[chIdx], "outro_end" + action, field.value);
+                    sideChannel[chIdx], `outro_end${  action}`, field.value);
                 break;
             }
         } else {
-            console.log("setting " + "hotcue_" + padNumber + action + " " + field.value);
+            console.log("setting " + `hotcue_${  padNumber  }${action  } ${  field.value}`);
             engine.setValue(
-                sideChannel[chIdx], "hotcue_" + (sideOffset[chIdx] + padNumber) + action, field.value);
+                sideChannel[chIdx], `hotcue_${  sideOffset[chIdx] + padNumber  }${action}`, field.value);
         }
     }
 
@@ -140,7 +140,7 @@ class DeckClass {
     vinylcontrolHandler(field) {
         console.log(
             "TraktorZ2: vinylcontrolHandler " +
-            "this.activeChannel:" + this.activeChannel + " field.value:" + field.value);
+            `this.activeChannel:${  this.activeChannel  } field.value:${  field.value}`);
         if (field.value === 0 || (engine.getValue(this.activeChannel, "passthrough") === 1)) {
             return;
         }
@@ -172,8 +172,8 @@ class DeckClass {
     syncHandler(field) {
         console.log(
             "TraktorZ2: syncHandler " +
-            "this.activeChannel:" + this.activeChannel + " field:" + field +
-            "key:" + engine.getValue(this.activeChannel, "key"));
+            `this.activeChannel:${  this.activeChannel  } field:${  field
+            }key:${  engine.getValue(this.activeChannel, "key")}`);
 
         if ((this.parent.shiftLocked === false) && (this.parent.shiftPressed === false)) {
             // Shift not hold down
@@ -288,7 +288,7 @@ class DeckClass {
         // All LEDs of the Traktor Z2 have 7Bit outputs
         console.log(
             "TraktorZ2: defineLED2 " +
-            "hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
+            `hidReport:${  hidReport  } this.deckNumber${  this.deckNumber  } name:${  name}`);
 
         switch (this.deckNumber) {
         case 1:
@@ -315,7 +315,7 @@ class DeckClass {
         // All LEDs of the Traktor Z2 have 7Bit outputs
         console.log(
             "TraktorZ2: defineLED4 " +
-            "hidReport:" + hidReport + " this.deckNumber" + this.deckNumber + " name:" + name);
+            `hidReport:${  hidReport  } this.deckNumber${  this.deckNumber  } name:${  name}`);
 
         switch (this.deckNumber) {
         case 1:
@@ -335,7 +335,7 @@ class DeckClass {
 
     selectLoopHandler(field) {
         console.log(
-            "TraktorZ2: selectLoopHandler " + this.activeChannel + " field.value:" + field.value);
+            `TraktorZ2: selectLoopHandler ${  this.activeChannel  } field.value:${  field.value}`);
 
         let delta = 0;
         if ((field.value + 15) % 16 === this.loopKnobEncoderState) {
@@ -477,7 +477,7 @@ class DeckClass {
     traktorButtonHandler(field) {
         console.log(
             "TraktorZ2: traktorButtonHandler " +
-            "this.activeChannel: " + this.activeChannel + " field.value: " + field.value);
+            `this.activeChannel: ${  this.activeChannel  } field.value: ${  field.value}`);
         if (field.value === 1) {
             // Taktor button pressed
             if (this.parent.shiftPressed) {
@@ -490,7 +490,7 @@ class DeckClass {
     traktorButtonStatusHandler(field) {
         console.log(
             "TraktorZ2: traktorButtonStatusHandler " +
-            "this.activeChannel: " + this.activeChannel + " field.value: " + field.value);
+            `this.activeChannel: ${  this.activeChannel  } field.value: ${  field.value}`);
         this.parent.traktorButtonStatus[this.activeChannel] = field.value;
         this.parent.traktorButtonOutputHandler(this.activeChannel);
     }
@@ -630,19 +630,19 @@ class DeckClass {
         };
         for (const hotcue in ledPadOffsets) {
             this.defineLED2(
-                this.parent.outputReport80, hotcue + "Red", 0x1D + ledPadOffsets[hotcue],
+                this.parent.outputReport80, `${hotcue  }Red`, 0x1D + ledPadOffsets[hotcue],
                 0x29 + ledPadOffsets[hotcue]);
             this.defineLED2(
-                this.parent.outputReport80, hotcue + "Green", 0x1E + ledPadOffsets[hotcue],
+                this.parent.outputReport80, `${hotcue  }Green`, 0x1E + ledPadOffsets[hotcue],
                 0x2A + ledPadOffsets[hotcue]);
             this.defineLED2(
-                this.parent.outputReport80, hotcue + "Blue", 0x1F + ledPadOffsets[hotcue],
+                this.parent.outputReport80, `${hotcue  }Blue`, 0x1F + ledPadOffsets[hotcue],
                 0x2B + ledPadOffsets[hotcue]);
         }
     }
 
     registerOutputs4Decks() {
-        console.log("TraktorZ2: registerOutputs4Decks  this.activeChannel:" + this.activeChannel);
+        console.log(`TraktorZ2: registerOutputs4Decks  this.activeChannel:${  this.activeChannel}`);
 
         engine.makeConnection(
             this.activeChannel, "intro_start_enabled",
@@ -659,10 +659,10 @@ class DeckClass {
 
         for (let hotcue = 1; hotcue <= 8; hotcue++) {
             engine.makeConnection(
-                this.activeChannel, "hotcue_" + hotcue + "_color",
+                this.activeChannel, `hotcue_${  hotcue  }_color`,
                 this.parent.hotcueOutputHandler.bind(this.parent));
             engine.makeConnection(
-                this.activeChannel, "hotcue_" + hotcue + "_status",
+                this.activeChannel, `hotcue_${  hotcue  }_status`,
                 this.parent.hotcueOutputHandler.bind(this.parent));
         }
 
@@ -680,7 +680,7 @@ class DeckClass {
         this.defineLED4(this.parent.outputReport81, "!vu_label", 0x01, 0x09, 0x11, 0x19);
         for (let i = 0; i < 6; i++) {
             this.defineLED4(
-                this.parent.outputReport81, "!vu_meter" + i, 0x02 + i, 0x0A + i, 0x12 + i, 0x1A + i);
+                this.parent.outputReport81, `!vu_meter${  i}`, 0x02 + i, 0x0A + i, 0x12 + i, 0x1A + i);
         }
         this.defineLED4(this.parent.outputReport81, "!peak_indicator", 0x08, 0x10, 0x18, 0x20);
 
@@ -724,7 +724,7 @@ class TraktorZ2Class {
 
         this.chTimer = [];
         for (let chidx = 1; chidx <= 4; chidx++) {
-            this.displayBrightness["[Channel" + chidx + "]"] = kLedDimmed;
+            this.displayBrightness[`[Channel${  chidx  }]`] = kLedDimmed;
         }
 
         this.inputReport01 = new HIDPacket("InputReport01", 0x01, this.messageCallback.bind(this));
@@ -784,7 +784,7 @@ class TraktorZ2Class {
         }
 
         const inputRpt01 = new Uint8Array(controller.getInputReport(0x01));
-        console.log("inputRpt01" + inputRpt01 + "   " + inputRpt01[8]);
+        console.log(`inputRpt01${  inputRpt01  }   ${  inputRpt01[8]}`);
         if ((inputRpt01[8] & 0x02) !== 0) {
             engine.setValue("[Channel1]", "pfl", 1);
             console.log("PFL 11");
@@ -842,8 +842,8 @@ class TraktorZ2Class {
         console.log("TraktorZ2: fxOnClickHandler");
         let numOfLoadedandEnabledEffects = 0;
         for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effectslots"); effectIdx++) {
-            if (engine.getValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "loaded") === 1) {
-                if (engine.getValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "enabled") === 1) {
+            if (engine.getValue(`${field.group.substr(0, field.group.length - 1)  }_Effect${  effectIdx  }]`, "loaded") === 1) {
+                if (engine.getValue(`${field.group.substr(0, field.group.length - 1)  }_Effect${  effectIdx  }]`, "enabled") === 1) {
                     numOfLoadedandEnabledEffects++;
                 }
             }
@@ -852,13 +852,13 @@ class TraktorZ2Class {
         if (field.value !== 0) {
             if (numOfLoadedandEnabledEffects === 0) {
                 for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effectslots"); effectIdx++) {
-                    if (engine.getValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "loaded") === 1) {
-                        engine.setValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "enabled", 1);
+                    if (engine.getValue(`${field.group.substr(0, field.group.length - 1)  }_Effect${  effectIdx  }]`, "loaded") === 1) {
+                        engine.setValue(`${field.group.substr(0, field.group.length - 1)  }_Effect${  effectIdx  }]`, "enabled", 1);
                     }
                 }
             } else {
                 for (let effectIdx = 1; effectIdx <= engine.getValue(field.group, "num_effectslots"); effectIdx++) {
-                    engine.setValue(field.group.substr(0, field.group.length - 1) + "_Effect" + effectIdx + "]", "enabled", 0);
+                    engine.setValue(`${field.group.substr(0, field.group.length - 1)  }_Effect${  effectIdx  }]`, "enabled", 0);
                 }
             }
         }
@@ -869,9 +869,9 @@ class TraktorZ2Class {
         for (let macroFxUnitIdx = 1; macroFxUnitIdx <= 2; macroFxUnitIdx++) {
             let numOfLoadedButDisabledEffects = 0;
             let numOfLoadedandEnabledEffects = 0;
-            for (let effectIdx = 1; effectIdx <= engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "num_effectslots"); effectIdx++) {
-                if (engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx + "_Effect" + effectIdx + "]", "loaded") === 1) {
-                    if (engine.getValue("[EffectRack1_EffectUnit" + macroFxUnitIdx + "_Effect" + effectIdx + "]", "enabled") === 1) {
+            for (let effectIdx = 1; effectIdx <= engine.getValue(`[EffectRack1_EffectUnit${  macroFxUnitIdx  }]`, "num_effectslots"); effectIdx++) {
+                if (engine.getValue(`[EffectRack1_EffectUnit${  macroFxUnitIdx  }_Effect${  effectIdx  }]`, "loaded") === 1) {
+                    if (engine.getValue(`[EffectRack1_EffectUnit${  macroFxUnitIdx  }_Effect${  effectIdx  }]`, "enabled") === 1) {
                         numOfLoadedandEnabledEffects++;
                     } else {
                         numOfLoadedButDisabledEffects++;
@@ -880,19 +880,19 @@ class TraktorZ2Class {
             }
             if (numOfLoadedandEnabledEffects === 0) {
                 this.controller.setOutput(
-                    "[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedOff, macroFxUnitIdx === 2);
+                    `[EffectRack1_EffectUnit${  macroFxUnitIdx  }]`, "!On", kLedOff, macroFxUnitIdx === 2);
             } else if (numOfLoadedandEnabledEffects > 0 && numOfLoadedButDisabledEffects > 0) {
                 this.controller.setOutput(
-                    "[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedDimmed, macroFxUnitIdx === 2);
+                    `[EffectRack1_EffectUnit${  macroFxUnitIdx  }]`, "!On", kLedDimmed, macroFxUnitIdx === 2);
             } else {
                 this.controller.setOutput(
-                    "[EffectRack1_EffectUnit" + macroFxUnitIdx + "]", "!On", kLedBright, macroFxUnitIdx === 2);
+                    `[EffectRack1_EffectUnit${  macroFxUnitIdx  }]`, "!On", kLedBright, macroFxUnitIdx === 2);
             }
         }
     }
 
     deckSwitchHandler(field) {
-        console.log("TraktorZ2: deckSwitchHandler: " + field.group + " " + field.value);
+        console.log(`TraktorZ2: deckSwitchHandler: ${  field.group  } ${  field.value}`);
         if (field.value === 1) {
             if (field.group === "[Channel1]") {
                 this.controller.setOutput("[Channel3]", "!deck", kLedOff, true);
@@ -931,7 +931,7 @@ class TraktorZ2Class {
     vinylcontrolOutputHandler(value, group, key) {
         console.log(
             "TraktorZ2: vinylcontrolOutputHandler " +
-            "group:" + group + " key:" + key);
+            `group:${  group  } key:${  key}`);
 
         // Sets TaktorButton state, depending on Passthrough state
         this.traktorButtonOutputHandler(group);
@@ -984,7 +984,7 @@ class TraktorZ2Class {
     vinylcontrolStatusOutputHandler(vfalue, group, key) {
         console.log(
             "TraktorZ2: vinylcontrolOutputHandler " +
-            "group:" + group + " key:" + key);
+            `group:${  group  } key:${  key}`);
         // Z2 has only one vinylcontrol status LED for both channels -> merge information of both
         if ((engine.getValue("[Channel1]", "vinylcontrol_status") === 3) ||
             (engine.getValue("[Channel2]", "vinylcontrol_status") === 3) ||
@@ -1138,7 +1138,7 @@ class TraktorZ2Class {
     microphoneButtonHandler(field) {
         console.log(
             "TraktorZ2: microphoneButtonHandler " +
-            "field.value: " + field.value);
+            `field.value: ${  field.value}`);
         if (field.value === 1) {
             // Microphone button pressed
             if (this.shiftPressed) {
@@ -1157,7 +1157,7 @@ class TraktorZ2Class {
     microphoneButtonStatusHandler(field) {
         console.log(
             "TraktorZ2: microphoneButtonStatusHandler " +
-            "field.value: " + field.value);
+            `field.value: ${  field.value}`);
         this.microphoneButtonStatus = field.value;
         this.microphoneButtonOutputHandler();
     }
@@ -1368,8 +1368,8 @@ class TraktorZ2Class {
     enableSoftTakeover() {
         // Soft takeovers
         for (let ch = 1; ch <= 2; ch++) {
-            const group = "[Channel" + ch + "]";
-            engine.softTakeover("[QuickEffectRack1_" + group + "]", "super1", true);
+            const group = `[Channel${  ch  }]`;
+            engine.softTakeover(`[QuickEffectRack1_${  group  }]`, "super1", true);
         }
 
         engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
@@ -1422,7 +1422,7 @@ class TraktorZ2Class {
         } else if (field.value === 0) {
             this.shiftPressed = false;
 
-            console.log("TraktorZ2: shift button released" + this.shiftLocked);
+            console.log(`TraktorZ2: shift button released${  this.shiftLocked}`);
             if (this.shiftPressedTimer !== 0) {
                 // Timer still running -> stop it and toggle shift lock state
                 // Set LED brightness depending on new shift lock state
@@ -1444,7 +1444,7 @@ class TraktorZ2Class {
                 this.displayLoopCount("[Channel1]", false);
                 this.displayLoopCount("[Channel2]", true);
 
-                console.log("TraktorZ2: static shift lock state changed to: " + this.shiftLocked);
+                console.log(`TraktorZ2: static shift lock state changed to: ${  this.shiftLocked}`);
             } else {
                 // Timeout -> Long press and hold -> Don't change shift lock state
                 // Resetting the LED brightness depending on the state of the preserved shift lock state
@@ -1454,7 +1454,7 @@ class TraktorZ2Class {
                     this.controller.setOutput("[Master]", "shift", kLedOff, true);
                 }
 
-                console.log("TraktorZ2: back to static lock shift state: " + this.shiftLocked);
+                console.log(`TraktorZ2: back to static lock shift state: ${  this.shiftLocked}`);
             }
             // Apply stored EQ and filter settings
             const eqGroups = {
@@ -1479,10 +1479,10 @@ class TraktorZ2Class {
             };
 
             for (const idx in eqGroups) {
-                if (this.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "changed"] === true) {
+                if (this.eqValueStorage[`${eqGroups[idx] + eqParameters[idx]  }changed`] === true) {
                     this.eqExecute(
                         eqGroups[idx], eqParameters[idx],
-                        this.eqValueStorage[eqGroups[idx] + eqParameters[idx] + "value"]);
+                        this.eqValueStorage[`${eqGroups[idx] + eqParameters[idx]  }value`]);
                 }
             }
         }
@@ -1500,8 +1500,8 @@ class TraktorZ2Class {
             this.eqExecute(field.group, field.name, field.value);
         } else {
             // Store value until Shift button will be released
-            this.eqValueStorage[field.group + field.name + "changed"] = true;
-            this.eqValueStorage[field.group + field.name + "value"] = field.value;
+            this.eqValueStorage[`${field.group + field.name  }changed`] = true;
+            this.eqValueStorage[`${field.group + field.name  }value`] = field.value;
         }
     }
 
@@ -1529,7 +1529,7 @@ class TraktorZ2Class {
             }
         }
         engine.setParameter(group, name, value / 4095);
-        this.eqValueStorage[group + name + "changed"] = false;
+        this.eqValueStorage[`${group + name  }changed`] = false;
     }
 
     /// The Traktor Z2 has a dedicated pre-gain knob for all 4 channels,
@@ -1766,7 +1766,7 @@ class TraktorZ2Class {
     basicOutputHandler(value, group, key) {
         console.log(
             "TraktorZ2: basicOutputHandler " +
-            "group:" + group + " key:" + key + " value:" + value);
+            `group:${  group  } key:${  key  } value:${  value}`);
         if (value === 0 || value === false) {
             // Off value
             this.controller.setOutput(group, key, kLedOff, true);
@@ -1819,12 +1819,12 @@ class TraktorZ2Class {
         }
 
         for (let chidx = 1; chidx <= 2; chidx++) {
-            const ch = "[Channel" + chidx + "]";
+            const ch = `[Channel${  chidx  }]`;
             for (let i = 1; i <= 4; i++) {
                 let colorCode = engine.getValue(
-                    sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_color");
+                    sideChannel[chidx], `hotcue_${  sideOffset[chidx] + i  }_color`);
                 if (engine.getValue(
-                    sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_status") === 0) {
+                    sideChannel[chidx], `hotcue_${  sideOffset[chidx] + i  }_status`) === 0) {
                     colorCode = 0;
                 }
                 if (sideOffset[chidx] === -1) {
@@ -1854,16 +1854,16 @@ class TraktorZ2Class {
                     (i === 2 && engine.getValue(sideChannel[chidx], "intro_end_enabled") === 0) ||
                     (i === 3 && engine.getValue(sideChannel[chidx], "outro_start_enabled") === 0) ||
                     (i === 4 && engine.getValue(sideChannel[chidx], "outro_end_enabled") === 0)
-                    )) || engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_type") === 4) {
+                    )) || engine.getValue(sideChannel[chidx], `hotcue_${  sideOffset[chidx] + i  }_type`) === 4) {
                     red = Math.ceil(red * 0.3);
                     green = Math.ceil(green * 0.3);
                     blue = Math.ceil(blue * 0.25);  // Blue LED is dominant -> dim it slightly
                 }
                 // console.log("Channel: " + ch + " Hotcue: " + i + " Colorcode: " + colorCode +
                 // " Red: " + red + " Green: " + green + " Blue: " + blue);
-                this.controller.setOutput(ch, "Hotcue" + i + "Red", red, false);
-                this.controller.setOutput(ch, "Hotcue" + i + "Green", green, false);
-                this.controller.setOutput(ch, "Hotcue" + i + "Blue", blue, true);
+                this.controller.setOutput(ch, `Hotcue${  i  }Red`, red, false);
+                this.controller.setOutput(ch, `Hotcue${  i  }Green`, green, false);
+                this.controller.setOutput(ch, `Hotcue${  i  }Blue`, blue, true);
             }
         }
     }
@@ -1966,7 +1966,7 @@ class TraktorZ2Class {
 
         if (this.Decks.deck1.syncPressed || this.Decks.deck2.syncPressed) {
             const key = engine.getValue(group, "key");
-            console.log("TraktorZ2: ################ Key:" + key);
+            console.log(`TraktorZ2: ################ Key:${  key}`);
 
             let majorMinor;
 
@@ -2045,16 +2045,16 @@ class TraktorZ2Class {
             } else {
                 if (sendMessage === true) {
                     // Display empty string
-                    this.displayLoopCountDigit(group + "[Digit1]", -2, displayBrightness);
-                    this.displayLoopCountDigit(group + "[Digit2]", -2, displayBrightness);
-                    this.displayLoopCountDigit(group + "[Digit3]", -2, displayBrightness);
+                    this.displayLoopCountDigit(`${group  }[Digit1]`, -2, displayBrightness);
+                    this.displayLoopCountDigit(`${group  }[Digit2]`, -2, displayBrightness);
+                    this.displayLoopCountDigit(`${group  }[Digit3]`, -2, displayBrightness);
 
-                    this.controller.getOutputField(group + "[Digit1]", "segment_a").packet.send();
+                    this.controller.getOutputField(`${group  }[Digit1]`, "segment_a").packet.send();
                 }
                 return;
             }
 
-            this.displayLoopCountDigit(group + "[Digit3]", majorMinor, displayBrightness);
+            this.displayLoopCountDigit(`${group  }[Digit3]`, majorMinor, displayBrightness);
 
             // Lancelot key notation integer
             let numberToDisplayRemainder = numberToDisplay;
@@ -2075,7 +2075,7 @@ class TraktorZ2Class {
                 numberToDisplayRemainder /= 10;
             }
             if (sendMessage === true) {
-                this.controller.getOutputField(group + "[Digit1]", "segment_a").packet.send();
+                this.controller.getOutputField(`${group  }[Digit1]`, "segment_a").packet.send();
             }
             return;
         } else if ((this.shiftLocked)) {
@@ -2101,10 +2101,10 @@ class TraktorZ2Class {
             }
             if (numberToDisplay > .1) {
                 this.displayLoopCountDigit(
-                    group + "[Digit1]", -2, displayBrightness);  // Leading zero -> Blank
+                    `${group  }[Digit1]`, -2, displayBrightness);  // Leading zero -> Blank
             } else {
                 this.displayLoopCountDigit(
-                    group + "[Digit1]", -1,
+                    `${group  }[Digit1]`, -1,
                     displayBrightness);  // Show special symbol of number 1 and the fraction stroke
                 // combined in left digit
             }
@@ -2131,7 +2131,7 @@ class TraktorZ2Class {
             }
         }
         if (sendMessage === true) {
-            this.controller.getOutputField(group + "[Digit1]", "segment_a").packet.send();
+            this.controller.getOutputField(`${group  }[Digit1]`, "segment_a").packet.send();
         }
     }
 
@@ -2169,13 +2169,13 @@ class TraktorZ2Class {
         };
         // Switch LEDs On
         HIDController.fastForIn(symbolArray[digit][0], (segmentName) => {
-            this.controller.setOutput(group, "segment_" + symbolArray[digit][0][segmentName], brightness, false);
+            this.controller.setOutput(group, `segment_${  symbolArray[digit][0][segmentName]}`, brightness, false);
         }
         );
         // Switch LEDs Off
 
         HIDController.fastForIn(symbolArray[digit][1], (segmentName) => {
-            this.controller.setOutput(group, "segment_" + symbolArray[digit][1][segmentName], kLedOff, false);
+            this.controller.setOutput(group, `segment_${  symbolArray[digit][1][segmentName]}`, kLedOff, false);
         }
         );
     }
@@ -2361,7 +2361,7 @@ class TraktorZ2Class {
             if (brightness > kLedVuMeterBrightness) {
                 brightness = kLedVuMeterBrightness;
             }
-            this.controller.setOutput(ch, "!vu_meter" + i, brightness, false);
+            this.controller.setOutput(ch, `!vu_meter${  i}`, brightness, false);
         }
     }
 
@@ -2449,4 +2449,5 @@ class TraktorZ2Class {
     }
 }
 
-var TraktorZ2 = new TraktorZ2Class;  // eslint-disable-line no-var, no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const TraktorZ2 = new TraktorZ2Class;
