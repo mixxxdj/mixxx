@@ -17,6 +17,8 @@ on:
 permissions:
   contents: read #  to fetch code (actions/checkout)
   checks: write #  to create new checks (coverallsapp/github-action)
+  actions: read #  to list the UI test artifacts (ready)
+  pull-requests: write #  to post/edit comments about test results (peter-evans/create-or-update-comment)
 
 jobs:
   stop-build:
