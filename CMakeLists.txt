@@ -1323,6 +1323,7 @@ add_library(
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/dao/relationdao.cpp
   src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
@@ -1405,6 +1406,12 @@ add_library(
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
   src/library/trackset/playlistfeature.cpp
+  src/library/relations/dlgrelations.cpp
+  src/library/relations/dlgrelations.ui
+  src/library/relations/dlgrelationinfo.cpp
+  src/library/relations/dlgrelationinfo.ui
+  src/library/relations/relationsfeature.cpp
+  src/library/relations/relationstablemodel.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
   src/library/traktor/traktorfeature.cpp
@@ -1525,6 +1532,7 @@ add_library(
   src/track/keys.cpp
   src/track/keyutils.cpp
   src/track/playcounter.cpp
+  src/track/relation.cpp
   src/track/replaygain.cpp
   src/track/serato/beatgrid.cpp
   src/track/serato/beatsimporter.cpp
@@ -1703,8 +1711,8 @@ add_library(
   src/widget/wplaybutton.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
-  src/widget/wstarratingaction.cpp
   src/widget/wrecordingduration.cpp
+  src/widget/wrelationtableview.cpp
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
@@ -1717,6 +1725,7 @@ add_library(
   src/widget/wspinnybase.cpp
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
+  src/widget/wstarratingaction.cpp
   src/widget/wstatuslight.cpp
   src/widget/wtime.cpp
   src/widget/wtrackmenu.cpp

@@ -179,7 +179,19 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
                 &PLAYLISTTRACKSTABLE_DATETIMEADDED,
                 QT_TRANSLATE_NOOP("BaseSqlTableModel", "Timestamp"),
                 kDefaultColumnWidth * 80 / 50},
-        DI(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH){&REKORDBOX_ANALYZE_PATH, nullptr, 0}};
+        DI(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH){&REKORDBOX_ANALYZE_PATH, nullptr, 0},
+        DI(ColumnCache::COLUMN_RELATIONTABLE_ID){
+                &RELATIONTABLE_ID,
+                nullptr,
+                0},
+        DI(ColumnCache::COLUMN_RELATIONTABLE_COMMENT){
+                &RELATIONTABLE_COMMENT,
+                QT_TRANSLATE_NOOP("BaseSqlTableModel", "Relation Comment"),
+                kDefaultColumnWidth * 4},
+        DI(ColumnCache::COLUMN_RELATIONTABLE_DATETIMEADDED){
+                &RELATIONTABLE_DATETIMEADDED,
+                QT_TRANSLATE_NOOP("BaseSqlTableModel", "Relation Added"),
+                kDefaultColumnWidth}};
 static_assert(std::size(kColumnPropertiesByEnum) == ColumnCache::NUM_COLUMNS);
 
 #if defined(__clang__)
