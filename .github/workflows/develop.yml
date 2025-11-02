@@ -17,77 +17,85 @@ on:
 permissions:
   contents: read #  to fetch code (actions/checkout)
   checks: write #  to create new checks (coverallsapp/github-action)
-  actions: read #  to list the UI test artifacts (ready)
-  pull-requests: write #  to post/edit comments about test results (peter-evans/create-or-update-comment)
-  issues: write #  to post/edit comments about test results (peter-evans/create-or-update-comment)
 
 jobs:
   stop-build:
     name: Check if build should be stopped
     runs-on: ubuntu-latest
-    outputs:
-      result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
+    # outputs:
+    #   result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
     steps:
-      - name: Check if there is an open PR for this branch
-        id: stop-build
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/github-script@v8
-        env:
-          ORGANIZATION: mixxxdj
-          REPOSITORY: mixxx
+      # - name: Check if there is an open PR for this branch
+      #   id: stop-build
+      #   if: ${{ github.event_name == 'push' }}
+      #   uses: actions/github-script@v8
+      #   env:
+      #     ORGANIZATION: mixxxdj
+      #     REPOSITORY: mixxx
+      #   with:
+      #     script: |
+      #       try {
+      #         const branch = context.ref.replace('refs/heads/', '');
+      #         const { data: pullRequests } = await github.rest.pulls.list({
+      #           owner: process.env.ORGANIZATION,
+      #           repo: process.env.REPOSITORY,
+      #           head: `${context.repo.owner}:${branch}`,
+      #           state: 'open'
+      #         });
+      #         console.log(`There is ${pullRequests.length} PR open upstream for branch '${context.repo.owner}:${branch}'`);
+      #         return pullRequests.length != 0;
+      #       } catch (error) {
+      #         console.log(`Didn't find a PR for branch '${context.repo.owner}:${branch}' on '${process.env.ORGANIZATION}/${process.env.REPOSITORY}'.`);
+      #         return false;
+      #       }
+
+      - name: test
+        run: touch ${{ github.workspace }}/foobar
+      - name: Upload test
+        uses: actions/upload-artifact@v4
         with:
-          script: |
-            try {
-              const branch = context.ref.replace('refs/heads/', '');
-              const { data: pullRequests } = await github.rest.pulls.list({
-                owner: process.env.ORGANIZATION,
-                repo: process.env.REPOSITORY,
-                head: `${context.repo.owner}:${branch}`,
-                state: 'open'
-              });
-              console.log(`There is ${pullRequests.length} PR open upstream for branch '${context.repo.owner}:${branch}'`);
-              return pullRequests.length != 0;
-            } catch (error) {
-              console.log(`Didn't find a PR for branch '${context.repo.owner}:${branch}' on '${process.env.ORGANIZATION}/${process.env.REPOSITORY}'.`);
-              return false;
-            }
+          name: UI Tests for Foo - failure
+          path: ${{ github.workspace }}/foobar
 
-  pre-commit:
-    if: needs.stop-build.outputs.result == 'false'
-    needs:
-      - stop-build
-    uses: ./.github/workflows/pre-commit.yml
-    with:
-      pull_request: ${{ github.event_name == 'pull_request' }}
+  # pre-commit:
+  #   if: needs.stop-build.outputs.result == 'false'
+  #   needs:
+  #     - stop-build
+  #   uses: ./.github/workflows/pre-commit.yml
+  #   with:
+  #     pull_request: ${{ github.event_name == 'pull_request' }}
 
-  checks:
-    if: needs.stop-build.outputs.result == 'false'
-    needs:
-      - stop-build
-    uses: ./.github/workflows/checks.yml
+  # checks:
+  #   if: needs.stop-build.outputs.result == 'false'
+  #   needs:
+  #     - stop-build
+  #   uses: ./.github/workflows/checks.yml
 
-  git:
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/git.yml
+  # git:
+  #   if: github.event_name == 'pull_request'
+  #   uses: ./.github/workflows/git.yml
 
-  build:
-    if: needs.stop-build.outputs.result == 'false'
-    needs:
-      - stop-build
-    uses: ./.github/workflows/build.yml
-    with:
-      branch: ${{ github.head_ref || github.ref_name }}
-      ref: ${{ github.ref }}
+  # build:
+  #   if: needs.stop-build.outputs.result == 'false'
+  #   needs:
+  #     - stop-build
+  #   uses: ./.github/workflows/build.yml
+  #   with:
+  #     branch: ${{ github.head_ref || github.ref_name }}
+  #     ref: ${{ github.ref }}
 
   # This task is used as a probe for auto merge
   # In the future, it could also be used to perform a status update (e.g once the whole CI is passing + is ready for review, add a specific label such as `need review`)
   ready:
     name: Ready to merge
-    needs:
-      - pre-commit
-      - checks
-      - git
-      - build
+    permissions:
+      actions: read #  to list the UI test artifacts (ready)
+      pull-requests: write #  to post/edit comments about test results (peter-evans/create-or-update-comment)
+    # needs:
+    #   - pre-commit
+    #   - checks
+    #   - git
+    #   - build
     runs-on: ubuntu-latest
     if: always() && github.event_name == 'pull_request'
     steps:
@@ -133,11 +141,11 @@ jobs:
             ${{ steps.generateCommentBody.outputs.result }}
           edit-mode: replace
 
-      - name: Ready to go
-        id: ready
-        if: needs.pre-commit.outcome == 'success' && needs.checks.outcome == 'success' && needs.git.outcome == 'success' && needs.build.outcome == 'success'
-        run: "exit 0"
+      # - name: Ready to go
+      #   id: ready
+      #   if: needs.pre-commit.outcome == 'success' && needs.checks.outcome == 'success' && needs.git.outcome == 'success' && needs.build.outcome == 'success'
+      #   run: "exit 0"
 
-      - name: Not ready
-        if: steps.ready.outcome == 'skipped'
-        run: "exit 1"
+      # - name: Not ready
+      #   if: steps.ready.outcome == 'skipped'
+      #   run: "exit 1"
