@@ -103,7 +103,7 @@ jobs:
             return data.artifacts.filter(artifact => artifact.name.match(/^UI Tests for/)).map(artifact => {
               const words = artifact.name.split(' ');
               const label = words.slice(0, -2).join(' ');
-              const outcome = words.slice(-1);
+              const [ outcome ]  = words.slice(-1);
 
               if (outcome === "failure")
                 return `- :x: ${label} - ([view results](${artifact.url}))`
@@ -117,7 +117,7 @@ jobs:
           cat > $GITHUB_STEP_SUMMARY <<EOF
             ## QML UI test results
 
-            ${{ steps.generateCommentBody.outputs.result }}
+            ${{ fromJSON(steps.generateCommentBody.outputs.result) }}
           EOF
 
       - name: Ready to go
