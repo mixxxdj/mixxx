@@ -478,6 +478,9 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
                 .arg(m_idColumn, idStrings.join(","));
     }
 
+    // Note(ronso0) SearchQueryParser::parseQuery(searchQuery, extraFilter) wraps
+    // extraFilter in an SqlNode, and SqlNode::match() always returns true.
+    // Unwanted sideeffect is described where we check if dirty tracks may be added.
     const std::unique_ptr<QueryNode> pQuery =
             m_pQueryParser->parseQuery(
                     searchQuery,
@@ -549,8 +552,15 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
 
         // The track should be in the result set if the search is empty or the
         // track matches the search.
-        bool shouldBeInResultSet = searchQuery.isEmpty() ||
-                pQuery->match(pTrack);
+        // FIXME Above we create a QueryNode from the searchQuery and extraFilter.
+        // SearchQueryParser::parseQuery(searchQuery, extraFilter) wraps
+        // extraFilter in an SqlNode, and SqlNode::match() always returns true.
+        // Hence, if extraFilter is not empty, pQuery->match(pTrack) always returns
+        // true and will add all dirty tracks to the set where they not necessarily
+        // belong.
+        // So the TODO is: find a better way to handle extraFilter.
+        bool shouldBeInResultSet = extraFilter.isEmpty() &&
+                (searchQuery.isEmpty() || pQuery->match(pTrack));
 
         // If the track is in this result set.
         bool isInResultSet = trackToIndex->contains(trackId);
