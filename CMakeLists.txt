@@ -1410,6 +1410,10 @@ add_library(
   src/library/traktor/traktorfeature.cpp
   src/library/treeitem.cpp
   src/library/treeitemmodel.cpp
+  src/library/vdj/vdjfeature.cpp
+  src/library/vdj/vdj_modern_parser.cpp
+  src/library/vdj/vdj_parser_factory.cpp
+  src/library/vdj/vdj_v6_parser.cpp
   src/mixer/auxiliary.cpp
   src/mixer/baseplayer.cpp
   src/mixer/basetrackplayer.cpp
