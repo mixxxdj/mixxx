@@ -1,5 +1,6 @@
 #pragma once
 
+#include "audio/types.h"
 #include "preferences/broadcastsettings.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
@@ -43,6 +44,8 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void btnRemoveConnectionClicked();
     void btnDisconnectAllClicked();
     void onSectionResized();
+    void slotFormatChanged(int newFormatIdx);
+    void slotSampleRateChanged(int newSampleRateIdx);
 
   private:
     void applyModel();
@@ -51,6 +54,8 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void selectConnectionRowByName(const QString& rowName);
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
+    const QList<mixxx::audio::SampleRate>& createSampleRateGUIForFormat(const QString& format);
+    void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
 
     BroadcastSettingsPointer m_pBroadcastSettings;
     BroadcastSettingsModel* m_pSettingsModel;

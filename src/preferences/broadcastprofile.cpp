@@ -35,6 +35,7 @@ constexpr const char* kDocumentRoot = "BroadcastProfile";
 constexpr const char* kSecureCredentials = "SecureCredentialsStorage";
 constexpr const char* kBitrate = "Bitrate";
 constexpr const char* kChannels = "Channels";
+constexpr const char* kSampleRate = "SampleRate";
 constexpr const char* kCustomArtist = "CustomArtist";
 constexpr const char* kCustomTitle = "CustomTitle";
 constexpr const char* kEnableMetadata = "EnableMetadata";
@@ -207,6 +208,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setFormat(this->getFormat());
     other->setBitrate(this->getBitrate());
     other->setChannels(this->getChannels());
+    other->setSampleRate(this->getSampleRate());
 
     other->setMountPoint(this->getMountpoint());
     other->setStreamName(this->getStreamName());
@@ -338,6 +340,8 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     }
     m_bitrate = XmlParse::selectNodeInt(doc, kBitrate);
     m_channels = XmlParse::selectNodeInt(doc, kChannels);
+    // load saved samplerate
+    m_sampleRate = XmlParse::selectNodeDouble(doc, kSampleRate);
 
     m_enableMetadata = (bool)XmlParse::selectNodeInt(doc, kEnableMetadata);
     m_metadataCharset = XmlParse::selectNodeQString(doc, kMetadataCharset);
@@ -403,6 +407,8 @@ bool BroadcastProfile::save(const QString& filename) {
                          QString::number(m_bitrate));
     XmlParse::addElement(doc, docRoot, kChannels,
                          QString::number(m_channels));
+    // save broadcast samplerate for this profile
+    XmlParse::addElement(doc, docRoot, kSampleRate, QString::number(m_sampleRate));
 
     XmlParse::addElement(doc, docRoot, kEnableMetadata,
                          QString::number((int)m_enableMetadata));
@@ -736,6 +742,14 @@ int BroadcastProfile::getChannels() const {
 
 void BroadcastProfile::setChannels(int value) {
     m_channels = value;
+}
+
+double BroadcastProfile::getSampleRate() const {
+    return m_sampleRate;
+}
+
+void BroadcastProfile::setSampleRate(double value) {
+    m_sampleRate = value;
 }
 
 bool BroadcastProfile::getEnableMetadata() const {

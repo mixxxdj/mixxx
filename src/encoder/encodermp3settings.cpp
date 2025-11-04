@@ -10,6 +10,7 @@ EncoderMp3Settings::EncoderMp3Settings(UserSettingsPointer pConfig) :
     m_pConfig(pConfig)
 {
     // Added "32" because older settings started at index 1 with 48.
+    // these are bitrates.
     m_qualList.append(32); // mono
     m_qualList.append(48); // mono
     m_qualList.append(64); // mono
