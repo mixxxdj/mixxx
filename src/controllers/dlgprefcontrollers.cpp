@@ -287,3 +287,19 @@ void DlgPrefControllers::slotMidiThroughChanged(bool checked) {
 }
 #endif
 #endif
+
+void DlgPrefControllers::openLearningWizard(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+
+    // Find the DlgPrefController for this controller by matching the controller pointer
+    for (int i = 0; i < m_controllerPages.size(); ++i) {
+        DlgPrefController* pControllerDlg = m_controllerPages.at(i);
+        if (pControllerDlg && pControllerDlg->controller() == pController) {
+            // Pass true to suppress preferences dialog when wizard closes
+            pControllerDlg->showLearningWizard(true);
+            return;
+        }
+    }
+}

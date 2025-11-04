@@ -8,6 +8,7 @@
 
 #include "config.h"
 #include "control/controlproxy.h"
+#include "controllers/controller.h"
 #include "defs_urls.h"
 #include "moc_wmainmenubar.cpp"
 #include "util/cmdlineargs.h"
@@ -469,6 +470,17 @@ void WMainMenuBar::initialize() {
     pOptionsMenu->addMenu(pVinylControlMenu);
     pOptionsMenu->addSeparator();
 #endif
+
+    // Controller Learning submenu
+    m_pControllerLearningMenu = new QMenu(tr("&Controller Learning Wizard"), this);
+    QString controllerLearningText = tr(
+            "Open the MIDI learning wizard for an enabled controller");
+    m_pControllerLearningMenu->setStatusTip(controllerLearningText);
+    m_pControllerLearningMenu->setWhatsThis(buildWhatsThis(
+            tr("Controller Learning Wizard"), controllerLearningText));
+    // Menu will be populated dynamically with enabled controllers
+    pOptionsMenu->addMenu(m_pControllerLearningMenu);
+    pOptionsMenu->addSeparator();
 
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
@@ -997,4 +1009,31 @@ void VisibilityControlConnection::slotActionToggled(bool toggle) {
     if (m_pControl) {
         m_pControl->set(toggle ? 1.0 : 0.0);
     }
+}
+
+void WMainMenuBar::onControllersChanged(const QList<Controller*>& controllers) {
+    // Clear existing actions
+    for (QAction* pAction : std::as_const(m_controllerLearningActions)) {
+        m_pControllerLearningMenu->removeAction(pAction);
+        delete pAction;
+    }
+    m_controllerLearningActions.clear();
+
+    // Add menu item for each controller
+    for (Controller* pController : controllers) {
+        if (!pController) {
+            continue;
+        }
+        QString controllerName = pController->getName();
+        auto* pAction = new QAction(controllerName, this);
+        pAction->setStatusTip(tr("Open learning wizard for %1").arg(controllerName));
+        connect(pAction, &QAction::triggered, this, [this, pController]() {
+            emit openControllerLearningWizard(pController);
+        });
+        m_pControllerLearningMenu->addAction(pAction);
+        m_controllerLearningActions.append(pAction);
+    }
+
+    // Hide menu when no controllers are enabled to avoid disabled action issue on Qt 6.2.3
+    m_pControllerLearningMenu->menuAction()->setVisible(!m_controllerLearningActions.isEmpty());
 }
