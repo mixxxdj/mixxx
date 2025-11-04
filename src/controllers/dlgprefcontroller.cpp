@@ -88,6 +88,7 @@ DlgPrefController::DlgPrefController(
           m_pOutputProxyModel(nullptr),
           m_GuiInitialized(false),
           m_bDirty(false),
+          m_bSuppressPrefsDialogOnClose(false),
           m_inputMappingsTabIndex(-1),
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
@@ -364,7 +365,9 @@ void DlgPrefController::slotRecreateControlPickerMenu() {
     m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 }
 
-void DlgPrefController::showLearningWizard() {
+void DlgPrefController::showLearningWizard(bool suppressPrefsDialogOnClose) {
+    m_bSuppressPrefsDialogOnClose = suppressPrefsDialogOnClose;
+    
     if (isDirty()) {
         QMessageBox::StandardButton result = QMessageBox::question(this,
                 tr("Apply device settings?"),
@@ -423,7 +426,10 @@ void DlgPrefController::showLearningWizard() {
 
 void DlgPrefController::slotStopLearning() {
     VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
-        emit mappingEnded();
+        if (!m_bSuppressPrefsDialogOnClose) {
+            emit mappingEnded();
+        }
+        m_bSuppressPrefsDialogOnClose = false;
         return;
     }
 
@@ -455,8 +461,11 @@ void DlgPrefController::slotStopLearning() {
         }
     }
 
-    // This will show() -> slotUpdate() -> enumerateMappings() etc.
-    emit mappingEnded();
+    // Only emit mappingEnded if not launched from menu
+    if (!m_bSuppressPrefsDialogOnClose) {
+        emit mappingEnded();
+    }
+    m_bSuppressPrefsDialogOnClose = false;
 }
 
 void DlgPrefController::midiInputMappingsLearned(
