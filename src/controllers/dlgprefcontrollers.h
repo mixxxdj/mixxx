@@ -7,6 +7,7 @@
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
+class Controller;
 class ControlProxy;
 class DlgPreferences;
 class DlgPrefController;
@@ -28,6 +29,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
     QUrl helpUrl() const override;
+    void openLearningWizard(Controller* pController);
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
