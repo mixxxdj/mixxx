@@ -42,6 +42,14 @@ class DlgPrefController : public DlgPreferencePage {
     QUrl helpUrl() const override;
     void keyPressEvent(QKeyEvent* pEvent) override;
 
+    Controller* controller() const {
+        return m_pController;
+    }
+
+    // Open the MIDI learning wizard for this controller
+    // suppressPrefsDialogOnClose: if true, don't show preferences dialog when wizard closes
+    void showLearningWizard(bool suppressPrefsDialogOnClose = false);
+
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
@@ -83,7 +91,6 @@ class DlgPrefController : public DlgPreferencePage {
 
     // Input mappings
     void addInputMapping();
-    void showLearningWizard();
     void removeInputMappings();
     void clearAllInputMappings();
 
@@ -150,6 +157,7 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
+    bool m_bSuppressPrefsDialogOnClose;
     int m_inputMappingsTabIndex;  // Index of the input mappings tab
     int m_outputMappingsTabIndex; // Index of the output mappings tab
     int m_settingsTabIndex;       // Index of the settings tab

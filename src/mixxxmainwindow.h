@@ -10,6 +10,7 @@
 #include "util/parented_ptr.h"
 
 class ControlObject;
+class Controller;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
@@ -81,6 +82,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotNoAuxiliaryInputConfigured();
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
+    /// Controller learning wizard menu management
+    void slotUpdateControllerLearningMenu();
+    void slotOpenControllerLearningWizard(Controller* pController);
 #ifndef __APPLE__
     /// Update whether the menubar is toggled pressing the Alt key and show/hide
     /// it accordingly
