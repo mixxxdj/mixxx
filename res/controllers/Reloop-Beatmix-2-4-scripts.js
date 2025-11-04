@@ -409,9 +409,19 @@ ReloopBeatmix24.WheelTouch = function(channel, control, value, status, group) {
 ReloopBeatmix24.WheelTurn = function(channel, control, value, status, group) {
     const newValue = value - 64;
     const deck = parseInt(group.substr(8, 1), 10);
+    const isShifted = (control === 0x70);
 
-    // In either case, register the movement
-    if (engine.isScratching(deck)) {
+    if (isShifted) {
+        // Shift+jog wheel: quick seek through track
+        // Use playposition for faster seeking
+        const currentPos = engine.getValue(group, "playposition");
+        const duration = engine.getValue(group, "duration");
+        if (duration > 0) {
+            // Seek by ~0.5% of track per tick
+            const seekAmount = (newValue / 64) * 0.005;
+            engine.setValue(group, "playposition", Math.max(0, Math.min(1, currentPos + seekAmount)));
+        }
+    } else if (engine.isScratching(deck)) {
         engine.scratchTick(deck, newValue); // Scratch!
     } else {
         engine.setValue(group, "jog", newValue / 5); // Pitch bend
