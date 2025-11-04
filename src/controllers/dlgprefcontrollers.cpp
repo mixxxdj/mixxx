@@ -286,3 +286,40 @@ void DlgPrefControllers::slotMidiThroughChanged(bool checked) {
 }
 #endif
 #endif
+
+void DlgPrefControllers::openLearningWizard(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+
+    // Find the DlgPrefController for this controller by matching the controller pointer
+    for (int i = 0; i < m_controllerPages.size(); ++i) {
+        DlgPrefController* pControllerDlg = m_controllerPages.at(i);
+        if (pControllerDlg && pControllerDlg->controller() == pController) {
+            // Temporarily disconnect the mappingEnded signal to prevent
+            // showing the preferences dialog when the wizard closes
+            disconnect(pControllerDlg,
+                    &DlgPrefController::mappingEnded,
+                    m_pDlgPreferences,
+                    &DlgPreferences::show);
+
+            // Reconnect after wizard closes to restore normal behavior
+            connect(
+                    pControllerDlg,
+                    &DlgPrefController::mappingEnded,
+                    this,
+                    [this, pControllerDlg]() {
+                        // Restore the connection for future uses from preferences
+                        connect(pControllerDlg,
+                                &DlgPrefController::mappingEnded,
+                                m_pDlgPreferences,
+                                &DlgPreferences::show);
+                    },
+                    Qt::SingleShotConnection);
+
+            // Open the learning wizard directly
+            pControllerDlg->showLearningWizard();
+            return;
+        }
+    }
+}
