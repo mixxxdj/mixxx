@@ -195,12 +195,12 @@ class Library: public QObject {
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     WLibrary* m_pLibraryWidget;
-    MixxxLibraryFeature* m_pMixxxLibraryFeature;
-    AutoDJFeature* m_pAutoDJFeature;
-    PlaylistFeature* m_pPlaylistFeature;
-    CrateFeature* m_pCrateFeature;
-    AnalysisFeature* m_pAnalysisFeature;
-    BrowseFeature* m_pBrowseFeature;
+    parented_ptr<MixxxLibraryFeature> m_pMixxxLibraryFeature;
+    parented_ptr<AutoDJFeature> m_pAutoDJFeature;
+    parented_ptr<PlaylistFeature> m_pPlaylistFeature;
+    parented_ptr<CrateFeature> m_pCrateFeature;
+    parented_ptr<BrowseFeature> m_pBrowseFeature;
+    parented_ptr<AnalysisFeature> m_pAnalysisFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;
