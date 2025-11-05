@@ -12,6 +12,8 @@
 #include "util/performancetimer.h"
 #include "util/sample.h"
 
+#define DEBUG_PRINT_FINGERPRINT
+
 #ifdef DEBUG_PRINT_FINGERPRINT
 #include <QCryptographicHash>
 #endif
@@ -34,6 +36,153 @@ namespace
 // on their server so we need only a fingerprint of the first two minutes
 // --kain88 July 2012
     constexpr SINT kFingerprintDuration = 120; // in seconds
+
+    std::vector<uint32_t> old;
+
+#define MATCH_BITS 14
+#define MATCH_MASK ((1 << MATCH_BITS) - 1)
+#define MATCH_STRIP(x) ((uint32_t)(x) >> (32 - MATCH_BITS))
+
+#define UNIQ_BITS 16
+#define UNIQ_MASK ((1 << MATCH_BITS) - 1)
+#define UNIQ_STRIP(x) ((uint32_t)(x) >> (32 - MATCH_BITS))
+
+    int popcount_3(uint64_t x) {
+        const uint64_t m1 = 0x5555555555555555ULL;  /* binary: 0101... */
+        const uint64_t m2 = 0x3333333333333333ULL;  /* binary: 00110011.. */
+        const uint64_t m4 = 0x0f0f0f0f0f0f0f0fULL;  /* binary:  4 zeros,  4 ones ... */
+        const uint64_t h01 = 0x0101010101010101ULL; /* the sum of 256 to the power of 0,1,2,3... */
+
+        x -= (x >> 1) & m1;             /* put count of each 2 bits into those 2 bits */
+        x = (x & m2) + ((x >> 2) & m2); /* put count of each 4 bits into those 4 bits */
+        x = (x + (x >> 4)) & m4;        /* put count of each 8 bits into those 8 bits */
+        return (x * h01) >> 56;         /* returns left 8 bits of x + (x<<8) + (x<<16) +
+                                           (x<<24) + ...  */
+    }
+
+    float matchFingerprints(uint32_t* a, int aSize, uint32_t* b, int bSize, int maxoffset) {
+        int biterror;
+        int numcounts = aSize + bSize + 1;
+
+        std::vector<unsigned short> counts(numcounts);
+
+        float score;
+        float diversity;
+
+        uint16_t aOffsets[MATCH_MASK + 1] = {};
+        uint16_t bOffsets[MATCH_MASK + 1] = {};
+
+        // store offset of different patterns
+        for (int i = 0; i < aSize; i++) {
+            aOffsets[MATCH_STRIP(a[i])] = i;
+        }
+        for (int i = 0; i < bSize; i++) {
+            bOffsets[MATCH_STRIP(b[i])] = i;
+        }
+
+        int topcount = 0;
+        int topoffset = 0;
+        int topcount2 = 0;
+        int topoffset2 = 0;
+        int topcount3 = 0;
+        int topoffset3 = 0;
+
+        // 16384 steps
+        for (int i = 0; i < MATCH_MASK; i++) {
+            if (aOffsets[i] && bOffsets[i]) {
+                int offset = aOffsets[i] - bOffsets[i];
+                if (maxoffset == 0 || (-maxoffset <= offset && offset <= maxoffset)) {
+                    offset += bSize;
+                    counts[offset]++;
+                    if (counts[offset] > topcount) {
+                        if (topoffset != offset) {
+                            if (topoffset2 != topoffset) {
+                                topcount3 = topcount2;
+                                topoffset3 = topoffset2;
+                            }
+                            topcount2 = topcount;
+                            topoffset2 = topoffset;
+                        }
+                        topcount = counts[offset];
+                        topoffset = offset;
+                    }
+                }
+            }
+        }
+
+        qDebug() << "topOffset" << topoffset << topcount << " # " << topoffset2
+                 << topcount2 << " # " << topoffset3 << topcount3;
+
+        topoffset -= bSize;
+
+        int minSize = std::min(aSize, bSize) & ~1;
+        if (topoffset < 0) {
+            b -= topoffset;
+            bSize = std::max(0, bSize + topoffset);
+        } else {
+            a += topoffset;
+            aSize = std::max(0, aSize - topoffset);
+        }
+
+        int size = std::min(aSize, bSize) / 2;
+        if (!size || !minSize) {
+            qDebug() << "acoustid_compare2: empty matching subfingerprint";
+            return 0.0;
+        }
+
+        uint16_t seen[UNIQ_MASK + 1] = {};
+
+        int aUniq = 0;
+        for (int i = 0; i < aSize; i++) {
+            int key = UNIQ_STRIP(a[i]);
+            if (!seen[key]) {
+                aUniq++;
+                seen[key] = 1;
+            }
+        }
+
+        memset(seen, 0, UNIQ_MASK);
+
+        int bUniq = 0;
+        for (int i = 0; i < bSize; i++) {
+            int key = UNIQ_STRIP(b[i]);
+            if (!seen[key]) {
+                bUniq++;
+                seen[key] = 1;
+            }
+        }
+
+        diversity = std::min(std::min(1.0f, (float)(aUniq + 10) / aSize + 0.5f),
+                std::min(1.0f, (float)(bUniq + 10) / bSize + 0.5f));
+
+        qDebug() << "acoustid_compare2: offset" << topoffset << "offset score"
+                 << topcount << "size" << size * 2 << "uniq size"
+                 << std::max(aUniq, bUniq) << "diversity" << diversity;
+
+        if (topcount < std::max(aUniq, bUniq) * 0.02) {
+            qDebug() << "acoustid_compare2: top offset score is below 2% of the unique size";
+            return 0.0;
+        }
+
+        uint64_t* aData = (uint64_t*)a;
+        uint64_t* bData = (uint64_t*)b;
+        biterror = 0;
+        for (int i = 0; i < size; i++, aData++, bData++) {
+            biterror += popcount_3(*aData ^ *bData);
+        }
+        score = (size * 2.0f / minSize) * (1.0f - 2.0f * (float)biterror / (64 * size));
+        if (score < 0.0) {
+            score = 0.0;
+        }
+        if (diversity < 1.0) {
+            float newscore = std::pow(score, 8.0f - 7.0f * diversity);
+            qDebug() << "acoustid_compare2: scaling score because of duplicate "
+                        "items"
+                     << score << "=>" << newscore;
+            score = newscore;
+        }
+        return score;
+    }
 
 QString calcFingerprint(
         mixxx::AudioSourceStereoProxy& audioSourceProxy,
@@ -100,6 +249,8 @@ QString calcFingerprint(
     uint32_t simHash;
     chromaprint_hash_fingerprint(fprint, size, &simHash);
 
+    qDebug() << "similar" << matchFingerprints(fprint, size, old.data(), old.size(), 120);
+
     QByteArray hash =
             QCryptographicHash::hash(QByteArray(reinterpret_cast<char*>(fprint),
                                              size * sizeof(fprint[0])),
@@ -109,12 +260,14 @@ QString calcFingerprint(
     qDebug() << "Hash:" << hash;
     qDebug() << "SimHash:" << simHash;
 
+    old.clear();
     for (int i = 0; i < size; ++i) {
         QString item = QString::number(fprint[i], 2).replace('0', ' ');
         while (item.length() < 32) {
             item.prepend(' ');
         }
         qDebug() << item << i;
+        old.push_back(fprint[i]);
     }
 #endif
 
@@ -161,8 +314,8 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
         return QString();
     }
 
-    const SINT startFrame = 2;
-    const auto fingerprintRange = intersect(
+    const SINT startFrame = 0;
+    mixxx::IndexRange fingerprintRange = intersect(
             pAudioSource->frameIndexRange(),
             mixxx::IndexRange::forward(
                     pAudioSource->frameIndexMin() + startFrame,
@@ -170,6 +323,14 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
             fingerprintRange.length());
+
+    calcFingerprint(audioSourceProxy, fingerprintRange);
+
+    fingerprintRange = intersect(
+            pAudioSource->frameIndexRange(),
+            mixxx::IndexRange::forward(
+                    pAudioSource->frameIndexMin() + 0, // 5904/2,
+                    kFingerprintDuration * pAudioSource->getSignalInfo().getSampleRate()));
 
     return calcFingerprint(audioSourceProxy, fingerprintRange);
 }
