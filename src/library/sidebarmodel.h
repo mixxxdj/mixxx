@@ -5,6 +5,8 @@
 #include <QModelIndex>
 #include <QVariant>
 
+#include "preferences/usersettings.h"
+
 class LibraryFeature;
 class QTimer;
 class TreeItem;
@@ -23,14 +25,17 @@ struct SidebarBookmark {
               data(datavar),
               label(sLabel),
               index(dIndex) {
+        // How to?
+        // qWarning() << "------- created" << this;
     }
     bool isValid() const {
         // qDebug() << "       SidebarBookmark isValid()";
+        // Don't validate the index. It may still be invalid, eg. when we
+        // read bookmarks from config
         return featureRow >= 0 &&
                 childLevel >= 0 &&
                 parentRow >= 0 &&
-                (data.isValid() || !label.isEmpty()) &&
-                index.isValid();
+                (data.isValid() || !label.isEmpty());
     }
     bool operator==(const SidebarBookmark& other) const {
         // qDebug() << "       SidebarBookmark==op";
@@ -75,6 +80,19 @@ struct SidebarBookmark {
     // for getNextPrevBookmarkIndex().
     // Must be updated when the child model is changed.
     QModelIndex index;
+
+    // TODO How to store Bookmarks in config?
+    // [SidebarBookmarks]
+    // 3 /home/user/Music/SomeAlbum
+    // [featureRow] [dataOrLabel]
+    // dataOrLabel can be either int (int for playlist or CrateId which is
+    // converted to QVariant(int) so I could rework/duplicate
+    // findBookmarkIndex() and either
+    // * check data type of a random item of the feature
+    //   -> could work. check History
+    // * try to convert dataLabel to int, if okay
+    //   * try to find QVariant(intValue)
+    //   * if not okay or int search fails, try QString
 };
 
 inline QDebug operator<<(QDebug dbg, const SidebarBookmark& bm) {
@@ -137,6 +155,9 @@ class SidebarModel : public QAbstractItemModel {
 
     void toggleBookmarkByIndex(const QModelIndex& selIndex);
     QModelIndex getNextPrevBookmarkIndex(const QModelIndex& selIndex, int direction);
+
+    void saveBookmarksToConfig(UserSettingsPointer pConfig);
+    void loadBookmarksFromConfig(UserSettingsPointer pConfig);
 
     bool indexIsBookmark(const QModelIndex& index) const;
     bool indexNeedsUpdate(const QModelIndex& index) const;
