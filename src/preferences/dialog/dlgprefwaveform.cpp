@@ -765,10 +765,19 @@ void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
     size_t numBytes = analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVEFORM) +
             analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
 
-    // Display total cached waveform size in mebibytes with 2 decimals.
-    QString sizeMebibytes = QString::number(
-            numBytes / (1024.0 * 1024.0), 'f', 2);
+    // Display total cached waveform size with appropriate unit (GiB for >= 1024 MiB, MiB otherwise)
+    double sizeMebibytes = numBytes / (1024.0 * 1024.0);
+    QString sizeText;
 
-    waveformDiskUsage->setText(
-            tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
+    if (sizeMebibytes >= 1024.0) {
+        // Use GiB for better readability when size is >= 1 GiB
+        double sizeGibibytes = sizeMebibytes / 1024.0;
+        sizeText = QString::number(sizeGibibytes, 'f', 2);
+        waveformDiskUsage->setText(
+                tr("Cached waveforms occupy %1 GiB on disk.").arg(sizeText));
+    } else {
+        sizeText = QString::number(sizeMebibytes, 'f', 2);
+        waveformDiskUsage->setText(
+                tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeText));
+    }
 }
