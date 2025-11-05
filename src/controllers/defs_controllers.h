@@ -32,3 +32,6 @@ const auto kMidiThroughPortPrefix = QLatin1String("MIDI Through Port");
 const ConfigKey kMidiThroughCfgKey =
         ConfigKey(QStringLiteral("[Controller]"), QStringLiteral("midi_through_enabled"));
 #endif
+
+const ConfigKey kHideDisabledControllersCfgKey =
+        ConfigKey(QStringLiteral("[Controller]"), QStringLiteral("hide_disabled_controllers"));
