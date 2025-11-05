@@ -71,11 +71,10 @@ Library::Library(
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pSidebarModel(make_parented<SidebarModel>(this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
-          m_pLibraryWidget(nullptr) {
+          m_pLibraryWidget(nullptr),
+          m_pKeyNotation(std::make_unique<ControlObject>(
+                  mixxx::library::prefs::kKeyNotationConfigKey)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
-
-    m_pKeyNotation.reset(
-            new ControlObject(mixxx::library::prefs::kKeyNotationConfigKey));
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,

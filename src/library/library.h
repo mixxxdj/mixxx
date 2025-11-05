@@ -204,5 +204,5 @@ class Library: public QObject {
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;
-    QScopedPointer<ControlObject> m_pKeyNotation;
+    std::unique_ptr<ControlObject> m_pKeyNotation;
 };
