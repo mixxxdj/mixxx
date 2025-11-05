@@ -634,11 +634,12 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
 }
 
 void SidebarModel::toggleBookmarkByIndex(const QModelIndex& index) {
-    qWarning() << "   toggleBookmarkByIndex" << index;
     if (!index.isValid()) {
+        qWarning() << "toggleBookmarkByIndex ! index invalid" << index;
         return;
     }
 
+    qWarning() << "toggleBookmarkByIndex" << index;
     SidebarBookmark bookmark = createBookmarkFromIndex(index);
     if (m_bookmarks.contains(bookmark)) {
         // Remove bookmark and index
@@ -659,13 +660,17 @@ QModelIndexList SidebarModel::sortBookmarksUpdateIndices(QList<SidebarBookmark>*
     // Update indices. Only add valid indices -- invalid means the bookmark
     // wasn't found after last child model update.
     QModelIndexList newBookmarkIndices;
+    qWarning() << "Updating Sidebar bookmark indices";
     for (const auto& bm : std::as_const(*pBookmarks)) {
         if (bm.index.isValid()) {
+            qWarning() << "  valid bm index, added" << bm.index;
             newBookmarkIndices.append(bm.index);
+        } else {
+            qWarning() << "  ! bm index invalid" << bm.index;
         }
     }
+    qWarning() << "Sidebar bookmark indices updated";
     return newBookmarkIndices;
-    qDebug() << "Sidebar bookmarks updated";
 }
 
 QModelIndex SidebarModel::getNextPrevBookmarkIndex(const QModelIndex& currIndex, int direction) {
@@ -683,11 +688,13 @@ QModelIndex SidebarModel::getNextPrevBookmarkIndex(const QModelIndex& currIndex,
     if (m_bookmarkIndices.size() == 1 && currIndex == m_bookmarkIndices[0]) {
         // We already have the only bookmark selected.
         // Return invalid index so the sidebar does not reload the current view.
+        qWarning() << "SidebarModel::getNextPrevBookmarkIndex: already on only bookmark";
         return {};
     }
 
     // Do single steps regardless the input.
     direction = direction > 0 ? 1 : -1;
+    qWarning() << "SidebarModel::getNextPrevBookmarkIndex, dir:" << direction;
 
     int currPos = 0;
     const SidebarBookmark tempBM = createBookmarkFromIndex(currIndex);
@@ -716,18 +723,28 @@ QModelIndex SidebarModel::getNextPrevBookmarkIndex(const QModelIndex& currIndex,
         // pick first
         targetPos = 0;
     }
+    qWarning() << "  targetPos:" << targetPos;
 
     SidebarBookmark targetBM;
     QModelIndex targetIndex;
     int maxAttempts = m_bookmarks.size();
     int attempt = 0;
     while (!targetIndex.isValid() && attempt < maxAttempts) {
+        qWarning() << "  find targetBm -- attempt" << attempt;
         targetBM = m_bookmarks[targetPos];
+        if (!targetBM.isValid()) {
+            attempt++;
+            targetPos++;
+            continue;
+        }
         // If this is root item we can simply create an index.
         // Else we look insinde the child model
-        if (targetBM.childLevel == 0) {
+        if (targetBM.childLevel == -1) {
+        } else if (targetBM.childLevel == 0) {
+            qWarning() << "    chidlLevel = 0 -> root" << targetBM.featureRow;
             targetIndex = index(targetBM.featureRow, 0);
         } else {
+            qWarning() << "    chidlLevel =" << targetBM.childLevel;
             targetIndex = translateChildIndex(findBookmarkIndex(targetBM));
         }
         attempt++;
@@ -765,8 +782,9 @@ QModelIndex SidebarModel::getNextPrevBookmarkIndex(const QModelIndex& currIndex,
 // This is now fixed, but I didn't check with other features, so can't rule out
 // simultaneous invocations of rowsInserted().
 void SidebarModel::maybeUpdateBookmarkIndices(const QModelIndex& parentIndex) {
-    // qWarning() << "maybeUpdateBookmarkIndices" << parentIndex;
+    qWarning() << "maybeUpdateBookmarkIndices" << parentIndex;
     if (m_bookmarkIndices.isEmpty()) {
+        qWarning() << "  ! bm indices empty";
         return;
     }
     // Collect the start parameters for findBookmarkIndex()
@@ -858,9 +876,10 @@ SidebarBookmark SidebarModel::createBookmarkFromIndex(const QModelIndex& index) 
         return {};
     }
 
-    // qWarning() << " >> getBookmarkFromIndex" << index;
+    qWarning() << "createBookmarkFromIndex" << index;
     SidebarBookmark bookmark;
     if (index.internalPointer() == this) {
+        qWarning() << "-> int.pointer = this:" << index.internalPointer();
         LibraryFeature* pFeature = m_sFeatures[index.row()];
         bookmark = SidebarBookmark(
                 index.row(),
@@ -870,6 +889,7 @@ SidebarBookmark SidebarModel::createBookmarkFromIndex(const QModelIndex& index) 
                 pFeature->title().toString(),
                 index);
     } else {
+        qWarning() << "-> int.pointer != this:" << index.internalPointer();
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
         VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
             return {};
@@ -879,9 +899,11 @@ SidebarBookmark SidebarModel::createBookmarkFromIndex(const QModelIndex& index) 
         bookmark.parentRow = pTreeItem->parentRow();
         const auto& data = pTreeItem->getData();
         if (data.isValid() && pTreeItem->isDataUniqueInFeature()) {
+            qWarning() << "-> data valid:" << data;
             bookmark.data = data;
         } else {
             bookmark.label = pTreeItem->getLabel();
+            qWarning() << "-> data invalid, use label:" << bookmark.label;
         }
         bookmark.index = index;
     }
@@ -894,5 +916,151 @@ bool SidebarModel::indexIsBookmark(const QModelIndex& index) const {
     if (!index.isValid()) {
         return false;
     }
+    if (m_bookmarkIndices.contains(index)) {
+        qWarning() << "--* indexIsBookmark?" << index << index.internalPointer();
+    }
     return m_bookmarkIndices.contains(index);
+}
+
+void SidebarModel::saveBookmarksToConfig(UserSettingsPointer pConfig) {
+    if (pConfig == nullptr || m_bookmarks.isEmpty()) {
+        return;
+    }
+
+    // Bookmark identifiers are either
+    // [item]      [value]
+    // int         0 = feature root item
+    //  └> feature row index
+    // int-int-int string = child item
+    //  |   |   |    └> data of TreeItem, int-based id, or QString
+    //  |   |   └> data type: 0 data as QVariant(int)
+    //  |   |                 1 data a QVariant(QString)
+    //  |   └> child level
+    //  └> feature row index
+
+    qWarning() << ".";
+    qWarning() << "save bookmarks to config:";
+    const QString group = QStringLiteral("[SidebarBookmarks]");
+    for (const auto& bm : std::as_const(m_bookmarks)) {
+        if (bm.childLevel == 0) { // feature root item
+            qWarning() << "  root item" << bm.label;
+            pConfig->setValue(ConfigKey(group, QString::number(bm.featureRow)), QString("xyz"));
+        } else { // child item
+            qWarning() << "  child item" << bm;
+            QStringList desc;
+            // check data type of feature
+            QVariant idxData = data(bm.index, SidebarModel::DataRole);
+            if (!idxData.isValid() || idxData.isNull()) {
+                // each child item must have data
+                qWarning() << "  ! invalid data";
+                continue;
+            }
+            int dataType = -1;
+            QString data;
+            if (idxData.canConvert<int>()) {
+                bool okay = false;
+                int dataInt = idxData.toInt(&okay);
+                if (okay) {
+                    qWarning() << "  -> int data:" << dataInt;
+                    dataType = 0;
+                    data = QString::number(dataInt);
+                }
+            }
+            if (dataType == -1 && idxData.canConvert<QString>()) {
+                dataType = 1;
+                data = idxData.toString();
+                qWarning() << "  -> string data:" << data;
+            } else {
+                qWarning() << "  ! unknown data type:" << idxData;
+                continue;
+            }
+            desc << QString::number(bm.featureRow);
+            desc << QString::number(bm.childLevel);
+            desc << QString::number(dataType);
+            const QString item = desc.join('-');
+            qWarning() << "  save bookmark as" << item << data;
+            pConfig->setValue(ConfigKey(group, item), data);
+        }
+    }
+}
+
+void SidebarModel::loadBookmarksFromConfig(UserSettingsPointer pConfig) {
+    if (pConfig == nullptr) {
+        return;
+    }
+
+    // Bookmark identifiers are either
+    // [item]      [value]
+    // int         0 = feature root item
+    //  └> feature row index
+    // int-int-int string = child item
+    //  |   |   |    └> data of TreeItem, int-based id, or QString
+    //  |   |   └> data type: 0 data as QVariant(int)
+    //  |   |                 1 data a QVariant(QString)
+    //  |   └> child level
+    //  └> feature row index
+
+    qWarning() << ".";
+    qWarning() << "read bookmarks from config:";
+
+    int i = 1;
+    const QList<ConfigKey> bookmarkKeys =
+            pConfig->getKeysWithGroup(QStringLiteral("[SidebarBookmarks]"));
+    for (const auto& bookmarkKey : bookmarkKeys) {
+        qWarning() << "  " << i << bookmarkKey.item << pConfig->getValueString(bookmarkKey);
+        const QStringList desc = bookmarkKey.item.split('-', Qt::SkipEmptyParts);
+        if (desc.size() == 1) { // root item
+            bool okay = false;
+            int fRow = desc[0].toInt(&okay);
+            if (okay && fRow >= 0 && fRow < m_sFeatures.count()) {
+                toggleBookmarkByIndex(createIndex(fRow, 0, this));
+            }
+        } else if (desc.size() == 3) { // child item
+            bool allInt = false;
+            int fRow = desc[0].toInt(&allInt);
+            int chLevel = desc[1].toInt(&allInt);
+            int dataType = desc[2].toInt(&allInt);
+            if (!allInt || fRow < 0 || chLevel < 0 || (dataType != 0 && dataType != 1)) {
+                // invalid, ignore
+                continue;
+            }
+            const QString dataStr = pConfig->getValueString(bookmarkKey).trimmed();
+            if (dataStr.isEmpty()) {
+                continue;
+            }
+            SidebarBookmark bm(
+                    fRow,
+                    chLevel,
+                    0,
+                    QVariant(),
+                    QString());
+            if (dataType == 0) { // QVariant(int)
+                bool okay = false;
+                int dataInt = dataStr.toInt(&okay);
+                if (!okay) {
+                    continue;
+                }
+                bm.data = QVariant(dataInt);
+            } else if (dataType == 1) { // QVariant(QSring)
+                bm.data = QVariant(dataStr);
+            }
+            qWarning() << "    created Bookmark" << bm;
+            // We now have an incomplete Bookmark (index is missing), so we
+            // do the same round trip like when we update bookmarks after
+            // the model has changed (rows added, removed)
+            QModelIndex bmIdx = findBookmarkIndex(bm);
+            if (!bmIdx.isValid()) {
+                qWarning() << "    - no index found, skip";
+                continue;
+            }
+            qWarning() << "    - found Bookmark index:" << bmIdx;
+            qWarning() << "    - index data:" << data(bmIdx, Qt::DisplayRole);
+            toggleBookmarkByIndex(translateChildIndex(bmIdx));
+        } else {
+            // invalid
+            continue;
+        }
+        i++;
+    }
+    return;
 }
