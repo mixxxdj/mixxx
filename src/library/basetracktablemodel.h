@@ -276,6 +276,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     QVariant composeCoverArtToolTipHtml(
             const QModelIndex& index) const;
 
+    QString composeHotCueTooltip(const QModelIndex& index, const QString& columnValue) const;
+
     Qt::ItemFlags defaultItemFlags(
             const QModelIndex& index) const;
 
