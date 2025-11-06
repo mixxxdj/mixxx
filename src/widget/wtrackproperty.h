@@ -42,7 +42,8 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
             UserSettingsPointer pConfig,
             Library* pLibrary,
             const QString& group,
-            bool isMainDeck);
+            bool isMainDeck,
+            int mainDeckNum);
     ~WTrackProperty() override;
     // Custom property to allow skins to style the 'selected' state when the
     // widget awaits a second click to open the editor. It's reset automatically
@@ -89,10 +90,15 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     void restyleAndRepaint();
 
     void ensureTrackMenuIsCreated();
+    void openEditor();
+
     const QString m_group;
     const UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
     const bool m_isMainDeck;
+    bool m_isComment;
+    int m_mainDeckNum;
+
     TrackPointer m_pCurrentTrack;
 
     QString m_displayProperty;
