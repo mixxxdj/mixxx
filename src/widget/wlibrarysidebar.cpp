@@ -305,7 +305,7 @@ void WLibrarySidebar::toggleBookmark() {
     update();
 }
 
-void WLibrarySidebar::goToNextPrevBookmark(int direction) {
+void WLibrarySidebar::slotGoToNextPrevBookmark(int direction) {
     // Don't use selectedIndex(). Selected item may not be the focused item, eg.
     // if we focused a bookmark item without activating it.
     QModelIndex index = currentIndex();
@@ -353,7 +353,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* pEvent) {
     // Press Enter to activate
     if (pEvent->modifiers().testFlag(Qt::AltModifier)) {
         if (pEvent->key() == Qt::Key_Down || pEvent->key() == Qt::Key_Up) {
-            goToNextPrevBookmark(pEvent->key() == Qt::Key_Down ? 1 : -1);
+            slotGoToNextPrevBookmark(pEvent->key() == Qt::Key_Down ? 1 : -1);
         } else if (pEvent->key() == Qt::Key_B) {
             toggleBookmark();
         }

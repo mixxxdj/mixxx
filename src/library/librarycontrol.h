@@ -216,6 +216,10 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlObject> m_pToggleSidebarItem;
     std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
 
+    std::unique_ptr<ControlPushButton> m_pBookmarkNext;
+    std::unique_ptr<ControlPushButton> m_pBookmarkPrev;
+    std::unique_ptr<ControlEncoder> m_pBookmarkSelect;
+
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;

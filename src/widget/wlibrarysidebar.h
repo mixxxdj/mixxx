@@ -46,6 +46,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void selectChildIndex(const QModelIndex&, bool selectItem = true);
     void slotSetFont(const QFont& font);
     void slotSetExpandOnHoverDelay(int delay);
+    void slotGoToNextPrevBookmark(int direction);
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
@@ -66,7 +67,6 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void toggleDragHoverPropertyAndUpdateStyle(bool enabled);
     void resetHoverIndexAndDragMoveResult();
     void toggleBookmark();
-    void goToNextPrevBookmark(int direction);
 
     SidebarModel* m_pSidebarModel;
     SidebarItemDelegate* m_pItemDelegate;

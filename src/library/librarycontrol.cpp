@@ -524,6 +524,47 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotLoadSelectedIntoFirstStopped);
 
+    m_pBookmarkNext = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "bookmark_next"));
+    connect(m_pBookmarkNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+                    return;
+                }
+                if (value > 0) {
+                    m_pSidebarWidget->slotGoToNextPrevBookmark(1);
+                }
+            });
+    m_pBookmarkPrev = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "bookmark_prev"));
+    connect(m_pBookmarkPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+                    return;
+                }
+                if (value > 0) {
+                    m_pSidebarWidget->slotGoToNextPrevBookmark(-1);
+                }
+            });
+    m_pBookmarkSelect = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "bookmark_selector"), false);
+    connect(m_pBookmarkSelect.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
+                    return;
+                }
+                int iSteps = static_cast<int>(steps);
+                if (iSteps) {
+                    m_pSidebarWidget->slotGoToNextPrevBookmark(static_cast<int>(steps));
+                }
+            });
+
 #ifdef MIXXX_USE_QML
     if (!CmdlineArgs::Instance().isQml())
 #endif
