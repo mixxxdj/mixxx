@@ -37,6 +37,7 @@ declare namespace MixxxControls {
 		"[AutoDJ]": AutoDJControl;
 		"[Controls]": ControlsControl;
 		"[Library]": LibraryControl;
+		"[Main]": MainControl;
 		"[Master]": MasterControl;
 		"[Playlist]": PlaylistControl;
 		"[Recording]": RecordingControl;
@@ -245,7 +246,7 @@ declare namespace MixxxControls {
 		 * @feedback None
 		 * @since New in version 1.10.0.
 		 */
-		"orientation" | AuxiliaryNMicrophoneNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
+		"orientation" | AuxiliaryNChannelNPreviewDeckNSamplerNControl | AuxiliaryNMicrophoneNControl;
 
 	type AuxiliaryNChannelNPreviewDeckNSamplerNControl =
 		/**
@@ -271,78 +272,6 @@ declare namespace MixxxControls {
 
 	type AuxiliaryNMicrophoneNControl =
 		/**
-		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [AuxiliaryN], [MicrophoneN]
-		 * @range binary
-		 * @feedback Microphone Clip light
-		 * @since New in version 1.10.0.
-		 * @kind pot meter control
-		 */
-		| `PeakIndicator${PotMeterSuffix}`
-
-		/**
-		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [AuxiliaryN], [MicrophoneN]
-		 * @range binary
-		 * @feedback Clip light (left)
-		 * @since New in version 2.0.0.
-		 * @kind pot meter control
-		 */
-		| `PeakIndicator${number}${PotMeterSuffix}`
-
-		/**
-		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [AuxiliaryN], [MicrophoneN]
-		 * @range binary
-		 * @feedback Clip light (right)
-		 * @since New in version 2.0.0.
-		 * @kind pot meter control
-		 */
-		| `PeakIndicator${number}${PotMeterSuffix}`
-
-		/**
-		 * Outputs the current instantaneous channel volume
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [AuxiliaryN], [MicrophoneN]
-		 * @range default
-		 * @feedback Microphone VU meter changes
-		 * @since New in version 1.10.0.
-		 * @kind pot meter control
-		 */
-		| `VuMeter${PotMeterSuffix}`
-
-		/**
-		 * Outputs the current instantaneous deck volume for the left channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [AuxiliaryN], [MicrophoneN]
-		 * @range default
-		 * @feedback Deck VU meter L
-		 * @since New in version 2.0.0.
-		 * @kind pot meter control
-		 */
-		| `VuMeter${number}${PotMeterSuffix}`
-
-		/**
-		 * Outputs the current instantaneous deck volume for the right channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [AuxiliaryN], [MicrophoneN]
-		 * @range default
-		 * @feedback Deck VU meter R
-		 * @since New in version 2.0.0.
-		 * @kind pot meter control
-		 */
-		| `VuMeter${number}${PotMeterSuffix}`
-
-		/**
 		 * Hold value at 1 to mix channel input into the main output.
 		 * For [MicrophoneN] use [MicrophoneN],talkover instead.
 		 * Note that [AuxiliaryN] also take [AuxiliaryN],orientation into account.
@@ -362,6 +291,36 @@ declare namespace MixxxControls {
 		 * @since New in version 2.0.0.
 		 */
 		| "mute"
+
+		/**
+		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
+		 *
+		 * @groups [AuxiliaryN], [MicrophoneN]
+		 * @range binary
+		 * @feedback Microphone Clip light
+		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicator and [AuxiliaryN],PeakIndicator controls.
+		 */
+		| "peak_indicator"
+
+		/**
+		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
+		 *
+		 * @groups [AuxiliaryN], [MicrophoneN]
+		 * @range binary
+		 * @feedback Clip light (left)
+		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicatorL and [AuxiliaryN],PeakIndicatorL controls.
+		 */
+		| "peak_indicator_l"
+
+		/**
+		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
+		 *
+		 * @groups [AuxiliaryN], [MicrophoneN]
+		 * @range binary
+		 * @feedback Clip light (right)
+		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicatorR and [AuxiliaryN],PeakIndicatorR controls.
+		 */
+		| "peak_indicator_r"
 
 		/**
 		 * Toggles headphone cueing (PFL).
@@ -405,7 +364,37 @@ declare namespace MixxxControls {
 		 * @since New in version 1.10.0.
 		 * @kind pot meter control
 		 */
-		| `volume${PotMeterSuffix}`;
+		| `volume${PotMeterSuffix}`
+
+		/**
+		 * Outputs the current instantaneous channel volume
+		 *
+		 * @groups [AuxiliaryN], [MicrophoneN]
+		 * @range default
+		 * @feedback Microphone VU meter changes
+		 * @since New in version 1.10..
+		 */
+		| "vu_meter"
+
+		/**
+		 * Outputs the current instantaneous deck volume for the left channel
+		 *
+		 * @groups [AuxiliaryN], [MicrophoneN]
+		 * @range default
+		 * @feedback Microphone/auxiliary VU meter L
+		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],VuMeterL and [AuxiliaryN],VuMeterL controls.
+		 */
+		| "vu_meter_l"
+
+		/**
+		 * Outputs the current instantaneous deck volume for the right channel
+		 *
+		 * @groups [AuxiliaryN], [MicrophoneN]
+		 * @range default
+		 * @feedback Microphone/auxiliary VU meter R
+		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],VuMeterR and [AuxiliaryN],VuMeterR controls.
+		 */
+		| "vu_meter_r";
 
 	type ChannelNControl =
 		/**
@@ -481,74 +470,6 @@ declare namespace MixxxControls {
 		 * @since New in version 2.4.0.
 		 */
 		| "LoadTrackFromSampler"
-
-		/**
-		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @range binary
-		 * @feedback Clip light
-		 * @kind pot meter control
-		 */
-		| `PeakIndicator${PotMeterSuffix}`
-
-		/**
-		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @range binary
-		 * @feedback Clip light (left)
-		 * @since New in version 2.0.0.
-		 * @kind pot meter control
-		 */
-		| `PeakIndicator${number}${PotMeterSuffix}`
-
-		/**
-		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @range binary
-		 * @feedback Clip light (right)
-		 * @since New in version 2.0.0.
-		 * @kind pot meter control
-		 */
-		| `PeakIndicator${number}${PotMeterSuffix}`
-
-		/**
-		 * Outputs the current instantaneous deck volume
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @range default
-		 * @feedback Deck VU meter
-		 * @kind pot meter control
-		 */
-		| `VuMeter${PotMeterSuffix}`
-
-		/**
-		 * Outputs the current instantaneous deck volume for the left channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @range default
-		 * @feedback Deck VU meter L
-		 * @kind pot meter control
-		 */
-		| `VuMeter${number}${PotMeterSuffix}`
-
-		/**
-		 * Outputs the current instantaneous deck volume for the right channel
-		 * This is a ControlPotMeter control.
-		 *
-		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @range default
-		 * @feedback Deck VU meter R
-		 * @kind pot meter control
-		 */
-		| `VuMeter${number}${PotMeterSuffix}`
 
 		/**
 		 * Fast rewind (REW)
@@ -1710,6 +1631,36 @@ declare namespace MixxxControls {
 		| "passthrough"
 
 		/**
+		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
+		 *
+		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+		 * @range binary
+		 * @feedback Clip light
+		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicator, [PreviewDeckN],PeakIndicator and [SamplerN],PeakIndicator controls.
+		 */
+		| "peak_indicator"
+
+		/**
+		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
+		 *
+		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+		 * @range binary
+		 * @feedback Clip light (left)
+		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicatorL, [PreviewDeckN],PeakIndicatorL and [SamplerN],PeakIndicatorL controls.
+		 */
+		| "peak_indicator_l"
+
+		/**
+		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
+		 *
+		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+		 * @range binary
+		 * @feedback Clip light (right)
+		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicatorR, [PreviewDeckN],PeakIndicatorR and [SamplerN],PeakIndicatorR controls.
+		 */
+		| "peak_indicator_r"
+
+		/**
 		 * Toggles headphone cueing (PFL).
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -2289,6 +2240,36 @@ declare namespace MixxxControls {
 		 * @kind pot meter control
 		 */
 		| `volume${PotMeterSuffix}`
+
+		/**
+		 * Outputs the current instantaneous deck volume
+		 *
+		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+		 * @range default
+		 * @feedback Deck VU meter
+		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeter, [PreviewDeckN],VuMeter and [SamplerN],VuMeter controls.
+		 */
+		| "vu_meter"
+
+		/**
+		 * Outputs the current instantaneous deck volume for the left channel
+		 *
+		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+		 * @range default
+		 * @feedback Deck VU meter L
+		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterL, [PreviewDeckN],VuMeterL and [SamplerN],VuMeterL controls.
+		 */
+		| "vu_meter_l"
+
+		/**
+		 * Outputs the current instantaneous deck volume for the right channel
+		 *
+		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+		 * @range default
+		 * @feedback Deck VU meter R
+		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterR, [PreviewDeckN],VuMeterR and [SamplerN],VuMeterR controls.
+		 */
+		| "vu_meter_r"
 
 		/**
 		 * Zooms the waveform to look ahead or back as needed.
@@ -2963,84 +2944,77 @@ declare namespace MixxxControls {
 		 */
 		| "AutoDjAddTop";
 
-	type MasterControl =
+	type MainControl =
 		/**
 		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) (composite).
-		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [Master]
+		 * @groups [Main]
 		 * @range binary
 		 * @feedback Clip light (mono)
-		 * @kind pot meter control
+		 * @since New in version 2.4.0: Replaces the deprecated [Master],PeakIndicator control.
 		 */
-		| `PeakIndicator${PotMeterSuffix}`
+		| "peak_indicator"
 
 		/**
 		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel.
-		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [Master]
+		 * @groups [Main]
 		 * @range binary
 		 * @feedback Clip light (left)
-		 * @kind pot meter control
+		 * @since New in version 2.4.0: Replaces the deprecated [Master],PeakIndicatorL control.
 		 */
-		| `PeakIndicator${number}${PotMeterSuffix}`
+		| "peak_indicator_l"
 
 		/**
 		 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel.
-		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [Master]
+		 * @groups [Main]
 		 * @range binary
 		 * @feedback Clip light (right)
-		 * @kind pot meter control
+		 * @since New in version 2.4.0: Replaces the deprecated [Master],PeakIndicatorR control.
 		 */
-		| `PeakIndicator${number}${PotMeterSuffix}`
+		| "peak_indicator_r"
 
 		/**
 		 * Outputs the current instantaneous main volume (composite).
-		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [Master]
+		 * @groups [Main]
 		 * @range default
 		 * @feedback Main meter (mono)
-		 * @kind pot meter control
+		 * @since New in version 2.4.0: Replaces the deprecated [Master],VuMeter control.
 		 */
-		| `VuMeter${PotMeterSuffix}`
+		| "vu_meter"
 
 		/**
 		 * Outputs the current instantaneous main volume for the left channel.
-		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [Master]
+		 * @groups [Main]
 		 * @range default
 		 * @feedback Main meter L
-		 * @kind pot meter control
+		 * @since New in version 2.4.0: Replaces the deprecated [Master],VuMeterL control.
 		 */
-		| `VuMeter${number}${PotMeterSuffix}`
+		| "vu_meter_l"
 
 		/**
 		 * Outputs the current instantaneous main volume for the right channel.
-		 * This is a ControlPotMeter control.
 		 *
-		 * @groups [Master]
+		 * @groups [Main]
 		 * @range default
 		 * @feedback Main meter R
-		 * @kind pot meter control
+		 * @since New in version 2.4.0: Replaces the deprecated [Master],VuMeterR control.
 		 */
-		| `VuMeter${number}${PotMeterSuffix}`
+		| "vu_meter_r";
 
+	type MasterControl =
 		/**
 		 * Indicates a buffer under or over-flow. Resets after 500 ms
-		 * This is a ControlPotMeter control.
 		 *
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback Overload indicator
 		 * @since New in version 2.0.0.
-		 * @kind pot meter control
 		 */
-		| `audio_latency_overload${PotMeterSuffix}`
+		| "audio_latency_overload"
 
 		/**
 		 * Counts buffer over and under-flows. Max one per 500 ms
@@ -3054,15 +3028,13 @@ declare namespace MixxxControls {
 
 		/**
 		 * Reflects fraction of latency, given by the audio buffer size, spend for audio processing inside Mixxx. At value near 25 % there is a high risk of buffer underflows
-		 * This is a ControlPotMeter control.
 		 *
 		 * @groups [Master]
 		 * @range 0 .. 25 %
 		 * @feedback latency meter
 		 * @since New in version 2.0.0.
-		 * @kind pot meter control
 		 */
-		| `audio_latency_usage${PotMeterSuffix}`
+		| "audio_latency_usage"
 
 		/**
 		 * Adjusts the left/right channel balance on the Main output.
@@ -3399,22 +3371,22 @@ declare namespace MixxxControls {
 		 */
 		| "gain";
 
-	type QuickEffectRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
-	type PreviewDeckNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
+	type EqualizerRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
 	type EffectRack1EffectUnitNEffectMControl =
 		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
 	type SamplerNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
 
-	type EqualizerRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+	type QuickEffectRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
 	type QuickEffectRack1ChannelIEffect1Control =
 		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
 	type EqualizerRack1ChannelIEffect1Control =
 		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
+
+	type PreviewDeckNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
 
 	type MicrophoneNControl = AuxiliaryNMicrophoneNControl;
 
@@ -3806,13 +3778,8 @@ declare namespace MixxxControls {
 			 */
 			"num_effectsavailable";
 
-		type ReadOnlyEffectRack1EffectUnitNEffectMControl =
+		type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
 			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
-
-		type ReadOnlySamplerNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
-
-		type ReadOnlyEffectRack1EffectUnitNControl =
-			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
 		type ReadOnlyEqualizerRack1ChannelIControl =
 			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
@@ -3820,14 +3787,16 @@ declare namespace MixxxControls {
 		type ReadOnlyEqualizerRack1ChannelIEffect1Control =
 			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
-		type ReadOnlyChannelNControl =
-			| ReadOnlyChannelNPreviewDeckNSamplerNControl
-			| ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+		type ReadOnlyEffectRack1EffectUnitNControl =
+			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
-		type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
-			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
+		type ReadOnlyQuickEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
+
+		type ReadOnlySamplerNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
 
 		type ReadOnlyAuxiliaryNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+
+		type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
 
 		type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
 
@@ -3836,15 +3805,84 @@ declare namespace MixxxControls {
 		type ReadOnlyQuickEffectRack1ChannelIControl =
 			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
-		type ReadOnlyQuickEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
-
-		type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
+		type ReadOnlyEffectRack1EffectUnitNEffectMControl =
+			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
 		type ReadOnlyMicrophoneNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+
+		type ReadOnlyChannelNControl =
+			| ReadOnlyChannelNPreviewDeckNSamplerNControl
+			| ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
 	}
 
 	namespace Deprecated {
 		type DeprecatedAuxiliaryNMicrophoneNControl =
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
+			 *
+			 * @groups [AuxiliaryN], [MicrophoneN]
+			 * @range binary
+			 * @feedback Microphone Clip light
+			 * @since New in version ?.?.?.
+			 * @deprecated since  version 2.4.0: Use [MicrophoneN],peak_indicator and [AuxiliaryN],peak_indicator instead.
+			 */
+			| "PeakIndicator"
+
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
+			 *
+			 * @groups [AuxiliaryN], [MicrophoneN]
+			 * @range binary
+			 * @feedback Clip light (left)
+			 * @since New in version 2.0.0.
+			 * @deprecated since  version 2.4.0: Use [MicrophoneN],peak_indicator_l and [AuxiliaryN],peak_indicator_l instead.
+			 */
+			| `PeakIndicator${number}`
+
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
+			 *
+			 * @groups [AuxiliaryN], [MicrophoneN]
+			 * @range binary
+			 * @feedback Clip light (right)
+			 * @since New in version 2.0.0.
+			 * @deprecated since  version 2.4.0: Use [MicrophoneN],peak_indicator_r and [AuxiliaryN],peak_indicator_r instead.
+			 */
+			| `PeakIndicator${number}`
+
+			/**
+			 * Outputs the current instantaneous channel volume
+			 *
+			 * @groups [AuxiliaryN], [MicrophoneN]
+			 * @range default
+			 * @feedback Microphone/auxiliary VU meter changes
+			 * @since New in version 1.10..
+			 * @deprecated since  version 2.4.0: Use [MicrophoneN],vu_meter and [AuxiliaryN],vu_meter instead.
+			 */
+			| "VuMeter"
+
+			/**
+			 * Outputs the current instantaneous channel volume
+			 *
+			 * @groups [AuxiliaryN], [MicrophoneN]
+			 * @range default
+			 * @feedback Microphone/auxiliary VU meter changes
+			 * @since New in version 2.0.0.
+			 * @deprecated since  version 2.4.0: Use [MicrophoneN],vu_meter_l and [AuxiliaryN],vu_meter_l instead.
+			 */
+			| `VuMeter${number}`
+
+			/**
+			 * Outputs the current instantaneous channel volume
+			 *
+			 * @groups [AuxiliaryN], [MicrophoneN]
+			 * @range default
+			 * @feedback Microphone/auxiliary VU meter changes
+			 * @since New in version 2.0.0.
+			 * @deprecated since  version 2.4.0: Use [MicrophoneN],vu_meter_r and [AuxiliaryN],vu_meter_r instead.
+			 */
+			| `VuMeter${number}`
+
 			/**
 			 * 1 if a channel input is enabled, 0 if not.
 			 *
@@ -3869,6 +3907,71 @@ declare namespace MixxxControls {
 			| "master";
 
 		type DeprecatedChannelNPreviewDeckNSamplerNControl =
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
+			 *
+			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+			 * @range binary
+			 * @feedback Clip light
+			 * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator, [PreviewDeckN],peak_indicator and [SamplerN],peak_indicator instead.
+			 */
+			| "PeakIndicator"
+
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
+			 *
+			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+			 * @range binary
+			 * @feedback Clip light (left)
+			 * @since New in version 2.0.0.
+			 * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_l, [PreviewDeckN],peak_indicator_l and [SamplerN],peak_indicator_l instead.
+			 */
+			| `PeakIndicator${number}`
+
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
+			 *
+			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+			 * @range binary
+			 * @feedback Clip light (right)
+			 * @since New in version 2.0.0.
+			 * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_r, [PreviewDeckN],peak_indicator_r and [SamplerN],peak_indicator_r instead.
+			 */
+			| `PeakIndicator${number}`
+
+			/**
+			 * Outputs the current instantaneous deck volume
+			 *
+			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+			 * @range default
+			 * @feedback Deck VU meter
+			 * @since New in version ?.?.?.
+			 * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter, Use [PreviewDeckN],vu_meter and [SamplerN],vu_meter instead.
+			 */
+			| "VuMeter"
+
+			/**
+			 * Outputs the current instantaneous deck volume for the left channel
+			 *
+			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+			 * @range default
+			 * @feedback Deck VU meter L
+			 * @since New in version ?.?.?.
+			 * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_l, Use [PreviewDeckN],vu_meter_l and [SamplerN],vu_meter_l instead.
+			 */
+			| `VuMeter${number}`
+
+			/**
+			 * Outputs the current instantaneous deck volume for the right channel
+			 *
+			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+			 * @range default
+			 * @feedback Deck VU meter R
+			 * @since New in version ?.?.?.
+			 * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_r, Use [PreviewDeckN],vu_meter_r and [SamplerN],vu_meter_r instead.
+			 */
+			| `VuMeter${number}`
+
 			/**
 			 * Setup a loop over the set number of beats.
 			 * If the loaded track has no beat grid, seconds are used instead of beats.
@@ -4059,6 +4162,66 @@ declare namespace MixxxControls {
 			"show_coverart";
 
 		type DeprecatedMasterControl =
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) (composite).
+			 *
+			 * @groups [Master]
+			 * @range binary
+			 * @feedback Clip light (mono)
+			 * @deprecated since  version 2.4.0: Use [Main],peak_indicator instead.
+			 */
+			| "PeakIndicator"
+
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel.
+			 *
+			 * @groups [Master]
+			 * @range binary
+			 * @feedback Clip light (left)
+			 * @deprecated since  version 2.4.0: Use [Main],peak_indicator_l instead.
+			 */
+			| `PeakIndicator${number}`
+
+			/**
+			 * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel.
+			 *
+			 * @groups [Master]
+			 * @range binary
+			 * @feedback Clip light (right)
+			 * @deprecated since  version 2.4.0: Use [Main],peak_indicator_r instead.
+			 */
+			| `PeakIndicator${number}`
+
+			/**
+			 * Outputs the current instantaneous main volume (composite).
+			 *
+			 * @groups [Master]
+			 * @range default
+			 * @feedback Main meter (mono)
+			 * @deprecated since  version 2.4.0: Use [Main],vu_meter instead.
+			 */
+			| "VuMeter"
+
+			/**
+			 * Outputs the current instantaneous main volume for the left channel.
+			 *
+			 * @groups [Master]
+			 * @range default
+			 * @feedback Main meter L
+			 * @deprecated since  version 2.4.0: Use [Main],vu_meter_l instead.
+			 */
+			| `VuMeter${number}`
+
+			/**
+			 * Outputs the current instantaneous main volume for the right channel.
+			 *
+			 * @groups [Master]
+			 * @range default
+			 * @feedback Main meter R
+			 * @deprecated since  version 2.4.0: Use [Main],vu_meter_r instead.
+			 */
+			| `VuMeter${number}`
+
 			/**
 			 * A throttled timer that provides the time elapsed in seconds since Mixxx was started.
 			 *
@@ -4263,21 +4426,21 @@ declare namespace MixxxControls {
 			 */
 			"show_vinylcontrol";
 
-		type DeprecatedSamplerNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
-
-		type DeprecatedEffectRack1EffectUnitNControl =
-			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
 		type DeprecatedEqualizerRack1ChannelIControl =
 			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
-		type DeprecatedChannelNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
+		type DeprecatedSamplerNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
 
 		type DeprecatedAuxiliaryNControl = DeprecatedAuxiliaryNMicrophoneNControl;
+
+		type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
 
 		type DeprecatedQuickEffectRack1ChannelIControl =
 			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
-		type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
+		type DeprecatedEffectRack1EffectUnitNControl =
+			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
+		type DeprecatedChannelNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
 	}
 }

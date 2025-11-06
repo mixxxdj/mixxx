@@ -168,14 +168,14 @@ def get_version_modified_tag(
 def get_deprecated(content: nodes.Element) -> str | None:
     dep_tag = get_version_modified_tag(content, "type", "deprecated")
     if dep_tag:
-        return dep_tag.astext().replace("Deprecated since", "")
+        return dep_tag.astext().replace("Deprecated since", "").replace("\n", " ")
     return None
 
 
 def get_version_added(content: nodes.Element) -> str | None:
     dep_tag = get_version_modified_tag(content, "type", "versionadded")
     if dep_tag:
-        return dep_tag.astext()
+        return dep_tag.astext().replace("\n", " ")
     return None
 
 
