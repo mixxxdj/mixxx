@@ -121,6 +121,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))),
           m_pHeadSplitEnabled(std::make_unique<ControlPushButton>(
                   ConfigKey(group, "headSplit"), true, 0.0)),
+          m_pMainPfl(std::make_unique<ControlPushButton>(
+                  ConfigKey(kMainGroup, "pfl"))),
 
           m_pKeylockEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
@@ -190,6 +192,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
 
     m_pHeadSplitEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pHeadSplitEnabled->set(0.0);
+    m_pMainPfl->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pMainPfl->set(1.0);
 
     // zero out otherwise uninitialized buffers
     m_head.clear();
@@ -386,12 +390,15 @@ void EngineMixer::process(const std::size_t bufferSize) {
 
     // Compute headphone mix
     // Head phone left/right mix
-    CSAMPLE pflMixGainInHeadphones = 1;
-    CSAMPLE mainMixGainInHeadphones = 0;
+    CSAMPLE_GAIN pflMixGainInHeadphones = 1;
+    CSAMPLE_GAIN mainMixGainInHeadphones = 0;
     if (mainEnabled) {
         const auto cf_val = static_cast<CSAMPLE_GAIN>(m_pHeadMix->get());
+        bool mainPlf = m_pMainPfl->toBool();
         pflMixGainInHeadphones = 0.5f * (-cf_val + 1.0f);
-        mainMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
+        if (mainPlf) {
+            mainMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
+        }
         // qDebug() << "head val " << cf_val << ", head " << chead_gain
         //          << ", main " << mainGain;
     }
