@@ -104,7 +104,7 @@ std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, IndexRange arg) {
-    return os << '[' << arg.start() << " -> " << arg.end() << ')';
+    return os << '[' << arg.start() << " -> " << arg.end() << ']';
 }
 
 QDebug operator<<(QDebug dbg, IndexRange arg) {
