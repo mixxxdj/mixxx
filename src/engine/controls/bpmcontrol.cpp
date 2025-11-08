@@ -1326,7 +1326,9 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures, double speed
                 &beatFraction)) {
         const double rateRatio = m_pRateRatio->get();
         if (rateRatio != 0.0) {
-            pGroupFeatures->beat_length = {beatLengthFrames / rateRatio, speed / rateRatio};
+            pGroupFeatures->beat_length = {
+                    beatLengthFrames / info.sampleRate.toDouble() / rateRatio,
+                    speed / rateRatio};
         }
         pGroupFeatures->beat_fraction_buffer_end = beatFraction;
     }

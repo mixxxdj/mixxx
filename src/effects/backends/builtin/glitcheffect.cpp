@@ -79,7 +79,7 @@ void GlitchEffect::processChannel(
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
 
-    int delay_frames;
+    double delay_seconds;
     double min_delay;
     if (groupFeatures.beat_length.has_value()) {
         if (m_pQuantizeParameter->toBool()) {
@@ -89,14 +89,14 @@ void GlitchEffect::processChannel(
             }
         }
         period = std::max(period, 1 / 8.0);
-        delay_frames = static_cast<int>(period * groupFeatures.beat_length->frames);
-        min_delay = 1 / 8.0 * groupFeatures.beat_length->frames;
+        delay_seconds = static_cast<int>(period * groupFeatures.beat_length->seconds);
+        min_delay = 1 / 8.0 * groupFeatures.beat_length->seconds;
     } else {
-        delay_frames = static_cast<int>(period * engineParameters.sampleRate());
-        min_delay = 1 / 8.0 * engineParameters.sampleRate();
+        delay_seconds = period;
+        min_delay = 1 / 8.0;
     }
 
-    if (delay_frames < min_delay) {
+    if (delay_seconds < min_delay) {
         SampleUtil::copy(
                 pOutput,
                 pInput,
@@ -104,7 +104,8 @@ void GlitchEffect::processChannel(
         return;
     }
 
-    int delay_samples = delay_frames * engineParameters.channelCount();
+    int delay_samples = static_cast<int>(delay_seconds *
+            engineParameters.channelCount() * engineParameters.sampleRate());
     pGroupState->sample_count += engineParameters.samplesPerBuffer();
     if (pGroupState->sample_count >= delay_samples) {
         // If the delay parameter is at its maximum value, we don't update the `repeat_buf`

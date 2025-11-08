@@ -86,14 +86,40 @@ jobs:
           COMMIT_MERGE="$(git show --no-patch --format="%h" "${SYNC_BRANCH}")"
           git status
           echo "::endgroup::"
+          conflictIssueNumber=$(gh issue list --label sync-branches --search '"'${CONFLICT_ISSUE_TITLE}'"' --json number --state all | jq -r .[].number)
           if [ "${COMMIT_ORIGINAL}" = "${COMMIT_MERGE}" ]; then
-            echo "::warning:: No changes (or merge conflict), skipping push and PR creation."
+            if [ -z "$(git status --porcelain)" ]; then
+              echo "No changes, skipping push and PR creation."
+            else
+              echo "::warning:: Merge conflict detected!"
+              issueBody=`cat <<EOF
+              ${CONFLICT_ISSUE_BODY}
+
+              ---
+              The following files are in conflicts:
+
+              \\\`\\\`\\\`
+              $(git diff --name-only --diff-filter=U --relative)
+              \\\`\\\`\\\`
+              EOF
+              `
+              if [ -z "$conflictIssueNumber" ]; then
+                gh issue create --title "${CONFLICT_ISSUE_TITLE}" --body "${issueBody}" --label sync-branches
+              else
+                gh issue reopen "${conflictIssueNumber}"
+                gh issue edit "${conflictIssueNumber}" --body "${issueBody}"
+              fi
+              exit 0
+            fi
           else
             git push origin "${SYNC_BRANCH}"
             if [ ! "${BRANCH_EXISTS}" = true ]; then
               gh pr create -B "${TO_BRANCH}" -H "${SYNC_BRANCH}" --title "${PULL_REQUEST_TITLE}" --body "${PULL_REQUEST_BODY}"
               gh pr edit --add-label "sync-branches"
             fi
+          fi
+          if [ -n "$conflictIssueNumber" ]; then
+            gh issue close "$conflictIssueNumber"
           fi
         env:
           BRANCH_EXISTS: ${{ steps.check_sync.outputs.branch_exists }}
@@ -104,3 +130,6 @@ jobs:
           PULL_REQUEST_TITLE: Merge changes from `${{ github.ref_name  }}` into `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`
           PULL_REQUEST_BODY: |
             New content has landed in the `${{ github.ref_name  }}` branch, so let's merge the changes into `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`
+          CONFLICT_ISSUE_TITLE: Conflict detected between `${{ github.ref_name  }}` and `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`
+          CONFLICT_ISSUE_BODY: |
+            Merge conflicts were detected when trying to merge branch `${{ github.ref_name  }}` into `${{ fromJSON(env.ACTIVE_VERSIONS)[github.ref_name] }}`. A manual pull request is required to resolve these issues.

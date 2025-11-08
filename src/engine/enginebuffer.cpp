@@ -1161,7 +1161,7 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    m_actual_speed = (m_playPos - playpos_old) / (bufferSize / 2);
+    m_actual_speed = (m_playPos - playpos_old) / (bufferSize / 2) / baseSampleRate;
     // qDebug() << "Ramped Speed" << m_actual_speed / m_speed_old;
 
     for (const auto& pControl : std::as_const(m_engineControls)) {
