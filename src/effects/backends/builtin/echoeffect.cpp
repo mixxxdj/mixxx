@@ -131,7 +131,7 @@ void EchoEffect::processChannel(
     const auto feedback_current = static_cast<CSAMPLE_GAIN>(m_pFeedbackParameter->value());
     const auto pingpong_frac = static_cast<CSAMPLE_GAIN>(m_pPingPongParameter->value());
 
-    int delay_frames;
+    double delay_seconds;
     if (groupFeatures.beat_length.has_value()) {
         // period is a number of beats
         if (m_pQuantizeParameter->toBool()) {
@@ -142,17 +142,18 @@ void EchoEffect::processChannel(
         } else if (period < 1 / 8.0) {
             period = 1 / 8.0;
         }
-        delay_frames = static_cast<int>(period * groupFeatures.beat_length->frames);
+        delay_seconds = period * groupFeatures.beat_length->seconds;
     } else {
         // period is a number of seconds
         period = std::max(period, 1 / 8.0);
-        delay_frames = static_cast<int>(period * engineParameters.sampleRate());
+        delay_seconds = period;
     }
-    VERIFY_OR_DEBUG_ASSERT(delay_frames > 0) {
-        delay_frames = 1;
+    VERIFY_OR_DEBUG_ASSERT(delay_seconds > 0) {
+        delay_seconds = 1 / engineParameters.sampleRate();
     }
 
-    int delay_samples = delay_frames * engineParameters.channelCount();
+    int delay_samples = static_cast<int>(delay_seconds *
+            engineParameters.channelCount() * engineParameters.sampleRate());
     VERIFY_OR_DEBUG_ASSERT(delay_samples <= pGroupState->delay_buf.size()) {
         delay_samples = pGroupState->delay_buf.size();
     }
