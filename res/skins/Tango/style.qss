@@ -67,6 +67,7 @@ WTrackPropertyEditor,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 /* With 'Ubuntu' font the header section titles would always be top-aligned... */
+WTrackTableViewHeader,
 WTrackTableViewHeader::section {
   font-family: "Open Sans";
   font-weight: normal;
@@ -2775,8 +2776,7 @@ WTrackTableViewHeader {
   }
   /*  Library header 'buttons'  */
   WTrackTableViewHeader::section {
-    height: 1.1em;
-    padding: 0 -0.7em 0 0.1em;
+    padding: 2px 1px;
     /*  use 'border-right' so that for the header of the leftmost column
     the border doesn't add to the border of the surrounding qtableview */
     border-right: 1px solid #585858;
@@ -2790,9 +2790,6 @@ WTrackTableViewHeader {
 
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
-    width: 0.6em;
-    padding-right: 0.1em;
-    border-right: 1px solid #585858;
     background-color: rgba(51,51,51,200);
     }
     WTrackTableViewHeader::up-arrow:hover,
