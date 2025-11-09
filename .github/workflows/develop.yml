@@ -86,6 +86,45 @@ jobs:
       - git
       - build
     runs-on: ubuntu-latest
+    if: always() && github.event_name == 'pull_request'
     steps:
+      - name: "[UI tests] Fetch all artifacts"
+        id: generateCommentBody
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId
+            });
+            console.log(JSON.stringify(data));
+            console.log(`There is ${data.artifacts.length} artifacts on this run`);
+            return data.artifacts.filter(artifact => artifact.name.match(/^UI Tests for/)).map(artifact => {
+              const words = artifact.name.split(' ');
+              const label = words.slice(0, -2).join(' ');
+              const [ outcome ]  = words.slice(-1);
+
+              if (outcome === "failure")
+                return `- :x: ${label} - ([view results](${artifact.url}))`
+              else
+                return `- :white_check_mark: ${label} - ([view results](${artifact.url}))`
+            }).join('\n');
+
+      - name: "[UI tests] Update the step summary"
+        if: steps.generateCommentBody.outputs.result != ''
+        run: |
+          cat > $GITHUB_STEP_SUMMARY <<EOF
+            ## QML UI test results
+
+            ${{ fromJSON(steps.generateCommentBody.outputs.result) }}
+          EOF
+
       - name: Ready to go
+        id: ready
+        if: needs.pre-commit.outcome == 'success' && needs.checks.outcome == 'success' && needs.git.outcome == 'success' && needs.build.outcome == 'success'
         run: "exit 0"
+
+      - name: Not ready
+        if: steps.ready.outcome == 'skipped'
+        run: "exit 1"

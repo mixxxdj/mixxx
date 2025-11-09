@@ -114,7 +114,7 @@ Item {
             default:
                 console.error(`Unknown deck ${deckId}. Defaulting to D`);
             case 4:
-                return "D";
+                    return "D";
         }
     }
 

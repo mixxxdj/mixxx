@@ -48,14 +48,9 @@ jobs:
           - name: Ubuntu 24.04
             os: ubuntu-24.04
             cmake_args: >-
-              -DQT6=ON
-              -DQML=ON
-              -DBULK=ON
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
@@ -68,17 +63,18 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
+            coverage: ON
+            qml: ON
+            warning_fatal: OFF
+            build_type: Debug
+            optimize: off
           - name: macOS 15 x64
             os: macos-15-intel
             cmake_args: >-
-              -DBULK=ON
               -DCOREAUDIO=ON
+              -DBUILD_UI_TEST=OFF
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=OFF
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
@@ -92,17 +88,15 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
+            # FIXME: QML deployment on Mac appears to be incomplete (#12527)
+            qml: OFF
           - name: macOS 15 arm64
             os: macos-15-intel
             cmake_args: >-
-              -DBULK=ON
               -DCOREAUDIO=ON
+              -DBUILD_UI_TEST=OFF
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             crosscompile: true
@@ -116,21 +110,17 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
             qt_qpa_platform: offscreen
+            qml: OFF
           - name: Windows 2022 x64
             os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
-              -DBULK=ON
               -DHSS1394=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
             cc: cl
             cxx: cl
@@ -143,6 +133,7 @@ jobs:
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
             qt_qpa_platform: windows
+            qml: ON
             arch: x64
           - name: Windows 11 ARM64
             os: windows-11-arm
@@ -172,6 +163,7 @@ jobs:
             artifacts_path: build/*.msi
             artifacts_slug: windows-winarm
             qt_qpa_platform: windows
+            qml: ON
             arch: arm64
 
     env:
@@ -250,13 +242,6 @@ jobs:
         if: runner.os != 'Linux'
         run: ${{ matrix.buildenv_script }} name
 
-      - name: "[macOS/Windows] Set up build environment cache"
-        if: runner.os != 'Linux'
-        uses: actions/cache@v4
-        with:
-          path: ${{ matrix.buildenv_basepath }}
-          key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
-
       - name: "[macOS] Import Apple code signing identity"
         id: apple_codesign
         if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
@@ -279,6 +264,17 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
+      - name: "Restore GitHub cache for ccache"
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ${{ matrix.compiler_cache_path }}
+            ${{ matrix.buildenv_basepath }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
@@ -294,16 +290,6 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
-      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
-        if: runner.os != 'windows'
-        uses: actions/cache@v4
-        with:
-          path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
-            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
-
       - name: "[Ubuntu/macOS] Set up ccache"
         # GitHub Actions gives us 10 GB of cache.
         # 4 runs * 2 GB = 8 GB
@@ -316,22 +302,30 @@ jobs:
         run: mkdir build
 
       - name: "Configure"
+        id: configure
         run: >-
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo
-          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-          -DWARNINGS_FATAL=ON
-          -DDEBUG_ASSERTIONS_FATAL=OFF
           -DBATTERY=ON
           -DBROADCAST=ON
+          -DBULK=ON
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type || 'RelWithDebInfo' }}
+          -DOPTIMIZE=${{ matrix.optimize || 'portable' }}
+          -DCOVERAGE=${{ matrix.coverage || 'OFF' }}
+          -DWARNINGS_FATAL=${{ matrix.warning_fatal || 'ON' }}
+          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -DDEBUG_ASSERTIONS_FATAL=OFF
           -DDOWNLOAD_MANUAL=ON
           -DHID=ON
           -DKEYFINDER=ON
           -DLILV=ON
+          -DMODPLUG=ON
           -DOPUS=ON
+          -DQML=${{ matrix.qml || 'OFF' }}
+          -DQT6=ON
           -DQTKEYCHAIN=ON
           -DVINYLCONTROL=ON
-          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -DWAVPACK=ON
           -L
           ..
         working-directory: build
@@ -356,6 +350,15 @@ jobs:
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
 
+      - name: "Save GitHub cache for ccache"
+        if: always() && steps.configure.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ matrix.compiler_cache_path }}
+            ${{ matrix.buildenv_basepath }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
+
       - name: "[Ubuntu/macOS] Print compiler cache stats"
         if: runner.os != 'windows'
         run: |
@@ -371,8 +374,122 @@ jobs:
           QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel
+          # Also prevent *.gcna files from overwriting each other
           CTEST_PARALLEL_LEVEL: 1
           CTEST_OUTPUT_ON_FAILURE: 1
+
+      - name: "Create screenshot directory"
+        if: matrix.qml == 'ON'
+        run: mkdir screenshots
+        working-directory: build
+
+      - name: "[Ubuntu] Setup UI dependencies for QML UI Test"
+        if: runner.os == 'Linux' && matrix.qml == 'ON'
+        run: |
+          sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
+          echo "QT_QPA_PLATFORM=xcb" >> "$GITHUB_ENV"
+        working-directory: build
+
+      - name: "[Windows] Setup UI dependencies for QML UI tests"
+        if: runner.os == 'Windows' && matrix.qml == 'ON'
+        timeout-minutes: 5
+        run: |
+          # Add OpenGL library
+          $downloadUrl = "https://mirrors.20i.com/pub/qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64.7z"
+          $localPath = "opengl32sw-64.7z"
+          $expectedChecksum = "a19b32017652de3a6d33bc861186303a95b92ec570c36277e137093909d47ccd"
+
+          Invoke-WebRequest -Uri $downloadUrl -OutFile $localPath
+
+          $actualChecksum = (Get-FileHash -Algorithm SHA256 -Path $localPath).Hash
+
+          if ($actualChecksum -ne $expectedChecksum) {
+              exit 1
+              Write-Host "Checksum verification failed."
+          }
+
+          Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
+          Install-Module -Name 7Zip4PowerShell -Force
+
+          Expand-7Zip -ArchiveFileName $localPath -TargetPath '.'
+        working-directory: build
+
+      - name: "[Windows] Run QML UI tests"
+        id: uitest_windows
+        if: runner.os == 'Windows' && matrix.qml == 'ON'
+        timeout-minutes: 2
+        run: |
+          $ffmpeg = Start-Process -PassThru -NoNewWindow $Env:FFMPEG_BIN '-f gdigrab -framerate 30 -i desktop -codec:v mpeg4 -r 30 -b:v 1000k output.mkv -y'
+          try {
+            ./mixxx-test --ui --log-level debug --developer
+          }
+          finally {
+            Stop-Process -Id $ffmpeg.Id
+            $ffmpeg.WaitForExit(10000)  # Wait for up to 10 seconds
+          }
+        working-directory: build
+        env:
+          FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\x64-windows-release\tools\ffmpeg\ffmpeg.exe
+
+      - name: "[Ubuntu] Run QML UI tests"
+        id: uitest_linux
+        if: runner.os == 'Linux' && matrix.qml == 'ON'
+        timeout-minutes: 2
+        run: |
+          Xvfb :44 -ac -nocursor -screen 0 1920x1080x24 -auth /dev/null &
+          sleep 3
+          ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v mpeg4 -r 30 -b:v 1000k output.mkv -y &
+          function finish() {
+              set -x
+              kill $(jobs -p "%ffmpeg")
+              wait -f $(jobs -p "%ffmpeg") || true
+              kill $(jobs -p "%Xvfb") || true
+          }
+
+          trap finish EXIT
+          DISPLAY=:44 ./mixxx-test --ui --log-level debug --developer
+        working-directory: build
+
+      - name: "Upload QML UI tests artifact"
+        if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest_windows.outcome != 'skipped')
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: UI Tests for ${{ matrix.name }} - ${{ steps.uitest_linux.outcome != 'skipped' && steps.uitest_linux.outcome || steps.uitest_windows.outcome }}
+          path: |
+            build/screenshots
+            build/output.mkv
+          retention-days: 7
+
+      - name: "[Ubuntu] Generate Coverage Report"
+        if: runner.os == 'Linux'
+        run: >-
+          lcov
+          --capture
+          --directory .
+          --base-directory ..
+          --include "${PWD%/*}/src/*"
+          --exclude "${PWD%/*}/src/test/*"
+          --exclude "${PWD%/*}/build/*"
+          --exclude "${PWD%/*}/lib/*"
+          --output-file lcov.info
+        working-directory: build
+
+      - name: "[Ubuntu] Upload Coverage Report to coveralls.io"
+        if: runner.os == 'Linux'
+        continue-on-error: true
+        uses: coverallsapp/github-action@v2.3.6
+        with:
+          flag-name: ubuntu-24.04
+          path-to-lcov: build/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Benchmark
+        if: matrix.crosscompile != true
+        run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
+        working-directory: build
+        env:
+          # Render analyzer waveform tests to an offscreen buffer
+          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
       - name: "[Windows] Sign executables"
         env:
