@@ -62,11 +62,29 @@ DeckAttributes::DeckAttributes(int index,
 void AutoDJProcessor::setStartTimeSeconds(int seconds) {
     if (seconds < 0) seconds = 0;
     m_startTimeSeconds = seconds;
+    if (m_eState == ADJ_IDLE) {
+        DeckAttributes* fromDeck = getFromDeck();
+        if (fromDeck) {
+            DeckAttributes* toDeck = getOtherDeck(fromDeck);
+            if (toDeck) {
+                calculateTransition(fromDeck, toDeck, false);
+            }
+        }
+    }
 }
 
 void AutoDJProcessor::setDurationSeconds(int seconds) {
     if (seconds < 1) seconds = 1;
     m_durationSeconds = seconds;
+    if (m_eState == ADJ_IDLE) {
+        DeckAttributes* fromDeck = getFromDeck();
+        if (fromDeck) {
+            DeckAttributes* toDeck = getOtherDeck(fromDeck);
+            if (toDeck) {
+                calculateTransition(fromDeck, toDeck, false);
+            }
+        }
+    }
 }
 
 DeckAttributes::~DeckAttributes() {
@@ -1522,30 +1540,43 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
         break;
     case TransitionMode::StartTimeDuration: {
-        // Start next track at configured start time and play only for configured duration.
-        // Determine the start point on the to-deck in seconds and clamp within track.
-        double trackEnd = getEndSecond(pToDeck);
-        double startSec = math_max(0.0, static_cast<double>(m_startTimeSeconds));
-        if (trackEnd > kMinimumTrackDurationSec) {
-            startSec = math_min(startSec, trackEnd - kMinimumTrackDurationSec);
+        // To-deck: start at configured start time (seconds).
+        double toTrackEnd = getEndSecond(pToDeck);
+        double toStartSec = math_max(0.0, static_cast<double>(m_startTimeSeconds));
+        if (toTrackEnd > kMinimumTrackDurationSec) {
+            toStartSec = math_min(toStartSec, toTrackEnd - kMinimumTrackDurationSec);
         }
+        // Set where the to-deck will start when the current transition happens.
+        pToDeck->startPos = toStartSec;
 
-        // Perform current transition like a fixed full-track fade but starting from startSec on to-deck.
-        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startSec);
-
-        // Program the next transition window on the to-deck so AutoDJ fades after the set duration.
-        // We want the fade to begin so that it ends after 'duration', so place fadeBegin 'duration - m_transitionTime' after start.
+        // From-deck: fade after <duration> seconds of playback from its start position.
         double durationSec = math_max(kMinimumTrackDurationSec, static_cast<double>(m_durationSeconds));
-        double fadeBegin = startSec + math_max(kMinimumTrackDurationSec, durationSec - m_transitionTime);
-        // Ensure fadeBegin + transitionTime fits into the track.
-        if (trackEnd > m_transitionTime) {
-            fadeBegin = math_min(fadeBegin, trackEnd - m_transitionTime);
+        double fromTrackEnd = getEndSecond(pFromDeck);
+        double fromTrackDur = fromTrackEnd; // alias for clarity
+        // Determine the absolute start second for the from-deck.
+        double fromStartSec;
+        if (pFromDeck->startPos != kKeepPosition) {
+            // startPos may already be normalized (0..1). Convert to seconds if so.
+            if (pFromDeck->startPos <= 1.0) {
+                fromStartSec = fromTrackDur * pFromDeck->startPos;
+            } else {
+                fromStartSec = pFromDeck->startPos;
+            }
         } else {
-            // Track shorter than transition time: start fading immediately after start
-            fadeBegin = startSec + kMinimumTrackDurationSec;
+            // Fallback: use current absolute play position as baseline
+            fromStartSec = fromTrackDur * pFromDeck->playPosition();
         }
-        pToDeck->fadeBeginPos = fadeBegin;
-        pToDeck->fadeEndPos = fadeBegin + m_transitionTime;
+        // Compute fade begin so that fade ends at fromStartSec + durationSec
+        double fadeBeginSec = fromStartSec + math_max(kMinimumTrackDurationSec, durationSec - m_transitionTime);
+        // Clamp to track end minus transition
+        if (fromTrackEnd > m_transitionTime) {
+            fadeBeginSec = math_min(fadeBeginSec, fromTrackEnd - m_transitionTime);
+        } else {
+            // Track shorter than transition time -> fade immediately
+            fadeBeginSec = math_min(fromStartSec + kMinimumTrackDurationSec, fromTrackEnd);
+        }
+        pFromDeck->fadeBeginPos = fadeBeginSec;
+        pFromDeck->fadeEndPos = fadeBeginSec + m_transitionTime;
     } break;
     }
 
@@ -1638,6 +1669,14 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         // Load the next track. If we are the first AutoDJ track
         // (ADJ_ENABLE_P1LOADED state) then play the track.
         loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
+    } else if (m_eState == ADJ_ENABLE_P1LOADED && m_transitionMode == TransitionMode::StartTimeDuration) {
+        // First AutoDJ track is being loaded to play immediately. Honor Start Time here as well.
+        double toStartSec = math_max(0.0, static_cast<double>(m_startTimeSeconds));
+        if (duration > kMinimumTrackDurationSec) {
+            toStartSec = math_min(toStartSec, duration - kMinimumTrackDurationSec);
+        }
+        double startFrac = (duration > 0.0) ? (toStartSec / duration) : 0.0;
+        pDeck->setPlayPosition(startFrac);
     } else if (m_eState == ADJ_IDLE) {
         // this deck has just changed the track so it becomes the toDeck
         DeckAttributes* fromDeck = getOtherDeck(pDeck);
