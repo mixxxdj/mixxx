@@ -105,55 +105,100 @@ namespace
 
         qDebug() << topoffset;
 
-        int count_r = 0;
-        int count_c = 0;
-        int count_l = 0;
+        int count_r1 = 0;
+        int count_c1 = 0;
+        int count_l1 = 0;
+        int count_r2 = 0;
+        int count_c2 = 0;
+        int count_l2 = 0;
 
         int corr_size = std::min(aSize, bSize);
 
         if (topoffset > 0) {
-            for (int i = 1 + topoffset; i < corr_size - (1 + topoffset); i++) {
+            int i = 1 + topoffset;
+            for (; i < (corr_size - (1 + topoffset)) / 2; i++) {
                 for (int k = 0; k < 32; k++) {
                     if (compareBit(a[i - (-1 - topoffset)], b[i], k)) {
-                        count_r++;
+                        count_r1++;
                     }
                     if (compareBit(a[i - (0 - topoffset)], b[i], k)) {
-                        count_c++;
+                        count_c1++;
                     }
                     if (compareBit(a[i - (1 - topoffset)], b[i], k)) {
-                        count_l++;
+                        count_l1++;
+                    }
+                }
+            }
+            for (; i < corr_size - (1 + topoffset); i++) {
+                for (int k = 0; k < 32; k++) {
+                    if (compareBit(a[i - (-1 - topoffset)], b[i], k)) {
+                        count_r2++;
+                    }
+                    if (compareBit(a[i - (0 - topoffset)], b[i], k)) {
+                        count_c2++;
+                    }
+                    if (compareBit(a[i - (1 - topoffset)], b[i], k)) {
+                        count_l2++;
                     }
                 }
             }
         } else {
-            for (int i = 1 - topoffset; i < corr_size - (1 - topoffset); i++) {
+            int i = 1 - topoffset;
+            for (; i < (corr_size - (1 - topoffset)) / 2; i++) {
                 for (int k = 0; k < 32; k++) {
                     if (compareBit(a[i], b[i - (1 + topoffset)], k)) {
-                        count_r++;
+                        count_r1++;
                     }
                     if (compareBit(a[i], b[i - (0 + topoffset)], k)) {
-                        count_c++;
+                        count_c1++;
                     }
                     if (compareBit(a[i], b[i - (-1 + topoffset)], k)) {
-                        count_l++;
+                        count_l1++;
+                    }
+                }
+            }
+            for (; i < corr_size - (1 - topoffset); i++) {
+                for (int k = 0; k < 32; k++) {
+                    if (compareBit(a[i], b[i - (1 + topoffset)], k)) {
+                        count_r2++;
+                    }
+                    if (compareBit(a[i], b[i - (0 + topoffset)], k)) {
+                        count_c2++;
+                    }
+                    if (compareBit(a[i], b[i - (-1 + topoffset)], k)) {
+                        count_l2++;
                     }
                 }
             }
         }
 
-        qDebug() << count_r << count_c << count_l;
+        qDebug() << count_r1 << count_c1 << count_l1;
 
-        int count_min = std::min(std::min(count_r, count_c), count_l);
+        int count_min1 = std::min(std::min(count_r1, count_c1), count_l1);
 
-        count_r -= count_min;
-        count_c -= count_min;
-        count_l -= count_min;
+        count_r1 -= count_min1;
+        count_c1 -= count_min1;
+        count_l1 -= count_min1;
 
-        float fract = ((float)count_r * 1 + float(count_l) * -1) / (count_r + count_c + count_l);
+        float fract1 = ((float)count_r1 * 1 + float(count_l1) * -1) /
+                (count_r1 + count_c1 + count_l1);
+
+        qDebug() << count_r2 << count_c2 << count_l2;
+
+        int count_min2 = std::min(std::min(count_r2, count_c2), count_l2);
+
+        count_r2 -= count_min2;
+        count_c2 -= count_min2;
+        count_l2 -= count_min2;
+
+        float fract2 = ((float)count_r2 * 1 + float(count_l2) * -1) /
+                (count_r2 + count_c2 + count_l2);
+
+        qDebug() << fract1 << fract2;
 
         const double A = 0.06;
-        float correction = static_cast<float>(A * std::sin(2.0 * M_PI * fract));
-        qDebug() << "fine offset" << topoffset + fract - correction << correction;
+        float correction = static_cast<float>(A * std::sin(2.0 * M_PI * (fract1 + fract2) / 2));
+        qDebug() << "fine offset" << topoffset + (fract1 + fract2) / 2 - correction << correction;
 
         int minSize = std::min(aSize, bSize) & ~1;
         if (topoffset < 0) {
