@@ -59,6 +59,16 @@ DeckAttributes::DeckAttributes(int index,
     m_rateRatio.connectValueChanged(this, &DeckAttributes::slotRateChanged);
 }
 
+void AutoDJProcessor::setStartTimeSeconds(int seconds) {
+    if (seconds < 0) seconds = 0;
+    m_startTimeSeconds = seconds;
+}
+
+void AutoDJProcessor::setDurationSeconds(int seconds) {
+    if (seconds < 1) seconds = 1;
+    m_durationSeconds = seconds;
+}
+
 DeckAttributes::~DeckAttributes() {
 }
 
@@ -119,7 +129,9 @@ AutoDJProcessor::AutoDJProcessor(
           m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
-          m_transitionTime(kTransitionPreferenceDefault) {
+          m_transitionTime(kTransitionPreferenceDefault),
+          m_startTimeSeconds(30),
+          m_durationSeconds(90) {
     m_pAutoDJTableModel = new PlaylistTableModel(
             this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
@@ -1508,6 +1520,33 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
         useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startPoint);
         }
+        break;
+    case TransitionMode::StartTimeDuration: {
+        // Start next track at configured start time and play only for configured duration.
+        // Determine the start point on the to-deck in seconds and clamp within track.
+        double trackEnd = getEndSecond(pToDeck);
+        double startSec = math_max(0.0, static_cast<double>(m_startTimeSeconds));
+        if (trackEnd > kMinimumTrackDurationSec) {
+            startSec = math_min(startSec, trackEnd - kMinimumTrackDurationSec);
+        }
+
+        // Perform current transition like a fixed full-track fade but starting from startSec on to-deck.
+        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startSec);
+
+        // Program the next transition window on the to-deck so AutoDJ fades after the set duration.
+        // We want the fade to begin so that it ends after 'duration', so place fadeBegin 'duration - m_transitionTime' after start.
+        double durationSec = math_max(kMinimumTrackDurationSec, static_cast<double>(m_durationSeconds));
+        double fadeBegin = startSec + math_max(kMinimumTrackDurationSec, durationSec - m_transitionTime);
+        // Ensure fadeBegin + transitionTime fits into the track.
+        if (trackEnd > m_transitionTime) {
+            fadeBegin = math_min(fadeBegin, trackEnd - m_transitionTime);
+        } else {
+            // Track shorter than transition time: start fading immediately after start
+            fadeBegin = startSec + kMinimumTrackDurationSec;
+        }
+        pToDeck->fadeBeginPos = fadeBegin;
+        pToDeck->fadeEndPos = fadeBegin + m_transitionTime;
+    } break;
     }
 
     // These are expected to be a fraction of the track length.
