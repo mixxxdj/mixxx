@@ -319,14 +319,13 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
-
-# Because of multiple concurrent definition of symbols caused by the rendergraph
-# compile definition we need to disable QML by default. This avoids the risk of
-# undefined behaviour in a stable build.
-# See: https://github.com/mixxxdj/mixxx/issues/14766
-# Once this is fixed we can revert the commit introducing this.
-option(QML "Build with QML" OFF)
-
+cmake_dependent_option(
+  QML
+  "Build with QML"
+  ON
+  "QT6"
+  OFF
+)
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 
 if(QOPENGL)
