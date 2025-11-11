@@ -75,7 +75,8 @@ Mixxx core team members are contributors who have write access to the [upstream 
 
 * Enable [two-factor authentication (2FA)](https://help.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa) for your GitHub account.
 * _Never_ force push to an upstream repository (mixxxdj). If you encounter an error from Git saying you would need to force push, stop what you are doing and discuss the situation on Zulip.
-* Only push directly to an upstream repository (mixxxdj) for trivial, uncontroversial changes like fixing a typo.
+* Only push to release branches translation updates, use a PR for all the rest.
+* Use pull requests to merge release branches. To ensure no duplication with the auto sync branch CI, it is recommended to push to the upstream repository (mixxxdj) with the branch name convention following `sync-branch-<SourceBranch>-to-<TargetBranch>`
 * All non-trivial contributions should be made with a pull request, just like any other contributor who does not have write access. Do not merge your own pull requests.
 * You may merge someone else's pull request as the only reviewer if no other contributors have expressed concerns about the changes or said they want to review the code. Please do not merge pull requests immediately; allow at least a day or two for others to comment. Remember we are all volunteers and cannot respond to everything immediately.
 * If there is disagreement about changes in a pull request, do not merge it until a consensus has been reached.
