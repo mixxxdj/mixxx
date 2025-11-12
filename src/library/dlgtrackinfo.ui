@@ -564,14 +564,14 @@
           </item>
 
           <item row="2" column="0">
-           <widget class="QLabel" name="lblDateAdded">
+           <widget class="QLabel" name="lblReplayGain">
             <property name="text">
-             <string>Date added:</string>
+             <string>ReplayGain:</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="txtDateAdded">
+           <widget class="QLabel" name="txtReplayGain">
             <property name="font">
              <font>
               <weight>75</weight>
@@ -609,14 +609,14 @@
           </item>
 
           <item row="3" column="0">
-           <widget class="QLabel" name="lblReplayGain">
+           <widget class="QLabel" name="lblDateAdded">
             <property name="text">
-             <string>ReplayGain:</string>
+             <string>Date added:</string>
             </property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QLabel" name="txtReplayGain">
+           <widget class="QLabel" name="txtDateAdded">
             <property name="font">
              <font>
               <weight>75</weight>
