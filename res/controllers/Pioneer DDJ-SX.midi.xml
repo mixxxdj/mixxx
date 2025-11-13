@@ -15,7 +15,7 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.crossfaderCurveKnobMSB</key>
                 <description>Crossfader Curve adjust (MSB), Knob: Frontpanel CROSSFADER CURVE</description>
                 <status>0xB6</status>
@@ -25,7 +25,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.crossfaderCurveKnobLSB</key>
                 <description>Crossfader Curve adjust (LSB), Knob: Frontpanel CROSSFADER CURVE</description>
                 <status>0xB6</status>
@@ -35,7 +35,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.crossFaderMSB</key>
                 <description>Crossfader (MSB), Slider: FADE</description>
                 <status>0xB6</status>
@@ -45,7 +45,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.crossFaderLSB</key>
                 <description>Crossfader (LSB), Slider: FADE</description>
                 <status>0xB6</status>
@@ -55,7 +55,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.panelSelectButton</key>
                 <description>Show/hide EffectRack/Sampler, Button: left PANEL SELECT</description>
                 <status>0x96</status>
@@ -65,7 +65,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.shiftPanelSelectButton</key>
                 <description>Enable/show EffectUnit 3 and 4 assignment on FX ASSIGN buttons, Button: left SHIFT + PANEL SELECT</description>
                 <status>0x96</status>
@@ -75,7 +75,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.shiftBackButton</key>
                 <description>Toggle maximized view of Library, Button: SHIFT &amp; BACK</description>
                 <status>0x96</status>
@@ -85,7 +85,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>PioneerDDJSX.headphoneSplitCueButton</key>
                 <description>Split headphone cueing (right = master mono and left = pfl mono), Button: SHIFT &amp; MASTER CUE</description>
                 <status>0x96</status>

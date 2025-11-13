@@ -355,8 +355,8 @@ EksOtus.init = function (id) {
     // Link controls and register callbacks
     EksOtus.registerCallbacks();
 
-    engine.softTakeover("[Master]","headVolume",true);
-    engine.softTakeover("[Master]","headMix",true);
+    engine.softTakeover("[Mixer]", "headphone_gain", true);
+    engine.softTakeover("[Mixer]", "headphone_mix", true);
     for (var deck in controller.deckOutputColors) {
         engine.softTakeover("[Channel"+deck+"]","pregain",true);
         engine.softTakeover("[Channel"+deck+"]","volume",true);
@@ -397,8 +397,8 @@ EksOtus.updateLEDs = function(from_timer) {
 
 // Device cleanup function
 EksOtus.shutdown = function() {
-    engine.softTakeover("[Master]","headVolume",false);
-    engine.softTakeover("[Master]","headMix",false);
+    engine.softTakeover("[Mixer]", "headphone_gain", false);
+    engine.softTakeover("[Mixer]", "headphone_mix", false);
     for (var deck in controller.deckOutputColors) {
         engine.softTakeover("[Channel"+deck+"]","pregain",false);
         engine.softTakeover("[Channel"+deck+"]","volume",false);
@@ -443,7 +443,7 @@ EksOtus.registerCallbacks = function() {
     controller.linkControl("hid","jog_se_button","deck","LoadSelectedTrack");
     controller.linkControl("hid","jog_se","[Playlist]","SelectTrackKnob");
 
-    controller.linkControl("hid","crossfader","[Master]","crossfader");
+    controller.linkControl("hid","crossfader","[Mixer]","crossfader");
     controller.linkControl("hid","gain_1","deck1","pregain");
     controller.linkControl("hid","gain_2","deck2","pregain");
     controller.linkControl("hid","eq_high_1","deck1","filterHigh");
@@ -478,7 +478,7 @@ EksOtus.registerCallbacks = function() {
 
     controller.setCallback("control","hid","deck_switch",EksOtus.deckSwitch);
 
-    //controller.linkControl("hid","headphones","[Master]","headphones");
+    //controller.linkControl("hid","headphones","[Mixer]","headphones");
     controller.setCallback("control","hid","headphones",EksOtus.headphones);
 
     controller.setCallback("control","hid","slider_scale",EksOtus.pitchSlider);
@@ -642,10 +642,10 @@ EksOtus.headphones = function (field) {
     var controller = EksOtus.controller;
     if (controller.modifiers.get("shift")) {
         value = script.absoluteNonLin(field.value, 0, 1, 5, 0, 65536);
-        engine.setValue("[Master]","headVolume",value);
+        engine.setValue("[Mixer]", "headphone_gain", value);
     } else {
         value = EksOtus.plusMinus1Scaler(field.group,field.name,field.value);
-        engine.setValue("[Master]","headMix",value);
+        engine.setValue("[Mixer]", "headphone_mix", value);
     }
 }
 

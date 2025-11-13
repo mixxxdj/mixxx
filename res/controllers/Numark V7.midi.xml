@@ -771,7 +771,7 @@
 					<Script-Binding/>
 				</options>
             </control>
-            <!--Master section-->
+            <!--Main section-->
             <control>
 				<group>[Channel1]</group>
 				<key>NumarkV7.DeckSelectL</key>
