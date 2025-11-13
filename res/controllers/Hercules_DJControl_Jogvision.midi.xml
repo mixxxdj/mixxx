@@ -111,7 +111,7 @@
       <control>
         <group>[Channel1]</group>
         <key>sync_leader</key>
-        <description>SHIFT + Sync: Sync Master</description>
+        <description>SHIFT + Sync: Sync Leader</description>
         <status>0x90</status>
         <midino>0x35</midino>
         <options>
@@ -130,7 +130,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>DJCJV.headCue</key>
         <description>Headphone CUE button</description>
         <status>0x90</status>
@@ -140,8 +140,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>DJCJV.headMix</key>
+        <group>[Mixer]</group>
+        <key>DJCJV.headphone_mix</key>
         <description>Headphone MIX button</description>
         <status>0x90</status>
         <midino>0x4C</midino>
@@ -595,7 +595,7 @@
       <control>
         <group>[Channel2]</group>
         <key>sync_leader</key>
-        <description>SHIFT + Sync: Sync Master</description>
+        <description>SHIFT + Sync: Sync Leader</description>
         <status>0x91</status>
         <midino>0x35</midino>
         <options>
@@ -1005,7 +1005,7 @@
       <!-- CC's MIDI Generic -->
       <!-- Vinyl button -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>DJCJV.vinylButton</key>
         <description>Vinyl Deck A</description>
         <status>0x90</status>
@@ -1049,7 +1049,7 @@
       </control>
       <!-- Crossfader -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <description>Crossfader</description>
         <status>0xB0</status>

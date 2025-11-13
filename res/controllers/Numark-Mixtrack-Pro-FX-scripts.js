@@ -738,18 +738,18 @@ MixtrackProFX.Browse.prototype = new components.ComponentContainer();
 
 MixtrackProFX.Gains = function() {
     this.mainGain = new components.Pot({
-        group: "[Master]",
-        inKey: "gain"
+        group: "[Mixer]",
+        inKey: "main_gain"
     });
 
     this.cueGain = new components.Pot({
-        group: "[Master]",
-        inKey: "headGain"
+        group: "[Mixer]",
+        inKey: "headphone_gain"
     });
 
     this.cueMix = new components.Pot({
-        group: "[Master]",
-        inKey: "headMix"
+        group: "[Mixer]",
+        inKey: "headphone_mix"
     });
 };
 MixtrackProFX.Gains.prototype = new components.ComponentContainer();

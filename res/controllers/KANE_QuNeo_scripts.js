@@ -347,11 +347,11 @@ KANE_QuNeo.init = function (id) { // called when the device is opened & set up
 
   // led controls for the master / flanger channels
     engine.connectControl("[Main]", "vu_meter", "KANE_QuNeo.masterVuMeter");
-  //engine.softTakeover("[Master]","volume",true);
-  engine.connectControl("[Master]","headVolume","KANE_QuNeo.headVol");
+  //engine.softTakeover("[Mixer]","main_gain",true);
+  engine.connectControl("[Mixer]","headphone_gain","KANE_QuNeo.headVol");
   engine.connectControl("[Flanger]","lfoPeriod","KANE_QuNeo.flangerPeriod");
   engine.connectControl("[Flanger]","lfoDepth","KANE_QuNeo.flangerDepth");
-  engine.connectControl("[Master]","crossfader","KANE_QuNeo.crossFader");
+  engine.connectControl("[Mixer]","crossfader","KANE_QuNeo.crossFader");
 
   for (var deck = 1; deck <= KANE_QuNeo.numDecks; deck++) {
       var channelName = KANE_QuNeo.getChannelName(deck)
@@ -1469,7 +1469,7 @@ KANE_QuNeo.getLEDGroup = function (deck) {
 KANE_QuNeo.getChannelName = function (deck) {
     var deckType = KANE_QuNeo.getDeckType(deck);
     if (deckType == "master") // master deck
-    return "[Master]"
+    return "[Mixer]"
     else if (deckType == "deck") // if dealing with actual decks
     return "[Channel"+deck+"]"
     else if (deckType == "sampler") // if dealing with samplers
@@ -1643,10 +1643,10 @@ KANE_QuNeo.assertLEDs = function (mode) {
     KANE_QuNeo.assertNudgeLEDs();
     KANE_QuNeo.assertHorizArrowLEDs(1);
     KANE_QuNeo.assertHorizArrowLEDs(2);
-    engine.trigger("[Master]","headVolume");
+    engine.trigger("[Mixer]","headphone_gain");
     engine.trigger("[Flanger]","lfoPeriod");
     engine.trigger("[Flanger]","lfoDepth");
-    engine.trigger("[Master]","crossfader");
+    engine.trigger("[Mixer]","crossfader");
 
     // trigger all VuMeters
     for (var deck = 0; deck <= KANE_QuNeo.numDecks; deck++)
@@ -2329,7 +2329,7 @@ KANE_QuNeo.masterVuMeter = function (value) {
     }
     }
     if (level == -1) // if there were no playing decks, display volume
-    level = KANE_QuNeo.oneToFiveKnob(engine.getValue("[Master]","volume"))
+    level = KANE_QuNeo.oneToFiveKnob(engine.getValue("[Mixer]","main_gain"))
     KANE_QuNeo.LEDs(0xb0,0x0b,level);
 
     // AssertLED Button

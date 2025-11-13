@@ -11,24 +11,24 @@
     </scriptfiles>
     <controls>
       <!-- Mixer Controls -->
-      <control><status>0xB0</status><midino>0x07</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x08</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x0c</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x0d</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x58</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x59</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x1e</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x1f</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x1c</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x1d</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x14</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x15</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x16</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x17</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x18</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x19</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x1a</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
-      <control><status>0xB0</status><midino>0x1b</midino><group>[Master]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x07</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x08</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x0c</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x0d</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x58</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x59</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x1e</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x1f</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x1c</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x1d</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x14</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x15</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x16</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x17</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x18</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x19</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x1a</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
+      <control><status>0xB0</status><midino>0x1b</midino><group>[Mixer]</group><key>HileVci100.faders</key><options><Script-Binding/></options></control>
 
       <!-- Navigation Controls -->
       <control><status>0x90</status><midino>0x60</midino><group>[Playlist]</group><key>HileVci100.buttons</key><options><Script-Binding/></options></control>

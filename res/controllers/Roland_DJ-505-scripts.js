@@ -189,7 +189,7 @@ DJ505.autoShowDecks = function(_value, _group, _control) {
     if (!DJ505.autoShowFourDecks) {
         return;
     }
-    engine.setValue("[Master]", "show_4decks", anyLoaded);
+    engine.setValue("[Skin]", "show_4decks", anyLoaded);
 };
 
 DJ505.shutdown = function() {
@@ -332,7 +332,7 @@ DJ505.sortLibrary = function(channel, control, value, _status, _group) {
 
 DJ505.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
-    group: "[Master]",
+    group: "[Mixer]",
     inKey: "crossfader",
     input: function() {
         // We need a weird max. for the crossfader to make it cut cleanly.

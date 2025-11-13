@@ -22,7 +22,7 @@ Variables:
       <Alignment>center</Alignment>
     </State>
     <Connection>
-      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_[Master]_enable</ConfigKey>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_[Main]_enable</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>

@@ -102,7 +102,7 @@ TerminalMix.init = function (id,debug) {
         engine.softTakeover("[Channel"+j+"]", "rate", true);
     }
 
-    engine.softTakeover("[Master]","crossfader",true);
+    engine.softTakeover("[Mixer]","crossfader",true);
 
     engine.connectControl("[Channel1]","beat_active","TerminalMix.tapLEDL");
     engine.connectControl("[Channel2]","beat_active","TerminalMix.tapLEDR");

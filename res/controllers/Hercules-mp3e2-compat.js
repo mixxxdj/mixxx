@@ -117,7 +117,7 @@ MP3e2.incomingData = function(data, length) {
                 f = HerculesMP3e2.filterLow;
                 break;
             case 0xb038:
-                engine.setValue('[Master]', 'crossfader', script.absoluteLin(value, -1, 1));
+                engine.setValue('[Mixer]', 'crossfader', script.absoluteLin(value, -1, 1));
                 break;
         }
 

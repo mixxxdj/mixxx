@@ -431,16 +431,16 @@ ElectrixTweaker.topShiftButton = function(channel, control, value, status, group
     }
 
     const controlsToFunctions = {
-        "volume": "ElectrixTweaker.masterGainLEDs",
+        "main_gain": "ElectrixTweaker.masterGainLEDs",
         "balance": "ElectrixTweaker.masterBalanceLEDs",
-        "headVolume": "ElectrixTweaker.headGainLEDs",
-        "headMix": "ElectrixTweaker.headMixLEDs",
-        "headSplit": "ElectrixTweaker.headSplitLED"
+        "headphone_gain": "ElectrixTweaker.headphone_gainLEDs",
+        "headphone_mix": "ElectrixTweaker.headMixLEDs",
+        "headphone_split": "ElectrixTweaker.headSplitLED"
     };
     for (const control in controlsToFunctions) {
-        engine.connectControl("[Master]", control, controlsToFunctions[control], ! value/127);
+        engine.connectControl("[Mixer]", control, controlsToFunctions[control], ! value/127);
         if (value) {
-            engine.trigger("[Master]", control);
+            engine.trigger("[Mixer]", control);
         }
     }
 };
@@ -612,7 +612,7 @@ ElectrixTweaker.masterBalanceLEDs = function(value, _group, _control) {
     midi.sendShortMsg(0xB0, ElectrixTweaker.encoders["[Channel2]"].Mid.cc, script.absoluteLinInverse(value, -1, 1));
 };
 
-ElectrixTweaker.headGainLEDs = function(value, _group, _control) {
+ElectrixTweaker.headphone_gainLEDs = function(value, _group, _control) {
     midi.sendShortMsg(0xB0, ElectrixTweaker.encoders["[Channel1]"].High.cc, script.absoluteNonLinInverse(value, 0, 1, 4));
 };
 
@@ -632,9 +632,9 @@ ElectrixTweaker.highEncoder = function(channel, control, value, status, group) {
     group = ElectrixTweaker.deck[group];
     if (ElectrixTweaker.topShift) {
         if (control === ElectrixTweaker.encoders["[Channel1]"].High.cc) {
-            engine.setValue("[Master]", "headVolume", script.absoluteNonLin(value, 0, 1, 5));
+            engine.setValue("[Mixer]", "headphone_gain", script.absoluteNonLin(value, 0, 1, 5));
         } else {
-            engine.setValue("[Master]", "volume", script.absoluteNonLin(value, 0, 1, 5));
+            engine.setValue("[Mixer]", "main_gain", script.absoluteNonLin(value, 0, 1, 5));
         }
     } else if (ElectrixTweaker.deckShift[group]) {
         engine.setValue(group, "rate", script.absoluteLin(value, -1, 1, 0, 126));
@@ -659,9 +659,9 @@ ElectrixTweaker.highEncoderPress = function(channel, control, value, status, gro
     if (value) {
         if (ElectrixTweaker.topShift) {
             if (control === ElectrixTweaker.encoders["[Channel1]"].High.button) {
-                engine.setValue("[Master]", "headVolume", 1);
+                engine.setValue("[Mixer]", "headphone_gain", 1);
             } else {
-                engine.setValue("[Master]", "volume", 1);
+                engine.setValue("[Mixer]", "main_gain", 1);
             }
         } else {
             switch (ElectrixTweaker.mode[group]) {
@@ -683,9 +683,9 @@ ElectrixTweaker.midEncoder = function(channel, control, value, status, group) {
     group = ElectrixTweaker.deck[group];
     if (ElectrixTweaker.topShift) {
         if (control === ElectrixTweaker.encoders["[Channel1]"].Mid.cc) {
-            engine.setValue("[Master]", "headMix", script.absoluteLin(value, -1, 1));
+            engine.setValue("[Mixer]", "headphone_mix", script.absoluteLin(value, -1, 1));
         } else {
-            engine.setValue("[Master]", "balance", script.absoluteLin(value, -1, 1));
+            engine.setValue("[Mixer]", "balance", script.absoluteLin(value, -1, 1));
         }
     } else if (ElectrixTweaker.deckShift[group]) {
         engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group]);
@@ -722,9 +722,9 @@ ElectrixTweaker.midEncoderPress = function(channel, control, value, status, grou
     if (value) {
         if (ElectrixTweaker.topShift) {
             if (control === ElectrixTweaker.encoders["[Channel1]"].Mid.button) {
-                engine.setValue("[Master]", "headSplit", ! engine.getValue("[Master]", "headSplit"));
+                engine.setValue("[Mixer]", "headphone_split", ! engine.getValue("[Mixer]", "headphone_split"));
             } else {
-                engine.setValue("[Master]", "balance", 0);
+                engine.setValue("[Mixer]", "balance", 0);
             }
         } else {
             switch (ElectrixTweaker.mode[group]) {

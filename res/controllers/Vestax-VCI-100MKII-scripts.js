@@ -403,16 +403,16 @@ VCI102.init = function(id, debug) {
         [0x29, 0x26]
     ];
 
-    function headMix(value, group, key) {
+    function headphone_mix(value, group, key) {
         if (value) {
-            if (engine.getValue("[Master]", "headMix") == 1) {
-                engine.setValue("[Master]", "headMix", -1);
+            if (engine.getValue("[Master]", "headphone_mix") == 1) {
+                engine.setValue("[Master]", "headphone_mix", -1);
             }
-        } else if (engine.getValue("[Master]", "headMix") == -1) {
+        } else if (engine.getValue("[Master]", "headphone_mix") == -1) {
             if (VCI102.deck.every(function(deck) {
                 return !engine.getValue(deck, "pfl");
             })) {
-                engine.setValue("[Master]", "headMix", 1);
+                engine.setValue("[Master]", "headphone_mix", 1);
             }
         }
     }
@@ -462,7 +462,7 @@ VCI102.init = function(id, debug) {
          "play"].forEach(function(key) {
             engine.connectControl(deck, key, VCI102.slip);
         });
-        engine.connectControl(deck, "pfl", headMix);
+        engine.connectControl(deck, "pfl", headphone_mix);
         engine.softTakeover(deck, "rate", true);
         engine.softTakeover(deck, "pitch_adjust", true);
         VCI102.refreshLED(i);

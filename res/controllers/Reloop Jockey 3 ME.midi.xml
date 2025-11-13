@@ -13,9 +13,9 @@
         </scriptfiles>
         <controls>
 
-            <!-- Master Section -->
+            <!-- Mixer Section -->
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>Jockey3ME.crossfaderCurve</key>
                 <status>0xB0</status>
                 <midino>0x38</midino>
@@ -24,7 +24,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>Jockey3ME.crossfader</key>
                 <status>0xB0</status>
                 <midino>0x37</midino>
@@ -60,8 +60,8 @@
 				</options>
 			</control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB0</status>
                 <midino>0x36</midino>
                 <options>
@@ -69,7 +69,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>balance</key>
                 <status>0xB0</status>
                 <midino>0x33</midino>

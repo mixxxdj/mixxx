@@ -165,17 +165,17 @@ mc3000.rate = function(channel, control, value, status, group) {
 mc3000.micVolume = function(channel, control, value, status, group) {
     engine.setValue("[Microphone]", "volume", value/127);
 }
-mc3000.headMix = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "headMix", (value-64)/64);
+mc3000.headphone_mix = function(channel, control, value, status, group) {
+    engine.setValue("[Mixer]", "headphone_mix", (value-64)/64);
 }
-mc3000.headVolume = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "headVolume", value/127*5);
+mc3000.headphone_gain = function(channel, control, value, status, group) {
+    engine.setValue("[Mixer]", "headphone_gain", value/127*5);
 }
 mc3000.masterBalance = function(channel, control, value, status, group) {
     engine.setValue("[Master]", "balance", (value-64)/64);
 }
-mc3000.masterVolume = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "volume", value/127*5);
+mc3000.mainGain = function(channel, control, value, status, group) {
+    engine.setValue("[Mixer]", "main_gain", value/127*5);
 }
 
 // === PLAYLIST ===

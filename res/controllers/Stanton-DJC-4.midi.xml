@@ -968,7 +968,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0xB0</status>
         <midino>0x10</midino>
@@ -977,7 +977,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>DJC4.crossfaderCurve</key>
         <status>0xB0</status>
         <midino>0x12</midino>
@@ -1058,8 +1058,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>headMix</key>
+        <group>[Mixer]</group>
+        <key>headphone_mix</key>
         <status>0xB0</status>
         <midino>0x13</midino>
         <options>
@@ -1103,8 +1103,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>headGain</key>
+        <group>[Mixer]</group>
+        <key>headphone_gain</key>
         <status>0xB0</status>
         <midino>0x14</midino>
         <options>
@@ -1778,7 +1778,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>DJC4.shiftButton</key>
         <status>0x90</status>
         <midino>0x2D</midino>

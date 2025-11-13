@@ -183,17 +183,17 @@ TraktorS2MK3.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x13, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x25, 0xFFFF, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Mixer]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
     /*
     do NOT map the "master" button because it also drives the analog output gain.
     Disabling this mapping is the only way to have independent controls for the
     digital master gain and the output level - the latter usually needs to be set
     at 100%.
     */
-    // this.registerInputScaler(messageLong, "[Master]", "gain", 0x15, 0xFFFF, this.parameterHandler);
+    // this.registerInputScaler(messageLong, "[Mixer]", "main_gain", 0x15, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Sampler]", "pregain", 0x17, 0xFFFF, this.samplerPregainHandler);
-    this.registerInputScaler(messageLong, "[Master]", "headMix", 0x19, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Mixer]", "headphone_mix", 0x19, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Mixer]", "headphone_gain", 0x1B, 0xFFFF, this.parameterHandler);
 
     this.controller.registerInputPacket(messageLong);
 
@@ -218,11 +218,13 @@ TraktorS2MK3.registerInputPackets = function() {
     engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
     engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
 
-    engine.softTakeover("[Master]", "crossfader", true);
-    // see the above comment on master gain
-    //engine.softTakeover("[Master]", "gain", true);
-    engine.softTakeover("[Master]", "headMix", true);
-    engine.softTakeover("[Master]", "headGain", true);
+    engine.softTakeover("[Mixer]", "crossfader", true);
+    // see the above comment on main gain
+
+    //engine.softTakeover("[Mixer]", "main_gain", true);
+    engine.softTakeover("[Mixer]", "headphone_mix", true);
+    engine.softTakeover("[Mixer]", "headphone_gain", true);
+
     for (let i = 1; i <= TraktorS2MK3.samplerCount; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }

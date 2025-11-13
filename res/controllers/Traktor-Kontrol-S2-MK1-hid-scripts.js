@@ -1150,17 +1150,17 @@ class TraktorS2MK1Class {
             channel1: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x01},
             channel2: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x04},
         });
-        InputReport0x01.addControl("[Master]", "!browse_encoder_press", 0x0E, "B", 0x08, false, this.browseEncoderPress.bind(this));
+        InputReport0x01.addControl("[Mixer]", "!browse_encoder_press", 0x0E, "B", 0x08, false, this.browseEncoderPress.bind(this));
 
-        InputReport0x02.addControl("[Master]", "!crossfader", 0x2F, "H", 0xFFFF, false, this.crossfader.bind(this));
-        InputReport0x02.addControl("[Master]", "headMix", 0x31, "H");
-        InputReport0x02.addControl("[Master]", "!samplerGain", 0x13, "H", 0xFFFF, false, this.samplerGainKnob.bind(this));
+        InputReport0x02.addControl("[Mixer]", "!crossfader", 0x2F, "H", 0xFFFF, false, this.crossfader.bind(this));
+        InputReport0x02.addControl("[Mixer]", "headphone_mix", 0x31, "H");
+        InputReport0x02.addControl("[Mixer]", "!samplerGain", 0x13, "H", 0xFFFF, false, this.samplerGainKnob.bind(this));
         InputReport0x02.addControl("[Library]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoderCallback.bind(this));
 
         // Soft takeover for knobs
 
         // Set scalers
-        this.controller.setScaler("headMix", this.scalerSlider);
+        this.controller.setScaler("headphone_mix", this.scalerSlider);
         this.controller.setScaler("rate", this.scalerSlider);
 
         // Register packet
@@ -1255,7 +1255,7 @@ class TraktorS2MK1Class {
             channel2: {hidReport: OutputReport0x80, offset: 0x3A},
         });
 
-        OutputReport0x80.addOutput("[Master]", "!warninglight", 0x33, "B");
+        OutputReport0x80.addOutput("[Mixer]", "!warninglight", 0x33, "B");
 
         this.controller.registerOutputPacket(OutputReport0x80);
 
@@ -1268,7 +1268,7 @@ class TraktorS2MK1Class {
         this.decks.forEach(function(deck) {
             deck.setPadMode(padModes.hotcue);
         });
-        this.controller.setOutput("[Master]", "!warninglight", 0x00, true);
+        this.controller.setOutput("[Mixer]", "!warninglight", 0x00, true);
     }
     calibrate() {
         this.rawCalibration.faders = new Uint8Array(controller.getFeatureReport(0xD0));
@@ -1294,8 +1294,8 @@ class TraktorS2MK1Class {
         this.controller.parsePacket([0x02, ...Array.from(report0x02)]);
     }
     enableSoftTakeover() {
-        engine.softTakeover("[Master]", "crossfader", true);
-        engine.softTakeover("[Master]", "headMix", true);
+        engine.softTakeover("[Mixer]", "crossfader", true);
+        engine.softTakeover("[Mixer]", "headphone_mix", true);
         for (let i = 1; i <= 8; i++) {
             engine.softTakeover("[Sampler" + i + "]", "pregain", true);
         }
@@ -1408,7 +1408,7 @@ class TraktorS2MK1Class {
 
     }
     crossfader(field) {
-        setFaderParameter("[Master]", "crossfader", field.value, this.calibration.crossfader);
+        setFaderParameter("[Mixer]", "crossfader", field.value, this.calibration.crossfader);
     }
 
     scalerParameter(group, name, value) {
@@ -1417,7 +1417,7 @@ class TraktorS2MK1Class {
     }
 
     scalerVolume(group, name, value) {
-        if (group === "[Master]") {
+        if (group === "[Mixer]") {
             return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
         } else {
             return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);

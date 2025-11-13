@@ -95,7 +95,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HercDJCompact.scratch</key>
                 <status>0x90</status>
                 <midino>0x2D</midino>
@@ -590,7 +590,7 @@ setting.</description>
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description>MIDI Learned from 1239 messages.</description>
                 <status>0xB0</status>

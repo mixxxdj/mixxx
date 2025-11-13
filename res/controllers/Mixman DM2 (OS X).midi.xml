@@ -14,7 +14,7 @@
 <!-- crossfader -->
 			<control>
 				<status>0xe4</status>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<key>crossfader</key>
 				<options>
 					<Normal/>
