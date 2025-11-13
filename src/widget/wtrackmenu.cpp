@@ -3,6 +3,7 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QInputDialog>
+#include <QKeyEvent>
 #include <QList>
 #include <QListWidget>
 #include <QModelIndex>
@@ -152,6 +153,32 @@ void WTrackMenu::closeEvent(QCloseEvent* event) {
     // If it's not accepted the menu remains open and entire GUI will be blocked!
     event->accept();
     emit trackMenuVisible(false);
+}
+
+bool WTrackMenu::eventFilter(QObject* pObj, QEvent* e) {
+    // If a checkbox in a QWidgetAction is focused, Left/Right keys are translated
+    // to Up/Down which prevents closing the submenus with Left key like in other
+    // submenus.
+    // We simply call hide() of the submenu if Left is pressed.
+    // We ignore Right.
+    // Don't continue (close track menu) if the checkbox is at the top level.
+    if (pObj->parent() && pObj->parent() != this && e->type() == QEvent::KeyPress) {
+        QCheckBox* pCB = qobject_cast<QCheckBox*>(pObj);
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
+        if (!pCB || !pKE) {
+            return QObject::eventFilter(pObj, e);
+        }
+        if (pKE->key() == Qt::Key_Left) {
+            VERIFY_OR_DEBUG_ASSERT(pCB->parentWidget()) {
+                return QObject::eventFilter(pObj, e);
+            }
+            pCB->parentWidget()->hide();
+            return true;
+        } else if (pKE->key() == Qt::Key_Right) {
+            return true;
+        }
+    }
+    return QObject::eventFilter(pObj, e);
 }
 
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
@@ -1411,10 +1438,18 @@ void WTrackMenu::slotPopulateSearchRelatedMenu() {
     const auto pTrack = getFirstTrackPointer();
     if (pTrack) {
         // Ensure it's enabled, else we can't add actions.
-        VERIFY_OR_DEBUG_ASSERT(m_pSearchRelatedMenu->isEnabled()) {
-            m_pSearchRelatedMenu->setEnabled(true);
-        }
+        m_pSearchRelatedMenu->setEnabled(true);
         m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
+    }
+    if (!m_pSearchRelatedMenu->isEmpty()) {
+        // We're interested in keypress Qt::Key_Left, so use our
+        // event filter like we do for the crate checkboxes.
+        for (auto* pObj : m_pSearchRelatedMenu->children()) {
+            QCheckBox* pCB = qobject_cast<QCheckBox*>(pObj);
+            if (pCB) {
+                pCB->installEventFilter(this);
+            }
+        }
     }
     m_pSearchRelatedMenu->setEnabled(!m_pSearchRelatedMenu->isEmpty());
     m_bSearchRelatedMenuLoaded = true;
@@ -1537,6 +1572,8 @@ void WTrackMenu::slotPopulateCrateMenu() {
                 m_pCrateMenu);
         pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
+        // We're interested in keypress Qt::Key_Left
+        pCheckBox->installEventFilter(this);
         // Strangely, the normal styling of QActions does not automatically
         // apply to QWidgetActions. The :selected pseudo-state unfortunately
         // does not work with QWidgetAction. :hover works for selecting items
