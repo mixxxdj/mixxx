@@ -15,7 +15,6 @@ constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 PlayerInfo* s_pPlayerInfo = nullptr;
 
 const QString kAppGroup = QStringLiteral("[App]");
-const QString kMasterGroup = QStringLiteral("[Master]");
 
 } // namespace
 

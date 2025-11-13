@@ -124,7 +124,9 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         addDeck(m_pChannel3);
 
         m_pEngineSync = m_pEngineMixer->getEngineSync();
-        ControlObject::set(ConfigKey(m_sMainGroup, "enabled"), 1.0);
+        ControlObject::set(ConfigKey(QStringLiteral("[Mixer]"),
+                                   QStringLiteral("main_enabled")),
+                1.0);
 
         PlayerInfo::create();
     }
@@ -274,7 +276,6 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
-    static const QString m_sMainGroup;
     static const QString m_sInternalClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
