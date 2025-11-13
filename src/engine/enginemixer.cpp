@@ -179,11 +179,11 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
 
     // Legacy: the main "gain" control used to be named "volume" in Mixxx
     // 1.11.0 and earlier. See issue #7413.
-    m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
+    m_pMainGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("volume")));
 
     // Legacy: the headphone "headGain" control used to be named "headVolume" in
     // Mixxx 1.11.0 and earlier. See issue #7413.
-    m_pHeadGain->addAlias(ConfigKey(group, QStringLiteral("headVolume")));
+    m_pHeadGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headVolume")));
 
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
