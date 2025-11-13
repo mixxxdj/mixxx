@@ -108,6 +108,7 @@ WTrackMenu::WTrackMenu(
           m_pNumSamplers(kAppGroup, QStringLiteral("num_samplers")),
           m_pNumDecks(kAppGroup, QStringLiteral("num_decks")),
           m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
+          m_bSearchRelatedMenuLoaded(false),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
@@ -226,28 +227,11 @@ void WTrackMenu::createMenus() {
 
     if (featureIsEnabled(Feature::SearchRelated)) {
         DEBUG_ASSERT(!m_pSearchRelatedMenu);
-        m_pSearchRelatedMenu =
-                make_parented<WSearchRelatedTracksMenu>(this);
+        m_pSearchRelatedMenu = make_parented<WSearchRelatedTracksMenu>(this);
         connect(m_pSearchRelatedMenu,
                 &QMenu::aboutToShow,
                 this,
-                [this] {
-                    // TODO When accidentally leaving the menu and reopening it,
-                    // the previous check states are cleared.
-                    // Clear in closeEvent() only? And create actions on aboutToShow
-                    // only if it's empty?
-                    m_pSearchRelatedMenu->clear();
-                    const auto pTrack = getFirstTrackPointer();
-                    if (pTrack) {
-                        // Ensure it's enabled, else we can't add actions.
-                        VERIFY_OR_DEBUG_ASSERT(m_pSearchRelatedMenu->isEnabled()) {
-                            m_pSearchRelatedMenu->setEnabled(true);
-                        }
-                        m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
-                    }
-                    m_pSearchRelatedMenu->setEnabled(
-                            !m_pSearchRelatedMenu->isEmpty());
-                });
+                &WTrackMenu::slotPopulateSearchRelatedMenu);
         connect(m_pSearchRelatedMenu,
                 &WSearchRelatedTracksMenu::triggerSearch,
                 this,
@@ -996,6 +980,11 @@ void WTrackMenu::updateMenus() {
         }
     }
 
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        // Search menu is lazy loaded on hover by slotPopulateSearchRelatedMenu
+        m_bSearchRelatedMenuLoaded = false;
+    }
+
     if (featureIsEnabled(Feature::Playlist)) {
         // Playlist menu is lazy loaded on hover by slotPopulatePlaylistMenu
         // to avoid unnecessary database queries
@@ -1412,6 +1401,23 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     }
 
     externalTrackCollection->updateTracks(getTrackRefs());
+}
+
+void WTrackMenu::slotPopulateSearchRelatedMenu() {
+    if (m_bSearchRelatedMenuLoaded) {
+        return;
+    }
+    m_pSearchRelatedMenu->clear();
+    const auto pTrack = getFirstTrackPointer();
+    if (pTrack) {
+        // Ensure it's enabled, else we can't add actions.
+        VERIFY_OR_DEBUG_ASSERT(m_pSearchRelatedMenu->isEnabled()) {
+            m_pSearchRelatedMenu->setEnabled(true);
+        }
+        m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
+    }
+    m_pSearchRelatedMenu->setEnabled(!m_pSearchRelatedMenu->isEmpty());
+    m_bSearchRelatedMenuLoaded = true;
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {

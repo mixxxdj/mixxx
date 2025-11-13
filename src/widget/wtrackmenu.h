@@ -165,6 +165,7 @@ class WTrackMenu : public QMenu {
     void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
 
     // Playlist and crate
+    void slotPopulateSearchRelatedMenu();
     void slotPopulatePlaylistMenu();
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
@@ -364,6 +365,7 @@ class WTrackMenu : public QMenu {
 
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
+    bool m_bSearchRelatedMenuLoaded;
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 
