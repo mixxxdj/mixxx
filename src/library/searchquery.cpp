@@ -1,5 +1,6 @@
 #include "library/searchquery.h"
 
+#include <QLocale>
 #include <QRegularExpression>
 
 #include "library/dao/trackschema.h"
@@ -807,5 +808,117 @@ QString YearFilterNode::toSql() const {
                         QString::number(m_dRangeHigh));
     }
 
+    return QString();
+}
+
+// TODO Convert to DateFilterNode and allow searching for "last_played"
+DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
+        : m_operatorQuery(false),
+          m_operator("="),
+          m_opDate(QDateTime()) {
+    qWarning() << "     .";
+    qWarning() << "     DateAdded:" << argument;
+    QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
+    if (opMatch.hasMatch()) {
+        m_operator = opMatch.captured(1);
+        qWarning() << "       opMatch: " << m_operator;
+        qWarning() << "       arg:     " << opMatch.captured(2);
+        QDateTime date = parseDate(opMatch.captured(2));
+        if (!date.isValid()) {
+            qWarning() << "       date invalid, return";
+            return;
+        }
+
+        if (m_operator == '>') {
+            // "added:>25.10.2025" would include any time until 25.10.2025T23:59:59Z999
+            // Add one day to make it truly > 25.10.2025
+            date = date.addDays(1);
+        }
+
+        qWarning() << "     date valid, to string:" << dateStringIsoNoZ(date);
+        qWarning() << "     -> opQuery";
+        m_operatorQuery = true;
+        m_opDate = date;
+    }
+
+    // TODO Add literal parser, for example:
+    // added:7days
+    // added:4weeks-2weeks etc.
+    qWarning() << "     .";
+}
+
+QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
+    // Prior to Qt 6.7 QLocale::toDate() with QLocale::ShortFormat used the
+    // base year 1900. With 6.7+ we can specify the century, ie. 20 for 2000.
+    // Mixxx was created aftre 2000 :)
+    qWarning() << "       parseDate: app locale:" << QLocale()
+               << QLocale().dateFormat(QLocale::ShortFormat);
+    qWarning() << "               system locale:" << QLocale::system()
+               << QLocale::system().dateFormat(QLocale::ShortFormat);
+#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
+    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat);
+#else
+    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat, 20);
+#endif
+    qWarning() << "       date auto:" << date;
+    if (!date.isValid()) {
+        qWarning() << "       ! date invalid !";
+        return QDateTime();
+    }
+
+    if (date.year() < 2000) {
+        date = date.addYears(100);
+        qWarning() << "       date adj.:" << date;
+    }
+    // We store date_added as (UTC-based) ISO 8601 strings, yyyy-mm-ddThh:mm:ss.zzzZ
+    return QDateTime(date, QTime(0, 0)).toUTC();
+}
+
+QString DateAddedFilterNode::dateStringIsoNoZ(const QDateTime& date) const {
+    QString dateStr = date.toString(Qt::ISODateWithMs);
+    // sqlite can't handle 'Z' suffix, strip if present
+    if (dateStr.endsWith('Z')) {
+        dateStr.chop(1);
+    }
+    return dateStr;
+}
+
+bool DateAddedFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_operatorQuery) {
+        // invalid query, don't filter
+        return true;
+    }
+
+    QDateTime trackDate = pTrack->getDateAdded();
+    if (!trackDate.isValid()) {
+        return true;
+    }
+
+    if ((m_operator == "=" && trackDate == m_opDate) ||
+            (m_operator == "<" && trackDate < m_opDate) ||
+            (m_operator == ">" && trackDate > m_opDate) ||
+            (m_operator == "<=" && trackDate <= m_opDate) ||
+            (m_operator == ">=" && trackDate >= m_opDate)) {
+        return true;
+    }
+
+    // valid query with no matches
+    return false;
+}
+
+QString DateAddedFilterNode::toSql() const {
+    if (m_operatorQuery) {
+        qWarning() << "     .";
+        qWarning() << "     DateAdded toSql: op:"
+                   << QStringLiteral("datetime_added %1 '%2'")
+                              .arg(m_operator, dateStringIsoNoZ(m_opDate));
+        qWarning() << "     .";
+        return QStringLiteral("datetime_added %1 '%2'")
+                .arg(m_operator, dateStringIsoNoZ(m_opDate));
+    }
+
+    qWarning() << "     .";
+    qWarning() << "     DateAdded toSql: ! invalid, return true";
+    qWarning() << "     .";
     return QString();
 }
