@@ -394,6 +394,44 @@
         </property>
        </widget>
       </item>
+      <item row="8" column="0">
+       <layout class="QVBoxLayout" name="comment_edit_mode_layout">
+        <item>
+         <widget class="QRadioButton" name="btnCommentSelect">
+          <property name="text">
+           <string>Select</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">commentEditModeGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="btnCommentReplace">
+          <property name="text">
+           <string>Find/Replace</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">commentEditModeGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+          <spacer name="spacerCommentEditSpacer2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </spacer>
+         </item>
+       </layout>
+      </item>
+
       <item row="8" column="1" colspan="3">
        <widget class="QPlainTextEdit" name="txtComment">
         <property name="sizePolicy">
@@ -405,6 +443,78 @@
         <property name="tabChangesFocus">
          <bool>true</bool>
         </property>
+       </widget>
+      </item>
+
+      <item row="8" column="1" colspan="3">
+       <widget class="QWidget" name="commentFindReplaceBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QGridLayout" name="comment_edit_fields_layout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelCommentFind">
+           <property name="text">
+            <string>Find</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="txtCommentFind">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelCommentReplace">
+           <property name="text">
+            <string>Replace / Insert</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="txtCommentReplace">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <spacer name="spacerCommentEditSpacer2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </spacer>
+         </item>
+        </layout>
        </widget>
       </item>
 
@@ -421,7 +531,7 @@
       <item row="9" column="1" colspan="3">
        <widget class="QPushButton" name="btnColorPicker">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -744,6 +854,10 @@
   <tabstop>txtGenre</tabstop>
   <tabstop>txtGrouping</tabstop>
   <tabstop>txtCommentBox</tabstop>
+  <tabstop>btnCommentSelect</tabstop>
+  <tabstop>btnCommentReplace</tabstop>
+  <tabstop>txtCommentFind</tabstop>
+  <tabstop>txtCommentReplace</tabstop>
   <tabstop>txtComment</tabstop>
   <tabstop>txtYear</tabstop>
   <tabstop>txtKey</tabstop>
@@ -755,5 +869,8 @@
   <tabstop>btnOK</tabstop>
  </tabstops>
  <resources/>
+ <buttongroups>
+  <buttongroup name="commentEditModeGroup"/>
+ </buttongroups>
  <connections/>
 </ui>
