@@ -15,12 +15,11 @@ constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 PlayerInfo* s_pPlayerInfo = nullptr;
 
 const QString kAppGroup = QStringLiteral("[App]");
-const QString kMasterGroup = QStringLiteral("[Master]");
 
 } // namespace
 
 PlayerInfo::PlayerInfo()
-        : m_xfader(kMasterGroup, QStringLiteral("crossfader")),
+        : m_xfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_numDecks(kAppGroup, QStringLiteral("num_decks")),
           m_numSamplers(kAppGroup, QStringLiteral("num_samplers")),
           m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),

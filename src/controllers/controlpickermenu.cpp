@@ -16,6 +16,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+const QString kMixerGroup = QStringLiteral("[Mixer]");
 } // namespace
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
@@ -53,8 +54,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* pMixerMenu = addSubmenu(tr("Mixer"));
     // Crossfader / Orientation
     QMenu* pCrossfaderMenu = addSubmenu(tr("Crossfader / Orientation"), pMixerMenu);
-    addControl("[Master]",
-            "crossfader",
+    addControl(kMixerGroup,
+            QStringLiteral("crossfader"),
             tr("Crossfader"),
             tr("Crossfader"),
             pCrossfaderMenu,
@@ -77,45 +78,45 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             pCrossfaderMenu);
     // Main Output
     QMenu* pMainOutputMenu = addSubmenu(tr("Main Output"), pMixerMenu);
-    addControl("[Master]",
-            "gain",
+    addControl(kMixerGroup,
+            QStringLiteral("main_gain"),
             tr("Main Output Gain"),
             tr("Main Output gain"),
             pMainOutputMenu,
             true);
-    addControl("[Master]",
-            "balance",
+    addControl(kMixerGroup,
+            QStringLiteral("balance"),
             tr("Main Output Balance"),
             tr("Main Output balance"),
             pMainOutputMenu,
             true);
-    addControl("[Master]",
-            "delay",
+    addControl(kMixerGroup,
+            QStringLiteral("main_delay"),
             tr("Main Output Delay"),
             tr("Main Output delay"),
             pMainOutputMenu,
             true);
     // Headphone
     QMenu* pHeadphoneMenu = addSubmenu(tr("Headphone"), pMixerMenu);
-    addControl("[Master]",
-            "headGain",
+    addControl(kMixerGroup,
+            QStringLiteral("headphone_gain"),
             tr("Headphone Gain"),
             tr("Headphone gain"),
             pHeadphoneMenu,
             true);
-    addControl("[Master]",
-            "headMix",
+    addControl(kMixerGroup,
+            QStringLiteral("headphone_mix"),
             tr("Headphone Mix"),
             tr("Headphone mix (pre/main)"),
             pHeadphoneMenu,
             true);
-    addControl("[Master]",
-            "headSplit",
+    addControl(kMixerGroup,
+            QStringLiteral("headphone_split"),
             tr("Headphone Split Cue"),
             tr("Toggle headphone split cueing"),
             pHeadphoneMenu);
-    addControl("[Master]",
-            "headDelay",
+    addControl(kMixerGroup,
+            QStringLiteral("headphone_delay"),
             tr("Headphone Delay"),
             tr("Headphone delay"),
             pHeadphoneMenu,
@@ -1347,14 +1348,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             pMicrophoneMenu,
             true,
             false);
-    addControl("[Master]",
-            "duckStrength",
+    addControl(kMixerGroup,
+            QStringLiteral("talkover_ducking_strength"),
             tr("Microphone Ducking Strength"),
             tr("Microphone Ducking Strength"),
             pMicrophoneMenu,
             true);
-    addControl("[Master]",
-            "talkoverDucking",
+    addControl(kMixerGroup,
+            QStringLiteral("talkover_ducking_mode"),
             tr("Microphone Ducking Mode"),
             tr("Toggle microphone ducking mode (OFF, AUTO, MANUAL)"),
             pMicrophoneMenu);
