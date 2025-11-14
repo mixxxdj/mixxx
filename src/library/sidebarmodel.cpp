@@ -2,6 +2,7 @@
 
 #include <QTimer>
 #include <QUrl>
+#include <functional>
 
 #include "library/libraryfeature.h"
 #include "library/treeitem.h"
@@ -32,6 +33,13 @@ SidebarModel::SidebarModel(
             &QTimer::timeout,
             this,
             &SidebarModel::slotPressedUntilClickedTimeout);
+}
+
+SidebarModel::~SidebarModel() {
+    // save current selection on shutdown instead of on every click
+    if (m_currentSelection.isValid()) {
+        saveCurrentSelection(m_currentSelection);
+    }
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
@@ -94,9 +102,20 @@ void SidebarModel::setDefaultSelection(unsigned int index) {
 }
 
 void SidebarModel::activateDefaultSelection() {
+    // try to restore previously selected item
+    QModelIndex savedIndex = restoreSavedSelection();
+    if (savedIndex.isValid()) {
+        // disable auto-scrolling - sidebar will restore saved scroll position
+        emit selectIndex(savedIndex, false /* scrollTo */);
+        // reuse clicked() method to activate the restored selection
+        clicked(savedIndex);
+        return;
+    }
+
+    // fallback to default selection if restoration failed
     if (m_iDefaultSelectedIndex <
             static_cast<unsigned int>(m_sFeatures.size())) {
-        emit selectIndex(getDefaultSelection(), true /* scrollTo */);
+        emit selectIndex(getDefaultSelection(), false /* scrollTo */);
         // Selecting an index does not activate it.
         m_sFeatures[m_iDefaultSelectedIndex]->activate();
     }
@@ -354,6 +373,9 @@ void SidebarModel::clicked(const QModelIndex& index) {
     // this event.
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
+        // track current selection for saving on shutdown
+        m_currentSelection = index;
+
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
         } else {
@@ -520,7 +542,16 @@ QModelIndex SidebarModel::translateIndex(
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
     // qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
-    QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
+    QModelIndex bottomRightTranslated;
+
+    // if bottomRight is invalid in the source, keep it invalid in the translation
+    if (bottomRight.isValid()) {
+        bottomRightTranslated = translateSourceIndex(bottomRight);
+    } else {
+        // per Qt convention, invalid bottomRight means same as topLeft
+        bottomRightTranslated = topLeftTranslated;
+    }
+
     emit dataChanged(topLeftTranslated, bottomRightTranslated);
 }
 
@@ -609,4 +640,132 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
         }
     }
     emit selectIndex(ind, scrollTo);
+}
+
+void SidebarModel::saveCurrentSelection(const QModelIndex& index) {
+    if (!m_pConfig || !index.isValid()) {
+        return;
+    }
+
+    QString featureName;
+    QString childName;
+
+    if (index.internalPointer() == this) {
+        // root feature selected
+        if (index.row() >= 0 && index.row() < m_sFeatures.size()) {
+            featureName = m_sFeatures[index.row()]->iconName();
+        }
+    } else {
+        // child item selected
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pTreeItem) {
+            LibraryFeature* pFeature = pTreeItem->feature();
+            if (pFeature) {
+                featureName = pFeature->iconName();
+                childName = pTreeItem->getData().toString();
+            }
+        }
+    }
+
+    if (!featureName.isEmpty()) {
+        m_pConfig->setValue(
+                ConfigKey(QStringLiteral("[Library]"), QStringLiteral("LastSelectedFeature")),
+                featureName);
+        m_pConfig->setValue(
+                ConfigKey(QStringLiteral("[Library]"), QStringLiteral("LastSelectedChild")),
+                childName);
+    }
+}
+
+QModelIndex SidebarModel::restoreSavedSelection() {
+    if (!m_pConfig || m_sFeatures.isEmpty()) {
+        return QModelIndex();
+    }
+
+    const QString savedFeatureName = m_pConfig->getValueString(
+            ConfigKey(QStringLiteral("[Library]"), QStringLiteral("LastSelectedFeature")));
+
+    if (savedFeatureName.isEmpty()) {
+        return QModelIndex();
+    }
+
+    int featureRow = -1;
+    // find the feature by icon name (non-translated, programmatic identifier)
+    for (int i = 0; i < m_sFeatures.size(); ++i) {
+        if (m_sFeatures[i]->iconName() == savedFeatureName) {
+            featureRow = i;
+            break;
+        }
+    }
+
+    const QString savedChildName = m_pConfig->getValueString(
+            ConfigKey(QStringLiteral("[Library]"), QStringLiteral("LastSelectedChild")));
+    // if no child data, return the feature root.
+    // returns invalid index if feature was not found.
+    if (savedChildName.isEmpty()) {
+        return index(featureRow, 0);
+    }
+
+    // feature not found, can't search for child
+    if (featureRow < 0) {
+        return {};
+    }
+
+    // search for matching child by data using QAbstractItemModel::match()
+    QAbstractItemModel* pChildModel = m_sFeatures[featureRow]->sidebarModel();
+    if (pChildModel && pChildModel->rowCount() > 0) {
+        // the model items' data type may be int (playlist, crate) or
+        // QString (Missing, Quick Links).
+        // get the model's data type, then create the appropriate QVariant.
+        // note: assumes the model uses only one data type!
+        const QVariant dataVar = pChildModel->data(
+                pChildModel->index(0, 0), TreeItemModel::kDataRole);
+        auto dataType = dataVar.metaType();
+        QVariant childData;
+        switch (dataType.id()) {
+        case QMetaType::QString: {
+            childData = QVariant::fromValue(savedChildName);
+            break;
+        }
+        case QMetaType::Int: {
+            bool convertedToInt = false;
+            int intValue = savedChildName.toInt(&convertedToInt);
+            if (convertedToInt) {
+                childData = QVariant::fromValue(intValue);
+            } else {
+                qWarning() << "SidebarModel::restoreSavedSelection: could not "
+                              "convert stored child data to int";
+            }
+            break;
+        }
+        default:
+            qWarning() << "SidebarModel::restoreSavedSelection: "
+                          "model uses unexpected data type"
+                       << dataType.name();
+            qWarning() << "select feature root";
+        }
+
+        if (!childData.isValid()) {
+            return {};
+        }
+
+        const QModelIndexList matches = pChildModel->match(
+                pChildModel->index(0, 0),
+                TreeItemModel::kDataRole,
+                childData,
+                1, // stop at first match
+                Qt::MatchExactly | Qt::MatchRecursive);
+
+        if (!matches.isEmpty() && matches.first().isValid()) {
+            // translate child model index to sidebar model index
+            const QModelIndex childIndex = matches.first();
+            TreeItem* pTreeItem = static_cast<TreeItem*>(childIndex.internalPointer());
+            if (pTreeItem) {
+                return createIndex(childIndex.row(), childIndex.column(), pTreeItem);
+            }
+        }
+    }
+
+    // child not found, return feature root or invalid index if feature was not found.
+    return index(featureRow, 0);
 }
