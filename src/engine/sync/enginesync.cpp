@@ -4,6 +4,7 @@
 
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
+#include "engine/sync/abletonlink.h"
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 #include "util/logger.h"
@@ -11,12 +12,14 @@
 namespace {
 const mixxx::Logger kLogger("EngineSync");
 const QString kInternalClockGroup = QStringLiteral("[InternalClock]");
+const QString kAbletonLinkGroup = QStringLiteral("[AbletonLink]");
 constexpr mixxx::Bpm kDefaultBpm = mixxx::Bpm(124.0);
 } // anonymous namespace
 
 EngineSync::EngineSync(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
+          m_pAbletonLink(new AbletonLink(kAbletonLinkGroup, this)),
           m_pLeaderSyncable(nullptr) {
     qRegisterMetaType<SyncMode>("SyncMode");
     m_pInternalClock->updateLeaderBpm(kDefaultBpm);
@@ -27,6 +30,7 @@ EngineSync::~EngineSync() {
     const mixxx::Bpm bpm = m_pInternalClock->getBpm();
     m_pConfig->setValue(ConfigKey(kInternalClockGroup, "bpm"),
             bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined);
+    delete m_pAbletonLink;
     delete m_pInternalClock;
 }
 
@@ -381,6 +385,10 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         }
     }
 
+    if (m_pAbletonLink->isPlaying()) {
+        return m_pAbletonLink;
+    }
+
     if (pStoppedSyncTarget) {
         return pStoppedSyncTarget;
     }
@@ -414,11 +422,18 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
         reinitLeaderParams(newLeader);
     } else {
         Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
-        if (pOnlyPlayer) {
+        if (pOnlyPlayer && !m_pAbletonLink->isPlaying()) {
             // Even if we didn't change leader, if there is only one player, then we should
             // reinit leader params.
             pOnlyPlayer->notifyUniquePlaying();
             reinitLeaderParams(pOnlyPlayer);
+        } else if (pOnlyPlayer) {
+            // If the Leader is the only player, but Ableton Link peers are
+            // playing, then it will need to initialize parameters from Ableton
+            // Link.
+
+            pOnlyPlayer->notifyUniquePlaying();
+            reinitLeaderParams(m_pAbletonLink);
         }
     }
 }
@@ -437,11 +452,41 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     }
     if (isLeader(pSyncable->getSyncMode())) {
         Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
-        if (pOnlyPlayer) {
+        if (pOnlyPlayer && !m_pAbletonLink->isPlaying()) {
             // Even if we didn't change leader, if there is only one player (us), then we should
             // reinit the beat distance.
             pOnlyPlayer->notifyUniquePlaying();
-            updateLeaderBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
+            double beatDistance = pOnlyPlayer->getBeatDistance();
+            updateLeaderBeatDistance(pOnlyPlayer, beatDistance);
+
+            // No other Ableton Link peers are playing -> Enforce immediate beat
+            // position shift This ensures that a peer that later joins/starts
+            // playing, starts in sync to the Mixxx sync leader
+            m_pAbletonLink->forceUpdateLeaderBeatDistance(beatDistance);
+        } else if (pOnlyPlayer) {
+            // If the Leader is the only player, but Ableton Link peers are
+            // playing, then it will need to sync phase to the beat distance
+            // from Ableton Link.
+
+            auto* engineBuffer = pSyncable->getChannel()->getEngineBuffer();
+            DEBUG_ASSERT(engineBuffer);
+
+            const auto playPos = engineBuffer->getVisualPlayPos();
+            const auto trackEnd = engineBuffer->getTrackEndPosition().value();
+            const auto trackSampleRate = engineBuffer->getTrackSampleRate();
+            const auto bpmValue = pSyncable->getBpm().value();
+            const auto abletonBpmValue = m_pAbletonLink->getBpm().value();
+
+            const auto chBeatDistance =
+                    (pSyncable->getBeatDistance() * 60 * trackSampleRate) /
+                    (bpmValue * trackEnd);
+            const auto abletonBeatDistance =
+                    (m_pAbletonLink->getBeatDistance() * 60 * trackSampleRate) /
+                    (abletonBpmValue * trackEnd);
+
+            const auto seekPos = playPos - chBeatDistance + abletonBeatDistance;
+            engineBuffer->slotControlSeek(seekPos);
+            engineBuffer->requestSyncPhase();
         } else {
             // If the Leader isn't the only player, then it will need to sync
             // phase like followers do.
@@ -456,7 +501,9 @@ void EngineSync::notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position
         // This relies on the bpmcontrol being notified about the seek before
         // the sync control, but that's ok because that's intrinsic to how the
         // controls are constructed (see the constructor of enginebuffer).
-        updateLeaderBeatDistance(pSyncable, pSyncable->getBeatDistance());
+        double beatDistance = pSyncable->getBeatDistance();
+        updateLeaderBeatDistance(pSyncable, beatDistance);
+        m_pAbletonLink->updateLeaderBeatDistance(beatDistance);
     }
 }
 
@@ -465,7 +512,9 @@ void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
         kLogger.trace() << "notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
     }
 
-    if (isSyncLeader(pSyncable)) {
+    // In case of playing Ableton Link peers, don't overwrite BPM with base BPM
+    // (happens at track load)
+    if (isSyncLeader(pSyncable) && !m_pAbletonLink->isPlaying()) {
         updateLeaderBpm(pSyncable, bpm);
     }
 }
@@ -522,7 +571,8 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDista
         kLogger.trace() << "notifyBeatDistanceChanged"
                         << pSyncable->getGroup() << beatDistance;
     }
-    if (pSyncable != m_pInternalClock) {
+
+    if (pSyncable != m_pInternalClock && pSyncable != m_pAbletonLink) {
         if (getUniquePlayingSyncedDeck() == pSyncable) {
             updateLeaderBeatDistance(pSyncable, beatDistance);
         }
@@ -604,12 +654,16 @@ void EngineSync::addSyncableDeck(Syncable* pSyncable) {
     m_syncables.append(pSyncable);
 }
 
-void EngineSync::onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
+void EngineSync::onCallbackStart(mixxx::audio::SampleRate sampleRate,
+        std::size_t bufferSize,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
+    m_pAbletonLink->onCallbackStart(sampleRate, bufferSize, absTimeWhenPrevOutputBufferReachesDac);
 }
 
 void EngineSync::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
+    m_pAbletonLink->onCallbackEnd(sampleRate, bufferSize);
 }
 
 EngineChannel* EngineSync::getLeaderChannel() const {
@@ -638,12 +692,18 @@ mixxx::Bpm EngineSync::leaderBpm() const {
     if (m_pLeaderSyncable) {
         return m_pLeaderSyncable->getBpm();
     }
+    if (m_pAbletonLink->isPlaying()) {
+        return m_pAbletonLink->getBpm();
+    }
     return m_pInternalClock->getBpm();
 }
 
 double EngineSync::leaderBeatDistance() const {
     if (m_pLeaderSyncable) {
         return m_pLeaderSyncable->getBeatDistance();
+    }
+    if (m_pAbletonLink->isPlaying()) {
+        return m_pAbletonLink->getBeatDistance();
     }
     return m_pInternalClock->getBeatDistance();
 }
@@ -652,12 +712,18 @@ mixxx::Bpm EngineSync::leaderBaseBpm() const {
     if (m_pLeaderSyncable) {
         return m_pLeaderSyncable->getBaseBpm();
     }
+    if (m_pAbletonLink->isPlaying()) {
+        return m_pAbletonLink->getBaseBpm();
+    }
     return m_pInternalClock->getBaseBpm();
 }
 
 void EngineSync::updateLeaderBpm(Syncable* pSource, mixxx::Bpm bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->updateLeaderBpm(bpm);
+    }
+    if (pSource != m_pAbletonLink) {
+        m_pAbletonLink->updateLeaderBpm(bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
@@ -726,6 +792,8 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
         }
         if (playingSyncables) {
             beatDistance = m_pInternalClock->getBeatDistance();
+        } else if (m_pAbletonLink->isPlaying()) {
+            beatDistance = m_pAbletonLink->getBeatDistance();
         }
     }
     const mixxx::Bpm baseBpm = pSource->getBaseBpm();
@@ -744,6 +812,9 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
     }
     if (pSource != m_pInternalClock) {
         m_pInternalClock->reinitLeaderParams(beatDistance, baseBpm, bpm);
+    }
+    if (pSource != m_pAbletonLink) {
+        m_pAbletonLink->reinitLeaderParams(beatDistance, baseBpm, bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (!pSyncable->isSynchronized()) {
