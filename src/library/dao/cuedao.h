@@ -20,4 +20,9 @@ class CueDAO : public DAO {
 
   private:
     bool saveCue(TrackId trackId, Cue* pCue) const;
+    void updateTrackHotcueCount(TrackId trackId) const;
+
+  public:
+    // update hotcue count with explicit count value (for live updates from memory)
+    void updateTrackHotcueCount(TrackId trackId, int hotcueCount) const;
 };
