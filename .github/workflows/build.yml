@@ -57,6 +57,7 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
+              -D BUILD_TESTING=ON
             ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
@@ -80,6 +81,7 @@ jobs:
               -DQML=OFF
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
+              -D BUILD_TESTING=ON
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -104,6 +106,7 @@ jobs:
               -DQML=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
+              -D BUILD_TESTING=ON
             # TODO: Fix this broken test on macOS
             crosscompile: true
             cpack_generator: DragNDrop
@@ -132,6 +135,7 @@ jobs:
               -DQML=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
+              -D BUILD_TESTING=ON
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
@@ -161,6 +165,7 @@ jobs:
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-windows-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
+              -D BUILD_TESTING=ON
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
@@ -293,6 +298,19 @@ jobs:
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
+
+      #- name: "[macOS] Install liblo"
+      # Eve - get liblo in CI
+      #  if: runner.os == 'macOS'
+      #  run: brew install liblo
+
+      #- name: "[Ubuntu] Install liblo"
+      #  if: runner.os == 'Linux'
+      #  run: sudo apt-get update && sudo apt-get install -y liblo-dev
+
+      #- name: "[Windows] Install liblo via vcpkg"
+      #  if: runner.os == 'Windows'
+      #  run: vcpkg install liblo:x64-windows
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'

@@ -25,6 +25,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
+      - name: Install vcpkg and liblo
+        run: |
+          # Clone vcpkg if not already present
+          git clone https://github.com/Microsoft/vcpkg.git
+          cd vcpkg
+          ./bootstrap-vcpkg.sh
+          ./vcpkg install liblo:x64-linux
+          ./vcpkg integrate install
       - name: Add clazy PPA
         if: matrix.name == 'clazy'
         # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04

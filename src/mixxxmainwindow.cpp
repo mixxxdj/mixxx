@@ -66,6 +66,11 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
+//  EveOSC
+#include "osc/oscfunctions.h"
+#include "osc/oscreceiver.cpp"
+//  EveOSC
+
 namespace {
 #ifdef __LINUX__
 // Detect if the desktop supports a global menu to decide whether we need to rebuild
@@ -147,6 +152,9 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
+    // EveOSC
+    oscEnable();
+    // EveOSC
 }
 
 #ifdef MIXXX_USE_QOPENGL
@@ -540,9 +548,26 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
 
     WaveformWidgetFactory::destroy();
-
     delete m_pGuiTick;
     delete m_pVisualsManager;
+
+    if (m_pOscReceiver) {
+        qDebug() << "[MIXXXMAINWINDOW] -> [OSCRECEIVER] -> Stopping OSC Receiver before shutdown";
+        m_pOscReceiver->stop();
+        if (m_oscThread.isRunning()) {
+            m_oscThread.quit();
+            if (!m_oscThread.wait(3000)) {
+                qWarning()
+                        << "[MIXXXMAINWINDOW] -> [OSCRECEIVER] -> OSC thread "
+                           "did not stop in time, forcing termination.";
+                m_oscThread.terminate();
+                m_oscThread.wait();
+            }
+        }
+        // m_pOscReceiver->deleteLater();
+        // m_pOscReceiver.reset();
+        qDebug() << "[MIXXXMAINWINDOW] -> [OSCRECEIVER] -> OSC Receiver stopped and cleaned up";
+    }
 }
 
 void MixxxMainWindow::initializeWindow() {
@@ -1602,4 +1627,85 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
         m_pLaunchImage->progress(progress, serviceName);
     }
     qApp->processEvents();
+}
+
+void MixxxMainWindow::oscEnable() {
+    // Check if m_pCoreServices is ready
+    if (!m_pCoreServices) {
+        qDebug() << "[MIXXXMAINWINDOW] -> m_pCoreServices is not ready, "
+                    "delaying OSC initialization...";
+        QTimer::singleShot(3000, this, [this]() { oscEnable(); }); // Retry after 3 seconds
+        return;
+    }
+
+    // Check if OSC is enabled in settings
+    if (m_pCoreServices->getSettings()->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
+        qDebug() << "[MIXXXMAINWINDOW] -> Mixxx OSC Service Enabled";
+        int ckOscPortInInt = m_pCoreServices->getSettings()
+                                     ->getValue(ConfigKey("[OSC]", "OscPortIn"))
+                                     .toInt();
+        if (!m_pOscReceiver) {
+            m_pOscReceiver = std::make_unique<OscReceiver>(m_pCoreServices->getSettings());
+            m_pOscReceiver->moveToThread(&m_oscThread);
+
+            qDebug() << "[MIXXXMAINWINDOW] -> Calling loadOscConfiguration";
+            m_pOscReceiver->loadOscConfiguration(m_pCoreServices->getSettings());
+
+            // Add a 3-second delay before starting the thread
+            QTimer::singleShot(3000, this, [this, ckOscPortInInt]() {
+                qDebug() << "[MIXXXMAINWINDOW] -> Starting OSC thread after delay...";
+                connect(&m_oscThread,
+                        &QThread::started,
+                        m_pOscReceiver.get(),
+                        [this, ckOscPortInInt]() {
+                            m_pOscReceiver->startOscReceiver(ckOscPortInInt);
+                        });
+                connect(&m_oscThread,
+                        &QThread::finished,
+                        this,
+                        &MixxxMainWindow::onOscThreadFinished);
+                m_oscThread.start();
+
+                // Start a timer to periodically check responsiveness
+                QTimer* responsivenessTimer = new QTimer(this);
+                connect(responsivenessTimer, &QTimer::timeout, this, [this]() {
+                    if (m_pOscReceiver) {
+                        m_pOscReceiver->checkResponsiveness();
+                    }
+                });
+                responsivenessTimer->start(5000); // Check every 5 seconds
+            });
+        }
+    } else {
+        qDebug() << "[MIXXXMAINWINDOW] -> Mixxx OSC Service NOT Enabled";
+
+        if (m_pOscReceiver) {
+            // Ensure stop is implemented properly in OscReceiver
+            m_pOscReceiver->stop();
+            // Request interruption
+            m_oscThread.requestInterruption();
+            // Quit the thread gracefully
+            m_oscThread.quit();
+            // Wait for the thread to finish with a timeout
+            if (!m_oscThread.wait(3000)) {
+                qWarning() << "[MIXXXMAINWINDOW] -> OSC thread did not stop in "
+                              "time, forcing termination.";
+                m_oscThread.terminate(); // Forcibly terminate if not stopped in time
+            }
+            // Reset the receiver pointer & delete the object
+            m_pOscReceiver.reset();
+        }
+    }
+}
+
+void MixxxMainWindow::onOscThreadFinished() {
+    qDebug() << "[MIXXXMAINWINDOW] -> OSC thread finished";
+
+    // Safely delete the receiver object once the thread has finished
+    if (m_pOscReceiver) {
+        // Ensure the receiver object is deleted in the main thread
+        m_pOscReceiver->deleteLater();
+        // Reset the unique pointer to null
+        m_pOscReceiver.reset();
+    }
 }
