@@ -157,17 +157,24 @@ void OverviewDelegate::paintItem(QPainter* painter,
             // non-cache we can request an update.
             m_cacheMissIds.insert(trackId);
         } else {
-            pixmap = m_pCache->requestUncachedOverview(m_type,
-                    m_signalColors,
-                    trackId,
-                    this,
-                    option.rect.size() * scaleFactor);
+            // get track to access cues and duration
+            TrackPointer pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                pixmap = m_pCache->requestUncachedOverview(m_type,
+                        m_signalColors,
+                        pTrack,
+                        this,
+                        option.rect.size() * scaleFactor);
+            }
         }
         paintItemBackground(painter, option, index);
     } else {
         // We have a cached pixmap, paint it
         pixmap.setDevicePixelRatio(scaleFactor);
+        // disable smooth transform to preserve marker opacity
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, false);
         painter->drawPixmap(option.rect, pixmap);
+        painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
     }
 
     // Draw a border if the cover art cell has focus
