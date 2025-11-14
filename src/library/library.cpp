@@ -76,6 +76,12 @@ Library::Library(
                   mixxx::library::prefs::kKeyNotationConfigKey)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
+    // provide config to sidebar model for selection persistence
+    m_pSidebarModel->setConfig(m_pConfig);
+
+    m_pKeyNotation.reset(
+            new ControlObject(mixxx::library::prefs::kKeyNotationConfigKey));
+
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
             this,
@@ -343,6 +349,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
+    pSidebarWidget->setup(m_pConfig);
     connect(m_pSidebarModel,
             &SidebarModel::selectIndex,
             pSidebarWidget,

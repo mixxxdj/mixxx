@@ -214,6 +214,11 @@ void TreeItemModel::triggerRepaint(const QModelIndex& index) {
 }
 
 void TreeItemModel::triggerRepaint() {
+    // don't emit dataChanged if the model is empty
+    if (rowCount() == 0) {
+        return;
+    }
+
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
     emit dataChanged(left, right);
