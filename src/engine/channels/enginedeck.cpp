@@ -14,6 +14,10 @@
 #include "util/assert.h"
 #include "util/sample.h"
 
+// One Deck => One logical stream of audio from a track
+// The "stream of audio" is referred to as EngineChannel.
+// Note that each EngineChannel has an EngineBuffer that
+// supports tracks with stereo (2 audio channels).
 EngineDeck::EngineDeck(
         const ChannelHandleAndGroup& handleGroup,
         UserSettingsPointer pConfig,

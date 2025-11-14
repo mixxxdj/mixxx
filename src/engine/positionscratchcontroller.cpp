@@ -311,7 +311,7 @@ void PositionScratchController::process(double currentSamplePos,
         // may be entirely unrelated to audio frames.
         m_scratchStartPos = m_pScratchPos->get();
         m_scratchPosSampleTime = 0;
-        // qDebug() << "scratchEnable()" << currentSamplePos;
+        qDebug() << "scratchEnable()" << currentSamplePos;
     }
 
     if (!util_isnan(m_seekSamplePos)) {

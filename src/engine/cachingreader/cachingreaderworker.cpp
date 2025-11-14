@@ -42,7 +42,9 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // Before trying to read any data we need to check if the audio source
     // is available and if any audio data that is needed by the chunk is
     // actually available.
-    auto chunkFrameIndexRange = pChunk->frameIndexRange(m_pAudioSource);
+    auto chunkFrameIndexRange = pChunk->frameIndexRange(
+            m_pAudioSource); // A chunk contains metadata about audiosource
+                             // frame range
     DEBUG_ASSERT(!m_pAudioSource ||
             chunkFrameIndexRange.isSubrangeOf(m_pAudioSource->frameIndexRange()));
     if (chunkFrameIndexRange.empty()) {
@@ -52,6 +54,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     }
 
     // Try to read the data required for the chunk from the audio source
+    // copy required frames from the audiosource to m_tempReadBuffer
     const mixxx::IndexRange bufferedFrameIndexRange = pChunk->bufferSampleFrames(
             m_pAudioSource,
             mixxx::SampleBuffer::WritableSlice(m_tempReadBuffer));
@@ -87,6 +90,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     verifyFirstSound(pChunk, m_pAudioSource->getSignalInfo().getChannelCount());
 
     ReaderStatusUpdate result;
+    // result contains pchunk with actual audio frames from the track
     result.init(status, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
     return result;
 }
@@ -146,10 +150,15 @@ void CachingReaderWorker::run() {
                 // here, the engine is already stopped
                 unloadTrack();
             }
-        } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
+        } else if (m_pChunkReadRequestFIFO->read(&request, 1) ==
+                1) { // read one (empty) chunk from fifo ring buffer into
+                     // request.chunk
             // Read the requested chunk and send the result
-            const ReaderStatusUpdate update = processReadRequest(request);
-            m_pReaderStatusFIFO->writeBlocking(&update, 1);
+            const ReaderStatusUpdate update = processReadRequest(
+                    request); // copy frames from audiosource into req.chunk,
+                              // return update w/pointer to chunk
+            m_pReaderStatusFIFO->writeBlocking(
+                    &update, 1); // write to a status tracker FIFO
         } else {
             Event::end(m_tag);
             m_semaRun.acquire();

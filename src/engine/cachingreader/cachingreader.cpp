@@ -50,7 +50,8 @@ CachingReader::CachingReader(const QString& group,
           // buffer, where new requests replace old requests when full. Those
           // old requests need to be returned immediately to the CachingReader
           // that must take ownership and free them!!!
-          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory / 4),
+          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory /
+                  4), // init a FIFO of CachingReaderChunk
           // The capacity of the back channel must be equal to the number of
           // allocated chunks, because the worker use writeBlocking(). Otherwise
           // the worker could get stuck in a hot loop!!!
@@ -59,7 +60,8 @@ CachingReader::CachingReader(const QString& group,
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
           m_sampleBuffer(CachingReaderChunk::kFrames * maxSupportedChannel *
-                  kNumberOfCachedChunksInMemory),
+                  kNumberOfCachedChunksInMemory), // alloc buffer corresponding
+                                                  // to current FIFO chunks
           m_worker(group,
                   &m_chunkReadRequestFIFO,
                   &m_readerStatusUpdateFIFO,
@@ -90,7 +92,7 @@ CachingReader::CachingReader(const QString& group,
             this, &CachingReader::trackLoadFailed,
             Qt::DirectConnection);
 
-    m_worker.start(QThread::HighPriority);
+    m_worker.start(QThread::HighPriority); // calls run() of the object
 }
 
 CachingReader::~CachingReader() {
@@ -350,6 +352,9 @@ CachingReader::ReadResult CachingReader::read(SINT startSample,
     SINT sample = startSample;
     if (reverse) {
         // Start with the last sample in buffer
+        qDebug() << "Reading from CachingReader in reverse:\n"
+                 << "start sample = " << sample
+                 << "\n#samples: " << numSamples;
         sample -= numSamples;
     }
 
