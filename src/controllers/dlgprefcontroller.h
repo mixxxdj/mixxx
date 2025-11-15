@@ -38,6 +38,13 @@ class DlgPrefController : public DlgPreferencePage {
     QUrl helpUrl() const override;
     void keyPressEvent(QKeyEvent* pEvent) override;
 
+    Controller* controller() const {
+        return m_pController;
+    }
+
+    // Open the MIDI learning wizard for this controller
+    void showLearningWizard();
+
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
@@ -78,7 +85,6 @@ class DlgPrefController : public DlgPreferencePage {
 
     // Input mappings
     void addInputMapping();
-    void showLearningWizard();
     void removeInputMappings();
     void clearAllInputMappings();
 
