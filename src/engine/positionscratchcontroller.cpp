@@ -1,5 +1,6 @@
 #include "engine/positionscratchcontroller.h"
 
+#include "audio/frame.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/bufferscalers/enginebufferscale.h" // for MIN_SEEK_SPEED
@@ -95,9 +96,7 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_isScratching(false),
           m_inertiaEnabled(false),
           m_prevSamplePos(0),
-          // TODO we might as well use FramePos in order to use more convenient
-          // mixxx::audio::kInvalidFramePos, then convert to sample pos on the fly
-          m_seekSamplePos(std::numeric_limits<double>::quiet_NaN()),
+          m_seekFramePos(mixxx::audio::kInvalidFramePos),
           m_samplePosDeltaSum(0),
           m_scratchTargetDelta(0),
           m_scratchStartPos(0),
@@ -314,20 +313,19 @@ void PositionScratchController::process(double currentSamplePos,
         // qDebug() << "scratchEnable()" << currentSamplePos;
     }
 
-    if (!util_isnan(m_seekSamplePos)) {
+    if (!m_seekFramePos.isValid()) {
         // We need to transpose all buffers to compensate the seek
         // in a way that the next process call does not even notice anything
-        currentSamplePos = m_seekSamplePos;
-        m_seekSamplePos = std::numeric_limits<double>::quiet_NaN();
+        currentSamplePos = m_seekFramePos.toEngineSamplePos();
+        m_seekFramePos = mixxx::audio::kInvalidFramePos;
     }
     m_prevSamplePos = currentSamplePos;
 }
 
 void PositionScratchController::notifySeek(mixxx::audio::FramePos position) {
-    const double newPos = position.toEngineSamplePos();
     // Scratching continues after seek due to calculating the relative
     // distance traveled in m_samplePosDeltaSum
-    m_seekSamplePos = newPos;
+    m_seekFramePos = position;
 }
 
 void PositionScratchController::reset() {
