@@ -10,6 +10,8 @@ enum class OverviewType {
     Filtered,
     HSV,
     RGB,
+    StackedRGB,
+    StackedFiltered,
 };
 Q_ENUM_NS(OverviewType);
 
