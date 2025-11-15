@@ -63,6 +63,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void setDisplayBeatGridAlpha(int alpha);
     void setPlayMarkerPosition(double position);
 
+    void stopScratchingAndBending();
+
   private:
     const QString m_group;
     UserSettingsPointer m_pConfig;
