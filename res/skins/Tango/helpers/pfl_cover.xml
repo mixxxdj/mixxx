@@ -19,7 +19,7 @@ Description:
       </Label>
     </Children>
     <Connection>
-      <ConfigKey>[Master],headEnabled</ConfigKey>
+      <ConfigKey>[Mixer],headphones_enabled</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform><Not/></Transform>
     </Connection>

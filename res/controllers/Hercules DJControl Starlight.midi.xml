@@ -21,7 +21,7 @@
 
         // Shift
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJCStarlight.shiftButton</key>
                 <description>Shift button</description>
                 <status>0x90</status>
@@ -85,7 +85,7 @@
 
         // Vinyl button
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJCStarlight.vinylButton</key>
                 <description>Vinyl</description>
                 <status>0x91</status>
@@ -203,7 +203,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>sync_leader</key>
-                <description>SHIFT + Sync: Sync Master</description>
+                <description>SHIFT + Sync: Sync Leader</description>
                 <status>0x94</status>
                 <midino>0x05</midino>
                 <options>
@@ -213,9 +213,9 @@
 
         // PFL
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJCStarlight.cueMaster</key>
-                <description>CUE Master</description>
+                <description>CUE Main</description>
                 <status>0x94</status>
                 <midino>0x0C</midino>
                 <options>
@@ -267,7 +267,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>sync_leader</key>
-                <description>SHIFT + Sync: Sync Master</description>
+                <description>SHIFT + Sync: Sync Leader</description>
                 <status>0x95</status>
                 <midino>0x05</midino>
                 <options>
@@ -277,7 +277,7 @@
 
         // PFL
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJCStarlight.cueMix</key>
                 <description>Headphone CUE + MIX</description>
                 <status>0x95</status>
@@ -874,7 +874,7 @@
 
         // Crossfader
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description>Crossfader</description>
                 <status>0xB0</status>

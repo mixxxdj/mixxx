@@ -22,7 +22,7 @@
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
-const QString kMasterGroup = QStringLiteral("[Master]");
+const QString kMixerGroup = QStringLiteral("[Mixer]");
 const ConfigKey kKeylockEngingeCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_engine"));
 const ConfigKey kKeylockMultiThreadingCfgkey =
@@ -74,11 +74,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_pSoundManager(pSoundManager),
           m_pSettings(pSettings),
           m_config(pSoundManager.get()),
-          m_pLatencyCompensation(kMasterGroup, QStringLiteral("microphoneLatencyCompensation")),
-          m_pMainDelay(kMasterGroup, QStringLiteral("delay")),
-          m_pHeadDelay(kMasterGroup, QStringLiteral("headDelay")),
-          m_pBoothDelay(kMasterGroup, QStringLiteral("boothDelay")),
-          m_pMicMonitorMode(kMasterGroup, QStringLiteral("talkover_mix")),
+          m_pLatencyCompensation(kMixerGroup, QStringLiteral("microphone_delay")),
+          m_pMainDelay(kMixerGroup, QStringLiteral("main_delay")),
+          m_pHeadDelay(kMixerGroup, QStringLiteral("headphone_delay")),
+          m_pBoothDelay(kMixerGroup, QStringLiteral("booth_delay")),
+          m_pMicMonitorMode(kMixerGroup, QStringLiteral("talkover_mix")),
           m_pKeylockEngine(kKeylockEngingeCfgkey),
           m_settingsModified(false),
           m_bLatencyChanged(false),
@@ -266,7 +266,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     // TODO: remove this option by automatically disabling/enabling the main mix
     // when recording, broadcasting, headphone, and main outputs are enabled/disabled
     m_pMainEnabled =
-            make_parented<ControlProxy>(kMasterGroup, QStringLiteral("enabled"), this);
+            make_parented<ControlProxy>(kMixerGroup, QStringLiteral("main_enabled"), this);
     mainMixComboBox->addItem(tr("Disabled"));
     mainMixComboBox->addItem(tr("Enabled"));
     mainMixComboBox->setCurrentIndex(m_pMainEnabled->toBool() ? 1 : 0);
@@ -277,7 +277,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     m_pMainEnabled->connectValueChanged(this, &DlgPrefSound::mainEnabledChanged);
 
     m_pMainMonoMixdown =
-            make_parented<ControlProxy>(kMasterGroup, QStringLiteral("mono_mixdown"), this);
+            make_parented<ControlProxy>(kMixerGroup, QStringLiteral("mono_mixdown"), this);
     mainOutputModeComboBox->addItem(tr("Stereo"));
     mainOutputModeComboBox->addItem(tr("Mono"));
     mainOutputModeComboBox->setCurrentIndex(m_pMainMonoMixdown->toBool() ? 1 : 0);

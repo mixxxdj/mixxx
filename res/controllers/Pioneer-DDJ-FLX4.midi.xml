@@ -357,7 +357,7 @@
             </control>
 
             <control>
-                <description>BEAT SYNC (DECK1) - press - Beat Sync to Master deck</description>
+                <description>BEAT SYNC (DECK1) - press - Beat Sync to Leader deck</description>
                 <group>[Channel1]</group>
                 <key>PioneerDDJFLX4.syncPressed</key>
                 <status>0x90</status>
@@ -367,7 +367,7 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC LONG PRESS (DECK1) - press - Set as Master deck</description>
+                <description>BEAT SYNC LONG PRESS (DECK1) - press - Set as Leader deck</description>
                 <group>[Channel1]</group>
                 <key>PioneerDDJFLX4.syncLongPressed</key>
                 <status>0x90</status>
@@ -388,7 +388,7 @@
             </control>
 
             <control>
-                <description>BEAT SYNC (DECK2) - press - Beat Sync to Master deck</description>
+                <description>BEAT SYNC (DECK2) - press - Beat Sync to Leader deck</description>
                 <group>[Channel2]</group>
                 <key>PioneerDDJFLX4.syncPressed</key>
                 <status>0x91</status>
@@ -398,7 +398,7 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC LONG PRESS (DECK2) - press - Set as Master deck</description>
+                <description>BEAT SYNC LONG PRESS (DECK2) - press - Set as Leader deck</description>
                 <group>[Channel2]</group>
                 <key>PioneerDDJFLX4.syncLongPressed</key>
                 <status>0x91</status>
@@ -633,7 +633,7 @@
             <!-- MIXER Section START -->
             <control>
                 <description>CROSSFADER - slider</description>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB6</status>
                 <midino>0x1F</midino>
@@ -643,7 +643,7 @@
             </control>
             <control>
                 <description>CROSSFADER - slider</description>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB6</status>
                 <midino>0x3F</midino>
@@ -901,8 +901,8 @@
 
             <control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB6</status>
                 <midino>0x2C</midino>
                 <options>
@@ -911,8 +911,8 @@
             </control>
             <control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB6</status>
                 <midino>0x0C</midino>
                 <options>
