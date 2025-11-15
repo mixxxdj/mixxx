@@ -3,11 +3,12 @@ import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import "Theme"
 
-MixxxControls.Slider {
+MixxxControls.Fader {
     id: root
 
     property alias fg: handleImage.source
     property alias bg: backgroundImage.source
+    property alias handleImage: handleImage
 
     bar: true
     barMargin: 10
