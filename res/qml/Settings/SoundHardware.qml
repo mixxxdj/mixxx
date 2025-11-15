@@ -617,7 +617,7 @@ Category {
                 enabled: root.hasChanges && !root.committing
                 text: "Save"
                 opacity: enabled ? 1.0 : 0.5
-                backgroundColor: root.hasChanges ? "#3a60be" : "#3F3F3F"
+                backgroundColor: root.hasChanges ? "#3a60be" : Theme.darkGray3
                 activeColor: "#999999"
                 onPressed: {
                     errorMessage.text = ""
