@@ -1,7 +1,55 @@
 #include "controllers/controllermappinginfo.h"
 
+#include <qglobal.h>
+#include <qregularexpression.h>
+#include <qstringliteral.h>
+
+#include <QDir>
+#include <QFileInfo>
+
 #include "util/xml.h"
 
+namespace {
+QVersionNumber sanitizeVersion(QString rawVersion) {
+    return !rawVersion.isEmpty()
+            ? QVersionNumber::fromString(rawVersion.remove(QChar('+')))
+            : QVersionNumber();
+}
+} // namespace
+
+bool operator==(const ProductInfo& a, const ProductInfo& b) {
+    return a.protocol == b.protocol &&
+            a.vendor_id == b.vendor_id &&
+            a.product_id == b.product_id &&
+            a.interface_number == b.interface_number &&
+            a.usage_page == b.usage_page &&
+            a.usage == b.usage &&
+            a.in_epaddr == b.in_epaddr &&
+            a.out_epaddr == b.out_epaddr;
+}
+
+size_t qHash(const ProductInfo& product) {
+    return qHash(product.protocol) +
+            qHash(product.vendor_id) +
+            qHash(product.product_id) +
+            qHash(product.interface_number) +
+            qHash(product.usage_page) +
+            qHash(product.usage) +
+            qHash(product.in_epaddr) +
+            qHash(product.out_epaddr);
+}
+
+QDebug operator<<(QDebug dbg, const ProductInfo& product) {
+    dbg << QStringLiteral(
+            "ProductInfo<protocol=%1, friendlyName=%2, vendor_id=%3, "
+            "product_id=%4, interface_number=%5>")
+                    .arg(product.protocol,
+                            product.friendlyName,
+                            product.vendor_id,
+                            product.product_id,
+                            product.interface_number);
+    return dbg;
+}
 MappingInfo::MappingInfo()
         : m_valid(false) {
 }
@@ -38,6 +86,16 @@ MappingInfo::MappingInfo(const QString& mapping_path)
 
     m_valid = true;
 
+    m_hasSettings = !root.firstChildElement("settings").isNull();
+    m_hasScreens = !root.firstChildElement("controller").firstChildElement("screens").isNull();
+
+    auto dom_mixxx_version = root.attribute("mixxxVersion");
+    if (!dom_mixxx_version.isEmpty()) {
+        m_mixxxVersion = sanitizeVersion(dom_mixxx_version);
+    } else {
+        m_mixxxVersion = QVersionNumber();
+    }
+
     QDomElement dom_name = info.firstChildElement("name");
     if (!dom_name.isNull()) {
         m_name = dom_name.text();
@@ -69,52 +127,56 @@ MappingInfo::MappingInfo(const QString& mapping_path)
     if (!devices.isNull()) {
         QDomElement product = devices.firstChildElement("product");
         while (!product.isNull()) {
-            QString protocol = product.attribute("protocol", "");
-            if (protocol == "hid") {
-                m_products.append(parseHIDProduct(product));
-            } else if (protocol == "bulk") {
-                m_products.append(parseBulkProduct(product));
-            } else if (protocol == "midi") {
+            auto device = parseGenericProduct(product);
+            if (device.protocol == "hid") {
+                parseHIDProduct(product, device);
+            } else if (device.protocol == "bulk") {
+                parseBulkProduct(product, device);
+            } else if (device.protocol == "midi") {
                 qDebug("MIDI product info parsing not yet implemented");
                 //m_products.append(parseMIDIProduct(product);
-            } else if (protocol == "osc") {
+            } else if (device.protocol == "osc") {
                 qDebug("OSC product info parsing not yet implemented");
                 //m_products.append(parseOSCProduct(product);
             } else {
                 qDebug("Product specification missing protocol attribute");
+                product = product.nextSiblingElement("product");
+                continue;
             }
+            m_products.append(device);
             product = product.nextSiblingElement("product");
         }
     }
 }
 
-ProductInfo MappingInfo::parseBulkProduct(const QDomElement& element) const {
-    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105"
-    // in_epaddr="0x82" out_epaddr="0x03" interface_number="0x04" />
+ProductInfo MappingInfo::parseGenericProduct(const QDomElement& element) const {
+    // <product protocol="..." vendor_id="0x06f8" product_id="0x0b105"
+    // interface_number="0x04" ... />
     ProductInfo product;
     product.protocol = element.attribute("protocol");
     product.vendor_id = element.attribute("vendor_id");
     product.product_id = element.attribute("product_id");
-    product.in_epaddr = element.attribute("in_epaddr");
-    product.out_epaddr = element.attribute("out_epaddr");
     product.interface_number = element.attribute("interface_number");
+    product.friendlyName = element.attribute("friendly_name");
+
+    product.visualUrl = QUrl(element.attribute("image"));
     return product;
 }
 
-ProductInfo MappingInfo::parseHIDProduct(const QDomElement& element) const {
+void MappingInfo::parseBulkProduct(const QDomElement& element, ProductInfo& product) const {
+    // <product ... in_epaddr="0x82" out_epaddr="0x03" />
+    product.in_epaddr = element.attribute("in_epaddr");
+    product.out_epaddr = element.attribute("out_epaddr");
+}
+
+void MappingInfo::parseHIDProduct(const QDomElement& element, ProductInfo& product) const {
     // HID device <product> element parsing. Example of valid element:
-    //   <product protocol="hid" vendor_id="0x1" product_id="0x2" usage_page="0x3" usage="0x4" interface_number="0x3" />
+    //   <product ... usage_page="0x3" usage="0x4"/>
     // All numbers must be hex prefixed with 0x
     // Only vendor_id and product_id fields are required to map a device.
     // usage_page and usage are matched on OS/X and windows
     // interface_number is matched on linux, which does support usage_page/usage
 
-    ProductInfo product;
-    product.protocol = element.attribute("protocol");
-    product.vendor_id = element.attribute("vendor_id");
-    product.product_id = element.attribute("product_id");
     product.usage_page = element.attribute("usage_page");
     product.usage = element.attribute("usage");
-    product.interface_number = element.attribute("interface_number");
-    return product;
 }
