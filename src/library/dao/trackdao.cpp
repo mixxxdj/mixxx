@@ -442,6 +442,7 @@ void TrackDAO::addTracksPrepare() {
             "title,"
             "album,"
             "album_artist,"
+            "catalogue_number,"
             "year,"
             "genre,"
             "tracknumber,"
@@ -490,6 +491,7 @@ void TrackDAO::addTracksPrepare() {
             ":title,"
             ":album,"
             ":album_artist,"
+            ":catalogue_number,"
             ":year,"
             ":genre,"
             ":tracknumber,"
@@ -595,6 +597,7 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":title", trackInfo.getTitle());
     pTrackLibraryQuery->bindValue(":album", albumInfo.getTitle());
     pTrackLibraryQuery->bindValue(":album_artist", albumInfo.getArtist());
+    pTrackLibraryQuery->bindValue(":catalogue_number", albumInfo.getCatalogueNumber());
     pTrackLibraryQuery->bindValue(":year", trackInfo.getYear());
     pTrackLibraryQuery->bindValue(":genre", trackInfo.getGenre());
     pTrackLibraryQuery->bindValue(":composer", trackInfo.getComposer());
@@ -1170,6 +1173,10 @@ void setTrackAlbumArtist(const QSqlRecord& record, const int column, Track* pTra
     pTrack->setAlbumArtist(record.value(column).toString());
 }
 
+void setTrackCatalogueNumber(const QSqlRecord& record, const int column, Track* pTrack) {
+    pTrack->setCatalogueNumber(record.value(column).toString());
+}
+
 void setTrackYear(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setYear(record.value(column).toString());
 }
@@ -1388,6 +1395,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"title", setTrackTitle},
             {"album", setTrackAlbum},
             {"album_artist", setTrackAlbumArtist},
+            {"catalogue_number", setTrackCatalogueNumber},
             {"year", setTrackYear},
             {"genre", setTrackGenre},
             {"composer", setTrackComposer},
@@ -1697,6 +1705,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
             "title=:title,"
             "album=:album,"
             "album_artist=:album_artist,"
+            "catalogue_number=:catalogue_number,"
             "year=:year,"
             "genre=:genre,"
             "composer=:composer,"
