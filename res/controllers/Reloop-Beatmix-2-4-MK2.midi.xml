@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
     <info>
-        <name>Reloop Beatmix 2/4</name>
+        <name>Reloop Beatmix 2/4 MK2</name>
         <author>Sébastien Blaisot &lt;sebastien@blaisot.org&gt;</author>
-        <description>Controller mapping for the Reloop Beatmix 2/4.</description>
+        <description>Controller mapping for the Reloop Beatmix 2/4 MK2.</description>
         <forums>https://mixxx.discourse.group/t/reloop-beatmix-2-4-mapping/16049</forums>
         <manual>reloop_beatmix_2</manual>
     </info>
-    <controller id="Reloop Beatmix 2/4">
+    <controller id="Reloop Beatmix 2/4 MK2">
         <scriptfiles>
-            <file functionprefix="ReloopBeatmix24" filename="Reloop-Beatmix-2-4-scripts.js"/>
+            <file functionprefix="ReloopBeatmix24" filename="Reloop-Beatmix-2-4-MK2-scripts.js"/>
         </scriptfiles>
         <controls>
             <!--
