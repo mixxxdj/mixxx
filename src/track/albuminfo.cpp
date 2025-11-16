@@ -5,6 +5,7 @@ namespace mixxx {
 
 bool operator==(const AlbumInfo& lhs, const AlbumInfo& rhs) {
     return (lhs.getArtist() == rhs.getArtist()) &&
+            (lhs.getCatalogueNumber() == rhs.getCatalogueNumber()) &&
 #if defined(__EXTRA_METADATA__)
             (lhs.getCopyright() == rhs.getCopyright()) &&
             (lhs.getLicense() == rhs.getLicense()) &&
@@ -20,6 +21,7 @@ bool operator==(const AlbumInfo& lhs, const AlbumInfo& rhs) {
 QDebug operator<<(QDebug dbg, const AlbumInfo& arg) {
     dbg << "AlbumInfo{";
     arg.dbgArtist(dbg);
+    arg.dbgCatalogueNumber(dbg);
 #if defined(__EXTRA_METADATA__)
     arg.dbgCopyright(dbg);
     arg.dbgLicense(dbg);
