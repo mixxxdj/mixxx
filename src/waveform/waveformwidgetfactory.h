@@ -21,6 +21,7 @@ class WWaveformViewer;
 class WaveformWidgetAbstract;
 class VSyncThread;
 class GuiTick;
+class ControlPotmeter;
 class VisualsManager;
 class ControlObject;
 
@@ -377,4 +378,5 @@ class WaveformWidgetFactory : public QObject,
     double m_actualFrameRate;
     int m_vSyncType;
     double m_playMarkerPosition;
+    std::unique_ptr<ControlPotmeter> m_pPlayMarkerPositionCO;
 };
