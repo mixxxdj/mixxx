@@ -424,6 +424,23 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
                     WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
     setPlayMarkerPosition(m_playMarkerPosition);
 
+    // Create control for playback marker position (0.0 = left, 1.0 = right)
+    if (!m_pPlayMarkerPositionCO) {
+        m_pPlayMarkerPositionCO = std::make_unique<ControlPotmeter>(
+                ConfigKey(kWaveformGroup, QStringLiteral("play_marker_position")),
+                0.0,
+                1.0);
+        m_pPlayMarkerPositionCO->set(m_playMarkerPosition);
+        connect(m_pPlayMarkerPositionCO.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    setPlayMarkerPosition(value);
+                });
+    } else {
+        m_pPlayMarkerPositionCO->set(m_playMarkerPosition);
+    }
+
     int untilMarkShowBeats =
             m_config->getValueString(
                             ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowBeats")))
