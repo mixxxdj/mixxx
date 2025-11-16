@@ -13,7 +13,7 @@ const JogFlashCriticalTime = 15; // number of seconds to quickly blink at the en
 
 
 /************************  GPL v2 licence  *****************************
- * Reloop Beatmix 2/4 controller script
+ * Reloop Beatmix 2/4 MK2 controller script
  * Author: Sébastien Blaisot <sebastien@blaisot.org>
  *
  **********************************************************************
@@ -39,7 +39,7 @@ const JogFlashCriticalTime = 15; // number of seconds to quickly blink at the en
  ***********************************************************************
  *                           GPL v2 licence
  *                           --------------
- * Reloop Beatmix controller script script 2.0.0 for Mixxx 2.4+
+ * Reloop Beatmix 2/4 MK2 controller script 2.0.0 for Mixxx 2.4+
  * Copyright (C) 2016 Sébastien Blaisot
  *
  * This program is free software; you can redistribute it and/or
