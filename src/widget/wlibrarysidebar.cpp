@@ -1,6 +1,8 @@
 #include "widget/wlibrarysidebar.h"
 
 #include <QHeaderView>
+#include <QScrollBar>
+#include <QTimer>
 #include <QUrl>
 #include <QtDebug>
 
@@ -15,10 +17,10 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
-    //Set some properties
+    // Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    //Drag and drop setup
+    // Drag and drop setup
     setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
@@ -30,8 +32,35 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 }
 
-void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
-    //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
+WLibrarySidebar::~WLibrarySidebar() {
+    // save scroll position on shutdown instead of on every scroll event
+    saveScrollPosition();
+}
+
+void WLibrarySidebar::setup(UserSettingsPointer pConfig) {
+    m_pConfig = pConfig;
+    // removed: connection to save on every scroll - now saves on shutdown only
+}
+
+void WLibrarySidebar::saveScrollPosition() {
+    if (m_pConfig) {
+        m_pConfig->setValue(
+                ConfigKey(QStringLiteral("[Library]"), QStringLiteral("SidebarScrollPosition")),
+                verticalScrollBar()->value());
+    }
+}
+
+void WLibrarySidebar::restoreScrollPosition() {
+    if (m_pConfig) {
+        int scrollPos = m_pConfig->getValue(
+                ConfigKey(QStringLiteral("[Library]"), QStringLiteral("SidebarScrollPosition")),
+                0);
+        verticalScrollBar()->setValue(scrollPos);
+    }
+}
+
+void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* event) {
+    // if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedIndex = indexAt(event->pos());
     if (!clickedIndex.isValid()) {
         return;
@@ -44,7 +73,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 /// Drag enter event, happens when a dragged item enters the track sources view
-void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
+void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         // We don't have a way to ask the LibraryFeatures whether to accept a
@@ -59,13 +88,13 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
         }
     }
     event->ignore();
-    //QTreeView::dragEnterEvent(event);
+    // QTreeView::dragEnterEvent(event);
 }
 
 /// Drag move event, happens when a dragged item hovers over the track sources view...
-void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
-    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
-    // Start a timer to auto-expand sections the user hovers on.
+void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* event) {
+    // qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    //  Start a timer to auto-expand sections the user hovers on.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QPoint pos = event->position().toPoint();
 #else
@@ -83,8 +112,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     if (event->mimeData()->hasUrls()) {
         const QList<QUrl> urls = event->mimeData()->urls();
         // Drag and drop within this widget
-        if ((event->source() == this)
-                && (event->possibleActions() & Qt::MoveAction)) {
+        if ((event->source() == this) && (event->possibleActions() & Qt::MoveAction)) {
             // Do nothing.
             event->ignore();
         } else {
@@ -124,7 +152,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     }
 }
 
-void WLibrarySidebar::timerEvent(QTimerEvent *event) {
+void WLibrarySidebar::timerEvent(QTimerEvent* event) {
     if (event->timerId() == m_expandTimer.timerId()) {
         QPoint pos = viewport()->mapFromGlobal(QCursor::pos());
         if (viewport()->rect().contains(pos)) {
@@ -140,18 +168,17 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
-void WLibrarySidebar::dropEvent(QDropEvent * event) {
+void WLibrarySidebar::dropEvent(QDropEvent* event) {
     if (event->mimeData()->hasUrls()) {
         // Drag and drop within this widget
-        if ((event->source() == this)
-                && (event->possibleActions() & Qt::MoveAction)) {
+        if ((event->source() == this) && (event->possibleActions() & Qt::MoveAction)) {
             // Do nothing.
             event->ignore();
         } else {
-            //Reset the selected items (if you had anything highlighted, it clears it)
-            //this->selectionModel()->clear();
-            //Drag-and-drop from an external application or the track table widget
-            //eg. dragging a track from Windows Explorer onto the sidebar
+            // Reset the selected items (if you had anything highlighted, it clears it)
+            // this->selectionModel()->clear();
+            // Drag-and-drop from an external application or the track table widget
+            // eg. dragging a track from Windows Explorer onto the sidebar
             SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
             if (sidebarModel) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -171,8 +198,8 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
                 }
             }
         }
-        //emit trackDropped(name);
-        //repaintEverything();
+        // emit trackDropped(name);
+        // repaintEverything();
     } else {
         event->ignore();
     }
@@ -201,7 +228,7 @@ void WLibrarySidebar::toggleSelectedItem() {
 bool WLibrarySidebar::isLeafNodeSelected() {
     QModelIndex index = selectedIndex();
     if (index.isValid()) {
-        if(!index.model()->hasChildren(index)) {
+        if (!index.model()->hasChildren(index)) {
             return true;
         }
         const SidebarModel* sidebarModel = qobject_cast<const SidebarModel*>(index.model());
@@ -352,7 +379,6 @@ void WLibrarySidebar::focusInEvent(QFocusEvent* event) {
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index, bool scrollToIndex) {
-    // qDebug() << "WLibrarySidebar::selectIndex" << index << scrollToIndex;
     if (!index.isValid()) {
         return;
     }
@@ -361,21 +387,22 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index, bool scrollToIndex) 
     if (selectionModel()) {
         selectionModel()->deleteLater();
     }
+
+    // disable auto-scroll before any operations that might trigger scrolling
+    setAutoScroll(false);
+
     if (index.parent().isValid()) {
         expand(index.parent());
     }
     setSelectionModel(pModel);
-    if (!scrollToIndex) {
-        // With auto-scroll enabled, setCurrentIndex() would scroll there.
-        // Disable (and re-enable if we don't want to scroll, e.g. when selecting
-        // AutoDJ from the menubar or during startup
-        setAutoScroll(false);
-    }
     setCurrentIndex(index);
-    if (scrollToIndex) {
-        scrollTo(index);
-    } else {
-        setAutoScroll(true);
+
+    // re-enable auto-scroll
+    setAutoScroll(true);
+
+    if (!scrollToIndex) {
+        // restore saved scroll position after tree expansion completes
+        QTimer::singleShot(100, this, &WLibrarySidebar::restoreScrollPosition);
     }
 }
 
