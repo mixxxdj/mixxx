@@ -147,7 +147,9 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         QWidget* pParent)
         : QHeaderView(orientation, pParent),
           m_menu(tr("Show or hide columns."), this),
-          m_preferredHeight(-1) {
+          m_preferredHeight(-1),
+          m_hoveredSection(-1),
+          m_previousHoveredSection(-1) {
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
@@ -431,6 +433,37 @@ void WTrackTableViewHeader::setHeightForFont() {
     m_preferredHeight = fm.height() + vPadding;
 }
 
+void WTrackTableViewHeader::leaveEvent(QEvent* pEvent) {
+    if (m_hoveredSection != -1) {
+        m_previousHoveredSection = m_hoveredSection;
+        m_hoveredSection = -1;
+        updateSection(m_previousHoveredSection);
+    }
+
+    QHeaderView::leaveEvent(pEvent);
+}
+
+void WTrackTableViewHeader::mouseMoveEvent(QMouseEvent* pEvent) {
+    int hovered = logicalIndexAt(pEvent->pos());
+
+    // We need to track the hover state manually, it's not set when initializing
+    // the QStyleOption in paintSection()
+    if (hovered != m_hoveredSection) {
+        // Store previous section before updating
+        m_previousHoveredSection = m_hoveredSection;
+        m_hoveredSection = hovered;
+
+        if (m_previousHoveredSection != -1) {
+            updateSection(m_previousHoveredSection);
+        }
+        if (m_hoveredSection != -1) {
+            updateSection(m_hoveredSection);
+        }
+    }
+
+    QHeaderView::mouseMoveEvent(pEvent);
+}
+
 QSize WTrackTableViewHeader::sizeHint() const {
     if (m_preferredHeight == -1) { // no font set by us, yet
         return QHeaderView::sizeHint();
@@ -459,6 +492,10 @@ void WTrackTableViewHeader::paintSection(
     initStyleOption(&opt);
     opt.rect = rect;
     opt.section = logicalIndex;
+    // Consider hover state to apply the respective style from qss
+    if (logicalIndex == m_hoveredSection) {
+        opt.state |= QStyle::State_MouseOver;
+    }
 
     // Draw background & border only
     opt.text = QString(); // prevent style from drawing the text

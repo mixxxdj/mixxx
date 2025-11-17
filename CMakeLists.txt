@@ -319,14 +319,13 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
-
-# Because of multiple concurrent definition of symbols caused by the rendergraph
-# compile definition we need to disable QML by default. This avoids the risk of
-# undefined behaviour in a stable build.
-# See: https://github.com/mixxxdj/mixxx/issues/14766
-# Once this is fixed we can revert the commit introducing this.
-option(QML "Build with QML" OFF)
-
+cmake_dependent_option(
+  QML
+  "Build with QML"
+  ON
+  "QT6"
+  OFF
+)
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 
 if(QOPENGL)
@@ -2804,6 +2803,13 @@ if(BUILD_TESTING)
 
   add_executable(mixxx-test ${src-mixxx-test})
 
+  if(HID)
+    target_sources(
+      mixxx-test
+      PRIVATE src/test/controller_hid_reportdescriptor_test.cpp
+    )
+  endif()
+
   if(QML)
     target_sources(
       mixxx-test
@@ -4855,12 +4861,14 @@ if(HID)
   target_sources(
     mixxx-lib
     PRIVATE
+      src/controllers/controllerhidreporttabsmanager.cpp
       src/controllers/hid/hidcontroller.cpp
       src/controllers/hid/hidiothread.cpp
       src/controllers/hid/hidioglobaloutputreportfifo.cpp
       src/controllers/hid/hidiooutputreport.cpp
       src/controllers/hid/hiddevice.cpp
       src/controllers/hid/hidenumerator.cpp
+      src/controllers/hid/hidreportdescriptor.cpp
       src/controllers/hid/hidusagetables.cpp
       src/controllers/hid/legacyhidcontrollermapping.cpp
       src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
@@ -5054,7 +5062,6 @@ if(QT6)
     )
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-nativestyle")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
@@ -5107,7 +5114,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble plucky questing)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble plucky questing resolute)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT

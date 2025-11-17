@@ -582,13 +582,11 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
-    }
+    } else if (nodeName == "StemLabel") {
 #ifdef __STEM__
-    else if (nodeName == "StemLabel") {
         result = wrapWidget(parseStemLabelWidget(node));
-    }
 #endif
-    else if (nodeName == "Knob") {
+    } else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
     } else if (nodeName == "KnobComposed") {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
