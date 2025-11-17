@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2025-10-14" timestamp="1760418812">
+    <release version="2.6.0" type="development" date="2025-11-15" timestamp="1763214302">
       <description>
  <p>
   STEM file support
@@ -1078,12 +1078,17 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.4" type="development" date="2025-10-14" timestamp="1760418812">
+    <release version="2.5.4" type="development" date="2025-11-15" timestamp="1763214302">
       <description>
  <p>
   Controller Mappings
  </p>
  <ul>
+  <li>
+   Korg Kaoss DJ: fix scratching with left wheel
+   #15607
+   #15121
+  </li>
   <li>
    Numark-NS6II: fix typo in NS6II.PadMode
    #15428
@@ -1093,6 +1098,11 @@
    #15363
    #15343
    #14731
+  </li>
+  <li>
+   Reloop Beatmix 2/4: fix overriding persisted fx routing
+   #15574
+   #14917
   </li>
   <li>
    Components JogwheelBasic: Disable scratching when leaving
@@ -1114,10 +1124,6 @@
    #15467
   </li>
   <li>
-   Improve and unify sampler sync button behaviour across all skins
-   #15399
-  </li>
-  <li>
    LateNight: work around style bug in Qt 6.9.2 causing black key button text
    #15404
    #15351
@@ -1125,6 +1131,14 @@
   <li>
    LateNight: revert xfader buttons to one (cycling) toggle
    #15395
+  </li>
+  <li>
+   Tango: restore VU meter mini backpath
+   #15544
+  </li>
+  <li>
+   Improve and unify sampler sync button behaviour across all skins
+   #15399
   </li>
  </ul>
  <p>
@@ -1169,6 +1183,14 @@
    Sidebar: expand items to full width to maximize click-responsive area
    #15330
   </li>
+  <li>
+   focus tracks view when selecting a track via deck track menu
+   #15543
+  </li>
+  <li>
+   Search: maintain cursor position when saving query
+   #15512
+  </li>
  </ul>
  <p>
   Preferences
@@ -1196,18 +1218,26 @@
    Waveforms: fix handling of invalid overview config type
    #15422
   </li>
+  <li>
+   Broadcast: handle and fix invalid config strings
+   #15525
+  </li>
  </ul>
  <p>
   Target support
  </p>
  <ul>
   <li>
-   Upload all 2.5 builds to "Patch Builds" ppa:mixxx/mixxxpatches
-   #15436
-  </li>
-  <li>
    Update macOS (Intel) runner for building Mixxx to macOS Sequoia 15
    #15391
+  </li>
+  <li>
+   Welcome Ubuntu 26.04 LTS Resolute Raccoon
+   #15588
+  </li>
+  <li>
+   Upload all 2.5 builds to "Patch Builds" ppa:mixxx/mixxxpatches
+   #15436
   </li>
   <li>
    CMakeLists.txt: fix handling of custom CMAKE_OSX_DEPLOYMENT_TARGET
@@ -1233,6 +1263,20 @@
   <li>
    Fix building with FLAC V 1.5
   </li>
+  <li>
+   Support building with Qt 6.10: Add Qt6::GuiPrivate
+   #15502
+   #15485
+  </li>
+  <li>
+   Touchscreen on Windows 11: disable touch -&gt; mouse event translation
+   #15547
+   #15546
+  </li>
+  <li>
+   Fix missing QuickTemplates2 in Windows Installer
+   #15439
+  </li>
  </ul>
  <p>
   Misc
@@ -1256,13 +1300,26 @@
    #15394
   </li>
   <li>
-   Menu bar: fix showing/hiding via Alt broken for Qt 6.9
+   Effects: fix quantisation in case of engine samplerate != track samplerate
+   #15538
+   #15300
+  </li>
+  <li>
+   Menu bar: fix showing/hiding via Alt
    #15352
    #15350
+   #15396
+   #15385
   </li>
   <li>
    Fix Menu checkbox behaviour, consistency &amp; cleanup
    #15365
+  </li>
+  <li>
+   Fix time warping when click-and-dragging waveform
+   #15579
+   #15619
+   #15610
   </li>
  </ul>
 </description>

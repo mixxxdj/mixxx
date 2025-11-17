@@ -313,9 +313,13 @@ void PositionScratchController::process(double currentSamplePos,
         // qDebug() << "scratchEnable()" << currentSamplePos;
     }
 
-    if (!m_seekFramePos.isValid()) {
-        // We need to transpose all buffers to compensate the seek
-        // in a way that the next process call does not even notice anything
+    if (m_seekFramePos.isValid()) {
+        // This is true when the engine seeked, so we now need to adopt the new
+        // position, ie. transpose all buffers to compensate the seek
+        // in a way that the next process call does not even notice anything.
+        // Else the PID controller will give us insane high scratch rates
+        // (insane scratch sounds) and the play position will be horribly off.
+        // See https://github.com/mixxxdj/mixxx/pull/14357
         currentSamplePos = m_seekFramePos.toEngineSamplePos();
         m_seekFramePos = mixxx::audio::kInvalidFramePos;
     }
