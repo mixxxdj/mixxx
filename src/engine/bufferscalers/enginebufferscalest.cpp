@@ -159,7 +159,8 @@ double EngineBufferScaleST::scaleBuffer(
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
-                m_pSoundTouch->putSamples(m_bufferBack.data(), iAvailFrames);
+                m_pSoundTouch->putSamples(m_bufferBack.data(),
+                        iAvailFrames); // bookkeeping, no copy yet
             } else {
                 // We may get 0 samples once if we just hit a loop trigger, e.g.
                 // when reloop_toggle jumps back to loop_in, or when moving a
