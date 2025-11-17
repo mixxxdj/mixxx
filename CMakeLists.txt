@@ -3898,6 +3898,15 @@ else()
             COMPONENT
             applocal
         )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
       endif()
 
       if(QT_VERSION VERSION_LESS 6.8)
