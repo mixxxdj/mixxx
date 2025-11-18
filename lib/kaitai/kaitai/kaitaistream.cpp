@@ -684,7 +684,7 @@ std::string kaitai::kstream::bytes_to_str(const std::string src, const char *src
 
         if (res == (size_t)-1) {
             if (errno == E2BIG) {
-                // dst buffer is not enough to accomodate whole string
+                // dst buffer is not enough to accommodate whole string
                 // enlarge the buffer and try again
                 size_t dst_used = dst_len - dst_left;
                 dst_left += dst_len;
