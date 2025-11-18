@@ -82,7 +82,8 @@ class SoundManager : public QObject {
     void closeActiveConfig(bool async = false);
     void checkConfig();
 
-    void onDeviceOutputCallback(const SINT iFramesPerBuffer);
+    void onDeviceOutputCallback(const SINT iFramesPerBuffer,
+            std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
