@@ -177,6 +177,8 @@ class Library: public QObject {
 
     void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
+    void trackDirectoriesUpdated();
+
   private slots:
       void onPlayerManagerTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
       void onPlayerManagerTrackAnalyzerIdle();
