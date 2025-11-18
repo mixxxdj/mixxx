@@ -25,7 +25,9 @@ constexpr unsigned short kAppleIncVendorId = 0x004c;
 
 } // namespace mixxx
 
-bool HidEnumerator::recognizeDevice(const hid_device_info& device_info) const {
+namespace {
+
+bool recognizeDevice(const hid_device_info& device_info) {
     // Skip mice and keyboards. Users can accidentally disable their mouse
     // and/or keyboard by enabling them as HID controllers in Mixxx.
     // https://github.com/mixxxdj/mixxx/issues/10498
@@ -81,6 +83,8 @@ bool HidEnumerator::recognizeDevice(const hid_device_info& device_info) const {
     }
     return true;
 }
+
+} // namespace
 
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
