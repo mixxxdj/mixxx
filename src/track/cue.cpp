@@ -84,7 +84,7 @@ Cue::Cue(
                           sampleRate)),
           m_iHotCue(cueInfo.getHotCueIndex().value_or(kNoHotCue)),
           m_label(cueInfo.getLabel()),
-          m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)) {
+          m_color(cueInfo.getColor().value_or(mixxx::predefinedcolorpalettes::kDefaultCueColor)) {
     DEBUG_ASSERT(!m_dbId.isValid());
 }
 
