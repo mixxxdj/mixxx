@@ -184,12 +184,36 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
     fadeModeCombobox->addItem(tr("Skip Silence Start Full Volume"),
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedStartCenterSkipSilence));
+    fadeModeCombobox->addItem(tr("Start Time + Duration"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::StartTimeDuration));
     fadeModeCombobox->setCurrentIndex(
             fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
     connect(fadeModeCombobox,
             QOverload<int>::of(&QComboBox::activated),
             this,
             &DlgAutoDJ::slotTransitionModeChanged);
+
+    // Initialize Start/Duration controls and wire to processor (real-time changes)
+    startTimeSpinBox->setValue(m_pAutoDJProcessor->getStartTimeSeconds());
+    durationSpinBox->setValue(m_pAutoDJProcessor->getDurationSeconds());
+    connect(startTimeSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int v) {
+        m_pAutoDJProcessor->setStartTimeSeconds(v);
+    });
+    connect(durationSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, [this](int v) {
+        m_pAutoDJProcessor->setDurationSeconds(v);
+    });
+
+    auto updateStartDurationVisibility = [this]() {
+        const auto mode = m_pAutoDJProcessor->getTransitionMode();
+        const bool show = (mode == AutoDJProcessor::TransitionMode::StartTimeDuration);
+        labelStartTime->setVisible(show);
+        startTimeSpinBox->setVisible(show);
+        labelStartTimeAppendix->setVisible(show);
+        labelDuration->setVisible(show);
+        durationSpinBox->setVisible(show);
+        labelDurationAppendix->setVisible(show);
+    };
+    updateStartDurationVisibility();
 
     connect(pushButtonRepeatPlaylist,
             &QPushButton::clicked,
@@ -344,6 +368,15 @@ void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
     m_pAutoDJProcessor->setTransitionMode(
             static_cast<AutoDJProcessor::TransitionMode>(
                     fadeModeCombobox->itemData(newIndex).toInt()));
+    // Toggle visibility of Start/Duration when switching mode
+    const bool show = (m_pAutoDJProcessor->getTransitionMode() ==
+            AutoDJProcessor::TransitionMode::StartTimeDuration);
+    labelStartTime->setVisible(show);
+    startTimeSpinBox->setVisible(show);
+    labelStartTimeAppendix->setVisible(show);
+    labelDuration->setVisible(show);
+    durationSpinBox->setVisible(show);
+    labelDurationAppendix->setVisible(show);
     // Clicking on a transition mode item moves keyboard focus to the list widget.
     // Move focus back to the previously focused library widget.
     ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
