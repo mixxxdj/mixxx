@@ -78,7 +78,7 @@ def selectCpus(userCpu=-1):
 def cpusetname(name):
     if name and name[0] == "/":
         return name
-    return "/%s" % name
+    return f"/{name}"
 
 
 def deleteCpuset(name, debug):
