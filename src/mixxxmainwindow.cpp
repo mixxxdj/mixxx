@@ -577,7 +577,7 @@ void MixxxMainWindow::initializeWindow() {
     slotUpdateWindowTitle(TrackPointer());
 }
 
-#ifndef __APPLE__
+/*#ifndef __APPLE__
 void MixxxMainWindow::alwaysHideMenuBarDlg() {
     // Don't show the dialog if the user unchecked "Ask me again"
     if (!m_pCoreServices->getSettings()->getValue<bool>(
@@ -621,7 +621,7 @@ void MixxxMainWindow::alwaysHideMenuBarDlg() {
             kHideMenuBarConfigKey,
             msg.clickedButton() == pHideBtn ? 1 : 0);
 }
-#endif
+#endif*/
 
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
         const QString &title, const QString &text, bool* retryClicked) {
