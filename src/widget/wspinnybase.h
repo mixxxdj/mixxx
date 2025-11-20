@@ -72,10 +72,13 @@ class WSpinnyBase : public WGLWidget,
     void mouseMoveEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
+    void leaveEvent(QEvent* e) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
     bool event(QEvent* pEvent) override;
+
+    void stopScratching();
 
     // TrackDropTarget:
     bool handleDragAndDropEventFromWindow(QEvent* pEvent) override;

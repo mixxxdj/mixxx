@@ -41,6 +41,8 @@ WWaveformViewer::WWaveformViewer(
 
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
+
+    setCursor(Qt::OpenHandCursor);
 }
 
 WWaveformViewer::~WWaveformViewer() {
@@ -132,6 +134,18 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         return;
     }
 
+    // Apparently it's possible that we don't receive button release events
+    // which means we assume we're still scratching or bending even though
+    // it's not desired anymore.
+    // Stop scratching/bending in this case
+    if (event->buttons().testFlag(Qt::NoButton)) {
+        qWarning() << "     .";
+        qWarning() << "     moved, no button -> stop scratching and bending";
+        qWarning() << "     .";
+        stopScratchingAndBending();
+        return;
+    }
+
     // Only send signals for mouse moving if the left button is pressed
     if (m_bScratching) {
         int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
@@ -178,18 +192,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
-    if (m_bScratching) {
-        m_pScratchPositionEnable->set(0.0);
-        m_bScratching = false;
-    }
-    if (m_bBending) {
-        m_pWheel->setParameter(0.5);
-        m_bBending = false;
-    }
-    m_mouseAnchor = QPoint();
-
-    // Set the cursor back to an arrow.
-    setCursor(Qt::ArrowCursor);
+    stopScratchingAndBending();
 }
 
 void WWaveformViewer::wheelEvent(QWheelEvent* event) {
@@ -215,10 +218,27 @@ bool WWaveformViewer::handleDragAndDropEventFromWindow(QEvent* pEvent) {
 }
 
 void WWaveformViewer::leaveEvent(QEvent*) {
-    if (m_pHoveredMark) {
-        unhighlightMark(m_pHoveredMark);
-        m_pHoveredMark = nullptr;
+    // if (m_pHoveredMark) {
+    //    unhighlightMark(m_pHoveredMark);
+    //    m_pHoveredMark = nullptr;
+    // }
+    // setCursor(Qt::ForbiddenCursor);
+    // stopScratchingAndBending();
+}
+
+void WWaveformViewer::stopScratchingAndBending() {
+    if (m_bScratching) {
+        m_pScratchPositionEnable->set(0.0);
+        m_bScratching = false;
     }
+    if (m_bBending) {
+        m_pWheel->setParameter(0.5);
+        m_bBending = false;
+    }
+    m_mouseAnchor = QPoint();
+
+    // Set the cursor back to an open hand.
+    setCursor(Qt::OpenHandCursor);
 }
 
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
