@@ -3,19 +3,20 @@
     <info>
         <name>Numark MixTrack Pro</name>
         <author>Matteo (matteo@magm3.com), James Ralston, and D. J. Freije (dario2004@gmail.com), Josh Patten<!-- codespell:ignore patten -->, Vespadj</author>
-        <description>version v2.5 (2025)</description>
+        <description>version v2.5 - 2.6 (2026)</description>
         <forums>https://mixxx.discourse.group/t/numark-mixtrack-pro-by-vespadj/32635</forums>
+        <manual>numark_mixtrack_pro</manual>
     </info>
     <settings>
         <group label="Alternative Mapping">
             <option
-                variable="numarkMixTrackPro_brakeEnabled"
-                type="boolean"
-                default="false"
-                label='Play/Pause performs Brake and Soft Start if "SCRATCH LED" is on. [Require Mixxx v.2.6+]'>
-                <description>
-                    Brake and Soft Start, at Play / Pause if "scratch LED" is on.
-                </description>
+                variable="numarkMixTrackPro_meanPitchBendBtns"
+                type="enum"
+                label="PITCH BEND buttons">
+                <value label="Rate temp up/down (already available by external wheel)">rate_temp</value>
+                <value label="Beat jump" default="true">beatjump</value>
+                <value label="Pitch-Key up/down">pitch</value>
+                <description>Assaign function to "PITCH BEND" buttons.</description>
             </option>
             <option
                 variable="numarkMixTrackPro_editLoopByWheelEnabled"
@@ -28,13 +29,22 @@
                 </description>
             </option>
             <option
-                variable="numarkMixTrackPro_meanPitchBendBtns"
-                type="enum"
-                label="PITCH BEND buttons">
-                <value label="Rate temp up/down (already available by external wheel)">rate_temp</value>
-                <value label="Beat jump" default="true">beatjump</value>
-                <value label="Pitch-Key up/down">pitch</value>
-                <description>Assaign function to "PITCH BEND" buttons.</description>
+                variable="numarkMixTrackPro_brakeEnabled"
+                type="boolean"
+                default="false"
+                label='Pause performs Brake if "SCRATCH LED" is on.'>
+                <description>
+                    Brake at Pause if "scratch LED" is on. [Require Mixxx v.2.6+]
+                </description>
+            </option>
+            <option
+                variable="numarkMixTrackPro_softStartEnabled"
+                type="boolean"
+                default="false"
+                label='Play performs Soft Start if "SCRATCH LED" is on.'>
+                <description>
+                    Soft Start at Play if "scratch LED" is on. [Require Mixxx v.2.6+]
+                </description>
             </option>
         </group>
         <group label="Activator for Quick Effect Super knob">
@@ -52,6 +62,18 @@
             <row orientation="vertical">
             </row>
         </group>
+        <group label="Parameters">
+            <option
+                variable="numarkMixTrackPro_scratchSensibility"
+                type="integer"
+                label="Scratch Sensibility (default 600)"
+                default="600"
+                min="300"
+                max="1200"
+                step="100"
+                >
+            </option>
+        </group>
     </settings>
     <controller id="Numark_Mixtrack_Pro">
         <scriptfiles>
@@ -61,7 +83,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>volume</key>
-                <description>[Channel1], volume</description>
+                <description>Mixer</description>
                 <status>0xB0</status>
                 <midino>0x08</midino>
                 <options>
@@ -71,7 +93,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>volume</key>
-                <description>[Channel2], volume</description>
+                <description>Mixer</description>
                 <status>0xB0</status>
                 <midino>0x09</midino>
                 <options>
@@ -188,7 +210,7 @@
             <control>
                 <group>[Master]</group>
                 <key>gain</key>
-                <description>[Master],gain</description>
+                <description>Mixer</description>
                 <status>0xB0</status>
                 <midino>0x17</midino>
                 <options>
@@ -648,7 +670,6 @@
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
                 <key>super1_set_default</key>
-                <description>was [EffectRack1_EffectUnit2_Effect1],clear</description>
                 <status>0x90</status>
                 <midino>0x67</midino>
                 <options>
@@ -658,7 +679,6 @@
             <control>
                 <group>[Channel1]</group>
                 <key>NumarkMixTrackPro.fxSelectKnobPress</key>
-                <description>was [EffectRack1_EffectUnit1_Effect1],clear</description>
                 <status>0x90</status>
                 <midino>0x68</midino>
                 <options>
