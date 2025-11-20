@@ -59,16 +59,6 @@
 //						Border of the wheels: Pitch Bend.
 //
 
-
-// Global constants/variables
-const ON = 0x7f;
-/*
-const OFF = 0x00;
-const DOWN = 0x7f;
-const FW = 0x01; // wheel forward
-const RW = 0x7f; // wheel rewind
-*/
-
 /* eslint no-undef: "error" */
 function NumarkMixTrackPro() {}
 
@@ -84,7 +74,7 @@ NumarkMixTrackPro.init = function(id) {
     NumarkMixTrackPro.shiftKey = [false, false]; // used as [Shift], aka "VIEW" and "TICK" buttons
     NumarkMixTrackPro.touch = [false, false];
     NumarkMixTrackPro.scratchTimer = [-1, -1];
-    NumarkMixTrackPro.fxKnobPressed = false; // TODO: to [0, 0]
+    NumarkMixTrackPro.fxKnobPressed = [0, 0];
     NumarkMixTrackPro.syncLastTimestamp = [0, 0];
     NumarkMixTrackPro.loopEditIn = [-1, -1];
 
@@ -301,7 +291,7 @@ NumarkMixTrackPro.pitchBendBtns = function(group, value, isPlus) {
         break;
 
     default:
-        console.log(
+        console.error(
             "NumarkMixTrackPro.settings.meanPitchBendBtns",
             NumarkMixTrackPro.settings.meanPitchBendBtns
         );
@@ -353,41 +343,30 @@ NumarkMixTrackPro.Channel2Clip = function(value) {
     NumarkMixTrackPro.clipLED(value, NumarkMixTrackPro.leds[2].sync);
 };
 
-NumarkMixTrackPro.Stutter1Beat = function(value) {
+NumarkMixTrackPro.setStutterBeat = function(deck, value) {
     const secondsBlink = 30;
     const secondsToEnd =
-        engine.getParameter("[Channel1]", "duration") *
-        (1 - engine.getParameter("[Channel1]", "playposition"));
+        engine.getParameter(`[Channel${deck}]`, "duration") *
+        (1 - engine.getParameter(`[Channel${deck}]`, "playposition"));
 
     if (
         secondsToEnd < secondsBlink &&
         secondsToEnd > 1 &&
-        engine.getParameter("[Channel1]", "play")
+        engine.getParameter(`[Channel${deck}]`, "play")
     ) {
         // The song is going to end
-
-        NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[1].Cue, value);
+        NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck].Cue, value);
     }
-    NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[1].stutter, value);
+
+    NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck].stutter, value);
+};
+
+NumarkMixTrackPro.Stutter1Beat = function(value) {
+    NumarkMixTrackPro.setStutterBeat(1, value);
 };
 
 NumarkMixTrackPro.Stutter2Beat = function(value) {
-    const secondsBlink = 30;
-    const secondsToEnd =
-        engine.getParameter("[Channel2]", "duration") *
-        (1 - engine.getParameter("[Channel2]", "playposition"));
-
-    if (
-        secondsToEnd < secondsBlink &&
-        secondsToEnd > 1 &&
-        engine.getParameter("[Channel2]", "play")
-    ) {
-        // The song is going to end
-
-        NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[2].Cue, value);
-    }
-
-    NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[2].stutter, value);
+    NumarkMixTrackPro.setStutterBeat(2, value);
 };
 
 NumarkMixTrackPro.clipLED = function(value, note) {
@@ -444,9 +423,7 @@ NumarkMixTrackPro.doFlash = function(ndx, veces) {
 NumarkMixTrackPro.selectKnob = function(
     channel,
     control,
-    value,
-    // status,
-    // group
+    value
 ) {
     if (value > 63) {
         value = value - 128;
@@ -475,12 +452,10 @@ NumarkMixTrackPro.LoadTrack = function(
     status,
     group
 ) {
-    // Load the selected track in the corresponding deck only if the track is paused
-
-    if (value && engine.getParameter(group, "play") !== 1) {
+    if (value) {
         script.triggerControl(group, "LoadSelectedTrack", 50);
 
-        // cargar el tema con el pitch en 0
+        // reset rate/pitch to 0%
         engine.softTakeover(group, "rate", false);
         engine.setParameter(group, "rate", 0.5);
         engine.softTakeover(group, "rate", true);
@@ -530,7 +505,7 @@ NumarkMixTrackPro.beatsync = function(channel, control, value, status, group) {
         const syncLeader = engine.getParameter(group, "sync_leader");
         const timestamp = Date.now();
 
-        if (value === ON) {
+        if (value) {
             if (!syncLeader) {
                 engine.setParameter(group, "sync_enabled", true);
                 lastTimestamp.set(timestamp);
@@ -929,8 +904,8 @@ NumarkMixTrackPro.wheelTouch = function(
         NumarkMixTrackPro.touch[deck - 1] = false;
         NumarkMixTrackPro.loopEditIn[deck - 1] = -1;
 
-        // 	paro el timer (si no existe da error mmmm) y arranco un nuevo timer.
-        // 	Si en 20 milisegundos no se mueve el plato, desactiva el scratch
+        // Stop the timer (if it doesn't exist, it gives an error) and start a new timer.
+        // If the wheel doesn't move within 20 milliseconds, it disables scratching.
 
         if (NumarkMixTrackPro.scratchTimer[deck - 1] !== -1) {
             engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck - 1]);
@@ -990,7 +965,7 @@ NumarkMixTrackPro.toggleDirectoryMode = function(
     // Toggle setting and light
     if (value) {
         NumarkMixTrackPro.directoryMode = !NumarkMixTrackPro.directoryMode;
-        // https://manual.mixxx.org/latest/it/chapters/appendix/mixxx_controls.html#control-[Library]-focused_widget
+        // https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html#control-[Library]-focused_widget
         /*
         if (NumarkMixTrackPro.directoryMode) {
             script.triggerControl('[Library]', 'MoveFocusBackward', 50); // [Shift+TAB]; [TAB]: MoveFocusForward
@@ -1010,9 +985,7 @@ NumarkMixTrackPro.toggleDirectoryMode = function(
 NumarkMixTrackPro.onCentralKnobPress = function(
     channel,
     control,
-    value,
-    // status,
-    // group
+    value
 ) {
     if (!value) { return; }
 
@@ -1140,16 +1113,18 @@ NumarkMixTrackPro.fxSelectKnobPress = function(
     status,
     group
 ) {
-    // group [QuickEffectRack1_[Channel1]] or [QuickEffectRack1_[Channel2]]
+    const deck = script.deckFromGroup(group);
+
+    // [QuickEffectRack1_[Channel1]] or [QuickEffectRack1_[Channel2]]
     if (value === 127) {
         script.triggerControl(
             `[QuickEffectRack1_${group}]`,
             "super1_set_default",
             100
         );
-        NumarkMixTrackPro.fxKnobPressed = true;
+        NumarkMixTrackPro.fxKnobPressed[deck - 1] = true;
     } else {
-        NumarkMixTrackPro.fxKnobPressed = false;
+        NumarkMixTrackPro.fxKnobPressed[deck - 1] = false;
     }
 };
 
@@ -1160,11 +1135,14 @@ NumarkMixTrackPro.fxSelectKnobRotate = function(
     status,
     group
 ) {
-    if (NumarkMixTrackPro.fxKnobPressed) {
-        if (value === 0x7f) {
-            script.triggerControl(group, "waveform_zoom_down", 100);
-        } else {
-            script.triggerControl(group, "waveform_zoom_up", 100);
+    const deck = script.deckFromGroup(group);
+    if (NumarkMixTrackPro.fxKnobPressed[deck - 1]) {
+        if (deck === 1) {
+            if (value === 0x7f) {
+                script.triggerControl(group, "waveform_zoom_down", 100);
+            } else {
+                script.triggerControl(group, "waveform_zoom_up", 100);
+            }
         }
     } else {
         // Select FX
