@@ -93,16 +93,16 @@ jobs:
             else
               echo "::warning:: Merge conflict detected!"
               issueBody=`cat <<EOF
-              ${CONFLICT_ISSUE_BODY}
+          ${CONFLICT_ISSUE_BODY}
 
-              ---
-              The following files are in conflicts:
+          ---
+          The following files are in conflicts:
 
-              \\\`\\\`\\\`
-              $(git diff --name-only --diff-filter=U --relative)
-              \\\`\\\`\\\`
-              EOF
-              `
+          \\\`\\\`\\\`
+          $(git diff --name-only --diff-filter=U --relative)
+          \\\`\\\`\\\`
+          EOF
+          `
               if [ -z "$conflictIssueNumber" ]; then
                 gh issue create --title "${CONFLICT_ISSUE_TITLE}" --body "${issueBody}" --label sync-branches
               else
