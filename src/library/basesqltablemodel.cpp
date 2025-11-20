@@ -422,6 +422,9 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
         return;
     }
 
+    // Note: don't use SQL strings as extraFilter, this will cause issues in
+    // BaseTrackCache::filterAndSort() which is responsible for adding/removing
+    // dirty tracks from the view.
     m_currentSearch = searchText;
     m_currentSearchFilter = extraFilter;
 }
