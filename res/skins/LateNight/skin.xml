@@ -45,6 +45,7 @@
     <!-- Decks -->
       <!-- general -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_4decks_row">0</attribute>
       <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
@@ -410,6 +411,23 @@
     </SingletonDefinition>
 
     <Template src="skins:LateNight/mixer/singletons.xml"/>
+
+    <!-- move to /mixer/singletons.xml -->
+    <!-- <Template src="skins:LateNight/mixer/singletons_channel.xml">
+      <SetVariable name="ChanNum">1</SetVariable>
+    </Template>
+
+    <Template src="skins:LateNight/mixer/singletons_channel.xml">
+      <SetVariable name="ChanNum">2</SetVariable>
+    </Template>
+
+    <Template src="skins:LateNight/mixer/singletons_channel.xml">
+      <SetVariable name="ChanNum">3</SetVariable>
+    </Template>
+
+    <Template src="skins:LateNight/mixer/singletons_channel.xml">
+      <SetVariable name="ChanNum">4</SetVariable>
+    </Template> -->
 
     <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
