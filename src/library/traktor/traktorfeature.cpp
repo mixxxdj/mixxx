@@ -423,15 +423,6 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
     TreeItem* parent = rootItem.get();
 
-    QSqlQuery query_insert_to_playlists(m_database);
-    query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
-                  "VALUES (:name)");
-
-    QSqlQuery query_insert_to_playlist_tracks(m_database);
-    query_insert_to_playlist_tracks.prepare(
-        "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
-        "VALUES (:playlist_id, :track_id, :position)");
-
     while (!xml.atEnd() && !m_cancelImport) {
         //read next XML element
         xml.readNext();
@@ -455,7 +446,16 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                     //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "PLAYLIST");
 
-                    parent->appendChild(name, current_path);
+                   QSqlQuery query_insert_to_playlists(m_database);
+                   query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
+                                 "VALUES (:name)");
+
+                   QSqlQuery query_insert_to_playlist_tracks(m_database);
+                   query_insert_to_playlist_tracks.prepare(
+                       "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
+                       "VALUES (:playlist_id, :track_id, :position)");
+
+                   parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml,
                             current_path,
