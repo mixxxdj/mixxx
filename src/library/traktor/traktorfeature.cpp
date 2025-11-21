@@ -472,8 +472,9 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                 parent = parent->parent();
 
                 if (last_non_playlist_was_empty) {
-                    // If the last node was not a playlist (FOLDER, SMARTLIST, etc... and was empty we remove it
-                    // from the item tree so that it doesn't show for the user.
+                    // If the last node was not a playlist (FOLDER, SMARTLIST,
+                    // etc... and was empty we remove it from the item tree so
+                    // that it doesn't show for the user.
                     parent->removeChildren(parent->children().count() - 1, 1);
                 }
 
