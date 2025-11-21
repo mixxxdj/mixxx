@@ -438,18 +438,20 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                 parent = parent->appendChild(name, current_path);
 
                 if (type == "PLAYLIST") {
-                    //qDebug() << "Playlist: " + current_path << " has parent " << parent->getData().toString();
+                    // qDebug() << "Playlist: " + current_path << " has parent "
+                    // << parent->getData().toString();
 
                     playlists += current_path;
 
                     QSqlQuery query_insert_to_playlists(m_database);
-                    query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
-                                  "VALUES (:name)");
+                    query_insert_to_playlists.prepare(
+                            "INSERT INTO traktor_playlists (name) "
+                            "VALUES (:name)");
 
                     QSqlQuery query_insert_to_playlist_tracks(m_database);
                     query_insert_to_playlist_tracks.prepare(
-                        "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
-                        "VALUES (:playlist_id, :track_id, :position)");
+                            "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
+                            "VALUES (:playlist_id, :track_id, :position)");
 
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml,
@@ -476,7 +478,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                 }
 
                 // Whenever we find a closing NODE, remove the last component of the path
-                const int lastSlash = current_path.lastIndexOf (delimiter);
+                const int lastSlash = current_path.lastIndexOf(delimiter);
                 const int path_length = current_path.size();
 
                 current_path.remove(lastSlash, path_length - lastSlash);
