@@ -453,7 +453,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                             "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
                             "VALUES (:playlist_id, :track_id, :position)");
 
-                    // process all the entries within the playlist 'name' having path 'current_path'
+                    // Process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml,
                             current_path,
                             std::move(query_insert_to_playlists),
@@ -483,7 +483,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
-            // We leave the infinite loop, if twe have the closing "PLAYLIST" tag
+            // We leave the infinite loop, if we have the closing "PLAYLIST" tag
             if (xml.name() == QLatin1String("PLAYLISTS")) {
                 break;
             }
