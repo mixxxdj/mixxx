@@ -1435,6 +1435,7 @@ add_library(
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
   src/network/webtask.cpp
+  src/osc/oscreceiver.cpp
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
@@ -1464,6 +1465,8 @@ add_library(
   src/preferences/dialog/dlgpreflibrarydlg.ui
   src/preferences/dialog/dlgprefmixer.cpp
   src/preferences/dialog/dlgprefmixerdlg.ui
+  src/preferences/dialog/dlgprefosc.cpp
+  src/preferences/dialog/dlgprefoscdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
@@ -2078,6 +2081,8 @@ if(MSVC)
     target_compile_definitions(
       mixxx-lib
       PUBLIC
+        # Eve: to prevent multiple instances of winsock(2) being loaded
+        WIN32_LEAN_AND_MEAN
         _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
         _CRT_SECURE_NO_WARNINGS
     )
@@ -2171,6 +2176,8 @@ if(WIN32)
   # _WIN32_WINNT_WIN7 = 0x0601
   target_compile_definitions(mixxx-lib PUBLIC WINVER=0x0601)
   target_compile_definitions(mixxx-lib PUBLIC _WIN32_WINNT=0x0601)
+  # Eve: to prevent multiple instances of winsock(2) being loaded
+  target_compile_definitions(mixxx-lib PUBLIC WIN32_LEAN_AND_MEAN)
   if(MSVC)
     target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
   endif()
@@ -2268,6 +2275,8 @@ if(QT6)
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
   # builds with Qt < 3.21
+  # Eve: to prevent multiple instances of winsock(2) being loaded
+  ### add_definitions(-DWIN32_LEAN_AND_MEAN)
   qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
 else()
   find_package(Qt5 COMPONENTS Core) # For Qt Core cmake functions
@@ -2550,6 +2559,9 @@ endif()
 # Tests
 #
 
+# Eve: to prevent multiple instances of winsock(2) being loaded
+### add_definitions(-DWIN32_LEAN_AND_MEAN)
+
 find_package(GTest CONFIG)
 default_option(BUILD_TESTING "Build with Unittests" "GTest_FOUND")
 if(BUILD_TESTING)
@@ -2735,6 +2747,8 @@ if(BUILD_TESTING)
     src/test/mixxxtest.cpp
     src/test/mock_networkaccessmanager.cpp
     src/test/musicbrainzrecordingstasktest.cpp
+    #src/test/osc_liblo_test.cpp
+    #src/test/osc_mixxx_integration_test.cpp
     src/test/performancetimer_test.cpp
     src/test/playcountertest.cpp
     src/test/playermanagertest.cpp
@@ -2957,6 +2971,8 @@ add_custom_target(
 
 # Windows-only resource file
 if(WIN32)
+  # EVE
+  ###add_definitions(-DWIN32_LEAN_AND_MEAN)
   string(TIMESTAMP MIXXX_YEAR "%Y")
 
   set(
@@ -3378,6 +3394,43 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(rekordbox_metadata PRIVATE -Wno-switch)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   target_compile_options(rekordbox_metadata PRIVATE /w44063)
+endif()
+
+#eve osc
+# liblo
+
+if(WIN32 OR APPLE)
+  message(STATUS "[Liblo] Windows or macOS, using vcpkg")
+  find_package(liblo REQUIRED)
+elseif(UNIX)
+  message(STATUS "[Liblo] Linux, using pkg-config")
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(LIBLO REQUIRED liblo)
+
+  add_library(liblo UNKNOWN IMPORTED)
+  set_target_properties(
+    liblo
+    PROPERTIES
+      IMPORTED_LOCATION ${LIBLO_LINK_LIBRARIES}
+      INTERFACE_INCLUDE_DIRECTORIES ${LIBLO_INCLUDE_DIRS}
+  )
+
+  add_library(liblo::liblo ALIAS liblo)
+endif()
+
+include_directories(${LIBLO_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PRIVATE liblo::liblo)
+
+# Liblo Test for CI
+# to check if liblo is included >> send some messages to itself
+# if received >> test passes
+if(BUILD_TESTING)
+  add_executable(
+    osc_mixxx_integration_test
+    src/test/osc_mixxx_integration_test.cpp
+  )
+  target_link_libraries(osc_mixxx_integration_test PRIVATE liblo::liblo)
+  add_test(NAME osc_mixxx_integration_test COMMAND osc_mixxx_integration_test)
 endif()
 
 # Kaitai for reading Rekordbox libraries
