@@ -138,35 +138,27 @@ NumarkPartyMix.Deck = function(deckNumber) {
     this.wheelTurn = new components.Encoder({
         group: "[Channel" + deckNumber + "]",
         key: "wheelTurn",
-        touchTimer: 0,
-        touchTimout: 0,
         input: function(channel, _control, value, _status, group) {
-            //clockwise (slow-fast) 0x01 - 0x06
-            //counter-clockwise (slow-fast) 0x7F - 0x7A
-            //transform counter-clockwise messages to negative values
+            // Calculate direction (Standard Mixxx logic)
+            // Clockwise = positive, Counter-Clockwise = negative
             var newValue = (value < 0x40) ? value : (value - 0x80);
 
-            if (this.touchTimer !== 0) {
-                engine.stopTimer(this.touchTimer);
-                this.touchTimer = 0;
-            }
-
+            // LOGIC FROM "DARKPOUBELLE" ADAPTED FOR THIS SCRIPT:
+            
             if (deck.scratchModeEnabled) {
-                this.touchTimer = engine.beginTimer(50, function() {
-                    engine.scratchDisable(deckNumber);
-                }, true);
-
+                // --- SCRATCH MODE ---
+                // If the scratch button is ON, we scratch.
                 if (!engine.isScratching(deckNumber)) {
+                    // Enable scratch using the sensitivity settings defined at the top of the file
                     engine.scratchEnable(deckNumber, NumarkPartyMix.jogScratchSensitivity, 33 + 1 / 3, NumarkPartyMix.jogScratchAlpha, NumarkPartyMix.jogScratchBeta, true);
                 }
-                engine.scratchTick(deckNumber, newValue); // Scratch!
+                engine.scratchTick(deckNumber, newValue); 
             } else {
-                if (engine.getValue(group, "play") > 0) {
-                    engine.setValue(group, "jog", newValue / NumarkPartyMix.jogPitchSensitivity); // fine jog to sync
-                } else {
-                    engine.setValue(group, "jog", newValue / NumarkPartyMix.jogSearchSensitivity); // scrup through track
-
-                }
+                // --- PITCH BEND MODE ---
+                // Previously, the PADS script divided this value (newValue / 10), 
+                // which made it so slow it felt broken.
+                // It now sends the raw value, just like the "DARKPOUBELLE" script does.
+                engine.setValue(group, "jog", newValue); 
             }
         }
     });
