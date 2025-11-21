@@ -416,7 +416,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
     qDebug() << "Process RootFolder";
     //Each playlist is unique and can be identified by a path in the tree structure.
     QString current_path = "";
-    QMap<QString,QString> map;
+    QSet<QString> playlists;
 
     QString delimiter = "-->";
 
@@ -432,19 +432,15 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                 QXmlStreamAttributes attr = xml.attributes();
                 QString name = attr.value("NAME").toString();
                 QString type = attr.value("TYPE").toString();
-               //TODO: What happens if the folder node is a leaf (empty folder)
-               // Idea: Hide empty folders :-)
-               if (type == "FOLDER") {
-                    current_path += delimiter;
-                    current_path += name;
-                    //qDebug() << "Folder: " +current_path << " has parent " << parent->getData().toString();
-                    map.insert(current_path, "FOLDER");
-                    parent = parent->appendChild(name, current_path);
-               } else if (type == "PLAYLIST") {
-                    current_path += delimiter;
-                    current_path += name;
-                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
-                    map.insert(current_path, "PLAYLIST");
+
+                current_path += delimiter;
+                current_path += name;
+                parent = parent->appendChild(name, current_path);
+
+                if (type == "PLAYLIST") {
+                    //qDebug() << "Playlist: " + current_path << " has parent " << parent->getData().toString();
+
+                    playlists += current_path;
 
                    QSqlQuery query_insert_to_playlists(m_database);
                    query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
@@ -455,7 +451,6 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                        "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
                        "VALUES (:playlist_id, :track_id, :position)");
 
-                   parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml,
                             current_path,
@@ -467,13 +462,22 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
         if (xml.isEndElement()) {
             if (xml.name() == QLatin1String("NODE")) {
-                if (map.value(current_path) == "FOLDER") {
-                    parent = parent->parent();
+                bool last_non_playlist_was_empty = false;
+                if (!parent->hasChildren() and !playlists.contains(current_path)) {
+                    last_non_playlist_was_empty = true;
                 }
 
-                //Whenever we find a closing NODE, remove the last component of the path
-                int lastSlash = current_path.lastIndexOf (delimiter);
-                int path_length = current_path.size();
+                parent = parent->parent();
+
+                if (last_non_playlist_was_empty) {
+                    // If the last node was not a playlist (FOLDER, SMARTLIST, etc... and was empty we remove it
+                    // from the item tree so that it doesn't show for the user.
+                    parent->removeChildren(parent->children().count() - 1, 1);
+                }
+
+                // Whenever we find a closing NODE, remove the last component of the path
+                const int lastSlash = current_path.lastIndexOf (delimiter);
+                const int path_length = current_path.size();
 
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
