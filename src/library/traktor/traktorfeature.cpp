@@ -428,7 +428,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
         xml.readNext();
 
         if (xml.isStartElement()) {
-            if (xml.name() == QLatin1StringView("NODE")) {
+            if (xml.name() == QStringLiteral("NODE")) {
                 QXmlStreamAttributes attr = xml.attributes();
                 const QStringView name = attr.value(QStringLiteral("NAME"));
                 const QStringView type = attr.value(QStringLiteral("TYPE"));
@@ -463,7 +463,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
         }
 
         if (xml.isEndElement()) {
-            if (xml.name() == QLatin1StringView("NODE")) {
+            if (xml.name() == QStringLiteral("NODE")) {
                 bool last_non_playlist_was_empty = false;
                 if (!parent->hasChildren() and !playlists.contains(current_path)) {
                     last_non_playlist_was_empty = true;
@@ -484,7 +484,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
             // We leave the infinite loop, if we have the closing "PLAYLIST" tag
-            if (xml.name() == QLatin1StringView("PLAYLISTS")) {
+            if (xml.name() == QStringLiteral("PLAYLISTS")) {
                 break;
             }
         }
