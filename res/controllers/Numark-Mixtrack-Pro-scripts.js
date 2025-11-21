@@ -59,8 +59,8 @@
 //						Border of the wheels: Pitch Bend.
 //
 
-/* eslint no-undef: "error" */
-function NumarkMixTrackPro() {}
+// eslint-disable-next-line no-var
+var NumarkMixTrackPro = {};
 
 NumarkMixTrackPro.init = function(id) {
     // called when the MIDI device is opened & set up
