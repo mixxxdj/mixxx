@@ -66,6 +66,7 @@ class DlgPrefController : public DlgPreferencePage {
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
     void enableWizardAndIOTabs(bool enable);
+    void slotRefreshMappingList();
 
 #ifdef MIXXX_USE_QML
     // Onboard screen controller.

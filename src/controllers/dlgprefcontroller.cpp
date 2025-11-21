@@ -103,6 +103,22 @@ DlgPrefController::DlgPrefController(
     // Create text color for the file and wiki links
     createLinkColor();
 
+    QString refreshIconPath;
+    if (!Color::isDimColor(palette().text().color())) {
+        refreshIconPath = QStringLiteral(
+                ":/images/preferences/light/"
+                "ic_preferences_controllers_reload.svg");
+    } else {
+        refreshIconPath = QStringLiteral(
+                ":/images/preferences/dark/"
+                "ic_preferences_controllers_reload.svg");
+    }
+    m_ui.btnRefreshMappingList->setIcon(QIcon(refreshIconPath));
+    connect(m_ui.btnRefreshMappingList,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefController::slotRefreshMappingList);
+
     m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 
     initTableView(m_ui.midiInputMappingTableView);
@@ -653,6 +669,11 @@ void DlgPrefController::slotUpdate() {
     // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
     // from setting a false-postive 'dirty' flag when updating the fresh GUI.
     m_GuiInitialized = true;
+}
+
+void DlgPrefController::slotRefreshMappingList() {
+    enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
+            m_pController->getName()));
 }
 
 void DlgPrefController::slotHide() {

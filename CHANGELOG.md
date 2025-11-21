@@ -337,11 +337,17 @@
 
 ### Controller Mappings
 
+* Korg Kaoss DJ: fix scratching with left wheel
+  [#15607](https://github.com/mixxxdj/mixxx/pull/15607)
+  [#15121](https://github.com/mixxxdj/mixxx/issues/15121)
 * Numark-NS6II: fix typo in NS6II.PadMode [#15428](https://github.com/mixxxdj/mixxx/pull/15428)
 * Pioneer DJ CDJ: fix broken initiatlisation
   [#15363](https://github.com/mixxxdj/mixxx/pull/15363)
   [#15343](https://github.com/mixxxdj/mixxx/issues/15343)
   [#14731](https://github.com/mixxxdj/mixxx/issues/14731)
+* Reloop Beatmix 2/4: fix overriding persisted fx routing
+  [#15574](https://github.com/mixxxdj/mixxx/pull/15574)
+  [#14917](https://github.com/mixxxdj/mixxx/issues/14917)
 * Components JogwheelBasic: Disable scratching when leaving `vinylMode` [#15336](https://github.com/mixxxdj/mixxx/pull/15336)
 
 ### Skins
@@ -350,11 +356,12 @@
   [#15448](https://github.com/mixxxdj/mixxx/pull/15448)
   [#15339](https://github.com/mixxxdj/mixxx/issues/15339)
 * LateNight: fix color of effect toggle buttons [#15467](https://github.com/mixxxdj/mixxx/pull/15467)
-* Improve and unify sampler sync button behaviour across all skins [#15399](https://github.com/mixxxdj/mixxx/pull/15399)
 * LateNight: work around style bug in Qt 6.9.2 causing black key button text
   [#15404](https://github.com/mixxxdj/mixxx/pull/15404)
   [#15351](https://github.com/mixxxdj/mixxx/issues/15351)
 * LateNight: revert xfader buttons to one (cycling) toggle [#15395](https://github.com/mixxxdj/mixxx/pull/15395)
+* Tango: restore VU meter mini backpath [#15544](https://github.com/mixxxdj/mixxx/pull/15544)
+* Improve and unify sampler sync button behaviour across all skins [#15399](https://github.com/mixxxdj/mixxx/pull/15399)
 
 ### Library
 
@@ -371,6 +378,8 @@
   [#14940](https://github.com/mixxxdj/mixxx/issues/14940)
 * Library scanner: fix an issue when verifying remaining tracks [#15346](https://github.com/mixxxdj/mixxx/pull/15346)
 * Sidebar: expand items to full width to maximize click-responsive area [#15330](https://github.com/mixxxdj/mixxx/pull/15330)
+* focus tracks view when selecting a track via deck track menu [#15543](https://github.com/mixxxdj/mixxx/pull/15543)
+* Search: maintain cursor position when saving query [#15512](https://github.com/mixxxdj/mixxx/pull/15512)
 
 ### Preferences
 
@@ -383,11 +392,13 @@
   [#6077](https://github.com/mixxxdj/mixxx/issues/6077)
 * Library: fix display of font style [#15382](https://github.com/mixxxdj/mixxx/pull/15382)
 * Waveforms: fix handling of invalid overview config type [#15422](https://github.com/mixxxdj/mixxx/pull/15422)
+* Broadcast: handle and fix invalid config strings [#15525](https://github.com/mixxxdj/mixxx/pull/15525)
 
 ### Target support
 
-* Upload all 2.5 builds to "Patch Builds" ppa:mixxx/mixxxpatches [#15436](https://github.com/mixxxdj/mixxx/pull/15436)
 * Update macOS (Intel) runner for building Mixxx to macOS Sequoia 15 [#15391](https://github.com/mixxxdj/mixxx/pull/15391)
+* Welcome Ubuntu 26.04 LTS Resolute Raccoon [#15588](https://github.com/mixxxdj/mixxx/pull/15588)
+* Upload all 2.5 builds to "Patch Builds" ppa:mixxx/mixxxpatches [#15436](https://github.com/mixxxdj/mixxx/pull/15436)
 * CMakeLists.txt: fix handling of custom CMAKE_OSX_DEPLOYMENT_TARGET [#15356](https://github.com/mixxxdj/mixxx/pull/15356)
 * debian_buildenv.sh: assert for bash
   [#15274](https://github.com/mixxxdj/mixxx/pull/15274)
@@ -396,6 +407,14 @@
 * debian_buildenv.sh: fix for Ubuntu Noble (24.10) [#15292](https://github.com/mixxxdj/mixxx/pull/15292)
 * Fix building without an X Window screensaver [#15297](https://github.com/mixxxdj/mixxx/pull/15297)
 * Fix building with FLAC V 1.5
+* Support building with Qt 6.10: Add Qt6::GuiPrivate
+  [#15502](https://github.com/mixxxdj/mixxx/pull/15502)
+  [#15485](https://github.com/mixxxdj/mixxx/issues/15485)
+* Touchscreen on Windows 11: disable touch -> mouse event translation
+  [#15547](https://github.com/mixxxdj/mixxx/pull/15547)
+  [#15546](https://github.com/mixxxdj/mixxx/issues/15546)
+* Fix missing QuickTemplates2 in Windows Installer
+  [#15439](https://github.com/mixxxdj/mixxx/pull/15439)
 
 ### Misc
 
@@ -405,10 +424,19 @@
 * Network Clock: fix writing wrong number of silence after a long underrun [#15400](https://github.com/mixxxdj/mixxx/pull/15400)
 * Engine: tidy debug log messages in case of sample cache misses [#14793](https://github.com/mixxxdj/mixxx/pull/14793)
 * Engine: use the correct number of channels for underflow compensation [#15394](https://github.com/mixxxdj/mixxx/pull/15394)
-* Menu bar: fix showing/hiding via Alt broken for Qt 6.9
+* Effects: fix quantisation in case of engine samplerate != track samplerate
+  [#15538](https://github.com/mixxxdj/mixxx/pull/15538)
+  [#15300](https://github.com/mixxxdj/mixxx/issues/15300)
+* Menu bar: fix showing/hiding via Alt
   [#15352](https://github.com/mixxxdj/mixxx/pull/15352)
   [#15350](https://github.com/mixxxdj/mixxx/issues/15350)
+  [#15396](https://github.com/mixxxdj/mixxx/pull/15396)
+  [#15385](https://github.com/mixxxdj/mixxx/issues/15385)
 * Fix Menu checkbox behaviour, consistency & cleanup [#15365](https://github.com/mixxxdj/mixxx/pull/15365)
+* Fix time warping when click-and-dragging waveform
+  [#15579](https://github.com/mixxxdj/mixxx/issues/15579)
+  [#15619](https://github.com/mixxxdj/mixxx/issues/15619)
+  [#15610](https://github.com/mixxxdj/mixxx/pull/15610)
 
 ## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (2025-09-02)
 
