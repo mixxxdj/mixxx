@@ -16,6 +16,8 @@ ApplicationWindow {
     property alias showSamplers: showSamplersButton.checked
     property alias editDeck: editDeckButton.checked
 
+    property var focusedDeck: null
+
     color: Theme.backgroundColor
     height: 1080
     visible: true
@@ -53,6 +55,17 @@ ApplicationWindow {
                     activeColor: Theme.white
                     checkable: true
                     text: "Library"
+                    Mixxx.ControlProxy {
+                        id: showMaximizedLibrary
+                        group: "[Skin]"
+                        key: "show_maximized_library"
+                        onValueChanged: () => {
+                            maximizeLibraryButton.checked = this.value
+                        }
+                    }
+                    onCheckedChanged: () => {
+                        showMaximizedLibrary.value = this.checked
+                    }
                 }
                 Skin.Button {
                     id: showEffectsButton
@@ -160,20 +173,27 @@ ApplicationWindow {
 
             Item {
                 id: waveforms
-                SplitView.preferredHeight: root.maximizeLibrary ? 120 : 240
+                SplitView.preferredHeight: library.active ? 120 : undefined
+                SplitView.fillHeight: !library.active
                 visible: !root.maximizeLibrary
-                Skin.WaveformDisplay {
+                Loader {
                     id: deck3waveform
 
                     anchors.top: parent.top
 
-                    group: "[Channel3]"
+                    readonly property string group: "[Channel3]"
                     height: parent.height / 4
-                    visible: root.show4decks
+                    active: root.show4decks
                     width: root.width
 
-                    FadeBehavior on visible {
-                        fadeTarget: deck3waveform
+                    sourceComponent: Component {
+                        Skin.WaveformDisplay {
+                            group: deck3waveform.group
+
+                            FadeBehavior on visible {
+                                fadeTarget: deck3waveform
+                            }
+                        }
                     }
                 }
 
@@ -195,18 +215,24 @@ ApplicationWindow {
                     height: parent.height / (root.show4decks ? 4 : 2)
                     width: root.width
                 }
-                Skin.WaveformDisplay {
+                Loader {
                     id: deck4waveform
 
                     anchors.bottom: parent.bottom
 
-                    group: "[Channel4]"
+                    readonly property string group: "[Channel4]"
                     height: parent.height / 4
-                    visible: root.show4decks
+                    active: root.show4decks
                     width: root.width
 
-                    FadeBehavior on visible {
-                        fadeTarget: deck4waveform
+                    sourceComponent: Component {
+                        Skin.WaveformDisplay {
+                            group: deck4waveform.group
+
+                            FadeBehavior on visible {
+                                fadeTarget: deck4waveform
+                            }
+                        }
                     }
                 }
                 Rectangle {
@@ -258,20 +284,24 @@ ApplicationWindow {
             }
 
             Item {
-                SplitView.fillHeight: true
+                SplitView.fillHeight: library.active
+                SplitView.minimumHeight: mixer.height
+                SplitView.maximumHeight: library.active ? undefined : mixer.height
                 Deck {
                     id: deck1
 
-                    anchors {
-                        left: parent.left
-                        right: mixer.left
-                    }
+                    anchors.right: mixer.left
+                    width: (root.width - mixer.width) / 2
 
                     minimized: root.maximizeLibrary
                     height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
                     group: "[Channel1]"
 
                     editMode: root.editDeck
+
+                    onToggleFocus: {
+                        root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1
+                    }
 
                     states: [
                         State {
@@ -316,21 +346,52 @@ ApplicationWindow {
                             damping: 0.2
                         }
                     }
+
+                    states: [
+                        State {
+                            when: root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
+                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.right}
+                            PropertyChanges { target: deck1; width: root.width - (mixer.width / 2) }
+                        },
+                        State {
+                            when: root.focusedDeck === deck2 && root.width < 1400 && !root.maximizeLibrary
+                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.left}
+                            PropertyChanges { target: deck2; width: root.width - (mixer.width / 2) }
+                        },
+                        State {
+                            when: (!root.focusedDeck || root.width > 1400) && !root.maximizeLibrary
+                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.horizontalCenter}
+                            PropertyChanges { target: deck1; width: (root.width - mixer.width) / 2 }
+                            PropertyChanges { target: deck2; width: (root.width - mixer.width) / 2 }
+                        },
+                        State {
+                            when: root.maximizeLibrary
+                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.horizontalCenter}
+                            PropertyChanges { target: deck1; width: root.width / 2 }
+                            PropertyChanges { target: deck2; width: root.width / 2 }
+                        }
+                    ]
+
+                    transitions: Transition {
+                        AnchorAnimation { duration: 200 }
+                    }
                 }
 
                 Deck {
                     id: deck2
 
-                    anchors {
-                        left: mixer.right
-                        right: parent.right
-                    }
+                    anchors.left: mixer.right
+                    width: (root.width - mixer.width) / 2
 
                     minimized: root.maximizeLibrary
                     height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
                     group: "[Channel2]"
 
                     editMode: root.editDeck
+
+                    onToggleFocus: {
+                        root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2
+                    }
 
                     states: [
                         State {
@@ -349,7 +410,7 @@ ApplicationWindow {
                     }
                 }
 
-                Deck {
+                Loader {
                     id: deck3
 
                     anchors {
@@ -358,11 +419,18 @@ ApplicationWindow {
                         right: mixer.left
                     }
 
-                    minimized: root.maximizeLibrary
-                    height: root.show4decks ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
-                    group: "[Channel3]"
+                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
+                    readonly property string group: "[Channel3]"
+                    active: root.show4decks
 
-                    editMode: root.editDeck
+                    sourceComponent: Component {
+                        Deck {
+                            minimized: root.maximizeLibrary
+                            group: deck3.group
+
+                            editMode: root.editDeck
+                        }
+                    }
 
                     states: [
                         State {
@@ -381,7 +449,7 @@ ApplicationWindow {
                     }
                 }
 
-                Deck {
+                Loader {
                     id: deck4
 
                     anchors {
@@ -389,12 +457,18 @@ ApplicationWindow {
                         left: mixer.right
                         right: parent.right
                     }
+                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
+                    readonly property string group: "[Channel4]"
+                    active: root.show4decks
 
-                    minimized: root.maximizeLibrary
-                    height: root.show4decks ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
-                    group: "[Channel4]"
+                    sourceComponent: Component {
+                        Deck {
+                            minimized: root.maximizeLibrary
+                            group: deck4.group
 
-                    editMode: root.editDeck
+                            editMode: root.editDeck
+                        }
+                    }
 
                     states: [
                         State {
@@ -431,7 +505,7 @@ ApplicationWindow {
                 //         fadeTarget: effects
                 //     }
                 // }
-                Skin.Library {
+                Loader {
                     id: library
                     height: parent.height - y
                     anchors {
@@ -439,7 +513,12 @@ ApplicationWindow {
                         bottom: parent.bottom
                     }
                     width: parent.width
-
+                    sourceComponent: Component {
+                        Skin.Library {
+                            anchors.fill: parent
+                        }
+                    }
+                    active: root.maximizeLibrary || root.height - mixer.height >= 400
                     states: [
                         State {
                             when: root.maximizeLibrary && root.show4decks

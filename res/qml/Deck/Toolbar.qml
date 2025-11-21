@@ -35,8 +35,8 @@ Item {
                 fillColor: root.buttonColor
                 strokeColor: 'transparent'
                 startX: 5; startY: 11
-                PathLine { x: 20; y: 4 }
-                PathLine { x: 20; y: 18 }
+                PathLine { x: 18; y: 4 }
+                PathLine { x: 18; y: 18 }
                 PathLine { x: 5; y: 11 }
             }
         }

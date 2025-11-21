@@ -1,4 +1,5 @@
 import ".." as Skin
+import Mixxx 1.0 as Mixxx
 import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Controls 2.12
@@ -9,6 +10,19 @@ import "../Theme"
 ColumnLayout {
     required property string group
     required property var currentTrack
+
+    Mixxx.ControlProxy {
+        id: keylockCO
+        group: root.group
+        key: pitchKey.key
+    }
+
+    Mixxx.ControlProxy {
+        id: keyCO
+        group: root.group
+        key: "key"
+    }
+
     RowLayout {
         height: 22
         Layout.fillWidth: true
@@ -41,44 +55,87 @@ ColumnLayout {
             }
             activeColor: Theme.deckActiveColor
         }
-        Item {
+        Skin.ControlButton {
             id: pitchKey
+
+            // FIXME: the following map are copied from S4 mapping. Once the interface setting PR is merged, we should use the palette
+            readonly property variant colorsMap: [
+                                                  "#b960a2",// 1d
+                                                  "#9fc516", // 8d
+                                                  "#527fc0", // 3d
+                                                  "#f28b2e", // 10d
+                                                  "#5bc1cf", // 5d
+                                                  "#e84c4d", // 12d
+                                                  "#73b629", // 7d
+                                                  "#8269ab", // 2d
+                                                  "#fdd615", // 9d
+                                                  "#3cc0f0", // 4d
+                                                  "#4cb686", // 11d
+                                                  "#4cb686", // 6d
+                                                  "#f5a158", // 10m
+                                                  "#7bcdd9", // 5m
+                                                  "#ed7171", // 12m
+                                                  "#8fc555", // 7m
+                                                  "#9b86be", // 2m
+                                                  "#fcdf45", // 9m
+                                                  "#63cdf4", // 4m
+                                                  "#f1845f", // 11m
+                                                  "#70c4a0", // 6m
+                                                  "#c680b6", // 1m
+                                                  "#b2d145", // 8m
+                                                  "#7499cd"  // 3m
+            ]
+            readonly property variant textMap: [
+                                                "1d",
+                                                "8d",
+                                                "3d",
+                                                "10d",
+                                                "5d",
+                                                "12d",
+                                                "7d",
+                                                "2d",
+                                                "9d",
+                                                "4d",
+                                                "11d",
+                                                "6d",
+                                                "10m",
+                                                "5m",
+                                                "12m",
+                                                "7m",
+                                                "2m",
+                                                "9m",
+                                                "4m",
+                                                "11m",
+                                                "6m",
+                                                "1m",
+                                                "8m",
+                                                "3m"
+            ]
 
             Layout.fillWidth: true
             Layout.leftMargin: 0
             Layout.rightMargin: 0
 
             implicitHeight: 22
+            group: root.group
+            key: "keylock"
+            toggleable: true
 
-            Rectangle {
-                id: background2Image
-
-                anchors.fill: parent
-                color: '#2B2B2B'
-            }
-
-            DropShadow {
-                anchors.fill: background2Image
-                horizontalOffset: 0
-                verticalOffset: 0
-                radius: 1.0
-                color: "#80000000"
-                source: background2Image
-            }
-            InnerShadow {
-                anchors.fill: background2Image
-                radius: 1
-                samples: 16
-                horizontalOffset: -0
-                verticalOffset: 0
-                color: "#353535"
-                source: background2Image
-            }
-            Label {
-                anchors.centerIn: background2Image
-                text: trackLoadedControl.value ? root.currentTrack.keyText : "-"
-                color: "#626262"
+            contentItem: Text {
+                id: item
+                text: {
+                    if (!trackLoadedControl.value || keyCO.value <= 0) return "-"
+                    return pitchKey.textMap[keyCO.value]
+                }
+                color: {
+                    if (!trackLoadedControl.value || keyCO.value <= 0) {
+                        return keylockCO.value ? Theme.white : Theme.midGray3
+                    }
+                    return pitchKey.colorsMap[keyCO.value]
+                }
                 font.pixelSize: 8
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
         }
 
@@ -135,6 +192,14 @@ ColumnLayout {
     }
 
     Skin.SyncButton {
+        id: rangeButton
+        Layout.fillWidth: true
+        height: 22
+        Layout.alignment: Qt.AlignHCenter
+        group: root.group
+    }
+
+    Skin.RangeButton {
         id: syncButton
         Layout.fillWidth: true
         height: 22
