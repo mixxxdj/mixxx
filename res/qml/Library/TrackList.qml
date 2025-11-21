@@ -184,7 +184,8 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 5
         clip: true
-        reuseItems: true
+        selectionBehavior: TableView.SelectionDisabled
+        pointerNavigationEnabled: false
         Keys.onUpPressed: this.selectionModel.moveSelectionVertical(-1)
         Keys.onDownPressed: this.selectionModel.moveSelectionVertical(1)
         Keys.onEnterPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
@@ -233,6 +234,9 @@ Rectangle {
                 }
                 const newRow = Mixxx.MathUtils.positiveModulo(row, rowCount);
                 this.select(this.model.index(newRow, 0), ItemSelectionModel.Rows | ItemSelectionModel.Select | ItemSelectionModel.Clear | ItemSelectionModel.Current);
+                if (!view.isRowLoaded(newRow)) {
+                    view.positionViewAtRow(newRow, TableView.Visible | TableView.AlignVCenter)
+                }
             }
 
             function moveSelectionVertical(value) {
@@ -278,18 +282,11 @@ Rectangle {
                 property var capabilities: root.model ? root.model.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
                 sourceComponent: delegate
                 focus: true
+                asynchronous: true
+                opacity: loader.status == Loader.Ready
 
-                onLoaded: {
-                // Workaround needed for WaveformOverview column to load the data
-                //     if (track)
-                //         Mixxx.Library.analyze(track)
-                }
+                Behavior on opacity { NumberAnimation { duration: 100; easing.type: Easing.Linear} }
             }
-            // Workaround needed for WaveformOverview column to load the data
-            // TableView.onReused: {
-            //     if (track)
-            //         Mixxx.Library.analyze(track)
-            // }
         }
     }
 }
