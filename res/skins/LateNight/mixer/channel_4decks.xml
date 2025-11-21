@@ -12,6 +12,14 @@
     <ObjectName>MixerChannel_4Decks</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
+    <Connection>
+      <ConfigKey>[Skin],highlight_mixer_<Variable name="Group"/></ConfigKey>
+      <BindProperty>highlight_mixer</BindProperty>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
+      <BindProperty>highlight_input_allow</BindProperty>
+    </Connection>
     <Children>
 
       <WidgetGroup>
