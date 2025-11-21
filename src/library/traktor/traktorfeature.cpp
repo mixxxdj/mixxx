@@ -418,7 +418,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
     QString current_path = "";
     QSet<QString> playlists;
 
-    QString delimiter = "-->";
+    const QString delimiter = "-->";
 
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
     TreeItem* parent = rootItem.get();
@@ -430,8 +430,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
         if (xml.isStartElement()) {
             if (xml.name() == QLatin1String("NODE")) {
                 QXmlStreamAttributes attr = xml.attributes();
-                QString name = attr.value("NAME").toString();
-                QString type = attr.value("TYPE").toString();
+                const QString name = attr.value("NAME").toString();
+                const QString type = attr.value("TYPE").toString();
 
                 current_path += delimiter;
                 current_path += name;
