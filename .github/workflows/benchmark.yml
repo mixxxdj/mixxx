@@ -30,16 +30,11 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: qt6
-            cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 24.04 Qt6 DEB
-            artifacts_path: build/*.deb
-            artifacts_slug: ubuntu-jammy
           - name: macOS 15 x64
             os: macos-15-intel
             cmake_args: >-
@@ -53,16 +48,11 @@ jobs:
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
-            ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
-            cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
             compiler_cache_id: x64
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_release_buildenv.sh
-            artifacts_name: macOS Intel DMG
-            artifacts_path: build/*.dmg
-            artifacts_slug: macos-macosintel
           - name: Windows 2022 x64
             os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
@@ -81,14 +71,8 @@ jobs:
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
             cc: cl
             cxx: cl
-            # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
-            cpack_generator: WIX
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
-            artifacts_name: Windows x64 Installer
-            artifacts_path: build/*.msi
-            artifacts_slug: windows-win64
             arch: x64
           - name: Windows 11 ARM64
             os: windows-11-arm
@@ -109,14 +93,8 @@ jobs:
               -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
             cc: cl
             cxx: cl
-            # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
-            cpack_generator: WIX
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
-            artifacts_name: Windows ARM64 Installer
-            artifacts_path: build/*.msi
-            artifacts_slug: windows-winarm
             arch: arm64
 
     runs-on: ${{ matrix.os }}
