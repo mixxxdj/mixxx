@@ -184,8 +184,7 @@ void QmlControlProxy::slotControlProxyValueChanged(double newValue) {
 
 void QmlControlProxy::trigger() {
     setValue(1);
-    // Use a single-shot timer to ensure the event loop processes the change
-    QTimer::singleShot(0, this, [this]() { setValue(0); });
+    setValue(0);
 }
 
 } // namespace qml
