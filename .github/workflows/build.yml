@@ -328,7 +328,7 @@ jobs:
             echo "QT_ANDROID_KEYSTORE_STORE_PASS=mixxxandroid" >> $GITHUB_ENV
             echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
           else
-            echo "${{ env.ANDROID_SIGNING_KEYSTORE_BASE64 }}" | base64 -d -o ${{ github.workspace }}/mixxx.keystore
+            echo "${{ env.ANDROID_SIGNING_KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/mixxx.keystore
             echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx" >> $GITHUB_ENV
             echo "QT_ANDROID_KEYSTORE_KEY_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
             echo "QT_ANDROID_KEYSTORE_STORE_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
