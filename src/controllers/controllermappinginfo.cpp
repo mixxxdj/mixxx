@@ -6,8 +6,6 @@
 #include <QLoggingCategory>
 #include <QXmlStreamReader>
 
-#include "util/runtimeloggingcategory.h"
-
 Q_LOGGING_CATEGORY(kLogger, "controllers.mappinginfo")
 
 MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
@@ -106,7 +104,7 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
             }
             if (inInfo && name == QStringLiteral("info")) {
                 // End of info block; we stop file-reading/parsing entirely
-                // Stopping here safes several hundreds milliseconds of startup time
+                // Stopping here saves several hundreds milliseconds of startup time
                 break;
             }
 
