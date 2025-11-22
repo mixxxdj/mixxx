@@ -9,6 +9,12 @@
 
 using namespace mixxx;
 
+#if defined(Q_OS_WIN)
+const QString kStemFile = QStringLiteral("stems/test_alac.stem.mp4");
+#else
+const QString kStemFile = QStringLiteral("stems/test.stem.mp4");
+#endif
+
 namespace {
 
 const QList<QString> kStemFiles = {
@@ -27,7 +33,7 @@ class StemTest : public MixxxTest {
 };
 
 TEST_F(StemTest, FetchStemInfo) {
-    TrackPointer pTrack(Track::newTemporary(getTestDir().filePath("stems/test.stem.mp4")));
+    TrackPointer pTrack(Track::newTemporary(getTestDir().filePath(kStemFile)));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -62,7 +68,7 @@ TEST_F(StemTest, FetchStemEmptyInfo) {
 TEST_F(StemTest, ReadMainMix) {
     SoundSourceFFmpeg sourceMainMix(
             QUrl::fromLocalFile(getTestDir().filePath("stems/mainmix.wav")));
-    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath("stems/test.stem.mp4")));
+    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath(kStemFile)));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -103,7 +109,7 @@ TEST_F(StemTest, ReadEachStem) {
                 QUrl::fromLocalFile(getTestDir().filePath("stems/" + stem)));
         SoundSourceSingleSTEM sourceStem(
                 QUrl::fromLocalFile(
-                        getTestDir().filePath("stems/test.stem.mp4")),
+                        getTestDir().filePath(kStemFile)),
                 stemIdx++);
 
         mixxx::AudioSource::OpenParams config;
@@ -140,7 +146,7 @@ TEST_F(StemTest, ReadEachStem) {
 }
 
 TEST_F(StemTest, OpenStem) {
-    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath("stems/test.stem.mp4")));
+    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath(kStemFile)));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(8));
