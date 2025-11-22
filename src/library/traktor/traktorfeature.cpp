@@ -423,6 +423,16 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
     TreeItem* parent = rootItem.get();
 
+    QSqlQuery query_insert_to_playlists(m_database);
+    query_insert_to_playlists.prepare(
+            "INSERT INTO traktor_playlists (name) "
+            "VALUES (:name)");
+
+    QSqlQuery query_insert_to_playlist_tracks(m_database);
+    query_insert_to_playlist_tracks.prepare(
+            "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
+            "VALUES (:playlist_id, :track_id, :position)");
+
     while (!xml.atEnd() && !m_cancelImport) {
         // Read next XML element
         xml.readNext();
@@ -443,21 +453,14 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                     playlists += current_path;
 
-                    QSqlQuery query_insert_to_playlists(m_database);
-                    query_insert_to_playlists.prepare(
-                            "INSERT INTO traktor_playlists (name) "
-                            "VALUES (:name)");
-
-                    QSqlQuery query_insert_to_playlist_tracks(m_database);
-                    query_insert_to_playlist_tracks.prepare(
-                            "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
-                            "VALUES (:playlist_id, :track_id, :position)");
-
                     // Process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml,
                             current_path,
-                            std::move(query_insert_to_playlists),
-                            std::move(query_insert_to_playlist_tracks));
+                            &query_insert_to_playlists,
+                            &query_insert_to_playlist_tracks);
+
+                    query_insert_to_playlists.finish();
+                    query_insert_to_playlist_tracks.finish();
                 }
             }
         }
@@ -496,14 +499,14 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 void TraktorFeature::parsePlaylistEntries(
         QXmlStreamReader& xml,
         const QString& playlist_path,
-        QSqlQuery query_insert_into_playlist,
-        QSqlQuery query_insert_into_playlisttracks) {
+        QSqlQuery* pQueryInsertIntoPlaylist,
+        QSqlQuery* pQueryInsertIntoPlaylistTracks) {
     // In the database, the name of a playlist is specified by the unique path,
     // e.g., /someFolderA/someFolderB/playlistA"
-    query_insert_into_playlist.bindValue(":name", playlist_path);
+    pQueryInsertIntoPlaylist->bindValue(":name", playlist_path);
 
-    if (!query_insert_into_playlist.exec()) {
-        LOG_FAILED_QUERY(query_insert_into_playlist)
+    if (!pQueryInsertIntoPlaylist->exec()) {
+        LOG_FAILED_QUERY(*pQueryInsertIntoPlaylist)
                 << "Failed to insert playlist in TraktorTableModel:"
                 << playlist_path;
         return;
@@ -557,13 +560,13 @@ void TraktorFeature::parsePlaylistEntries(
                         track_id = finder_query.value(finder_query.record().indexOf("id")).toInt();
                     }
 
-                    query_insert_into_playlisttracks.bindValue(":playlist_id", playlist_id);
-                    query_insert_into_playlisttracks.bindValue(":track_id", track_id);
-                    query_insert_into_playlisttracks.bindValue(":position", playlist_position++);
-                    if (!query_insert_into_playlisttracks.exec()) {
-                        LOG_FAILED_QUERY(query_insert_into_playlisttracks)
+                    pQueryInsertIntoPlaylistTracks->bindValue(":playlist_id", playlist_id);
+                    pQueryInsertIntoPlaylistTracks->bindValue(":track_id", track_id);
+                    pQueryInsertIntoPlaylistTracks->bindValue(":position", playlist_position++);
+                    if (!pQueryInsertIntoPlaylistTracks->exec()) {
+                        LOG_FAILED_QUERY(*pQueryInsertIntoPlaylistTracks)
                                 << "trackid" << track_id << " with path " << key
-                                << "playlistname; " << playlist_path <<" with ID " << playlist_id;
+                                << "playlistname; " << playlist_path << " with ID " << playlist_id;
                     }
                 }
             }
