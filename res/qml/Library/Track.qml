@@ -2,11 +2,14 @@ import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls 2.15
 import "../Theme"
+import ".." as Skin
 
 MouseArea {
     id: dragArea
 
     required property var capabilities
+    required property var playlists
+    required property var crates
 
     readonly property var library: Mixxx.Library
 
@@ -78,11 +81,72 @@ MouseArea {
                 hasCapabilities(Mixxx.LibraryTrackListModel.Capability.AddToTrackSet)
             }
 
+            Instantiator {
+                model: playlists.list()
+                delegate: MenuItem {
+                    text: modelData.name
+                    onTriggered: modelData.addTrack(track)
+                    enabled: !modelData.locked
+                }
+
+                onObjectAdded: (index, object) => addToPlaylistMenu.insertItem(index, object)
+                onObjectRemoved: (index, object) => addToPlaylistMenu.removeItem(object)
+            }
+
             MenuSeparator {}
 
             MenuItem {
-                enabled: false // TODO implement
+                id: createPlaylistItem
+
+                property bool creating: false
+
                 text: qsTr("Create New Playlist")
+                contentItem: Item {
+                    TextInput {
+                        id: playlistNewName
+                        visible: createPlaylistItem.creating
+                        anchors.fill: parent
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.margins: 7
+                        focus: true
+                        clip: true
+                        color: acceptableInput ? "#000000" : 'red'
+                        horizontalAlignment: TextInput.AlignLeft
+                        onAccepted: {
+                            if (!text) {
+                                return
+                            }
+                            let result = playlists.create(text)
+                            if (result != Mixxx.LibraryPlaylistSource.PlaylistCreateResult.Ok) {
+                                // TODO UX feedback
+                                console.warn("Create New Playlist", text, result)
+                                return
+                            }
+                            playlists.get(text).addTrack(track)
+                            text = ""
+                            createPlaylistItem.creating = false
+                        }
+                    }
+                    Text {
+                        visible: !createPlaylistItem.creating
+                        leftPadding: createPlaylistItem.indicator.width
+                        rightPadding: createPlaylistItem.arrow.width
+                        text: createPlaylistItem.text
+                        font: createPlaylistItem.font
+                        opacity: enabled ? 1.0 : 0.3
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    TapHandler {
+                        onTapped: {
+                            createPlaylistItem.creating = true
+                            playlistNewName.forceActiveFocus();
+                        }
+                    }
+                }
             }
         }
 
@@ -93,11 +157,73 @@ MouseArea {
                 hasCapabilities(Mixxx.LibraryTrackListModel.Capability.AddToTrackSet)
             }
 
+            Instantiator {
+                model: crates.list([track])
+                delegate: MenuItem {
+                    text: modelData.name
+                    checked: modelData.trackCount() == 1
+                    checkable: true
+                    onToggled: {
+                        if (checked) {
+                            modelData.addTrack(track)
+                        } else {
+                            modelData.removeTrack(track)
+                        }
+                    }
+                    enabled: !modelData.locked
+                }
+
+                onObjectAdded: (index, object) => addToCrateMenu.insertItem(index, object)
+                onObjectRemoved: (index, object) => addToCrateMenu.removeItem(object)
+            }
+
             MenuSeparator {}
 
             MenuItem {
-                enabled: false // TODO implement
+                id: createCrateItem
+
+                property bool creating: false
+
                 text: qsTr("Create New Crate")
+                contentItem: Item {
+                    TextInput {
+                        id: crateNewName
+                        visible: createCrateItem.creating
+                        anchors.fill: parent
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.margins: 7
+                        focus: true
+                        clip: true
+                        color: acceptableInput ? "#000000" : 'red'
+                        horizontalAlignment: TextInput.AlignLeft
+                        onAccepted: {
+                            if (text) {
+                                crates.create(text)
+                            }
+                            text = ""
+                            createCrateItem.creating = false
+                        }
+                    }
+                    Text {
+                        visible: !createCrateItem.creating
+                        leftPadding: createCrateItem.indicator.width
+                        rightPadding: createCrateItem.arrow.width
+                        text: createCrateItem.text
+                        font: createCrateItem.font
+                        opacity: enabled ? 1.0 : 0.3
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    TapHandler {
+                        onTapped: {
+                            createPlaylistItem.creating = true
+                            playlistNewName.forceActiveFocus();
+                        }
+                    }
+                }
             }
         }
 

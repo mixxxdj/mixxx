@@ -39,6 +39,10 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
 
+    PlaylistDAO& dao() {
+        return m_playlistDao;
+    }
+
   public slots:
     void activateChild(const QModelIndex& index) override;
     virtual void activatePlaylist(int playlistId);
