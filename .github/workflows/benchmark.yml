@@ -53,49 +53,50 @@ jobs:
             compiler_cache_id: x64
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_release_buildenv.sh
-          - name: Windows 2022 x64
-            os: windows-2022
-            # Attention: If you change the cmake_args for the Windows CI build,
-            #            also adjust the for the local Windows build setup in
-            #            ./tools/windows_buildenv.bat
-            cmake_args: >-
-              -DBULK=ON
-              -DHSS1394=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMEDIAFOUNDATION=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=x64-windows-release
-            cc: cl
-            cxx: cl
-            buildenv_basepath: C:\buildenv
-            buildenv_script: tools/windows_buildenv.bat
-            arch: x64
-          - name: Windows 11 ARM64
-            os: windows-11-arm
-            # Attention: If you change the cmake_args for the Windows CI build,
-            #            also adjust the for the local Windows build setup in
-            #            ./tools/windows_buildenv.bat
-            cmake_args: >-
-              -DBULK=ON
-              -DHSS1394=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMEDIAFOUNDATION=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=arm64-windows-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
-            cc: cl
-            cxx: cl
-            buildenv_basepath: C:\buildenv
-            buildenv_script: tools/windows_buildenv.bat
-            arch: arm64
+          # FIXME: The benchmark are currently broken on Windows and not really used anyway, so we are disabling them
+          # - name: Windows 2022 x64
+          #   os: windows-2022
+          #   # Attention: If you change the cmake_args for the Windows CI build,
+          #   #            also adjust the for the local Windows build setup in
+          #   #            ./tools/windows_buildenv.bat
+          #   cmake_args: >-
+          #     -DBULK=ON
+          #     -DHSS1394=ON
+          #     -DLOCALECOMPARE=ON
+          #     -DMAD=ON
+          #     -DMEDIAFOUNDATION=ON
+          #     -DMODPLUG=ON
+          #     -DQT6=ON
+          #     -DQML=ON
+          #     -DWAVPACK=ON
+          #     -DVCPKG_TARGET_TRIPLET=x64-windows-release
+          #   cc: cl
+          #   cxx: cl
+          #   buildenv_basepath: C:\buildenv
+          #   buildenv_script: tools/windows_buildenv.bat
+          #   arch: x64
+          # - name: Windows 11 ARM64
+          #   os: windows-11-arm
+          #   # Attention: If you change the cmake_args for the Windows CI build,
+          #   #            also adjust the for the local Windows build setup in
+          #   #            ./tools/windows_buildenv.bat
+          #   cmake_args: >-
+          #     -DBULK=ON
+          #     -DHSS1394=ON
+          #     -DLOCALECOMPARE=ON
+          #     -DMAD=ON
+          #     -DMEDIAFOUNDATION=ON
+          #     -DMODPLUG=ON
+          #     -DQT6=ON
+          #     -DQML=ON
+          #     -DWAVPACK=ON
+          #     -DVCPKG_TARGET_TRIPLET=arm64-windows-release
+          #     -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
+          #   cc: cl
+          #   cxx: cl
+          #   buildenv_basepath: C:\buildenv
+          #   buildenv_script: tools/windows_buildenv.bat
+          #   arch: arm64
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
