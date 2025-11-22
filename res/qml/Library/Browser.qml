@@ -26,7 +26,7 @@ Rectangle {
         anchors.fill: parent
         anchors.topMargin: 7
         anchors.leftMargin: 7
-        anchors.rightMargin: 25
+        anchors.rightMargin: 15
         anchors.bottomMargin: 40
         color: Theme.sunkenBackgroundColor
 
@@ -87,7 +87,7 @@ Rectangle {
                         Rectangle {
                             id: background
                             anchors.fill: parent
-                            color: depth == 0 ? Theme.darkGray3 : 'transparent'
+                            color: depth == 0 ? Theme.midGray2 : 'transparent'
 
                             MouseArea {
                                 id: rowMouseArea
