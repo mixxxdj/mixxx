@@ -5,17 +5,23 @@
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
+#include "gtest/gtest.h"
 #include "mixxxtest.h"
 #include "test/signalpathtest.h"
 
-#if defined(Q_OS_WIN)
-const QString kStemFile = QStringLiteral("stems/test_alac.stem.mp4");
-#else
-const QString kStemFile = QStringLiteral("stems/test.stem.mp4");
-#endif
+#define STEM_FILE QStringLiteral("stems/sin_%1.stem.mp4").arg(QString::fromStdString(GetParam()))
 
-class StemControlTest : public BaseSignalPathTest {
-  protected:
+namespace {
+const std::vector<std::string> supportedCodecs = {
+#if !defined(Q_OS_WIN)
+        "AAC_256kbps_VBR",
+#endif
+        "ALAC_24bit"};
+} // namespace
+
+class StemControlFixture : public BaseSignalPathTest,
+                           public ::testing::WithParamInterface<std::string> {
+  public:
     QString getGroupForStem(QStringView deckGroup, int stemNr) {
         DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemNr <= 4);
         return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('0' + stemNr) + QChar(']');
@@ -47,7 +53,7 @@ class StemControlTest : public BaseSignalPathTest {
             m_pEffectsManager->addStem(stemHandleGroup);
         }
 
-        const QString kStemFileLocationTest = getTestDir().filePath(kStemFile);
+        const QString kStemFileLocationTest = getTestDir().filePath(STEM_FILE);
         TrackPointer pStemFile(Track::newTemporary(kStemFileLocationTest));
 
         loadTrack(m_pMixerDeck1, pStemFile);
@@ -148,7 +154,7 @@ class StemControlTest : public BaseSignalPathTest {
     std::unique_ptr<PollingControlProxy> m_pStemCount;
 };
 
-TEST_F(StemControlTest, StemCount) {
+TEST_P(StemControlFixture, StemCount) {
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
@@ -157,14 +163,14 @@ TEST_F(StemControlTest, StemCount) {
 
     EXPECT_EQ(m_pStemCount->get(), 0.0);
 
-    kTrackLocationTest = getTestDir().filePath(kStemFile);
+    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
     pTrack = Track::newTemporary(kTrackLocationTest);
     loadTrack(m_pMixerDeck1, pTrack);
 
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 }
 
-TEST_F(StemControlTest, StemColor) {
+TEST_P(StemControlFixture, StemColor) {
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
     EXPECT_EQ(m_pStem3Color->get(), 0x00 << 16 | 0xe8 << 8 | 0xe8);
@@ -179,7 +185,7 @@ TEST_F(StemControlTest, StemColor) {
     EXPECT_EQ(m_pStem3Color->get(), -1.0);
     EXPECT_EQ(m_pStem4Color->get(), -1.0);
 
-    kTrackLocationTest = getTestDir().filePath(kStemFile);
+    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
     pTrack = Track::newTemporary(kTrackLocationTest);
     loadTrack(m_pMixerDeck1, pTrack);
 
@@ -189,7 +195,7 @@ TEST_F(StemControlTest, StemColor) {
     EXPECT_EQ(m_pStem4Color->get(), 0xad << 16 | 0x65 << 8 | 0xff);
 }
 
-TEST_F(StemControlTest, Volume) {
+TEST_P(StemControlFixture, Volume) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
@@ -237,7 +243,7 @@ TEST_F(StemControlTest, Volume) {
             QStringLiteral("StemVolumeControlFull"));
 }
 
-TEST_F(StemControlTest, VolumeResetOnLoad) {
+TEST_P(StemControlFixture, VolumeResetOnLoad) {
     m_pStem1Volume->set(0.1);
     m_pStem2Volume->set(0.2);
     m_pStem3Volume->set(0.3);
@@ -276,7 +282,7 @@ TEST_F(StemControlTest, VolumeResetOnLoad) {
     EXPECT_EQ(m_pStem4Mute->get(), 0.0);
 }
 
-TEST_F(StemControlTest, Mute) {
+TEST_P(StemControlFixture, Mute) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
@@ -322,3 +328,11 @@ TEST_F(StemControlTest, Mute) {
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             QStringLiteral("StemMuteControlFull"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+        StemControlTest,
+        StemControlFixture,
+        ::testing::ValuesIn(supportedCodecs),
+        [](const testing::TestParamInfo<StemControlFixture::ParamType>& info) {
+            return info.param;
+        });
