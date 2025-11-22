@@ -165,11 +165,6 @@ Rectangle {
     Mixxx.ControlProxy {
         id: ejectControl
 
-        function trigger() {
-            this.value = 1;
-            this.value = 0;
-        }
-
         group: root.group
         key: "eject"
     }
