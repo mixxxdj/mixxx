@@ -4,12 +4,13 @@
 #include <QList>
 #include <QMap>
 #include <QString>
-#include <QXmlStreamReader>
 
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "preferences/usersettings.h"
 #include "util/runtimeloggingcategory.h"
+
+class QXmlStreamAttributes;
 
 struct ProductInfo {
     QString protocol;

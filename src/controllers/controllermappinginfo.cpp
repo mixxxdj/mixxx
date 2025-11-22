@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QLoggingCategory>
+#include <QXmlStreamReader>
 
 #include "util/xml.h"
 
