@@ -4,6 +4,7 @@
 #include <QString>
 
 class QXmlStreamAttributes;
+class QFileInfo;
 
 struct ProductInfo {
     QString protocol;
@@ -28,7 +29,7 @@ struct ProductInfo {
 class MappingInfo {
   public:
     MappingInfo() = default;
-    explicit MappingInfo(const QString& path);
+    explicit MappingInfo(const QFileInfo& fileInfo);
 
     inline bool isValid() const {
         return m_valid;

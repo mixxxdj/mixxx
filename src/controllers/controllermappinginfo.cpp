@@ -10,7 +10,7 @@
 
 Q_LOGGING_CATEGORY(kLogger, "controllers.mappinginfo")
 
-MappingInfo::MappingInfo(const QString& mapping_path) {
+MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
     // Parse only the <info> header section from a controller description XML file
     // using a streaming parser to avoid loading/parsing the entire (potentially
     // very large) XML file.
@@ -21,7 +21,6 @@ MappingInfo::MappingInfo(const QString& mapping_path) {
     // info.forums      Link to mixxx forum discussion for the mapping
     // info.wiki        Link to mixxx wiki for the mapping
     // info.devices.product List of device matches, specific to device type
-    QFileInfo fileInfo(mapping_path);
     m_path = fileInfo.absoluteFilePath();
     m_dirPath = fileInfo.dir().absolutePath();
 
