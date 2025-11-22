@@ -10,15 +10,7 @@
 
 Q_LOGGING_CATEGORY(kLogger, "controllers.mappinginfo")
 
-MappingInfo::MappingInfo(const QString& mapping_path)
-        : m_path(),
-          m_dirPath(),
-          m_name(),
-          m_author(),
-          m_description(),
-          m_forumlink(),
-          m_wikilink(),
-          m_products() {
+MappingInfo::MappingInfo(const QString& mapping_path) {
     // Parse only the <info> header section from a controller description XML file
     // using a streaming parser to avoid loading/parsing the entire (potentially
     // very large) XML file.
