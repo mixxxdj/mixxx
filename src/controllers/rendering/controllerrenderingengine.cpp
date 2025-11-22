@@ -1,5 +1,6 @@
 #include "controllers/rendering/controllerrenderingengine.h"
 
+#include <QApplication>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFramebufferObject>
@@ -10,6 +11,8 @@
 #include <QQuickRenderTarget>
 #include <QQuickWindow>
 #include <QThread>
+#include <QTimer>
+#include <QtEndian>
 
 #include "controllers/controller.h"
 #include "controllers/controllerenginethreadcontrol.h"
@@ -49,16 +52,15 @@ ControllerRenderingEngine::ControllerRenderingEngine(
     switch (m_screenInfo.pixelFormat) {
     case QImage::Format_RGB16:
         m_GLDataFormat = GL_RGB;
+#ifndef QT_OPENGL_ES_2
         if (m_screenInfo.reversedColor) {
-#ifdef QT_OPENGL_ES_2
-            m_isValid = false;
-            kLogger.critical() << "Reversed RGB16 format is not supported in OpenGL ES";
-#else
             m_GLDataType = GL_UNSIGNED_SHORT_5_6_5_REV;
-#endif
         } else {
+#endif
             m_GLDataType = GL_UNSIGNED_SHORT_5_6_5;
+#ifndef QT_OPENGL_ES_2
         }
+#endif
         break;
     case QImage::Format_RGB888:
         if (m_screenInfo.reversedColor) {
@@ -213,6 +215,7 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     }
 
     m_renderControl = std::make_unique<QQuickRenderControl>(this);
+    m_renderControl->setSamples(format.samples());
     m_quickWindow = std::make_unique<QQuickWindow>(m_renderControl.get());
 
     if (!qmlEngine->incubationController()) {
@@ -261,10 +264,10 @@ void ControllerRenderingEngine::renderFrame() {
 
     VERIFY_OR_TERMINATE(m_offscreenSurface->isValid(), "OffscreenSurface isn't valid anymore.");
     VERIFY_OR_TERMINATE(m_context->isValid(), "GLContext isn't valid anymore.");
-    VERIFY_OR_TERMINATE(m_context->makeCurrent(m_offscreenSurface.get()),
-            "Couldn't make the GLContext current to the OffscreenSurface.");
 
     if (!m_fbo) {
+        VERIFY_OR_TERMINATE(m_context->makeCurrent(m_offscreenSurface.get()),
+                "Couldn't make the GLContext current to the OffscreenSurface.");
         ScopedTimer t(QStringLiteral("ControllerRenderingEngine::renderFrame::initFBO"));
         VERIFY_OR_TERMINATE(
                 QOpenGLFramebufferObject::hasOpenGLFramebufferObjects(),
@@ -288,17 +291,23 @@ void ControllerRenderingEngine::renderFrame() {
                 m_screenInfo.size));
 
         m_quickWindow->setGeometry(0, 0, m_screenInfo.size.width(), m_screenInfo.size.height());
+
+        m_context->doneCurrent();
     }
 
     m_nextFrameStart = Clock::now();
 
-    m_renderControl->beginFrame();
-
     if (m_pEngineThreadControl) {
-        m_pEngineThreadControl->pause();
+        if (!m_pEngineThreadControl->pause()) {
+            kLogger.debug() << "Couldn't pause the GUI thread. Rescheduling frame rendering";
+            QCoreApplication::postEvent(this, new QEvent(QEvent::UpdateRequest));
+            return;
+        }
     }
 
     m_renderControl->polishItems();
+
+    m_renderControl->beginFrame();
 
     {
         ScopedTimer t(QStringLiteral("ControllerRenderingEngine::renderFrame::sync"));
@@ -310,27 +319,38 @@ void ControllerRenderingEngine::renderFrame() {
     if (m_pEngineThreadControl) {
         m_pEngineThreadControl->resume();
     }
+
+    VERIFY_OR_TERMINATE(m_offscreenSurface->isValid(), "OffscreenSurface isn't valid anymore.");
+    VERIFY_OR_TERMINATE(m_context->makeCurrent(m_offscreenSurface.get()),
+            "Couldn't make the GLContext current to the OffscreenSurface.");
+
+#ifdef QT_OPENGL_ES_2
+    // OpenGL ES doesn't support extended format and type when reading pixel and
+    // only support GL_RGBA/GL_UNSIGNED_BYTE On this platform, we fallback to Qt
+    // for the pixel transformation, using QImage conversion capabilities
+    QImage fboImage(m_screenInfo.size, QImage::Format_RGBA8888);
+#else
     QImage fboImage(m_screenInfo.size, m_screenInfo.pixelFormat);
+#endif
 
     VERIFY_OR_DEBUG_ASSERT(m_fbo->bind()) {
         kLogger.warning() << "Couldn't bind the FBO.";
     }
     GLenum glError;
+    // Flush any remaining GL errors.
+    while ((glError = m_context->functions()->glGetError()) != GL_NO_ERROR) {
+        kLogger.debug() << "Retrieved a previously unhandled GL error: " << glError;
+    }
+#ifndef QT_OPENGL_ES_2
     m_context->functions()->glFlush();
     glError = m_context->functions()->glGetError();
-    VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError: " << glError);
+    VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError after glFlush: " << glError);
     if (static_cast<std::endian>(m_screenInfo.endian) != std::endian::native) {
-#ifdef QT_OPENGL_ES_2
-        kLogger.critical()
-                << "Screen endianness mismatches native endianness, but OpenGL "
-                   "ES does not let us specify a reverse pixel store order. "
-                   "This will likely lead to invalid colors.";
-#else
         m_context->functions()->glPixelStorei(GL_PACK_SWAP_BYTES, GL_TRUE);
-#endif
     }
     glError = m_context->functions()->glGetError();
-    VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError: " << glError);
+    VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError after glPixelStorei: " << glError);
+#endif
 
     QDateTime timestamp = QDateTime::currentDateTime();
     m_renderControl->render();
@@ -346,18 +366,71 @@ void ControllerRenderingEngine::renderFrame() {
                 0,
                 m_screenInfo.size.width(),
                 m_screenInfo.size.height(),
+#ifndef QT_OPENGL_ES_2
                 m_GLDataFormat,
                 m_GLDataType,
+#else
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+#endif
                 fboImage.bits());
     }
     glError = m_context->functions()->glGetError();
-    VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError: " << glError);
+    VERIFY_OR_TERMINATE(glError == GL_NO_ERROR, "GLError after glReadPixels: " << glError);
     VERIFY_OR_DEBUG_ASSERT(!fboImage.isNull()) {
         kLogger.warning() << "Screen frame is null!";
     }
     VERIFY_OR_DEBUG_ASSERT(m_fbo->release()) {
         kLogger.debug() << "Couldn't release the FBO.";
     }
+
+    m_context->doneCurrent();
+
+#ifdef QT_OPENGL_ES_2
+    fboImage.convertTo(m_screenInfo.pixelFormat);
+
+    // OpenGL ES doesn't support extended reverse format (suffixed with _REV) so
+    // we use QImage function for this
+    if (static_cast<std::endian>(m_screenInfo.endian) != std::endian::native) {
+        fboImage.rgbSwap();
+    }
+
+    // OpenGL ES doesn't support explicit endianness (GL_PACK_SWAP_BYTES) se we
+    // use Qt helper function to convert the pixel buffer. Only 16 and 32 bit
+    // pixel format are supported currently.
+    switch (static_cast<std::endian>(m_screenInfo.endian)) {
+    case std::endian::big:
+        switch (m_screenInfo.pixelFormat) {
+        case QImage::Format_RGB16:
+            qToBigEndian<quint16>(fboImage.bits(), fboImage.sizeInBytes() / 2, fboImage.bits());
+            break;
+        case QImage::Format_RGBA8888:
+            qToBigEndian<quint32>(fboImage.bits(), fboImage.sizeInBytes() / 4, fboImage.bits());
+            break;
+        default:
+            kLogger.critical()
+                    << "Screen endianness mismatches native endianness, but OpenGL "
+                       "ES does not let us specify a reverse pixel store order. "
+                       "This will likely lead to invalid colors.";
+        }
+        break;
+    case std::endian::little:
+        switch (m_screenInfo.pixelFormat) {
+        case QImage::Format_RGB16:
+            qToLittleEndian<quint16>(fboImage.bits(), fboImage.sizeInBytes(), fboImage.bits());
+            break;
+        case QImage::Format_RGBA8888:
+            qToLittleEndian<quint32>(fboImage.bits(), fboImage.sizeInBytes(), fboImage.bits());
+            break;
+        default:
+            kLogger.critical()
+                    << "Screen endianness mismatches native endianness, but OpenGL "
+                       "ES does not let us specify a reverse pixel store order. "
+                       "This will likely lead to invalid colors.";
+        }
+        break;
+    }
+#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
     fboImage.flip(Qt::Vertical);
@@ -366,8 +439,6 @@ void ControllerRenderingEngine::renderFrame() {
 #endif
 
     emit frameRendered(m_screenInfo, fboImage.copy(), timestamp);
-
-    m_context->doneCurrent();
 }
 
 bool ControllerRenderingEngine::stop() {
