@@ -21,6 +21,7 @@
 #ifdef __HID__
 #include "controllers/hid/hidcontroller.h"
 #endif
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"

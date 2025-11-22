@@ -1,14 +1,7 @@
 #pragma once
 
-#include <QDomElement>
 #include <QList>
-#include <QMap>
 #include <QString>
-
-#include "controllers/legacycontrollermapping.h"
-#include "controllers/legacycontrollermappingfilehandler.h"
-#include "preferences/usersettings.h"
-#include "util/runtimeloggingcategory.h"
 
 class QXmlStreamAttributes;
 

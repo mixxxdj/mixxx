@@ -1,11 +1,12 @@
 #include "controllers/controllermappinginfo.h"
 
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QLoggingCategory>
 #include <QXmlStreamReader>
 
-#include "util/xml.h"
+#include "util/runtimeloggingcategory.h"
 
 Q_LOGGING_CATEGORY(kLogger, "controllers.mappinginfo")
 
