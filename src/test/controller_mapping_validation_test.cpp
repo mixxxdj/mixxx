@@ -130,7 +130,7 @@ void deleteTrack(Track* pTrack) {
 };
 #endif
 
-void LegacyControllerMappingValidationTest::SetUp() {
+void MappingFixture::SetUp() {
 #ifdef MIXXX_USE_QML
     // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
     // but it does a lot of local disk / settings setup.
@@ -180,7 +180,7 @@ void LegacyControllerMappingValidationTest::SetUp() {
     ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
 }
 
-void LegacyControllerMappingValidationTest::TearDown() {
+void MappingFixture::TearDown() {
     PlayerInfo::destroy();
     CoverArtCache::destroy();
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
@@ -188,7 +188,7 @@ void LegacyControllerMappingValidationTest::TearDown() {
 #endif
 }
 
-bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& mapping) {
+bool MappingFixture::testLoadMapping(const MappingInfo& mapping) {
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
                     QFileInfo(mapping.getPath()), QDir(RESOURCE_FOLDER"/controllers"));
@@ -256,7 +256,7 @@ std::ostream& operator<<(std::ostream& os, const MappingInfo&) {
 
 auto pEnumerator = createMappingEnumerator();
 
-TEST_P(LegacyControllerMappingValidationTest, ValidateMappingXML) {
+TEST_P(MappingFixture, ValidateMappingXML) {
     const MappingInfo& mapping = GetParam();
     qDebug() << "ValidateMappingXML " << mapping.getPath();
     std::string errorDescription = "Error while validating XML file " +
@@ -265,7 +265,7 @@ TEST_P(LegacyControllerMappingValidationTest, ValidateMappingXML) {
     EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
 }
 
-TEST_P(LegacyControllerMappingValidationTest, LoadMapping) {
+TEST_P(MappingFixture, LoadMapping) {
     const MappingInfo& mapping = GetParam();
     qDebug() << "LoadMapping " << mapping.getPath();
     std::string errorDescription = "Error while loading " + mapping.getPath().toStdString();
@@ -274,25 +274,24 @@ TEST_P(LegacyControllerMappingValidationTest, LoadMapping) {
 }
 
 #ifdef __HID__
-INSTANTIATE_TEST_SUITE_P(HidMappingsValid,
-        LegacyControllerMappingValidationTest,
+INSTANTIATE_TEST_SUITE_P(HidMappings,
+        MappingFixture,
         ::testing::ValuesIn(
                 pEnumerator->getMappingEnumerator()->getMappingsByExtension(
                         HID_MAPPING_EXTENSION)),
         PrintMappingName);
 #endif
 
-INSTANTIATE_TEST_SUITE_P(MidiMappingsValid,
-        LegacyControllerMappingValidationTest,
+INSTANTIATE_TEST_SUITE_P(MidiMappings,
+        MappingFixture,
         ::testing::ValuesIn(
                 pEnumerator->getMappingEnumerator()->getMappingsByExtension(
                         MIDI_MAPPING_EXTENSION)),
         PrintMappingName);
 
-
 #ifdef __BULK__
-INSTANTIATE_TEST_SUITE_P(BulkMappingsValid,
-        LegacyControllerMappingValidationTest,
+INSTANTIATE_TEST_SUITE_P(BulkMappings,
+        MappingFixture,
         ::testing::ValuesIn(
                 pEnumerator->getMappingEnumerator()->getMappingsByExtension(
                         BULK_MAPPING_EXTENSION)),
