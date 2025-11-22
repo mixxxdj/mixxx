@@ -8,6 +8,12 @@
 #include "mixxxtest.h"
 #include "test/signalpathtest.h"
 
+#if defined(Q_OS_WIN)
+const QString kStemFile = QStringLiteral("stems/test_alac.stem.mp4");
+#else
+const QString kStemFile = QStringLiteral("stems/test.stem.mp4");
+#endif
+
 class StemControlTest : public BaseSignalPathTest {
   protected:
     QString getGroupForStem(QStringView deckGroup, int stemNr) {
@@ -41,7 +47,7 @@ class StemControlTest : public BaseSignalPathTest {
             m_pEffectsManager->addStem(stemHandleGroup);
         }
 
-        const QString kStemFileLocationTest = getTestDir().filePath("stems/test.stem.mp4");
+        const QString kStemFileLocationTest = getTestDir().filePath(kStemFile);
         TrackPointer pStemFile(Track::newTemporary(kStemFileLocationTest));
 
         loadTrack(m_pMixerDeck1, pStemFile);
@@ -151,7 +157,7 @@ TEST_F(StemControlTest, StemCount) {
 
     EXPECT_EQ(m_pStemCount->get(), 0.0);
 
-    kTrackLocationTest = getTestDir().filePath("stems/test.stem.mp4");
+    kTrackLocationTest = getTestDir().filePath(kStemFile);
     pTrack = Track::newTemporary(kTrackLocationTest);
     loadTrack(m_pMixerDeck1, pTrack);
 
@@ -173,7 +179,7 @@ TEST_F(StemControlTest, StemColor) {
     EXPECT_EQ(m_pStem3Color->get(), -1.0);
     EXPECT_EQ(m_pStem4Color->get(), -1.0);
 
-    kTrackLocationTest = getTestDir().filePath("stems/test.stem.mp4");
+    kTrackLocationTest = getTestDir().filePath(kStemFile);
     pTrack = Track::newTemporary(kTrackLocationTest);
     loadTrack(m_pMixerDeck1, pTrack);
 
@@ -183,7 +189,7 @@ TEST_F(StemControlTest, StemColor) {
     EXPECT_EQ(m_pStem4Color->get(), 0xad << 16 | 0x65 << 8 | 0xff);
 }
 
-TEST_F(StemControlTest, DISABLED_Volume) {
+TEST_F(StemControlTest, Volume) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
@@ -270,7 +276,7 @@ TEST_F(StemControlTest, VolumeResetOnLoad) {
     EXPECT_EQ(m_pStem4Mute->get(), 0.0);
 }
 
-TEST_F(StemControlTest, DISABLED_Mute) {
+TEST_F(StemControlTest, Mute) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
