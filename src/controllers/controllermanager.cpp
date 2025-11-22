@@ -7,6 +7,7 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
@@ -166,6 +167,7 @@ void ControllerManager::slotInitialize() {
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
 #endif
+    emit initialized();
 }
 
 void ControllerManager::slotShutdown() {

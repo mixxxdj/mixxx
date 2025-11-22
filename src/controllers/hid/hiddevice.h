@@ -1,7 +1,5 @@
 #pragma once
 
-#include <hidapi.h>
-
 #include <QObject>
 #include <QString>
 #include <optional>
@@ -13,6 +11,8 @@
 
 struct ProductInfo;
 struct hid_device_info;
+struct hid_device_;
+typedef struct hid_device_ hid_device;
 
 namespace mixxx {
 

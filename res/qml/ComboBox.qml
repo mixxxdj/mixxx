@@ -8,11 +8,54 @@ import "Theme"
 ComboBox {
     id: root
 
-    property alias popupWidth: popup.width
+    property alias popupWidth: popupItem.width
+    property int popupMaxItems: 6
     property bool clip: false
-    property int popupMaxItem: 3
+    property list<var> footerItems: []
 
-    background: Skin.EmbeddedBackground {
+    signal activateFooter(int index)
+
+    background: Item {
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: 4
+            id: background
+            border.width: 1
+            border.color: '#000000'
+            radius: 4
+            color: '#232323'
+        }
+        InnerShadow {
+            id: bottomInnerEffect
+            anchors.fill: parent
+            radius: 4
+            samples: 16
+            spread: 0.3
+            horizontalOffset: -2
+            verticalOffset: -2
+            color: "#40000000"
+            source: background
+        }
+        InnerShadow {
+            id: topInnerEffect
+            anchors.fill: parent
+            radius: 4
+            samples: 16
+            spread: 0.3
+            horizontalOffset: 2
+            verticalOffset: 2
+            color: "#40000000"
+            source: bottomInnerEffect
+        }
+
+        DropShadow {
+            anchors.fill: parent
+            horizontalOffset: 0
+            verticalOffset: 0
+            radius: 4.0
+            color: "#40000000"
+            source: topInnerEffect
+        }
     }
 
     delegate: ItemDelegate {
@@ -20,6 +63,7 @@ ComboBox {
 
         required property int index
 
+        width: root.width
         highlighted: root.highlightedIndex === this.index
         text: root.textAt(this.index)
         padding: 4
@@ -54,11 +98,10 @@ ComboBox {
     }
 
     popup: Popup {
-        id: popup
+        id: popupItem
         y: root.height/2
-        width: root.width - root.indicator.width / 2
-        x: root.indicator.width / 2
-        height: root.indicator.implicitHeight*Math.min(root.popupMaxItem, root.count) + root.indicator.width
+        width: root.width
+        height: root.contentItem.height*Math.min(root.popupMaxItems, Math.max(root.count, 1)) + 20
 
         padding: 0
 
@@ -67,30 +110,33 @@ ComboBox {
                 id: content
                 anchors.fill: parent
                 Shape {
-                    id: arrow
+                    id: listIndicator
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.rightMargin: 3
-                    width: root.indicator.width-4
-                    height: width
+                    width: 20
+                    height: 20
                     antialiasing: true
                     layer.enabled: true
                     layer.samples: 4
                     ShapePath {
                         fillColor: Theme.embeddedBackgroundColor
-                        strokeColor: Theme.deckBackgroundColor
+                        strokeColor: Theme.embeddedBackgroundColor
                         strokeWidth: 2
-                        startX: arrow.width/2; startY: 0
+                        startX: listIndicator.width/2; startY: 0
                         fillRule: ShapePath.WindingFill
                         capStyle: ShapePath.RoundCap
-                        PathLine { x: root.indicator.width; y: root.indicator.width }
-                        PathLine { x: 0; y: root.indicator.width }
-                        PathLine { x: (root.indicator.width) / 2; y: 0 }
+                        PathLine { x: listIndicator.width; y: listIndicator.height }
+                        PathLine { x: 0; y: listIndicator.height }
+                        PathLine { x: listIndicator.width/2; y: 0 }
                     }
                 }
                 Skin.EmbeddedBackground {
-                    anchors.topMargin: root.indicator.width-6
-                    anchors.fill: parent
+                    anchors.top: listIndicator.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    clip: true
                     ListView {
                         clip: true
 
@@ -104,8 +150,52 @@ ComboBox {
                         model: root.popup.visible ? root.delegateModel : null
                         currentIndex: root.highlightedIndex
 
-                        ScrollBar.vertical: ScrollBar {
-                            policy: ScrollBar.AlwaysOn
+                        ScrollIndicator.vertical: ScrollIndicator {
+                        }
+
+                        footer: Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            Repeater {
+                                model: root.footerItems
+                                Rectangle {
+                                    color: "transparent"
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: root.contentItem.height
+
+                                    Item {
+                                        anchors.fill: parent
+                                        anchors.margins: 6
+                                        Text {
+                                            anchors.top: parent.top
+                                            anchors.bottom: parent.bottom
+                                            text: modelData.text
+                                            font: root.font
+                                            color: Theme.deckTextColor
+                                            elide: Text.ElideRight
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Text {
+                                            anchors.top: parent.top
+                                            anchors.bottom: parent.bottom
+                                            anchors.right: parent.right
+                                            text: modelData?.suffix || ''
+                                            font.pixelSize: 16
+                                            color: Theme.deckTextColor
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        id: footerItemMouseArea
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onPressed: {
+                                            root.activateFooter(index)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
