@@ -82,7 +82,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
         --nonZeroCount;
     }
 
-    std::size_t required_size = std::max(static_cast<std::size_t>(0), nonZeroCount - 2);
+    std::size_t required_size = std::max(static_cast<std::size_t>(2), nonZeroCount) - 2;
 
     std::vector<double> df;
     df.reserve(required_size);
