@@ -19,6 +19,22 @@ ApplicationWindow {
     visible: true
     width: 1920
 
+    Mixxx.ControlProxy {
+        group: "[App]"
+        key: "num_decks"
+        onInitializedChanged: {
+            value = 4
+        }
+    }
+
+    Mixxx.ControlProxy {
+        group: "[App]"
+        key: "num_samplers"
+        onInitializedChanged: {
+            value = 16
+        }
+    }
+
     Column {
         id: content
         anchors.fill: parent
