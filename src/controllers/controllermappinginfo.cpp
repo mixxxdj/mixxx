@@ -39,11 +39,11 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
         QXmlStreamReader::TokenType token = xml.readNext();
         if (token == QXmlStreamReader::StartElement) {
             ++xmlHierachyDepth;
-            const QString xmlElementName = xml.name().toString();
+            const QStringView xmlElementName = xml.name();
 
             // Accept info block only as a top-level child of the document root
             // root element will have depth == 1, so its direct children have depth == 2
-            if (!inInfo && xmlElementName == QLatin1String("info") && xmlHierachyDepth == 2) {
+            if (!inInfo && xmlElementName == QStringLiteral("info") && xmlHierachyDepth == 2) {
                 inInfo = true;
                 // We've found the info block; set valid now and start parsing children
                 m_valid = true;
@@ -52,37 +52,36 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
 
             // Parse simple info children when inside the info block
             if (inInfo) {
-                if (xmlElementName == QLatin1String("name")) {
+                if (!inInfo && xmlElementName == QStringLiteral("info") && xmlHierachyDepth == 2) {
                     m_name = xml.readElementText();
                     continue;
-                } else if (xmlElementName == QLatin1String("author")) {
+                } else if (xmlElementName == QStringLiteral("author")) {
                     m_author = xml.readElementText();
                     continue;
-                } else if (xmlElementName == QLatin1String("description")) {
+                } else if (xmlElementName == QStringLiteral("description")) {
                     m_description = xml.readElementText();
                     continue;
-                } else if (xmlElementName == QLatin1String("forums")) {
+                } else if (xmlElementName == QStringLiteral("forums")) {
                     m_forumlink = xml.readElementText();
                     continue;
-                } else if (xmlElementName == QLatin1String("wiki")) {
+                } else if (xmlElementName == QStringLiteral("wiki")) {
                     m_wikilink = xml.readElementText();
                     continue;
-                } else if (xmlElementName == QLatin1String("devices")) {
+                } else if (xmlElementName == QStringLiteral("devices")) {
                     // Enter devices block
                     inInfoDevices = true;
                     continue;
-                } else if (inInfoDevices && xmlElementName == QLatin1String("product")) {
+                } else if (inInfoDevices && xmlElementName == QStringLiteral("product")) {
                     QXmlStreamAttributes xmlElementAttributes = xml.attributes();
                     ProductInfo product;
-                    QString protocol = xmlElementAttributes
-                                               .value(QLatin1String("protocol"))
-                                               .toString();
+                    QStringView protocol = xmlElementAttributes
+                                                   .value(QStringLiteral("protocol"));
 
-                    if (protocol == "hid") {
+                    if (protocol == QStringLiteral("hid")) {
                         product = parseHIDProduct(xml.attributes());
-                    } else if (protocol == "bulk") {
+                    } else if (protocol == QStringLiteral("bulk")) {
                         product = parseBulkProduct(xml.attributes());
-                    } else if (protocol == "midi") {
+                    } else if (protocol == QStringLiteral("midi")) {
                         qCInfo(kLogger) << "MIDI product info parsing not yet implemented";
                     } else {
                         qCCritical(kLogger)
@@ -100,14 +99,14 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
         } else if (token == QXmlStreamReader::EndElement) {
             const QString name = xml.name().toString();
 
-            if (inInfoDevices && name == QLatin1String("devices")) {
+            if (inInfoDevices && name == QStringLiteral("devices")) {
                 inInfoDevices = false;
                 --xmlHierachyDepth;
                 continue;
             }
-            if (inInfo && name == QLatin1String("info")) {
-                // End of info block; we can stop parsing entirely
-                // This safes a lot of time
+            if (inInfo && name == QStringLiteral("info")) {
+                // End of info block; we stop file-reading/parsing entirely
+                // Stopping here safes several hundreds milliseconds of startup time
                 break;
             }
 
@@ -132,21 +131,21 @@ ProductInfo MappingInfo::parseBulkProduct(const QXmlStreamAttributes& xmlElement
     // All number strings must be hex prefixed with 0x
 
     ProductInfo productInfo;
-    productInfo.protocol = xmlElementAttributes.value(QLatin1String("protocol")).toString();
-    productInfo.vendor_id = xmlElementAttributes.value(QLatin1String("vendor_id")).toString();
-    productInfo.product_id = xmlElementAttributes.value(QLatin1String("product_id")).toString();
+    productInfo.protocol = xmlElementAttributes.value(QStringLiteral("protocol")).toString();
+    productInfo.vendor_id = xmlElementAttributes.value(QStringLiteral("vendor_id")).toString();
+    productInfo.product_id = xmlElementAttributes.value(QStringLiteral("product_id")).toString();
     // Check for HID-specific attributes which are not allowed for bulk protocol
-    if (xmlElementAttributes.hasAttribute(QLatin1String("usage_page"))) {
+    if (xmlElementAttributes.hasAttribute(QStringLiteral("usage_page"))) {
         qCCritical(kLogger) << "Product info element for bulk contains "
                                "unallowed UsagePage attribute";
     }
-    if (xmlElementAttributes.hasAttribute(QLatin1String("usage"))) {
+    if (xmlElementAttributes.hasAttribute(QStringLiteral("usage"))) {
         qCCritical(kLogger) << "Product info element for bulk contains unallowed Usage attribute";
     }
-    productInfo.in_epaddr = xmlElementAttributes.value(QLatin1String("in_epaddr")).toString();
-    productInfo.out_epaddr = xmlElementAttributes.value(QLatin1String("out_epaddr")).toString();
+    productInfo.in_epaddr = xmlElementAttributes.value(QStringLiteral("in_epaddr")).toString();
+    productInfo.out_epaddr = xmlElementAttributes.value(QStringLiteral("out_epaddr")).toString();
     productInfo.interface_number =
-            xmlElementAttributes.value(QLatin1String("interface_number"))
+            xmlElementAttributes.value(QStringLiteral("interface_number"))
                     .toString();
     return productInfo;
 }
@@ -157,22 +156,22 @@ ProductInfo MappingInfo::parseHIDProduct(const QXmlStreamAttributes& xmlElementA
     // All number strings must be hex prefixed with 0x
 
     ProductInfo productInfo;
-    productInfo.protocol = xmlElementAttributes.value(QLatin1String("protocol")).toString();
-    productInfo.vendor_id = xmlElementAttributes.value(QLatin1String("vendor_id")).toString();
-    productInfo.product_id = xmlElementAttributes.value(QLatin1String("product_id")).toString();
-    productInfo.usage_page = xmlElementAttributes.value(QLatin1String("usage_page")).toString();
-    productInfo.usage = xmlElementAttributes.value(QLatin1String("usage")).toString();
+    productInfo.protocol = xmlElementAttributes.value(QStringLiteral("protocol")).toString();
+    productInfo.vendor_id = xmlElementAttributes.value(QStringLiteral("vendor_id")).toString();
+    productInfo.product_id = xmlElementAttributes.value(QStringLiteral("product_id")).toString();
+    productInfo.usage_page = xmlElementAttributes.value(QStringLiteral("usage_page")).toString();
+    productInfo.usage = xmlElementAttributes.value(QStringLiteral("usage")).toString();
     // Check for bulk-specific attributes which are not allowed for hid protocol
-    if (xmlElementAttributes.hasAttribute(QLatin1String("in_epaddr"))) {
+    if (xmlElementAttributes.hasAttribute(QStringLiteral("in_epaddr"))) {
         qCCritical(kLogger) << "Product info element for hid contains "
                                "unallowed in_epaddr attribute";
     }
-    if (xmlElementAttributes.hasAttribute(QLatin1String("out_epaddr"))) {
+    if (xmlElementAttributes.hasAttribute(QStringLiteral("out_epaddr"))) {
         qCCritical(kLogger) << "Product info element for hid contains "
                                "unallowed out_epaddr attribute";
     }
     productInfo.interface_number =
-            xmlElementAttributes.value(QLatin1String("interface_number"))
+            xmlElementAttributes.value(QStringLiteral("interface_number"))
                     .toString();
     return productInfo;
 }
