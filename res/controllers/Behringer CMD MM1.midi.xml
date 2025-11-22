@@ -81,7 +81,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.shiftButton.input</key>
                 <description>shiftOff</description>
                 <status>&noteOff;</status>
@@ -102,7 +102,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.ctrlButton.input</key>
                 <description>ctrlOn</description>
                 <status>&noteOn;</status>
@@ -132,7 +132,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.crossfader.input</key>
                 <description>crossfader</description>
                 <status>&CC;</status>
@@ -174,7 +174,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>CMDMM.out2.input</key>
-                <description>Master Gain</description>
+                <description>Main Gain</description>
                 <status>&CC;</status>
                 <midino>0x02</midino>
                 <options>
@@ -182,7 +182,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.shiftButton.input</key>
                 <description>shiftOn</description>
                 <status>&noteOn;</status>
@@ -252,9 +252,9 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.out1.input</key>
-                <description>Master balance</description>
+                <description>Main balance</description>
                 <status>&CC;</status>
                 <midino>0x01</midino>
                 <options>
@@ -372,7 +372,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.cueMix.input</key>
                 <description>script pfl mix</description>
                 <status>&CC;</status>
@@ -442,7 +442,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.ctrlButton.input</key>
                 <description>ctrl</description>
                 <status>&noteOff;</status>
@@ -452,7 +452,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.cueVol.input</key>
                 <description>inscript pfl volume</description>
                 <status>&CC;</status>
@@ -462,7 +462,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>CMDMM.middleButton.input</key>
                 <description>Button in the Middle (shift on other mappings)</description>
                 <status>&noteOn;</status>

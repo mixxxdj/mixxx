@@ -448,7 +448,7 @@
         <midino>0x5d</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0xB2</status>
         <midino>0x08</midino>
