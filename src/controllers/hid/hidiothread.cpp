@@ -1,7 +1,13 @@
 #include "controllers/hid/hidiothread.h"
 
-#include <hidapi.h>
+#include "util/assert.h"
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <hidapi_libusb.h>
+#else
+#include <hidapi.h>
+#endif
 #include "moc_hidiothread.cpp"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"
@@ -56,6 +62,11 @@ HidIoThread::HidIoThread(hid_device* pHidDevice,
 
 HidIoThread::~HidIoThread() {
     hid_close(m_pHidDevice);
+#ifdef Q_OS_ANDROID
+    if (m_androidConnection.isValid()) {
+        m_androidConnection.callMethod<void>("close");
+    }
+#endif
 }
 
 void HidIoThread::run() {
