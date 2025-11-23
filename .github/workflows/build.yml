@@ -637,9 +637,9 @@ jobs:
           ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
-      - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
+      - name: "[Android/macOS/Windows] Upload build to downloads.mixxx.org"
         # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: runner.os != 'Linux' && inputs.publish && env.SSH_AUTH_SOCK != null
+        if: startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
