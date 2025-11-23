@@ -88,6 +88,7 @@ const LibrarySortableColumns = [
     engine.getSetting("librarySortableColumns6Value"),
 ].map(c => parseInt(c)).filter(c => c); // Filter '0' column, equivalent to '---' value in the UI or disabled
 
+const JogwheelAdjustFactor = engine.getSetting("jogwheelAdjustFactor") || 1.0;
 const LoopWheelMoveFactor = engine.getSetting("loopWheelMoveFactor") || 50;
 const LoopEncoderMoveFactor = engine.getSetting("loopEncoderMoveFactor") || 500;
 const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor") || 2500;
@@ -198,6 +199,15 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
+// Use alternative movemode instead of default.
+const AlternativeMoveMode = engine.getSetting("alternativeMoveMode");
+
+// Relative tempo slider mode -- the tempo slider does not care about its absolute position,
+// only changes in position.  Use Shift to adjust slider without changing tempo (for recentering, etc).
+const RelativeTempoMode = engine.getSetting("relativeTempoMode");
+// Only adjust tempo if shift is held.
+const ShiftTempoMode = engine.getSetting("shiftTempoMode");
+
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
 // slightly, so use that get 25 different colors to include the Filter
@@ -289,6 +299,8 @@ const moveModes = {
     grid: 2,
     keyboard: 3,
     hotcueColor: 4,
+    // For alternativeMoveMode
+    beatAlternative: 5,
 };
 
 // tracks state across input reports
@@ -585,6 +597,10 @@ class Deck extends ComponentContainer {
             this.color = colors[0];
         }
         this.settings = settings;
+        this.moveMode = moveModes.beat;
+        if (AlternativeMoveMode) {
+            this.moveMode = moveModes.beatAlternative;
+        }
         this.secondDeckModes = null;
         this.selectedHotcue = null;
 
@@ -615,6 +631,7 @@ class Deck extends ComponentContainer {
         case moveModes.bpm:
         case moveModes.grid:
         case moveModes.hotcueColor:
+        case moveModes.beatAlternative:
             this.moveMode = null;
             this.selectedHotcue = null;
 
@@ -2025,6 +2042,7 @@ class S4Mk3Deck extends Deck {
             inKey: "rate",
             outKey: "rate",
             appliedValue: null,
+            lastRelativeValue: -1,
             tempoCenterUpper: this.settings.tempoCenterUpper,
             tempoCenterLower: this.settings.tempoCenterLower,
             input: function(value) {
@@ -2040,18 +2058,38 @@ class S4Mk3Deck extends Deck {
                     // reset rate in center region
                     this.appliedValue = 0;
                 }
+
+                if (RelativeTempoMode) {
+                    const lastVal = this.lastRelativeValue;
+                    this.lastRelativeValue = this.appliedValue;
+                    // We do want to  reset the slider to the physical position when receiving the
+                    // first value.
+                    if (!receivingFirstValue) {
+                        let shiftValue = this.shifted;
+                        if (ShiftTempoMode) {
+                            shiftValue = !shiftValue;
+                        }
+                        if (shiftValue) {
+                            return;
+                        }
+
+                        let relVal = engine.getValue(this.group, "rate");
+                        relVal += this.appliedValue - lastVal;
+                        this.appliedValue = relVal;
+                    }
+                }
                 engine.setValue(this.group, this.inKey, this.appliedValue);
 
                 if (receivingFirstValue) {
                     engine.softTakeover(this.group, this.inKey, true);
-                    // Forec-update LED.
+                    // Force-update LED.
                     // Output connection is made and updated before input() can set this.appliedValue
                     // (doesn't happen until getInputReport())
                     this.outTrigger();
                 }
             },
             output: function(value) {
-                if (this.appliedValue === null) {
+                if (RelativeTempoMode || this.appliedValue === null) {
                     return;
                 }
 
@@ -2375,6 +2413,32 @@ class S4Mk3Deck extends Deck {
                     engine.setValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`, Object.keys(LedColorMap)[currentColorIdx]);
                     break;
                 }
+                case moveModes.beatAlternative:
+                    if (!this.shifted) {
+                        if (!this.deck.leftEncoderPress.pressed) {
+                            let beatjumpSize = engine.getValue(this.group, "beatjump_size");
+                            if (right) {
+                                beatjumpSize *= 2;
+                            } else {
+                                beatjumpSize /= 2;
+                            }
+                            engine.setValue(this.group, "beatjump_size", beatjumpSize);
+                        } else {
+                            if (right) {
+                                script.triggerControl(this.group, "pitch_up_small");
+                            } else {
+                                script.triggerControl(this.group, "pitch_down_small");
+                            }
+                        }
+                    } else {
+                        if (right) {
+                            script.triggerControl(this.group, "beatjump_forward");
+                        } else {
+                            script.triggerControl(this.group, "beatjump_backward");
+                        }
+                    }
+                    break;
+                case moveModes.beat:
                 default:
                     if (!this.shifted) {
                         if (!this.deck.leftEncoderPress.pressed) {
@@ -3099,11 +3163,11 @@ class S4Mk3Deck extends Deck {
                     if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
                         engine.setValue(this.group, "scratch2", this.speed);
                     } else {
-                        engine.setValue(this.group, "jog", this.speed);
+                        engine.setValue(this.group, "jog", this.speed * JogwheelAdjustFactor);
                     }
                     break;
                 default:
-                    engine.setValue(this.group, "jog", this.speed);
+                    engine.setValue(this.group, "jog", this.speed * JogwheelAdjustFactor);
                 }
             },
         });
