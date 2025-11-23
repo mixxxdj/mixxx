@@ -21,6 +21,7 @@
 #if defined(__HID__) && !defined(Q_OS_ANDROID)
 #include "controllers/hid/hidcontroller.h"
 #endif
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"

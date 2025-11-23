@@ -8,6 +8,7 @@
 #include "controllers/controllerhidreporttabsmanager.h"
 #endif
 #include "controllers/controllermappinginfo.h"
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
