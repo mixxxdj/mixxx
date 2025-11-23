@@ -138,7 +138,7 @@ jobs:
         working-directory: build
         env:
           # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
+          QT_QPA_PLATFORM: offscreen
           GTEST_COLOR: 1
           # Only use single thread to prevent *.gcna files from overwriting each other
           CTEST_PARALLEL_LEVEL: 1

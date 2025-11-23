@@ -2824,22 +2824,14 @@ if(BUILD_TESTING)
   include(CTest)
   include(GoogleTest)
   enable_testing()
-  gtest_add_tests(
-    TARGET mixxx-test
+  gtest_discover_tests(
+    mixxx-test
     EXTRA_ARGS --logLevel info
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
     TEST_LIST testsuite
+    DISCOVERY_MODE PRE_TEST
   )
-
-  if(NOT WIN32)
-    # Default to offscreen rendering during tests.
-    # This is required if the build system like Fedora koji/mock does not
-    # allow to pass environment variables into the ctest macro expansion.
-    set_tests_properties(
-      ${testsuite}
-      PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-    )
-  endif()
 
   if(BUILD_BENCH)
     # Benchmarking
