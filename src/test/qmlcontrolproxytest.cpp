@@ -13,8 +13,6 @@ using namespace mixxx::qml;
 using ::testing::ElementsAre;
 
 namespace {
-constexpr int kTimeoutMillis = 100;
-constexpr int kStepMs = 5;
 
 class QmlControlProxyTest : public MixxxTest {
   protected:
@@ -46,14 +44,7 @@ TEST_F(QmlControlProxyTest, TriggerEmitsValueChanged1Then0) {
     EXPECT_DOUBLE_EQ(m_proxy->getValue(), 0.0);
 
     m_proxy->trigger();
-
-    // Wait up to kTimeoutMillis for at least 2 signals
-    int waited = 0;
-    while (valueSpy.size() < 2 && waited < kTimeoutMillis) {
-        QCoreApplication::processEvents(QEventLoop::AllEvents, kStepMs);
-        QThread::msleep(kStepMs);
-        waited += kStepMs;
-    }
+    QmlControlProxyTest::processEvents();
 
     // The first emission should be 1, the second should be 0
     ASSERT_GE(valueSpy.size(), 2);
