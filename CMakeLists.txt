@@ -2828,12 +2828,21 @@ if(BUILD_TESTING)
   include(CTest)
   include(GoogleTest)
   enable_testing()
-  gtest_discover_tests(
+  file(
+    GLOB_RECURSE CONTROLLER_MAPPING_MIDI_LIST
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers/*.midi.xml"
+  )
+  list(JOIN CONTROLLER_MAPPING_MIDI_LIST "\",\"" CONTROLLER_MAPPING_MIDI)
+
+  target_compile_definitions(
     mixxx-test
+    PUBLIC CONTROLLER_MAPPING_MIDI="${CONTROLLER_MAPPING_MIDI}"
+  )
+  gtest_add_tests(
+    TARGET mixxx-test
     EXTRA_ARGS --logLevel info
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     TEST_LIST testsuite
-    DISCOVERY_MODE PRE_TEST
   )
 
   if(NOT WIN32)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qglobal.h>
+
 #include <QObject>
 
 #include "control/controlindicatortimer.h"
@@ -217,7 +219,7 @@ class PlayerManager;
 class MappingFixture
         : public MixxxDbTest,
           SoundSourceProviderRegistration,
-          public ::testing::WithParamInterface<MappingInfo> {
+          public ::testing::WithParamInterface<std::string> {
   public:
     MappingFixture()
             : MixxxDbTest(true) {
@@ -244,25 +246,5 @@ class MappingFixture
     std::shared_ptr<Library> m_pLibrary;
 #endif
 
-    bool testLoadMapping(const MappingInfo& mapping);
-};
-
-class LegacyControllerMappingList {
-  public:
-    LegacyControllerMappingList() {
-        m_mappingPath = QDir(RESOURCE_FOLDER"/controllers");
-        m_pEnumerator.reset(new MappingInfoEnumerator(
-                QList<QString>{RESOURCE_FOLDER"/controllers"}));
-    };
-    QDir getMappingPath() {
-        return m_mappingPath;
-    }
-
-    MappingInfoEnumerator* getMappingEnumerator() {
-        return m_pEnumerator.data();
-    }
-
-  protected:
-    QDir m_mappingPath;
-    QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
+    bool testLoadMapping(const QString& mapping);
 };

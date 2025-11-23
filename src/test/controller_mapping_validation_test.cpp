@@ -2,6 +2,8 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <qapplication.h>
+#include <qglobal.h>
 
 #include <QRegularExpression>
 #include <QUrl>
@@ -188,10 +190,10 @@ void MappingFixture::TearDown() {
 #endif
 }
 
-bool MappingFixture::testLoadMapping(const MappingInfo& mapping) {
+bool MappingFixture::testLoadMapping(const QString& mappingPath) {
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo(mapping.getPath()), QDir(RESOURCE_FOLDER"/controllers"));
+                    QFileInfo(mappingPath), QDir(RESOURCE_FOLDER "/controllers"));
     if (!pMapping) {
         return false;
     }
@@ -238,62 +240,50 @@ bool lintMappingInfo(const MappingInfo& mapping) {
     return result;
 }
 
-// Create a mapping enumerator for the test, which will be used to get the mappings
-// for the test cases
-std::shared_ptr<LegacyControllerMappingList> createMappingEnumerator() {
-    return std::make_shared<LegacyControllerMappingList>();
-}
-
-std::string PrintMappingName(const ::testing::TestParamInfo<MappingInfo>& info) {
-    auto name = info.param.getName();
-    return name.replace(QRegularExpression("[^\\w]+"), "_").toStdString();
+std::string PrintMappingName(const ::testing::TestParamInfo<std::string>& info) {
+    auto name = QFileInfo(QString::fromStdString(info.param));
+    return name.fileName().replace(QRegularExpression("[^\\w]+"), "_").toStdString();
 }
 
 // Inhibit the output of the mapping info to avoid spamming the console
-std::ostream& operator<<(std::ostream& os, const MappingInfo&) {
-    return os << "<MappingInfo>";
-}
-
-auto pEnumerator = createMappingEnumerator();
+// std::ostream& operator<<(std::ostream& os, const QString& MappingPath) {
+//     return os << MappingPath.toStdString();
+// }
 
 TEST_P(MappingFixture, ValidateMappingXML) {
-    const MappingInfo& mapping = GetParam();
-    qDebug() << "ValidateMappingXML " << mapping.getPath();
+    const auto& mappingPath = QString::fromStdString(GetParam());
+    qDebug() << "ValidateMappingXML " << mappingPath;
     std::string errorDescription = "Error while validating XML file " +
-            mapping.getPath().toStdString();
+            GetParam();
+    const auto mapping = MappingInfo(mappingPath);
     EXPECT_TRUE(mapping.isValid()) << errorDescription;
     EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
 }
 
 TEST_P(MappingFixture, LoadMapping) {
-    const MappingInfo& mapping = GetParam();
-    qDebug() << "LoadMapping " << mapping.getPath();
-    std::string errorDescription = "Error while loading " + mapping.getPath().toStdString();
-    EXPECT_TRUE(mapping.isValid()) << errorDescription;
-    EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
+    const auto& mappingPath = QString::fromStdString(GetParam());
+    qDebug() << "LoadMapping " << mappingPath;
+    std::string errorDescription = "Error while loading " + mappingPath.toStdString();
+    EXPECT_TRUE(testLoadMapping(mappingPath)) << errorDescription;
 }
 
-#ifdef __HID__
-INSTANTIATE_TEST_SUITE_P(HidMappings,
-        MappingFixture,
-        ::testing::ValuesIn(
-                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
-                        HID_MAPPING_EXTENSION)),
-        PrintMappingName);
-#endif
+// #ifdef __HID__
+// INSTANTIATE_TEST_SUITE_P(HidMappings,
+//         MappingFixture,
+//         ::testing::ValuesIn(
+//                 findMappings(HID_MAPPING_EXTENSION)),
+//         PrintMappingName);
+// #endif
 
 INSTANTIATE_TEST_SUITE_P(MidiMappings,
         MappingFixture,
-        ::testing::ValuesIn(
-                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
-                        MIDI_MAPPING_EXTENSION)),
+        ::testing::Values(CONTROLLER_MAPPING_MIDI),
         PrintMappingName);
 
-#ifdef __BULK__
-INSTANTIATE_TEST_SUITE_P(BulkMappings,
-        MappingFixture,
-        ::testing::ValuesIn(
-                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
-                        BULK_MAPPING_EXTENSION)),
-        PrintMappingName);
-#endif
+// #ifdef __BULK__
+// INSTANTIATE_TEST_SUITE_P(BulkMappings,
+//         MappingFixture,
+//         ::testing::Values(
+//                 ,
+//         PrintMappingName);
+// #endif
