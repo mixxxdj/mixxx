@@ -273,6 +273,8 @@ WSearchLineEdit {
 #DeckRateSeparator,
 #DeckRateSeparatorCompact,
 #MainMixerSeparator,
+#Mixer4Decks_ChannelSeparator,
+#Mixer4Decks_SeparatorH,
 #MainHeadphoneSeparator,
 #FxMixerSeparatorCollapsed,
 #FxSlotSeparatorH,
@@ -287,6 +289,15 @@ WSearchLineEdit {
     min-width: 0px;
     max-width: 0px;
   }
+  #Mixer4Decks_ChannelSeparator {
+    min-width: 0px;
+    max-width: 0px;
+    /* 2 x 1px border + 2 + 2 margin */
+    /*min-width: 6px;
+    max-width: 6px;*/
+    margin: 0px 4px;
+  }
+  #Mixer4Decks_SeparatorH,
   #SkinSettingsSeparator {
     min-height: 0px;
     max-height: 0px;
@@ -298,6 +309,7 @@ WSearchLineEdit {
     min-width: 12px;
     max-width: 12px;
   }
+  #Mixer4Decks_ChannelSeparator,
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
   #FxMixerSeparatorCollapsed,
@@ -308,6 +320,10 @@ WSearchLineEdit {
   #MainMixerSeparator {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #222;
+  }
+  #Mixer4Decks_SeparatorH {
+    border-top: 1px solid #0c0c0c;
+    border-bottom: 1px solid #333;
   }
   #FxSlotSeparatorH {
     border-top: 1px solid #0c0c0c;
@@ -715,37 +731,69 @@ WBeatSpinBox::down-button,
 
 /************** Mixer ***************************************************/
 
-#CrossfaderContainer[highlight="1"] {
-  border:  1px solid #b2421c;
+/* all mixer variants */
+#Mixer_2Decks,
+#Mixer_4Decks_Stacked,
+#Mixer_4Decks_Row {}
+
+#Mixer_4Decks_Stacked {
+  padding: 3px 0px 0px 2px;
 }
 
-#MixerDecks {
-  padding: 2px 5px 2px 5px;
+  #Mixer_2Decks_Ch1,
+  #Mixer_4Decks_Row_Ch3 {
+    /* Using padding here would braek center alignment in VolumeGain2Decks ... */
+    margin: 3px 0px 2px 5px;
   }
-  #MixerChannel_2Decks_Left {
-    margin: 0px 2px;
+  #Mixer_2Decks_Ch2,
+  #Mixer_4Decks_Row_Ch4 {
+    padding: 3px 5px 2px 0px;
   }
-  #MixerChannel_2Decks_Right {
-    margin: 0px 2px;
+  #Mixer_4Decks_Row_Ch1,
+  #Mixer_4Decks_Row_Ch2 {
+    margin: 3px 0px 2px 0px;
   }
+
+  #GainKnob {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  }
+
   #VuAndSlider_4Decks {
     margin-right: 1px;
   }
-  #PflBox_4Decks {
-    margin: 3px 0px 0px 20px;
+  #PflBox_2Decks {
+    margin: 8px 0px 11px 0px;
+  }
+  #PflBox_4Decks_Row {
+    margin: 8px 0px 10px 0px;
+  }
+  #PflBox_4Decks_Stacked {
+    /* not applied */
+    /* qproperty-layoutAlignment: 'AlignRight | AlignTop';*/
+    margin: 2px 10px 0px 0px;
   }
 
-  #CrossfaderSwitch_4Decks {
-    margin: 0px 4px 3px 0px;
+  #EQKillButtonBox {
+    padding-top: 5px;
+  }
+
+  #VuMeterBoxFull {
+    margin: 0px 0px 9px 0px;
+  }
+
+#CrossfaderContainer[highlight="1"] {
+  border:  1px solid #b2421c;
   }
   #Crossfader {
     padding: 0px 0px 0px 1px;
   }
+  #CrossfaderSwitch_4Decks_Stacked {
+    margin: 0px 0px 0px 5px;
+  }
 
   #CrossfaderButtonContainer_Deck {
-    padding: 1px;
     margin: 0px 1px 1px 0px;
-    }
+  }
   #CrossfaderButtonContainer_Aux {
     padding: 1px;
     margin-left: 3px;
