@@ -7,6 +7,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crate.h"
+#include "library/treeitem.h"
 #include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
 #include "widget/wlibrarysidebar.h"
@@ -165,9 +166,11 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
     }
 
     DEBUG_ASSERT(pPlaylist);
-    *pPlaylist = m_lastRightClickedIndex.data().toString();
-    std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
-            createPlaylistModelForPlaylist(*pPlaylist));
+    const auto* pTreeItem = static_cast<TreeItem*>(
+            m_lastRightClickedIndex.internalPointer());
+    *pPlaylist = pTreeItem->getLabel();
+    const std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
+            createPlaylistModelForPlaylist(pTreeItem->getData().toString()));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
         qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
