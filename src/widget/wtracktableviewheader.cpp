@@ -145,7 +145,7 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
 
 WTrackTableViewHeader::WTrackTableViewHeader(QWidget* pParent)
         : QHeaderView(Qt::Horizontal, pParent),
-          m_menu(tr("Show or hide columns."), this),
+          m_pMenu(make_parented<QMenu>(tr("Show or hide columns."), this)),
           m_preferredHeight(-1),
           m_hoveredSection(-1),
           m_previousHoveredSection(-1) {
@@ -171,7 +171,7 @@ WTrackTableViewHeader::WTrackTableViewHeader(QWidget* pParent)
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
     pEvent->accept();
-    m_menu.popup(pEvent->globalPos());
+    m_pMenu->popup(pEvent->globalPos());
 }
 
 void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
@@ -188,9 +188,8 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         saveHeaderState();
     }
 
-    // First clear all the context menu actions for the old model.
-    clearActions();
-    m_hiddenColumnSizes.clear();
+    // Clear the menu of the old model (actions, checkbox list, hidden sizes)
+    clearMenu();
 
     // Now set the header view to show the new model
     QHeaderView::setModel(pModel);
@@ -224,7 +223,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         const QString title = pModel->headerData(i, orientation()).toString();
 
         // Custom QCheckBox with fixed hover behavior
-        auto pCheckBox = make_parented<WMenuCheckBox>(title, &m_menu);
+        auto pCheckBox = make_parented<WMenuCheckBox>(title, m_pMenu);
         // Keep a map of checkboxes and columns
         m_columnCheckBoxes.insert(i, pCheckBox.get());
         connect(pCheckBox.get(),
@@ -253,21 +252,20 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
                 [pCheckBox{pCheckBox.get()}] {
                     pCheckBox->toggle();
                 });
-        m_menu.addAction(pAction);
-
+        m_pMenu->addAction(pAction);
     }
 
-    m_menu.addSeparator();
+    m_pMenu->addSeparator();
 
     // Only show the shuffle action in models that allow sorting.
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Sorting)) {
-        auto pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), &m_menu);
+        auto pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), m_pMenu);
         connect(pShuffleAction,
                 &QAction::triggered,
                 this,
                 &WTrackTableViewHeader::shuffle,
                 /*signal-to-signal*/ Qt::DirectConnection);
-        m_menu.addAction(pShuffleAction);
+        m_pMenu->addAction(pShuffleAction);
     }
 
     // Safety check against someone getting stuck with all columns hidden
@@ -335,12 +333,16 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     return !headerStateString.isNull();
 }
 
-void WTrackTableViewHeader::clearActions() {
+void WTrackTableViewHeader::clearMenu() {
+    if (m_pMenu->isVisible()) {
+        m_pMenu->hide();
+    }
     // The QActions are parented to the menu, so clearing deletes them. Since
     // they are deleted we don't have to disconnect their signals from the
     // mapper.
     m_columnCheckBoxes.clear();
-    m_menu.clear();
+    m_hiddenColumnSizes.clear();
+    m_pMenu->clear();
 }
 
 void WTrackTableViewHeader::showOrHideColumn(int column) {
