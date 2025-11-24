@@ -27,7 +27,7 @@
 //
 //      * 32 beat jump forward & back (Shift + </> CUE/LOOP CALL arrows)
 //      * Toggle quantize (Shift + channel cue)
-//      * Stems selection using PADs (using controller's KeyShift mode)
+//      * Stems selection using PADs (using controller's Keyboard mode)
 //
 //  Not implemented (after discussion and trial attempts):
 //      * Loop Section:
@@ -205,17 +205,17 @@ PioneerDDJFLX4.beatjumpSizeForPad = {
     0x27: 8   // PAD 8
 };
 
-// Stems (KEY SHIFT) pads mode status for deck 1 and 2, without or with SHIFT pressed
+// Stems (KEYBOARD) pads mode status for deck 1 and 2, without or with SHIFT pressed
 PioneerDDJFLX4.stemsPadsModesStatus = {
     "[Channel1]": [0x97, 0x98],
     "[Channel2]": [0x99, 0x9a],
 };
 
-// Stems (KEY SHIFT) pad 1 control (pad control = [this value] + [pad  number] - 1)
-PioneerDDJFLX4.stemMutePadsFirstControl = 0x70;
+// Stems (KEYBOARD) pad 1 control (pad control = [this value] + [pad  number] - 1)
+PioneerDDJFLX4.stemMutePadsFirstControl = 0x40;
 
-// Stems (KEY SHIFT) pad 5 control (pad control = [this value] + [pad  number] - 1)
-PioneerDDJFLX4.stemFxPadsFirstControl = 0x74;
+// Stems (KEYBOARD) pad 5 control (pad control = [this value] + [pad  number] - 1)
+PioneerDDJFLX4.stemFxPadsFirstControl = 0x44;
 
 PioneerDDJFLX4.quickJumpSize = 32;
 
