@@ -183,8 +183,10 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         return;
     }
 
-    // WTrackTableView calls saveHeaderState(), there's just too much interference
-    // with there and our sorting
+    // Save state of the old model's header
+    if (pOldTrackModel) {
+        saveHeaderState();
+    }
 
     // First clear all the context menu actions for the old model.
     clearActions();
