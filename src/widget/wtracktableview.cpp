@@ -62,6 +62,21 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
+    // FIXME Check if we still need this, now that
+    // 1) we show/hide the header's sort indicator in loadTrackModel()
+    // 2) that our sort slots act/don't depending on m_sorting (per model)
+    setSortingEnabled(false);
+
+    connect(m_pHeader,
+            &QHeaderView::sortIndicatorChanged,
+            this,
+            &WTrackTableView::slotSortingChanged,
+            Qt::UniqueConnection);
+    connect(m_pHeader,
+            &WTrackTableViewHeader::shuffle,
+            this,
+            &WTrackTableView::slotRandomSorting,
+            Qt::UniqueConnection);
     setHorizontalHeader(m_pHeader);
 
     m_pCOTGuiTick = new ControlProxy(
@@ -222,26 +237,13 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
 
     DEBUG_ASSERT(m_pHeader);
 
-    // Save the old model's header state
-    m_pHeader->saveHeaderState();
-
-    // Disconnect sort slots and disable sorting so we don't sort (yet) when
-    // restoring the new header's state via setModel()
-    // (just in case that was sorted previously??)
-    disconnect(m_pHeader,
-            &QHeaderView::sortIndicatorChanged,
-            this,
-            &WTrackTableView::slotSortingChanged);
-    disconnect(m_pHeader,
-            &WTrackTableViewHeader::shuffle,
-            this,
-            &WTrackTableView::slotRandomSorting);
-    setSortingEnabled(false);
-
-    // This also calls horizontalHeader->setModel(), and WTrackTableViewHeader::setModel()
-    // restores the header state, if possible.
+    // This also calls horizontalHeader()->setModel(). WTrackTableViewHeader::setModel()
+    // saves the old model's header state and tries to restores the saved state
+    // of the new model.
     setModel(pNewModel);
-    // Now set maybe enable sorting
+    // Now show/hide the header sort indicator (eg. Auto DJ doesn't show/need it)
+    // This is just the visual aspect -- clicks on header sections do always
+    // emit sort signals, and our sort slots act or don't depending on m_sorting.
     m_pHeader->setSortIndicatorShown(m_sorting);
 
     // Initialize all column-specific things
@@ -272,19 +274,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     }
 
     if (m_sorting) {
-        // FIXME: Instead of repetitive disconnect/connect, just refuse to sort
-        // in the slots in m_sorting == false ??
-        connect(m_pHeader,
-                &QHeaderView::sortIndicatorChanged,
-                this,
-                &WTrackTableView::slotSortingChanged,
-                Qt::UniqueConnection);
-        connect(m_pHeader,
-                &WTrackTableViewHeader::shuffle,
-                this,
-                &WTrackTableView::slotRandomSorting,
-                Qt::UniqueConnection);
-
         Qt::SortOrder sortOrder;
         TrackModel::SortColumnId sortColumn =
                 pNewTrackModel->sortColumnIdFromColumnIndex(
@@ -1805,7 +1794,7 @@ void WTrackTableView::selectTracksById(const QList<TrackId>& trackIds, int prevC
 void WTrackTableView::applySortingIfVisible() {
     // There are multiple instances of WTrackTableView, but we only want to
     // apply the sorting to the currently visible instance
-    if (!isVisible()) {
+    if (!isVisible() || !m_sorting) {
         return;
     }
 
@@ -1813,6 +1802,10 @@ void WTrackTableView::applySortingIfVisible() {
 }
 
 void WTrackTableView::applySorting() {
+    if (!m_sorting) {
+        return;
+    }
+
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -1844,6 +1837,10 @@ void WTrackTableView::applySorting() {
 }
 
 void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order) {
+    if (!m_sorting) {
+        return;
+    }
+
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
         return;
@@ -1872,6 +1869,10 @@ void WTrackTableView::slotSortingChanged(int headerSection, Qt::SortOrder order)
 }
 
 void WTrackTableView::slotRandomSorting() {
+    if (!m_sorting) {
+        return;
+    }
+
     // There's no need to remove the shuffle feature of the Preview column
     // (and replace it with a dedicated randomize slot to BaseSqltableModel),
     // so we simply abuse that column.
