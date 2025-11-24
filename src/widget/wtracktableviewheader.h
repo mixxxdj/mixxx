@@ -5,6 +5,7 @@
 #include <QMenu>
 
 #include "proto/headers.pb.h"
+#include "util/parented_ptr.h"
 
 class TrackModel;
 class QAction;
@@ -94,12 +95,12 @@ class WTrackTableViewHeader : public QHeaderView {
 
   private:
     int hiddenCount();
-    void clearActions();
+    void clearMenu();
     TrackModel* getTrackModel();
 
     void setHeightForFont();
 
-    QMenu m_menu;
+    parented_ptr<QMenu> m_pMenu;
     QMap<int, QCheckBox*> m_columnCheckBoxes;
 
     int m_preferredHeight;
