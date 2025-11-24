@@ -21,7 +21,7 @@
             <control>
                 <group>[Master]</group>
                 <key>MixstreamPro.Effectbutton1</key>
-                <description>MIDI Effectbutton1</description>
+                <description>Effectbutton1</description>
                 <status>0x94</status>
                 <midino>0x00</midino>
                 <options>
@@ -31,7 +31,7 @@
             <control>
                 <group>[Auxiliary1]</group>
                 <key>pregain</key>
-                <description>MIDI Learned from 622 messages.</description>
+                <description>Auxiliary1 pregain</description>
                 <status>0xBF</status>
                 <midino>0x00</midino>
                 <options>
@@ -42,7 +42,7 @@
             <control>
                 <group>[Master]</group>
                 <key>MixstreamPro.Effectbutton2</key>
-                <description>MIDI Effectbutton2</description>
+                <description>Effectbutton2</description>
                 <status>0x94</status>
                 <midino>0x01</midino>
                 <options>
@@ -52,7 +52,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>LoadSelectedTrack</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 1 Load Selected Track</description>
                 <status>0x9F</status>
                 <midino>0x01</midino>
                 <options>
@@ -62,7 +62,7 @@
             <control>
                 <group>[Master]</group>
                 <key>MixstreamPro.Effectbutton3</key>
-                <description>MIDI Effectbutton3</description>
+                <description>Effectbutton3</description>
                 <status>0x94</status>
                 <midino>0x02</midino>
                 <options>
@@ -72,7 +72,8 @@
             <control>
                 <group>[Channel2]</group>
                 <key>LoadSelectedTrack</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>LoadSelectedTrack</key>
+                <description>Deck 2 Load Selected Track</description>
                 <status>0x9F</status>
                 <midino>0x02</midino>
                 <options>
@@ -82,7 +83,7 @@
             <control>
                 <group>[Master]</group>
                 <key>MixstreamPro.Effectbutton4</key>
-                <description>MIDI Effectbutton4</description>
+                <description>Effectbutton4</description>
                 <status>0x94</status>
                 <midino>0x03</midino>
                 <options>
@@ -92,7 +93,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>pregain</key>
-                <description>MIDI Learned from 447 messages.</description>
+                <description>Deck 1 pregain</description>
                 <status>0xB0</status>
                 <midino>0x03</midino>
                 <options>
@@ -102,7 +103,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>pregain</key>
-                <description>MIDI Learned from 365 messages.</description>
+                <description>Deck 2 pregain</description>
                 <status>0xB1</status>
                 <midino>0x03</midino>
                 <options>
@@ -112,7 +113,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.EffectToggleSwitch</key>
-                <description>MIDI Deck1 Effect Toggle Switch</description>
+                <description>Deck1 Effect Toggle Switch</description>
                 <status>0x94</status>
                 <midino>0x04</midino>
                 <options>
@@ -122,7 +123,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.EffectToggleSwitch</key>
-                <description>MIDI Deck2 Effect Toggle Switch</description>
+                <description>Deck2 Effect Toggle Switch</description>
                 <status>0x95</status>
                 <midino>0x04</midino>
                 <options>
@@ -132,7 +133,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>parameter3</key>
-                <description>MIDI Learned from 364 messages.</description>
+                <description>Deck 1 EqualizerRack1 Effect1</description>
                 <status>0xB0</status>
                 <midino>0x04</midino>
                 <options>
@@ -142,7 +143,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>parameter3</key>
-                <description>MIDI Learned from 382 messages.</description>
+                <description>Deck 2 EqualizerRack1 Effect1</description>
                 <status>0xB1</status>
                 <midino>0x04</midino>
                 <options>
@@ -152,7 +153,7 @@
             <control>
                 <group>[Library]</group>
                 <key>MoveVertical</key>
-                <description>MIDI Learned from 85 messages.</description>
+                <description>Library Scroll Verticle.</description>
                 <status>0xBF</status>
                 <midino>0x05</midino>
                 <options>
@@ -162,7 +163,7 @@
             <control>
                 <group>[Library]</group>
                 <key>GoToItem</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Library Go To Item</description>
                 <status>0x9F</status>
                 <midino>0x06</midino>
                 <options>
@@ -172,7 +173,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>parameter2</key>
-                <description>MIDI Learned from 310 messages.</description>
+                <description>Deck 1 EqualizerRack1 Effect1 Parameter 2</description>
                 <status>0xB0</status>
                 <midino>0x06</midino>
                 <options>
@@ -182,7 +183,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>parameter2</key>
-                <description>MIDI Learned from 316 messages.</description>
+                <description>Deck 2 EqualizerRack1 Effect1 Parameter 2</description>
                 <status>0xB1</status>
                 <midino>0x06</midino>
                 <options>
@@ -192,7 +193,7 @@
             <control>
                 <group>[Auxiliary1]</group>
                 <key>MixstreamPro.Play_Aux_1</key>
-                <description>Play Aux 1</description>
+                <description>Activate Aux 1 Play Button</description>
                 <status>0x9F</status>
                 <midino>0x07</midino>
                 <options>
@@ -202,7 +203,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>sync_enabled</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 1 Sync Tempo</description>
                 <status>0x92</status>
                 <midino>0x08</midino>
                 <options>
@@ -212,7 +213,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>sync_enabled</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 2 Sync Tempo</description>
                 <status>0x93</status>
                 <midino>0x08</midino>
                 <options>
@@ -222,7 +223,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>parameter1</key>
-                <description>MIDI Learned from 303 messages.</description>
+                <description>Deck 1 EqualizerRack1 Effect1 Parameter 1</description>
                 <status>0xB0</status>
                 <midino>0x08</midino>
                 <options>
@@ -232,7 +233,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>parameter1</key>
-                <description>MIDI Learned from 289 messages.</description>
+                <description>Deck 2 EqualizerRack1 Effect1 Parameter 1</description>
                 <status>0xB1</status>
                 <midino>0x08</midino>
                 <options>
@@ -242,7 +243,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>cue_set</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 1 Set Cue</description>
                 <status>0x92</status>
                 <midino>0x09</midino>
                 <options>
@@ -252,7 +253,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>cue_set</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 2 Set Cue</description>
                 <status>0x93</status>
                 <midino>0x09</midino>
                 <options>
@@ -262,7 +263,7 @@
             <control>
                 <group>[Master]</group>
                 <key>headMix</key>
-                <description>MIDI Learned from 235 messages.</description>
+                <description>Master Volume Button</description>
                 <status>0xBF</status>
                 <midino>0x09</midino>
                 <options>
@@ -272,7 +273,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.play1</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 1 Play Button</description>
                 <status>0x92</status>
                 <midino>0x0A</midino>
                 <options>
@@ -282,7 +283,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.play2</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 2 Play Button</description>
                 <status>0x93</status>
                 <midino>0x0A</midino>
                 <options>
@@ -292,7 +293,7 @@
             <control>
                 <group>[Master]</group>
                 <key>headGain</key>
-                <description>MIDI Learned from 277 messages.</description>
+                <description>Master Headphone Volume Button</description>
                 <status>0xBF</status>
                 <midino>0x0A</midino>
                 <options>
@@ -302,7 +303,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.cue_goto_toggle1</key>
-                <description>cue_goto_toggle</description>
+                <description>Deck 1 Hotcue Toggle Function</description>
                 <status>0x92</status>
                 <midino>0x0B</midino>
                 <options>
@@ -312,7 +313,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.cue_goto_toggle2</key>
-                <description>cue_goto_toggle</description>
+                <description>Deck 2 Hotcue Toggle Function</description>
                 <status>0x93</status>
                 <midino>0x0B</midino>
                 <options>
@@ -322,7 +323,7 @@
             <control>
                 <group>[QuickEffectRack1_[Channel1]]</group>
                 <key>super1</key>
-                <description>MIDI Learned from 488 messages.</description>
+                <description>Deck 1 QuickEffectRack1 Super Button</description>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
@@ -332,7 +333,7 @@
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
                 <key>super1</key>
-                <description>MIDI Learned from 446 messages.</description>
+                <description>Deck 2 QuickEffectRack1 Super Button</description>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
                 <options>
@@ -342,7 +343,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.reloop_toggle1</key>
-                <description>reloop_toggle</description>
+                <description>Deck 1 Reloop Toggle Function</description>
                 <status>0x92</status>
                 <midino>0x0C</midino>
                 <options>
@@ -352,7 +353,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.reloop_toggle2</key>
-                <description>reloop_toggle</description>
+                <description>Deck 2 Reloop Toggle Function</description>
                 <status>0x93</status>
                 <midino>0x0C</midino>
                 <options>
@@ -362,7 +363,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>pfl</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 1 Pre-Fader Listen</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <options>
@@ -372,7 +373,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 2 Pre-Fader Listen</description>
                 <status>0x91</status>
                 <midino>0x0D</midino>
                 <options>
@@ -382,7 +383,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.BeatloopRoll1</key>
-                <description>MIDI Deck1 BeatloopRoll</description>
+                <description>Deck1 BeatloopRoll Function</description>
                 <status>0x92</status>
                 <midino>0x0D</midino>
                 <options>
@@ -392,7 +393,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.BeatloopRoll2</key>
-                <description>MIDI Deck2 Effect BeatloopRoll</description>
+                <description>Deck 2 Effect BeatloopRoll Function</description>
                 <status>0x93</status>
                 <midino>0x0D</midino>
                 <options>
@@ -402,7 +403,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.Autoloop1</key>
-                <description>MIDI Deck1 Autoloop</description>
+                <description>Deck1 Autoloop Function</description>
                 <status>0x92</status>
                 <midino>0x0E</midino>
                 <options>
@@ -412,7 +413,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.Autoloop2</key>
-                <description>MIDI Deck2 Effect Autoloop</description>
+                <description>Deck2 Effect Autoloop Function</description>
                 <status>0x93</status>
                 <midino>0x0E</midino>
                 <options>
@@ -422,7 +423,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>volume</key>
-                <description>MIDI Learned from 330 messages.</description>
+                <description>Deck 1 Volume Button</description>
                 <status>0xB0</status>
                 <midino>0x0E</midino>
                 <options>
@@ -432,7 +433,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>volume</key>
-                <description>MIDI Learned from 1189 messages.</description>
+                <description>Deck 2 Volume Button</description>
                 <status>0xB1</status>
                 <midino>0x0E</midino>
                 <options>
@@ -442,7 +443,7 @@
             <control>
                 <group>[Master]</group>
                 <key>crossfader</key>
-                <description>MIDI Learned from 330 messages.</description>
+                <description>Crossfader Slider</description>
                 <status>0xBF</status>
                 <midino>0x0E</midino>
                 <options>
@@ -452,7 +453,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.Deck1_Pad1</key>
-                <description>MIDI Deck1 Pad1 Script</description>
+                <description>Deck1 Pad 1 Function</description>
                 <status>0x92</status>
                 <midino>0x0F</midino>
                 <options>
@@ -462,7 +463,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.Deck2_Pad1</key>
-                <description>MIDI Deck2 Pad1 Script</description>
+                <description>Deck 2 Pad 1 Function</description>
                 <status>0x93</status>
                 <midino>0x0F</midino>
                 <options>
@@ -472,7 +473,7 @@
             <control>
                 <group>[Master]</group>
                 <key>gain</key>
-                <description>MIDI Learned from 582 messages.</description>
+                <description>Main Output Volume Gain</description>
                 <status>0xBF</status>
                 <midino>0x0F</midino>
                 <options>
@@ -482,7 +483,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.Deck1_Pad2</key>
-                <description>MIDI Deck1 Pad2 Script</description>
+                <description>Deck 1 Pad 2 Function</description>
                 <status>0x92</status>
                 <midino>0x10</midino>
                 <options>
@@ -492,7 +493,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.Deck2_Pad2</key>
-                <description>MIDI Deck2 Pad2 Script</description>
+                <description>Deck 2 Pad 2 Function</description>
                 <status>0x93</status>
                 <midino>0x10</midino>
                 <options>
@@ -502,7 +503,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.Deck1_Pad3</key>
-                <description>MIDI Deck1 Pad3 Script</description>
+                <description>Deck 1 Pad 3 Function</description>
                 <status>0x92</status>
                 <midino>0x11</midino>
                 <options>
@@ -512,7 +513,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.Deck2_Pad3</key>
-                <description>MIDI Deck2 Pad3 Script</description>
+                <description>Deck 2 Pad 3 Function</description>
                 <status>0x93</status>
                 <midino>0x11</midino>
                 <options>
@@ -522,7 +523,7 @@
             <control>
                 <group>[Master]</group>
                 <key>booth_gain</key>
-                <description>MIDI Learned from CONTROLLER DEBUG messages.</description>
+                <description>Booth Volume Gain</description>
                 <status>0xBF</status>
                 <midino>0x11</midino>
                 <options>
@@ -532,7 +533,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.Deck1_Pad4</key>
-                <description>MIDI Deck1 Pad4 Script</description>
+                <description>Deck 1 Pad 4 Function</description>
                 <status>0x92</status>
                 <midino>0x12</midino>
                 <options>
@@ -542,7 +543,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.Deck2_Pad4</key>
-                <description>MIDI Deck2 Pad4 Script</description>
+                <description>Deck 2 Pad 4 Function</description>
                 <status>0x93</status>
                 <midino>0x12</midino>
                 <options>
@@ -552,7 +553,7 @@
             <control>
                 <group>[Auxiliary1]</group>
                 <key>pregain</key>
-                <description>MIDI Learned from 622 messages.</description>
+                <description>Aux 1 Volume Gain</description>
                 <status>0xBF</status>
                 <midino>0x12</midino>
                 <options>
@@ -563,7 +564,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.shiftButton</key>
-                <description>MIDI Deck1 shift Button Script</description>
+                <description>Deck 1 Shift Button Function</description>
                 <status>0x92</status>
                 <midino>0x1C</midino>
                 <options>
@@ -573,7 +574,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.shiftButton</key>
-                <description>MIDI Deck2 shift Button Script</description>
+                <description>Deck 2 Shift Button Function</description>
                 <status>0x93</status>
                 <midino>0x1C</midino>
                 <options>
@@ -583,7 +584,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>rate_temp_down</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 1 Pitch Bend Down</description>
                 <status>0x92</status>
                 <midino>0x1D</midino>
                 <options>
@@ -593,7 +594,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>rate_temp_down</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 2 Pitch Bend Down</description>
                 <status>0x93</status>
                 <midino>0x1D</midino>
                 <options>
@@ -603,7 +604,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>rate_temp_up</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 1 Pitch Bend Up</description>
                 <status>0x92</status>
                 <midino>0x1E</midino>
                 <options>
@@ -613,7 +614,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>rate_temp_up</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <description>Deck 2 Pitch Bend Up</description>
                 <status>0x93</status>
                 <midino>0x1E</midino>
                 <options>
@@ -623,7 +624,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>rate</key>
-                <description>MIDI Learned from 46 messages.</description>
+                <description>Deck 1 Pitch Bend</description>
                 <status>0xB2</status>
                 <midino>0x1F</midino>
                 <options>
@@ -634,7 +635,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>rate</key>
-                <description>MIDI Learned from 214 messages.</description>
+                <description>Deck 2 Pitch Bend</description>
                 <status>0xB3</status>
                 <midino>0x1F</midino>
                 <options>
@@ -645,7 +646,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.WheelTouch</key>
-                <description>MIDI Learned from 2264 messages.</description>
+                <description>Deck 1 WheelTouch Function</description>
                 <status>0x92</status>
                 <midino>0x21</midino>
                 <options>
@@ -655,7 +656,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.WheelTouch</key>
-                <description>MIDI Learned from 2264 messages.</description>
+                <description>Deck 2 WheelTouch Function</description>
                 <status>0x93</status>
                 <midino>0x21</midino>
                 <options>
@@ -665,7 +666,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.slip_enabled_toggle1</key>
-                <description>slip_enabled_toggle1</description>
+                <description>Deck 1 Slip Enabled Toggle Function</description>
                 <status>0x92</status>
                 <midino>0x23</midino>
                 <options>
@@ -675,7 +676,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.slip_enabled_toggle2</key>
-                <description>slip_enabled_toggle2</description>
+                <description>Deck 1 Slip Enabled Toggle Function</description>
                 <status>0x93</status>
                 <midino>0x23</midino>
                 <options>
@@ -685,7 +686,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.JogLSB_1</key>
-                <description>MIDI Learned from 2264 messages.</description>
+                <description>Deck 1 Jogwheel LSB Dummy Function</description>
                 <status>0xB2</status>
                 <midino>0x37</midino>
                 <options>
@@ -695,7 +696,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.JogLSB_2</key>
-                <description>MIDI Learned from 632 messages.</description>
+                <description>Deck 2 Jogwheel LSB Dummy Function</description>
                 <status>0xB3</status>
                 <midino>0x37</midino>
                 <options>
@@ -705,7 +706,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>rate</key>
-                <description>MIDI Learned from 46 messages.</description>
+                <description>Deck 1 Jogwheel LSB not used</description>
                 <status>0xB2</status>
                 <midino>0x4B</midino>
                 <options>
@@ -716,7 +717,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>rate</key>
-                <description>MIDI Learned from 214 messages.</description>
+                <description>Deck 2 Jogwheel LSB not used</description>
                 <status>0xB3</status>
                 <midino>0x4B</midino>
                 <options>
@@ -727,7 +728,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>MixstreamPro.JogMSB_1</key>
-                <description>MIDI Learned from 2264 messages.</description>
+                <description>Deck 1 JogWheel MSB Function</description>
                 <status>0xB2</status>
                 <midino>0x4D</midino>
                 <options>
@@ -737,7 +738,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>MixstreamPro.JogMSB_2</key>
-                <description>MIDI Learned from 2264 messages.</description>
+                <description>Deck 2 JogWheel MSB Function</description>
                 <status>0xB3</status>
                 <midino>0x4D</midino>
                 <options>
@@ -749,7 +750,7 @@
             <output>
                 <group>[Channel1]</group>
                 <key>cue_indicator</key>
-                <description>CUE LED1</description>
+                <description>Deck 1 Cue Led Indicator</description>
                 <status>0x92</status>
                 <midino>0x09</midino>
                 <off>0x01</off>
@@ -758,7 +759,7 @@
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
-                <description>PFL LED1</description>
+                <description>Deck 1 Pre-Fader Listen Indicator</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <off>0x01</off>
@@ -767,7 +768,7 @@
             <output>
                 <group>[Channel1]</group>
                 <key>play_indicator</key>
-                <description>PLAY LED1</description>
+                <description>Deck 1 Play Led Indicator</description>
                 <status>0x92</status>
                 <midino>0x0A</midino>
                 <off>0x01</off>
@@ -776,7 +777,7 @@
             <output>
                 <group>[Channel1]</group>
                 <key>slip_enabled</key>
-                <description>SLIP MODE LED1</description>
+                <description>Deck 1 slip Mode Led Indicator</description>
                 <status>0x92</status>
                 <midino>0x23</midino>
                 <off>0x01</off>
@@ -785,7 +786,7 @@
             <output>
                 <group>[Channel1]</group>
                 <key>sync_enabled</key>
-                <description>SYNC LED1</description>
+                <description>Deck 1 Sync Led Indicator</description>
                 <status>0x92</status>
                 <midino>0x08</midino>
                 <off>0x01</off>
@@ -794,7 +795,7 @@
             <output>
                 <group>[Channel2]</group>
                 <key>cue_indicator</key>
-                <description>CUE LED2</description>
+                <description>Deck 2 Cue Led Indicator</description>
                 <status>0x93</status>
                 <midino>0x09</midino>
                 <off>0x01</off>
@@ -803,7 +804,7 @@
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <description>PFL LED2</description>
+                <description>Deck 2 Pre-Fader Listen Led Indicator</description>
                 <status>0x91</status>
                 <midino>0x0D</midino>
                 <off>0x01</off>
@@ -812,7 +813,7 @@
             <output>
                 <group>[Channel2]</group>
                 <key>play_indicator</key>
-                <description>PLAY LED2</description>
+                <description>Deck 2 Play Led Indicator</description>
                 <status>0x93</status>
                 <midino>0x0A</midino>
                 <off>0x01</off>
@@ -821,7 +822,7 @@
             <output>
                 <group>[Channel2]</group>
                 <key>slip_enabled</key>
-                <description>SLIP MODE LED2</description>
+                <description>Deck 2 Slip Mode Led Indicator</description>
                 <status>0x93</status>
                 <midino>0x23</midino>
                 <off>0x01</off>
@@ -830,7 +831,7 @@
             <output>
                 <group>[Channel2]</group>
                 <key>sync_enabled</key>
-                <description>SYNC LED2</description>
+                <description>Deck 2 Sync Led Indicator</description>
                 <status>0x93</status>
                 <midino>0x08</midino>
                 <off>0x01</off>
