@@ -173,13 +173,18 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
             createPlaylistModelForPlaylist(pTreeItem->getData().toString()));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
-                "could not initialize a playlist model for playlist:" << *pPlaylist;
+        qDebug() << "BaseExternalLibraryFeature::"
+                    "appendTrackIdsFromRightClickIndex "
+                    "could not initialize a playlist model for "
+                    "playlist:"
+                 << *pPlaylist;
         return;
     }
 
-    pPlaylistModelToAdd->setSort(pPlaylistModelToAdd->fieldIndex(
-            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    pPlaylistModelToAdd->setSort(
+            pPlaylistModelToAdd->fieldIndex(
+                    ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
     pPlaylistModelToAdd->select();
 
     // Copy Tracks
