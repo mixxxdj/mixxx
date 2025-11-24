@@ -407,14 +407,15 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
 }
 
 // Purpose: Parsing all the folder and playlists of Traktor
-// This is a complex operation since Traktor uses the concept of folders and playlist.
-// A folder can contain folders and playlists. A playlist contains entries but no folders.
-// In other words, Traktor uses a tree structure to organize music.
-// Inner nodes represent folders while leaves are playlists.
+// This is a complex operation since Traktor uses the concept of folders and
+// playlist. A folder can contain folders and playlists. A playlist contains
+// entries but no folders. In other words, Traktor uses a tree structure to
+// organize music. Inner nodes represent folders while leaves are playlists.
 TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     qDebug() << "Process RootFolder";
-    // Each playlist is unique and can be identified by a path in the tree structure.
+    // Each playlist is unique and can be identified by a path in the
+    // tree structure.
     QString current_path = "";
     QSet<QString> playlists;
 
@@ -430,8 +431,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
     query_insert_to_playlist_tracks.prepare(
-            "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
-            "VALUES (:playlist_id, :track_id, :position)");
+            "INSERT INTO traktor_playlist_tracks (playlist_id, "
+            "track_id, position) VALUES (:playlist_id, :track_id, :position)");
 
     while (!xml.atEnd() && !m_cancelImport) {
         // Read next XML element
@@ -445,7 +446,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                 current_path += delimiter;
                 current_path += name;
-                parent = parent->appendChild(name.toString(), current_path);
+                parent = parent->appendChild(name.toString(),
+                        current_path);
 
                 if (type == QStringLiteral("PLAYLIST")) {
                     // qDebug() << "Playlist: " + current_path << " has parent "
@@ -453,7 +455,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                     playlists += current_path;
 
-                    // Process all the entries within the playlist 'name' having path 'current_path'
+                    // Process all the entries within the playlist 'name'
+                    // having path 'current_path'
                     parsePlaylistEntries(xml,
                             current_path,
                             &query_insert_to_playlists,
@@ -468,7 +471,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
         if (xml.isEndElement()) {
             if (xml.name() == QStringLiteral("NODE")) {
                 bool last_non_playlist_was_empty = false;
-                if (!parent->hasChildren() and !playlists.contains(current_path)) {
+                if (!parent->hasChildren() and
+                        !playlists.contains(current_path)) {
                     last_non_playlist_was_empty = true;
                 }
 
@@ -478,10 +482,12 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                     // If the last node was not a playlist (FOLDER, SMARTLIST,
                     // etc... and was empty we remove it from the item tree so
                     // that it doesn't show for the user.
-                    parent->removeChildren(parent->children().count() - 1, 1);
+                    parent->removeChildren(parent->children().count() - 1,
+                            1);
                 }
 
-                // Whenever we find a closing NODE, remove the last component of the path
+                // Whenever we find a closing NODE, remove the last component
+                // of the path
                 const int lastSlash = current_path.lastIndexOf(delimiter);
                 const int path_length = current_path.size();
 
