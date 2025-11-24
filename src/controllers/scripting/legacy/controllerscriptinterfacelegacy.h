@@ -113,6 +113,9 @@ class ControllerScriptInterfaceLegacy : public QObject {
             const ControllerScriptInterfaceLegacy::Charset
                     targetCharset,
             const QString& value);
+    // Returns an object with title, artist, album, year, and trackNumber for the given group.
+    // Empty object if no track is loaded or not available.
+    Q_INVOKABLE QJSValue getTrackInfo(const QString& group);
 
     bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback

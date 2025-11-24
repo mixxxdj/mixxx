@@ -9,6 +9,8 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
+#include "mixer/playerinfo.h"
+#include "track/track.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
 #include "util/cmdlineargs.h"
 #include "util/fpclassify.h"
@@ -1167,4 +1169,29 @@ QByteArray ControllerScriptInterfaceLegacy::convertCharsetInternal(
         return QByteArray();
     }
     return fromUtf16(value);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getTrackInfo(const QString& group) {
+    QJSValue obj = m_pScriptEngineLegacy->m_pJSEngine->newObject();
+    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
+    if (!pTrack) {
+        return obj;
+    }
+    QString title = pTrack->getTitle();
+    QString artist = pTrack->getArtist();
+    QString album = pTrack->getAlbum();
+    QString year = pTrack->getYear();
+    QString trackNumber = pTrack->getTrackNumber();
+
+    // Fallback: if title is empty, use the title info (filename or title).
+    if (title.trimmed().isEmpty()) {
+        title = pTrack->getTitleInfo();
+    }
+
+    obj.setProperty(QStringLiteral("title"), title);
+    obj.setProperty(QStringLiteral("artist"), artist);
+    obj.setProperty(QStringLiteral("album"), album);
+    obj.setProperty(QStringLiteral("year"), year);
+    obj.setProperty(QStringLiteral("trackNumber"), trackNumber);
+    return obj;
 }
