@@ -12,9 +12,9 @@
             <file functionprefix="joyMIDI" filename="Soundless_joyMIDI_scripts.js"/>
         </scriptfiles>
         <controls>
-            <!-- Master -->
+            <!-- Mixer -->
             <control> <!-- fader -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x01</midino>
@@ -23,7 +23,7 @@
                 </options>
             </control>
             <control> <!-- fsr -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.fsr</key>
                 <status>0xB0</status>
                 <midino>0x02</midino>
@@ -32,7 +32,7 @@
                 </options>
             </control>
             <control> <!-- joystick left -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.joystick</key>
                 <status>0xB0</status>
                 <midino>0x10</midino>
@@ -41,7 +41,7 @@
                 </options>
             </control>
             <control> <!-- joystick right -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.joystick</key>
                 <status>0xB0</status>
                 <midino>0x11</midino>
@@ -50,7 +50,7 @@
                 </options>
             </control>
             <control> <!-- joystick down -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.joystick</key>
                 <status>0xB0</status>
                 <midino>0x12</midino>
@@ -59,7 +59,7 @@
                 </options>
             </control>
             <control> <!-- joystick up -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.joystick</key>
                 <status>0xB0</status>
                 <midino>0x13</midino>
@@ -68,7 +68,7 @@
                 </options>
             </control>
             <control> <!-- G-Sensor left -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.gsensor</key>
                 <status>0xB0</status>
                 <midino>0x14</midino>
@@ -77,7 +77,7 @@
                 </options>
             </control>
             <control> <!-- G-Sensor right -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.gsensor</key>
                 <status>0xB0</status>
                 <midino>0x15</midino>
@@ -86,7 +86,7 @@
                 </options>
             </control>
             <control> <!-- G-Sensor down -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.gsensor</key>
                 <status>0xB0</status>
                 <midino>0x16</midino>
@@ -95,7 +95,7 @@
                 </options>
             </control>
             <control> <!-- G-Sensor up -->
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>joyMIDI.gsensor</key>
                 <status>0xB0</status>
                 <midino>0x17</midino>

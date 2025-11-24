@@ -239,7 +239,7 @@ TraktorS3.Controller = class {
         this.registerInputButton(messageShort, "[Channel4]", "pfl", 0x08, 0x04, TraktorS3.Controller.prototype.headphoneHandler.bind(this));
 
         // EXT Button
-        this.registerInputButton(messageShort, "[Master]", "!extButton", 0x07, 0x04, TraktorS3.Controller.prototype.extModeHandler.bind(this));
+        this.registerInputButton(messageShort, "[Mixer]", "!extButton", 0x07, 0x04, TraktorS3.Controller.prototype.extModeHandler.bind(this));
 
         this.fxController.registerInputs(messageShort, messageLong);
 
@@ -271,10 +271,10 @@ TraktorS3.Controller = class {
         this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel4]_Effect1]", "parameter2", 0x33, 0xFFFF, this.parameterHandler);
         this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel4]_Effect1]", "parameter1", 0x35, 0xFFFF, this.parameterHandler);
 
-        this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x0B, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(messageLong, "[Master]", "gain", 0x17, 0xFFFF, TraktorS3.Controller.prototype.masterGainHandler.bind(this));
-        this.registerInputScaler(messageLong, "[Master]", "headMix", 0x1D, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(messageLong, "[Mixer]", "crossfader", 0x0B, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(messageLong, "[Mixer]", "main_gain", 0x17, 0xFFFF, TraktorS3.Controller.prototype.masterGainHandler.bind(this));
+        this.registerInputScaler(messageLong, "[Mixer]", "headphone_mix", 0x1D, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(messageLong, "[Mixer]", "headphone_gain", 0x1B, 0xFFFF, this.parameterHandler);
 
         this.hid.registerInputPacket(messageLong);
 
@@ -346,10 +346,10 @@ TraktorS3.Controller = class {
         engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]", "parameter2", true);
         engine.softTakeover("[EqualizerRack1_[Channel4]_Effect1]", "parameter3", true);
 
-        // engine.softTakeover("[Master]", "crossfader", true);
-        engine.softTakeover("[Master]", "gain", true);
-        // engine.softTakeover("[Master]", "headMix", true);
-        // engine.softTakeover("[Master]", "headGain", true);
+        // engine.softTakeover("[Mixer]", "crossfader", true);
+        engine.softTakeover("[Mixer]", "main_gain", true);
+        // engine.softTakeover("[Mixer]", "headphone_mix", true);
+        // engine.softTakeover("[Mixer]", "headphone_gain", true);
         for (let i = 1; i <= 16; ++i) {
             engine.softTakeover("[Sampler" + i + "]", "pregain", true);
         }
@@ -485,7 +485,7 @@ TraktorS3.Controller = class {
         outputA.addOutput("[Channel2]", "!fxEnabled", 0x36, "B");
         outputA.addOutput("[Channel4]", "!fxEnabled", 0x37, "B");
 
-        outputA.addOutput("[Master]", "!extButton", 0x33, "B");
+        outputA.addOutput("[Mixer]", "!extButton", 0x33, "B");
 
         this.hid.registerOutputPacket(outputA);
 
@@ -532,7 +532,7 @@ TraktorS3.Controller = class {
 
         engine.makeConnection("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
-        // Master VuMeters
+        // Main VuMeters
         this.masterVuMeter.vu_meter_left.connection = engine.makeConnection("[Main]", "vu_meter_left", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
         this.masterVuMeter.vu_meter_right.connection = engine.makeConnection("[Main]", "vu_meter_right", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
         this.linkChannelOutput("[Main]", "peak_indicator_left", TraktorS3.Controller.prototype.peakOutput.bind(this));
@@ -732,7 +732,7 @@ TraktorS3.Controller = class {
             deck.colorOutput(0, "!MaximizeLibrary");
             deck.colorOutput(deck.jogToggled, "!jogButton");
             if (group === "[Channel4]") {
-                this.basicOutput(0, "[Master]", "!extButton");
+                this.basicOutput(0, "[Mixer]", "!extButton");
             }
         }
         // this.lightFx();
@@ -943,7 +943,7 @@ TraktorS3.Deck = class {
         engine.setValue("[Controls]", "touch_shift", field.value);
         this.shiftPressed = field.value;
         if (field.value) {
-            engine.softTakeoverIgnoreNextValue("[Master]", "gain");
+            engine.softTakeoverIgnoreNextValue("[Mixer]", "main_gain");
         }
         this.controller.basicOutput(field.value, field.group, "!shift");
     }

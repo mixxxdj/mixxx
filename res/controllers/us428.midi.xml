@@ -16,7 +16,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>headVolume</key>
+        <key>headphone_gain</key>
         <status>0xB0</status>
         <midino>0x4c</midino>
         <options>
@@ -25,7 +25,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>headMix</key>
+        <key>headphone_mix</key>
         <status>0xB0</status>
         <midino>0x4d</midino>
         <options>

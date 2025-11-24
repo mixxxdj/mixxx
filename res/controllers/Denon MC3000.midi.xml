@@ -16,7 +16,7 @@
     <control>
         <status>0xb0</status>
                 <midino>0x16</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
     </control>
 
@@ -753,8 +753,8 @@
     <control>
         <status>0xb2</status>
         <midino>89</midino>
-        <group>[Master]</group>
-        <key>mc3000.headMix</key>
+        <group>[Mixer]</group>
+        <key>mc3000.headphone_mix</key>
         <options>
             <script-binding/>
         </options>
@@ -762,8 +762,8 @@
     <control>
         <status>0xb2</status>
         <midino>90</midino>
-        <group>[Master]</group>
-        <key>mc3000.headVolume</key>
+        <group>[Mixer]</group>
+        <key>mc3000.headphone_gain</key>
         <options>
             <script-binding/>
         </options>
@@ -780,8 +780,8 @@
     <control>
         <status>0xb2</status>
         <midino>92</midino>
-        <group>[Master]</group>
-        <key>mc3000.masterVolume</key>
+        <group>[Mixer]</group>
+        <key>mc3000.mainGain</key>
         <options>
             <script-binding/>
         </options>

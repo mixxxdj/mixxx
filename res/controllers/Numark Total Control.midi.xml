@@ -12,27 +12,27 @@
 			<file filename="Numark-Total-Control-scripts.js" functionprefix="NumarkTotalControl"/>
 		</scriptfiles>
 		<controls>
-<!-- Master and PFL controls -->
+<!-- Mixer and PFL controls -->
 			<control>
-				<group>[Master]</group>
-				<key>headVolume</key>
+				<group>[Mixer]</group>
+				<key>headphone_gain</key>
 				<status>0xb0</status>
 				<midino>0x0f</midino>
 			</control>
 			<control>
-				<group>[Master]</group>
-				<key>headMix</key>
+				<group>[Mixer]</group>
+				<key>headphone_mix</key>
 				<status>0xb0</status>
 				<midino>0x16</midino>
 			</control>
 			<control>
-				<group>[Master]</group>
-				<key>volume</key>
+				<group>[Mixer]</group>
+				<key>main_gain</key>
 				<status>0xb0</status>
 				<midino>0x17</midino>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<key>crossfader</key>
 				<status>0xb0</status>
 				<midino>0x0a</midino>
@@ -184,7 +184,7 @@
 			</control>
 			<!-- Select -->
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<key>NumarkTotalControl.toggleSimpleCue</key>
 				<status>0x90</status>
 				<midino>0x31</midino>
@@ -453,7 +453,7 @@
 <!-- Loops -->
 			<!-- Select -->
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<key>NumarkTotalControl.toggleExtendedLooping</key>
 				<status>0x90</status>
 				<midino>0x35</midino>
@@ -510,7 +510,7 @@
 		</controls>
 
 		<outputs>
-<!-- Master and PFL controls -->
+<!-- Main and PFL controls -->
 			<output>
 				<group>[Channel1]</group>
 				<key>pfl</key>

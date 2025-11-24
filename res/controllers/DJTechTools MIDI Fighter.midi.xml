@@ -35,7 +35,7 @@
 
     <controls>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x24</midino>
@@ -44,7 +44,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x25</midino>
@@ -53,7 +53,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x26</midino>
@@ -62,7 +62,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x27</midino>
@@ -71,7 +71,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x28</midino>
@@ -80,7 +80,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x29</midino>
@@ -89,7 +89,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x2A</midino>
@@ -98,7 +98,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x2B</midino>
@@ -107,7 +107,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x2C</midino>
@@ -116,7 +116,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x2D</midino>
@@ -125,7 +125,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x2E</midino>
@@ -134,7 +134,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x2F</midino>
@@ -143,7 +143,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x30</midino>
@@ -152,7 +152,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x31</midino>
@@ -161,7 +161,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x32</midino>
@@ -170,7 +170,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_down</key>
         <status>0x92</status>
         <midino>0x33</midino>
@@ -180,7 +180,7 @@
       </control>
 
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x24</midino>
@@ -189,7 +189,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x25</midino>
@@ -198,7 +198,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x26</midino>
@@ -207,7 +207,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x27</midino>
@@ -216,7 +216,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x28</midino>
@@ -225,7 +225,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x29</midino>
@@ -234,7 +234,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x2A</midino>
@@ -243,7 +243,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x2B</midino>
@@ -252,7 +252,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x2C</midino>
@@ -261,7 +261,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x2D</midino>
@@ -270,7 +270,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x2E</midino>
@@ -279,7 +279,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x2F</midino>
@@ -288,7 +288,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x30</midino>
@@ -297,7 +297,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x31</midino>
@@ -306,7 +306,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x32</midino>
@@ -315,7 +315,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MIDIFighter.button_up</key>
         <status>0x82</status>
         <midino>0x33</midino>

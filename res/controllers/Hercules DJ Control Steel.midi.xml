@@ -14,7 +14,7 @@
                <control>
                    <status>0xB0</status>
                    <midino>0x3A</midino>
-                   <group>[Master]</group>
+                   <group>[Mixer]</group>
                    <key>HerculesSteel.headPhoneMix</key>
                    <options>
                        <Script-Binding/>
@@ -371,7 +371,7 @@
 <!-- end of keypad channel 2-->
 
     <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesSteel.crossFader</key>
                 <status>0xB0</status>
                 <midino>0x39</midino>
@@ -380,7 +380,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesSteel.balance</key>
                 <status>0xB0</status>
                 <midino>0x37</midino>
@@ -425,7 +425,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesSteel.volume</key>
                 <status>0xB0</status>
                 <midino>0x38</midino>
@@ -652,7 +652,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesSteel.scratch</key>
                 <status>0xB0</status>
                 <midino>0x29</midino>
