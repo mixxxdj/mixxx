@@ -188,7 +188,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
     pPlaylistModelToAdd->select();
 
     // Copy Tracks
-    int rows = pPlaylistModelToAdd->rowCount();
+    const int rows = pPlaylistModelToAdd->rowCount();
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistModelToAdd->index(i, 0);
         VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
