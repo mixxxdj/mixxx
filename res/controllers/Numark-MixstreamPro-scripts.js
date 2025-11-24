@@ -84,7 +84,7 @@ MixstreamPro.vuCallback = function(value, group, control) {
             level = MixstreamPro.maxVuLevel;
         }
 
-        if (MixstreamPro.prevVuLevelL !=== level) {
+        if (MixstreamPro.prevVuLevelL !== level) {
             midi.sendShortMsg(0xBF, 0x20, level);
             MixstreamPro.prevVuLevelL = level;
         }
@@ -97,7 +97,7 @@ MixstreamPro.vuCallback = function(value, group, control) {
             level = MixstreamPro.maxVuLevel
         }
 
-        if (MixstreamPro.prevVuLevelR !=== level) {
+        if (MixstreamPro.prevVuLevelR !== level) {
             midi.sendShortMsg(0xBF, 0x21, level);
             MixstreamPro.prevVuLevelR = level;
         }
@@ -183,7 +183,7 @@ MixstreamPro.previousJogValue1 = 0
 MixstreamPro.previousJogValue2 = 0
 
 MixstreamPro.WheelTouch = function (channel, control, value, status, group) {
-    let deckNumber = script.deckFromGroup(group)
+    const deckNumber = script.deckFromGroup(group)
 
 if((MixstreamPro.slipenabledToggle1 === true && deckNumber === 1) || (MixstreamPro.slipenabledToggle2 === true && deckNumber === 2)){
     if (value === 0x7F) {     
@@ -205,7 +205,7 @@ MixstreamPro.JogLSB_1 = function(channel, control, value, status, group) {
 MixstreamPro.JogMSB_1 = function(channel, control, value, status, group) {
         let MSB = value;
         let POS = engine.getValue(group, "playposition")
-        let deckNumber = script.deckFromGroup(group);
+        const deckNumber = script.deckFromGroup(group);
 
         switch(true) {
             case POS <= 0:
@@ -250,7 +250,7 @@ MixstreamPro.JogLSB_2 = function(channel, control, value, status, group) {
  MixstreamPro.JogMSB_2 = function(channel, control, value, status, group) {
         let MSB = value;
         let POS = engine.getValue(group, "playposition")
-        let deckNumber = script.deckFromGroup(group);
+        const deckNumber = script.deckFromGroup(group);
 
         switch(true) {
             case POS <= 0:
@@ -297,14 +297,14 @@ MixstreamPro.track_loaded1 = function(channel, control, value, status, group) {
     MixstreamPro.BeatloopRollToggle1 = false
 
      
-    if (engine.getValue("[Channel1]", "track_loaded") !=== true && engine.getValue("[Channel2]", "track_loaded") !=== true) {
+    if (engine.getValue("[Channel1]", "track_loaded") !== true && engine.getValue("[Channel2]", "track_loaded") !== true) {
         midi.sendShortMsg(status, 0x0E, 0x7f);
         midi.sendShortMsg(status, 0x0F, 0x7f);
         midi.sendShortMsg(status, 0x10, 0x7f);
         midi.sendShortMsg(status, 0x11, 0x7f);
         midi.sendShortMsg(status, 0x12, 0x7f);
     } else
-    if (engine.getValue("[Channel1]", "track_loaded") === true && engine.getValue("[Channel2]", "play_indicator") !=== 1) {
+    if (engine.getValue("[Channel1]", "track_loaded") === true && engine.getValue("[Channel2]", "play_indicator") !== 1) {
         engine.setValue("[Auxiliary1]", "orientation", 2)
     } else
     if (engine.getValue("[Channel1]", "track_loaded") === true && engine.getValue("[Channel2]", "play_indicator") === 1) {
@@ -322,7 +322,7 @@ MixstreamPro.track_loaded1 = function(channel, control, value, status, group) {
 
     for (let i = 1; i <= 4; i++) {
         midi.sendShortMsg(0x92, (hotcue_Led1 + i), 0x01)  
-        if (MixstreamPro.blinktimer4 !=== 0) {
+        if (MixstreamPro.blinktimer4 !== 0) {
             engine.stopTimer(MixstreamPro.blinktimer4);
              
             MixstreamPro.blinktimer4 = 0;
@@ -335,12 +335,12 @@ MixstreamPro.track_loaded1 = function(channel, control, value, status, group) {
 
         hotcues_enabled1 += engine.getValue("[Channel1]", "hotcue_" + i + "_enabled")
 
-        if (hotcues_enabled1 !=== 0 && i < 5 && hotcues_enabled1 !=== MixstreamPro.hotcuevalue1) {
+        if (hotcues_enabled1 !== 0 && i < 5 && hotcues_enabled1 !== MixstreamPro.hotcuevalue1) {
             midi.sendShortMsg(0x92, hotcue_Led1 + hotcues_enabled1, 0x7f)
             MixstreamPro.hotcuevalue1 = hotcues_enabled1
         }
 
-        if (hotcues_enabled1 !=== 0 && i > 4 && hotcues_enabled1 !=== MixstreamPro.hotcuevalue1) {
+        if (hotcues_enabled1 !== 0 && i > 4 && hotcues_enabled1 !== MixstreamPro.hotcuevalue1) {
             midi.sendShortMsg(0x92, (hotcue_Led1 + hotcues_enabled1) - 4, 0x7f)
             MixstreamPro.hotcuevalue1 = hotcues_enabled1
         }
@@ -385,14 +385,14 @@ MixstreamPro.track_loaded2 = function(channel, control, value, status, group) {
     MixstreamPro.BeatloopRollToggle2 = false
 
      
-    if (engine.getValue("[Channel1]", "track_loaded") !=== true && engine.getValue("[Channel2]", "track_loaded") !=== true) {
+    if (engine.getValue("[Channel1]", "track_loaded") !== true && engine.getValue("[Channel2]", "track_loaded") !== true) {
         midi.sendShortMsg(status, 0x0E, 0x7f);
         midi.sendShortMsg(status, 0x0F, 0x7f);
         midi.sendShortMsg(status, 0x10, 0x7f);
         midi.sendShortMsg(status, 0x11, 0x7f);
         midi.sendShortMsg(status, 0x12, 0x7f);
     } else
-    if (engine.getValue("[Channel2]", "track_loaded") === true && engine.getValue("[Channel1]", "play_indicator") !=== 1) {
+    if (engine.getValue("[Channel2]", "track_loaded") === true && engine.getValue("[Channel1]", "play_indicator") !== 1) {
         engine.setValue("[Auxiliary1]", "orientation", 0)
     } else
     if (engine.getValue("[Channel1]", "track_loaded") === true && engine.getValue("[Channel1]", "play_indicator") === 1) {
@@ -410,7 +410,7 @@ MixstreamPro.track_loaded2 = function(channel, control, value, status, group) {
 
     for (let i = 1; i <= 4; i++) {
         midi.sendShortMsg(0x93, (hotcue_Led2 + i), 0x01)
-        if (MixstreamPro.blinktimer5 !=== 0) {
+        if (MixstreamPro.blinktimer5 !== 0) {
             engine.stopTimer(MixstreamPro.blinktimer5);
              
             MixstreamPro.blinktimer5 = 0;
@@ -421,12 +421,12 @@ MixstreamPro.track_loaded2 = function(channel, control, value, status, group) {
         if (engine.getValue("[Channel2]", "hotcue_" + i + "_type") === 1){ 
 
         hotcues_enabled2 += engine.getValue("[Channel2]", "hotcue_" + i + "_enabled")
-        if (hotcues_enabled2 !=== 0 && i < 5 && hotcues_enabled2 !=== MixstreamPro.hotcuevalue2) {
+        if (hotcues_enabled2 !== 0 && i < 5 && hotcues_enabled2 !== MixstreamPro.hotcuevalue2) {
             midi.sendShortMsg(0x93, hotcue_Led2 + hotcues_enabled2, 0x7f)
             MixstreamPro.hotcuevalue2 = hotcues_enabled2
         }
 
-        if (hotcues_enabled2 !=== 0 && i > 4 && hotcues_enabled2 !=== MixstreamPro.hotcuevalue2) {
+        if (hotcues_enabled2 !== 0 && i > 4 && hotcues_enabled2 !== MixstreamPro.hotcuevalue2) {
             midi.sendShortMsg(0x93, (hotcue_Led2 + hotcues_enabled2) - 4, 0x7f)
             MixstreamPro.hotcuevalue2 = hotcues_enabled2
         }
@@ -529,12 +529,12 @@ MixstreamPro.cue_goto_toggle1 = function(channel, control, value, status, group)
             if (engine.getValue("[Channel1]", "hotcue_" + i + "_type") === 1){
 
                 hotcues_enabled1 += engine.getValue("[Channel1]", "hotcue_" + i + "_enabled")
-                if (hotcues_enabled1 !=== 0 && i < 5 && hotcues_enabled1 !=== MixstreamPro.hotcuevalue1) {
+                if (hotcues_enabled1 !== 0 && i < 5 && hotcues_enabled1 !== MixstreamPro.hotcuevalue1) {
                     midi.sendShortMsg(0x92, hotcue_Led1 + hotcues_enabled1, 0x7f)
                     MixstreamPro.hotcuevalue1 = hotcues_enabled1
                 }
         
-                if (hotcues_enabled1 !=== 0 && i > 4 && hotcues_enabled1 !=== MixstreamPro.hotcuevalue1) {
+                if (hotcues_enabled1 !== 0 && i > 4 && hotcues_enabled1 !== MixstreamPro.hotcuevalue1) {
                     midi.sendShortMsg(0x92, (hotcue_Led1 + hotcues_enabled1) - 4, 0x7f)
                     MixstreamPro.hotcuevalue1 = hotcues_enabled1
                 }
@@ -574,12 +574,12 @@ MixstreamPro.cue_goto_toggle2 = function(channel, control, value, status, group)
             if (engine.getValue("[Channel2]", "hotcue_" + i + "_type") === 1){ 
 
                 hotcues_enabled2 += engine.getValue("[Channel2]", "hotcue_" + i + "_enabled")
-                if (hotcues_enabled2 !=== 0 && i < 5 && hotcues_enabled2 !=== MixstreamPro.hotcuevalue2) {
+                if (hotcues_enabled2 !== 0 && i < 5 && hotcues_enabled2 !== MixstreamPro.hotcuevalue2) {
                     midi.sendShortMsg(0x93, hotcue_Led2 + hotcues_enabled2, 0x7f)
                     MixstreamPro.hotcuevalue2 = hotcues_enabled2
                 }
         
-                if (hotcues_enabled2 !=== 0 && i > 4 && hotcues_enabled2 !=== MixstreamPro.hotcuevalue2) {
+                if (hotcues_enabled2 !== 0 && i > 4 && hotcues_enabled2 !== MixstreamPro.hotcuevalue2) {
                     midi.sendShortMsg(0x93, (hotcue_Led2 + hotcues_enabled2) - 4, 0x7f)
                     MixstreamPro.hotcuevalue2 = hotcues_enabled2
                 }
@@ -1493,7 +1493,7 @@ MixstreamPro.Effectbutton1 = function(channel, control, value, status, group) {
             MixstreamPro.toggle1 = false
         } else
         if (MixstreamPro.toggle1 === false) {
-            if (MixstreamPro.blinktimer1 !=== 0) {
+            if (MixstreamPro.blinktimer1 !== 0) {
                 engine.stopTimer(MixstreamPro.blinktimer1);
                  
                 MixstreamPro.blinktimer1 = 0;
@@ -1524,7 +1524,7 @@ MixstreamPro.Effectbutton2 = function(channel, control, value, status, group) {
             MixstreamPro.toggle2 = false
         } else
         if (MixstreamPro.toggle2 === false) {
-            if (MixstreamPro.blinktimer2 !=== 0) {
+            if (MixstreamPro.blinktimer2 !== 0) {
                 engine.stopTimer(MixstreamPro.blinktimer2);
                  
                 MixstreamPro.blinktimer2 = 0;
@@ -1556,7 +1556,7 @@ MixstreamPro.Effectbutton3 = function(channel, control, value, status, group) {
             MixstreamPro.toggle3 = false
         } else
         if (MixstreamPro.toggle3 === false) {
-            if (MixstreamPro.blinktimer3 !=== 0) {
+            if (MixstreamPro.blinktimer3 !== 0) {
                 engine.stopTimer(MixstreamPro.blinktimer3);
                  
                 MixstreamPro.blinktimer3 = 0;
@@ -1589,7 +1589,7 @@ MixstreamPro.Effectbutton4 = function(channel, control, value, status, group) {
             MixstreamPro.toggle4 = false
         } else
         if (MixstreamPro.toggle4 === false) {
-            if (MixstreamPro.blinktimer4 !=== 0) {
+            if (MixstreamPro.blinktimer4 !== 0) {
                 engine.stopTimer(MixstreamPro.blinktimer4);
                  
                 MixstreamPro.blinktimer4 = 0;
@@ -1601,4 +1601,5 @@ MixstreamPro.Effectbutton4 = function(channel, control, value, status, group) {
     } else
     if (value === 0) { return }
 }
+
 
