@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
     <info>
-        <name>Mixstream Pro v17</name>
+        <name>Mixstream Pro</name>
     </info>
     <controller id="MixstreamPro">
         <scriptfiles>
