@@ -3,6 +3,7 @@ import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Shapes
 import Qt5Compat.GraphicalEffects
 import "Theme"
 
@@ -10,14 +11,29 @@ ApplicationWindow {
     id: root
 
     property alias maximizeLibrary: maximizeLibraryButton.checked
-    property alias show4decks: show4DecksButton.checked
+    readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
+    property alias editDeck: editDeckButton.checked
 
     color: Theme.backgroundColor
-    height: 1080
+
+    width: 1792
+    height: 1008
     visible: true
-    width: 1920
+
+    minimumWidth: 680
+    minimumHeight: 300
+
+    Mixxx.ControlProxy {
+        id: numDecksControl
+
+        group: "[App]"
+        key: "num_decks"
+        Component.onCompleted: {
+            value = 4
+        }
+    }
 
     Column {
         id: content
@@ -45,6 +61,7 @@ ApplicationWindow {
                     activeColor: Theme.white
                     checkable: true
                     text: "4 Decks"
+                    visible: root.height > 515
                 }
                 Skin.Button {
                     id: maximizeLibraryButton
@@ -59,6 +76,13 @@ ApplicationWindow {
                     text: "Effects"
                 }
                 Skin.Button {
+                    id: showAuxButton
+                    activeColor: Theme.white
+                    checkable: true
+                    text: "Aux"
+                }
+
+                Skin.Button {
                     id: showSamplersButton
                     activeColor: Theme.white
                     checkable: true
@@ -66,6 +90,12 @@ ApplicationWindow {
                 }
                 Item {
                     Layout.fillWidth: true
+                }
+                Skin.Button {
+                    id: editDeckButton
+                    activeColor: Theme.white
+                    checkable: true
+                    text: "Edit"
                 }
                 Skin.Button {
                     id: showDevToolsButton
@@ -107,107 +137,349 @@ ApplicationWindow {
                 }
             }
         }
-        Skin.WaveformDisplay {
-            id: deck3waveform
-            group: "[Channel3]"
-            height: 120
-            visible: root.show4decks && !root.maximizeLibrary
-            width: root.width
-
-            FadeBehavior on visible  {
-                fadeTarget: deck3waveform
-            }
-        }
-        Skin.WaveformDisplay {
-            id: deck1waveform
-            group: "[Channel1]"
-            height: 120
-            visible: !root.maximizeLibrary
-            width: root.width
-
-            FadeBehavior on visible  {
-                fadeTarget: deck1waveform
-            }
-        }
-        Skin.WaveformDisplay {
-            id: deck2waveform
-            group: "[Channel2]"
-            height: 120
-            visible: !root.maximizeLibrary
-            width: root.width
-
-            FadeBehavior on visible  {
-                fadeTarget: deck2waveform
-            }
-        }
-        Skin.WaveformDisplay {
-            id: deck4waveform
-            group: "[Channel4]"
-            height: 120
-            visible: root.show4decks && !root.maximizeLibrary
-            width: root.width
-
-            FadeBehavior on visible  {
-                fadeTarget: deck4waveform
-            }
-        }
-        Skin.DeckRow {
-            id: decks12
-            leftDeckGroup: "[Channel1]"
-            minimized: root.maximizeLibrary
-            rightDeckGroup: "[Channel2]"
+        SplitView {
+            id: splitView
             width: parent.width
-        }
-        Skin.CrossfaderRow {
-            id: crossfader
-            crossfaderWidth: decks12.mixer.width
-            visible: !root.maximizeLibrary
-            width: parent.width
-
-            Skin.FadeBehavior on visible  {
-                fadeTarget: crossfader
-            }
-        }
-        Skin.DeckRow {
-            id: decks34
-            leftDeckGroup: "[Channel3]"
-            minimized: root.maximizeLibrary
-            rightDeckGroup: "[Channel4]"
-            visible: root.show4decks
-            width: parent.width
-
-            Skin.FadeBehavior on visible  {
-                fadeTarget: decks34
-            }
-        }
-        Skin.SamplerRow {
-            id: samplers
-            visible: root.showSamplers
-            width: parent.width
-
-            Skin.FadeBehavior on visible  {
-                fadeTarget: samplers
-            }
-        }
-        Skin.EffectRow {
-            id: effects
-            visible: root.showEffects
-            width: parent.width
-
-            Skin.FadeBehavior on visible  {
-                fadeTarget: effects
-            }
-        }
-        Skin.Library {
             height: parent.height - y
-            width: parent.width
+
+            orientation: Qt.Vertical
+
+            handle: Rectangle {
+                id: handleDelegate
+                implicitWidth: 8
+                implicitHeight: 4
+                color: Theme.libraryPanelSplitterBackground
+                clip: true
+                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.libraryPanelSplitterHandleActive : Theme.libraryPanelSplitterHandle
+                property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 3
+
+                RowLayout {
+                    anchors.centerIn: parent
+                    Repeater {
+                        model: 3
+                        Rectangle {
+                            width: handleSize
+                            height: handleSize
+                            radius: handleSize
+                            color: handleColor
+                        }
+                    }
+                }
+
+                containmentMask: Item {
+                    x: (handleDelegate.width - width) / 2
+                    height: 8
+                    width: splitView.width
+                }
+            }
+
+            Item {
+                id: waveforms
+                SplitView.preferredHeight: library.visible ? 120 : undefined
+                SplitView.fillHeight: !library.visible
+                visible: !root.maximizeLibrary
+                Skin.WaveformDisplay {
+                    id: deck3waveform
+
+                    anchors.top: parent.top
+
+                    group: "[Channel3]"
+                    height: parent.height / 4
+                    visible: root.show4decks
+                    width: root.width
+
+                    FadeBehavior on visible {
+                        fadeTarget: deck3waveform
+                    }
+                }
+
+                Skin.WaveformDisplay {
+                    id: deck1waveform
+
+                    anchors.top: root.show4decks ? deck3waveform.bottom : parent.top
+
+                    group: "[Channel1]"
+                    height: parent.height / (root.show4decks ? 4 : 2)
+                    width: root.width
+                }
+                Skin.WaveformDisplay {
+                    id: deck2waveform
+
+                    anchors.bottom: root.show4decks ? deck4waveform.top : parent.bottom
+
+                    group: "[Channel2]"
+                    height: parent.height / (root.show4decks ? 4 : 2)
+                    width: root.width
+                }
+                Skin.WaveformDisplay {
+                    id: deck4waveform
+
+                    anchors.bottom: parent.bottom
+
+                    group: "[Channel4]"
+                    height: parent.height / 4
+                    visible: root.show4decks
+                    width: root.width
+
+                    FadeBehavior on visible {
+                        fadeTarget: deck4waveform
+                    }
+                }
+                Rectangle {
+                    width: 125
+                    anchors {
+                        top: parent.top
+                        left: parent.left
+                        bottom:parent.bottom
+                    }
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+
+                        GradientStop {
+                            position: 0
+                            color: Theme.darkGray
+                        }
+
+                        GradientStop {
+                            position: 1
+                            color: 'transparent'
+                        }
+                    }
+                }
+                Rectangle {
+                    width: 125
+                    anchors {
+                        top: parent.top
+                        right: parent.right
+                        bottom:parent.bottom
+                    }
+                    gradient: Gradient {
+                        orientation: Gradient.Horizontal
+
+                        GradientStop {
+                            position: 0
+                            color: 'transparent'
+                        }
+
+                        GradientStop {
+                            position: 1
+                            color: Theme.darkGray
+                        }
+                    }
+                }
+
+                FadeBehavior on visible {
+                    fadeTarget: waveforms
+                }
+            }
+
+            Item {
+                SplitView.fillHeight: library.visible
+                SplitView.minimumHeight: mixer.height
+                SplitView.maximumHeight: library.visible ? undefined : mixer.height
+                Deck {
+                    id: deck1
+
+                    anchors {
+                        left: parent.left
+                        right: mixer.left
+                    }
+
+                    minimized: root.maximizeLibrary
+                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
+                    group: "[Channel1]"
+
+                    editMode: root.editDeck
+
+                    states: [
+                        State {
+                            when: root.maximizeLibrary
+                            AnchorChanges { target: deck1; anchors.right: parent.horizontalCenter}
+                        }
+                    ]
+
+                    Behavior on height {
+                        SpringAnimation {
+                            id: deck1HeightAnimation
+                            duration: 500
+                            spring: 2
+                            damping: 0.2
+                        }
+                    }
+                }
+
+                Mixer {
+                    id: mixer
+                    show4decks: root.show4decks
+                    groups: [
+                             deck1.group,
+                             deck2.group,
+                             deck3.group,
+                             deck4.group
+                    ]
+
+                    anchors.top: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    visible: !root.maximizeLibrary
+
+                    FadeBehavior on visible {
+                        fadeTarget: mixer
+                    }
+
+                    Behavior on height {
+                        SpringAnimation {
+                            id: mixerHeightAnimation
+                            duration: 500
+                            spring: 2
+                            damping: 0.2
+                        }
+                    }
+                }
+
+                Deck {
+                    id: deck2
+
+                    anchors {
+                        left: mixer.right
+                        right: parent.right
+                    }
+
+                    minimized: root.maximizeLibrary
+                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
+                    group: "[Channel2]"
+
+                    editMode: root.editDeck
+
+                    states: [
+                        State {
+                            when: root.maximizeLibrary
+                            AnchorChanges { target: deck2; anchors.left: parent.horizontalCenter}
+                        }
+                    ]
+
+                    Behavior on height {
+                        SpringAnimation {
+                            id: deck2HeightAnimation
+                            duration: 500
+                            spring: 2
+                            damping: 0.2
+                        }
+                    }
+                }
+
+                Deck {
+                    id: deck3
+
+                    anchors {
+                        top: deck1.bottom
+                        left: parent.left
+                        right: mixer.left
+                    }
+
+                    minimized: root.maximizeLibrary
+                    height: root.show4decks ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
+                    group: "[Channel3]"
+
+                    editMode: root.editDeck
+
+                    states: [
+                        State {
+                            when: root.maximizeLibrary
+                            AnchorChanges { target: deck3; anchors.right: parent.horizontalCenter}
+                        }
+                    ]
+
+                    Behavior on height {
+                        SpringAnimation {
+                            id: deck3HeightAnimation
+                            duration: 500
+                            spring: 2
+                            damping: 0.2
+                        }
+                    }
+                }
+
+                Deck {
+                    id: deck4
+
+                    anchors {
+                        top: deck2.bottom
+                        left: mixer.right
+                        right: parent.right
+                    }
+
+                    minimized: root.maximizeLibrary
+                    height: root.show4decks ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
+                    group: "[Channel4]"
+
+                    editMode: root.editDeck
+
+                    states: [
+                        State {
+                            when: root.maximizeLibrary
+                            AnchorChanges { target: deck4; anchors.left: parent.horizontalCenter}
+                        }
+                    ]
+
+                    Behavior on height {
+                        SpringAnimation {
+                            id: deck4HeightAnimation
+                            duration: 500
+                            spring: 2
+                            damping: 0.2
+                        }
+                    }
+                }
+
+                // Skin.SamplerRow {
+                //     id: samplers
+                //     visible: root.showSamplers
+                //     width: parent.width
+
+                //     Skin.FadeBehavior on visible {
+                //         fadeTarget: samplers
+                //     }
+                // }
+                // Skin.EffectRow {
+                //     id: effects
+                //     visible: root.showEffects
+                //     width: parent.width
+
+                //     Skin.FadeBehavior on visible {
+                //         fadeTarget: effects
+                //     }
+                // }
+                Skin.Library {
+                    id: library
+                    anchors {
+                        top: mixer.bottom
+                        bottom: parent.bottom
+                    }
+                    width: parent.width
+
+                    states: [
+                        State {
+                            when: root.maximizeLibrary && root.show4decks
+                            AnchorChanges { target: library; anchors.top: deck4.bottom}
+                        },
+                        State {
+                            when: root.maximizeLibrary && !root.show4decks
+                            AnchorChanges { target: library; anchors.top: deck1.bottom}
+                        },
+                        State {
+                            when: !root.maximizeLibrary && root.height - mixer.height < 400
+                            PropertyChanges { target: library; visible: false}
+                        }
+                    ]
+                }
+            }
         }
     }
     Skin.Settings {
         id: settingsPopup
-        height: Math.max(840, parent.height * 0.7)
+        height: Math.min(840, parent.height)
         modal: true
-        width: Math.max(1400, parent.width * 0.8)
+        width: Math.min(1400, parent.width)
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
 
