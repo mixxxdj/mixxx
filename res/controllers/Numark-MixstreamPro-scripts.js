@@ -107,7 +107,7 @@ MixstreamPro.vuCallback = function(value, group, control) {
  
 MixstreamPro.WIFI = true
  
-MixstreamPro.Play_Aux_1 = function(channel, control, value, status, group) {
+MixstreamPro.Play_Aux_1 = function(_channel, _control, value, _status, _group) {
     if (value === 127) {
         if (MixstreamPro.WIFI == true) {
             engine.setValue("[Auxiliary1]", "master", 1)
@@ -136,13 +136,13 @@ MixstreamPro.Play_Aux_1 = function(channel, control, value, status, group) {
  
 MixstreamPro.shift = false
 
-MixstreamPro.shiftButton = function(channel, control, value, status, group) {
+MixstreamPro.shiftButton = function(_channel, _control, _value, _status, _group) {
      
      
     MixstreamPro.shift = !MixstreamPro.shift;  
 }
  
-MixstreamPro.play1 = function(channel, control, value, status, group) {
+MixstreamPro.play1 = function(_channel, _control, value, _status, group) {
     let playStatus = engine.getValue("[Channel1]", "play_indicator")
     let deck = script.deckFromGroup(group)
 
@@ -155,7 +155,7 @@ MixstreamPro.play1 = function(channel, control, value, status, group) {
     }
 }
 
-MixstreamPro.play2 = function(channel, control, value, status, group) {
+MixstreamPro.play2 = function(_channel, _control, value, _status, group) {
     let playStatus = engine.getValue("[Channel2]", "play_indicator")
     let deck = script.deckFromGroup(group)
 
@@ -169,11 +169,11 @@ MixstreamPro.play2 = function(channel, control, value, status, group) {
 } 
 
  
-MixstreamPro.play_indicator1 = function(channel, control, value, status, group) {
+MixstreamPro.play_indicator1 = function(_channel, _control, _value, _status, _group) {
     engine.setValue("[Auxiliary1]", "orientation", 2)
 }
 
-MixstreamPro.play_indicator2 = function(channel, control, value, status, group) {
+MixstreamPro.play_indicator2 = function(_channel, _control, _value, _status, _group) {
     engine.setValue("[Auxiliary1]", "orientation", 0)
 }
 
@@ -182,7 +182,7 @@ MixstreamPro.jogSensitivity = 0.05;
 MixstreamPro.previousJogValue1 = 0
 MixstreamPro.previousJogValue2 = 0
 
-MixstreamPro.WheelTouch = function (channel, control, value, status, group) {
+MixstreamPro.WheelTouch = function (_channel, _control, value, _status, group) {
     const deckNumber = script.deckFromGroup(group)
 
 if((MixstreamPro.slipenabledToggle1 === true && deckNumber === 1) || (MixstreamPro.slipenabledToggle2 === true && deckNumber === 2)){
@@ -197,12 +197,12 @@ if((MixstreamPro.slipenabledToggle1 === true && deckNumber === 1) || (MixstreamP
 }
 
 
-MixstreamPro.JogLSB_1 = function(channel, control, value, status, group) {
+MixstreamPro.JogLSB_1 = function(_channel, _control, _value, _status, _group) {
     
     return 
 };
 
-MixstreamPro.JogMSB_1 = function(channel, control, value, status, group) {
+MixstreamPro.JogMSB_1 = function(_channel, _control, value, _status, group) {
         let MSB = value;
         let POS = engine.getValue(group, "playposition")
         const deckNumber = script.deckFromGroup(group);
@@ -239,12 +239,12 @@ MixstreamPro.JogMSB_1 = function(channel, control, value, status, group) {
 };
 
  
-MixstreamPro.JogLSB_2 = function(channel, control, value, status, group) {
+MixstreamPro.JogLSB_2 = function(_channel, _control, _value, _status, _group) {
      
      return
  };
  
- MixstreamPro.JogMSB_2 = function(channel, control, value, status, group) {
+ MixstreamPro.JogMSB_2 = function(_channel, _control, value, _status, group) {
         let MSB = value;
         let POS = engine.getValue(group, "playposition")
         const deckNumber = script.deckFromGroup(group);
@@ -285,7 +285,7 @@ MixstreamPro.blinktimer4 = 0
 MixstreamPro.hotcuevalue1 = 0
 MixstreamPro.LEDblink4 = true
  
-MixstreamPro.track_loaded1 = function(channel, control, value, status, group) {
+MixstreamPro.track_loaded1 = function(_channel, _control, _value, status, _group) {
      
     MixstreamPro.AutoloopToggle1 = false
     MixstreamPro.BeatloopRollToggle1 = false
@@ -373,7 +373,7 @@ MixstreamPro.blinktimer5 = 0
 MixstreamPro.hotcuevalue2 = 0
 MixstreamPro.LEDblink5 = true
 
-MixstreamPro.track_loaded2 = function(channel, control, value, status, group) {
+MixstreamPro.track_loaded2 = function(_channel, _control, _value, status, _group) {
      
     MixstreamPro.AutoloopToggle2 = false
     MixstreamPro.BeatloopRollToggle2 = false
@@ -458,7 +458,7 @@ MixstreamPro.track_loaded2 = function(channel, control, value, status, group) {
  
 MixstreamPro.slipenabledToggle1 = false
 
-MixstreamPro.slip_enabled_toggle1 = function(channel, control, value, status, group) {
+MixstreamPro.slip_enabled_toggle1 = function(_channel, _control, value, status, _group) {
     if (value === 127) {
         if (MixstreamPro.slipenabledToggle1 === false) {
             engine.setValue("[Channel1]", "slip_enabled", true);
@@ -476,7 +476,7 @@ MixstreamPro.slip_enabled_toggle1 = function(channel, control, value, status, gr
 
 MixstreamPro.slipenabledToggle2 = false
 
-MixstreamPro.slip_enabled_toggle2 = function(channel, control, value, status, group) {
+MixstreamPro.slip_enabled_toggle2 = function(_channel, _control, value, status, _group) {
     if (value === 127) {
         if (MixstreamPro.slipenabledToggle2 === false) {
             engine.setValue("[Channel2]", "slip_enabled", true);
@@ -495,7 +495,7 @@ MixstreamPro.slip_enabled_toggle2 = function(channel, control, value, status, gr
  
 MixstreamPro.Hotcue_Toggle1 = true
 
-MixstreamPro.cue_goto_toggle1 = function(channel, control, value, status, group) {
+MixstreamPro.cue_goto_toggle1 = function(_channel, _control, value, status, _group) {
     let PlayStatus = engine.getValue("[Channel1]", "play_indicator")
     let trackloaded = engine.getValue("[Channel1]", "track_loaded") 
 
@@ -541,7 +541,7 @@ MixstreamPro.cue_goto_toggle1 = function(channel, control, value, status, group)
 
 MixstreamPro.Hotcue_Toggle2= true
 
-MixstreamPro.cue_goto_toggle2 = function(channel, control, value, status, group) {
+MixstreamPro.cue_goto_toggle2 = function(_channel, _control, value, status, _group) {
     let PlayStatus = engine.getValue("[Channel2]", "play_indicator")
     let trackloaded = engine.getValue("[Channel2]", "track_loaded")
 
@@ -587,7 +587,7 @@ MixstreamPro.cue_goto_toggle2 = function(channel, control, value, status, group)
  
 MixstreamPro.SavedLoop_Toggle1 = false
 
-MixstreamPro.reloop_toggle1 = function(channel, control, value, status, group) {
+MixstreamPro.reloop_toggle1 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue("[Channel1]", "play_indicator")
     let trackloaded = engine.getValue("[Channel1]", "track_loaded")
 
@@ -641,7 +641,7 @@ MixstreamPro.reloop_toggle1 = function(channel, control, value, status, group) {
 
 MixstreamPro.SavedLoop_Toggle2 = false
 
-MixstreamPro.reloop_toggle2 = function(channel, control, value, status, group) {
+MixstreamPro.reloop_toggle2 = function(_channel, _control, value, status, group) {
     let  PlayStatus = engine.getValue("[Channel2]", "play_indicator")
     let  trackloaded = engine.getValue("[Channel2]", "track_loaded")
 
@@ -696,7 +696,7 @@ MixstreamPro.reloop_toggle2 = function(channel, control, value, status, group) {
  
 MixstreamPro.AutoloopToggle1 = false
 
-MixstreamPro.Autoloop1 = function(channel, control, value, status, group) {
+MixstreamPro.Autoloop1 = function(_channel, _control, value, status, group) {
     let  PlayStatus = engine.getValue("[Channel1]", "play_indicator")
 
     if (value === 127 && PlayStatus === true) {
@@ -739,7 +739,7 @@ MixstreamPro.Autoloop1 = function(channel, control, value, status, group) {
 
 MixstreamPro.AutoloopToggle2 = false
 
-MixstreamPro.Autoloop2 = function(channel, control, value, status, group) {
+MixstreamPro.Autoloop2 = function(_channel, _control, value, status, group) {
     let  PlayStatus = engine.getValue("[Channel2]", "play_indicator")
 
     if (value === 127 && PlayStatus === true) {
@@ -784,7 +784,7 @@ MixstreamPro.Autoloop2 = function(channel, control, value, status, group) {
  
 MixstreamPro.BeatloopRollToggle1 = false
 
-MixstreamPro.BeatloopRoll1 = function(channel, control, value, status, group) {
+MixstreamPro.BeatloopRoll1 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue("[Channel1]", "play_indicator")
     engine.setValue("[Channel1]", "beatloop_size", 4)
 
@@ -827,7 +827,7 @@ MixstreamPro.BeatloopRoll1 = function(channel, control, value, status, group) {
 
 MixstreamPro.BeatloopRollToggle2 = false
 
-MixstreamPro.BeatloopRoll2 = function(channel, control, value, status, group) {
+MixstreamPro.BeatloopRoll2 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue("[Channel2]", "play_indicator")
     engine.setValue("[Channel2]", "beatloop_size", 4)
 
@@ -868,7 +868,7 @@ MixstreamPro.BeatloopRoll2 = function(channel, control, value, status, group) {
     if (value === 0) { return }
 }
 
-MixstreamPro.Deck1_Pad1 = function(channel, control, value, status, group) {
+MixstreamPro.Deck1_Pad1 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
      
@@ -944,7 +944,7 @@ MixstreamPro.Deck1_Pad1 = function(channel, control, value, status, group) {
      
 }
 
-MixstreamPro.Deck1_Pad2 = function(channel, control, value, status, group) {
+MixstreamPro.Deck1_Pad2 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
     if (value === 127 && MixstreamPro.Hotcue_Toggle1 === true && MixstreamPro.AutoloopToggle1 === false && PlayStatus === false) {
@@ -1013,7 +1013,7 @@ MixstreamPro.Deck1_Pad2 = function(channel, control, value, status, group) {
      
 }
 
-MixstreamPro.Deck1_Pad3 = function(channel, control, value, status, group) {
+MixstreamPro.Deck1_Pad3 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
     if (value === 127 && MixstreamPro.Hotcue_Toggle1 === true && MixstreamPro.AutoloopToggle1 === false && PlayStatus === false) {
@@ -1081,7 +1081,7 @@ MixstreamPro.Deck1_Pad3 = function(channel, control, value, status, group) {
      
 }
 
-MixstreamPro.Deck1_Pad4 = function(channel, control, value, status, group) {
+MixstreamPro.Deck1_Pad4 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
     if (value === 127 && MixstreamPro.Hotcue_Toggle1 === true && MixstreamPro.AutoloopToggle1 === false && PlayStatus === false) {
@@ -1149,7 +1149,7 @@ MixstreamPro.Deck1_Pad4 = function(channel, control, value, status, group) {
      
 }
 
-MixstreamPro.Deck2_Pad1 = function(channel, control, value, status, group) {
+MixstreamPro.Deck2_Pad1 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
     if (value === 127 && MixstreamPro.Hotcue_Toggle2 === true && MixstreamPro.AutoloopToggle2 === false && PlayStatus === false) {
@@ -1217,7 +1217,7 @@ MixstreamPro.Deck2_Pad1 = function(channel, control, value, status, group) {
    
 }
 
-MixstreamPro.Deck2_Pad2 = function(channel, control, value, status, group) {
+MixstreamPro.Deck2_Pad2 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
     if (value === 127 && MixstreamPro.Hotcue_Toggle2 === true && MixstreamPro.AutoloopToggle2 === false && PlayStatus === false) {
@@ -1282,7 +1282,7 @@ MixstreamPro.Deck2_Pad2 = function(channel, control, value, status, group) {
      
 }
 
-MixstreamPro.Deck2_Pad3 = function(channel, control, value, status, group) {
+MixstreamPro.Deck2_Pad3 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
     if (value === 127 && MixstreamPro.Hotcue_Toggle2 === true && MixstreamPro.AutoloopToggle2 === false && PlayStatus === false) {
@@ -1346,7 +1346,7 @@ MixstreamPro.Deck2_Pad3 = function(channel, control, value, status, group) {
      
 }
 
-MixstreamPro.Deck2_Pad4 = function(channel, control, value, status, group) {
+MixstreamPro.Deck2_Pad4 = function(_channel, _control, value, status, group) {
     let PlayStatus = engine.getValue(group, "play_indicator")
 
     if (value === 127 && MixstreamPro.Hotcue_Toggle2 === true && MixstreamPro.AutoloopToggle2 === false && PlayStatus === false) {
@@ -1410,7 +1410,7 @@ MixstreamPro.Deck2_Pad4 = function(channel, control, value, status, group) {
      
 }
  
-MixstreamPro.EffectToggleSwitch = function(channel, control, value, status, group) {
+MixstreamPro.EffectToggleSwitch = function(channel, _control, value, _status, _group) {
     if (channel === 4 && value === 1 && MixstreamPro.toggle1 === false || channel === 4 && value === 2 && MixstreamPro.toggle1 === false) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect1]", "enabled", 1);
     } else {
@@ -1470,7 +1470,7 @@ MixstreamPro.EffectToggleSwitch = function(channel, control, value, status, grou
 MixstreamPro.toggle1 = true
 MixstreamPro.blinktimer1 = 0
 
-MixstreamPro.Effectbutton1 = function(channel, control, value, status, group) {
+MixstreamPro.Effectbutton1 = function(_channel, _control, value, _status, _group) {
     if (value === 127) {
         MixstreamPro.LEDblink1 = true
         if (MixstreamPro.toggle1 === true) {
@@ -1501,7 +1501,7 @@ MixstreamPro.Effectbutton1 = function(channel, control, value, status, group) {
 
 MixstreamPro.toggle2 = true
 MixstreamPro.blinktimer2 = 0
-MixstreamPro.Effectbutton2 = function(channel, control, value, status, group) {
+MixstreamPro.Effectbutton2 = function(_channel, _control, value, _status, _group) {
     if (value === 127) {
         MixstreamPro.LEDblink2 = true
         if (MixstreamPro.toggle2 === true) {
@@ -1533,7 +1533,7 @@ MixstreamPro.Effectbutton2 = function(channel, control, value, status, group) {
 
 MixstreamPro.toggle3 = true
 MixstreamPro.blinktimer3 = 0
-MixstreamPro.Effectbutton3 = function(channel, control, value, status, group) {
+MixstreamPro.Effectbutton3 = function(_channel, _control, value, _status, _group) {
     if (value === 127) {
         MixstreamPro.LEDblink3 = true
         if (MixstreamPro.toggle3 === true) {
@@ -1566,7 +1566,7 @@ MixstreamPro.Effectbutton3 = function(channel, control, value, status, group) {
 MixstreamPro.toggle4 = true
 MixstreamPro.blinktimer4 = 0
 
-MixstreamPro.Effectbutton4 = function(channel, control, value, status, group) {
+MixstreamPro.Effectbutton4 = function(_channel, _control, value, _status, _group) {
     if (value === 127) {
         MixstreamPro.LEDblink4 = true
         if (MixstreamPro.toggle4 === true) {
@@ -1595,3 +1595,5 @@ MixstreamPro.Effectbutton4 = function(channel, control, value, status, group) {
     } else
     if (value === 0) { return }
 }
+
+
