@@ -43,7 +43,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     //    <IsEqual>2<IsEqual>
     //   <Transform>
     //  </Connection>
-    // </HighlightingGroup>
+    // </WidgetGroup>
 
     // The highlight property is used to restyle the widget with CSS.
     // The declaration #MyGroup[highlight="1"] { } will define the style
@@ -51,6 +51,16 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     // support color schemes for images, a workaround is to set the background
     // image via <BackPath> and <BackPathHighlighted> from the skin.
     Q_PROPERTY(int highlight READ getHighlight WRITE setHighlight NOTIFY highlightChanged)
+    // Similar to the property above the following properties can be used to highlight
+    // deck control groups (channels).
+    Q_PROPERTY(int highlight_input_allow READ getHighlightInputAllow WRITE
+                    setHighlightInputAllow NOTIFY highlightInputAllowChanged)
+    Q_PROPERTY(int highlight_mixer READ getHighlightMixer WRITE setHighlightMixer
+                    NOTIFY highlightMixerChanged)
+    Q_PROPERTY(int highlight_deck READ getHighlightDeck WRITE setHighlightDeck
+                    NOTIFY highlightDeckChanged)
+    Q_PROPERTY(int highlight_waveform READ getHighlightWaveform WRITE setHighlightWaveform
+                    NOTIFY highlightWaveformChanged)
 
     int layoutSpacing() const;
     void setLayoutSpacing(int spacing);
@@ -60,6 +70,14 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     void setLayoutAlignment(Qt::Alignment alignment);
     int getHighlight() const;
     void setHighlight(int highlight);
+    int getHighlightInputAllow() const;
+    void setHighlightInputAllow(int highlight_input_allow);
+    int getHighlightMixer() const;
+    void setHighlightMixer(int highlight_mixer);
+    int getHighlightDeck() const;
+    void setHighlightDeck(int highlight_deck);
+    int getHighlightWaveform() const;
+    void setHighlightWaveform(int highlight_waveform);
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
@@ -74,6 +92,10 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
 
   signals:
     void highlightChanged(int highlight);
+    void highlightInputAllowChanged(int highlight_input_allow);
+    void highlightMixerChanged(int highlight_mixer);
+    void highlightDeckChanged(int highlight_deck);
+    void highlightWaveformChanged(int highlight_waveform);
 
   protected:
     void paintEvent(QPaintEvent* pe) override;
@@ -86,4 +108,8 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     PaintablePointer m_pPixmapBack;
     PaintablePointer m_pPixmapBackHighlighted;
     int m_highlight;
+    int m_highlight_input_allow;
+    int m_highlight_mixer;
+    int m_highlight_deck;
+    int m_highlight_waveform;
 };
