@@ -2587,6 +2587,329 @@
             </control>
             <!-- SAMPLER MODE END -->
 
+            <!-- KEY SHIFT MODE START -->
+            <control>
+                <description>PAD 1 (DECK1) KEY SHIFT MODE - press - No pitch modification</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x70</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 1 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 1 semitone</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x70</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 1 (DECK2) KEY SHIFT MODE - press - No pitch modification</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x70</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 1 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 1 semitone</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x70</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 (DECK1) KEY SHIFT MODE - press - Set pitch to one semitone up</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x71</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 2 semitones</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x71</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 (DECK2) KEY SHIFT MODE - press - Set pitch to one semitone up</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x71</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 2 semitones</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x71</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 (DECK1) KEY SHIFT MODE - press - Set the pitch to 2 semitones up</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x72</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 3 semitones</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x72</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 (DECK2) KEY SHIFT MODE - press - Set the pitch to 2 semitones up</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x72</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 3 semitones</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x72</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 (DECK1) KEY SHIFT MODE - press - Set the pitch to 3 semitones up</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x73</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 4 semitones</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x73</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 (DECK2) KEY SHIFT MODE - press - Set the pitch to 3 semitones up</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x73</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 4 semitones</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x73</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 (DECK1) KEY SHIFT MODE - press - Set the pitch to 3 semitones down</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x74</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 1 semitons</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x74</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 (DECK2) KEY SHIFT MODE - press - Set the pitch to 3 semitones down</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x74</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 1 semitone</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x74</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 (DECK1) KEY SHIFT MODE - press - Set the pitch to 2 semitones down</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x75</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 2 semitones</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x75</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 (DECK2) KEY SHIFT MODE - press - Set the pitch to 2 semitones down</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x75</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 2 semitones</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x75</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 (DECK1) KEY SHIFT MODE - press - Set the pitch to 1 semitones down</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x76</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 3 semitones</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x76</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 (DECK2) KEY SHIFT MODE - press - Set the pitch to 1 semitones down</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x76</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 3 semitones</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x76</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 (DECK1) KEY SHIFT MODE - press - No pitch modification</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x97</status>
+                <midino>0x77</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 4 semitones</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x77</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 (DECK2) KEY SHIFT MODE - press - No pitch modification</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
+                <status>0x99</status>
+                <midino>0x77</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 4 semitones</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x77</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- KEYBOARD MODE END -->
+
             <!-- PAD Section END -->
         </controls>
         <outputs>
