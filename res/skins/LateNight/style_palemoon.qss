@@ -3507,6 +3507,8 @@ WSearchLineEdit::item:selected,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
 WLibraryTextBrowser QMenu::item:disabled,
+WTrackTableViewHeader QMenu::item::disabled,
+WTrackTableViewHeader QMenu QCheckBox::disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
@@ -3551,7 +3553,9 @@ QPlainTextEdit QMenu::item:disabled {
     image: url(skins:LateNight/palemoon/buttons/btn__menu_checkbox_checked.svg);
     }
     #MainMenu QMenu::indicator:unchecked,
-    #MainMenu QMenu::indicator:unchecked:selected {
+    #MainMenu QMenu::indicator:unchecked:selected,
+    WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
+    WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked:selected {
       image: url(skins:LateNight/palemoon/buttons/btn__menu_checkbox.svg);
     }
 
@@ -3586,8 +3590,6 @@ QPlainTextEdit QMenu::item:disabled {
   selected, unchecked items would have a checkmark */
 WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
-WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 WEffectChainPresetSelector::indicator:unchecked,
