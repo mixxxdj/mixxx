@@ -220,20 +220,17 @@ MixstreamPro.JogMSB_1 = function(channel, control, value, status, group) {
             if (MSB >= MixstreamPro.previousJogValue1) {
                 engine.scratchTick(deckNumber, MSB/2);  
                 MixstreamPro.previousJogValue1 = value;
-            }
-            else 
+            } else 
                 {
                 engine.scratchTick(deckNumber, -MSB/2);  
                 MixstreamPro.previousJogValue1 = value;
                 }
-        } 
-        else  
+        } else  
         {
             if (MSB >= MixstreamPro.previousJogValue1) {
                 engine.setValue(group, "jog", MSB * MixstreamPro.jogSensitivity);
                 MixstreamPro.previousJogValue1 = value;
-            }
-        else 
+            } else 
             {
             engine.setValue(group, "jog", -MSB * MixstreamPro.jogSensitivity);
             MixstreamPro.previousJogValue1 = value;
@@ -265,20 +262,17 @@ MixstreamPro.JogLSB_2 = function(channel, control, value, status, group) {
             if (MSB >= MixstreamPro.previousJogValue1) {
                 engine.scratchTick(deckNumber, MSB/2);  
                 MixstreamPro.previousJogValue1 = value;
-            }
-        else 
+            } else 
             {
             engine.scratchTick(deckNumber, -MSB/2);  
             MixstreamPro.previousJogValue1 = value;
             }
-        } 
-        else  
+        } else  
         {
             if (MSB >= MixstreamPro.previousJogValue1) {
                 engine.setValue(group, "jog", MSB * MixstreamPro.jogSensitivity);
                 MixstreamPro.previousJogValue1 = value;
-            }
-        else 
+            } else 
             {
             engine.setValue(group, "jog", -MSB * MixstreamPro.jogSensitivity);
             MixstreamPro.previousJogValue1 = value;
@@ -1011,7 +1005,7 @@ MixstreamPro.Deck1_Pad2 = function(channel, control, value, status, group) {
         engine.setValue("[Channel1]", "beatlooproll_" + loopSize + "_activate", true)
         engine.setValue("[Channel1]", "beatlooproll_activate", true)
         script.triggerControl(group, "reloop_toggle");
-    }else
+    } else
     if (value === 0) { 
         midi.sendShortMsg(status, 0x10, 0x01);
         return }
@@ -1431,7 +1425,7 @@ MixstreamPro.EffectToggleSwitch = function(channel, control, value, status, grou
         engine.setValue("[EffectRack1_EffectUnit2_Effect1]", "enabled", 0);
     }
 
-    if (channel ==== 4 && value === 1 && MixstreamPro.toggle2 === false || channel === 4 && value === 2 && MixstreamPro.toggle2 === false) {
+    if (channel === 4 && value === 1 && MixstreamPro.toggle2 === false || channel === 4 && value === 2 && MixstreamPro.toggle2 === false) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect2]", "enabled", 1);
     } else {
          
@@ -1601,5 +1595,3 @@ MixstreamPro.Effectbutton4 = function(channel, control, value, status, group) {
     } else
     if (value === 0) { return }
 }
-
-
