@@ -200,13 +200,13 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
 // Use alternative movemode instead of default.
-const AlternativeMoveMode = engine.getSetting("alternativeMoveMode");
+const AlternativeMoveMode = engine.getSetting("alternativeMoveMode") || false;
 
 // Relative tempo slider mode -- the tempo slider does not care about its absolute position,
 // only changes in position.  Use Shift to adjust slider without changing tempo (for recentering, etc).
-const RelativeTempoMode = engine.getSetting("relativeTempoMode");
+const RelativeTempoMode = engine.getSetting("relativeTempoMode") || false;
 // Only adjust tempo if shift is held.
-const ShiftTempoMode = engine.getSetting("shiftTempoMode");
+const ShiftTempoMode = engine.getSetting("shiftTempoMode") || false;
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
@@ -603,6 +603,7 @@ class Deck extends ComponentContainer {
         }
         this.secondDeckModes = null;
         this.selectedHotcue = null;
+        this.relativeTempoMode = RelativeTempoMode;
 
         updateRuntimeData({
             selectedHotcue: {
@@ -1992,6 +1993,7 @@ class S4Mk3Deck extends Deck {
         this.mixer = mixer;
 
         this.syncMasterButton = new Button({
+            deck: this,
             key: "sync_leader",
             defaultRange: 0.08,
             shift: UseKeylockOnMaster ? function() {
@@ -2004,13 +2006,18 @@ class S4Mk3Deck extends Deck {
                 script.toggleControl(this.group, this.inKey);
             },
             onLongPress: function() {
-                const currentRange = engine.getValue(this.group, "rateRange");
-                if (currentRange < 1.0) {
-                    engine.setValue(this.group, "rateRange", 1.0);
-                    this.indicator(true);
+                if (this.shifted) {
+                    this.deck.relativeTempoMode = !this.deck.relativeTempoMode;
+                    this.deck.tempoFader.resync();
                 } else {
-                    engine.setValue(this.group, "rateRange", this.defaultRange);
-                    this.indicator(false);
+                    const currentRange = engine.getValue(this.group, "rateRange");
+                    if (currentRange < 1.0) {
+                        engine.setValue(this.group, "rateRange", 1.0);
+                        this.indicator(true);
+                    } else {
+                        engine.setValue(this.group, "rateRange", this.defaultRange);
+                        this.indicator(false);
+                    }
                 }
             },
         });
@@ -2042,11 +2049,23 @@ class S4Mk3Deck extends Deck {
             inKey: "rate",
             outKey: "rate",
             appliedValue: null,
-            lastRelativeValue: -1,
+            lastHardwareValue: null,
+            lastRelativeValue: null,
             tempoCenterUpper: this.settings.tempoCenterUpper,
             tempoCenterLower: this.settings.tempoCenterLower,
+            resync: function() {
+                this.appliedValue = null;
+                if (!this.deck.relativeTempoMode) {
+                    if (this.lastHardwareValue) {
+                        this.input(this.lastHardwareValue);
+                    } else {
+                        this.input(0);
+                    }
+                }
+            },
             input: function(value) {
                 const receivingFirstValue = this.appliedValue === null;
+                this.lastHardwareValue = value;
 
                 if (value < this.tempoCenterLower) {
                     // scale input for lower range
@@ -2059,7 +2078,7 @@ class S4Mk3Deck extends Deck {
                     this.appliedValue = 0;
                 }
 
-                if (RelativeTempoMode) {
+                if (this.deck.relativeTempoMode) {
                     const lastVal = this.lastRelativeValue;
                     this.lastRelativeValue = this.appliedValue;
                     // We do want to  reset the slider to the physical position when receiving the
@@ -2075,7 +2094,7 @@ class S4Mk3Deck extends Deck {
 
                         let relVal = engine.getValue(this.group, "rate");
                         relVal += this.appliedValue - lastVal;
-                        this.appliedValue = relVal;
+                        this.appliedValue = Math.max(Math.min(relVal, 10.0), -10.0);
                     }
                 }
                 engine.setValue(this.group, this.inKey, this.appliedValue);
@@ -2089,7 +2108,7 @@ class S4Mk3Deck extends Deck {
                 }
             },
             output: function(value) {
-                if (RelativeTempoMode || this.appliedValue === null) {
+                if (this.deck.relativeTempoMode || this.appliedValue === null) {
                     return;
                 }
 
