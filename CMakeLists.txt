@@ -2833,6 +2833,14 @@ if(BUILD_TESTING)
     DISCOVERY_MODE PRE_TEST
   )
 
+  # Default to offscreen rendering during tests.
+  # This is required if the build system like Fedora koji/mock does not
+  # allow to pass environment variables into the ctest macro expansion.
+  set_tests_properties(
+    ${testsuite}
+    PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+  )
+
   if(BUILD_BENCH)
     # Benchmarking
     add_custom_target(
