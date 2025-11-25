@@ -67,7 +67,6 @@ jobs:
             artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
-            qt_qpa_platform: offscreen
           - name: macOS 15 x64
             os: macos-15-intel
             cmake_args: >-
@@ -91,7 +90,6 @@ jobs:
             artifacts_name: macOS Intel DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
-            qt_qpa_platform: offscreen
           - name: macOS 15 arm64
             os: macos-15-intel
             cmake_args: >-
@@ -115,7 +113,6 @@ jobs:
             artifacts_name: macOS ARM DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
-            qt_qpa_platform: offscreen
           - name: Windows 2022 x64
             os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
@@ -142,7 +139,6 @@ jobs:
             artifacts_name: Windows x64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
-            qt_qpa_platform: windows
             arch: x64
           - name: Windows 11 ARM64
             os: windows-11-arm
@@ -171,7 +167,6 @@ jobs:
             artifacts_name: Windows ARM64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-winarm
-            qt_qpa_platform: windows
             arch: arm64
 
     env:
@@ -367,8 +362,6 @@ jobs:
         run: ctest --timeout 45 ${{ matrix.ctest_args }}
         working-directory: build
         env:
-          # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel
           CTEST_PARALLEL_LEVEL: 1
