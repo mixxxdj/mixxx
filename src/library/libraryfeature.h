@@ -87,6 +87,10 @@ class LibraryFeature : public QObject {
     virtual bool hasTrackTable() {
         return false;
     }
+    virtual bool isItemDataUnique(const QVariant& data) const {
+        Q_UNUSED(data);
+        return true;
+    }
 
   protected:
     QStringList getPlaylistFiles() const {
@@ -134,9 +138,13 @@ class LibraryFeature : public QObject {
         Q_UNUSED(index);
     }
     // Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
-    // This method is executed whenever you **double** click child items
-    virtual void onLazyChildExpandation(const QModelIndex& index) {
+    // This is called whenever you manually expand the subtree (double click on item
+    // or click on the triangle icon) and after programmatic expandation with QTreeView's
+    // expand() or scrollTo() (with EnsureVisible hint the latter auto-expands all
+    // of the index' parents).
+    virtual void onLazyChildExpandation(const QModelIndex& index, bool enforceRebuild = false) {
         Q_UNUSED(index);
+        Q_UNUSED(enforceRebuild);
     }
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
