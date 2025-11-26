@@ -1480,6 +1480,20 @@ bool WOverview::drawNextPixmapPart() {
                 &m_actualCompletion,
                 nextCompletion,
                 m_signalColors);
+    } else if (m_type == OverviewType::StackedRGB) {
+        waveformOverviewRenderer::drawWaveformPartStackedRGB(
+                &painter,
+                pWaveform,
+                &m_actualCompletion,
+                nextCompletion,
+                m_signalColors);
+    } else if (m_type == OverviewType::StackedFiltered) {
+        waveformOverviewRenderer::drawWaveformPartStackedLMH(
+                &painter,
+                pWaveform,
+                &m_actualCompletion,
+                nextCompletion,
+                m_signalColors);
     } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,

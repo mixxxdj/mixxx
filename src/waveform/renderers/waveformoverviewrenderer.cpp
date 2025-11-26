@@ -38,6 +38,22 @@ QImage render(ConstWaveformPointer pWaveform,
                 dataSize,
                 signalColors,
                 mono);
+    } else if (type == mixxx::OverviewType::StackedRGB) {
+        // stacked rgb: layer low/mid/high using rgb colors
+        drawWaveformPartStackedRGB(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                signalColors,
+                mono);
+    } else if (type == mixxx::OverviewType::StackedFiltered) {
+        // stacked filtered: layer low/mid/high using filtered colors
+        drawWaveformPartStackedLMH(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                signalColors,
+                mono);
     } else {
         drawWaveformPartRGB(&painter,
                 pWaveform,
@@ -324,6 +340,233 @@ void drawWaveformPartHSV(
     if (start) {
         *start = end;
     }
+}
+
+// MARK: -- STACKED WAVEFORM RENDERING
+
+void drawWaveformPartStackedRGB(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono) {
+    ScopedTimer t(QStringLiteral("waveformOverviewRenderer::drawNextPixmapPartStackedRGB"));
+    int startVal = 0;
+    if (start) {
+        startVal = *start;
+    }
+
+    const QColor lowColor = signalColors.getRgbLowColor();
+    const QColor midColor = signalColors.getRgbMidColor();
+    const QColor highColor = signalColors.getRgbHighColor();
+
+    // stacked mode: draw low/mid/high bands layered on top of each other
+    // draw in order: low (widest), mid (on top), high (on top of that)
+
+    if (mono) {
+        // mono means paint from bottom to top with l+r
+        const qreal dy = pPainter->deviceTransform().dy();
+        pPainter->resetTransform();
+        // shift y0 to bottom
+        pPainter->translate(0, 2 * dy);
+        // flip y-axis
+        pPainter->scale(1, -1);
+
+        for (int i = startVal, x = startVal / 2; i < end; i += 2, ++x) {
+            int low = pWaveform->getLow(i) + pWaveform->getLow(i + 1);
+            int mid = pWaveform->getMid(i) + pWaveform->getMid(i + 1);
+            int high = pWaveform->getHigh(i) + pWaveform->getHigh(i + 1);
+
+            // draw low band (widest)
+            if (low > 0) {
+                pPainter->setPen(lowColor);
+                pPainter->drawLine(x, 0, x, low);
+            }
+
+            // draw mid band (on top of low)
+            if (mid > 0) {
+                pPainter->setPen(midColor);
+                pPainter->drawLine(x, 0, x, mid);
+            }
+
+            // draw high band (on top of mid)
+            if (high > 0) {
+                pPainter->setPen(highColor);
+                pPainter->drawLine(x, 0, x, high);
+            }
+        }
+    } else { // stereo
+        for (int i = startVal, x = startVal / 2; i < end; i += 2, ++x) {
+            // left channel
+            int low = pWaveform->getLow(i);
+            int mid = pWaveform->getMid(i);
+            int high = pWaveform->getHigh(i);
+
+            // draw low band (widest)
+            if (low > 0) {
+                pPainter->setPen(lowColor);
+                pPainter->drawLine(x, static_cast<int>(-low), x, 0);
+            }
+
+            // draw mid band (on top of low)
+            if (mid > 0) {
+                pPainter->setPen(midColor);
+                pPainter->drawLine(x, static_cast<int>(-mid), x, 0);
+            }
+
+            // draw high band (on top of mid)
+            if (high > 0) {
+                pPainter->setPen(highColor);
+                pPainter->drawLine(x, static_cast<int>(-high), x, 0);
+            }
+
+            // right channel
+            low = pWaveform->getLow(i + 1);
+            mid = pWaveform->getMid(i + 1);
+            high = pWaveform->getHigh(i + 1);
+
+            // draw low band (widest)
+            if (low > 0) {
+                pPainter->setPen(lowColor);
+                pPainter->drawLine(x, 0, x, static_cast<int>(low));
+            }
+
+            // draw mid band (on top of low)
+            if (mid > 0) {
+                pPainter->setPen(midColor);
+                pPainter->drawLine(x, 0, x, static_cast<int>(mid));
+            }
+
+            // draw high band (on top of mid)
+            if (high > 0) {
+                pPainter->setPen(highColor);
+                pPainter->drawLine(x, 0, x, static_cast<int>(high));
+            }
+        }
+    }
+
+    if (start) {
+        *start = end;
+    }
+}
+
+void drawWaveformPartStackedLMH(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono) {
+    ScopedTimer t(QStringLiteral("waveformOverviewRenderer::drawNextPixmapPartStackedLMH"));
+    int startVal = 0;
+    if (start) {
+        startVal = *start;
+    }
+
+    const QColor lowColor = signalColors.getLowColor();
+    const QColor midColor = signalColors.getMidColor();
+    const QColor highColor = signalColors.getHighColor();
+
+    // stacked mode: draw low/mid/high bands layered on top of each other
+    // draw in order: low (widest), mid (on top), high (on top of that)
+
+    if (mono) {
+        // mono means paint from bottom to top with l+r
+        const qreal dy = pPainter->deviceTransform().dy();
+        pPainter->resetTransform();
+        // shift y0 to bottom
+        pPainter->translate(0, 2 * dy);
+        // flip y-axis
+        pPainter->scale(1, -1);
+
+        for (int i = startVal, x = startVal / 2; i < end; i += 2, ++x) {
+            int low = pWaveform->getLow(i) + pWaveform->getLow(i + 1);
+            int mid = pWaveform->getMid(i) + pWaveform->getMid(i + 1);
+            int high = pWaveform->getHigh(i) + pWaveform->getHigh(i + 1);
+
+            // draw low band (widest)
+            if (low > 0) {
+                pPainter->setPen(lowColor);
+                pPainter->drawLine(x, 0, x, low);
+            }
+
+            // draw mid band (on top of low)
+            if (mid > 0) {
+                pPainter->setPen(midColor);
+                pPainter->drawLine(x, 0, x, mid);
+            }
+
+            // draw high band (on top of mid)
+            if (high > 0) {
+                pPainter->setPen(highColor);
+                pPainter->drawLine(x, 0, x, high);
+            }
+        }
+    } else { // stereo
+        for (int i = startVal, x = startVal / 2; i < end; i += 2, ++x) {
+            // left channel
+            int low = pWaveform->getLow(i);
+            int mid = pWaveform->getMid(i);
+            int high = pWaveform->getHigh(i);
+
+            // draw low band (widest)
+            if (low > 0) {
+                pPainter->setPen(lowColor);
+                pPainter->drawLine(x, static_cast<int>(-low), x, 0);
+            }
+
+            // draw mid band (on top of low)
+            if (mid > 0) {
+                pPainter->setPen(midColor);
+                pPainter->drawLine(x, static_cast<int>(-mid), x, 0);
+            }
+
+            // draw high band (on top of mid)
+            if (high > 0) {
+                pPainter->setPen(highColor);
+                pPainter->drawLine(x, static_cast<int>(-high), x, 0);
+            }
+
+            // right channel
+            low = pWaveform->getLow(i + 1);
+            mid = pWaveform->getMid(i + 1);
+            high = pWaveform->getHigh(i + 1);
+
+            // draw low band (widest)
+            if (low > 0) {
+                pPainter->setPen(lowColor);
+                pPainter->drawLine(x, 0, x, static_cast<int>(low));
+            }
+
+            // draw mid band (on top of low)
+            if (mid > 0) {
+                pPainter->setPen(midColor);
+                pPainter->drawLine(x, 0, x, static_cast<int>(mid));
+            }
+
+            // draw high band (on top of mid)
+            if (high > 0) {
+                pPainter->setPen(highColor);
+                pPainter->drawLine(x, 0, x, static_cast<int>(high));
+            }
+        }
+    }
+
+    if (start) {
+        *start = end;
+    }
+}
+
+void drawWaveformPartStackedHSV(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono) {
+    // stacked HSV is the same as regular HSV - already shows combined frequency view
+    drawWaveformPartHSV(pPainter, pWaveform, start, end, signalColors, mono);
 }
 
 } // namespace waveformOverviewRenderer
