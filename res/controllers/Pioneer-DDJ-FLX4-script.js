@@ -979,7 +979,7 @@ PioneerDDJFLX4.stemFxChanged = function(value, group, _control) {
 //
 
 PioneerDDJFLX4.pitchAdjusted = function(_value, group, _control) {
-    const pitchAdjust = engine.getValue(group, "pitch_adjust");
+    const pitchAdjust = Math.round(engine.getValue(group, "pitch_adjust"));
     let lights = 0b00000000;
 
     if (pitchAdjust === 0) {
