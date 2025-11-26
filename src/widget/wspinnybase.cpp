@@ -501,44 +501,43 @@ void WSpinnyBase::updateSlipEnabled(double enabled) {
 }
 
 void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
+    if ((e->buttons() & Qt::LeftButton) || (e->buttons() & Qt::RightButton)) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    int y = static_cast<int>(e->position().y());
-    int x = static_cast<int>(e->position().x());
+        int y = static_cast<int>(e->position().y());
+        int x = static_cast<int>(e->position().x());
 #else
-    int y = e->y();
-    int x = e->x();
+        int y = e->y();
+        int x = e->x();
 #endif
 
-    // Keeping these around in case we want to switch to control relative
-    // to the original mouse position.
-    // int dX = x-m_iStartMouseX;
-    // int dY = y-m_iStartMouseY;
+        // Keeping these around in case we want to switch to control relative
+        // to the original mouse position.
+        // int dX = x-m_iStartMouseX;
+        // int dY = y-m_iStartMouseY;
 
-    // Coordinates from center of widget
-    double c_x = x - width() / 2;
-    double c_y = y - height() / 2;
-    double theta = (180.0 / M_PI) * atan2(c_x, -c_y);
+        // Coordinates from center of widget
+        double c_x = x - width() / 2;
+        double c_y = y - height() / 2;
+        double theta = (180.0 / M_PI) * atan2(c_x, -c_y);
 
-    // qDebug() << "c_x:" << c_x << "c_y:" << c_y <<
-    //             "dX:" << dX << "dY:" << dY;
+        // qDebug() << "c_x:" << c_x << "c_y:" << c_y <<
+        //             "dX:" << dX << "dY:" << dY;
 
-    // When we finish one full rotation (clockwise or anticlockwise),
-    // we'll need to manually add/sub 360 degrees because atan2()'s range is
-    // only within -180 to 180 degrees. We need a wider range so your position
-    // in the song can be tracked.
-    if (m_dPrevTheta > 100 && theta < 0) {
-        m_iFullRotations++;
-    } else if (m_dPrevTheta < -100 && theta > 0) {
-        m_iFullRotations--;
-    }
+        // When we finish one full rotation (clockwise or anticlockwise),
+        // we'll need to manually add/sub 360 degrees because atan2()'s range is
+        // only within -180 to 180 degrees. We need a wider range so your position
+        // in the song can be tracked.
+        if (m_dPrevTheta > 100 && theta < 0) {
+            m_iFullRotations++;
+        } else if (m_dPrevTheta < -100 && theta > 0) {
+            m_iFullRotations--;
+        }
 
-    m_dPrevTheta = theta;
-    theta += m_iFullRotations * 360;
+        m_dPrevTheta = theta;
+        theta += m_iFullRotations * 360;
 
-    // qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta <<
-    //             "icr" << m_iFullRotations;
-
-    if ((e->buttons() & Qt::LeftButton) || (e->buttons() & Qt::RightButton)) {
+        // qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta <<
+        //             "icr" << m_iFullRotations;
         // Convert deltaTheta into a percentage of song length.
         double absPos = calculatePositionFromAngle(theta);
         double absPosInSamples = absPos * m_pTrackSamples->get();
@@ -609,10 +608,18 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
 
 void WSpinnyBase::mouseReleaseEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
-        QApplication::restoreOverrideCursor();
-        m_pScratchToggle->set(0.0);
-        m_iFullRotations = 0;
+        stopScratching();
     }
+}
+
+void WSpinnyBase::leaveEvent(QEvent*) {
+    stopScratching();
+}
+
+void WSpinnyBase::stopScratching() {
+    QApplication::restoreOverrideCursor();
+    m_pScratchToggle->set(0.0);
+    m_iFullRotations = 0;
 }
 
 void WSpinnyBase::showEvent(QShowEvent* event) {

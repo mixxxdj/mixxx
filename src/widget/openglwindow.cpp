@@ -135,6 +135,7 @@ bool OpenGLWindow::event(QEvent* pEv) {
         // container widget that contains this QOpenGLWindow. With this mouse
         // events, keyboard events, etc all arrive as intended, including the
         // events for the WWaveformViewer that contains the waveform widget.
+        qWarning() << "     ---- OpenGLWindow" << pEv;
         QApplication::sendEvent(m_pWidget, pEv);
     }
 
