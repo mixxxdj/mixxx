@@ -103,6 +103,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     void releaseBrowseThread();
 
   signals:
+    void saveModelState();
     void restoreModelState();
 
   public slots:

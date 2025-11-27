@@ -368,10 +368,10 @@ void BrowseTableModel::slotClear(BrowseTableModel* caller_object) {
 
 void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*>>& rows,
         BrowseTableModel* caller_object) {
-    // There exists more than one BrowseTableModel in Mixxx We only want to
-    // receive items here, this object has 'ordered' by the BrowserThread
-    // (singleton)
+    // There exists more than one BrowseTableModel in Mixxx and we only want to
+    // receive items this object has 'ordered' from the BrowseThread (singleton)
     if (caller_object == this) {
+        emit saveModelState();
         //qDebug() << "BrowseTableModel::slotInsert";
         for (int i = 0; i < rows.size(); ++i) {
             appendRow(rows.at(i));
