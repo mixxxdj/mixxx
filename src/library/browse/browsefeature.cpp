@@ -49,6 +49,10 @@ BrowseFeature::BrowseFeature(
           m_proxyModel(&m_browseModel, true),
           m_pSidebarModel(new FolderTreeModel(this)) {
     connect(&m_browseModel,
+            &BrowseTableModel::saveModelState,
+            this,
+            &LibraryFeature::saveModelState);
+    connect(&m_browseModel,
             &BrowseTableModel::restoreModelState,
             this,
             &LibraryFeature::restoreModelState);
