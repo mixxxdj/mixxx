@@ -1572,8 +1572,330 @@
             </control>
             <!-- HOT CUE MODE END -->
 
-            <!-- BEAT LOOP MODE START -->
+            <!-- KEYBOARD MODE START -->
+            <control>
+                <description>PAD 1 (DECK1) KEYBOARD MODE - press - Toggle Stem 1</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x97</status>
+                <midino>0x40</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 1 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 1 active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x40</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 1 (DECK2) KEYBOARD MODE - press - Toggle Stem 1</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x99</status>
+                <midino>0x40</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 1 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 1 active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x40</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 (DECK1) KEYBOARD MODE - press - Toggle Stem 2</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x97</status>
+                <midino>0x41</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 2 active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x41</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 (DECK2) KEYBOARD MODE - press - Toggle Stem 2</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x99</status>
+                <midino>0x41</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 2 active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x41</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 (DECK1) KEYBOARD MODE - press - Toggle Stem 3</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x97</status>
+                <midino>0x42</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 3 active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x42</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 (DECK2) KEYBOARD MODE - press - Toggle Stem 3</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x99</status>
+                <midino>0x42</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 3 active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x42</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 (DECK1) KEYBOARD MODE - press - Toggle Stem 4</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x97</status>
+                <midino>0x43</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 4 active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x43</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 (DECK2) KEYBOARD MODE - press - Toggle Stem 4</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <status>0x99</status>
+                <midino>0x43</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 4 active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x43</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 (DECK1) KEYBOARD MODE - press - Toggle Stem 1 FX</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x97</status>
+                <midino>0x44</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 1 FX active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x44</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 (DECK2) KEYBOARD MODE - press - Toggle Stem 1 FX</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x99</status>
+                <midino>0x44</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 1 FX active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x44</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 (DECK1) KEYBOARD MODE - press - Toggle Stem 2 FX</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x97</status>
+                <midino>0x45</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 2 FX active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x45</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 (DECK2) KEYBOARD MODE - press - Toggle Stem 2 FX</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x99</status>
+                <midino>0x45</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 2 FX active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x45</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 (DECK1) KEYBOARD MODE - press - Toggle Stem 3 FX</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x97</status>
+                <midino>0x46</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 3 FX active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x46</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 (DECK2) KEYBOARD MODE - press - Toggle Stem 3 FX</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x99</status>
+                <midino>0x46</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 3 FX active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x46</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 (DECK1) KEYBOARD MODE - press - Toggle Stem 4 FX</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x97</status>
+                <midino>0x47</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 +SHIFT (DECK1) KEYBOARD MODE - press - Only Stem 4 FX active</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x98</status>
+                <midino>0x47</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 (DECK2) KEYBOARD MODE - press - Toggle Stem 4 FX</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <status>0x99</status>
+                <midino>0x47</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 +SHIFT (DECK2) KEYBOARD MODE - press - Only Stem 4 FX active</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <status>0x9A</status>
+                <midino>0x47</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- KEYBOARD MODE END -->
 
+            <!-- BEAT LOOP MODE START -->
             <control>
                 <description>PAD 1 (DECK1) BEAT LOOP MODE - press - 1/4 Beatloop</description>
                 <group>[Channel1]</group>
@@ -2265,11 +2587,11 @@
             </control>
             <!-- SAMPLER MODE END -->
 
-            <!-- KEYSHIFT MODE START -->
+            <!-- KEY SHIFT MODE START -->
             <control>
-                <description>PAD 1 (DECK1) KEYSHIFT MODE - press - Toggle Stem 1</description>
+                <description>PAD 1 (DECK1) KEY SHIFT MODE - press - No pitch modification</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x70</midino>
                 <options>
@@ -2277,9 +2599,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 1 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 1 active</description>
+                <description>PAD 1 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 1 semitone</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x70</midino>
                 <options>
@@ -2287,9 +2609,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 1 (DECK2) KEYSHIFT MODE - press - Toggle Stem 1</description>
+                <description>PAD 1 (DECK2) KEY SHIFT MODE - press - No pitch modification</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x70</midino>
                 <options>
@@ -2297,9 +2619,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 1 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 1 active</description>
+                <description>PAD 1 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 1 semitone</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x70</midino>
                 <options>
@@ -2307,9 +2629,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 2 (DECK1) KEYSHIFT MODE - press - Toggle Stem 2</description>
+                <description>PAD 2 (DECK1) KEY SHIFT MODE - press - Set pitch to one semitone up</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x71</midino>
                 <options>
@@ -2317,9 +2639,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 2 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 2 active</description>
+                <description>PAD 2 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 2 semitones</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x71</midino>
                 <options>
@@ -2327,9 +2649,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 2 (DECK2) KEYSHIFT MODE - press - Toggle Stem 2</description>
+                <description>PAD 2 (DECK2) KEY SHIFT MODE - press - Set pitch to one semitone up</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x71</midino>
                 <options>
@@ -2337,9 +2659,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 2 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 2 active</description>
+                <description>PAD 2 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 2 semitones</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x71</midino>
                 <options>
@@ -2347,9 +2669,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 3 (DECK1) KEYSHIFT MODE - press - Toggle Stem 3</description>
+                <description>PAD 3 (DECK1) KEY SHIFT MODE - press - Set the pitch to 2 semitones up</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x72</midino>
                 <options>
@@ -2357,9 +2679,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 3 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 3 active</description>
+                <description>PAD 3 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 3 semitones</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x72</midino>
                 <options>
@@ -2367,9 +2689,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 3 (DECK2) KEYSHIFT MODE - press - Toggle Stem 3</description>
+                <description>PAD 3 (DECK2) KEY SHIFT MODE - press - Set the pitch to 2 semitones up</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x72</midino>
                 <options>
@@ -2377,9 +2699,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 3 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 3 active</description>
+                <description>PAD 3 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 3 semitones</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x72</midino>
                 <options>
@@ -2387,9 +2709,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 4 (DECK1) KEYSHIFT MODE - press - Toggle Stem 4</description>
+                <description>PAD 4 (DECK1) KEY SHIFT MODE - press - Set the pitch to 3 semitones up</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x73</midino>
                 <options>
@@ -2397,9 +2719,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 4 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 4 active</description>
+                <description>PAD 4 +SHIFT (DECK1) KEY SHIFT MODE - press - Increase the pitch by 4 semitones</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x73</midino>
                 <options>
@@ -2407,9 +2729,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 4 (DECK2) KEYSHIFT MODE - press - Toggle Stem 4</description>
+                <description>PAD 4 (DECK2) KEY SHIFT MODE - press - Set the pitch to 3 semitones up</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x73</midino>
                 <options>
@@ -2417,9 +2739,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 4 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 4 active</description>
+                <description>PAD 4 +SHIFT (DECK2) KEY SHIFT MODE - press - Increase the pitch by 4 semitones</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemMutePadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x73</midino>
                 <options>
@@ -2427,9 +2749,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 5 (DECK1) KEYSHIFT MODE - press - Toggle Stem 1 FX</description>
+                <description>PAD 5 (DECK1) KEY SHIFT MODE - press - Set the pitch to 3 semitones down</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x74</midino>
                 <options>
@@ -2437,9 +2759,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 5 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 1 FX active</description>
+                <description>PAD 5 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 1 semitons</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x74</midino>
                 <options>
@@ -2447,9 +2769,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 5 (DECK2) KEYSHIFT MODE - press - Toggle Stem 1 FX</description>
+                <description>PAD 5 (DECK2) KEY SHIFT MODE - press - Set the pitch to 3 semitones down</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x74</midino>
                 <options>
@@ -2457,9 +2779,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 5 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 1 FX active</description>
+                <description>PAD 5 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 1 semitone</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x74</midino>
                 <options>
@@ -2467,9 +2789,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 6 (DECK1) KEYSHIFT MODE - press - Toggle Stem 2 FX</description>
+                <description>PAD 6 (DECK1) KEY SHIFT MODE - press - Set the pitch to 2 semitones down</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x75</midino>
                 <options>
@@ -2477,9 +2799,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 6 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 2 FX active</description>
+                <description>PAD 6 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 2 semitones</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x75</midino>
                 <options>
@@ -2487,9 +2809,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 6 (DECK2) KEYSHIFT MODE - press - Toggle Stem 2 FX</description>
+                <description>PAD 6 (DECK2) KEY SHIFT MODE - press - Set the pitch to 2 semitones down</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x75</midino>
                 <options>
@@ -2497,9 +2819,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 6 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 2 FX active</description>
+                <description>PAD 6 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 2 semitones</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x75</midino>
                 <options>
@@ -2507,9 +2829,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 7 (DECK1) KEYSHIFT MODE - press - Toggle Stem 3 FX</description>
+                <description>PAD 7 (DECK1) KEY SHIFT MODE - press - Set the pitch to 1 semitones down</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x76</midino>
                 <options>
@@ -2517,9 +2839,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 7 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 3 FX active</description>
+                <description>PAD 7 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 3 semitones</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x76</midino>
                 <options>
@@ -2527,9 +2849,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 7 (DECK2) KEYSHIFT MODE - press - Toggle Stem 3 FX</description>
+                <description>PAD 7 (DECK2) KEY SHIFT MODE - press - Set the pitch to 1 semitones down</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x76</midino>
                 <options>
@@ -2537,9 +2859,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 7 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 3 FX active</description>
+                <description>PAD 7 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 3 semitones</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x76</midino>
                 <options>
@@ -2547,9 +2869,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 8 (DECK1) KEYSHIFT MODE - press - Toggle Stem 4 FX</description>
+                <description>PAD 8 (DECK1) KEY SHIFT MODE - press - No pitch modification</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x97</status>
                 <midino>0x77</midino>
                 <options>
@@ -2557,9 +2879,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 8 +SHIFT (DECK1) KEYSHIFT MODE - press - Only Stem 4 FX active</description>
+                <description>PAD 8 +SHIFT (DECK1) KEY SHIFT MODE - press - Decrease the pitch by 4 semitones</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x98</status>
                 <midino>0x77</midino>
                 <options>
@@ -2567,9 +2889,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 8 (DECK2) KEYSHIFT MODE - press - Toggle Stem 4 FX</description>
+                <description>PAD 8 (DECK2) KEY SHIFT MODE - press - No pitch modification</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadPressed</key>
+                <key>PioneerDDJFLX4.pitchPadPressed</key>
                 <status>0x99</status>
                 <midino>0x77</midino>
                 <options>
@@ -2577,15 +2899,16 @@
                 </options>
             </control>
             <control>
-                <description>PAD 8 +SHIFT (DECK2) KEYSHIFT MODE - press - Only Stem 4 FX active</description>
+                <description>PAD 8 +SHIFT (DECK2) KEY SHIFT MODE - press - Decrease the pitch by 4 semitones</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJFLX4.stemFxPadShiftPressed</key>
+                <key>PioneerDDJFLX4.pitchPadShiftPressed</key>
                 <status>0x9A</status>
                 <midino>0x77</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
+            <!-- KEYBOARD MODE END -->
 
             <!-- PAD Section END -->
         </controls>
