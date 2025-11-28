@@ -2999,7 +2999,12 @@ if(BUILD_TESTING)
     )
   endif()
   if(BUILD_UI_TEST)
-    set(src-mixxx-test ${src-mixxx-test} src/test/qml/servertest.cpp)
+    set(
+      src-mixxx-test
+      ${src-mixxx-test}
+      src/test/qml/servertest.cpp
+      src/test/qml/basic_test.cpp
+    )
   endif()
 
   add_executable(mixxx-test ${src-mixxx-test})
