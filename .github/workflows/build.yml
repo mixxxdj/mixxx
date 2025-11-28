@@ -446,6 +446,118 @@ jobs:
           CTEST_PARALLEL_LEVEL: 1
           CTEST_OUTPUT_ON_FAILURE: 1
 
+      - name: "[Ubuntu] Setup UI dependencies for QML UI Test"
+        if: runner.os == 'Linux' && matrix.qml == 'ON' && matrix.crosscompile != true
+        run: |
+          sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
+          echo "QT_QPA_PLATFORM=xcb" >> "$GITHUB_ENV"
+        working-directory: build
+
+      - name: "[Windows] Setup UI dependencies for QML UI tests"
+        if: runner.os == 'Windows' && matrix.qml == 'ON' && matrix.crosscompile != true && matrix.os != 'windows-11-arm' # Disabling Windows 11 ARM as the VM doesn't appears to be correctly provisioned
+        timeout-minutes: 5
+        run: |
+          # Add OpenGL library
+          $downloadUrl = "https://mirrors.20i.com/pub/qt.io/development_releases/prebuilt/llvmpipe/windows/opengl32sw-64.7z"
+          $localPath = "opengl32sw-64.7z"
+          $expectedChecksum = "a19b32017652de3a6d33bc861186303a95b92ec570c36277e137093909d47ccd"
+
+          Invoke-WebRequest -Uri $downloadUrl -OutFile $localPath
+
+          $actualChecksum = (Get-FileHash -Algorithm SHA256 -Path $localPath).Hash
+
+          if ($actualChecksum -ne $expectedChecksum) {
+              exit 1
+              Write-Host "Checksum verification failed."
+          }
+
+          Set-PSRepository -Name 'PSGallery' -SourceLocation "https://www.powershellgallery.com/api/v2" -InstallationPolicy Trusted
+          Install-Module -Name 7Zip4PowerShell -Force
+
+          Expand-7Zip -ArchiveFileName $localPath -TargetPath '.'
+        working-directory: build
+
+      - name: "[Windows] Run QML UI tests"
+        id: uitest_windows
+        if: runner.os == 'Windows' && matrix.qml == 'ON' && matrix.crosscompile != true && matrix.os != 'windows-11-arm' # Disabling Windows 11 ARM as the VM doesn't appears to be correctly provisioned
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          retry_wait_seconds: 1
+          on_retry_command: rm build/output.mkv && rm -Force build/screenshots
+          command: |
+            cd build
+            mkdir screenshots
+            $ffmpeg = Start-Process -PassThru -NoNewWindow $Env:FFMPEG_BIN '-f gdigrab -framerate 30 -probesize 20M -i desktop -codec:v mpeg4 -r 30 -b:v 10000k output.mkv -y'
+            try {
+              ./mixxx-test --ui --qml --log-level debug --developer
+            }
+            finally {
+              Stop-Process -Id $ffmpeg.Id
+              $ffmpeg.WaitForExit(10000)
+            }
+        env:
+          FFMPEG_BIN: ${{ env.MIXXX_VCPKG_ROOT }}\installed\${{ env.VCPKG_TARGET_TRIPLET }}\tools\ffmpeg\ffmpeg.exe
+
+      - name: "[Ubuntu] Run QML UI tests"
+        id: uitest_linux
+        if: runner.os == 'Linux' && matrix.qml == 'ON' && matrix.crosscompile != true
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          retry_wait_seconds: 1
+          on_retry_command: rm -rf build/output.mkv build/screenshots
+          command: |
+            cd build
+            mkdir screenshots
+            Xvfb :44 -ac -nocursor -screen 0 1920x1080x24 -auth /dev/null &
+            sleep 3
+            ffmpeg -nostdin -hide_banner -loglevel error -f x11grab -video_size 1920x1080 -i :44 -draw_mouse 0 -codec:v mpeg4 -r 30 -b:v 2000k output.mkv -y &
+            function finish() {
+                set -x
+                kill $(jobs -p "%ffmpeg")
+                wait -f $(jobs -p "%ffmpeg") || true
+                kill $(jobs -p "%Xvfb") || true
+            }
+
+            trap finish EXIT
+            DISPLAY=:44 ./mixxx-test --ui --qml --log-level debug --developer
+
+      - name: "Upload QML UI tests artifact"
+        if: always() && (steps.uitest_linux.outcome != 'skipped' || steps.uitest_windows.outcome != 'skipped')
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: UI Tests for ${{ matrix.name }} - ${{ steps.uitest_linux.outcome != 'skipped' && steps.uitest_linux.outcome || steps.uitest_windows.outcome }}
+          path: |
+            build/screenshots
+            build/output.mkv
+          retention-days: 7
+
+      - name: "[Ubuntu] Generate Coverage Report"
+        if: runner.os == 'Linux' && matrix.crosscompile != true
+        run: >-
+          lcov
+          --capture
+          --directory .
+          --base-directory ..
+          --include "${PWD%/*}/src/*"
+          --exclude "${PWD%/*}/src/test/*"
+          --exclude "${PWD%/*}/build/*"
+          --exclude "${PWD%/*}/lib/*"
+          --output-file lcov.info
+        working-directory: build
+
+      - name: "[Ubuntu] Upload Coverage Report to coveralls.io"
+        if: runner.os == 'Linux' && matrix.crosscompile != true
+        continue-on-error: true
+        uses: coverallsapp/github-action@v2.3.6
+        with:
+          flag-name: ubuntu-24.04
+          path-to-lcov: build/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: "[Windows] Sign executables"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
