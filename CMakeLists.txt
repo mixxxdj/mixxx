@@ -2715,6 +2715,61 @@ elseif(BUILD_BENCH AND NOT BUILD_TESTING)
   message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
 endif()
 
+default_option(BUILD_UI_TEST "Build Mixxx QML UI/E2E tests" "QML")
+if(BUILD_UI_TEST)
+  set(ANYRPC_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libanyrpc-install")
+  set(
+    ANYRPC_LIBRARY
+    "lib/${CMAKE_SHARED_LIBRARY_PREFIX}Spix${CMAKE_SHARED_LIBRARY_SUFFIX}"
+  )
+  ExternalProject_Add(
+    libanyrpc
+    GIT_REPOSITORY https://github.com/sgieseking/anyrpc.git
+    GIT_TAG b1949b3d40849229055ae75cf5334b9d08579502
+    INSTALL_DIR ${ANYRPC_INSTALL_DIR}
+    LIST_SEPARATOR "|"
+    CMAKE_ARGS
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_WITH_LOG4CPLUS=OFF
+      -DCMAKE_INSTALL_PREFIX=${ANYRPC_INSTALL_DIR} -DBUILD_EXAMPLES=OFF
+      -DBUILD_PROTOCOL_MESSAGEPACK=OFF
+    BUILD_BYPRODUCTS <INSTALL_DIR>/${ANYRPC_LIBRARY}
+    EXCLUDE_FROM_ALL TRUE
+  )
+  set(SPIX_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libspix-install")
+  set(
+    SPIX_QTQUICK_LIBRARY
+    "${CMAKE_STATIC_LIBRARY_PREFIX}SpixCore${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  )
+  set(
+    SPIX_CORE_LIBRARY
+    "${CMAKE_STATIC_LIBRARY_PREFIX}SpixQtQuick${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  )
+  ExternalProject_Add(
+    libspix
+    GIT_REPOSITORY https://github.com/faaxm/spix.git
+    GIT_TAG 73ed4d0880e8434815a82a5ad876d03a51eaa1db
+    INSTALL_DIR ${SPIX_INSTALL_DIR}
+    LIST_SEPARATOR "|"
+    CMAKE_ARGS
+      -DSPIX_BUILD_EXAMPLES=OFF -DSPIX_CMAKE_CONFIG_DIR=${SPIX_INSTALL_DIR}
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DCMAKE_INSTALL_PREFIX=${SPIX_INSTALL_DIR}
+      -DCMAKE_INSTALL_BINDIR=${SPIX_INSTALL_DIR}
+      -DCMAKE_INSTALL_LIBDIR=${SPIX_INSTALL_DIR}
+      -DCMAKE_INSTALL_DATADIR=${SPIX_INSTALL_DIR}
+      -DCMAKE_INSTALL_INCLUDEDIR=${SPIX_INSTALL_DIR}
+      -DAnyRPC_INCLUDE_DIRS=${ANYRPC_INSTALL_DIR}/include
+      -DAnyRPC_LIBRARIES=${ANYRPC_INSTALL_DIR}/lib -DQt6Core_DIR=${Qt6Core_DIR}
+      -DQt6Gui_DIR=${Qt6Gui_DIR} -DQt6_DIR=${Qt6_DIR}
+      -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+    BUILD_BYPRODUCTS
+      <INSTALL_DIR>/${SPIX_QTQUICK_LIBRARY}
+      <INSTALL_DIR>/${SPIX_CORE_LIBRARY}
+    EXCLUDE_FROM_ALL TRUE
+  )
+  add_dependencies(libspix libanyrpc)
+endif()
+
 # FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
@@ -2943,6 +2998,9 @@ if(BUILD_TESTING)
       src/test/waveform_upgrade_test.cpp
     )
   endif()
+  if(BUILD_UI_TEST)
+    set(src-mixxx-test ${src-mixxx-test} src/test/qml/servertest.cpp)
+  endif()
 
   add_executable(mixxx-test ${src-mixxx-test})
 
@@ -2968,6 +3026,33 @@ if(BUILD_TESTING)
     mixxx-test
     PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock
   )
+
+  if(BUILD_UI_TEST)
+    add_compile_definitions(USE_TEST_UI)
+    add_dependencies(mixxx-test libspix)
+    target_include_directories(
+      mixxx-test
+      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/lib/libspix-install/
+    )
+    # Assemble a library based on the external project.
+    add_library(SpixCore STATIC IMPORTED)
+    set_target_properties(
+      SpixCore
+      PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${SPIX_INSTALL_DIR}"
+        IMPORTED_LOCATION "${SPIX_INSTALL_DIR}/${SPIX_QTQUICK_LIBRARY}"
+    )
+    add_library(SpixQtQuick STATIC IMPORTED)
+    set_target_properties(
+      SpixQtQuick
+      PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${SPIX_INSTALL_DIR}"
+        IMPORTED_LOCATION "${SPIX_INSTALL_DIR}/${SPIX_CORE_LIBRARY}"
+    )
+
+    target_link_libraries(mixxx-test PRIVATE SpixCore)
+    target_link_libraries(mixxx-test PRIVATE SpixQtQuick)
+  endif()
 
   if(BUILD_BENCH)
     add_compile_definitions(USE_BENCH)
