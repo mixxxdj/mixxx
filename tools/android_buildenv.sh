@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Ignored in case of a source call, but needed for bash specific sourcing detection
 
-set -o pipefail
+set -eo pipefail
 
 # shellcheck disable=SC2091
 if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
@@ -64,7 +64,7 @@ case "$1" in
         ;;
 
     setup)
-        sudo apt-get install -y --no-install-recommends -- \
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
             make \
@@ -89,7 +89,7 @@ case "$1" in
             openjdk-17-jdk \
             pkg-config \
             python3-jinja2
-        yes | sudo sdkmanager --licenses
+        (yes | sudo sdkmanager --licenses) || true
         sudo sdkmanager "platforms;android-${ANDROID_API}" "platform-tools" "build-tools;${ANDROID_VERSION}" "ndk;${ANDROID_NDK}"
         ANDROID_SDK=/usr/lib/android-sdk
         ANDROID_NDK_HOME=/usr/lib/android-sdk/ndk/${ANDROID_NDK}
