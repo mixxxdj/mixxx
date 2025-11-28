@@ -2,9 +2,11 @@
 
 #include <QOpenGLTexture>
 #include <QPainterPath>
+#include <QRegExp>
 #include <QStringLiteral>
 #include <QSvgRenderer>
 #include <QtDebug>
+#include <algorithm>
 
 #include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -592,6 +594,43 @@ QImage WaveformMark::performImageGeneration(float devicePixelRatio,
     painter.end();
 
     return image;
+}
+
+QString WaveformMark::validate() const {
+    auto checkPath = [](const auto& path) {
+        return !path.isEmpty() && !QFileInfo(path).exists();
+    };
+
+    auto addPaths = [](QStringList* pathList, const QString& pathTemplate) {
+        static const QRegularExpression re("%\\d+");
+        auto argCount = pathTemplate.count(re);
+        switch (argCount) {
+        case 0:
+            pathList->append(pathTemplate);
+            break;
+        case 1:
+            pathList->append(pathTemplate.arg(QStringLiteral("forward")));
+            pathList->append(pathTemplate.arg(QStringLiteral("backward")));
+            break;
+        default:
+            return false;
+        }
+        return true;
+    };
+
+    QStringList pathList;
+    pathList.append(m_pixmapPath);
+    pathList.append(m_endPixmapPath);
+    pathList.append(m_iconPath);
+    if (!addPaths(&pathList, m_endIconPath)) {
+        return QStringLiteral("Invalid number or arguments in endIconPath: %1").arg(m_endIconPath);
+    }
+
+    auto first_missing_path = std::find_if(pathList.constBegin(), pathList.constEnd(), checkPath);
+    if (first_missing_path != pathList.constEnd()) {
+        return QStringLiteral("path for icon or pixmap is not found: %1").arg(*first_missing_path);
+    }
+    return {};
 }
 
 QImage WaveformMark::generateImage(float devicePixelRatio) {

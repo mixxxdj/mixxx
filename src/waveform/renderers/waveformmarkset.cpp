@@ -65,7 +65,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     }
 }
 
-void WaveformMarkSet::setDefault(const QString& group,
+QString WaveformMarkSet::setDefault(const QString& group,
         const DefaultMarkerStyle& model,
         const WaveformSignalColors& signalColors) {
     m_pDefaultMark = WaveformMarkPointer::create(
@@ -81,6 +81,10 @@ void WaveformMarkSet::setDefault(const QString& group,
             0,
             Cue::kNoHotCue,
             signalColors);
+    auto error = m_pDefaultMark->validate();
+    if (!error.isEmpty()) {
+        return error;
+    }
     for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
         if (m_hotCueMarks.value(i).isNull()) {
             auto pMark = WaveformMarkPointer::create(
@@ -100,10 +104,15 @@ void WaveformMarkSet::setDefault(const QString& group,
                     model.endIconPath,
                     model.enabledOpacity,
                     model.disabledOpacity);
+            auto error = pMark->validate();
+            if (!error.isEmpty()) {
+                return error;
+            }
             m_marks.push_front(pMark);
             m_hotCueMarks.insert(pMark->getHotCue(), pMark);
         }
     }
+    return {};
 }
 
 WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {
