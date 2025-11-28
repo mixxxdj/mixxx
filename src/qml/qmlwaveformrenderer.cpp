@@ -311,7 +311,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
     // The initialisation is closely inspired from WaveformMarkSet::setup
     int priority = 0;
     for (const auto* pMark : std::as_const(m_marks)) {
-        pRenderer->addMark(WaveformMarkPointer(new WaveformMark(
+        auto pMarker = WaveformMarkPointer(new WaveformMark(
                 waveformWidget->getGroup(),
                 pMark->control(),
                 pMark->visibilityControl(),
@@ -327,7 +327,13 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
                 pMark->endPixmap().toLocalFile(),
                 pMark->endIcon().toLocalFile(),
                 pMark->disabledOpacity(),
-                pMark->enabledOpacity())));
+                pMark->enabledOpacity()));
+        auto error = pMarker->validate();
+        if (!error.isEmpty()) {
+            qmlEngine(this)->throwError(tr("Invalid marker: %1").arg(error));
+            continue;
+        }
+        pRenderer->addMark(pMarker);
         priority--;
     }
     const auto* pMark = defaultMark();
@@ -336,26 +342,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
         const QString endPixmap = pMark->endPixmap().toLocalFile();
         const QString icon = pMark->icon().toLocalFile();
         const QString endIcon = pMark->endIcon().toLocalFile();
-        // FIXME: the following checks should be done on the WaveformMarker
-        // setter (depends of #14515)
-        if (!pixmap.isEmpty() && !QFileInfo::exists(pixmap)) {
-            qmlEngine(this)->throwError(tr("Cannot find the marker pixmap") + " \"" + pixmap + '"');
-        }
-
-        if (!endPixmap.isEmpty() && !QFileInfo::exists(endPixmap)) {
-            qmlEngine(this)->throwError(tr("Cannot find the marker endPixmap") +
-                    " \"" + endPixmap + '"');
-        }
-
-        if (!icon.isEmpty() && !QFileInfo::exists(icon)) {
-            qmlEngine(this)->throwError(tr("Cannot find the marker icon") + " \"" + icon + '"');
-        }
-
-        if (!endIcon.isEmpty() && !QFileInfo::exists(endIcon)) {
-            qmlEngine(this)->throwError(tr("Cannot find the marker endIcon") +
-                    " \"" + endIcon + '"');
-        }
-        pRenderer->setDefaultMark(
+        QString error = pRenderer->setDefaultMark(
                 waveformWidget->getGroup(),
                 WaveformMarkSet::DefaultMarkerStyle{
                         pMark->control(),
@@ -371,6 +358,9 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
                         pMark->enabledOpacity(),
                         pMark->disabledOpacity(),
                 });
+        if (!error.isEmpty()) {
+            qmlEngine(this)->throwError(tr("Invalid default marker: %1").arg(error));
+        }
     }
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
