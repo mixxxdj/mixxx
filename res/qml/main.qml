@@ -8,6 +8,7 @@ import "Theme"
 
 ApplicationWindow {
     id: root
+    objectName: "mainWindow"
 
     property alias maximizeLibrary: maximizeLibraryButton.checked
     property alias show4decks: show4DecksButton.checked
@@ -42,12 +43,14 @@ ApplicationWindow {
 
                 Skin.Button {
                     id: show4DecksButton
+                    objectName: "show4DecksButton"
                     activeColor: Theme.white
                     checkable: true
                     text: "4 Decks"
                 }
                 Skin.Button {
                     id: maximizeLibraryButton
+                    objectName: "library"
                     activeColor: Theme.white
                     checkable: true
                     text: "Library"
@@ -109,6 +112,8 @@ ApplicationWindow {
         }
         Skin.WaveformDisplay {
             id: deck3waveform
+            objectName: "deck3waveform"
+
             group: "[Channel3]"
             height: 120
             visible: root.show4decks && !root.maximizeLibrary
@@ -142,6 +147,8 @@ ApplicationWindow {
         }
         Skin.WaveformDisplay {
             id: deck4waveform
+            objectName: "deck4waveform"
+
             group: "[Channel4]"
             height: 120
             visible: root.show4decks && !root.maximizeLibrary
@@ -170,6 +177,8 @@ ApplicationWindow {
         }
         Skin.DeckRow {
             id: decks34
+            objectName: "decks34"
+
             leftDeckGroup: "[Channel3]"
             minimized: root.maximizeLibrary
             rightDeckGroup: "[Channel4]"
