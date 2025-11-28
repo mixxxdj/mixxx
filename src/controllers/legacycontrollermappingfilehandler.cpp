@@ -1,7 +1,11 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
 
+#include <algorithm>
+#include <functional>
+
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "util/assert.h"
 #include "util/logger.h"
 #include "util/xml.h"
 
@@ -245,7 +249,9 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
     }
 
     QString mixxxVersion = root.attribute("mixxxVersion", "");
-    mapping->setMixxxVersion(mixxxVersion);
+    if (!mixxxVersion.isEmpty()) {
+        mapping->setMixxxVersion(mixxxVersion);
+    }
     QString schemaVersion = root.attribute("schemaVersion", "");
     mapping->setSchemaVersion(schemaVersion);
     QDomElement name = info.firstChildElement("name");
@@ -317,11 +323,11 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
                     element.attribute("orientation").trimmed().toLower() ==
                             "vertical"
-                    ? LegacyControllerSettingsLayoutContainer::VERTICAL
-                    : LegacyControllerSettingsLayoutContainer::HORIZONTAL;
+                    ? LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL
+                    : LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL;
             std::unique_ptr<LegacyControllerSettingsLayoutContainer> row =
                     std::make_unique<LegacyControllerSettingsLayoutContainer>(
-                            LegacyControllerSettingsLayoutContainer::HORIZONTAL,
+                            LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL,
                             orientation);
             parseMappingSettingsElement(element, pMapping, row.get());
             pLayout->addItem(std::move(row));
@@ -503,21 +509,110 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     if (mapping.description().length() > 0) {
         addTextTag(doc, info, "description", mapping.description());
     }
-    if (mapping.forumlink().length() > 0) {
+    if (!mapping.forumlink().isEmpty()) {
         addTextTag(doc, info, "forums", mapping.forumlink());
     }
-    if (mapping.wikilink().length() > 0) {
+    if (!mapping.wikilink().isEmpty()) {
         addTextTag(doc, info, "wiki", mapping.wikilink());
+    }
+    if (!mapping.manualPage().isEmpty()) {
+        addTextTag(doc, info, "manual", mapping.manualPage());
+    }
+    QDomElement devices = doc.createElement("devices");
+    for (const auto& productInfo : std::as_const(mapping.productMatch())) {
+        QDomElement element = doc.createElement("product");
+
+        element.setAttribute("protocol", productInfo.protocol);
+        element.setAttribute("vendor_id", productInfo.vendor_id);
+        element.setAttribute("product_id", productInfo.product_id);
+        element.setAttribute("interface_number", productInfo.interface_number);
+        if (!productInfo.friendlyName.isEmpty()) {
+            element.setAttribute("friendly_name", productInfo.friendlyName);
+        }
+        if (productInfo.visualUrl.isValid()) {
+            element.setAttribute("image", productInfo.visualUrl.toString());
+        }
+
+        if (productInfo.protocol == "bulk") {
+            element.setAttribute("in_epaddr", productInfo.in_epaddr);
+            element.setAttribute("out_epaddr", productInfo.out_epaddr);
+        }
+        if (productInfo.protocol == "hid") {
+            element.setAttribute("usage_page", productInfo.usage_page);
+            element.setAttribute("usage", productInfo.usage);
+        }
+        devices.appendChild(element);
+    }
+    info.appendChild(devices);
+
+    QDomElement settings = doc.createElement("settings");
+    auto* pSettingRoot = mapping.getSettingsLayout();
+
+    std::function<void(LegacyControllerSettingsLayoutElement * pSettingElement,
+            QDomElement * pDom,
+            QDomDocument * pDoc)>
+            traverseSettingNode;
+    traverseSettingNode = [&traverseSettingNode](
+                                  LegacyControllerSettingsLayoutElement*
+                                          pSettingElement,
+                                  QDomElement* pDom,
+                                  QDomDocument* pDoc) {
+        const auto children = pSettingElement->children();
+        for (auto* pSettingChild : std::as_const(children)) {
+            auto* pGroup = dynamic_cast<LegacyControllerSettingsGroup*>(pSettingChild);
+            if (pGroup) {
+                QDomElement item = pDoc->createElement("group");
+                item.setAttribute("label", pGroup->label());
+                traverseSettingNode(pGroup, &item, pDoc);
+                pDom->appendChild(item);
+                continue;
+            }
+            auto* pLayoutContainer =
+                    dynamic_cast<LegacyControllerSettingsLayoutContainer*>(
+                            pSettingChild);
+            if (pLayoutContainer) {
+                QDomElement item = pDoc->createElement("row");
+                item.setAttribute("orientation",
+                        pLayoutContainer->widgetOrientation() ==
+                                        LegacyControllerSettingsLayoutContainer::
+                                                Disposition::VERTICAL
+                                ? "vertical"
+                                : "horizontal");
+                traverseSettingNode(pLayoutContainer, &item, pDoc);
+                pDom->appendChild(item);
+                continue;
+            }
+            auto* pLayoutItem = dynamic_cast<LegacyControllerSettingsLayoutItem*>(pSettingChild);
+            if (pLayoutItem) {
+                QDomElement item = pDoc->createElement("option");
+                pLayoutItem->setting()->serialize(pDoc, &item);
+                pDom->appendChild(item);
+                continue;
+            }
+        }
+    };
+    if (pSettingRoot) {
+        traverseSettingNode(pSettingRoot, &settings, &doc);
+        rootNode.appendChild(settings);
     }
 
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
     controller.setAttribute("id", rootDeviceName(mapping.deviceId()));
+    switch (static_cast<LegacyControllerMapping::DeviceDirection>(
+            mapping.getDeviceDirection().toInt())) {
+    case LegacyControllerMapping::DeviceDirection::Incoming:
+        controller.setAttribute("direction", "in");
+        break;
+    case LegacyControllerMapping::DeviceDirection::Outgoing:
+        controller.setAttribute("direction", "out");
+        break;
+    default:
+        break;
+    }
     rootNode.appendChild(controller);
 
     QDomElement scriptFiles = doc.createElement("scriptfiles");
-    controller.appendChild(scriptFiles);
-
     for (const LegacyControllerMapping::ScriptFileInfo& script : mapping.getScriptFiles()) {
         QString filename = script.name;
         // Don't need to write anything for built-in files.
@@ -529,8 +624,58 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         QDomElement scriptFile = doc.createElement("file");
 
         scriptFile.setAttribute("filename", filename);
-        scriptFile.setAttribute("functionprefix", functionPrefix);
+        if (!functionPrefix.isEmpty()) {
+            scriptFile.setAttribute("functionprefix", functionPrefix);
+        }
         scriptFiles.appendChild(scriptFile);
     }
+    controller.appendChild(scriptFiles);
+
+#ifdef MIXXX_USE_QML
+    QDomElement screens = doc.createElement("screens");
+    for (const auto& screen : mapping.getInfoScreens()) {
+        QDomElement screenElement = doc.createElement("screen");
+
+        screenElement.setAttribute("identifier", screen.identifier);
+        screenElement.setAttribute("width", screen.size.width());
+        screenElement.setAttribute("height", screen.size.height());
+        screenElement.setAttribute("targetFps", screen.target_fps);
+        auto pixelFormat = std::find_if(
+                LegacyControllerMappingFileHandler::kSupportedPixelFormat.constKeyValueBegin(),
+                LegacyControllerMappingFileHandler::kSupportedPixelFormat.constKeyValueEnd(),
+                [screen](const auto element) {
+                    return element.second == screen.pixelFormat;
+                });
+        if (pixelFormat !=
+                LegacyControllerMappingFileHandler::kSupportedPixelFormat
+                        .constKeyValueEnd()) {
+            screenElement.setAttribute("pixelType", pixelFormat->first);
+        } else {
+            DEBUG_ASSERT(!"Unrecognised pixel format");
+        }
+        screenElement.setAttribute("splashoff", QString::number(screen.splash_off.count()));
+        screenElement.setAttribute("msaa", screen.msaa);
+        screenElement.setAttribute("endian",
+                screen.endian ==
+                                LegacyControllerMapping::ScreenInfo::
+                                        ColorEndian::Big
+                        ? "big"
+                        : "little");
+        screenElement.setAttribute("reversed", screen.reversedColor ? "true" : "false");
+        screenElement.setAttribute("raw", screen.rawData ? "true" : "false");
+
+        screens.appendChild(screenElement);
+    }
+    controller.appendChild(screens);
+
+    QDomElement qmllibraries = doc.createElement("qmllibraries");
+    for (const auto& module : mapping.getModules()) {
+        QDomElement libraryElement = doc.createElement("library");
+        // TODO path should not be absolute
+        libraryElement.setAttribute("path", module.dirinfo.absoluteFilePath());
+        qmllibraries.appendChild(libraryElement);
+    }
+    controller.appendChild(qmllibraries);
+#endif
     return doc;
 }
