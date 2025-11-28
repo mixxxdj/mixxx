@@ -615,7 +615,10 @@ void CoreServices::initialize(QApplication* pApp) {
 
     bool musicDirAdded = false;
 
-    if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
+    if (!m_cmdlineArgs.getDeveloper() &&
+            m_pTrackCollectionManager->internalCollection()
+                    ->loadRootDirs()
+                    .isEmpty()) {
 #if defined(Q_OS_IOS) || defined(Q_OS_WASM)
         // On the web and iOS, we are running in a sandbox (a virtual file
         // system on the web). Since we are generally limited to paths within
