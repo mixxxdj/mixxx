@@ -55,7 +55,7 @@ class EngineBufferScale : public QObject {
     virtual void clear() = 0;
     // Scale buffer
     // Returns the number of frames that have bean read from the unscaled
-    // input buffer The number of frames copied to the output buffer is always
+    // input buffer. The number of frames copied to the output buffer is always
     // an integer value, while the number of frames read from the unscaled
     // input buffer might be partial number!
     // The size of the output buffer is given in samples, i.e. twice the number

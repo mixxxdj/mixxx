@@ -17,6 +17,9 @@
 namespace {
 // recommended in encoder documentation, section 2.4.1
 constexpr int kOutBufferBits = 6144;
+
+// 96Khz/8Khz (max_allowed_sample_rate / min_allowed_sample_rate)
+constexpr int kMaxInterpolationFactor = 12;
 const mixxx::Logger kLogger("EncoderFdkAac");
 } // namespace
 
@@ -345,7 +348,8 @@ int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUs
         delete m_pInputFifo;
         m_pInputFifo = nullptr;
     }
-    m_pInputFifo = new FIFO<SAMPLE>(EngineSideChain::SIDECHAIN_BUFFER_SIZE * 2);
+    m_pInputFifo = new FIFO<SAMPLE>(EngineSideChain::SIDECHAIN_BUFFER_SIZE * 2 *
+            kMaxInterpolationFactor);
 
     m_pFifoChunkBuffer.resize(m_readRequired * sizeof(SAMPLE));
     return 0;
