@@ -1,0 +1,31 @@
+{
+  "name": "zix",
+  "buildsystem": "meson",
+  "config-opts": [
+    "-Dbuildtype=debugoptimized",
+    "-Dbenchmarks=disabled",
+    "-Ddocs=disabled",
+    "-Dtests=disabled",
+    "-Dtests_cpp=disabled"
+  ],
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://gitlab.com/drobilla/zix/-/archive/v0.8.0/zix-v0.8.0.tar.gz",
+      "sha256": "51d70d63e970214db84e32d55377d84090c02145f5768265ab140d117f2b8e24",
+      "x-checker-data": {
+        "type": "anitya",
+        "project-id": 370005,
+        "stable-only": true,
+        "url-template": "https://gitlab.com/drobilla/zix/-/archive/v$version/zix-v$version.tar.gz"
+      }
+    }
+  ],
+  "cleanup": [
+    "/include",
+    "/lib/pkgconfig"
+  ],
+  "post-install": [
+    "install -Dm644 -t $FLATPAK_DEST/share/licenses/zix ../COPYING"
+  ]
+}
