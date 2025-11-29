@@ -255,8 +255,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                         field == "added" ||
                         field == "dateadded") {
                     field = "datetime_added";
-                    pNode = std::make_unique<TextFilterNode>(
-                        m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                    pNode = std::make_unique<DateAddedFilterNode>(argument);
                 } else if (field == "bpm") {
                     if (matchMode == StringMatch::Equals) {
                         // restore = operator removed by getTextArgument()
