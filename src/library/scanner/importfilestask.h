@@ -22,6 +22,10 @@ class ImportFilesTask : public ScannerTask {
 
     virtual void run();
 
+    int numFilesToImport() const {
+        return static_cast<int>(m_filesToImport.size());
+    }
+
   private:
     const QString m_dirPath;
     const bool m_prevHashExists;
