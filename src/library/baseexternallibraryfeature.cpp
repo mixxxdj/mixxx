@@ -7,6 +7,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crate.h"
+#include "library/treeitem.h"
 #include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
 #include "widget/wlibrarysidebar.h"
@@ -165,22 +166,29 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
     }
 
     DEBUG_ASSERT(pPlaylist);
-    *pPlaylist = m_lastRightClickedIndex.data().toString();
-    std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
-            createPlaylistModelForPlaylist(*pPlaylist));
+    const auto* pTreeItem = static_cast<TreeItem*>(
+            m_lastRightClickedIndex.internalPointer());
+    *pPlaylist = pTreeItem->getLabel();
+    const std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
+            createPlaylistModelForPlaylist(pTreeItem->getData().toString()));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
-                "could not initialize a playlist model for playlist:" << *pPlaylist;
+        qDebug() << "BaseExternalLibraryFeature::"
+                    "appendTrackIdsFromRightClickIndex "
+                    "could not initialize a playlist model for "
+                    "playlist:"
+                 << *pPlaylist;
         return;
     }
 
-    pPlaylistModelToAdd->setSort(pPlaylistModelToAdd->fieldIndex(
-            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    pPlaylistModelToAdd->setSort(
+            pPlaylistModelToAdd->fieldIndex(
+                    ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
     pPlaylistModelToAdd->select();
 
     // Copy Tracks
-    int rows = pPlaylistModelToAdd->rowCount();
+    const int rows = pPlaylistModelToAdd->rowCount();
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistModelToAdd->index(i, 0);
         VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
