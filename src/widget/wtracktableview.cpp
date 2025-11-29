@@ -186,22 +186,23 @@ void WTrackTableView::pasteFromSidebar() {
 }
 
 // slot
-void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreState) {
-    qDebug() << "WTrackTableView::loadTrackModel()" << model;
+void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restoreState) {
+    qDebug() << "WTrackTableView::loadTrackModel()" << pNewModel;
 
-    VERIFY_OR_DEBUG_ASSERT(model) {
+    VERIFY_OR_DEBUG_ASSERT(pNewModel) {
         return;
     }
-    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model);
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
+    TrackModel* pNewTrackModel = dynamic_cast<TrackModel*>(pNewModel);
+    VERIFY_OR_DEBUG_ASSERT(pNewTrackModel) {
         return;
     }
 
-    m_sorting = pTrackModel->hasCapabilities(TrackModel::Capability::Sorting);
+    m_sorting = pNewTrackModel->hasCapabilities(TrackModel::Capability::Sorting);
 
     // If the model has not changed there's no need to exchange the headers
     // which would cause a small GUI freeze
-    if (getTrackModel() == pTrackModel) {
+    TrackModel* pCurrModel = getTrackModel();
+    if (pCurrModel == pNewTrackModel) {
         // Re-sort the table even if the track model is the same. This triggers
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection(),
@@ -211,6 +212,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
             restoreCurrentViewState();
         }
         return;
+    } else if (pCurrModel) {
+        pCurrModel->maybeStopModelPopulation();
     }
 
     setVisible(false);
@@ -252,7 +255,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
 
-    setModel(model);
+    setModel(pNewModel);
     setHorizontalHeader(header);
     header->setSectionsMovable(true);
     header->setSectionsClickable(true);
@@ -266,10 +269,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     header->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
-    for (int i = 0; i < model->columnCount(); ++i) {
+    for (int i = 0; i < pNewModel->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
         QAbstractItemDelegate* delegate =
-                pTrackModel->delegateForColumn(i, this);
+                pNewTrackModel->delegateForColumn(i, this);
         // We need to delete the old delegates, since the docs say the view will
         // not take ownership of them.
         QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
@@ -278,7 +281,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         delete old_delegate;
 
         // Show or hide the column based on whether it should be shown or not.
-        if (pTrackModel->isColumnInternal(i)) {
+        if (pNewTrackModel->isColumnInternal(i)) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
@@ -286,7 +289,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         // due to database schema evolution we gonna hide all columns that may
         // contain a potential large number of NULL values.  This will hide the
         // key column by default unless the user brings it to front
-        if (pTrackModel->isColumnHiddenByDefault(i) &&
+        if (pNewTrackModel->isColumnHiddenByDefault(i) &&
                 !header->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
@@ -306,22 +309,24 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
 
         Qt::SortOrder sortOrder;
         TrackModel::SortColumnId sortColumn =
-                pTrackModel->sortColumnIdFromColumnIndex(
+                pNewTrackModel->sortColumnIdFromColumnIndex(
                         horizontalHeader()->sortIndicatorSection());
         if (sortColumn != TrackModel::SortColumnId::Invalid) {
             // Sort by the saved sort section and order.
             sortOrder = horizontalHeader()->sortIndicatorOrder();
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
-            sortColumn = pTrackModel->sortColumnIdFromColumnIndex(pTrackModel->defaultSortColumn());
-            sortOrder = pTrackModel->defaultSortOrder();
+            sortColumn = pNewTrackModel->sortColumnIdFromColumnIndex(
+                    pNewTrackModel->defaultSortColumn());
+            sortOrder = pNewTrackModel->defaultSortOrder();
 
             if (sortColumn == TrackModel::SortColumnId::Invalid) {
                 // If the TrackModel has an invalid or internal column as its default
                 // sort, find the first valid sort column and sort by that.
-                const int columnCount = model->columnCount(); // just to avoid an endless while loop
+                // avoid endless while loop
+                const int columnCount = pNewModel->columnCount();
                 for (int sortColumnIndex = 0; sortColumnIndex < columnCount; sortColumnIndex++) {
-                    sortColumn = pTrackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
+                    sortColumn = pNewTrackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
                     if (sortColumn != TrackModel::SortColumnId::Invalid) {
                         break;
                     }
@@ -344,7 +349,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // this.)
     setDragEnabled(true);
 
-    if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+    if (pNewTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
         setDragDropMode(QAbstractItemView::DragDrop);
         setDropIndicatorShown(true);
         setAcceptDrops(true);

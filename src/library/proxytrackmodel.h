@@ -22,6 +22,8 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     explicit ProxyTrackModel(QAbstractItemModel* pTrackModel, bool bHandleSearches = true);
     ~ProxyTrackModel() override;
 
+    void maybeStopModelPopulation() override;
+
     // Inherited from TrackModel
     Capabilities getCapabilities() const final;
     TrackPointer getTrack(const QModelIndex& index) const final;

@@ -243,6 +243,11 @@ class TrackModel {
     virtual void select() {
     }
 
+    /// This is an interface to stop any potentially running
+    /// model population when switching models in WTrackTableView.
+    /// Only implemented in ProxyTrackModel.
+    virtual void maybeStopModelPopulation() {};
+
     /// @brief modelKey returns a unique identifier for the model
     /// @param noSearch don't include the current search in the key
     virtual QString modelKey(bool noSearch) const = 0;
