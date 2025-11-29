@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QMetaProperty>
+#include <QRegExp>
 #include <QStyleOption>
 
 #include "control/controlobject.h"
@@ -29,6 +30,7 @@ WTrackProperty::WTrackProperty(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_isMainDeck(isMainDeck),
+          m_isComment(false),
           m_propertyIsWritable(false),
           m_pSelectedClickTimer(nullptr),
           m_bSelected(false),
@@ -65,6 +67,10 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
             return;
         }
         m_editProperty = m_displayProperty;
+        if (m_editProperty == QStringLiteral("comment")) {
+            qWarning() << "--- TrackProp: is comment," << m_group;
+            m_isComment = true;
+        }
     }
     m_propertyIsWritable = true;
 }
@@ -97,6 +103,10 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
 void WTrackProperty::slotTrackChanged(TrackId trackId) {
     Q_UNUSED(trackId);
     updateLabel();
+    if (m_pEditor && m_pEditor->isVisible()) {
+        // Close and discard new text
+        m_pEditor->hide();
+    }
 }
 
 void WTrackProperty::updateLabel() {
@@ -148,28 +158,7 @@ void WTrackProperty::mousePressEvent(QMouseEvent* pEvent) {
         m_pSelectedClickTimer->callOnTimeout(
                 this, &WTrackProperty::resetSelectedState);
     } else if (m_pSelectedClickTimer->isActive()) {
-        resetSelectedState();
-        // create the persistent editor, populate & connect
-        if (!m_pEditor) {
-            m_pEditor = make_parented<WTrackPropertyEditor>(this);
-            connect(m_pEditor,
-                    // use custom signal. editingFinished() doesn't suit since it's
-                    // also emitted weh pressing Esc (which should cancel editing)
-                    &WTrackPropertyEditor::commitEditorData,
-                    this,
-                    &WTrackProperty::slotCommitEditorData);
-        }
-        // Don't let the editor expand beyond its initial size
-        m_pEditor->setFixedSize(size());
-
-        QString editText = getPropertyStringFromTrack(m_editProperty);
-        if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
-            editText = tr("title");
-        }
-        m_pEditor->setText(editText);
-        m_pEditor->selectAll();
-        m_pEditor->show();
-        m_pEditor->setFocus();
+        openEditor();
         return;
     }
     // start timer
@@ -308,15 +297,86 @@ void WTrackProperty::slotShowTrackMenuChangeRequest(bool show) {
     contextMenuEvent(pEvent);
 }
 
-void WTrackProperty::slotCommitEditorData(const QString& text) {
-    // use real track data instead of text() to be independent from display text
-    if (m_pCurrentTrack && text != getPropertyStringFromTrack(m_editProperty)) {
-        const QVariant var(QVariant::fromValue(text));
-        m_pCurrentTrack->setProperty(
-                m_editProperty.toUtf8().constData(),
-                var);
-        // Track::changed() will update label
+void WTrackProperty::slotEditTrackComment() {
+    VERIFY_OR_DEBUG_ASSERT(m_isComment) {
+        return;
     }
+    openEditor();
+}
+
+void WTrackProperty::openEditor() {
+    if (!m_pCurrentTrack || !isVisible()) {
+        return;
+    }
+
+    // Note: if the editor is already visible, this will
+    // reload/reset the comment from the track
+    resetSelectedState();
+    // create the persistent editor, populate & connect
+    if (!m_pEditor) {
+        m_pEditor = make_parented<WTrackPropertyEditor>(this);
+        connect(m_pEditor,
+                // use custom signal. editingFinished() doesn't suit since it's
+                // also emitted weh pressing Esc (which should cancel editing)
+                &WTrackPropertyEditor::commitEditorData,
+                this,
+                &WTrackProperty::slotCommitEditorData);
+    }
+    // Don't let the editor expand beyond its initial size
+    m_pEditor->setFixedSize(size());
+
+    QString editText = getPropertyStringFromTrack(m_editProperty);
+    if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
+        editText = tr("title");
+    } else if (m_isComment) {
+        // For comments we only load the first line,
+        // ie. truncate track text at first linebreak.
+        // On commit we replace the first line with the edited text.
+        int firstLB = editText.indexOf('\n');
+        if (firstLB >= 0) {
+            editText.truncate(firstLB);
+        }
+    }
+    m_pEditor->setText(editText);
+    m_pEditor->selectAll();
+    m_pEditor->show();
+    m_pEditor->setFocus();
+}
+
+void WTrackProperty::slotCommitEditorData(const QString& text) {
+    if (!m_pCurrentTrack) {
+        return;
+    }
+
+    // use real track data instead of text() to be independent from display text
+    const QString trackText = getPropertyStringFromTrack(m_editProperty);
+    QString editorText = text;
+    if (m_isComment) {
+        // Transform ALL occurrences of \n into linebreaks.
+        // Existing linebreaks are not affected.
+        QString cr(QChar::CarriageReturn);
+        cr.append(QChar::LineFeed);
+        editorText.replace("\\n", cr);
+        // For multi-line comments, the editor received only the first line.
+        // In order to keep the other lines, we need to replace
+        // the first line of the original text with the editor text.
+        // (which may add new linebreaks)
+        // Note: assumes the comment didn't change while we were editing it.
+        int firstLB = trackText.indexOf('\n');
+        if (firstLB >= 0) { // has linebreak
+            QString trackTSliced = trackText;
+            trackTSliced = trackTSliced.sliced(firstLB);
+            editorText.append(trackTSliced);
+        }
+    }
+    if (editorText == trackText) {
+        return;
+    }
+    const QVariant var(QVariant::fromValue(editorText));
+    m_pCurrentTrack->setProperty(
+            m_editProperty.toUtf8().constData(),
+            var);
+    // Track::changed() will update label
 }
 
 void WTrackProperty::resetSelectedState() {
