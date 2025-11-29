@@ -130,7 +130,7 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
-                    <Size>0min,2f</Size>
+                    <Size>0min,1me</Size>
                     <Connection>
                       <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -151,7 +151,7 @@
                     </Connection>
                   </WidgetGroup>
                   <WidgetGroup>
-                    <Size>0min,0e</Size>
+                    <Size>0min,1me</Size>
                     <Connection>
                       <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -195,7 +195,7 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
-                    <Size>0min,2f</Size>
+                    <Size>0min,1me</Size>
                     <Connection>
                       <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -216,7 +216,7 @@
                     </Connection>
                   </WidgetGroup>
                   <WidgetGroup>
-                    <Size>0min,0e</Size>
+                    <Size>0min,1me</Size>
                     <Connection>
                       <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
                       <BindProperty>visible</BindProperty>
