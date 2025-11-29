@@ -1,0 +1,29 @@
+{
+  "name": "libmad",
+  "buildsystem": "cmake-ninja",
+  "config-opts": [
+    "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+    "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
+  ],
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://codeberg.org/tenacityteam/libmad/archive/0.16.4.tar.gz",
+      "sha256": "f4eb229452252600ce48f3c2704c9e6d97b789f81e31c37b0c67dd66f445ea35",
+      "x-checker-data": {
+        "type": "json",
+        "url": "https://codeberg.org/api/v1/repos/tenacityteam/libmad/releases/latest",
+        "version-query": ".tag_name",
+        "url-query": ".tarball_url"
+      }
+    }
+  ],
+  "cleanup": [
+    "/include",
+    "/lib/cmake",
+    "/lib/pkgconfig"
+  ],
+  "post-install": [
+    "install -Dm644 -t ${FLATPAK_DEST}/share/licenses/libmad COPYING COPYRIGHT"
+  ]
+}

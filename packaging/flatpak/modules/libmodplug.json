@@ -1,0 +1,24 @@
+{
+  "name": "libmodplug",
+  "buildsystem": "autotools",
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://sourceforge.net/projects/modplug-xmms/files/libmodplug/0.8.9.0/libmodplug-0.8.9.0.tar.gz",
+      "sha256": "457ca5a6c179656d66c01505c0d95fafaead4329b9dbaa0f997d00a3508ad9de",
+      "x-checker-data": {
+        "type": "anitya",
+        "project-id": 5669,
+        "stable-only": true,
+        "url-template": "https://sourceforge.net/projects/modplug-xmms/files/libmodplug/$version/libmodplug-$version.tar.gz"
+      }
+    }
+  ],
+  "cleanup": [
+    "/include",
+    "/lib/pkgconfig"
+  ],
+  "post-install": [
+    "install -Dm644 -t ${FLATPAK_DEST}/share/licenses/libmodplug COPYING"
+  ]
+}

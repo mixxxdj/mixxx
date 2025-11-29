@@ -1,0 +1,29 @@
+{
+  "name": "chromaprint",
+  "buildsystem": "cmake-ninja",
+  "config-opts": [
+    "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+    "-DBUILD_TESTS=OFF"
+  ],
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://github.com/acoustid/chromaprint/archive/refs/tags/v1.6.0.tar.gz",
+      "sha256": "65bfce4a35b2e673dbcda917b6aa577e2f145cf805243d19e6a50fea2a520c2a",
+      "x-checker-data": {
+        "type": "anitya",
+        "project-id": 286,
+        "stable-only": true,
+        "url-template": "https://github.com/acoustid/chromaprint/archive/refs/tags/v$version.tar.gz"
+      }
+    }
+  ],
+  "cleanup": [
+    "/include",
+    "/lib/cmake",
+    "/lib/pkgconfig"
+  ],
+  "post-install": [
+    "install -Dm644 -t ${FLATPAK_DEST}/share/licenses/chromaprint LICENSE.md"
+  ]
+}
