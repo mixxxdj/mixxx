@@ -15,6 +15,7 @@
 //      * Beat Loop Mode
 //      * Beat Jump Mode
 //      * Sampler Mode
+//      * Keyshift mode
 //
 //  Custom (Mixxx specific mappings):
 //      * BeatFX: Assigned Effect Unit 1
@@ -27,7 +28,7 @@
 //
 //      * 32 beat jump forward & back (Shift + </> CUE/LOOP CALL arrows)
 //      * Toggle quantize (Shift + channel cue)
-//      * Stems selection using PADs (using controller's KeyShift mode)
+//      * Stems selection using PADs (using controller's Keyboard mode)
 //
 //  Not implemented (after discussion and trial attempts):
 //      * Loop Section:
@@ -40,7 +41,6 @@
 //        * Keyboard mode
 //        * Pad FX1
 //        * Pad FX2
-//        * Keyshift mode
 //
 //  Not implemented yet (but might be in the future):
 //      * Smart CFX
@@ -205,17 +205,26 @@ PioneerDDJFLX4.beatjumpSizeForPad = {
     0x27: 8   // PAD 8
 };
 
-// Stems (KEY SHIFT) pads mode status for deck 1 and 2, without or with SHIFT pressed
+// Stems (KEYBOARD) pads mode status for deck 1 and 2, without or with SHIFT pressed
 PioneerDDJFLX4.stemsPadsModesStatus = {
     "[Channel1]": [0x97, 0x98],
     "[Channel2]": [0x99, 0x9a],
 };
 
-// Stems (KEY SHIFT) pad 1 control (pad control = [this value] + [pad  number] - 1)
-PioneerDDJFLX4.stemMutePadsFirstControl = 0x70;
+// Stems (KEYBOARD) pad 1 control (pad control = [this value] + [pad  number] - 1)
+PioneerDDJFLX4.stemMutePadsFirstControl = 0x40;
 
-// Stems (KEY SHIFT) pad 5 control (pad control = [this value] + [pad  number] - 1)
-PioneerDDJFLX4.stemFxPadsFirstControl = 0x74;
+// Stems (KEYBOARD) pad 5 control (pad control = [this value] + [pad  number] - 1)
+PioneerDDJFLX4.stemFxPadsFirstControl = 0x44;
+
+// Pitch shift (KEY SHIFT) pads mode status for deck 1 and 2, without or with SHIFT pressed
+PioneerDDJFLX4.pitchPadsModesStatus = {
+    "[Channel1]": [0x97, 0x98],
+    "[Channel2]": [0x99, 0x9a],
+};
+
+// Pitch shift (KEY SHIFT) pad 1 control (pad control = [this value] + [pad  number] - 1)
+PioneerDDJFLX4.pitchPadsFirstControl = 0x70;
 
 PioneerDDJFLX4.quickJumpSize = 32;
 
@@ -294,6 +303,14 @@ PioneerDDJFLX4.init = function() {
             engine.makeConnection(`[QuickEffectRack1_[Channel${deck}_Stem${stem}]]`, "enabled", PioneerDDJFLX4.stemFxChanged);
         }
     }
+
+    // Register callbacks for each deck, when a file is loaded to reset pitch shift
+    engine.makeConnection("[Channel1]", "track_loaded", PioneerDDJFLX4.pitchAdjusted);
+    engine.makeConnection("[Channel2]", "track_loaded", PioneerDDJFLX4.pitchAdjusted);
+
+    // Register callbacks for each deck, when the pitch shift is modified
+    engine.makeConnection("[Channel1]", "pitch_adjust", PioneerDDJFLX4.pitchAdjusted);
+    engine.makeConnection("[Channel2]", "pitch_adjust", PioneerDDJFLX4.pitchAdjusted);
 
     PioneerDDJFLX4.keepAliveTimer = engine.beginTimer(200, PioneerDDJFLX4.sendKeepAlive);
 
@@ -956,6 +973,136 @@ PioneerDDJFLX4.stemFxChanged = function(value, group, _control) {
         );
     }
 };
+
+//
+// Pitch Shift mode
+//
+
+PioneerDDJFLX4.pitchAdjusted = function(_value, group, _control) {
+    const pitchAdjust = Math.round(engine.getValue(group, "pitch_adjust"));
+    let lights = 0b00000000;
+
+    if (pitchAdjust === 0) {
+        lights = 0b10000001;
+    } else if (pitchAdjust === 1) {
+        lights = 0b01000000;
+    } else if (pitchAdjust === 2) {
+        lights = 0b00100000;
+    } else if (pitchAdjust === 3) {
+        lights = 0b00010000;
+    } else if (pitchAdjust === 4) {
+        lights = 0b10010000;
+    } else if (pitchAdjust === 5) {
+        lights = 0b01010000;
+    } else if (pitchAdjust === 6) {
+        lights = 0b00110000;
+    } else if (pitchAdjust === 7) {
+        lights = 0b10110000;
+    } else if (pitchAdjust === 8) {
+        lights = 0b01110000;
+    } else if (pitchAdjust > 8) {
+        lights = 0b11110000;
+    } else if (pitchAdjust === -1) {
+        lights = 0b00000010;
+    } else if (pitchAdjust === -2) {
+        lights = 0b00000100;
+    } else if (pitchAdjust === -3) {
+        lights = 0b00001000;
+    } else if (pitchAdjust === -4) {
+        lights = 0b00001001;
+    } else if (pitchAdjust === -5) {
+        lights = 0b00001010;
+    } else if (pitchAdjust === -6) {
+        lights = 0b00001100;
+    } else if (pitchAdjust === -7) {
+        lights = 0b00001101;
+    } else if (pitchAdjust === -8) {
+        lights = 0b00001110;
+    } else if (pitchAdjust < -8) {
+        lights = 0b00001111;
+    } else {
+        lights = 0b11111111;
+    }
+
+    for (let i=0; i<8; i++) {
+        let code = 0x00;
+        const pad = 0b10000000 >>> i;
+
+        if (lights & pad) {
+            code = 0x7f;
+        } else {
+            code = 0x00;
+        }
+
+        PioneerDDJFLX4.pitchPadsModesStatus[group].forEach(
+            (padMode) => midi.sendShortMsg(
+                padMode,
+                PioneerDDJFLX4.pitchPadsFirstControl + i,
+                code,
+            )
+        );
+    }
+};
+
+PioneerDDJFLX4.pitchPadPressed = function(_channel, control, value, _status, group) {
+    if (value !== 0x7f) {
+        return;
+    }
+
+    const pad = control - this.pitchPadsFirstControl;
+    let pitch = 0;
+
+    if (pad === 0) {
+        pitch = 0;
+    } else if (pad === 1) {
+        pitch = 1;
+    } else if (pad === 2) {
+        pitch = 2;
+    } else if (pad === 3) {
+        pitch = 3;
+    } else if (pad === 4) {
+        pitch = -3;
+    } else if (pad === 5) {
+        pitch = -2;
+    } else if (pad === 6) {
+        pitch = -1;
+    } else if (pad === 7) {
+        pitch = 0;
+    }
+
+    engine.setValue(group, "pitch_adjust", pitch);
+};
+
+PioneerDDJFLX4.pitchPadShiftPressed = function(_channel, control, value, _status, group) {
+    if (value !== 0x7f) {
+        return;
+    }
+
+    const pad = control - this.pitchPadsFirstControl;
+
+    let currentPitch = engine.getValue(group, "pitch_adjust");
+
+    if (pad === 0) {
+        currentPitch += 1;
+    } else if (pad === 1) {
+        currentPitch += 2;
+    } else if (pad === 2) {
+        currentPitch += 3;
+    } else if (pad === 3) {
+        currentPitch += 4;
+    } else if (pad === 4) {
+        currentPitch += -4;
+    } else if (pad === 5) {
+        currentPitch += -3;
+    } else if (pad === 6) {
+        currentPitch += -2;
+    } else if (pad === 7) {
+        currentPitch += -1;
+    }
+
+    engine.setValue(group, "pitch_adjust", currentPitch);
+};
+
 
 //
 // Shutdown
