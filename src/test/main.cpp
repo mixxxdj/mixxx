@@ -28,22 +28,14 @@ int main(int argc, char **argv) {
 
     if (run_benchmarks) {
         benchmark::Initialize(&argc, argv);
-    } else {
-        testing::InitGoogleTest(&argc, argv);
+        MixxxTest::ApplicationScope applicationScope(argc, argv);
+        benchmark::RunSpecifiedBenchmarks();
+        return 0;
     }
 
     // Otherwise, run the test suite:
-    MixxxTest::ApplicationScope applicationScope(argc, argv);
-
-    if (run_benchmarks) {
-        benchmark::RunSpecifiedBenchmarks();
-        return 0;
-    } else {
-        return RUN_ALL_TESTS();
-    }
-#else
+#endif
     testing::InitGoogleTest(&argc, argv);
     MixxxTest::ApplicationScope applicationScope(argc, argv);
     return RUN_ALL_TESTS();
-#endif
 }
