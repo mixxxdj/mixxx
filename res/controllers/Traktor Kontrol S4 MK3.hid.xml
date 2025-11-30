@@ -10,6 +10,15 @@
         </devices>
     </info>
     <settings>
+        <group label="TEST scratch options">
+            <option
+                variable="hotcuePressStopsScratching"
+                type="boolean"
+                default="false"
+                label="Stop scratching when a hotcue is pressed">
+            </option>
+        </group>
+
         <group label="Deck Lighting">
             <row orientation="vertical">
                 <option

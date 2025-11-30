@@ -136,6 +136,8 @@ const BeatLoopRolls = [
 // Default: 33 + 1/3
 const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3;
 
+const HotcuePressStopsScratching = !!engine.getSetting("hotcuePressStopsScratching");
+
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
 // Default: false
@@ -736,7 +738,9 @@ class HotcueButton extends PushButton {
         this.inKey = `hotcue_${this.number}_clear`;
     }
     input(pressed) {
-        engine.setValue(this.group, "scratch2_enable", false);
+        if (HotcuePressStopsScratching) {
+            engine.setValue(this.group, "scratch2_enable", false);
+        }
         engine.setValue(this.group, this.inKey, pressed);
     }
     output(value) {
