@@ -270,8 +270,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUr
             crate.isLocked()) {
         return false;
     }
-    // stop on first match, accept playlist files
-    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, true).isEmpty();
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 void CrateFeature::bindLibraryWidget(

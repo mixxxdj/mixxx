@@ -16,6 +16,10 @@ class DragAndDropHelper final {
   public:
     DragAndDropHelper() = delete;
 
+    static bool urlsContainSupportedTrackFiles(
+            const QList<QUrl>& urls,
+            bool acceptPlaylists);
+
     static QList<mixxx::FileInfo> supportedTracksFromUrls(
             const QList<QUrl>& urls,
             bool stopOnFirstMatch,

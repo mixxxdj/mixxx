@@ -138,6 +138,13 @@ bool mouseMoveInitiatesDragHelper(QMouseEvent* pEvent, bool isPress) {
 
 } // anonymous namespace
 
+// static
+bool DragAndDropHelper::urlsContainSupportedTrackFiles(
+        const QList<QUrl>& urls,
+        bool acceptPlaylists) {
+    return !supportedTracksFromUrls(urls, true, acceptPlaylists).isEmpty();
+}
+
 //static
 QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
         const QList<QUrl>& urls,
