@@ -141,6 +141,8 @@ const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMicAuxOnShi
 // Default: false
 const UseBeatloopRollInsteadOfSampler = !!engine.getSetting("useBeatloopRollInsteadOfSampler");
 
+const FilterIsFirstQuickEffect = !!engine.getSetting("filterIsFirstQuickEffect");
+
 // Predefined beatlooproll sizes.
 const BeatLoopRolls = [
     engine.getSetting("beatLoopRollsSize1") || 1/8,
@@ -1506,14 +1508,32 @@ class Mixer extends ComponentContainer {
             {inByte: 8, inBit: 7},
         ];
         this.fxSelects = [];
-        // FX SELECT buttons: Filter, 1, 2, 3, 4
-        for (const i of [0, 1, 2, 3, 4]) {
-            this.fxSelects[i] = new FXSelect(
-                Object.assign(fxSelectsInputs[i], {
-                    number: i + 1,
+        if (FilterIsFirstQuickEffect) {
+            // FX SELECT buttons: Filter, 1, 2, 3, 4
+            this.fxSelects[4] = new FXSelect(
+                Object.assign(fxSelectsInputs[4], {
+                    number: 1,
                     mixer: this,
                 })
             );
+            for (const i of [0, 1, 2, 3]) {
+                this.fxSelects[i] = new FXSelect(
+                    Object.assign(fxSelectsInputs[i], {
+                        number: i + 2,
+                        mixer: this,
+                    })
+                );
+            }
+        } else {
+            // FX SELECT buttons: 1, 2, 3, 4, Filter
+            for (const i of [0, 1, 2, 3, 4]) {
+                this.fxSelects[i] = new FXSelect(
+                    Object.assign(fxSelectsInputs[i], {
+                        number: i + 1,
+                        mixer: this,
+                    })
+                );
+            }
         }
 
         const quickEffectInputs = [
