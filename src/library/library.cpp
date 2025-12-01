@@ -267,9 +267,18 @@ Library::Library(
     m_editMetadataSelectedClick = m_pConfig->getValue(
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);
+
+    //
+    if (m_pSidebarModel && m_pConfig) {
+        m_pSidebarModel->loadBookmarksFromConfig(m_pConfig);
+    }
 }
 
-Library::~Library() = default;
+Library::~Library() {
+    if (m_pSidebarModel && m_pConfig) {
+        m_pSidebarModel->saveBookmarksToConfig(m_pConfig);
+    }
+}
 
 TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
