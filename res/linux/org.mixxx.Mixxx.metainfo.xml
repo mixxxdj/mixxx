@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.4" type="development" date="2025-11-15" timestamp="1763214302">
+    <release version="2.5.4" type="development" date="2025-11-30" timestamp="1764501526">
       <description>
  <p>
   Controller Mappings
@@ -189,6 +189,11 @@
    #15302
   </li>
   <li>
+   Computer: stop model population when switching to another feature
+   #11445
+   #15677
+  </li>
+  <li>
    Library scanner: make Cancel button work again
    #15320
    #14940
@@ -208,6 +213,19 @@
   <li>
    Search: maintain cursor position when saving query
    #15512
+  </li>
+  <li>
+   Search: add proper DateAddedFilter
+   #15572
+  </li>
+  <li>
+   Analyze view: avoid listing tracks that don't match the 'New' filter
+   #15597
+   #14873
+  </li>
+  <li>
+   Traktor feature: fixes to Traktor collection importer
+   #15645
   </li>
  </ul>
  <p>
@@ -338,6 +356,10 @@
    #15579
    #15619
    #15610
+  </li>
+  <li>
+   Update Keyboard SVG
+   #15635
   </li>
  </ul>
 </description>
