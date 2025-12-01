@@ -54,9 +54,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* pEvent) {
         // FIXME Unless the cursor is steady after entering the sidebar (which
         // is veryhard to achieve for humans) QDragEnterEvent is followed by one
         // or more QDragMoveEvent, so don't check here at all and rely on dragMove?
-        QList<mixxx::FileInfo> fileInfos = DragAndDropHelper::supportedTracksFromUrls(
-                pEvent->mimeData()->urls(), true, true);
-        if (!fileInfos.isEmpty()) {
+        if (DragAndDropHelper::urlsContainSupportedTrackFiles(pEvent->mimeData()->urls(), true)) {
             pEvent->acceptProposedAction();
             return;
         }
@@ -106,21 +104,11 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
         pEvent->ignore();
         return;
     }
-    for (const QUrl& url : urls) {
-        if (pSidebarModel->dragMoveAccept(index, url)) {
-            // We only need one URL to be valid for us
-            // to accept the whole drag...
-            // Consider that we might have a long list of files,
-            // checking all will take a lot of time that stalls
-            // Mixxx and this makes the drop feature useless.
-            // E.g. you may have tried to drag two MP3's and an EXE,
-            // the drop is accepted here, but the EXE is filtered
-            // out later after dropping
-            pEvent->acceptProposedAction();
-            return;
-        }
+    if (pSidebarModel->dragMoveAccept(index, urls)) {
+        pEvent->acceptProposedAction();
+    } else {
+        pEvent->ignore();
     }
-    pEvent->ignore();
 }
 
 void WLibrarySidebar::timerEvent(QTimerEvent* pEvent) {

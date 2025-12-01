@@ -464,16 +464,16 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     return false;
 }
 
-bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) const {
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QList<QUrl>& urls) const {
     if constexpr (kDebug) {
-        qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+        qDebug() << "SidebarModel::dragMoveAccept() index=" << index << urls;
     }
     if (!index.isValid()) {
         return false;
     }
 
     if (index.internalPointer() == this) {
-        return m_sFeatures[index.row()]->dragMoveAccept(url);
+        return m_sFeatures[index.row()]->dragMoveAccept(urls);
     } else {
         TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
         if (!pTreeItem) {
@@ -483,7 +483,7 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) con
         VERIFY_OR_DEBUG_ASSERT(pFeature) {
             return false;
         }
-        return pFeature->dragMoveAcceptChild(index, url);
+        return pFeature->dragMoveAcceptChild(index, urls);
     }
 }
 
