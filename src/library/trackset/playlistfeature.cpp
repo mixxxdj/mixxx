@@ -152,8 +152,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<
         return false;
     }
 
-    // stop on first match, accept playlist files
-    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, true).isEmpty();
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {

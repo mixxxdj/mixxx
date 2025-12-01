@@ -220,8 +220,7 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(const QList<QUrl>& urls) {
-    // stop on first match, accept playlist files
-    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, true).isEmpty();
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 #ifdef __ENGINEPRIME__

@@ -250,6 +250,5 @@ bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
 }
 
 bool AnalysisFeature::dragMoveAccept(const QList<QUrl>& urls) {
-    // stop on first match, don't accept playlist files
-    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, false).isEmpty();
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, false);
 }
