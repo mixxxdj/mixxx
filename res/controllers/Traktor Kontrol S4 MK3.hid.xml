@@ -10,6 +10,31 @@
         </devices>
     </info>
     <settings>
+        <group label="TEST scratch options">
+            <row orientation="vertical">
+                <option
+                    variable="scratchMode"
+                    type="enum"
+                    label="Scratch mode">
+                    <value label="scratch2">scratch2</value>
+                    <value label="scratchTick">scratchTick</value>
+                    <value label="wheelPos">wheelPos</value>
+                </option>
+                <option
+                    variable="scratchSyncToWheelLED"
+                    type="boolean"
+                    default="false"
+                    label="Sync scratch speed with wheel LED speed">
+                </option>
+                <option
+                    variable="hotcuePressStopsScratching"
+                    type="boolean"
+                    default="false"
+                    label="Stop scratching when a hotcue is pressed">
+                </option>
+            </row>
+        </group>
+
         <group label="Deck Lighting">
             <row orientation="vertical">
                 <option

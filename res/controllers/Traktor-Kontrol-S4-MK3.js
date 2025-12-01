@@ -135,6 +135,23 @@ const BeatLoopRolls = [
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
 const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3;
+const ScratchSyncToWheelLED = !!engine.getSetting("scratchSyncToWheelLED");
+
+const scratchModes = {
+    scratch2: 0,
+    scratchTick: 1,
+    wheelPos: 2,
+    wheelPosNew: 3,
+};
+const ScratchMode = scratchModes[engine.getSetting("scratchMode")] || scratchModes.scratch2;
+// Parameters for scratchTick mode
+// alpha and beta are the recommended start values from
+// https://github.com/mixxxdj/mixxx/wiki/midi%20scripting#scratching-and-jog-wheels
+const ScratchAlpha = 1.0/8;
+const ScratchBeta = ScratchAlpha/32;
+const ScratchTicksPerRev = ScratchSyncToWheelLED ? 2150 : 6750;
+const ScratchSpeedFactor = ScratchSyncToWheelLED ? 2.14 : 1;
+const HotcuePressStopsScratching = !!engine.getSetting("hotcuePressStopsScratching");
 
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
@@ -468,7 +485,7 @@ class Deck extends ComponentContainer {
             moveMode: this.moveMode,
         };
 
-        engine.setValue(this.group, "scratch2_enable", false);
+        this.deck.wheelTouch.toggleScratching(false);
         this.group = newGroup;
         this.color = this.groupsToColors[newGroup];
 
@@ -478,7 +495,7 @@ class Deck extends ComponentContainer {
 
             if (this.wheelMode === wheelModes.motor) {
                 engine.beginTimer(MotorWindUpMilliseconds, () => {
-                    engine.setValue(newGroup, "scratch2_enable", true);
+                    this.deck.wheelTouch.toggleScratching(true);
                 }, true);
             }
         }
@@ -682,9 +699,9 @@ class CueButton extends PushButton {
         } else {
             engine.setValue(this.group, this.inKey, pressed);
             if (this.deck.wheelMode === wheelModes.motor) {
-                engine.setValue(this.group, "scratch2_enable", false);
+                this.deck.wheelTouch.toggleScratching(false);
                 engine.beginTimer(MotorWindDownMilliseconds, () => {
-                    engine.setValue(this.group, "scratch2_enable", true);
+                    this.deck.wheelTouch.toggleScratching(true);
                 }, true);
             }
         }
@@ -736,7 +753,9 @@ class HotcueButton extends PushButton {
         this.inKey = `hotcue_${this.number}_clear`;
     }
     input(pressed) {
-        engine.setValue(this.group, "scratch2_enable", false);
+        if (HotcuePressStopsScratching) {
+            this.deck.wheelTouch.toggleScratching(false);
+        }
         engine.setValue(this.group, this.inKey, pressed);
     }
     output(value) {
@@ -1737,7 +1756,7 @@ class S4Mk3Deck extends Deck {
                         // Else, we enter/exit the loop in wheel mode
                     } else if (this.previousWheelMode === null) {
                         this.deck.fluxButton.loopModeOff();
-                        engine.setValue(this.group, "scratch2_enable", false);
+                        this.deck.wheelTouch.toggleScratching(false);
                         this.previousWheelMode = this.deck.wheelMode;
                         this.deck.wheelMode = wheelModes.loopIn;
 
@@ -1787,7 +1806,7 @@ class S4Mk3Deck extends Deck {
             onShortRelease: function() {
                 if (!this.shifted) {
                     engine.setValue(this.group, this.key, false);
-                    engine.setValue(this.group, "scratch2_enable", false);
+                    this.deck.wheelTouch.toggleScratching(false);
                 }
             },
             loopModeOff: function(skipRestore) {
@@ -1821,7 +1840,7 @@ class S4Mk3Deck extends Deck {
                         // Else, we enter/exit the loop in wheel mode
                     } else if (this.previousWheelMode === null) {
                         this.deck.reverseButton.loopModeOff();
-                        engine.setValue(this.group, "scratch2_enable", false);
+                        this.deck.wheelTouch.toggleScratching(false);
                         this.previousWheelMode = this.deck.wheelMode;
                         this.deck.wheelMode = wheelModes.loopOut;
                         if (this.loopModeConnection === null) {
@@ -2189,16 +2208,20 @@ class S4Mk3Deck extends Deck {
                 cueBaseName: "outro_end",
             }),
             new HotcueButton({
-                number: 1
+                number: 1,
+                deck: this
             }),
             new HotcueButton({
-                number: 2
+                number: 2,
+                deck: this
             }),
             new HotcueButton({
-                number: 3
+                number: 3,
+                deck: this
             }),
             new HotcueButton({
-                number: 4
+                number: 4,
+                deck: this
             })
         ];
         const hotcuePage2 = Array(8).fill({});
@@ -2209,8 +2232,8 @@ class S4Mk3Deck extends Deck {
         /* eslint no-unused-vars: "off" */
         for (const pad of hotcuePage2) {
             // start with hotcue 5; hotcues 1-4 are in defaultPadLayer
-            hotcuePage2[i] = new HotcueButton({number: i + 1});
-            hotcuePage3[i] = new HotcueButton({number: i + 13});
+            hotcuePage2[i] = new HotcueButton({number: i + 1, deck: this});
+            hotcuePage3[i] = new HotcueButton({number: i + 13, deck: this});
             if (UseBeatloopRollInsteadOfSampler) {
                 samplerOrBeatloopRollPage[i] = new BeatLoopRollButton({
                     number: i,
@@ -2394,7 +2417,7 @@ class S4Mk3Deck extends Deck {
                     this.deck.fluxButton.loopModeOff(true);
                     if (this.deck.wheelMode === wheelModes.motor) {
                         this.deck.wheelMode = wheelModes.vinyl;
-                        engine.setValue(this.group, "scratch2_enable", false);
+                        this.deck.wheelTouch.toggleScratching(false);
                     } else {
                         this.deck.wheelMode = wheelModes.motor;
                         const group = this.group;
@@ -2420,7 +2443,7 @@ class S4Mk3Deck extends Deck {
                     } else {
                         this.deck.wheelMode = wheelModes.vinyl;
                     }
-                    engine.setValue(this.group, "scratch2_enable", false);
+                    this.deck.wheelTouch.toggleScratching(false);
                     this.outTrigger();
                 }
             },
@@ -2437,12 +2460,14 @@ class S4Mk3Deck extends Deck {
         this.wheelTouch = new Button({
             touched: false,
             deck: this,
+            wheelPos: 0,
+            speed: 0,
             input: function(touched) {
                 this.touched = touched;
                 if (this.deck.wheelMode === wheelModes.vinyl || this.deck.wheelMode === wheelModes.motor) {
                     if (touched) {
-                        engine.setValue(this.group, "scratch2_enable", true);
-                    } else {
+                        this.toggleScratching(true);
+                    } else { // release
                         this.stopScratchWhenOver();
                     }
                 }
@@ -2452,14 +2477,54 @@ class S4Mk3Deck extends Deck {
                     return;
                 }
 
-                if (engine.getValue(this.group, "play") &&
-                    engine.getValue(this.group, "scratch2") < 1.5 * baseRevolutionsPerSecond &&
-                    engine.getValue(this.group, "scratch2") > 0) {
-                    engine.setValue(this.group, "scratch2_enable", false);
-                } else if (engine.getValue(this.group, "scratch2") === 0) {
-                    engine.setValue(this.group, "scratch2_enable", false);
-                } else {
-                    engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
+                switch (ScratchMode) {
+                case scratchModes.wheelPos:
+                    if (Math.abs(this.speed) < 0.0000001) {
+                        this.toggleScratching(false);
+                    } else {
+                        engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
+                    }
+                    break;
+                case scratchModes.scratchTick:
+                case scratchModes.scratch2:
+                default:
+                    if (engine.getValue(this.group, "play") &&
+                        engine.getValue(this.group, "scratch2") < 1.5 * baseRevolutionsPerSecond &&
+                        engine.getValue(this.group, "scratch2") > 0) {
+                        this.toggleScratching(false);
+                    } else if (engine.getValue(this.group, "scratch2") === 0) {
+                        this.toggleScratching(false);
+                    } else {
+                        engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
+                    }
+                    break;
+                }
+            },
+            toggleScratching: function(enable) {
+                switch (ScratchMode) {
+                case scratchModes.scratchTick:
+                    if (enable) {
+                        engine.scratchEnable(this.deck.currentDeckNumber,
+                            ScratchTicksPerRev,
+                            BaseRevolutionsPerMinute,
+                            ScratchAlpha,
+                            ScratchBeta); // ramping true by default
+                    } else {
+                        engine.scratchDisable(this.deck.currentDeckNumber);
+                    }
+                    break;
+                case scratchModes.wheelPos:
+                    if (enable) {
+                        engine.setValue(this.group, "scratch_position", this.wheelPos);
+                        engine.setValue(this.group, "scratch_position_enable", 1);
+                    } else {
+                        engine.setValue(this.group, "scratch_position_enable", 0);
+                    }
+                    break;
+                case scratchModes.scratch2:
+                default:
+                    engine.setValue(this.group, "scratch2_enable", enable);
+                    break;
                 }
             }
         });
@@ -2476,20 +2541,33 @@ class S4Mk3Deck extends Deck {
             input: function(value, timestamp) {
                 if (this.oldValue === null) {
                     // This is to avoid the issue where the first time, we diff with 0, leading to the absolute value
-                    this.oldValue = [value, timestamp, 0];
+                    this.oldValue = [value, timestamp, 0, 0];
                     return;
                 }
-                let [oldValue, oldTimestamp, speed] = this.oldValue;
+                /* eslint prefer-const: "off" */
+                let [oldValue, oldTimestamp, speed, oldPos] = this.oldValue;
 
+                // Log value right-aligned
+                // const maxLength = wheelRelativeMax.toString().length;
+                // const valueStr = value.toString().padStart(maxLength, " ");
+                // if (this.deck.currentDeckNumber === 1) {
+                //     console.warn(`value: ${valueStr}`);
+                //}
+
+                // check if the internal timer wrapped around
                 if (timestamp < oldTimestamp) {
                     oldTimestamp -= wheelTimerMax;
                 }
 
                 let diff = value - oldValue;
+                // Check if the value wrapped around.
+                // It's not impossible a human made ~11 revs since the last call...
                 if (diff > wheelRelativeMax / 2) {
                     oldValue += wheelRelativeMax;
+                    diff -= wheelRelativeMax;
                 } else if (diff < -wheelRelativeMax / 2) {
                     oldValue -= wheelRelativeMax;
+                    diff += wheelRelativeMax;
                 }
 
                 const currentSpeed = (value - oldValue)/(timestamp - oldTimestamp);
@@ -2498,11 +2576,18 @@ class S4Mk3Deck extends Deck {
                 } else {
                     speed = currentSpeed;
                 }
-                this.oldValue = [value, timestamp, speed];
-                this.speed = wheelAbsoluteMax*speed*10;
 
+                this.speed = wheelAbsoluteMax * speed * 10 * ScratchSpeedFactor * 2.14;
+
+                const newPos = oldPos + diff * 55;
+                this.deck.wheelTouch.wheelPos = newPos;
+                this.deck.wheelTouch.speed = speed;
+
+                this.oldValue = [value, timestamp, speed, newPos];
+
+                const scratch2 = engine.getValue(this.group, "scratch2");
                 if (this.speed === 0 &&
-                    engine.getValue(this.group, "scratch2") === 0 &&
+                    scratch2 === 0 &&
                     engine.getValue(this.group, "jog") === 0 &&
                     this.deck.wheelMode !== wheelModes.motor) {
                     return;
@@ -2536,8 +2621,19 @@ class S4Mk3Deck extends Deck {
                     }
                     break;
                 case wheelModes.vinyl:
-                    if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
+                    if (ScratchMode === scratchModes.scratchTick &&
+                            engine.isScratching(this.deck.currentDeckNumber)) {
+                        if (diff !== 0) {
+                            engine.scratchTick(this.deck.currentDeckNumber, diff);
+                        }
+                    } else if (ScratchMode === scratchModes.scratch2 &&
+                            (this.deck.wheelTouch.touched || scratch2 !== 0)) {
                         engine.setValue(this.group, "scratch2", this.speed);
+                    } else if (ScratchMode === scratchModes.wheelPos &&
+                            // (this.deck.wheelTouch.touched || scratch2 !== 0)) {
+                            (this.deck.wheelTouch.touched ||
+                                engine.getValue(this.group, "scratch_position_enable") > 0)) {
+                        engine.setValue(this.group, "scratch_position", newPos);
                     } else {
                         engine.setValue(this.group, "jog", this.speed);
                     }
@@ -2765,10 +2861,10 @@ class S4Mk3MotorManager {
         }
 
         if (this.isBlockedByUser()) {
-            engine.setValue(this.deck.group, "scratch2_enable", true);
+            this.deck.wheelTouch.toggleScratching(true);
             this.currentMaxWheelForce = this.zeroSpeedForce + parseInt(this.baseFactor * expectedSpeed);
         } else if (expectedSpeed && this.userHold === 0 && !this.deck.wheelTouch.touched) {
-            engine.setValue(this.deck.group, "scratch2_enable", false);
+            this.deck.wheelTouch.toggleScratching(true);
             this.currentMaxWheelForce = MaxWheelForce;
         }
 
