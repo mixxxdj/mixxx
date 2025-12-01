@@ -51,6 +51,10 @@ int BaseTrackCache::fieldIndex(const QString& columnName) const {
     return m_columnCache.fieldIndex(columnName);
 }
 
+int BaseTrackCache::endFieldIndex() const {
+    return m_columnCache.endFieldIndex();
+}
+
 QString BaseTrackCache::columnNameForFieldIndex(int index) const {
     return m_columnCache.columnNameForFieldIndex(index);
 }

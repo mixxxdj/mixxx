@@ -163,7 +163,11 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     // windows-2019 9.86 sec
     // macos-11 5.81 sec
     // macos-12 timeout after 45.02 sec (24.55 sec with 100000)
-    for (int i = 0; i < 100000; ++i) {
+
+    // NOTE(2024-08-31, daschuer): Reduced to 50000 to avoid timeouts
+    // With 100000 we hit a timeout on macos-13 see #14919
+
+    for (int i = 0; i < 50000; ++i) {
         m_recentTrackPtr.reset();
 
         TrackId trackId;

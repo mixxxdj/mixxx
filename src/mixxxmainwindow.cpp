@@ -39,7 +39,7 @@
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
-#include "library/overviewcache.h"
+#include "library/library_prefs.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -97,6 +97,10 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #ifndef __APPLE__
           m_prevState(Qt::WindowNoState),
 #endif
+          m_noVinylInputDialog(nullptr),
+          m_noPassthroughInputDialog(nullptr),
+          m_noMicInputDialog(nullptr),
+          m_noAuxInputDialog(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
@@ -287,18 +291,6 @@ void MixxxMainWindow::initialize() {
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
-    // Connect OverviewCache so we can clear and re-render overviews in the library
-    // when "OverviewNormalized" or "VisualGain_0" (all) have been changed in the
-    // preferences.
-    auto* pOverviewCache = OverviewCache::instance();
-    connect(WaveformWidgetFactory::instance(),
-            &WaveformWidgetFactory::visualGainChanged,
-            pOverviewCache,
-            &OverviewCache::onNormalizeOrVisualGainChanged);
-    connect(WaveformWidgetFactory::instance(),
-            &WaveformWidgetFactory::overviewNormalizeChanged,
-            pOverviewCache,
-            &OverviewCache::onNormalizeOrVisualGainChanged);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,
@@ -844,6 +836,14 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotShowKeywheel,
             Qt::UniqueConnection);
+#ifndef __APPLE__
+    // Menubar auto-hide
+    connect(m_pMenuBar,
+            &WMainMenuBar::menubarAutoHideChanged,
+            this,
+            &MixxxMainWindow::slotUpdateMenuBarAltKeyConnection,
+            Qt::UniqueConnection);
+#endif
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -1100,56 +1100,108 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::warning(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this vinyl control.\n"
-               "Please select an input device in the sound hardware preferences first."),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noVinylInputDialog && m_noVinylInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noVinylInputDialog) {
+        m_noVinylInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this vinyl control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noVinylInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noVinylInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noVinylInputDialog->exec();
+    if (m_noVinylInputDialog->clickedButton() ==
+            m_noVinylInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::warning(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this passthrough control.\n"
-               "Please select an input device in the sound hardware preferences first."),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noPassthroughInputDialog && m_noPassthroughInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noPassthroughInputDialog) {
+        m_noPassthroughInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this passthrough control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noPassthroughInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noPassthroughInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noPassthroughInputDialog->exec();
+    if (m_noPassthroughInputDialog->clickedButton() ==
+            m_noPassthroughInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::question(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this microphone.\n"
-               "Do you want to select an input device?"),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noMicInputDialog && m_noMicInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noMicInputDialog) {
+        m_noMicInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this microphone.\n"
+                   "Do you want to select an input device?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noMicInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noMicInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noMicInputDialog->exec();
+    if (m_noMicInputDialog->clickedButton() ==
+            m_noMicInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::question(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this auxiliary.\n"
-               "Do you want to select an input device?"),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noAuxInputDialog && m_noAuxInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noAuxInputDialog) {
+        m_noAuxInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this auxiliary.\n"
+                   "Do you want to select an input device?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noAuxInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noAuxInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noAuxInputDialog->exec();
+    if (m_noAuxInputDialog->clickedButton() ==
+            m_noAuxInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
@@ -1161,6 +1213,11 @@ void MixxxMainWindow::slotHelpAbout() {
 }
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
+    if (!m_pCoreServices->getSettings()->getValue<bool>(
+                mixxx::library::prefs::kShowScanSummaryConfigKey, true)) {
+        return;
+    }
+
     // Don't show the report dialog when the scan is run during startup and no
     // noteworthy changes have been detected.
     if (result.autoscan &&

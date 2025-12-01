@@ -24,11 +24,13 @@
 
 #include "lut.h"
 #include "pitch.h"
+#include "pitch_kalman.h"
 
 #define TIMECODER_CHANNELS 2
 
 #ifdef __cplusplus
 extern "C" {
+
 #endif // __cplusplus
 
 typedef unsigned int bits_t;
@@ -42,6 +44,7 @@ struct timecode_def {
         taps; /* central LFSR taps, excluding end taps */
     unsigned int length, /* in cycles */
         safe; /* last 'safe' timecode number (for auto disconnect) */
+    signed int threshold; /* threshold for detection of zero-crossings */
     bool lookup; /* true if lut has been generated */
     struct lut lut;
 };
@@ -66,7 +69,12 @@ struct timecoder {
 
     bool forwards;
     struct timecoder_channel primary, secondary;
+
+    bool use_legacy_pitch_filter;
     struct pitch pitch;
+    struct pitch_kalman pitch_kalman;
+    unsigned quadrant, last_quadrant;
+    bool direction_changed;
 
     /* Numerical timecode */
 
@@ -86,7 +94,7 @@ struct timecode_def* timecoder_find_definition(const char *name);
 void timecoder_free_lookup(void);
 
 void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono);
+                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator);
 void timecoder_clear(struct timecoder *tc);
 
 int timecoder_monitor_init(struct timecoder *tc, int size);
@@ -111,7 +119,10 @@ static inline struct timecode_def* timecoder_get_definition(struct timecoder *tc
 
 static inline double timecoder_get_pitch(struct timecoder *tc)
 {
-    return pitch_current(&tc->pitch) / tc->speed;
+    if (tc->use_legacy_pitch_filter)
+        return pitch_current(&tc->pitch) / tc->speed;
+    else
+        return pitch_kalman_current(&tc->pitch_kalman) / tc->speed;
 }
 
 /*

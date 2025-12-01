@@ -48,7 +48,7 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-if(WIN32 AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
+if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
   if(NOT DEFINED BUILDENV_BASEPATH)
     if(DEFINED ENV{BUILDENV_BASEPATH})
       set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
@@ -164,12 +164,12 @@ function(fatal_error_missing_env)
     elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
       message(
         FATAL_ERROR
-        "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`"
+        "Did you download the Mixxx build environment using `source ${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh setup`"
       )
     else()
       message(
         FATAL_ERROR
-        "Did you download the Mixxx build environment using `${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.sh` or `${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh`(includes Debug)?"
+        "Did you download the Mixxx build environment using `source ${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.sh setup` or `source ${CMAKE_SOURCE_DIR}/tools/macos_buildenv.sh setup` (includes Debug)?"
       )
     endif()
   elseif(UNIX AND NOT APPLE)
@@ -177,17 +177,17 @@ function(fatal_error_missing_env)
     if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
         FATAL_ERROR
-        "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+        "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh setup`?"
       )
     elseif(EXISTS "/etc/redhat-release") # exists also on Fedora Mageia Madndriva Alma CentOS
       message(
         FATAL_ERROR
-        "Did you install the required RPM dev packages via `${CMAKE_SOURCE_DIR}/tools/rpm_buildenv.sh`?"
+        "Did you install the required RPM dev packages via `${CMAKE_SOURCE_DIR}/tools/rpm_buildenv.sh setup`?"
       )
     else()
       message(
         FATAL_ERROR
-        "Did you install the equivalent dev packages listed in `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh`?"
+        "Did you install the equivalent dev packages listed in `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh setup`?"
       )
     endif()
   elseif(DEFINED VCPKG_TARGET_TRIPLET)
@@ -2569,6 +2569,95 @@ elseif(BUILD_BENCH AND NOT BUILD_TESTING)
   message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
 endif()
 
+# FFmpeg support
+# FFmpeg is multimedia library that can be found http://ffmpeg.org/
+find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
+default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
+if(FFMPEG)
+  if(NOT FFMPEG_FOUND)
+    message(FATAL_ERROR "FFMPEG was not found")
+  endif()
+
+  # Check minimum required versions
+  # Minimum library versions according to <https://ffmpeg.org/download.html>
+  # Windows: Version numbers are not available!?
+  # macOS: Untested
+  if(
+    FFMPEG_libavcodec_VERSION
+    AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION})."
+    )
+  endif()
+  if(
+    FFMPEG_libavformat_VERSION
+    AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION})."
+    )
+  endif()
+  if(
+    FFMPEG_libavutil_VERSION
+    AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION})."
+    )
+  endif()
+  if(
+    FFMPEG_libswresample_VERSION
+    AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100
+  )
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION})."
+    )
+  endif()
+
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
+  target_compile_definitions(
+    mixxx-lib
+    PUBLIC
+      __FFMPEG__
+      # Needed to build new FFmpeg
+      __STDC_CONSTANT_MACROS
+      __STDC_LIMIT_MACROS
+      __STDC_FORMAT_MACROS
+  )
+  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
+endif()
+
+# STEM file support
+default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+if(STEM)
+  if(NOT FFMPEG)
+    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __STEM__)
+  list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/sources/soundsourcestem.cpp
+      src/track/steminfoimporter.cpp
+      src/track/steminfo.cpp
+      src/widget/wtrackstemmenu.cpp
+      src/widget/wstemlabel.cpp
+  )
+  if(QOPENGL)
+    target_sources(
+      mixxx-lib
+      PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+endif()
+
 if(BUILD_TESTING)
   set(
     src-mixxx-test
@@ -2687,6 +2776,15 @@ if(BUILD_TESTING)
     src/util/moc_included_test.cpp
     src/test/helpers/log_test.cpp
   )
+  if(STEM)
+    set(
+      src-mixxx-test
+      ${src-mixxx-test}
+      src/test/stemtest.cpp
+      src/test/steminfotest.cpp
+      src/test/stemcontrolobjecttest.cpp
+    )
+  endif()
   if(BUILD_BENCH)
     set(
       src-mixxx-test
@@ -2726,22 +2824,13 @@ if(BUILD_TESTING)
   include(CTest)
   include(GoogleTest)
   enable_testing()
-  gtest_add_tests(
-    TARGET mixxx-test
+  gtest_discover_tests(
+    mixxx-test
     EXTRA_ARGS --logLevel info
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     TEST_LIST testsuite
+    DISCOVERY_MODE PRE_TEST
   )
-
-  if(NOT WIN32)
-    # Default to offscreen rendering during tests.
-    # This is required if the build system like Fedora koji/mock does not
-    # allow to pass environment variables into the ctest macro expansion.
-    set_tests_properties(
-      ${testsuite}
-      PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-    )
-  endif()
 
   if(BUILD_BENCH)
     # Benchmarking
@@ -3001,6 +3090,7 @@ if(ENGINEPRIME)
         SHA256=f4fbe728783c14acdc999b74ce3f03d680f9187e1ff676d6bf1233fdb64ae7b2
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
+      PREFIX "libdjinterop-${LIBDJINTEROP_VERSION}"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       LIST_SEPARATOR "|"
       CMAKE_ARGS
@@ -3156,6 +3246,7 @@ if(KEYFINDER)
         SHA256=4f10e9e5673d948776e47e78273fa4d61408155cb0e210af1538c83222f285d4
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libkeyfinder-${FETCH_LIBKEYFINDER_VERSION}.zip"
+      PREFIX "libdjinterop-${FETCH_LIBKEYFINDER_VERSION}"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       LIST_SEPARATOR "|"
       CMAKE_ARGS
@@ -3165,7 +3256,7 @@ if(KEYFINDER)
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMEN_TARGET}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
         -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
         -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
         -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME} -DBUILD_TESTING=OFF
@@ -3226,6 +3317,8 @@ target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
 add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
 # With gcc >= 14 and -flto some code is inlined to fast-math code and then
 # optimized away. Disable it explicit for all compiler just in case.
+# Note: This does not set -fno-lto to override an external provided -flto=auto like on
+# Launchpad. Setting it explicit below.
 set_target_properties(FpClassify PROPERTIES INTERPROCEDURAL_OPTIMIZATION OFF)
 
 if(
@@ -3236,7 +3329,10 @@ if(
 elseif(GNU_GCC OR LLVM_CLANG)
   # The option `-ffp-contract=on` must precede `-fno-fast-math`
   # to silence a warning on Clang 14
-  target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
+  target_compile_options(
+    FpClassify
+    PRIVATE -ffp-contract=on -fno-fast-math -fno-lto
+  )
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
 
@@ -3404,6 +3500,10 @@ if(QT6)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
+    # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
+    list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
+  endif()
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
@@ -3566,6 +3666,16 @@ if(QML)
       # needed for qml/qmlautoreload.cpp
       src/util/autofilereloader.cpp
   )
+
+  if(STEM)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
+    target_sources(
+      mixxx-qml-lib
+      PRIVATE
+        src/waveform/renderers/allshader/waveformrendererstem.cpp
+        src/qml/qmlstemsmodel.cpp
+    )
+  endif()
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
@@ -3774,6 +3884,15 @@ else()
             Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
             Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
             Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2
             DESTINATION
             "${MIXXX_INSTALL_DATADIR}"
             COMPONENT
@@ -4428,114 +4547,6 @@ elseif(WIN32)
   endif()
 endif()
 
-# FFmpeg support
-# FFmpeg is multimedia library that can be found http://ffmpeg.org/
-find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
-if(FFMPEG)
-  if(NOT FFMPEG_FOUND)
-    message(FATAL_ERROR "FFMPEG was not found")
-  endif()
-
-  # Check minimum required versions
-  # Minimum library versions according to <https://ffmpeg.org/download.html>
-  # Windows: Version numbers are not available!?
-  # macOS: Untested
-  if(
-    FFMPEG_libavcodec_VERSION
-    AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION})."
-    )
-  endif()
-  if(
-    FFMPEG_libavformat_VERSION
-    AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION})."
-    )
-  endif()
-  if(
-    FFMPEG_libavutil_VERSION
-    AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION})."
-    )
-  endif()
-  if(
-    FFMPEG_libswresample_VERSION
-    AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100
-  )
-    message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION})."
-    )
-  endif()
-
-  target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
-  target_compile_definitions(
-    mixxx-lib
-    PUBLIC
-      __FFMPEG__
-      # Needed to build new FFmpeg
-      __STDC_CONSTANT_MACROS
-      __STDC_LIMIT_MACROS
-      __STDC_FORMAT_MACROS
-  )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
-  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
-endif()
-
-# STEM file support
-default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
-if(STEM)
-  if(NOT FFMPEG)
-    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
-  endif()
-  target_compile_definitions(mixxx-lib PUBLIC __STEM__)
-  if(BUILD_TESTING)
-    target_compile_definitions(mixxx-test PUBLIC __STEM__)
-    target_sources(
-      mixxx-test
-      PUBLIC
-        src/test/stemtest.cpp
-        src/test/steminfotest.cpp
-        src/test/stemcontrolobjecttest.cpp
-    )
-  endif()
-  list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/sources/soundsourcestem.cpp
-      src/track/steminfoimporter.cpp
-      src/track/steminfo.cpp
-      src/widget/wtrackstemmenu.cpp
-      src/widget/wstemlabel.cpp
-  )
-  if(QOPENGL)
-    target_sources(
-      mixxx-lib
-      PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
-    )
-  endif()
-  if(QML)
-    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
-    target_sources(
-      mixxx-qml-lib
-      PRIVATE
-        src/waveform/renderers/allshader/waveformrendererstem.cpp
-        src/qml/qmlstemsmodel.cpp
-    )
-  endif()
-endif()
-
 # Google PerfTools
 option(GPERFTOOLS "Google PerfTools libtcmalloc linkage" OFF)
 option(GPERFTOOLSPROFILER "Google PerfTools libprofiler linkage" OFF)
@@ -4880,7 +4891,10 @@ if(VINYLCONTROL)
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
-  target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
+  target_sources(
+    mixxx-xwax
+    PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c lib/xwax/pitch_kalman.c
+  )
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()
@@ -4985,31 +4999,41 @@ else()
 endif()
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
+
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-open-sans")
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-ubuntu")
 if(QT6)
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-qpa-plugins")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-svg-plugins")
+  endif()
   if(QML)
-    set(
+    list(
+      APPEND
       CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins, qml6-module-qt5compat-graphicaleffects, qml6-module-qtquick-controls, qml6-module-qtquick-layouts, qml6-module-qtquick-nativestyle, qml6-module-qtquick-templates, qml6-module-qtquick-window, qml6-module-qt-labs-qmlmodels, qml6-module-qtquick-shapes, qml6-module-qtqml-workerscript"
+      "qml6-module-qt5compat-graphicaleffects"
     )
-  else()
-    set(
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins"
-    )
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
   endif()
 else()
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite")
   if(QML)
-    set(
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu, qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qt-labs-qmlmodels, qml-module-qtquick-shapes"
-    )
-  else()
-    set(
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu"
-    )
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls2")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qt-labs-qmlmodels")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-shapes")
   endif()
 endif()
+list(JOIN CPACK_DEBIAN_PACKAGE_DEPENDS ", " CPACK_DEBIAN_PACKAGE_DEPENDS)
+
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
@@ -5045,7 +5069,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble oracular plucky questing)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble plucky questing resolute)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT

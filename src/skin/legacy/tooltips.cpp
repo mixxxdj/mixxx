@@ -705,13 +705,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Repeat")
             << tr("When active the track will repeat if you go past the end or reverse before the start.");
 
-    add("eject") << tr("Eject") << tr("Ejects track from the player.")
-                 << tr("Un-ejects when no track is loaded, i.e. reloads the "
-                       "track that was ejected last (of any deck).")
-                 << QString("%1: %2").arg(doubleClick,
-                            "Reloads the last replaced track. "
-                            "If no track is loaded reloads the second-last "
-                            "ejected track.");
+    add("eject")
+            << tr("Eject") << tr("Ejects track from the player.")
+            << tr("Un-ejects when no track is loaded, i.e. reloads the "
+                  "track that was ejected last (of any deck).")
+            << QString("%1: %2").arg(doubleClick,
+                       tr("Reloads the last replaced track. If no track is "
+                          "loaded reloads the second-last ejected track."));
 
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
@@ -1004,6 +1004,12 @@ void Tooltips::addStandardTooltips() {
     // Intro & outro cues
     add("show_intro_outro_cues")
             << tr("Show/hide intro & outro markers and associated buttons.");
+
+    add("keep_consistent_waveform_heights") << tr(
+            "Ensure all waveforms to have the same height across all channels. "
+            "By default, when displaying the stem controls, waveform for "
+            "channel that have no stem may render with a shorter height in "
+            "order to honor the waveform container size you have requested..");
 
     add("intro_start")
             << tr("Intro Start Marker")

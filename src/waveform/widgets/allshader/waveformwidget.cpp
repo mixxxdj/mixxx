@@ -28,6 +28,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         WaveformRendererSignalBase::Options options)
         : WGLWidget(parent),
           WaveformWidgetAbstract(group),
+          m_type(type),
           m_pWaveformRendererSignal(nullptr) {
     auto pTopNode = std::make_unique<rendergraph::Node>();
     auto pOpacityNode = std::make_unique<rendergraph::OpacityNode>();
@@ -174,8 +175,11 @@ void WaveformWidget::resizeGL(int w, int h) {
     w = static_cast<int>(std::lround(static_cast<qreal>(w) / devicePixelRatioF()));
     h = static_cast<int>(std::lround(static_cast<qreal>(h) / devicePixelRatioF()));
 
-    m_pEngine->resize(w, h);
+    // Many allshader components relies on WaveformWidgetRenderer::getWidth and
+    // WaveformWidgetRenderer::getHeight to update their rendering stack, so we
+    // must resize the renderer first, before updating the rendergraph
     WaveformWidgetRenderer::resizeRenderer(w, h, static_cast<float>(devicePixelRatio()));
+    m_pEngine->resize(w, h);
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {

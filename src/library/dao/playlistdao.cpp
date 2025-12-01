@@ -170,6 +170,11 @@ QList<TrackId> PlaylistDAO::getTrackIdsInPlaylistOrder(const int playlistId) con
     return trackIds;
 }
 
+QList<TrackId> PlaylistDAO::getAutoDJTrackIds() const {
+    const int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
+    return getTrackIds(iAutoDJPlaylistId);
+}
+
 int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
     //qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
 
@@ -674,9 +679,16 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
         return;
     }
 
+    bool anyTracksRemoved = false;
     while (query.next()) {
         int position = query.value(query.record().indexOf("position")).toInt();
         removeTracksFromPlaylistInner(playlistId, position);
+        anyTracksRemoved = true;
+    }
+
+    // Avoid no-op select() if we didn't remove any tracks
+    if (!anyTracksRemoved) {
+        return;
     }
 
     transaction.commit();

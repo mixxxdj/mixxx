@@ -111,8 +111,6 @@ class VinylControlXwax : public VinylControl {
     // How much of the pitch ring buffer is "filled" versus empty (used before
     // it fills up completely).
     int m_iPitchRingFilled;
-    // A smoothed pitch value to show to the user.
-    double m_dDisplayPitch;
 
     // Steady pitch trackers.  "Subtle" will be more likely to return true,
     // so it is used to set the play button.  "Gross" is more likely to return
@@ -122,18 +120,6 @@ class VinylControlXwax : public VinylControl {
 
     // Whether the configured timecode is CD-based or not.
     bool m_bCDControl;
-
-    // Whether track select mode is enabled.
-    bool m_bTrackSelectMode;
-
-    // Controls for manipulating the library.
-    ControlProxy* m_pControlTrackSelector;
-    ControlProxy* m_pControlTrackLoader;
-
-    // The previous and current track select position. Used for track selection
-    // using the control region.
-    double m_dLastTrackSelectPos;
-    double m_dCurTrackSelectPos;
 
     // The drift between the vinyl position and the file position from the most
     // recent run of analyzeSamples.

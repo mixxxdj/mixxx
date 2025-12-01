@@ -57,6 +57,15 @@ WSearchLineEdit QAbstractScrollArea,
   font-weight: normal;
   font-style: normal;
 }
+WTrackTableViewHeader,
+WTrackTableViewHeader::section {
+  /* On Linux all weight variants of Open Sans are identified
+  as "Open Sans" and we need to set the `font-weight`.
+  On Windows however, the semi-bold variant is identified as
+  "Open Sans Semibold", so look for that first. */
+  font-family: "Open Sans Semibold", "Open Sans";
+  font-weight: 500; /* semi-bold */
+}
 
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
@@ -579,6 +588,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #eb4123; /* orange like the faders */
 }
 
   /* Table cell in edit mode */
@@ -770,15 +781,13 @@ WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
 }
 WTrackTableViewHeader {
   /* Don't set a font size to pick up the system font size. */
-  font-weight: bold;
   color: #000;
   border-radius: 0px;
   border-bottom: 1px solid #0f0f0f;
 }
 /*	Library header 'buttons'	*/
 WTrackTableViewHeader::section {
-  height: 1.1em;
-  padding: 0.1em -0.7em 0.1em 0.1em;
+  padding: 2px;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;
@@ -789,8 +798,6 @@ WTrackTableViewHeader::section {
 WTrackTableViewHeader::up-arrow,
 WTrackTableViewHeader::down-arrow {
   width: 0.6em;
-  padding-right: 0.1em;
-  margin-right: 1px;
   background-color: rgba(98,111,135,255);
   }
   WTrackTableViewHeader::up-arrow {

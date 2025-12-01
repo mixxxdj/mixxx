@@ -1241,6 +1241,12 @@ WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
+/* Workaround for https://github.com/mixxxdj/mixxx/issues/15351, happening with Qt 6.9.2 on Linux:
+   #Deck1 #Keytext { color: ...;} won't be applied if #Keytext or WStarRating are in SingletonContainers.
+   Only `color` seems to be affected.
+   Just set the font by widget type for all decks here and override below with working Qt versions. */
+WKey, WStarRating,
+/* end fix */
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
@@ -1737,7 +1743,7 @@ WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"]
+#FxUnit4 #FxToggleButton[displayValue="1"],
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
@@ -1941,10 +1947,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
   }
   #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
+  }
   #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__1_loop_dark.svg) no-repeat center center;
   }
 
 #Hotcue2 WPushButton[displayValue="0"] {
@@ -1959,10 +1967,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
   }
   #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
+  }
   #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__2_loop_dark.svg) no-repeat center center;
   }
 
 #Hotcue3 WPushButton[displayValue="0"] {
@@ -1977,10 +1987,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
   }
   #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
+  }
   #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__3_loop_dark.svg) no-repeat center center;
   }
 
 #Hotcue4 WPushButton[displayValue="0"] {
@@ -1995,10 +2007,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
   }
   #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
+  }
   #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__4_loop_dark.svg) no-repeat center center;
   }
 
 #Hotcue5 WPushButton[displayValue="0"] {
@@ -2013,10 +2027,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
   }
   #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
+  }
   #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__5_loop_dark.svg) no-repeat center center;
   }
 
 #Hotcue6 WPushButton[displayValue="0"] {
@@ -2031,10 +2047,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
   }
   #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
+  }
   #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__6_loop_dark.svg) no-repeat center center;
   }
 
 #Hotcue7 WPushButton[displayValue="0"] {
@@ -2049,10 +2067,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
   }
   #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
+  }
   #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__7_loop_dark.svg) no-repeat center center;
   }
 
 #Hotcue8 WPushButton[displayValue="0"] {
@@ -2067,10 +2087,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
   }
   #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
+  }
   #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
   #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skins:LateNight/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
+    image: url(skins:LateNight/palemoon/buttons/btn__8_loop_dark.svg) no-repeat center center;
   }
 
 #SpecialCueButton_intro_start WPushButton[displayValue="0"] {
@@ -2378,6 +2400,10 @@ WPushButton#PlayDeck[value="0"] {
   #StemControlsToggle[displayValue="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
   }
+
+#NoStemLabel {
+  color: #444;
+}
 
 #BeatgridControlsToggle[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
@@ -2701,6 +2727,8 @@ WTrackTableView {
   qproperty-trackPlayedColor: #555;
   /* This is the color used to paint the text of missing tracks. */
   qproperty-trackMissingColor: #f856e7; /* pink */
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #984015; /* orange like fader highlight */
 }
 
 /* Table cell in edit mode */
@@ -2770,14 +2798,16 @@ WTrackTableViewHeader {
 }
 
 WTrackTableViewHeader::section {
-/* Setting an image causes QHeaderView to reserve space for the sort indicator,
-   i.e. column titles are truncated, even where no indicators are shown.
-   The arrow width and padding are set in style.qss (0.8em + .15em),
-   so let's set a negative padding-right to shift the text. This will push the
-   reserved space out of the visible region, but the actual arrow will still be visible.
-   Now the arrow overlaps the column title again like in Qt5 (bug), so the arrow images
-   could use a background-color to cover the text, or a gradient to fade it out gently. */
-  padding: 2px -0.95em 0px 3px;
+/* Setting an icon for sort arrows causes QHeaderView to reserve space for it
+   even where no indicators are shown (column titles are truncated).
+   Earlier we fixed this here by setting a negative padding-right in order to shift
+   the text (push the reserved space out of the visible region). The arrow will still
+   be painted correctly.
+   Now that the arrow overlaps the column title, up-/down-arrow need a background in
+   order to cover the text underneath. */
+/* This is now fixed in c++ in WTrackTableViewHeader::paintSection() so we can set
+   the usual padding with absolute px values here. */
+  padding: 2px;
   outline: none;
   border-width: 1px 2px 1px 1px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 1;
@@ -2786,7 +2816,7 @@ WTrackTableViewHeader::section {
 WTrackTableViewHeader::up-arrow,
 WTrackTableViewHeader::down-arrow {
   outline: none;
-  /* horizontal gradient to fade out the text */
+  /* horizontal gradient to fade out the text underneath */
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 transparent,
     stop: 0.2 #171719,

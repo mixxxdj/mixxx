@@ -129,7 +129,7 @@ bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
 }
 
 void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
-    //qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
+    // qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
     if (!trackId.isValid()) {
         return;
     }
@@ -137,7 +137,10 @@ void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
     if (!pTracksView) {
         return;
     }
-    pTracksView->selectTrack(trackId);
+    if (pTracksView->isTrackInCurrentView(trackId)) {
+        pTracksView->selectTrack(trackId);
+        pTracksView->setFocus();
+    }
 }
 
 void WLibrary::saveCurrentViewState() const {

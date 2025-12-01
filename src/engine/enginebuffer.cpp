@@ -22,6 +22,7 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "mixer/playermanager.h"
 #include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
@@ -83,6 +84,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
           m_slipModeState(SlipModeState::Disabled),
+          m_quantize(ControlFlag::AllowMissingOrInvalid),
           m_pRepeat(nullptr),
           m_startButton(nullptr),
           m_endButton(nullptr),
@@ -95,7 +97,12 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pCrossfadeBuffer(SampleUtil::alloc(
                   kMaxEngineFrames * mixxx::kMaxEngineChannelInputCount)),
           m_bCrossfadeReady(false),
-          m_lastBufferSize(0) {
+          m_lastBufferSize(0)
+#ifdef __STEM__
+          ,
+          m_stemMask()
+#endif
+{
     // This should be a static assertion, but isValid() is not constexpr.
     DEBUG_ASSERT(kInitialPlayPosition.isValid());
 
@@ -184,9 +191,9 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    QuantizeControl* quantize_control = new QuantizeControl(group, pConfig);
-    addControl(quantize_control);
-    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
+    QuantizeControl* pQuantize_control = new QuantizeControl(group, pConfig);
+    addControl(pQuantize_control);
+    m_quantize = PollingControlProxy(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
@@ -197,8 +204,15 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pSyncControl = new SyncControl(group, pConfig, pChannel, m_pEngineSync);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlControl = new VinylControlControl(group, pConfig);
-    addControl(m_pVinylControlControl);
+    if (PlayerManager::isDeckGroup(group)) {
+        m_pVinylControlControl = new VinylControlControl(group, pConfig);
+        connect(m_pVinylControlControl,
+                &VinylControlControl::noVinylControlInputConfigured,
+                this,
+                // signal-to-signal
+                &EngineBuffer::noVinylControlInputConfigured);
+        addControl(m_pVinylControlControl);
+    }
 #endif
 
     // Create the Rate Controller
@@ -292,6 +306,9 @@ EngineBuffer::~EngineBuffer() {
     //close the writer
     df.close();
 #endif
+
+    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
+
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -322,8 +339,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_pReplayGain;
 
     SampleUtil::free(m_pCrossfadeBuffer);
-
-    qDeleteAll(m_engineControls);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
@@ -437,7 +452,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
 
 void EngineBuffer::requestSyncMode(SyncMode mode) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "EngineBuffer::requestSyncMode";
+        kLogger.trace() << "requestSyncMode" << getGroup();
     }
     if (m_playButton->get() == 0.0) {
         // If we're not playing, the queued event won't get processed so do it now.
@@ -462,7 +477,7 @@ void EngineBuffer::readToCrossfadeBuffer(const std::size_t bufferSize) {
 // the engine callback!
 void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << position;
+        kLogger.trace() << "setNewPlaypos" << m_group << position;
     }
 
     m_playPos = position;
@@ -534,7 +549,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
         mixxx::audio::ChannelCount trackChannelCount,
         mixxx::audio::FramePos trackNumFrame) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
+        kLogger.trace() << "slotTrackLoaded" << getGroup();
     }
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
@@ -607,7 +622,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 void EngineBuffer::ejectTrack() {
     // clear track values in any case, may fix https://github.com/mixxxdj/mixxx/issues/8000
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineBuffer::ejectTrack()";
+        kLogger.trace() << "ejectTrack()";
     }
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
@@ -647,13 +662,19 @@ void EngineBuffer::ejectTrack() {
 
     if (pOldTrack) {
         notifyTrackLoaded(TrackPointer(), pOldTrack);
+    } else {
+        // When not invoking notifyTrackLoaded() call this separately
+        m_pRateControl->resetPositionScratchController();
     }
+
     m_iTrackLoading = 0;
     m_pChannelToCloneFrom = nullptr;
 }
 
 void EngineBuffer::notifyTrackLoaded(
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    m_pRateControl->resetPositionScratchController();
+
     if (pOldTrack) {
         disconnect(
                 pOldTrack.get(),
@@ -787,7 +808,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
-        if (m_pQuantize->toBool()
+        if (m_quantize.toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
 #endif
@@ -1140,7 +1161,7 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    m_actual_speed = (m_playPos - playpos_old) / (bufferSize / 2);
+    m_actual_speed = (m_playPos - playpos_old) / (bufferSize / 2) / baseSampleRate;
     // qDebug() << "Ramped Speed" << m_actual_speed / m_speed_old;
 
     for (const auto& pControl : std::as_const(m_engineControls)) {
@@ -1159,7 +1180,7 @@ void EngineBuffer::processTrackLocked(
     // Ife it's really desired, should this be moved to looping control in order
     // to set the sync'ed playposition right away and fill the wrap-around buffer
     // with correct samples from the sync'ed loop in / track start position?
-    if (m_pRepeat->toBool() && m_pQuantize->toBool() &&
+    if (m_pRepeat->toBool() && m_quantize.toBool() &&
             (m_playPos > playpos_old) == backwards) {
         // TODO() The resulting seek is processed in the following callback
         // That is to late
@@ -1341,7 +1362,7 @@ void EngineBuffer::processSeek(bool paused) {
             position = m_playPos;
             break;
         case SEEK_STANDARD:
-            if (m_pQuantize->toBool()) {
+            if (m_quantize.toBool()) {
                 seekType |= SEEK_PHASE;
             }
             // new position was already set above
@@ -1374,20 +1395,20 @@ void EngineBuffer::processSeek(bool paused) {
 
     if (!paused && (seekType & SEEK_PHASE)) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
+            kLogger.trace() << "processSeek" << getGroup() << "Seeking phase";
         }
         const mixxx::audio::FramePos syncPosition =
                 m_pBpmControl->getBeatMatchPosition(position, true, true);
         position = m_pLoopingControl->getSyncPositionInsideLoop(position, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_playPos
+                    << "processSeek" << getGroup() << "seek info:" << m_playPos
                     << "->" << position;
         }
     }
     if (position != m_playPos) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
+            kLogger.trace() << "processSeek" << getGroup() << "Seek to" << position;
         }
         setNewPlaypos(position);
         m_previousBufferSeek = true;
@@ -1409,7 +1430,7 @@ void EngineBuffer::postProcess(const std::size_t bufferSize) {
     // which Syncable is leader or could cause Syncables to try to match
     // beat distances. During these calls those values are inconsistent.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
+        kLogger.trace() << "postProcess" << getGroup();
     }
     const mixxx::Bpm localBpm = m_pBpmControl->getLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
@@ -1562,6 +1583,7 @@ void EngineBuffer::loadTrack(TrackPointer pTrack,
         m_bPlayAfterLoading = play;
 #ifdef __STEM__
         m_pReader->newTrack(pTrack, stemMask);
+        m_stemMask = stemMask;
 #else
         m_pReader->newTrack(pTrack);
 #endif

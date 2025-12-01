@@ -70,6 +70,7 @@ class WaveformWidgetAbstractHandle {
 #endif
 
     QString getDisplayName() const;
+    static QString getDisplayName(WaveformWidgetType::Type type);
 
   private:
     WaveformWidgetType::Type m_type;
@@ -120,7 +121,7 @@ class WaveformWidgetFactory : public QObject,
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
-//    bool getVSync() const { return m_vSyncType;}
+    // bool getVSync() const { return m_vSyncType;}
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
@@ -130,10 +131,12 @@ class WaveformWidgetFactory : public QObject,
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
+    WaveformWidgetBackend getBackendFromConfig() const;
     WaveformWidgetBackend preferredBackend() const;
     static WaveformWidgetType::Type defaultType() {
         return WaveformWidgetType::RGB;
     }
+    void setDefaultBackend();
 
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid
@@ -145,16 +148,27 @@ class WaveformWidgetFactory : public QObject,
     /// dialog.
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
+    QString getTypeDisplayName() const {
+        return WaveformWidgetAbstractHandle::getDisplayName(m_type);
+    }
     int getHandleIndex() {
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsAcceleration(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
+    bool widgetTypeSupportsStems() const;
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
+
+    void setStemReorderOnChange(bool value);
+    void setStemOutlineOpacity(float value);
+    void setStemOpacity(float value);
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -170,6 +184,15 @@ class WaveformWidgetFactory : public QObject,
     }
     float getUntilMarkTextHeightLimit() const {
         return m_untilMarkTextHeightLimit;
+    }
+    bool isStemReorderOnChange() const {
+        return m_stemReorderOnChange;
+    }
+    float getStemOutlineOpacity() const {
+        return m_stemOutlineOpacity;
+    }
+    float getStemOpacity() const {
+        return m_stemOpacity;
     }
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
@@ -215,6 +238,7 @@ class WaveformWidgetFactory : public QObject,
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
+
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
@@ -223,7 +247,7 @@ class WaveformWidgetFactory : public QObject,
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
 
-    void overviewNormalizeChanged();
+    void overviewScalingChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
 
     void untilMarkShowBeatsChanged(bool value);
@@ -231,6 +255,10 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkAlignChanged(Qt::Alignment align);
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
+
+    void stemReorderOnChangeChanged(bool value);
+    void stemOutlineOpacityChanged(float value);
+    void stemOpacityChanged(float value);
 
   public slots:
     void slotSkinLoaded();
@@ -291,6 +319,10 @@ class WaveformWidgetFactory : public QObject,
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;
+
+    bool m_stemReorderOnChange;
+    float m_stemOutlineOpacity;
+    float m_stemOpacity;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;

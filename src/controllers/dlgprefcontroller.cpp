@@ -95,6 +95,22 @@ DlgPrefController::DlgPrefController(
     // Create text color for the file and wiki links
     createLinkColor();
 
+    QString refreshIconPath;
+    if (!Color::isDimColor(palette().text().color())) {
+        refreshIconPath = QStringLiteral(
+                ":/images/preferences/light/"
+                "ic_preferences_controllers_reload.svg");
+    } else {
+        refreshIconPath = QStringLiteral(
+                ":/images/preferences/dark/"
+                "ic_preferences_controllers_reload.svg");
+    }
+    m_ui.btnRefreshMappingList->setIcon(QIcon(refreshIconPath));
+    connect(m_ui.btnRefreshMappingList,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefController::slotRefreshMappingList);
+
     m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 
     initTableView(m_ui.midiInputMappingTableView);
@@ -324,13 +340,6 @@ DlgPrefController::DlgPrefController(
     m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
     m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
     m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
-
-#ifndef MIXXX_USE_QML
-    // Remove the screens tab
-    m_ui.controllerTabs->removeTab(m_screensTabIndex);
-    // Just to be save
-    m_screensTabIndex = -1;
-#endif
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -646,6 +655,11 @@ void DlgPrefController::slotUpdate() {
     // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
     // from setting a false-postive 'dirty' flag when updating the fresh GUI.
     m_GuiInitialized = true;
+}
+
+void DlgPrefController::slotRefreshMappingList() {
+    enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
+            m_pController->getName()));
 }
 
 void DlgPrefController::slotHide() {
@@ -1161,8 +1175,10 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
             slotShowPreviewScreens(m_pController->getScriptEngine().get());
         }
     } else {
+#endif
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
         m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, false);
+#ifdef MIXXX_USE_QML
     }
 #endif
 

@@ -385,6 +385,7 @@ void CrateFeature::onRightClickChild(
 
     m_pDeleteCrateAction->setEnabled(!crate.isLocked());
     m_pRenameCrateAction->setEnabled(!crate.isLocked());
+    m_pImportPlaylistAction->setEnabled(!crate.isLocked());
 
     m_pAutoDjTrackSourceAction->setChecked(crate.isAutoDjSource());
 
@@ -402,9 +403,7 @@ void CrateFeature::onRightClickChild(
     menu.addSeparator();
     menu.addAction(m_pAnalyzeCrateAction.get());
     menu.addSeparator();
-    if (!crate.isLocked()) {
-        menu.addAction(m_pImportPlaylistAction.get());
-    }
+    menu.addAction(m_pImportPlaylistAction.get());
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
 #ifdef __ENGINEPRIME__
@@ -665,6 +664,13 @@ void CrateFeature::slotImportPlaylist() {
 }
 
 void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId crateId) {
+    Crate crate;
+    if (!m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
+        return;
+    }
+    if (crate.isLocked()) {
+        return;
+    }
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not

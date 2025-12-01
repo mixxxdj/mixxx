@@ -178,12 +178,22 @@ void BrowseThread::populateModel() {
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_FILENAME, item);
 
-            item = new QStandardItem(trackMetadata.getTrackInfo().getArtist());
+            QString artist = trackMetadata.getTrackInfo().getArtist();
+            QString title = trackMetadata.getTrackInfo().getTitle();
+            if (artist.isEmpty() && title.isEmpty()) {
+                if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
+                            fileAccess.info().fileName(), true)) {
+                    artist = trackMetadata.getTrackInfo().getArtist();
+                    title = trackMetadata.getTrackInfo().getTitle();
+                }
+            }
+
+            item = new QStandardItem(artist);
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_ARTIST, item);
 
-            item = new QStandardItem(trackMetadata.getTrackInfo().getTitle());
+            item = new QStandardItem(title);
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_TITLE, item);

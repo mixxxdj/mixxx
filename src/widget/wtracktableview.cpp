@@ -4,6 +4,7 @@
 #include <QModelIndex>
 #include <QScrollBar>
 #include <QShortcut>
+#include <QStylePainter>
 #include <QUrl>
 
 #include "control/controlobject.h"
@@ -49,12 +50,14 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
           // Default color for the focus border of TableItemDelegates
-          m_focusBorderColor(Qt::white),
-          m_trackPlayedColor(QColor(kDefaultTrackPlayedColor)),
-          m_trackMissingColor(QColor(kDefaultTrackMissingColor)),
+          m_focusBorderColor(kDefaultFocusBorderColor),
+          m_trackPlayedColor(kDefaultTrackPlayedColor),
+          m_trackMissingColor(kDefaultTrackMissingColor),
+          m_dropIndicatorColor(kDefaultDropIndicatorColor),
           m_sorting(false),
           m_selectionChangedSinceLastGuiTick(true),
-          m_loadCachedOnly(false) {
+          m_loadCachedOnly(false),
+          m_dropRow(-1) {
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
@@ -83,6 +86,29 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 }
+#ifdef __LINUX__
+void WTrackTableView::currentChanged(
+        const QModelIndex& current,
+        const QModelIndex& previous) {
+    // This override fixes https://github.com/mixxxdj/mixxx/pull/14734
+    // On Ubuntu-based distros it may happen that the InputMethod management
+    // isn't working correctly for some reason. When the focused cell in the
+    // tracks view is changed, QAbstractItemView::currentChanged()
+    // https://github.com/qt/qtbase/blob/82015992c853b50dac167da26b8b858ac4794c66/src/widgets/itemviews/qabstractitemview.cpp#L3823
+    // enables Qt::WA_InputMethodEnabled for editable columns/cells.
+    // Then, special keys are interpreted as QInputMethodEvent instead of
+    // QKeyEvent, which are therefore not filtered by KeyboardEventFilter and
+    // some keys of built-in keyboard mappings don't work.
+    // (de_DE, fr_FR, fr_CH and probably others).
+    // Reset Qt::WA_InputMethodEnabled right away if no editor is open
+    QTableView::currentChanged(current, previous);
+    if (state() != QTableView::EditingState) {
+        // Does not interfere with hovered Star delegate, the only editor that
+        // is opened on hover.
+        setAttribute(Qt::WA_InputMethodEnabled, false);
+    }
+}
+#endif
 
 void WTrackTableView::enableCachedOnly() {
     if (!m_loadCachedOnly) {
@@ -320,7 +346,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
 
     // Defaults
     setAcceptDrops(true);
-    setDragDropMode(QAbstractItemView::DragOnly);
     // Always enable drag for now (until we have a model that doesn't support
     // this.)
     setDragEnabled(true);
@@ -328,8 +353,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
         setDragDropMode(QAbstractItemView::DragDrop);
         setDropIndicatorShown(true);
-        setAcceptDrops(true);
         //viewport()->setAcceptDrops(true);
+    } else {
+        setDragDropMode(QAbstractItemView::DragOnly);
     }
 
     // Possible giant fuckup alert - It looks like Qt has something like these
@@ -337,6 +363,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // the flags(...) function that we're already using in LibraryTableModel. I
     // haven't been able to get it to stop us from using a model as a drag
     // target though, so my hacks above may not be completely unjustified.
+
+    // Now also apply the current font to the new header
+    pHeader->setFont(font());
 
     setVisible(true);
 
@@ -679,7 +708,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 // Drag enter event, happens when a dragged item hovers over the track table view
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     auto* pTrackModel = getTrackModel();
-    if (!pTrackModel || !event->mimeData()->hasUrls()) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
@@ -696,30 +725,55 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     }
 }
 
+void WTrackTableView::dragLeaveEvent(QDragLeaveEvent* /*event*/) {
+    // Reset drop indicator
+    m_dropRow = -1;
+    update();
+}
+
 // Drag move event, happens when a dragged item hovers over the track table view...
 // It changes the drop handle to a "+" when the drag content is acceptable.
 // Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     auto* pTrackModel = getTrackModel();
-    if (!pTrackModel) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
+        event->ignore();
         return;
     }
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
+    int newDropRow = -1;
+
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
-    if (pTrackModel && event->mimeData()->hasUrls()) {
-        if (event->source() == this) {
-            if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
-                event->acceptProposedAction();
-            } else {
-                event->ignore();
-            }
-        } else {
+    if (event->source() == this) {
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
             event->acceptProposedAction();
+        } else {
+            event->ignore();
         }
     } else {
-        event->ignore();
+        event->acceptProposedAction();
+    }
+
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder) &&
+            event->isAccepted()) {
+        // If this is a playlist, calculate the position where the track(s)
+        // will be inserted.
+        // Handle above/below row v-center like in dropEvent()
+        int posY = event->position().toPoint().y();
+        int hoverRow = rowAt(posY);       // is -1 below last row
+        int height = rowHeight(hoverRow); // is 0 below last row
+        int yBelow = posY + static_cast<int>(height / 2);
+        newDropRow = rowAt(yBelow);
+        if (newDropRow == -1) {
+            newDropRow = model()->rowCount();
+        }
+    }
+
+    if (newDropRow != m_dropRow) {
+        m_dropRow = newDropRow;
+        update();
     }
 }
 
@@ -728,7 +782,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     TrackModel* pTrackModel = getTrackModel();
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
-    if (!pTrackModel) {
+    if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
@@ -736,11 +790,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model available";
-        event->ignore();
-        return;
-    }
-
-    if (!event->mimeData()->hasUrls() || pTrackModel->isLocked()) {
         event->ignore();
         return;
     }
@@ -761,8 +810,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 #else
     QPoint position = event->pos();
 #endif
-    int dropRow = rowAt(position.y());
-    int height = rowHeight(dropRow);
+    int dropRow = rowAt(position.y()); // is -1 below last row
+    int height = rowHeight(dropRow);   // is 0 below last row
     QPoint pointOfRowBelowSeam(position.x(), position.y() + height / 2);
     QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
@@ -841,6 +890,37 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     event->acceptProposedAction();
     updateGeometries();
     verticalScrollBar()->setValue(vScrollBarPos);
+
+    m_dropRow = -1;
+    update();
+}
+
+void WTrackTableView::paintEvent(QPaintEvent* e) {
+    QTableView::paintEvent(e);
+
+    if (m_dropRow < 0) {
+        return;
+    }
+
+    // Draw drop indicator line
+    int y;
+    int rowsTotal = model()->rowCount();
+    if (m_dropRow < rowsTotal) {
+        y = rowViewportPosition(m_dropRow);
+    } else {
+        y = rowViewportPosition(rowsTotal - 1) + rowHeight(0);
+    }
+    // Line is 2px tall. Make sure the entire line is visible.
+    if (y == 0) {
+        y += 1;
+    } else if (y + 1 > viewport()->height()) {
+        y = viewport()->height() - 1;
+    }
+
+    QPainter painter(viewport());
+    QPen pen(m_dropIndicatorColor, 2, Qt::SolidLine);
+    painter.setPen(pen);
+    painter.drawLine(0, y, viewport()->width(), y);
 }
 
 QModelIndexList WTrackTableView::getSelectedRows() const {
@@ -1061,6 +1141,11 @@ void WTrackTableView::moveRows(QList<int> selectedRowsIn, int destRow) {
 }
 
 void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel || pTrackModel->isLocked()) {
+        return;
+    }
+
     QList<int> selectedRows = getSelectedRowNumbers();
     if (selectedRows.isEmpty()) {
         return;
@@ -1087,29 +1172,32 @@ void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
         return;
     }
 
-    int destRow = 0;
-    if (top) {
-        destRow = 0;
-    } else if (bottom || ((bottom || down || pageDown) && lastSelRow == rowCount - 1)) {
-        // In case of End or non-continuous and lastSelRow already at the end
-        // we simply paste at the end by invalidating the index.
+    int destRow = 0; // for Home (top)
+    if (bottom || ((down || pageDown) && lastSelRow == rowCount - 1)) {
+        // In case of End, or non-continuous selection and lastSelRow already
+        // at the end, we simply paste at the end by invalidating the index.
         destRow = -1;
     } else if (up || pageUp) {
         // currentIndex can be anywhere inside or outside the selection.
-        // Set it top or bottom of the selection, then pass through the key event
+        // Set it to first selected row, then pass through the key event
         // to get us the desired destination index.
         setCurrentIndex(model()->index(firstSelRow, currentIndex().column()));
         QTableView::keyPressEvent(event);
         destRow = currentIndex().row();
-    } else {
-        // Same when moving down.
+        if (destRow >= lastSelRow) {
+            // Multiple Up presses caused moveCursor() to wrap around.
+            // Paste at the top.
+            destRow = 0;
+        }
+    } else if (down || pageDown) {
+        // Same when moving down, set index to last selected row.
         setCurrentIndex(model()->index(lastSelRow, currentIndex().column()));
         QTableView::keyPressEvent(event);
         destRow = currentIndex().row() + 1;
-        if (pageDown && destRow >= rowCount) {
-            // PageDown hit the end of the list. Explicitly paste at the
+        if ((pageDown && destRow >= rowCount) || destRow <= firstSelRow) {
+            // PageDown hit the end of the list, or moveCursor() wrapped around.
+            // Explicitly paste at the end.
             destRow = -1;
-        } else {
         }
     }
 
@@ -1180,23 +1268,25 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                 clearSelection();
                 setCurrentIndex(QModelIndex());
             }
+
+            if (event->modifiers().testFlag(Qt::AltModifier) &&
+                    (event->key() == Qt::Key_Up ||
+                            event->key() == Qt::Key_Down ||
+                            event->key() == Qt::Key_PageUp ||
+                            event->key() == Qt::Key_PageDown ||
+                            event->key() == Qt::Key_Home ||
+                            event->key() == Qt::Key_End) &&
+                    pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+                moveSelectedTracks(event);
+                return;
+            }
         }
 
         if (event->matches(QKeySequence::Copy)) {
             copySelectedTracks();
             return;
         }
-        if (event->modifiers().testFlag(Qt::AltModifier) &&
-                (event->key() == Qt::Key_Up ||
-                        event->key() == Qt::Key_Down ||
-                        event->key() == Qt::Key_PageUp ||
-                        event->key() == Qt::Key_PageDown ||
-                        event->key() == Qt::Key_Home ||
-                        event->key() == Qt::Key_End) &&
-                pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
-            moveSelectedTracks(event);
-            return;
-        }
+
         if (event->modifiers().testFlag(Qt::ControlModifier) &&
                 event->modifiers().testFlag(Qt::ShiftModifier) &&
                 event->key() == Qt::Key_C) {

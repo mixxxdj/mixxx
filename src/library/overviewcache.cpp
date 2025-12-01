@@ -37,41 +37,7 @@ inline QImage resizeImageSize(const QImage& image, QSize size) {
 OverviewCache::OverviewCache(UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool)
         : m_pConfig(pConfig),
-          m_pDbConnectionPool(std::move(pDbConnectionPool)),
-          m_clearingCache(false),
-          m_stopClearing(false) {
-}
-
-void OverviewCache::onNormalizeOrVisualGainChanged() {
-    // Clear the cache and emit changed signal so OverviewDelegate requests
-    // new pixmaps.
-    // Prevent interferences of repeated calls when Normalize or VisualGainAll
-    // are changed in quick succession.
-    if (m_clearingCache) {
-        m_stopClearing = true;
-    }
-    m_clearingCache = true;
-
-    QMultiHashIterator<TrackId, QString> it(m_cacheKeysByTrackId);
-    QSet<TrackId> ids;
-    while (it.hasNext()) {
-        if (m_stopClearing) {
-            m_stopClearing = false;
-            return;
-        }
-        it.next();
-        TrackId id = it.key();
-        ids.insert(id);
-        const auto cacheKey = it.value();
-        QPixmapCache::remove(cacheKey);
-    }
-
-    m_cacheKeysByTrackId.clear();
-    m_clearingCache = false;
-
-    for (const auto trackId : ids) {
-        emit overviewChanged(trackId);
-    }
+          m_pDbConnectionPool(std::move(pDbConnectionPool)) {
 }
 
 void OverviewCache::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {

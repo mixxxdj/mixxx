@@ -122,7 +122,13 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 qDebug() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
             }
             auto renderer = pQmlRenderer->create(this);
+#ifdef __STEM__
             VERIFY_OR_DEBUG_ASSERT(renderer.renderer) {
+#else
+            // It is expected for the stem renderer to return a null value in
+            // case STEM are not enabled.
+            if (!renderer.renderer) {
+#endif
                 continue;
             }
             addRenderer(renderer.renderer);

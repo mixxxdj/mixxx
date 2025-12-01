@@ -36,7 +36,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
         PreferencesPage() {
         }
         PreferencesPage(DlgPreferencePage* pDlg, QTreeWidgetItem* pTreeItem)
-                : pDlg(pDlg), pTreeItem(pTreeItem) {
+                : pDlg(pDlg),
+                  pTreeItem(pTreeItem) {
         }
 
         DlgPreferencePage* pDlg;
@@ -107,4 +108,5 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QSize m_pageSizeHint;
 
     QDir m_iconsPath;
+    bool pendingConfigValidOnAllPages();
 };

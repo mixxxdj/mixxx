@@ -33,6 +33,7 @@ class PositionScratchController : public QObject {
         return m_rate;
     }
     void notifySeek(mixxx::audio::FramePos position);
+    void reset();
 
   private slots:
     void slotUpdateFilterParameters(double sampleRate);
@@ -47,7 +48,7 @@ class PositionScratchController : public QObject {
     bool m_isScratching;
     bool m_inertiaEnabled;
     double m_prevSamplePos;
-    double m_seekSamplePos;
+    mixxx::audio::FramePos m_seekFramePos;
     double m_samplePosDeltaSum;
     double m_scratchTargetDelta;
     double m_scratchStartPos;

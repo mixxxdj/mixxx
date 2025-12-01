@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QOpenGLTexture>
 
+#include "control/controlproxy.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/engine.h"
 #include "rendergraph/material/rgbamaterial.h"
@@ -13,6 +14,7 @@
 #include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
 
 namespace {
 #ifdef __SCENEGRAPH__
@@ -34,7 +36,9 @@ WaveformRendererStem::WaveformRendererStem(
         ::WaveformRendererAbstract::PositionSource type)
         : WaveformRendererSignalBase(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
-          m_splitStemTracks(false) {
+          m_splitStemTracks(false),
+          m_outlineOpacity(0.15f),
+          m_opacity(0.75f) {
     initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);
 }
@@ -46,12 +50,43 @@ bool WaveformRendererStem::init() {
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         QString stemGroup = EngineDeck::getGroupForStem(m_waveformRenderer->getGroup(), stemIdx);
         m_pStemGain.emplace_back(
-                std::make_unique<PollingControlProxy>(stemGroup,
+                std::make_unique<ControlProxy>(stemGroup,
                         QStringLiteral("volume")));
         m_pStemMute.emplace_back(
-                std::make_unique<PollingControlProxy>(stemGroup,
+                std::make_unique<ControlProxy>(stemGroup,
                         QStringLiteral("mute")));
+        auto bringToForeground = [this, stemIdx](double) {
+            if (!m_reorderOnChange) {
+                return;
+            }
+            m_stackOrder.removeAll(stemIdx);
+            m_stackOrder.append(stemIdx);
+        };
+        m_pStemGain.back()->connectValueChanged(this, bringToForeground);
+        m_pStemMute.back()->connectValueChanged(this, bringToForeground);
     }
+
+    m_stackOrder.resize(mixxx::kMaxSupportedStems);
+    std::iota(m_stackOrder.begin(), m_stackOrder.end(), 0);
+
+#ifndef __SCENEGRAPH__
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    setReorderOnChange(pWaveformWidgetFactory->isStemReorderOnChange());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemReorderOnChangeChanged,
+            this,
+            &WaveformRendererStem::setReorderOnChange);
+    setOutlineOpacity(pWaveformWidgetFactory->getStemOutlineOpacity());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemOutlineOpacityChanged,
+            this,
+            &WaveformRendererStem::setOutlineOpacity);
+    setOpacity(pWaveformWidgetFactory->getStemOpacity());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemOpacityChanged,
+            this,
+            &WaveformRendererStem::setOpacity);
+#endif
     return true;
 }
 
@@ -152,7 +187,8 @@ bool WaveformRendererStem::preprocessInner() {
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
     for (int visualIdx = 0; visualIdx < stripLength; visualIdx++) {
-        for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        int stemLayer = 0;
+        for (int stemIdx : std::as_const(m_stackOrder)) {
             // Stem is drawn twice with different opacity level, this allow to
             // see the maximum signal by transparency
             for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
@@ -160,7 +196,7 @@ bool WaveformRendererStem::preprocessInner() {
                 float color_r = stemColor.redF(),
                       color_g = stemColor.greenF(),
                       color_b = stemColor.blueF(),
-                      color_a = stemColor.alphaF() * (layerIdx ? 0.75f : 0.15f);
+                      color_a = stemColor.alphaF() * (layerIdx ? m_opacity : m_outlineOpacity);
                 const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
                 const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
@@ -187,26 +223,34 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Apply the gains
                 if (layerIdx) {
-                    max *= m_pStemMute[stemIdx]->toBool() ||
-                                    (selectedStems &&
-                                            !(selectedStems & 1 << stemIdx))
-                            ? 0.f
-                            : static_cast<float>(m_pStemGain[stemIdx]->get());
+                    if (selectedStems) {
+                        max *= !(selectedStems & 1 << stemIdx)
+                                ? 0.f
+                                : 1.f;
+                    } else if (!m_pStemMute.empty() && m_pStemMute[stemIdx]->toBool()) {
+                        max = 0;
+                    } else {
+                        float volume = m_pStemGain.empty()
+                                ? 1.f
+                                : static_cast<float>(m_pStemGain[stemIdx]->get());
+                        max *= volume;
+                    }
                 }
 
                 // Lines are thin rectangles
                 // shadow
                 vertexUpdater.addRectangle(
                         {fVisualIdx - halfStripSize,
-                                stemIdx * stemBreadth + halfBreadth -
+                                stemLayer * stemBreadth + halfBreadth -
                                         heightFactor * max},
                         {fVisualIdx + halfStripSize,
                                 m_isSlipRenderer
-                                        ? stemIdx * stemBreadth + halfBreadth
-                                        : stemIdx * stemBreadth + halfBreadth +
+                                        ? stemLayer * stemBreadth + halfBreadth
+                                        : stemLayer * stemBreadth + halfBreadth +
                                                 heightFactor * max},
                         {color_r, color_g, color_b, color_a});
             }
+            stemLayer++;
         }
 
         xVisualFrame += visualIncrementPerPixel;

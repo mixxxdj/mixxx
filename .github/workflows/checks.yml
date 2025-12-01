@@ -3,9 +3,7 @@
 name: build-checks
 
 on:
-  push:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
+  workflow_call:
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -26,7 +24,7 @@ jobs:
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Add clazy PPA
         if: matrix.name == 'clazy'
         # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04
@@ -139,8 +137,6 @@ jobs:
         run: ctest --timeout 45
         working-directory: build
         env:
-          # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
           GTEST_COLOR: 1
           # Only use single thread to prevent *.gcna files from overwriting each other
           CTEST_PARALLEL_LEVEL: 1

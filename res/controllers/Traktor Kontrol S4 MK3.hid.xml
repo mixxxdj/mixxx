@@ -16,77 +16,89 @@
                     variable="deckA"
                     type="enum"
                     label="Deck A">
-                    <value label="Aqua">aqua</value>
-                    <value label="Azalea">azalea</value>
-                    <value label="Blue">blue</value>
-                    <value label="Celeste">celeste</value>
-                    <value label="Fuscia">fuscia</value>
-                    <value label="Green">green</value>
-                    <value label="Lime">lime</value>
-                    <value label="Orange">orange</value>
-                    <value label="Purple">purple</value>
-                    <value label="Red" default="true">red</value>
-                    <value label="Salmon">salmon</value>
-                    <value label="Sky">sky</value>
-                    <value label="White">white</value>
-                    <value label="Yellow">yellow</value>
+                    <value label="Aqua" color="#00FF49">aqua</value>
+                    <value label="Azalea" color="#FF477E">azalea</value>
+                    <value label="Blue" color="#0000FF">blue</value>
+                    <value label="Carrot" color="#FF5E00">carrot</value>
+                    <value label="Celeste" color="#00FFFF">celeste</value>
+                    <value label="Fuscia" color="#FF0091">fuscia</value>
+                    <value label="Green" color="#00FF00">green</value>
+                    <value label="Honey" color="#FF9200">honey</value>
+                    <value label="Lime" color="#81FF00">lime</value>
+                    <value label="Magenta" color="#FF0079">magenta</value>
+                    <value label="Orange" color="#FF7800">orange</value>
+                    <value label="Purple" color="#FF00FF">purple</value>
+                    <value label="Red" color="#FF0000" default="true">red</value>
+                    <value label="Salmon" color="#FF4761">salmon</value>
+                    <value label="Sky" color="#0091FF">sky</value>
+                    <value label="White" color="#FFFFFF">white</value>
+                    <value label="Yellow" color="#FFFF00">yellow</value>
                 </option>
                 <option
                     variable="deckB"
                     type="enum"
                     label="Deck B">
-                    <value label="Aqua">aqua</value>
-                    <value label="Azalea">azalea</value>
-                    <value label="Blue" default="true">blue</value>
-                    <value label="Celeste">celeste</value>
-                    <value label="Fuscia">fuscia</value>
-                    <value label="Green">green</value>
-                    <value label="Lime">lime</value>
-                    <value label="Orange">orange</value>
-                    <value label="Purple">purple</value>
-                    <value label="Red">red</value>
-                    <value label="Salmon">salmon</value>
-                    <value label="Sky">sky</value>
-                    <value label="White">white</value>
-                    <value label="Yellow">yellow</value>
+                    <value label="Aqua" color="#00FF49">aqua</value>
+                    <value label="Azalea" color="#FF477E">azalea</value>
+                    <value label="Blue" color="#0000FF" default="true">blue</value>
+                    <value label="Carrot" color="#FF5E00">carrot</value>
+                    <value label="Celeste" color="#00FFFF">celeste</value>
+                    <value label="Fuscia" color="#FF0091">fuscia</value>
+                    <value label="Green" color="#00FF00">green</value>
+                    <value label="Honey" color="#FF9200">honey</value>
+                    <value label="Lime" color="#81FF00">lime</value>
+                    <value label="Magenta" color="#FF0079">magenta</value>
+                    <value label="Orange" color="#FF7800">orange</value>
+                    <value label="Purple" color="#FF00FF">purple</value>
+                    <value label="Red" color="#FF0000">red</value>
+                    <value label="Salmon" color="#FF4761">salmon</value>
+                    <value label="Sky" color="#0091FF">sky</value>
+                    <value label="White" color="#FFFFFF">white</value>
+                    <value label="Yellow" color="#FFFF00">yellow</value>
                 </option>
                 <option
                     variable="deckC"
                     type="enum"
                     label="Deck C">
-                    <value label="Aqua">aqua</value>
-                    <value label="Azalea">azalea</value>
-                    <value label="Blue">blue</value>
-                    <value label="Celeste">celeste</value>
-                    <value label="Fuscia">fuscia</value>
-                    <value label="Green">green</value>
-                    <value label="Lime">lime</value>
-                    <value label="Orange">orange</value>
-                    <value label="Purple">purple</value>
-                    <value label="Red">red</value>
-                    <value label="Salmon">salmon</value>
-                    <value label="Sky">sky</value>
-                    <value label="White">white</value>
-                    <value label="Yellow" default="true">yellow</value>
+                    <value label="Aqua" color="#00FF49">aqua</value>
+                    <value label="Azalea" color="#FF477E">azalea</value>
+                    <value label="Blue" color="#0000FF">blue</value>
+                    <value label="Carrot" color="#FF5E00">carrot</value>
+                    <value label="Celeste" color="#00FFFF">celeste</value>
+                    <value label="Fuscia" color="#FF0091">fuscia</value>
+                    <value label="Green" color="#00FF00">green</value>
+                    <value label="Honey" color="#FF9200">honey</value>
+                    <value label="Lime" color="#81FF00">lime</value>
+                    <value label="Magenta" color="#FF0079">magenta</value>
+                    <value label="Orange" color="#FF7800">orange</value>
+                    <value label="Purple" color="#FF00FF">purple</value>
+                    <value label="Red" color="#FF0000">red</value>
+                    <value label="Salmon" color="#FF4761">salmon</value>
+                    <value label="Sky" color="#0091FF">sky</value>
+                    <value label="White" color="#FFFFFF">white</value>
+                    <value label="Yellow" color="#FFFF00" default="true">yellow</value>
                 </option>
                 <option
                     variable="deckD"
                     type="enum"
                     label="Deck D">
-                    <value label="Aqua">aqua</value>
-                    <value label="Azalea">azalea</value>
-                    <value label="Blue">blue</value>
-                    <value label="Celeste">celeste</value>
-                    <value label="Fuscia">fuscia</value>
-                    <value label="Green">green</value>
-                    <value label="Lime">lime</value>
-                    <value label="Orange">orange</value>
-                    <value label="Purple" default="true">purple</value>
-                    <value label="Red">red</value>
-                    <value label="Salmon">salmon</value>
-                    <value label="Sky">sky</value>
-                    <value label="White">white</value>
-                    <value label="Yellow">yellow</value>
+                    <value label="Aqua" color="#00FF49">aqua</value>
+                    <value label="Azalea" color="#FF477E">azalea</value>
+                    <value label="Blue" color="#0000FF">blue</value>
+                    <value label="Carrot" color="#FF5E00">carrot</value>
+                    <value label="Celeste" color="#00FFFF">celeste</value>
+                    <value label="Fuscia" color="#FF0091">fuscia</value>
+                    <value label="Green" color="#00FF00">green</value>
+                    <value label="Honey" color="#FF9200">honey</value>
+                    <value label="Lime" color="#81FF00">lime</value>
+                    <value label="Magenta" color="#FF0079">magenta</value>
+                    <value label="Orange" color="#FF7800">orange</value>
+                    <value label="Purple" color="#FF00FF" default="true">purple</value>
+                    <value label="Red" color="#FF0000">red</value>
+                    <value label="Salmon" color="#FF4761">salmon</value>
+                    <value label="Sky" color="#0091FF">sky</value>
+                    <value label="White" color="#FFFFFF">white</value>
+                    <value label="Yellow" color="#FFFF00">yellow</value>
                 </option>
             </row>
             <option
@@ -183,17 +195,30 @@
                     Defines the center range in mm where the rate snaps to 0.
                 </description>
             </option>
-            <option
-                variable="tempoCenterOffsetMm"
-                type="real"
-                min="-3.0"
-                max="3.0"
-                default="0.0"
-                label="Center Snap Offset in Millimeter">
-                <description>
-                    Shifts the center range in case it doesn't match the center marker.
-                </description>
-            </option>
+            <row orientation="vertical">
+                <option
+                    variable="tempoCenterOffsetMmLeft"
+                    type="real"
+                    min="-3.0"
+                    max="3.0"
+                    default="0.0"
+                    label="Center Snap Offset in Millimeter (Left Deck)">
+                    <description>
+                        Shifts the center range in case it doesn't match the center marker.
+                    </description>
+                </option>
+                <option
+                    variable="tempoCenterOffsetMmRight"
+                    type="real"
+                    min="-3.0"
+                    max="3.0"
+                    default="0.0"
+                    label="Center Snap Offset in Millimeter (Right Deck)">
+                    <description>
+                        Shifts the center range in case it doesn't match the center marker.
+                    </description>
+                </option>
+            </row>
         </group>
 
         <group label="Alternative Mapping">
@@ -411,6 +436,188 @@
             </row>
         </group>
 
+        <group label="Beatjump Size">
+            <row orientation="vertical">
+                <option
+                    variable="beatJumpSize1"
+                    type="enum"
+                    label="First Pad">
+                    <value label="Use current beatjump size" default="true">beatjump</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="16">16</value>
+                    <value label="32">32</value>
+                    <value label="64">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size">half</value>
+                    <value label="Double beatjump size">double</value>
+                    <description>The top left or pad button.</description>
+                </option>
+                <option
+                    variable="beatJumpSize2"
+                    type="enum"
+                    label="Second Pad">
+                    <value label="Use current beatjump size">beatjump</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4" default="true">4</value>
+                    <value label="8">8</value>
+                    <value label="16">16</value>
+                    <value label="32">32</value>
+                    <value label="64">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size">half</value>
+                    <value label="Double beatjump size">double</value>
+                    <description>The top left second pad button.</description>
+                </option>
+                <option
+                    variable="beatJumpSize3"
+                    type="enum"
+                    label="Third Pad">
+                    <value label="Use current beatjump size">beatjump</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4" default="true">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8" default="true">8</value>
+                    <value label="16">16</value>
+                    <value label="32">32</value>
+                    <value label="64">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size">half</value>
+                    <value label="Double beatjump size">double</value>
+                    <description>The top right second pad button.</description>
+                </option>
+                <option
+                    variable="beatJumpSize4"
+                    type="enum"
+                    label="Fourth Pad">
+                    <value label="Use current beatjump size">beatjump</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2" default="true">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="16" default="true">16</value>
+                    <value label="32">32</value>
+                    <value label="64">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size">half</value>
+                    <value label="Double beatjump size">double</value>
+                    <description>The top right pad button.</description>
+                </option>
+            </row>
+            <row orientation="vertical">
+                <option
+                    variable="beatJumpSize5"
+                    type="enum"
+                    label="Fifth Pad">
+                    <value label="Use current beatjump size">beatjump</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="16">16</value>
+                    <value label="32" default="true">32</value>
+                    <value label="64">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size">half</value>
+                    <value label="Double beatjump size">double</value>
+                    <description>The bottom left pad button.</description>
+                </option>
+                <option
+                    variable="beatJumpSize6"
+                    type="enum"
+                    label="Sixth Pad">
+                    <value label="Use current beatjump size">beatjump</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2" default="true">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="16">16</value>
+                    <value label="32">32</value>
+                    <value label="64" default="true">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size">half</value>
+                    <value label="Double beatjump size">double</value>
+                    <description>The bottom left second pad button.</description>
+                </option>
+                <option
+                    variable="beatJumpSize7"
+                    type="enum"
+                    label="Seventh Pad">
+                    <value label="Use current beatjump size">half</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4" >4</value>
+                    <value label="8">8</value>
+                    <value label="16">16</value>
+                    <value label="32">32</value>
+                    <value label="64">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size" default="true">half</value>
+                    <value label="Double beatjump size">double</value>
+                    <description>The bottom right second pad button.</description>
+                </option>
+                <option
+                    variable="beatJumpSize8"
+                    type="enum"
+                    label="Eighth Pad">
+                    <value label="Use current beatjump size">beatjump</value>
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="16">16</value>
+                    <value label="32">32</value>
+                    <value label="64">64</value>
+                    <value label="128">128</value>
+                    <value label="Halve beatjump size">half</value>
+                    <value label="Double beatjump size" default="true">double</value>
+                    <description>The bottom right pad button.</description>
+                </option>
+            </row>
+        </group>
         <group label="Library">
             <row orientation="vertical">
                 <option
@@ -678,7 +885,7 @@
             </row>
         </group>
     </settings>
-    <controller id="Traktor">
+    <controller id="Traktor" namespace="S4MK3">
         <scriptfiles>
             <file filename="Traktor-Kontrol-S4-MK3.js" functionprefix="TraktorS4MK3"/>
         </scriptfiles>

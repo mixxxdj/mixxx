@@ -280,6 +280,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #006596; /* blue like the track selection color */
 }
 
 WTrackTableView:focus,
@@ -385,9 +387,8 @@ WTrackTableViewHeader {
 }
 
 WTrackTableViewHeader::section {
-  height: 1.1em;
   font-weight: bold;
-  padding: 0.1em -1em 0.1em 0.1em;
+  padding: 2px;
   background-color: #1A1A1A;
   border-top: none;
   border-left: none;
@@ -874,7 +875,6 @@ WBeatSpinBox,
 WOverview #PassthroughLabel,
 /* all context menus */
 #MainMenu, #MainMenu QMenu,
-WLibrarySidebar,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader,
 WTrackTableViewHeader QMenu,
@@ -896,7 +896,6 @@ WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector,
 WEffectChainPresetSelector QAbstractScrollArea,
-WSearchLineEdit,
 WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
@@ -1440,10 +1439,10 @@ WEffectChainPresetButton::menu-indicator {
   background-color: #333333;
 }
 
-WWidget, WLabel {
-  /* All labels should default to a grey that is readable on black. */
+WWidget, WLabel,
+#ToolBar WWidget, #ToolBar WLabel {
+  /* All labels in toolbar should default to a grey that is readable on black. */
   color: #D2D2D2;
-  font-size: 12px;
 }
 
 /* Track text, etc. should be in the deck color. */
@@ -1481,12 +1480,15 @@ WNumberRate {
   margin: 1px;
 }
 
-#EQKillButton[value="1"] {
+#EQKillButton[value="1"], #StemMuteButton[value="0"] {
   background-color: #bb0000;
   }
-  #EQKillButton[value="1"]:hover {
+  #EQKillButton[value="1"]:hover, #StemMuteButton[value="1"]:hover {
     background-color: #e30000;
   }
+#StemMuteButton[value="0"]:hover {
+  background-color: #0080BE;
+}
 
 #SmallCircleButton {
   border: 2px solid #333333;
@@ -1696,7 +1698,8 @@ WWidgetGroup {
 
 WPushButton,
 WEffectChainPresetButton,
-#BpmLockToggle[value="1"] {
+#BpmLockToggle[value="1"],
+#LoopAnchor[value="1"] {
     color: #D2D2D2;
     background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
@@ -1707,7 +1710,8 @@ WEffectChainPresetButton,
 WPushButton:hover,
 #PlayToggle:hover,
 WEffectChainPresetButton:hover,
-#BpmLockToggle[value="1"]:hover {
+#BpmLockToggle[value="1"]:hover,
+#LoopAnchor[value="1"]:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 1px solid #5F5F5F;
