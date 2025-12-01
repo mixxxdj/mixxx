@@ -122,6 +122,7 @@ bool CueDAO::deleteCuesForTrack(TrackId trackId) const {
     query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE track_id=:track_id"));
     query.bindValue(":track_id", trackId.toVariant());
     if (query.exec()) {
+        updateTrackHotcueCount(trackId);
         return true;
     } else {
         LOG_FAILED_QUERY(query);
@@ -141,6 +142,10 @@ bool CueDAO::deleteCuesForTracks(const QList<TrackId>& trackIds) const {
     query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE track_id in (%1)")
                   .arg(idList.join(",")));
     if (query.exec()) {
+        // update hotcue count for all affected tracks
+        for (const auto& trackId : trackIds) {
+            updateTrackHotcueCount(trackId);
+        }
         return true;
     } else {
         LOG_FAILED_QUERY(query);
@@ -243,5 +248,44 @@ void CueDAO::saveTrackCues(
                 << query.numRowsAffected()
                 << "orphaned cue(s) of track"
                 << trackId;
+    }
+
+    // update hotcue count in library table
+    updateTrackHotcueCount(trackId);
+}
+
+void CueDAO::updateTrackHotcueCount(TrackId trackId) const {
+    DEBUG_ASSERT(trackId.isValid());
+    FwdSqlQuery query(
+            m_database,
+            QStringLiteral("UPDATE library SET hotcue_count = ("
+                           "SELECT COUNT(*) FROM cues "
+                           "WHERE cues.track_id = :track_id "
+                           "AND cues.type = 1 "
+                           "AND cues.hotcue >= 0"
+                           ") WHERE id = :track_id"));
+    DEBUG_ASSERT(query.isPrepared() && !query.hasError());
+    query.bindValue(":track_id", trackId);
+    if (!query.execPrepared()) {
+        kLogger.warning()
+                << "Failed to update hotcue count for track"
+                << trackId;
+        DEBUG_ASSERT(!"failed query");
+    }
+}
+
+void CueDAO::updateTrackHotcueCount(TrackId trackId, int hotcueCount) const {
+    DEBUG_ASSERT(trackId.isValid());
+    FwdSqlQuery query(
+            m_database,
+            QStringLiteral("UPDATE library SET hotcue_count = :count WHERE id = :track_id"));
+    DEBUG_ASSERT(query.isPrepared() && !query.hasError());
+    query.bindValue(":count", QVariant(hotcueCount));
+    query.bindValue(":track_id", trackId);
+    if (!query.execPrepared()) {
+        kLogger.warning()
+                << "Failed to update hotcue count for track"
+                << trackId;
+        DEBUG_ASSERT(!"failed query");
     }
 }

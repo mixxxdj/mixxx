@@ -661,6 +661,24 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return QString::number(timesPlayed);
         }
+        case ColumnCache::COLUMN_LIBRARYTABLE_HOTCUE_COUNT: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
+                return QVariant();
+            }
+            bool ok;
+            const auto hotcueCount = rawValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok && hotcueCount >= 0) {
+                return QVariant();
+            }
+            // display nothing if no hotcues
+            if (hotcueCount == 0) {
+                return QVariant();
+            }
+            return QString::number(hotcueCount);
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
