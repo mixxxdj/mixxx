@@ -47,6 +47,9 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void focusSelectedIndex();
     QModelIndex selectedIndex();
 
+    void resetHoverIndexAndDragMoveResult();
+
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
+    bool m_lastDragMoveAccepted;
 };
