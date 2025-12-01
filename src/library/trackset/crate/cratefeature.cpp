@@ -22,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
+#include "util/dnd.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -256,7 +257,7 @@ bool CrateFeature::dropAcceptChild(
     return true;
 }
 
-bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
         return false;
@@ -266,8 +267,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url
             crate.isLocked()) {
         return false;
     }
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+    // stop on first match, accept playlist files
+    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, true).isEmpty();
 }
 
 void CrateFeature::bindLibraryWidget(

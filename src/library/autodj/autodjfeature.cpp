@@ -250,9 +250,9 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
-bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool AutoDJFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    // stop on first match, accept playlist files
+    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, true).isEmpty();
 }
 
 void AutoDJFeature::slotEnableAutoDJ() {

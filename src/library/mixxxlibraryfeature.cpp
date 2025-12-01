@@ -18,6 +18,7 @@
 #include "library/treeitem.h"
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #ifdef __ENGINEPRIME__
 #include "widget/wlibrarysidebar.h"
@@ -213,9 +214,9 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
     }
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool MixxxLibraryFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    // stop on first match, accept playlist files
+    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, true).isEmpty();
 }
 
 #ifdef __ENGINEPRIME__

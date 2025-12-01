@@ -14,6 +14,7 @@
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
+#include "util/dnd.h"
 #include "util/duration.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -136,13 +137,17 @@ bool PlaylistFeature::dropAcceptChild(
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     int playlistId = playlistIdFromIndex(index);
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    if (playlistId == kInvalidPlaylistId) {
+        return false;
+    }
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        return false;
+    }
 
-    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
-    return !locked && formatSupported;
+    // stop on first match, accept playlist files
+    return !DragAndDropHelper::supportedTracksFromUrls(urls, true, true).isEmpty();
 }
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
