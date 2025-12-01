@@ -15,14 +15,14 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
   public:
     explicit WLibrarySidebar(QWidget* parent = nullptr);
 
-    void contextMenuEvent(QContextMenuEvent * event) override;
-    void dragMoveEvent(QDragMoveEvent * event) override;
-    void dragEnterEvent(QDragEnterEvent * event) override;
-    void dropEvent(QDropEvent * event) override;
-    void keyPressEvent(QKeyEvent* event) override;
-    void mousePressEvent(QMouseEvent* event) override;
-    void focusInEvent(QFocusEvent* event) override;
-    void timerEvent(QTimerEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* pEvent) override;
+    void dragMoveEvent(QDragMoveEvent* pEvent) override;
+    void dragEnterEvent(QDragEnterEvent* pEvent) override;
+    void dropEvent(QDropEvent* pEvent) override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
+    void mousePressEvent(QMouseEvent* pEvent) override;
+    void focusInEvent(QFocusEvent* pEvent) override;
+    void timerEvent(QTimerEvent* pEvent) override;
     void toggleSelectedItem();
     void renameSelectedItem();
     bool isLeafNodeSelected();
