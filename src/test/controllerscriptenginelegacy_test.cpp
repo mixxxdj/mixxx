@@ -86,7 +86,6 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
         m_pEffectsManager = std::make_shared<EffectsManager>(config(), pChannelHandleFactory);
         m_pEngine = std::make_shared<EngineMixer>(
                 config(),
-                "[Master]",
                 m_pEffectsManager.get(),
                 pChannelHandleFactory,
                 true);

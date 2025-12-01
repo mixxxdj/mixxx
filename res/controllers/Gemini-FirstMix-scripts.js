@@ -15,8 +15,8 @@
  * EFX/fader knobs: Since the EFX function in Mixxx is kinda useless (only a flanger effect that doesn't sound that different), the EFX knobs adjust the gain,
  * the gain knobs to adjust the high fader and the treble knobs to adjust the mid fader. This way, you get high/mid/low faders.
  *
- * EFX buttons & Master volume: The EFX buttons are mapped to send that deck to the headphones (a.k.a PFL function). The buttons light up to indicate PFL state.
- * The master volume knob is mapped to headMix (the cue/main mix in the headphones). If you have two soundcards, this will allow you to cross-fade through the headphones before you do it live.
+ * EFX buttons & Main volume: The EFX buttons are mapped to send that deck to the headphones (a.k.a PFL function). The buttons light up to indicate PFL state.
+ * The master volume knob is mapped to headphone_mix (the cue/main mix in the headphones). If you have two soundcards, this will allow you to cross-fade through the headphones before you do it live.
  *
  * Play/Cue button blinking: The play button will blink on every beat when the track is playing. Starting at secondsBlink seconds (default is 30) before the end of the track, the CUE button
  * also blinks to warn you that the track is about to end.
@@ -75,8 +75,8 @@ firstmix.init = function (channel, control, value, status, group) {
     // midi.sendShortMsg(0xB0,0x7F,0x7F);
 
     // Enable soft-takeover for all direct hardware controls
-    engine.softTakeover("[Master]","crossfader",true);
-    engine.softTakeover("[Master]","headMix",true);
+    engine.softTakeover("[Mixer]","crossfader",true);
+    engine.softTakeover("[Mixer]","headphone_mix",true);
     engine.softTakeover("[Channel1]","pregain",true);
     engine.softTakeover("[Channel1]","filterHigh",true);
     engine.softTakeover("[Channel1]","filterMed",true);

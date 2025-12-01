@@ -19,6 +19,8 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
     EngineTalkoverDucking(UserSettingsPointer pConfig, const QString& group);
     virtual ~EngineTalkoverDucking();
 
+    void addAlias(const ConfigKey& duckStrengthKey, const ConfigKey& talkoverDuckingKey);
+
     TalkoverDuckSetting getMode() const {
         return static_cast<TalkoverDuckSetting>(int(m_pTalkoverDucking->get()));
     }
