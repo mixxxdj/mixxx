@@ -13,7 +13,8 @@ constexpr int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
-          WBaseWidget(this) {
+          WBaseWidget(this),
+          m_lastDragMoveAccepted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
@@ -46,6 +47,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* pEvent) {
 /// Drag enter event, happens when a dragged item enters the track sources view
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* pEvent) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << pEvent->mimeData()->formats();
+    resetHoverIndexAndDragMoveResult();
     if (pEvent->mimeData()->hasUrls()) {
         // We don't have a way to ask the LibraryFeatures whether to accept a
         // drag so for now we accept all drags. Since almost every
@@ -66,28 +68,28 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* pEvent) {
 /// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     // qDebug() << "dragMoveEvent" << pEvent->mimeData()->formats();
-    // Start a timer to auto-expand sections the user hovers on.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QPoint pos = pEvent->position().toPoint();
 #else
     QPoint pos = pEvent->pos();
 #endif
     const QModelIndex index = indexAt(pos);
-    if (m_hoverIndex != index) {
-        m_expandTimer.stop();
-        m_hoverIndex = index;
-        m_expandTimer.start(expand_time, this);
+    if (m_hoverIndex == index) {
+        m_lastDragMoveAccepted ? pEvent->acceptProposedAction() : pEvent->ignore();
+        return;
     }
-    // FIXME Avoid repeated url check for every drag move:
-    // * return previous result if m_hoverIndex == index
-    // * reset m_hoverIndex in dragLeaveEvent and dropEvent
-    // * also track urls?
+
+    // Start a timer to auto-expand sections the user hovers on
+    m_expandTimer.stop();
+    m_hoverIndex = index;
+    m_expandTimer.start(expand_time, this);
 
     // This has to be here instead of after, otherwise all drags will be
     // rejected -- rryan 3/2011
     QTreeView::dragMoveEvent(pEvent);
     if (!pEvent->mimeData()->hasUrls()) {
         pEvent->ignore();
+        m_lastDragMoveAccepted = false;
         return;
     }
 
@@ -95,18 +97,22 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     // Drag and drop within this widget
     if ((pEvent->source() == this) && (pEvent->possibleActions() & Qt::MoveAction)) {
         // Do nothing.
+        m_lastDragMoveAccepted = false;
         pEvent->ignore();
         return;
     }
 
     SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
     VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
+        m_lastDragMoveAccepted = false;
         pEvent->ignore();
         return;
     }
     if (pSidebarModel->dragMoveAccept(index, urls)) {
+        m_lastDragMoveAccepted = true;
         pEvent->acceptProposedAction();
     } else {
+        m_lastDragMoveAccepted = false;
         pEvent->ignore();
     }
 }
@@ -128,6 +134,7 @@ void WLibrarySidebar::timerEvent(QTimerEvent* pEvent) {
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
+    resetHoverIndexAndDragMoveResult();
     if (!pEvent->mimeData()->hasUrls()) {
         pEvent->ignore();
         return;
@@ -162,6 +169,11 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
     } else {
         pEvent->ignore();
     }
+}
+
+void WLibrarySidebar::resetHoverIndexAndDragMoveResult() {
+    m_hoverIndex = QModelIndex();
+    m_lastDragMoveAccepted = false;
 }
 
 void WLibrarySidebar::renameSelectedItem() {
