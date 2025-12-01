@@ -593,6 +593,14 @@ TrackPointer TrackCollectionManager::getTrackByRef(
             trackRef);
 }
 
+QList<TrackId> TrackCollectionManager::resolveTrackIds(
+        const QList<mixxx::FileInfo>& fileInfos,
+        QObject* pSource) const {
+    return internalCollection()->resolveTrackIds(
+            fileInfos,
+            pSource);
+}
+
 QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls,
         bool addMissing) const {
