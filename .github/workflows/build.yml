@@ -215,9 +215,8 @@ jobs:
         # On windows-11-arm this action installs the x64 version which has unwanted side effects
         if: matrix.os == 'windows-2022'
         with:
-          # This is a workaround for a SSL false positive in cmake 3.26.4
-          # When downloading the manual. 3.21 is required for installing the
-          # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
+          # This version of CMake is needed for Wix Toolset >= v4 support,
+          # see: https://cmake.org/cmake/help/latest/cpack_gen/wix.html#variable:CPACK_WIX_VERSION
           cmake-version: "3.30.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
