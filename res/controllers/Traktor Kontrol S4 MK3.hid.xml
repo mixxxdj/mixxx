@@ -252,6 +252,35 @@
                     Define the default layout used for the pads.
                 </description>
             </option>
+            <option
+                variable="alternativeMoveMode"
+                type="boolean"
+                default="false"
+                label="Alternative assignments for move button">
+                <description>
+                    Move encoder: Adjust beatjump size
+                    :hwbtn:`SHIFT` + move encoder: Beatjump
+                    Push + move encoder: adjust pitch up and down.
+                </description>
+            </option>
+            <option
+                variable="relativeTempoMode"
+                type="boolean"
+                default="false"
+                label="Tempo fader relative movement mode">
+                <description>
+                    No need for soft takeover. :hwbtn:`SHIFT` + tempo fader does not change tempo.
+                </description>
+            </option>
+            <option
+                variable="shiftTempoMode"
+                type="boolean"
+                default="false"
+                label="For Relative mode, Tempo does not adjust unless :hwbtn:`SHIFT` is held">
+                <description>
+                    Helps protect against accidental bumps.
+                </description>
+            </option>
         </group>
 
         <group label="Mixer">
@@ -797,6 +826,19 @@
                 Define the sensitivity factor when the jogwheel is used to move the in and out point of a loop using the Loop Mode.
             </description>
             <row>
+                <option
+                    variable="jogwheelAdjustFactor"
+                    type="real"
+                    precision="2"
+                    min="0.1"
+                    max="16.0"
+                    step="0.1"
+                    default="1.0"
+                    label="Jogwheel sensitivity in adjustment">
+                    <description>
+                        Define the sensitivity of the jogwheel when adjusting (not touched).
+                    </description>
+                </option>
                 <option
                     variable="loopEncoderMoveFactor"
                     type="integer"
