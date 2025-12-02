@@ -469,6 +469,8 @@ Rectangle {
                         root.hasChanges = true
                     }
 
+                    maxWidth: mainCanvas.width < 560 ? 200 : 400
+
                     Mixxx.SettingParameter {
                         label: "Multi-Soundcard Synchronization"
                     }
