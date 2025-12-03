@@ -52,6 +52,15 @@
             <row orientation="vertical">
             </row>
         </group>
+        <group label="Parameters">
+            <option
+                variable="numarkMixTrackPro_scratchSensibility"
+                type="integer"
+                label="Scratch Sensibility (default 600)"
+                default="600"
+                >
+            </option>
+        </group>
     </settings>
     <controller id="Numark_Mixtrack_Pro">
         <scriptfiles>

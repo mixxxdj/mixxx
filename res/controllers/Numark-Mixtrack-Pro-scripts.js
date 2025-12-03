@@ -74,6 +74,7 @@ NumarkMixTrackPro.init = function(id) {
     NumarkMixTrackPro.shiftKey = [false, false]; // used as [Shift], aka "VIEW" and "TICK" buttons
     NumarkMixTrackPro.touch = [false, false];
     NumarkMixTrackPro.scratchTimer = [-1, -1];
+    NumarkMixTrackPro.scratchLast = [-1, -1];
     NumarkMixTrackPro.fxKnobPressed = [0, 0];
     NumarkMixTrackPro.syncLastTimestamp = [0, 0];
     NumarkMixTrackPro.loopEditIn = [-1, -1];
@@ -252,11 +253,21 @@ NumarkMixTrackPro.init = function(id) {
         "meanPitchBendBtns",
         "editLoopByWheelEnabled",
         "quickFxActivator",
+        "scratchSensibility",
     ];
     settingsOptions.forEach((item) => {
         NumarkMixTrackPro.settings[item] =
             engine.getSetting(`numarkMixTrackPro_${item}`) || 0;
     });
+};
+
+NumarkMixTrackPro.shutdown = function() {
+    // called when the MIDI device is closed
+    const lowestLED = 0x30;
+    const highestLED = 0x73;
+    for (let i = lowestLED; i <= highestLED; i++) {
+        NumarkMixTrackPro.setLED(i, false); // Turn off all the lights
+    }
 };
 
 NumarkMixTrackPro.pitchBendBtns = function(group, value, isPlus) {
@@ -335,14 +346,6 @@ NumarkMixTrackPro.pitchFader = function(
     engine.setParameter(group, "rate", newValue);
 };
 
-NumarkMixTrackPro.Channel1Clip = function(value) {
-    NumarkMixTrackPro.clipLED(value, NumarkMixTrackPro.leds[1].sync);
-};
-
-NumarkMixTrackPro.Channel2Clip = function(value) {
-    NumarkMixTrackPro.clipLED(value, NumarkMixTrackPro.leds[2].sync);
-};
-
 NumarkMixTrackPro.setStutterBeat = function(deck, value) {
     const secondsBlink = 30;
     const secondsToEnd =
@@ -369,62 +372,52 @@ NumarkMixTrackPro.Stutter2Beat = function(value) {
     NumarkMixTrackPro.setStutterBeat(2, value);
 };
 
+NumarkMixTrackPro.ledTimers = NumarkMixTrackPro.ledTimers || {};
+
+NumarkMixTrackPro.setLED = function(note, on) {
+    midi.sendShortMsg(0x90, note, on ? 0x64 : 0x00);
+};
+
+NumarkMixTrackPro.flashLED = function(note, times) {
+    const timers = NumarkMixTrackPro.ledTimers;
+
+    if (timers[note]) {
+        engine.stopTimer(timers[note].id);
+    }
+
+    timers[note] = {counter: 0, times: times, state: false};
+
+    timers[note].id = engine.beginTimer(120, function() {
+        const obj = timers[note];
+        if (!obj || obj.counter >= obj.times) {
+            if (obj) { engine.stopTimer(obj.id); }
+            delete timers[note];
+            NumarkMixTrackPro.setLED(note, false);
+            return;
+        }
+        obj.counter++;
+        obj.state = !obj.state;
+        NumarkMixTrackPro.setLED(note, obj.state);
+    });
+};
+
 NumarkMixTrackPro.clipLED = function(value, note) {
     if (value > 0) {
         NumarkMixTrackPro.flashLED(note, 1);
     } else {
-        NumarkMixTrackPro.setLED(note, value);
+        NumarkMixTrackPro.setLED(note, false);
     }
 };
 
-NumarkMixTrackPro.shutdown = function() {
-    // called when the MIDI device is closed
-    const lowestLED = 0x30;
-    const highestLED = 0x73;
-    for (let i = lowestLED; i <= highestLED; i++) {
-        NumarkMixTrackPro.setLED(i, false); // Turn off all the lights
-    }
+NumarkMixTrackPro.Channel1Clip = function(value) {
+    NumarkMixTrackPro.clipLED(value, NumarkMixTrackPro.leds[1].sync);
 };
 
-NumarkMixTrackPro.setLED = function(value, status) {
-    status = status ? 0x64 : 0x00;
-    midi.sendShortMsg(0x90, value, status);
+NumarkMixTrackPro.Channel2Clip = function(value) {
+    NumarkMixTrackPro.clipLED(value, NumarkMixTrackPro.leds[2].sync);
 };
 
-NumarkMixTrackPro.flashLED = function(led, veces) {
-    const ndx = Math.random();
-    const id = engine.beginTimer(120, NumarkMixTrackPro.doFlash(ndx, veces));
-    NumarkMixTrackPro.ledTimers[ndx] = new NumarkMixTrackPro.LedTimer(
-        id,
-        led,
-        0,
-        false
-    );
-};
-
-NumarkMixTrackPro.doFlash = function(ndx, veces) {
-    const ledTimer = NumarkMixTrackPro.ledTimers[ndx];
-
-    if (!ledTimer) {
-        return;
-    }
-
-    if (ledTimer.count > veces) {
-        // how many times blink the button
-        engine.stopTimer(ledTimer.id);
-        delete NumarkMixTrackPro.ledTimers[ndx];
-    } else {
-        ledTimer.count++;
-        ledTimer.state = !ledTimer.state;
-        NumarkMixTrackPro.setLED(ledTimer.led, ledTimer.state);
-    }
-};
-
-NumarkMixTrackPro.selectKnob = function(
-    channel,
-    control,
-    value
-) {
+NumarkMixTrackPro.selectKnob = function(channel, control, value) {
     if (value > 63) {
         value = value - 128;
     }
@@ -780,8 +773,8 @@ NumarkMixTrackPro.playFromCue = function(
 };
 
 
-
 NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
+    // a.k.a. wheelTurn
     const deck = script.deckFromGroup(group);
 
     let adjustedJog = parseFloat(value); // 1; 2; ...; 13 or 120; ...; 127
@@ -833,7 +826,7 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
             // begin a loop move
             // loop_move_X... is very raw...
             const x = engine.getParameter(group, "loop_start_position");
-            const y = x + adjustedJog * 300; // 44200 / 300 = 147 parts per second
+            const y = x + adjustedJog * 300; // 44100 / 300 = 147 parts per second
             engine.setParameter(group, "loop_start_position", y);
             return;
         }
@@ -845,49 +838,26 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
         }
     }
 
-    if (engine.getParameter(group, "play")) {
-        if (
-            NumarkMixTrackPro.scratchMode[deck - 1] &&
-            posNeg === -1 &&
-            !NumarkMixTrackPro.touch[deck - 1]
-        ) {
-            if (NumarkMixTrackPro.scratchTimer[deck - 1] !== -1) {
-                engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck - 1]);
-            }
-            NumarkMixTrackPro.scratchTimer[deck - 1] = engine.beginTimer(
-                20,
-                () => {
-                    NumarkMixTrackPro.jogWheelStopScratch(deck);
-                },
-                true
-            );
-        }
+    // Normal usage
+    if (engine.isScratching(deck)) {
+        engine.scratchTick(deck, adjustedJog); // Scratch!
+        NumarkMixTrackPro.scratchLast[deck - 1] = Date.now();
     } else {
-        // stop scratching
-        if (!NumarkMixTrackPro.touch[deck - 1]) {
-            if (NumarkMixTrackPro.scratchTimer[deck - 1] !== -1) {
-                engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck - 1]);
-            }
-            NumarkMixTrackPro.scratchTimer[deck - 1] = engine.beginTimer(
-                20,
-                () => {
-                    NumarkMixTrackPro.jogWheelStopScratch(deck);
-                },
-                true
-            );
-        }
-    }
-
-    engine.scratchTick(deck, adjustedJog);
-
-    if (engine.getParameter(group, "play")) {
-        engine.setParameter(group, "jog", adjustedJogAdv);
+        engine.setValue(group, "jog", adjustedJogAdv); // Pitch bend
     }
 };
 
 NumarkMixTrackPro.jogWheelStopScratch = function(deck) {
+    // Inertia debounce: Compare timestamp of last wheel movement
+    if (
+        Date.now() - NumarkMixTrackPro.scratchLast[deck - 1] > 20 ||
+        !engine.isScratching(deck)
+    ) {
+        engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck - 1]);
     NumarkMixTrackPro.scratchTimer[deck - 1] = -1;
+        NumarkMixTrackPro.scratchLast[deck - 1] = -1;
     engine.scratchDisable(deck);
+    }
 };
 
 NumarkMixTrackPro.wheelTouch = function(
@@ -898,29 +868,31 @@ NumarkMixTrackPro.wheelTouch = function(
     group
 ) {
     const deck = script.deckFromGroup(group);
+    NumarkMixTrackPro.touch[deck - 1] = !!value;
 
     if (!value) {
-        // Untouch
-        NumarkMixTrackPro.touch[deck - 1] = false;
+        // Untouch!
+        // Reset loopEditIn
         NumarkMixTrackPro.loopEditIn[deck - 1] = -1;
 
-        // Stop the timer (if it doesn't exist, it gives an error) and start a new timer.
-        // If the wheel doesn't move within 20 milliseconds, it disables scratching.
+        // Disable scratching / backspin after untouch and wheel inertia after
 
+        // Stop any previous timer
         if (NumarkMixTrackPro.scratchTimer[deck - 1] !== -1) {
             engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck - 1]);
+            NumarkMixTrackPro.scratchTimer[deck - 1] = -1;
         }
 
+        // Start a timer
         NumarkMixTrackPro.scratchTimer[deck - 1] = engine.beginTimer(
-            20,
+            20, // (20 ms minimal resolution)
             () => {
                 NumarkMixTrackPro.jogWheelStopScratch(deck);
             },
-            true
+            false // non one-shot
         );
     } else {
-        NumarkMixTrackPro.touch[deck - 1] = true;
-
+        // Touch!
         // if playing and scratch mode is disabled, do nothing on press
         if (
             !NumarkMixTrackPro.scratchMode[deck - 1] &&
@@ -948,12 +920,17 @@ NumarkMixTrackPro.wheelTouch = function(
             */
         }
 
+        // Cancel timer
         if (NumarkMixTrackPro.scratchTimer[deck - 1] !== -1) {
             engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck - 1]);
+            NumarkMixTrackPro.scratchTimer[deck - 1] = -1;
         }
 
-        // change the 600 value for sensibility
-        engine.scratchEnable(deck, 600, 33 + 1 / 3, 1.0 / 8, 1.0 / 8 / 32);
+        const sensibility =
+            NumarkMixTrackPro.settings.scratchSensibility || 600;
+        const alpha = 1.0 / 8;
+        const beta = alpha / 32;
+        engine.scratchEnable(deck, sensibility, 33 + 1 / 3, alpha, beta);
     }
 };
 
