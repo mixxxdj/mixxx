@@ -224,7 +224,14 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
     } else {
         QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
                 urls, true);
-        return trackIds.size() > 0;
+        if (trackIds.size() == 0) {
+            return false;
+        }
+
+        // Update the track count in the sidebar item label.
+        // Calls slotUpdateTrackCount()
+        m_pLibraryTableModel->select();
+        return true;
     }
 }
 
