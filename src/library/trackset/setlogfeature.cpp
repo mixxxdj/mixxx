@@ -131,6 +131,19 @@ void SetlogFeature::bindLibraryWidget(
     m_pLibraryWidget = QPointer(pLibraryWidget);
 }
 
+QList<QUrl> SetlogFeature::collectTrackUrls(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return {};
+    }
+    int playlistId = playlistIdFromIndex(index);
+    if (playlistId == kInvalidPlaylistId || m_yearNodeId) {
+        return {};
+    } else {
+        // regular setlog, use the base implementation
+        return BasePlaylistFeature::collectTrackUrls(index);
+    }
+}
+
 void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
     ScopedTransaction transaction(m_pLibrary->trackCollectionManager()
                                           ->internalCollection()
