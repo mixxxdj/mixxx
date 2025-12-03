@@ -22,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
+#include "util/dnd.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -213,6 +214,26 @@ QString CrateFeature::formatRootViewHtml() const {
     return html;
 }
 
+QList<QUrl> CrateFeature::collectTrackUrls(const QModelIndex& index) {
+    CrateId crateId(crateIdFromIndex(index));
+    if (!crateId.isValid()) {
+        return {};
+    }
+    // Create a new table model since the main one might have an active search.
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
+    pCrateTableModel->selectCrate(crateId);
+    pCrateTableModel->select();
+    int rows = pCrateTableModel->rowCount();
+    QList<QUrl> trackUrls;
+    trackUrls.reserve(rows);
+    for (int i = 0; i < rows; ++i) {
+        const QModelIndex trackIndex = pCrateTableModel->index(i, 0);
+        trackUrls.push_back(pCrateTableModel->getTrackUrl(trackIndex));
+    }
+    return trackUrls;
+}
+
 std::unique_ptr<TreeItem> CrateFeature::newTreeItemForCrateSummary(
         const CrateSummary& crateSummary) {
     auto pTreeItem = TreeItem::newRoot(this);
@@ -235,8 +256,7 @@ void CrateFeature::updateTreeItemForCrateSummary(
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 }
 
-bool CrateFeature::dropAcceptChild(
-        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+bool CrateFeature::dropAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
@@ -246,8 +266,11 @@ bool CrateFeature::dropAcceptChild(
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls, !pSource);
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
     if (trackIds.isEmpty()) {
         return false;
     }
@@ -256,7 +279,7 @@ bool CrateFeature::dropAcceptChild(
     return true;
 }
 
-bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
         return false;
@@ -266,8 +289,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url
             crate.isLocked()) {
         return false;
     }
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 void CrateFeature::bindLibraryWidget(

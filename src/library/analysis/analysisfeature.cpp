@@ -10,6 +10,7 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 
@@ -234,11 +235,12 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
     emit analysisActive(false);
 }
 
-bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
+bool AnalysisFeature::dropAccept(const QList<QUrl>& urls) {
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
-                    urls,
-                    !pSource);
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
     QList<AnalyzerScheduledTrack> tracks;
     for (auto trackId : trackIds) {
         tracks.append(trackId);
@@ -247,6 +249,6 @@ bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     return tracks.size() > 0;
 }
 
-bool AnalysisFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url);
+bool AnalysisFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, false);
 }

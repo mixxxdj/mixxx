@@ -229,14 +229,17 @@ void AutoDJFeature::removeCrateFromAutoDj(CrateId crateId) {
     m_pTrackCollection->updateAutoDjCrate(crateId, false);
 }
 
-bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
+bool AutoDJFeature::dropAccept(const QList<QUrl>& urls) {
     // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
     // Auto DJ playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls,
-            !pSource);
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
     if (trackIds.isEmpty()) {
         return false;
     }
@@ -245,9 +248,8 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
-bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool AutoDJFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 void AutoDJFeature::slotEnableAutoDJ() {

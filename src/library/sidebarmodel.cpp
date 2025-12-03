@@ -34,6 +34,19 @@ SidebarModel::SidebarModel(
             &SidebarModel::slotPressedUntilClickedTimeout);
 }
 
+Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const {
+    Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+    if (!index.isValid()) {
+        return flags;
+        // Note: this would prohibit dragging of root items.
+        // Which we do not want, see comment in WLibrarySidebar::startDrag()
+        // } else if (index.internalPointer() == this) {
+        //        return flags | Qt::ItemIsDropEnabled;
+    } else {
+        return flags | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+    }
+}
+
 void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
     m_sFeatures.push_back(pFeature);
     connect(pFeature,
@@ -437,23 +450,24 @@ void SidebarModel::deleteItem(const QModelIndex& index) {
     }
 }
 
-bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls) {
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
     }
-    bool result = false;
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                result = pFeature->dropAcceptChild(index, urls, pSource);
-            }
-        }
+    if (!index.isValid()) {
+        return false;
     }
-    return result;
+
+    if (index.internalPointer() == this) {
+        return m_sFeatures[index.row()]->dropAccept(urls);
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (!pTreeItem) {
+            return false;
+        }
+        LibraryFeature* pFeature = pTreeItem->feature();
+        return pFeature->dropAcceptChild(index, urls);
+    }
 }
 
 bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
@@ -463,24 +477,54 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     return false;
 }
 
-bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) const {
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QList<QUrl>& urls) const {
     if constexpr (kDebug) {
-        qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+        qDebug() << "SidebarModel::dragMoveAccept() index=" << index << urls;
     }
-    bool result = false;
+    if (!index.isValid()) {
+        return false;
+    }
 
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            result = m_sFeatures[index.row()]->dragMoveAccept(url);
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                result = pFeature->dragMoveAcceptChild(index, url);
-            }
+    if (index.internalPointer() == this) {
+        return m_sFeatures[index.row()]->dragMoveAccept(urls);
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (!pTreeItem) {
+            return false;
         }
+        LibraryFeature* pFeature = pTreeItem->feature();
+        VERIFY_OR_DEBUG_ASSERT(pFeature) {
+            return false;
+        }
+        return pFeature->dragMoveAcceptChild(index, urls);
     }
-    return result;
+}
+
+/// Collects track urls from the model connected to the index
+QList<QUrl> SidebarModel::collectTrackUrls(const QModelIndex& index) const {
+    qWarning() << "SidebarModel::getItemUrls" << index;
+    // FIXME could as well be mimeData(indexes) so we don't need
+    // WLibrarySidebar::startDrag() ??
+    if (!index.isValid()) {
+        qWarning() << "--> !! index invalid";
+        return {};
+    }
+    if (index.internalPointer() == this) {
+        qWarning() << "--> !! index ptr == this, return";
+        return {};
+    }
+
+    TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pTreeItem) {
+        qWarning() << "--> !! NULL item, return";
+        return {};
+    }
+    LibraryFeature* pFeature = pTreeItem->feature();
+    VERIFY_OR_DEBUG_ASSERT(pFeature) {
+        return {};
+    }
+    qWarning() << "--> getUrls from" << pFeature;
+    return pFeature->collectTrackUrls(index);
 }
 
 /// Translates an index from the child models to an index of the sidebar models

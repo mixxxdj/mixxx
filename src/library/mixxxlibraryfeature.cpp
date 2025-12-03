@@ -18,6 +18,7 @@
 #include "library/treeitem.h"
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #ifdef __ENGINEPRIME__
 #include "widget/wlibrarysidebar.h"
@@ -218,19 +219,26 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(true);
 }
 
-bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
-    if (pSource) {
+bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls) {
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    // FIXME Collect urls as QStrings and call tracksAdded(),
+    // as that does the same incl. track count/title update ??
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
+    if (trackIds.size() == 0) {
         return false;
-    } else {
-        QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
-                urls, true);
-        return trackIds.size() > 0;
     }
+
+    // Update the track count in the sidebar item label.
+    // Calls slotUpdateTrackCount()
+    m_pLibraryTableModel->select();
+    return true;
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool MixxxLibraryFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 #ifdef __ENGINEPRIME__

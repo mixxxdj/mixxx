@@ -24,8 +24,8 @@ class AnalysisFeature : public LibraryFeature {
         return m_title;
     }
 
-    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
-    bool dragMoveAccept(const QUrl& url) override;
+    bool dropAccept(const QList<QUrl>& urls) override;
+    bool dragMoveAccept(const QList<QUrl>& urls) override;
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
