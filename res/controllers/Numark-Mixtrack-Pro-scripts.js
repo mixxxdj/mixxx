@@ -530,7 +530,7 @@ NumarkMixTrackPro.playbutton = function(
     } // (NoteOff, 0x00, button up)
     const deck = script.deckFromGroup(group);
 
-    if (!NumarkMixTrackPro.settings.brakeEnabled) {
+    if (!NumarkMixTrackPro.settings.brakeEnabled || typeof engine.isBrakeActive !== "function") {
         // Play/Pause standard
         if (engine.getParameter(group, "play")) {
             engine.setParameter(group, "play", 0);
@@ -841,7 +841,10 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
     // Normal usage
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, adjustedJog); // Scratch!
-        NumarkMixTrackPro.scratchLast[deck - 1] = Date.now();
+        if (posNeg === -1) {
+            // only in backspin save timestamp for inertia wheel
+            NumarkMixTrackPro.scratchLast[deck - 1] = Date.now();
+        }
     } else {
         engine.setValue(group, "jog", adjustedJogAdv); // Pitch bend
     }
@@ -902,7 +905,7 @@ NumarkMixTrackPro.wheelTouch = function(
         }
 
         // scratch disables braking, so stop if is braking to avoid re-play
-        if (NumarkMixTrackPro.settings.brakeEnabled) {
+        if (NumarkMixTrackPro.settings.brakeEnabled && typeof engine.isBrakeActive === "function") {
             // Mixxx v.2.6+ required
             if (engine.isBrakeActive(deck)) {
                 engine.setParameter(group, "play", 0); // Stop
