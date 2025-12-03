@@ -290,7 +290,7 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
     // Open input file and allocate/initialize AVFormatContext
     const int avformat_open_input_result =
             avformat_open_input(
-                    &pavInputFormatContext, fileName.toLocal8Bit().constData(), nullptr, nullptr);
+                    &pavInputFormatContext, fileName.toUtf8().constData(), nullptr, nullptr);
     if (avformat_open_input_result != 0) {
         DEBUG_ASSERT(avformat_open_input_result < 0);
         kLogger.warning().noquote()
