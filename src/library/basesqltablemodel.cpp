@@ -408,32 +408,26 @@ const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
-    if (sDebug) {
-        qDebug() << this << "setSearch" << searchText;
-    }
-
-    bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
-    bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
-    bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
-
-    if (!searchIsDifferent && (filterDisabled || !searchFilterIsDifferent)) {
-        // Do nothing if the filters are no different.
-        return;
-    }
-
+void BaseSqlTableModel::setExtraFilter(const QString& extraFilter) {
     // Note: don't use SQL strings as extraFilter, this will cause issues in
     // BaseTrackCache::filterAndSort() which is responsible for adding/removing
     // dirty tracks from the view.
-    m_currentSearch = searchText;
-    m_currentSearchFilter = extraFilter;
+    if (m_currentSearchFilter != extraFilter) {
+        m_currentSearchFilter = extraFilter;
+    }
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
+void BaseSqlTableModel::setSearch(const QString& searchText) {
+    if (m_currentSearch != searchText) {
+        m_currentSearch = searchText;
+    }
+}
+
+void BaseSqlTableModel::search(const QString& searchText) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
-    setSearch(searchText, extraFilter);
+    setSearch(searchText);
     select();
 }
 
