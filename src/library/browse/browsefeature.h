@@ -1,25 +1,27 @@
 #pragma once
 
+#include <QFuture>
+#include <QFutureWatcher>
 #include <QObject>
 #include <QPointer>
-#include <QSortFilterProxyModel>
 #include <QString>
-#include <QStringListModel>
-#include <QVariant>
 
-#include "library/browse/browsetablemodel.h"
 #include "library/libraryfeature.h"
-#include "library/proxytrackmodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"
 
-class Library;
-class TrackCollection;
-class WLibrarySidebar;
-class QModelIndex;
+class BrowseTableModel;
+class BrowseLibraryTableModel;
+class ProxyTrackModel;
 class FolderTreeModel;
+class Library;
+class RecordingManager;
+class TrackCollection;
+class TrackModel;
+class WLibrarySidebar;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
@@ -57,24 +59,45 @@ class BrowseFeature : public LibraryFeature {
     void requestAddDir(const QString&);
     void scanLibrary();
 
+  private slots:
+    void slotLibraryDirectoriesChanged();
+    void onSymLinkMapUpdated();
+
   private:
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
+    bool isPathWatched(const QString& path) const;
+    QString maybeUnResolveSymlink(const QString& path) const;
+
+    QMap<QString, QString> updateSymlinkList(const QList<mixxx::FileInfo>& rootDirs);
+    void slotUpdateAllTreeItemsIsWatchedPath();
+    void updateItemIsWatchedPathRecursively(TreeItem* pItem);
+
     QStringList getDefaultQuickLinks() const;
-    std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
+    std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() const;
+    std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(
+            const QString& path,
+            bool isWatched) const;
+    std::unique_ptr<TreeItem> createPathTreeItem(const QString& name,
+            const QString& path,
+            bool parentIsWatched = false) const;
     void saveQuickLinks();
     void loadQuickLinks();
     QString getLastRightClickedPath() const;
 
+    QString getCurrentSearch() const;
+
     TrackCollection* const m_pTrackCollection;
 
-    BrowseTableModel m_browseModel;
-    ProxyTrackModel m_proxyModel;
-    FolderTreeModel* m_pSidebarModel;
-    QAction* m_pAddQuickLinkAction;
-    QAction* m_pRemoveQuickLinkAction;
-    QAction* m_pAddtoLibraryAction;
-    QAction* m_pRefreshDirTreeAction;
+    parented_ptr<BrowseTableModel> m_pBrowseModel;
+    std::unique_ptr<ProxyTrackModel> m_pProxyModel;
+    parented_ptr<BrowseLibraryTableModel> m_pLibraryTableModel;
+    TrackModel* m_pCurrentTrackModel;
+    parented_ptr<FolderTreeModel> m_pSidebarModel;
+    parented_ptr<QAction> m_pAddQuickLinkAction;
+    parented_ptr<QAction> m_pRemoveQuickLinkAction;
+    parented_ptr<QAction> m_pAddtoLibraryAction;
+    parented_ptr<QAction> m_pRefreshDirTreeAction;
 
     // Caution: Make sure this is reset whenever the library tree is updated,
     // so that the internalPointer() does not become dangling
@@ -82,4 +105,10 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+
+    QMap<QString, QString> m_trackDirSymlinksMap;
+
+    QFutureWatcher<QMap<QString, QString>> m_future_watcher;
+    QFuture<QMap<QString, QString>> m_future;
+    QMutex m_mutex;
 };
