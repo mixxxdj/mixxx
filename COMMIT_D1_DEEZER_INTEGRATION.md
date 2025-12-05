@@ -65,14 +65,14 @@ Integration von Deezer-Streaming in Mixxx mit lokalem Caching:
 ## Referenz-Repositories
 
 ### 1. deezer-linux
-**Pfad:** `/home/yurij/Web/git/deezer-linux/`
+**Git:** `git@github.com:co-de-lab/deezer-linux.git`
 
 Electron-basierter Deezer Desktop Client für Linux.
 - Zeigt wie Deezer API integriert wird
 - Desktop-Integration Beispiele
 
 ### 2. deemix
-**Pfad:** `/home/yurij/Web/git/deemix/`
+**Git:** `git@github.com:co-de-lab/deemix.git`
 
 Python-basiertes Download-Tool für Deezer.
 - Download-Logik
@@ -80,24 +80,34 @@ Python-basiertes Download-Tool für Deezer.
 - ARL Token Authentication
 - FLAC/MP3 Qualitätsauswahl
 
+### Klonen der Repos
+```bash
+git clone git@github.com:co-de-lab/deezer-linux.git
+git clone git@github.com:co-de-lab/deemix.git
+```
+
 ---
 
 ## Recherche-Aufgaben für Opus
 
 ### Phase 1: Deemix verstehen
 ```bash
+# Repos klonen (falls noch nicht geschehen)
+git clone git@github.com:co-de-lab/deemix.git
+git clone git@github.com:co-de-lab/deezer-linux.git
+
 # Struktur analysieren
-ls -la /home/yurij/Web/git/deemix/
-cat /home/yurij/Web/git/deemix/README.md
+ls -la deemix/
+cat deemix/README.md
 
 # Python-Module untersuchen
-find /home/yurij/Web/git/deemix -name "*.py" | head -20
+find deemix -name "*.py" | head -20
 
 # API-Handling finden
-grep -r "api" /home/yurij/Web/git/deemix --include="*.py" | head -30
+grep -r "api" deemix --include="*.py" | head -30
 
 # Download-Logik
-grep -r "download" /home/yurij/Web/git/deemix --include="*.py" | head -30
+grep -r "download" deemix --include="*.py" | head -30
 ```
 
 ### Phase 2: Mixxx Plugin-System verstehen
