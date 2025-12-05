@@ -461,6 +461,18 @@ QVariant BaseTrackTableModel::data(
         }
     }
 
+    // Handle 432Hz role for key column
+    if (role == k432HzRole) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+            TrackPointer pTrack = getTrack(index);
+            if (pTrack) {
+                return pTrack->is432Hz();
+            }
+        }
+        return false;
+    }
+
     // Only retrieve a value for supported roles
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&

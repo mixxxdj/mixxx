@@ -13,6 +13,7 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
           m_bAnalyzerEnabled(m_keySettings.getKeyDetectionEnabledDefault()),
           m_bFastAnalysisEnabled(m_keySettings.getFastAnalysisDefault()),
           m_bReanalyzeEnabled(m_keySettings.getReanalyzeWhenSettingsChangeDefault()),
+          m_bDetect432HzEnabled(m_keySettings.getDetect432HzDefault()),
           m_stemStrategy(KeyDetectionSettings::StemStrategy::Disabled) {
     setupUi(this);
 
@@ -81,6 +82,14 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
             this,
             &DlgPrefKey::reanalyzeEnabled);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(bdetect432HzEnabled, &QCheckBox::checkStateChanged,
+#else
+    connect(bdetect432HzEnabled, &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefKey::detect432HzEnabled);
+
     connect(radioNotationOpenKey, &QRadioButton::toggled,
             this, &DlgPrefKey::setNotationOpenKey);
     connect(radioNotationOpenKeyAndTraditional, &QRadioButton::toggled,
@@ -113,6 +122,7 @@ void DlgPrefKey::loadSettings() {
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabled();
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
+    m_bDetect432HzEnabled = m_keySettings.getDetect432Hz();
 
     KeyUtils::KeyNotation notation_type =
             KeyUtils::keyNotationFromString(m_keySettings.getKeyNotation());
@@ -163,6 +173,7 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabledDefault();
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
+    m_bDetect432HzEnabled = m_keySettings.getDetect432HzDefault();
     if (m_availablePlugins.size() > 0) {
         m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
@@ -224,6 +235,16 @@ void DlgPrefKey::reanalyzeEnabled(int i) {
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::detect432HzEnabled(Qt::CheckState state) {
+    m_bDetect432HzEnabled = (state == Qt::Checked);
+#else
+void DlgPrefKey::detect432HzEnabled(int i) {
+    m_bDetect432HzEnabled = static_cast<bool>(i);
+#endif
+    slotUpdate();
+}
+
 void DlgPrefKey::slotStemStrategyChanged(int index) {
     switch (index) {
     case 1:
@@ -241,6 +262,7 @@ void DlgPrefKey::slotApply() {
     m_keySettings.setKeyDetectionEnabled(m_bAnalyzerEnabled);
     m_keySettings.setFastAnalysis(m_bFastAnalysisEnabled);
     m_keySettings.setReanalyzeWhenSettingsChange(m_bReanalyzeEnabled);
+    m_keySettings.setDetect432Hz(m_bDetect432HzEnabled);
 
     QString notation_name;
     KeyUtils::KeyNotation notation_type;
@@ -292,6 +314,8 @@ void DlgPrefKey::slotUpdate() {
     bfastAnalysisEnabled->setEnabled(m_bAnalyzerEnabled);
     breanalyzeEnabled->setChecked(m_bReanalyzeEnabled);
     breanalyzeEnabled->setEnabled(m_bAnalyzerEnabled);
+    bdetect432HzEnabled->setChecked(m_bDetect432HzEnabled);
+    bdetect432HzEnabled->setEnabled(m_bAnalyzerEnabled);
 
     if (!m_bAnalyzerEnabled) {
         return;

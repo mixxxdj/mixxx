@@ -209,6 +209,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlObject> m_pFileBPM;
     std::unique_ptr<ControlObject> m_pVisualBpm;
     parented_ptr<ControlProxy> m_pKey;
+    std::unique_ptr<ControlObject> m_pFileIs432Hz;
     std::unique_ptr<ControlObject> m_pVisualKey;
 
     std::unique_ptr<ControlObject> m_pTimeElapsed;

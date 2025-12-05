@@ -24,6 +24,7 @@
 #define KEY_NOTATION_CUSTOM "Custom"
 #define KEY_NOTATION_CUSTOM_PREFIX "CustomKeyNotation"
 #define KEY_STEM_STRATEGY "stem_strategy"
+#define KEY_432HZ_DETECTION_ENABLED "432HzDetectionEnabled"
 
 class KeyDetectionSettings {
   public:
@@ -55,6 +56,9 @@ class KeyDetectionSettings {
             KEY_CONFIG_KEY,
             KEY_STEM_STRATEGY,
             StemStrategy::Disabled);
+
+    DEFINE_PREFERENCE_HELPERS(Detect432Hz, bool,
+                              KEY_CONFIG_KEY, KEY_432HZ_DETECTION_ENABLED, false);
 
     QString getCustomKeyNotation(mixxx::track::io::key::ChromaticKey key) {
         return m_pConfig->getValue<QString>(ConfigKey(KEY_CONFIG_KEY,

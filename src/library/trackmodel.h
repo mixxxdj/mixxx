@@ -18,6 +18,8 @@ class TrackModel {
     static constexpr int kHeaderNameRole = Qt::UserRole + 1;
     // This role is used for data export like in CSV files
     static constexpr int kDataExportRole = Qt::UserRole + 2;
+    // This role indicates if a track is tuned to 432Hz
+    static constexpr int k432HzRole = Qt::UserRole + 3;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)

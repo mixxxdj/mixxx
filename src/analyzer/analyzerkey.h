@@ -28,7 +28,7 @@ class AnalyzerKey : public Analyzer {
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
-            const QString& pluginId, bool bPreferencesFastAnalysis);
+            const QString& pluginId, bool bPreferencesFastAnalysis, bool bDetect432Hz);
 
     bool shouldAnalyze(TrackPointer tio) const;
 
@@ -44,4 +44,5 @@ class AnalyzerKey : public Analyzer {
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
+    bool m_bPreferencesDetect432Hz;
 };
