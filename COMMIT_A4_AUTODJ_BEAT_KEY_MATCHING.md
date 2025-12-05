@@ -231,6 +231,154 @@ void alignIncomingTrack(
 }
 ```
 
+---
+
+## ⚠️ WICHTIG: Tatsächliche Beat-Synchronisation
+
+**Beim Übergang muss echte Beat-Synchronisation stattfinden!**
+
+Es reicht NICHT aus, nur zu prüfen ob BPMs kompatibel sind. Der Auto DJ muss:
+
+1. **BPM anpassen**: Incoming Track auf exakt gleiche BPM wie Outgoing bringen
+2. **Phase synchronisieren**: Beats müssen exakt übereinander liegen
+3. **Sync während Crossfade halten**: Beide Tracks bleiben während der Überblendung synchron
+
+### Sync-Aktivierung beim Übergang
+
+```cpp
+void AutoDJProcessor::executeIntelligentCrossfade() {
+    // 1. BPM des ausgehenden Tracks ermitteln
+    double masterBpm = m_pOutgoingDeck->getBpm();
+
+    // 2. Eingehenden Track auf Master-BPM setzen
+    m_pIncomingDeck->setRateRatio(masterBpm / m_pIncomingTrack->getFileBpm());
+
+    // 3. Sync aktivieren für Phase-Lock
+    ControlObject::set(ConfigKey(m_incomingGroup, "sync_enabled"), 1.0);
+
+    // 4. Beat-Phase synchronisieren
+    ControlObject::set(ConfigKey(m_incomingGroup, "beatsync_phase"), 1.0);
+
+    // 5. Crossfade starten (Beats sind jetzt synchron)
+    startCrossfade();
+}
+```
+
+### Unterschied: Manueller Sync vs. Auto DJ Sync
+
+| Aspekt | Manueller Sync | Auto DJ Intelligent Sync |
+|--------|----------------|--------------------------|
+| BPM Match | DJ passt manuell an | Automatisch berechnet |
+| Phase Sync | DJ drückt Sync-Button | Automatisch bei Crossfade-Start |
+| Während Mix | DJ überwacht | System hält Sync aufrecht |
+| Bei Drift | DJ korrigiert | Auto-Korrektur aktiv |
+
+---
+
+## BPM-Verlauf Steuerung (Track-Auswahl)
+
+### Neue Option: BPM-Tendenz für Auto DJ
+
+Der Auto DJ soll bei der Track-Auswahl die BPM berücksichtigen können:
+
+### Einstellungen
+
+```cpp
+enum class BpmTendency {
+    KEEP_CONSTANT,    // BPM bleibt gleich (±2 BPM Toleranz)
+    INCREASE_SLOWLY,  // BPM steigt langsam (+1-3 BPM pro Track)
+    INCREASE_FAST,    // BPM steigt schnell (+3-8 BPM pro Track)
+    DECREASE_SLOWLY,  // BPM sinkt langsam (-1-3 BPM pro Track)
+    DECREASE_FAST,    // BPM sinkt schnell (-3-8 BPM pro Track)
+    ENERGY_WAVE,      // BPM steigt und fällt (Wellenform)
+    NO_PREFERENCE     // BPM wird nicht berücksichtigt
+};
+```
+
+### Track-Auswahl-Logik
+
+```cpp
+TrackPointer AutoDJProcessor::selectNextTrack(
+        const QList<TrackPointer>& queue,
+        double currentBpm,
+        BpmTendency tendency) {
+
+    // Ziel-BPM-Bereich basierend auf Tendenz
+    double targetBpmMin, targetBpmMax;
+
+    switch (tendency) {
+        case BpmTendency::KEEP_CONSTANT:
+            targetBpmMin = currentBpm - 2.0;
+            targetBpmMax = currentBpm + 2.0;
+            break;
+
+        case BpmTendency::INCREASE_SLOWLY:
+            targetBpmMin = currentBpm + 1.0;
+            targetBpmMax = currentBpm + 3.0;
+            break;
+
+        case BpmTendency::INCREASE_FAST:
+            targetBpmMin = currentBpm + 3.0;
+            targetBpmMax = currentBpm + 8.0;
+            break;
+
+        case BpmTendency::DECREASE_SLOWLY:
+            targetBpmMin = currentBpm - 3.0;
+            targetBpmMax = currentBpm - 1.0;
+            break;
+
+        case BpmTendency::DECREASE_FAST:
+            targetBpmMin = currentBpm - 8.0;
+            targetBpmMax = currentBpm - 3.0;
+            break;
+
+        case BpmTendency::NO_PREFERENCE:
+        default:
+            // Alle Tracks in sync-barem Bereich
+            targetBpmMin = currentBpm * 0.92;  // -8%
+            targetBpmMax = currentBpm * 1.08;  // +8%
+            break;
+    }
+
+    // Track im Zielbereich finden
+    for (const auto& track : queue) {
+        double trackBpm = track->getBpm();
+        if (trackBpm >= targetBpmMin && trackBpm <= targetBpmMax) {
+            return track;
+        }
+    }
+
+    // Fallback: Nächstbester Track
+    return findClosestBpmTrack(queue, currentBpm);
+}
+```
+
+### UI-Element (für Commit A6)
+
+```xml
+<!-- BPM Tendenz Auswahl -->
+<ComboBox name="comboBoxBpmTendency">
+  <Item value="0">BPM konstant halten</Item>
+  <Item value="1">BPM langsam steigern</Item>
+  <Item value="2">BPM schnell steigern</Item>
+  <Item value="3">BPM langsam senken</Item>
+  <Item value="4">BPM schnell senken</Item>
+  <Item value="5">Energie-Welle</Item>
+  <Item value="6">Keine Präferenz</Item>
+</ComboBox>
+```
+
+### Anwendungsbeispiele
+
+| Szenario | BPM-Tendenz | Effekt |
+|----------|-------------|--------|
+| Warm-up Set | INCREASE_SLOWLY | 115 → 118 → 121 → 124 BPM |
+| Peak Time | KEEP_CONSTANT | 128 → 128 → 127 → 128 BPM |
+| Cool-down | DECREASE_SLOWLY | 130 → 127 → 124 → 120 BPM |
+| Energy Build | INCREASE_FAST | 120 → 126 → 132 → 138 BPM |
+
+---
+
 ## Fallback Behavior
 
 When validation fails:
