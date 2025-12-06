@@ -1,6 +1,7 @@
 #include <dsp/keydetection/GetKeyMode.h>
 
 #include <algorithm>
+#include <limits>
 
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
@@ -198,65 +199,71 @@ int AnalyzerQueenMaryKey::findBestTuningFrequency() const {
         return kStandardTuningFrequency;
     }
 
-    // If only one analyzer, return its frequency
-    if (m_frequencyAnalyzers.size() == 1) {
-        return m_frequencyAnalyzers[0].frequencyHz;
-    }
+    // Score each frequency based on analysis consistency and coverage
+    auto computeScore = [](const FrequencyAnalyzer& fa) -> double {
+        if (fa.currentFrame == 0 || fa.resultKeys.empty()) {
+            // No data processed or no valid keys detected
+            return std::numeric_limits<double>::infinity();
+        }
 
-    // Score each frequency based on analysis consistency
-    // Lower key change count = more consistent detection = better match
-    int bestFrequency = kStandardTuningFrequency;
-    int bestScore = INT_MAX;
-    bool bestHasValidStart = false;
+        const double totalFrames = static_cast<double>(fa.currentFrame);
 
-    for (const FrequencyAnalyzer& fa : m_frequencyAnalyzers) {
-        int keyChangeCount = static_cast<int>(fa.resultKeys.size());
-        bool hasValidStart = !fa.resultKeys.empty() &&
+        // Estimate how much of the track had a valid key at this tuning
+        double validFrames = 0.0;
+        for (int i = 0; i < fa.resultKeys.size(); ++i) {
+            const auto startFrame = static_cast<size_t>(fa.resultKeys[i].second);
+            const auto endFrame = (i + 1 < fa.resultKeys.size())
+                    ? static_cast<size_t>(fa.resultKeys[i + 1].second)
+                    : fa.currentFrame;
+            if (fa.resultKeys[i].first != mixxx::track::io::key::INVALID && endFrame > startFrame) {
+                validFrames += static_cast<double>(endFrame - startFrame);
+            }
+        }
+        const double validRatio = validFrames / totalFrames; // 0..1
+
+        // Ignore frequencies that only produced sporadic key estimates
+        if (validRatio < 0.05) {
+            return std::numeric_limits<double>::infinity();
+        }
+
+        const int keyChangeCount = static_cast<int>(fa.resultKeys.size());
+        const bool hasValidStart = !fa.resultKeys.empty() &&
                 fa.resultKeys.front().first != mixxx::track::io::key::INVALID;
 
-        // Calculate score (lower is better)
-        // Weight: fewer key changes is strongly preferred
-        // Bonus for having a valid key at the start
-        int score = keyChangeCount * 100;
+        // Lower score is better:
+        // - Favor long stretches with detected keys (coverage weighted heavily)
+        // - Favor fewer key changes (stability)
+        double score = (1.0 - validRatio) * 1000.0;
+        score += keyChangeCount * 20.0;
         if (!hasValidStart) {
-            score += 50;  // Penalty for no valid start
+            score += 50.0; // penalty for no valid start
         }
+        return score;
+    };
 
-        // Prefer standard tuning (440Hz) if scores are very close
-        // This avoids false positives when track tuning is ambiguous
-        if (fa.frequencyHz == kStandardTuningFrequency && score <= bestScore + 10) {
-            // 440Hz gets a small advantage
-            score -= 5;
-        }
+    int bestFrequency = kStandardTuningFrequency;
+    double bestScore = std::numeric_limits<double>::infinity();
 
-        // Update best if this frequency has a better score
-        // or same score but more common frequency
-        if (score < bestScore ||
-                (score == bestScore && hasValidStart && !bestHasValidStart)) {
+    for (const FrequencyAnalyzer& fa : m_frequencyAnalyzers) {
+        const double score = computeScore(fa);
+        if (score < bestScore) {
             bestScore = score;
             bestFrequency = fa.frequencyHz;
-            bestHasValidStart = hasValidStart;
         }
     }
 
-    // Require significant improvement over 440Hz to report a different frequency
-    // This reduces false positives
+    // If 440Hz is close to the best score, prefer it to avoid false positives.
     if (bestFrequency != kStandardTuningFrequency) {
-        // Find the 440Hz score for comparison
-        int score440 = INT_MAX;
+        double score440 = std::numeric_limits<double>::infinity();
         for (const FrequencyAnalyzer& fa : m_frequencyAnalyzers) {
             if (fa.frequencyHz == kStandardTuningFrequency) {
-                score440 = static_cast<int>(fa.resultKeys.size()) * 100;
-                if (fa.resultKeys.empty() ||
-                        fa.resultKeys.front().first == mixxx::track::io::key::INVALID) {
-                    score440 += 50;
-                }
+                score440 = computeScore(fa);
                 break;
             }
         }
 
-        // Require at least 20% improvement to report non-440Hz
-        if (bestScore >= score440 * 0.8) {
+        // Require a small but clear improvement over 440Hz
+        if (bestScore + 5.0 >= score440) {
             bestFrequency = kStandardTuningFrequency;
         }
     }

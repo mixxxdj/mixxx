@@ -37,7 +37,10 @@ class AnalyzerKey : public Analyzer {
             bool bPreferencesFastAnalysis,
             bool bDetect432Hz,
             bool bDetectTuningFrequency,
-            int tuningFrequencyHz);
+            int tuningFrequencyHz,
+            int tuningMinFrequency,
+            int tuningMaxFrequency,
+            int tuningStepFrequency);
 
     bool shouldAnalyze(TrackPointer tio) const;
 

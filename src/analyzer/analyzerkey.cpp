@@ -163,7 +163,10 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer pTrack) const {
                 bPreferencesFastAnalysisEnabled,
                 bDetect432Hz,
                 bDetectTuning,
-                keys.getTuningFrequencyHz());
+                keys.getTuningFrequencyHz(),
+                m_tuningMinFreq,
+                m_tuningMaxFreq,
+                m_tuningStepFreq);
         QString newVersion = KeyFactory::getPreferredVersion();
         QString newSubVersion = KeyFactory::getPreferredSubVersion(extraVersionInfo);
 
@@ -258,7 +261,10 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
             m_bPreferencesFastAnalysisEnabled,
             m_bPreferencesDetect432Hz,
             m_bPreferencesDetectTuningFrequency,
-            tuningFrequencyHz);
+            tuningFrequencyHz,
+            m_tuningMinFreq,
+            m_tuningMaxFreq,
+            m_tuningStepFreq);
     Keys track_keys = KeyFactory::makePreferredKeys(
             key_changes, extraVersionInfo, m_sampleRate, m_totalFrames,
             is432Hz, tuningFrequencyHz);
@@ -290,7 +296,10 @@ QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
         bool bPreferencesFastAnalysis,
         bool bDetect432Hz,
         bool bDetectTuningFrequency,
-        int tuningFrequencyHz) {
+        int tuningFrequencyHz,
+        int tuningMinFrequency,
+        int tuningMaxFrequency,
+        int tuningStepFrequency) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
     if (bPreferencesFastAnalysis) {
@@ -302,6 +311,9 @@ QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
     if (bDetectTuningFrequency) {
         extraVersionInfo["detect_tuning"] = "1";
         extraVersionInfo["tuning_freq_hz"] = QString::number(tuningFrequencyHz);
+        extraVersionInfo["tuning_min_hz"] = QString::number(tuningMinFrequency);
+        extraVersionInfo["tuning_max_hz"] = QString::number(tuningMaxFrequency);
+        extraVersionInfo["tuning_step_hz"] = QString::number(tuningStepFrequency);
     }
     return extraVersionInfo;
 }
