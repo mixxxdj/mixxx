@@ -2,6 +2,7 @@
 
 #include <QPair>
 #include <QtDebug>
+#include <cmath>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
@@ -16,6 +17,21 @@ constexpr bool kEnableDebugOutput = false;
 
 static const double kLockCurrentKey = 1;
 static const double kKeepUnlockedKey = 1;
+
+// Pitch adjustment in semitones to convert from 440Hz to 432Hz tuning
+// Calculated as: log2(432/440) * 12 ≈ -0.31767 semitones
+static constexpr double k432HzPitchAdjustmentSemitones = -0.31767;
+static constexpr int kTarget432Hz = 432;
+
+double calculate432HzAdjustment(int detectedFrequencyHz) {
+    if (detectedFrequencyHz <= 0) {
+        return 0.0;
+    }
+    if (detectedFrequencyHz == kTarget432Hz) {
+        return 0.0;
+    }
+    return std::log2(static_cast<double>(kTarget432Hz) / detectedFrequencyHz) * 12.0;
+}
 
 KeyControl::KeyControl(const QString& group,
         UserSettingsPointer pConfig)
@@ -117,6 +133,19 @@ KeyControl::KeyControl(const QString& group,
     m_pKeylock = make_parented<ControlProxy>(group, "keylock", this);
     m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
+
+    // 432Hz pitch lock controls
+    m_p432HzPitchLock = make_parented<ControlProxy>(group, "432hz_pitch_lock", this);
+    m_p432HzPitchLock->connectValueChanged(this, &KeyControl::slot432HzPitchLockChanged,
+            Qt::DirectConnection);
+
+    m_pFileIs432Hz = make_parented<ControlProxy>(group, "file_is_432hz", this);
+    m_pFileIs432Hz->connectValueChanged(this, &KeyControl::slotFileIs432HzChanged,
+            Qt::DirectConnection);
+
+    m_pFileTuningFrequencyHz = make_parented<ControlProxy>(group, "file_tuning_frequency", this);
+    m_pFileTuningFrequencyHz->connectValueChanged(
+            this, &KeyControl::slotFileTuningFrequencyChanged, Qt::DirectConnection);
 
     // m_pitchRateInfo members are initialized with default values, only keylock
     // is persistent and needs to be updated from config
@@ -475,4 +504,65 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     m_pPitch->set(pitchToTakeOctaves * 12);
     slotPitchChanged(pitchToTakeOctaves * 12);
     return true;
+}
+
+void KeyControl::slot432HzPitchLockChanged(double value) {
+    Q_UNUSED(value);
+    apply432HzPitchAdjustment();
+}
+
+void KeyControl::slotFileIs432HzChanged(double value) {
+    Q_UNUSED(value);
+    apply432HzPitchAdjustment();
+}
+
+void KeyControl::slotFileTuningFrequencyChanged(double value) {
+    Q_UNUSED(value);
+    apply432HzPitchAdjustment();
+}
+
+void KeyControl::apply432HzPitchAdjustment() {
+    // Apply pitch adjustment to convert 440Hz tracks to 432Hz tuning when:
+    // - 432Hz pitch lock is enabled
+    // - The track is tuned to a reference different from 432Hz
+    const bool is432HzPitchLockEnabled = m_p432HzPitchLock && m_p432HzPitchLock->toBool();
+    int detectedHz = kStandardTuningHertz440;
+    if (m_pFileTuningFrequencyHz) {
+        detectedHz = static_cast<int>(m_pFileTuningFrequencyHz->get());
+    }
+    if (detectedHz <= 0) {
+        detectedHz = kStandardTuningHertz440;
+    }
+
+    if (!is432HzPitchLockEnabled) {
+        // Pitch lock disabled, reset only if we applied an adjustment
+        if (m_bTuningAdjustmentApplied) {
+            m_pPitchAdjust->set(0);
+            slotPitchAdjustChanged(0);
+            m_bTuningAdjustmentApplied = false;
+            if constexpr (kEnableDebugOutput) {
+                qDebug() << "432Hz pitch lock: resetting pitch adjustment";
+            }
+        }
+        return;
+    }
+
+    // No adjustment needed if track already tuned to 432Hz
+    if ((m_pFileIs432Hz && m_pFileIs432Hz->toBool()) || detectedHz == kTarget432Hz) {
+        if (m_bTuningAdjustmentApplied) {
+            m_pPitchAdjust->set(0);
+            slotPitchAdjustChanged(0);
+            m_bTuningAdjustmentApplied = false;
+        }
+        return;
+    }
+
+    double adjustment = calculate432HzAdjustment(detectedHz);
+    m_pPitchAdjust->set(adjustment);
+    slotPitchAdjustChanged(adjustment);
+    m_bTuningAdjustmentApplied = true;
+    if constexpr (kEnableDebugOutput) {
+        qDebug() << "432Hz pitch lock: detected" << detectedHz << "Hz, applying"
+                 << adjustment << "semitones pitch adjustment";
+    }
 }
