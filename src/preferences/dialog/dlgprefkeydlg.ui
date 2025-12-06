@@ -80,6 +80,19 @@ and allows you to pitch adjust them for harmonic mixing.</string>
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="bdetect432HzEnabled">
+        <property name="toolTip">
+         <string>Detect tracks tuned to 432Hz concert pitch instead of the standard 440Hz.
+When enabled, tracks will be analyzed at both 440Hz and 432Hz tuning,
+and the more consistent result will be used. 432Hz tracks will be marked
+with a special indicator in the library.</string>
+        </property>
+        <property name="text">
+         <string>Detect 432Hz tuning (experimental)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="labelStemStrategy">

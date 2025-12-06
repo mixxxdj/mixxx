@@ -38,12 +38,33 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
         return m_resultKeys;
     }
 
+    // 432Hz detection support
+    bool is432Hz() const override {
+        return m_bIs432Hz;
+    }
+
+    void setDetect432Hz(bool enabled) override {
+        m_bDetect432Hz = enabled;
+    }
+
   private:
+    // 440Hz analyzer
     std::unique_ptr<GetKeyMode> m_pKeyMode;
     DownmixAndOverlapHelper m_helper;
     size_t m_currentFrame;
     KeyChangeList m_resultKeys;
     mixxx::track::io::key::ChromaticKey m_prevKey;
+
+    // 432Hz analyzer (used when 432Hz detection is enabled)
+    std::unique_ptr<GetKeyMode> m_pKeyMode432;
+    DownmixAndOverlapHelper m_helper432;
+    size_t m_currentFrame432;
+    KeyChangeList m_resultKeys432;
+    mixxx::track::io::key::ChromaticKey m_prevKey432;
+
+    // 432Hz detection settings
+    bool m_bDetect432Hz;
+    bool m_bIs432Hz;
 };
 
 } // namespace mixxx

@@ -49,4 +49,7 @@ message KeyMap {
   repeated KeyChange key_change = 3;
 
   optional Source source = 4 [ default = ANALYZER ];
+
+  // True if the track was detected to be tuned to 432Hz instead of 440Hz
+  optional bool is_432hz = 5 [ default = false ];
 }

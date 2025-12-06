@@ -36,6 +36,9 @@ class Keys final {
     // Return key text form the track metadata literally (not normalized)
     QString getGlobalKeyText() const;
 
+    // Return true if the track was detected to be tuned to 432Hz
+    bool is432Hz() const;
+
   private:
     explicit Keys(const mixxx::track::io::key::KeyMap& m_keyMap);
 

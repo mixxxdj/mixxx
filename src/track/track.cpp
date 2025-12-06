@@ -1576,6 +1576,11 @@ QString Track::getKeyText() const {
     return KeyUtils::keyToString(getKey());
 }
 
+bool Track::is432Hz() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getKeys().is432Hz();
+}
+
 // normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {

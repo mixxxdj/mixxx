@@ -83,6 +83,16 @@ class AnalyzerKeyPlugin : public AnalyzerPlugin {
     ~AnalyzerKeyPlugin() override = default;
 
     virtual KeyChangeList getKeyChanges() const = 0;
+
+    // Returns true if the track was detected to be tuned to 432Hz
+    virtual bool is432Hz() const {
+        return false;
+    }
+
+    // Enable 432Hz detection mode (analyze at both 440Hz and 432Hz)
+    virtual void setDetect432Hz(bool enabled) {
+        Q_UNUSED(enabled);
+    }
 };
 
 } // namespace mixxx
