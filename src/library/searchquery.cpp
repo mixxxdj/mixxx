@@ -1,5 +1,6 @@
 #include "library/searchquery.h"
 
+#include <QLocale>
 #include <QRegularExpression>
 
 #include "library/dao/trackschema.h"
@@ -846,6 +847,116 @@ QString YearFilterNode::toSql() const {
                 QStringLiteral("CAST(substr(year,1,4) AS INTEGER) BETWEEN %1 AND %2"))
                 .arg(QString::number(m_dRangeLow),
                         QString::number(m_dRangeHigh));
+    }
+
+    return QString();
+}
+
+// TODO Convert to DateFilterNode and allow searching for "last_played"
+DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
+        : m_operatorQuery(false),
+          m_operator("=") {
+    QDateTime date;
+    QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
+    if (opMatch.hasMatch()) {
+        // Explicit operator
+        m_operator = opMatch.captured(1);
+        date = parseDate(opMatch.captured(2));
+    } else {
+        // This is an implicit 'equals' filter with ':'.
+        // Try parsing the date and use default '=' operator.
+        date = parseDate(argument);
+    }
+
+    if (!date.isValid()) {
+        return;
+    }
+
+    if (m_operator == '=') {
+        // Note: due to literal = time comparison in Sql we need to set up
+        // a range from [date]T00:00:00.000 to [date]T23:59:59.999
+        m_equalsQuery = true;
+        m_dateStart = date;
+        m_dateEnd = date.addDays(1);
+        return;
+    }
+
+    m_operatorQuery = true;
+    if (m_operator == '>') {
+        // "added:>25.10.2025" would include any time from 2025-10-25T00:00:00Z001
+        // Add one day for >= 25.10.2026T00:00:00Z000 to exclude the whole day
+        date = date.addDays(1);
+        m_operator = ">=";
+    }
+
+    m_opDate = date;
+
+    // TODO Add literal parser, for example:
+    // added:7days
+    // added:4weeks-2weeks etc.
+}
+
+QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
+    // Prior to Qt 6.7 QLocale::toDate() with QLocale::ShortFormat used the
+    // base year 1900. With 6.7+ we can specify the century, ie. 20 for 2000.
+    // Mixxx was created aftre 2000 :)
+#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
+    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat);
+#else
+    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat, 20);
+#endif
+    if (!date.isValid()) {
+        return {};
+    }
+
+    if (date.year() < 2000) {
+        date = date.addYears(100);
+    }
+
+    // Return local date/time, don't convert to UTC, yet
+    return QDateTime(date, QTime(0, 0)).toUTC();
+}
+
+QString DateAddedFilterNode::dateStringIsoNoZ(const QDateTime& date) const {
+    QString dateStr = date.toString(Qt::ISODateWithMs);
+    // sqlite can't handle 'Z' suffix, strip if present
+    if (dateStr.endsWith('Z')) {
+        dateStr.chop(1);
+    }
+    return dateStr;
+}
+
+bool DateAddedFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_operatorQuery && !m_equalsQuery) {
+        // invalid query, don't filter
+        return true;
+    }
+
+    QDateTime trackDate = pTrack->getDateAdded();
+    if (!trackDate.isValid()) {
+        return true;
+    }
+
+    if (m_operatorQuery &&
+            ((m_operator == "<" && trackDate < m_opDate) ||
+                    (m_operator == "<=" && trackDate <= m_opDate) ||
+                    (m_operator == ">=" && trackDate >= m_opDate))) {
+        return true;
+    } else if (m_equalsQuery && trackDate >= m_dateStart && trackDate < m_dateEnd) {
+        return true;
+    }
+
+    // valid query with no matches
+    return false;
+}
+
+QString DateAddedFilterNode::toSql() const {
+    if (m_operatorQuery) {
+        return QStringLiteral("datetime_added %1 '%2'")
+                .arg(m_operator, dateStringIsoNoZ(m_opDate));
+    } else if (m_equalsQuery) {
+        return QStringLiteral("datetime_added >= '%1' AND datetime_added < '%2'")
+                .arg(dateStringIsoNoZ(m_dateStart), dateStringIsoNoZ(m_dateEnd));
     }
 
     return QString();

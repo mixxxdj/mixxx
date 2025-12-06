@@ -459,30 +459,35 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         buildIndex();
     }
 
+    // The id string we need for our QSqlQuery
     QStringList idStrings;
+    // The id set we need for removing/adding dirty tracks
+    QSet<TrackId> ids;
     // TODO(rryan) consider making this the data passed in and a separate
     // QVector for output
     QSet<TrackId> dirtyTracks;
-    for (const auto& trackId: trackIds) {
+    for (const auto& trackId : trackIds) {
         idStrings << trackId.toString();
+        ids << trackId;
         if (m_dirtyTracks.contains(trackId)) {
             dirtyTracks.insert(trackId);
         }
     }
 
-    QStringList queryFragments;
-    if (!extraFilter.isNull() && extraFilter != "") {
-        queryFragments << QString("(%1)").arg(extraFilter);
+    // Note: don't use the extraFilter for m_pQueryParser->parseQuery(), just
+    // append it to searchQuery if not empty and let the parser construct
+    // a SQL query from it.
+    // The issue with the extraFilter is that the parser is assuming the input
+    // is a SQL string and creates a SqlNode from it, and the issue with that is
+    // that SqlNode::match(TrackPointer) always returns true -- which leads to
+    // false positive matches when we iterate over the dirty tracks below.
+    QString searchPlusExtraFilter = searchQuery;
+    if (!extraFilter.isEmpty()) {
+        searchPlusExtraFilter += ' ';
+        searchPlusExtraFilter += extraFilter;
     }
-    if (idStrings.size() > 0) {
-        queryFragments << QString("%1 in (%2)")
-                .arg(m_idColumn, idStrings.join(","));
-    }
-
     const std::unique_ptr<QueryNode> pQuery =
-            m_pQueryParser->parseQuery(
-                    searchQuery,
-                    queryFragments.join(" AND "));
+            m_pQueryParser->parseQuery(searchPlusExtraFilter, QString());
 
     QString filter = pQuery->toSql();
     if (!filter.isEmpty()) {
@@ -540,18 +545,20 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     }
 
     for (TrackId trackId : std::as_const(dirtyTracks)) {
-        // Only get the track if it is in the cache. Tracks that
-        // are not cached in memory cannot be dirty.
+        // Only get the track if it is in the cache.
+        // Tracks that are not cached in memory cannot be dirty.
         // Bypass getCachedTrack() to not invalidate m_recentTrackId
         TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
         if (!pTrack) {
             continue;
         }
 
-        // The track should be in the result set if the search is empty or the
-        // track matches the search.
-        bool shouldBeInResultSet = searchQuery.isEmpty() ||
-                pQuery->match(pTrack);
+        // The track should be in the result set if
+        // the search and extra filter are empty
+        // or
+        // the track matches the search and ids (if not empty) contains its id
+        bool shouldBeInResultSet = searchPlusExtraFilter.isEmpty() ||
+                ((ids.isEmpty() || ids.contains(trackId)) && pQuery->match(pTrack));
 
         // If the track is in this result set.
         bool isInResultSet = trackToIndex->contains(trackId);
