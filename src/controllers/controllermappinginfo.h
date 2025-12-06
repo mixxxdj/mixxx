@@ -68,12 +68,6 @@ class MappingInfo {
     inline const QString& getAuthor() const {
         return m_author;
     }
-    inline bool hasSettings() const {
-        return m_hasSettings;
-    }
-    inline bool hasScreens() const {
-        return m_hasScreens;
-    }
 
     inline const QList<ProductInfo>& getProducts() const {
         return m_products;
@@ -96,8 +90,6 @@ class MappingInfo {
     static ProductInfo parseHIDProduct(const QXmlStreamAttributes& xmlElementAttributes);
 
     bool m_valid = false;
-    bool m_hasSettings;
-    bool m_hasScreens;
     QString m_path;
     QString m_dirPath;
     QVersionNumber m_mixxxVersion;

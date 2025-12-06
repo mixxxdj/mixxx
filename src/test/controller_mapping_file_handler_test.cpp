@@ -1137,6 +1137,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile) {
 
         assertMappings(pMapping.get(), pSerializedMapping.get());
     }
+#ifdef __BULK__
     foreach (const MappingInfo& mapping,
             m_pEnumerator->getMappingsByExtension(BULK_MAPPING_EXTENSION)) {
         qDebug() << "Validating " << mapping.getPath();
@@ -1155,6 +1156,9 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile) {
 
         assertMappings(pMapping.get(), pSerializedMapping.get());
     }
+#endif
+
+#ifdef __HID__
     foreach (const MappingInfo& mapping,
             m_pEnumerator->getMappingsByExtension(HID_MAPPING_EXTENSION)) {
         qDebug() << "Validating " << mapping.getPath();
@@ -1173,4 +1177,5 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile) {
 
         assertMappings(pMapping.get(), pSerializedMapping.get());
     }
+#endif
 }

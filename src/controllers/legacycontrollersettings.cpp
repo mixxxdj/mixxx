@@ -305,7 +305,7 @@ LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         !defined(_MSC_VER) // FIXME: Bug in MSVC preventing the use of this feature
         m_options.emplace_back(val, value.attribute(QStringLiteral("label"), val), color);
 #else
-        m_options.emplace_back(LegacyControllerEnumItem{
+        m_options.emplace_back(LegacyControllerEnumOption{
                 val, value.attribute(QStringLiteral("label"), val), color});
 #endif
         if (value.hasAttribute(QStringLiteral("default"))) {

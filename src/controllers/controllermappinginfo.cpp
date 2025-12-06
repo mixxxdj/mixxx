@@ -9,6 +9,11 @@
 Q_LOGGING_CATEGORY(kLogger, "controllers.mappinginfo")
 
 namespace {
+// Sanitize a string to a version number, often extracted from the XML property,
+// which aims to contain a Mixxx version, from which a given mapping is
+// supported. In the current official mapping included in the code base, we have
+// a variety of format such as "1.0.0" (correct semver), "2.4" (partial semver),
+// "1.7.0+", "1.10.0-beta1+" or ""  (invalid semver)
 QVersionNumber sanitizeVersion(QString rawVersion) {
     return !rawVersion.isEmpty()
             ? QVersionNumber::fromString(rawVersion.remove(QChar('+')))
@@ -56,8 +61,6 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
     // very large) XML file.
     // Contents parsed by xml path:
     // MixxxControllerPreset The minimum supported Mixxx version
-    // settings              Whether or not the mapping has settings
-    // controller.screens    Whether or not the mapping has screens
     // info.name             Mapping name, used for drop down menus in dialogs
     // info.author           Mapping author
     // info.description      Mapping description
@@ -75,7 +78,6 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
 
     QXmlStreamReader xml(&file);
     bool inInfo = false;
-    bool inController = false;
     bool inInfoDevices = false;
     int xmlHierachyDepth = 0;
 
@@ -139,12 +141,6 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
                     continue;
                 }
             }
-            if (!inController &&
-                    xmlElementName == QStringLiteral("controller") &&
-                    xmlHierachyDepth == 2) {
-                inController = true;
-                continue;
-            }
 
             if (xmlElementName == QStringLiteral("MixxxControllerPreset") &&
                     xmlHierachyDepth == 1) {
@@ -156,9 +152,6 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
                 m_mixxxVersion = sanitizeVersion(mixxxVersion);
             }
 
-            m_hasScreens |= inController && xmlElementName == QStringLiteral("screens");
-            m_hasSettings |= xmlElementName == QStringLiteral("settings");
-
         } else if (token == QXmlStreamReader::EndElement) {
             const QString name = xml.name().toString();
 
@@ -167,8 +160,10 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
                 --xmlHierachyDepth;
                 continue;
             }
-            if (inController && name == QStringLiteral("controller")) {
-                inController = false;
+            if (inInfo && name == QStringLiteral("info")) {
+                // End of info block; we stop file-reading/parsing entirely
+                // Stopping here saves several hundreds milliseconds of startup time
+                break;
             }
 
             --xmlHierachyDepth;
