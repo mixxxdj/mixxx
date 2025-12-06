@@ -8,9 +8,12 @@
 #include "moc_keydelegate.cpp"
 
 namespace {
-// Unicode symbol for 432Hz indicator
-constexpr const char* k432HzSymbol = "\xE2\x9C\xA7"; // ✧ (sparkle symbol)
-constexpr int k432HzSymbolWidth = 14;
+// Unicode symbols for tuning indicators
+constexpr const char* kTuningSymbol432Hz = "\xE2\x9C\xA7"; // ✧ (sparkle) for 432Hz
+constexpr const char* kTuningSymbolLow = "\xE2\x86\x93";   // ↓ (arrow down) for <440Hz
+constexpr const char* kTuningSymbolHigh = "\xE2\x86\x91";  // ↑ (arrow up) for >440Hz
+constexpr int kTuningSymbolWidth = 14;
+constexpr int kStandardTuningHz = 440;
 } // namespace
 
 void KeyDelegate::paintItem(
@@ -22,6 +25,7 @@ void KeyDelegate::paintItem(
     const QString keyText = index.data().value<QString>();
     const QColor keyColor = index.data(Qt::DecorationRole).value<QColor>();
     const bool is432Hz = index.data(TrackModel::k432HzRole).toBool();
+    const int tuningFrequencyHz = index.data(TrackModel::kTuningFrequencyRole).toInt();
     int rectWidth = 0;
 
     if (keyColor.isValid()) {
@@ -35,8 +39,25 @@ void KeyDelegate::paintItem(
                 keyColor);
     }
 
-    // Reserve space for 432Hz symbol if needed
-    int rightMargin = is432Hz ? k432HzSymbolWidth : 0;
+    // Determine which tuning symbol to show (if any)
+    const char* tuningSymbol = nullptr;
+    QColor symbolColor;
+    if (is432Hz || tuningFrequencyHz == 432) {
+        // 432Hz gets the sparkle symbol
+        tuningSymbol = kTuningSymbol432Hz;
+        symbolColor = QColor(218, 165, 32); // Golden color
+    } else if (tuningFrequencyHz > 0 && tuningFrequencyHz < kStandardTuningHz) {
+        // Lower than 440Hz gets arrow down
+        tuningSymbol = kTuningSymbolLow;
+        symbolColor = QColor(100, 149, 237); // Cornflower blue
+    } else if (tuningFrequencyHz > kStandardTuningHz) {
+        // Higher than 440Hz gets arrow up
+        tuningSymbol = kTuningSymbolHigh;
+        symbolColor = QColor(255, 99, 71); // Tomato red
+    }
+
+    // Reserve space for tuning symbol if needed
+    int rightMargin = tuningSymbol ? kTuningSymbolWidth : 0;
 
     // Display the key text with the user-provided notation
     QString elidedText = option.fontMetrics.elidedText(
@@ -59,26 +80,24 @@ void KeyDelegate::paintItem(
             Qt::AlignVCenter,
             elidedText);
 
-    // Draw 432Hz indicator symbol if the track is tuned to 432Hz
-    if (is432Hz) {
+    // Draw tuning indicator symbol
+    if (tuningSymbol) {
         painter->save();
-        // Use a golden/warm color for the 432Hz symbol
-        QColor symbolColor(218, 165, 32); // Golden color
         if (option.state & QStyle::State_Selected) {
             // Use a brighter color when selected
-            symbolColor = QColor(255, 215, 0); // Brighter gold
+            symbolColor = symbolColor.lighter(130);
         }
         painter->setPen(symbolColor);
         QFont symbolFont = option.font;
         symbolFont.setBold(true);
         painter->setFont(symbolFont);
         painter->drawText(
-                option.rect.x() + option.rect.width() - k432HzSymbolWidth,
+                option.rect.x() + option.rect.width() - kTuningSymbolWidth,
                 option.rect.y(),
-                k432HzSymbolWidth,
+                kTuningSymbolWidth,
                 option.rect.height(),
                 Qt::AlignVCenter | Qt::AlignRight,
-                QString::fromUtf8(k432HzSymbol));
+                QString::fromUtf8(tuningSymbol));
         painter->restore();
     }
 

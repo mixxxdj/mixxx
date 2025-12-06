@@ -52,4 +52,10 @@ message KeyMap {
 
   // True if the track was detected to be tuned to 432Hz instead of 440Hz
   optional bool is_432hz = 5 [ default = false ];
+
+  // Detected tuning frequency in Hz (e.g., 432, 440, 442)
+  // Default is 440Hz (standard concert pitch A4)
+  // This allows calculating the exact pitch offset needed for 432Hz playback:
+  // offset_semitones = log2(432 / tuning_frequency_hz) * 12
+  optional int32 tuning_frequency_hz = 6 [ default = 440 ];
 }

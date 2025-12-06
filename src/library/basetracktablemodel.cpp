@@ -473,6 +473,18 @@ QVariant BaseTrackTableModel::data(
         return false;
     }
 
+    // Handle tuning frequency role for key column
+    if (role == kTuningFrequencyRole) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+            TrackPointer pTrack = getTrack(index);
+            if (pTrack) {
+                return pTrack->getTuningFrequencyHz();
+            }
+        }
+        return 440; // Default to 440Hz
+    }
+
     // Only retrieve a value for supported roles
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
@@ -774,6 +786,20 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
         }
+        case ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            bool ok = false;
+            const int freq = rawValue.toInt(&ok);
+            if (!ok || freq <= 0) {
+                return QVariant();
+            }
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return QStringLiteral("%1 Hz").arg(freq);
+            }
+            return freq;
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
             // The Key value is determined by either the KEY_ID or KEY column
             return KeyUtils::keyFromKeyTextAndIdFields(
@@ -883,7 +909,8 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE:
         case ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER:
-        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY: {
             // We need to cast to int due to a bug similar to
             // https://bugreports.qt.io/browse/QTBUG-67582
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
