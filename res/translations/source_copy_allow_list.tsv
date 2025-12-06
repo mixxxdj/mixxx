@@ -441,10 +441,10 @@ nl,de	Release (ms)
 it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
-es,es_419,es_AR,es_CO,es_ES,es_MX	No
-nl,sq_AL,es,es_419,es_AR,es_CO,es_ES,es_MX,pl,sv	VID:
+es*	No
+nl,sq_AL,es*,pl,sv	VID:
 nl	Product ID
-nl,sq_AL,es,es_419,es_AR,es_CO,es_ES,es_MX,pl,sv	PID:
+nl,sq_AL,es*,pl,sv	PID:
 nl	Lossy
 nl	Lossless
 nl	Top

@@ -56,6 +56,14 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     // initiate table population, store path
     void setPath(mixxx::FileAccess path);
 
+    /// Stop the BrowseThread, potentially still running and population
+    /// the model, by setting an empty path in order to avoid its update
+    /// signals still affecting the selection in the shared WTrackTableView
+    /// before another model is loaded to it.
+    void stopBrowseThread() {
+        setPath({});
+    };
+
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackPointer getTrackByRef(const TrackRef& trackRef) const override;
     TrackModel::Capabilities getCapabilities() const override;
@@ -95,6 +103,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     void releaseBrowseThread();
 
   signals:
+    void saveModelState();
     void restoreModelState();
 
   public slots:

@@ -61,13 +61,13 @@ class LibraryFeature : public QObject {
         Q_UNUSED(pSource);
         return false;
     }
-    virtual bool dragMoveAccept(const QUrl& url) {
-        Q_UNUSED(url);
+    virtual bool dragMoveAccept(const QList<QUrl>& urls) {
+        Q_UNUSED(urls);
         return false;
     }
-    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
         Q_UNUSED(index);
-        Q_UNUSED(url);
+        Q_UNUSED(urls);
         return false;
     }
 

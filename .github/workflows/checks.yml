@@ -24,7 +24,7 @@ jobs:
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Add clazy PPA
         if: matrix.name == 'clazy'
         # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04
@@ -137,8 +137,6 @@ jobs:
         run: ctest --timeout 45
         working-directory: build
         env:
-          # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: offscreen
           GTEST_COLOR: 1
           # Only use single thread to prevent *.gcna files from overwriting each other
           CTEST_PARALLEL_LEVEL: 1
@@ -159,7 +157,7 @@ jobs:
       - name: "Upload Coverage Report to coveralls.io"
         if: matrix.name == 'coverage'
         continue-on-error: true
-        uses: coverallsapp/github-action@v2.3.6
+        uses: coverallsapp/github-action@v2.3.7
         with:
           flag-name: ubuntu-24.04
           path-to-lcov: build/lcov.info
