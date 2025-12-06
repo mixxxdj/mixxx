@@ -155,7 +155,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     }
 
 #ifdef __STEM__
-    // Returns the group for the deck and stem where deckIndex and stemInde are zero based
+    // Returns the group for the deck and stem where deckIndex and stemIndex are zero based
     static QString groupForDeckStem(int deckIdx, int stemIdx) {
         DEBUG_ASSERT(deckIdx >= 0 && stemIdx >= 0 && stemIdx < 4);
         return QStringLiteral("[Channel") + QString::number(deckIdx + 1) +
