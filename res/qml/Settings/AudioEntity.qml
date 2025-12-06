@@ -18,8 +18,8 @@ Item {
     property list<var> gateways: []
     property bool advanced: false
 
-    implicitHeight: 54 + 32 * gatewayRepeater.visibleChannels
-    width: 135
+    implicitHeight: 45 + 28 * gatewayRepeater.visibleChannels
+    width: 105
     z: 10
 
     onGatewaysChanged: {
@@ -43,7 +43,7 @@ Item {
             spacing: 4
 
             Item {
-                height: nameLabel.implicitHeight + 18
+                height: nameLabel.implicitHeight + 9
                 width: parent.width
                 Label {
                     id: nameLabel
@@ -112,7 +112,7 @@ Item {
                         }
 
                         width: parent.width
-                        height: 28
+                        height: 22
                         RowLayout {
                             anchors {
                                 left: parent.left
@@ -209,7 +209,7 @@ Item {
                             }
 
                             color: Theme.midGray
-                            width: 10
+                            width: 15
                             height: width
                             radius: width/2
                             z: 100
@@ -223,7 +223,7 @@ Item {
                                     when: (!edge.connection && node.required) || (edge.connection && edge.connection.state == "warning")
 
                                     PropertyChanges {
-                                        edge.width: 15
+                                        edge.width: 20
                                         edge.color: Theme.warningColor
                                     }
                                 },

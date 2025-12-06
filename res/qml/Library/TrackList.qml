@@ -171,7 +171,7 @@ Rectangle {
             if (urls.length == 0)
                 return ;
 
-            player.loadTrackFromLocationUrl(urls[0], play);
+            Mixxx.PlayerManager.getPlayer(group).loadTrackFromLocationUrl(urls[0], play);
         }
 
         ScrollBar.vertical: ScrollBar {
@@ -190,14 +190,20 @@ Rectangle {
         Keys.onEnterPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
         Keys.onReturnPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
         model: root.model
+
+        pointerNavigationEnabled: false
+        keyNavigationEnabled: false
+
         function updateColumnSize() {
+            const oldUsedWidth = usedWidth;
+            const oldDynamicColumnCount = dynamicColumnCount;
             usedWidth = 0;
             dynamicColumnCount = 0;
             if (model == null) {
                 return;
             }
             for (let c = 0; c < model.columns.length; c++) {
-                if (model.columns[c].hidden) {
+                if (model.columns[c].hidden || model.columns[c].autoHideWidth > view.width) {
                     continue
                 } else if (model.columns[c].preferredWidth > 0) {
                     usedWidth += model.columns[c].preferredWidth;
@@ -205,6 +211,7 @@ Rectangle {
                     dynamicColumnCount += model.columns[c].fillSpan || 1
                 }
             }
+            return oldDynamicColumnCount != dynamicColumnCount || oldUsedWidth != usedWidth;
         }
         Component.onCompleted: this.updateColumnSize()
         onModelChanged: this.updateColumnSize()
@@ -212,10 +219,20 @@ Rectangle {
         property int usedWidth: 0
         property int dynamicColumnCount: 0
 
+        onWidthChanged: {
+            if (view.updateColumnSize()) {
+                // forceLayout is costly - only invoke if there was a change in the column layouts
+                view.forceLayout()
+            }
+        }
+
         columnWidthProvider: function(column) {
             const columnDef = view.model.columns[column]
             if (columnDef.hidden) {
                 return 0;
+            }
+            if (columnDef.autoHideWidth > 0 && columnDef.autoHideWidth > view.width) {
+                return 0
             }
             if (columnDef.preferredWidth >= 0) {
                 return columnDef.preferredWidth;

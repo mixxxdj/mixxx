@@ -10,7 +10,7 @@ Rectangle {
 
     anchors.fill: parent
 
-    color: selected ? Theme.accent : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
+    color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
     Drag.dragType: Drag.Automatic
     Drag.supportedActions: Qt.CopyAction
