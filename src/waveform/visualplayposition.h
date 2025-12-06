@@ -90,6 +90,9 @@ class VisualPlayPosition : public QObject {
     bool isValid() const {
         return m_valid.load();
     }
+    const QString& key() const {
+        return m_key;
+    }
 
   private:
     double calcOffsetAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
