@@ -287,9 +287,7 @@ const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     return QVector<int>();
 }
 
-void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
-    Q_UNUSED(extraFilter);
-    Q_UNUSED(searchText);
+void BrowseTableModel::search(const QString&) {
 }
 
 const QString BrowseTableModel::currentSearch() const {
