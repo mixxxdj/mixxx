@@ -1,0 +1,32 @@
+{
+  "name": "lilv",
+  "buildsystem": "meson",
+  "config-opts": [
+    "-Dbuildtype=debugoptimized",
+    "-Dbindings_py=disabled",
+    "-Ddocs=disabled",
+    "-Dtests=disabled",
+    "-Dtools=disabled"
+  ],
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://gitlab.com/lv2/lilv/-/archive/v0.26.2/lilv-v0.26.2.tar.gz",
+      "sha256": "3d0ff171ca5fa124e65d8f8fbffcbc12e495a6d79f9599703543d3f08f402d63",
+      "x-checker-data": {
+        "type": "anitya",
+        "project-id": 1818,
+        "stable-only": true,
+        "url-template": "https://gitlab.com/lv2/lilv/-/archive/v$version/lilv-v$version.tar.gz"
+      }
+    }
+  ],
+  "cleanup": [
+    "/etc",
+    "/include",
+    "/lib/pkgconfig"
+  ],
+  "post-install": [
+    "install -Dm644 -t $FLATPAK_DEST/share/licenses/lilv ../COPYING"
+  ]
+}
