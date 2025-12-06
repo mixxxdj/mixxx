@@ -441,19 +441,20 @@ bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls,
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::dropAccept() index=" << index << urls;
     }
-    bool result = false;
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                result = pFeature->dropAcceptChild(index, urls, pSource);
-            }
-        }
+    if (!index.isValid()) {
+        return false;
     }
-    return result;
+
+    if (index.internalPointer() == this) {
+        return m_sFeatures[index.row()]->dropAccept(urls, pSource);
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (!pTreeItem) {
+            return false;
+        }
+        LibraryFeature* pFeature = pTreeItem->feature();
+        return pFeature->dropAcceptChild(index, urls, pSource);
+    }
 }
 
 bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
@@ -463,24 +464,27 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     return false;
 }
 
-bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) const {
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QList<QUrl>& urls) const {
     if constexpr (kDebug) {
-        qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+        qDebug() << "SidebarModel::dragMoveAccept() index=" << index << urls;
     }
-    bool result = false;
+    if (!index.isValid()) {
+        return false;
+    }
 
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            result = m_sFeatures[index.row()]->dragMoveAccept(url);
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                result = pFeature->dragMoveAcceptChild(index, url);
-            }
+    if (index.internalPointer() == this) {
+        return m_sFeatures[index.row()]->dragMoveAccept(urls);
+    } else {
+        TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+        if (!pTreeItem) {
+            return false;
         }
+        LibraryFeature* pFeature = pTreeItem->feature();
+        VERIFY_OR_DEBUG_ASSERT(pFeature) {
+            return false;
+        }
+        return pFeature->dragMoveAcceptChild(index, urls);
     }
-    return result;
 }
 
 /// Translates an index from the child models to an index of the sidebar models
