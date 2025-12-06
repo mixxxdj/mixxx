@@ -45,6 +45,9 @@
     const Component = function(options = {}) {
         this.normalizeMidi = (midiBytesVar) => {
             if (!Array.isArray(midiBytesVar)) {
+                if ("object" === typeof midiBytesVar) {
+                    return this.normalizeNestedMidi(midiBytesVar);
+                }
                 return [];
             }
 
@@ -56,6 +59,14 @@
                 return [midiBytesVar];
             }
         };
+
+        this.normalizeNestedMidi = (nestedMidi) => {
+            let array = [];
+            Object.keys(nestedMidi).forEach(key => {
+                array[key] = this.normalizeMidi(nestedMidi[key]);
+            });
+            return array;
+        }
 
         if (Array.isArray(options)) {
             const [midiStatus, midiNo] = options;
@@ -184,9 +195,38 @@
             }
         },
         connectMidiIn() {
-            for (const [midiStatus, midino] of this.midiIn) {
-                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.input.bind(this)));
+
+            if (0 in this.midiIn) {
+                for (const [midiStatus, midino] of this.midiIn) {
+                    this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.input.bind(this)));
+                }
+                return;
             }
+
+            Object.keys(this.midiIn).forEach(key => {
+                let methodNameOriginal = 'input' + key;
+                let methodNameCamelCase = 'input' + String(key[0]).toUpperCase() + String(key).slice(1);
+                let methodNameCapitals = 'input' + String(key).toUpperCase();
+                let methodName = null;
+
+                switch (true) {
+                    case methodNameOriginal in this:
+                        methodName = methodNameOriginal;
+                        break;
+                    case methodNameCamelCase in this:
+                        methodName = methodNameCamelCase;
+                        break;
+                    case methodNameCapitals in this:
+                        methodName = methodNameCapitals;
+                        break;
+                }
+                if (methodName !== null) {
+                    for (const [midiStatus, midino] of this.midiIn[key]) {
+                        this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this[methodName].bind(this)));
+                    }
+                }
+            });
+
         },
         connect() {
             this.connectMidiIn();
@@ -571,16 +611,6 @@
                 this._firstLSB = value;
             }
         },
-        connectMidiIn() {
-            if (this.midiIn.length >= 1) {
-                const [midiStatus, midino] = this.midiIn[0];
-                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.inputMSB.bind(this)));
-            }
-            if (this.midiIn.length === 2) {
-                const [midiStatus, midino] = this.midiIn[1];
-                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.inputLSB.bind(this)));
-            }
-        },
         connect() {
             this.connectMidiIn();
             this.connectMidiOut();
@@ -928,17 +958,6 @@
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
         reset() {},
-
-        connectMidiIn() {
-            if (this.midiIn.length >= 1) {
-                const [midiStatus, midino] = this.midiIn[0];
-                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.inputTouch.bind(this)));
-            }
-            if (this.midiIn.length === 2) {
-                const [midiStatus, midino] = this.midiIn[1];
-                this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.inputWheel.bind(this)));
-            }
-        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
