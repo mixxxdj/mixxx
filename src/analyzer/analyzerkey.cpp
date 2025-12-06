@@ -42,7 +42,12 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
           m_currentFrame(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
-          m_bPreferencesReanalyzeEnabled(false) {
+          m_bPreferencesReanalyzeEnabled(false),
+          m_bPreferencesDetect432Hz(false),
+          m_bPreferencesDetectTuningFrequency(true),
+          m_tuningMinFreq(427),
+          m_tuningMaxFreq(447),
+          m_tuningStepFreq(1) {
 }
 
 bool AnalyzerKey::initialize(const AnalyzerTrack& track,
@@ -61,6 +66,11 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& track,
 
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
+    m_bPreferencesDetect432Hz = m_keySettings.getDetect432Hz();
+    m_bPreferencesDetectTuningFrequency = m_keySettings.getDetectTuningFrequency();
+    m_tuningMinFreq = m_keySettings.getTuningMinFrequency();
+    m_tuningMaxFreq = m_keySettings.getTuningMaxFrequency();
+    m_tuningStepFreq = m_keySettings.getTuningStepFrequency();
 
     const auto plugins = availablePlugins();
     if (!plugins.isEmpty()) {
@@ -77,7 +87,11 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& track,
     qDebug() << "AnalyzerKey preference settings:"
              << "\nPlugin:" << m_pluginId
              << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeEnabled
-             << "\nFast analysis:" << m_bPreferencesFastAnalysisEnabled;
+             << "\nFast analysis:" << m_bPreferencesFastAnalysisEnabled
+             << "\n432Hz detection:" << m_bPreferencesDetect432Hz
+             << "\nTuning frequency detection:" << m_bPreferencesDetectTuningFrequency
+             << "\nTuning range:" << m_tuningMinFreq << "-" << m_tuningMaxFreq << "Hz"
+             << "(step:" << m_tuningStepFreq << "Hz)";
 
     m_sampleRate = sampleRate;
     m_channelCount = channelCount;
@@ -109,6 +123,13 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& track,
         }
 
         if (m_pPlugin) {
+            // Enable 432Hz detection if configured (legacy mode)
+            m_pPlugin->setDetect432Hz(m_bPreferencesDetect432Hz);
+
+            // Enable dynamic tuning frequency detection
+            m_pPlugin->setDetectTuningFrequency(m_bPreferencesDetectTuningFrequency);
+            m_pPlugin->setTuningDetectionRange(m_tuningMinFreq, m_tuningMaxFreq, m_tuningStepFreq);
+
             if (m_pPlugin->initialize(mixxx::audio::SampleRate(m_sampleRate))) {
                 qDebug() << "Key calculation started with plugin" << m_pluginId;
             } else {
@@ -125,6 +146,8 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& track,
 
 bool AnalyzerKey::shouldAnalyze(TrackPointer pTrack) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
+    bool bDetect432Hz = m_keySettings.getDetect432Hz();
+    bool bDetectTuning = m_keySettings.getDetectTuningFrequency();
     QString pluginID = m_keySettings.getKeyPluginId();
     if (pluginID.isEmpty()) {
         pluginID = defaultPlugin().id();
@@ -136,7 +159,11 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer pTrack) const {
         QString subVersion = keys.getSubVersion();
 
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-                pluginID, bPreferencesFastAnalysisEnabled);
+                pluginID,
+                bPreferencesFastAnalysisEnabled,
+                bDetect432Hz,
+                bDetectTuning,
+                keys.getTuningFrequencyHz());
         QString newVersion = KeyFactory::getPreferredVersion();
         QString newSubVersion = KeyFactory::getPreferredSubVersion(extraVersionInfo);
 
@@ -223,20 +250,58 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
     }
 
     KeyChangeList key_changes = m_pPlugin->getKeyChanges();
+    int tuningFrequencyHz = m_pPlugin->getTuningFrequencyHz();
+    bool is432Hz = (tuningFrequencyHz == 432);
+
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            m_pluginId, m_bPreferencesFastAnalysisEnabled);
+            m_pluginId,
+            m_bPreferencesFastAnalysisEnabled,
+            m_bPreferencesDetect432Hz,
+            m_bPreferencesDetectTuningFrequency,
+            tuningFrequencyHz);
     Keys track_keys = KeyFactory::makePreferredKeys(
-            key_changes, extraVersionInfo, m_sampleRate, m_totalFrames);
+            key_changes, extraVersionInfo, m_sampleRate, m_totalFrames,
+            is432Hz, tuningFrequencyHz);
     tio->setKeys(track_keys);
+
+    if (tuningFrequencyHz != 440) {
+        qDebug() << "Track detected with tuning frequency:" << tuningFrequencyHz
+                 << "Hz" << tio->getLocation();
+    }
 }
 
 // static
 QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
-        const QString& pluginId, bool bPreferencesFastAnalysis) {
+        const QString& pluginId, bool bPreferencesFastAnalysis, bool bDetect432Hz) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
     if (bPreferencesFastAnalysis) {
         extraVersionInfo["fast_analysis"] = "1";
+    }
+    if (bDetect432Hz) {
+        extraVersionInfo["detect_432hz"] = "1";
+    }
+    return extraVersionInfo;
+}
+
+// static
+QHash<QString, QString> AnalyzerKey::getExtraVersionInfo(
+        const QString& pluginId,
+        bool bPreferencesFastAnalysis,
+        bool bDetect432Hz,
+        bool bDetectTuningFrequency,
+        int tuningFrequencyHz) {
+    QHash<QString, QString> extraVersionInfo;
+    extraVersionInfo["vamp_plugin_id"] = pluginId;
+    if (bPreferencesFastAnalysis) {
+        extraVersionInfo["fast_analysis"] = "1";
+    }
+    if (bDetect432Hz) {
+        extraVersionInfo["detect_432hz"] = "1";
+    }
+    if (bDetectTuningFrequency) {
+        extraVersionInfo["detect_tuning"] = "1";
+        extraVersionInfo["tuning_freq_hz"] = QString::number(tuningFrequencyHz);
     }
     return extraVersionInfo;
 }
