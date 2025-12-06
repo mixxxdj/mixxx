@@ -25,6 +25,10 @@
 #define KEY_NOTATION_CUSTOM_PREFIX "CustomKeyNotation"
 #define KEY_STEM_STRATEGY "stem_strategy"
 #define KEY_432HZ_DETECTION_ENABLED "432HzDetectionEnabled"
+#define KEY_TUNING_DETECTION_ENABLED "TuningFrequencyDetectionEnabled"
+#define KEY_TUNING_MIN_FREQUENCY "TuningMinFrequency"
+#define KEY_TUNING_MAX_FREQUENCY "TuningMaxFrequency"
+#define KEY_TUNING_STEP_FREQUENCY "TuningStepFrequency"
 
 class KeyDetectionSettings {
   public:
@@ -59,6 +63,25 @@ class KeyDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(Detect432Hz, bool,
                               KEY_CONFIG_KEY, KEY_432HZ_DETECTION_ENABLED, false);
+
+    // Dynamic tuning frequency detection settings
+    // When enabled, analyzes tracks across a range of reference frequencies
+    // to find the most likely tuning (e.g., 432Hz, 440Hz, 442Hz)
+    DEFINE_PREFERENCE_HELPERS(DetectTuningFrequency, bool,
+                              KEY_CONFIG_KEY, KEY_TUNING_DETECTION_ENABLED, true);
+
+    // Minimum tuning frequency to test (Hz) - default 427Hz (approx -52 cents from 440Hz)
+    DEFINE_PREFERENCE_HELPERS(TuningMinFrequency, int,
+                              KEY_CONFIG_KEY, KEY_TUNING_MIN_FREQUENCY, 427);
+
+    // Maximum tuning frequency to test (Hz) - default 447Hz (approx +28 cents from 440Hz)
+    DEFINE_PREFERENCE_HELPERS(TuningMaxFrequency, int,
+                              KEY_CONFIG_KEY, KEY_TUNING_MAX_FREQUENCY, 447);
+
+    // Step size for tuning frequency scan (Hz) - default 1Hz for accuracy
+    // Higher values = faster analysis but less precision
+    DEFINE_PREFERENCE_HELPERS(TuningStepFrequency, int,
+                              KEY_CONFIG_KEY, KEY_TUNING_STEP_FREQUENCY, 1);
 
     QString getCustomKeyNotation(mixxx::track::io::key::ChromaticKey key) {
         return m_pConfig->getValue<QString>(ConfigKey(KEY_CONFIG_KEY,

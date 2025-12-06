@@ -14,6 +14,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
           m_bFastAnalysisEnabled(m_keySettings.getFastAnalysisDefault()),
           m_bReanalyzeEnabled(m_keySettings.getReanalyzeWhenSettingsChangeDefault()),
           m_bDetect432HzEnabled(m_keySettings.getDetect432HzDefault()),
+          m_bDetectTuningEnabled(m_keySettings.getDetectTuningFrequencyDefault()),
+          m_tuningMinFreq(m_keySettings.getTuningMinFrequencyDefault()),
+          m_tuningMaxFreq(m_keySettings.getTuningMaxFrequencyDefault()),
+          m_tuningStepFreq(m_keySettings.getTuningStepFrequencyDefault()),
           m_stemStrategy(KeyDetectionSettings::StemStrategy::Disabled) {
     setupUi(this);
 
@@ -90,6 +94,30 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
             this,
             &DlgPrefKey::detect432HzEnabled);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(bdetectTuningEnabled, &QCheckBox::checkStateChanged,
+#else
+    connect(bdetectTuningEnabled, &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefKey::detectTuningEnabled);
+
+    connect(spinTuningMin,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefKey::tuningMinChanged);
+    connect(spinTuningMax,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefKey::tuningMaxChanged);
+    connect(spinTuningStep,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefKey::tuningStepChanged);
+    setScrollSafeGuard(spinTuningMin);
+    setScrollSafeGuard(spinTuningMax);
+    setScrollSafeGuard(spinTuningStep);
+
     connect(radioNotationOpenKey, &QRadioButton::toggled,
             this, &DlgPrefKey::setNotationOpenKey);
     connect(radioNotationOpenKeyAndTraditional, &QRadioButton::toggled,
@@ -123,6 +151,10 @@ void DlgPrefKey::loadSettings() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
     m_bDetect432HzEnabled = m_keySettings.getDetect432Hz();
+    m_bDetectTuningEnabled = m_keySettings.getDetectTuningFrequency();
+    m_tuningMinFreq = m_keySettings.getTuningMinFrequency();
+    m_tuningMaxFreq = m_keySettings.getTuningMaxFrequency();
+    m_tuningStepFreq = m_keySettings.getTuningStepFrequency();
 
     KeyUtils::KeyNotation notation_type =
             KeyUtils::keyNotationFromString(m_keySettings.getKeyNotation());
@@ -174,6 +206,10 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
     m_bDetect432HzEnabled = m_keySettings.getDetect432HzDefault();
+    m_bDetectTuningEnabled = m_keySettings.getDetectTuningFrequencyDefault();
+    m_tuningMinFreq = m_keySettings.getTuningMinFrequencyDefault();
+    m_tuningMaxFreq = m_keySettings.getTuningMaxFrequencyDefault();
+    m_tuningStepFreq = m_keySettings.getTuningStepFrequencyDefault();
     if (m_availablePlugins.size() > 0) {
         m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
@@ -245,6 +281,39 @@ void DlgPrefKey::detect432HzEnabled(int i) {
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::detectTuningEnabled(Qt::CheckState state) {
+    m_bDetectTuningEnabled = (state == Qt::Checked);
+#else
+void DlgPrefKey::detectTuningEnabled(int i) {
+    m_bDetectTuningEnabled = static_cast<bool>(i);
+#endif
+    slotUpdate();
+}
+
+void DlgPrefKey::tuningMinChanged(int value) {
+    m_tuningMinFreq = value;
+    // Ensure max >= min
+    if (m_tuningMaxFreq < m_tuningMinFreq) {
+        m_tuningMaxFreq = m_tuningMinFreq;
+    }
+    slotUpdate();
+}
+
+void DlgPrefKey::tuningMaxChanged(int value) {
+    m_tuningMaxFreq = value;
+    // Ensure min <= max
+    if (m_tuningMinFreq > m_tuningMaxFreq) {
+        m_tuningMinFreq = m_tuningMaxFreq;
+    }
+    slotUpdate();
+}
+
+void DlgPrefKey::tuningStepChanged(int value) {
+    m_tuningStepFreq = value;
+    slotUpdate();
+}
+
 void DlgPrefKey::slotStemStrategyChanged(int index) {
     switch (index) {
     case 1:
@@ -263,6 +332,10 @@ void DlgPrefKey::slotApply() {
     m_keySettings.setFastAnalysis(m_bFastAnalysisEnabled);
     m_keySettings.setReanalyzeWhenSettingsChange(m_bReanalyzeEnabled);
     m_keySettings.setDetect432Hz(m_bDetect432HzEnabled);
+    m_keySettings.setDetectTuningFrequency(m_bDetectTuningEnabled);
+    m_keySettings.setTuningMinFrequency(m_tuningMinFreq);
+    m_keySettings.setTuningMaxFrequency(m_tuningMaxFreq);
+    m_keySettings.setTuningStepFrequency(m_tuningStepFreq);
 
     QString notation_name;
     KeyUtils::KeyNotation notation_type;
@@ -316,6 +389,21 @@ void DlgPrefKey::slotUpdate() {
     breanalyzeEnabled->setEnabled(m_bAnalyzerEnabled);
     bdetect432HzEnabled->setChecked(m_bDetect432HzEnabled);
     bdetect432HzEnabled->setEnabled(m_bAnalyzerEnabled);
+
+    // Tuning detection controls
+    bdetectTuningEnabled->setChecked(m_bDetectTuningEnabled);
+    bdetectTuningEnabled->setEnabled(m_bAnalyzerEnabled);
+    spinTuningMin->setValue(m_tuningMinFreq);
+    spinTuningMax->setValue(m_tuningMaxFreq);
+    spinTuningStep->setValue(m_tuningStepFreq);
+    // Enable tuning range controls only when analyzer and tuning detection are enabled
+    bool tuningControlsEnabled = m_bAnalyzerEnabled && m_bDetectTuningEnabled;
+    spinTuningMin->setEnabled(tuningControlsEnabled);
+    spinTuningMax->setEnabled(tuningControlsEnabled);
+    spinTuningStep->setEnabled(tuningControlsEnabled);
+    labelTuningRange->setEnabled(tuningControlsEnabled);
+    labelTuningTo->setEnabled(tuningControlsEnabled);
+    labelTuningStep->setEnabled(tuningControlsEnabled);
 
     if (!m_bAnalyzerEnabled) {
         return;
