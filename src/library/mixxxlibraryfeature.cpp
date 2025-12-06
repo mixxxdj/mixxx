@@ -18,6 +18,7 @@
 #include "library/treeitem.h"
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #ifdef __ENGINEPRIME__
 #include "widget/wlibrarysidebar.h"
@@ -205,17 +206,21 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
 
 bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     if (pSource) {
+        // We don't accept internal drags onto Tracks as all tracks with a
+        // source are already in the library.
         return false;
-    } else {
-        QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
-                urls, true);
-        return trackIds.size() > 0;
     }
+
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, nullptr);
+    return trackIds.size() > 0;
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool MixxxLibraryFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 #ifdef __ENGINEPRIME__

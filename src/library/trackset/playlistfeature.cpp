@@ -14,6 +14,7 @@
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
+#include "util/dnd.h"
 #include "util/duration.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -118,7 +119,10 @@ void PlaylistFeature::onRightClickChild(
 bool PlaylistFeature::dropAcceptChild(
         const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
-    VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_playlistDao.isPlaylistLocked(playlistId)) {
         return false;
     }
     // If a track is dropped onto a playlist's name, but the track isn't in the
@@ -126,8 +130,11 @@ bool PlaylistFeature::dropAcceptChild(
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
-                                      ->resolveTrackIdsFromUrls(urls, !pSource);
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
     if (trackIds.isEmpty()) {
         return false;
     }
@@ -136,13 +143,16 @@ bool PlaylistFeature::dropAcceptChild(
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     int playlistId = playlistIdFromIndex(index);
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    if (playlistId == kInvalidPlaylistId) {
+        return false;
+    }
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        return false;
+    }
 
-    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
-    return !locked && formatSupported;
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
