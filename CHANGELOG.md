@@ -371,6 +371,9 @@
   [#10325](https://github.com/mixxxdj/mixxx/issues/10325)
 * Computer: fix "Refresh directory tree" action [#15301](https://github.com/mixxxdj/mixxx/pull/15301)
 * Computer: parse artist+title from filename if both tags are empty [#15302](https://github.com/mixxxdj/mixxx/pull/15302)
+* Computer: stop model population when switching to another feature
+  [#11445](https://github.com/mixxxdj/mixxx/issues/11445)
+  [#15677](https://github.com/mixxxdj/mixxx/pull/15677)
 * Library scanner: make Cancel button work again
   [#15320](https://github.com/mixxxdj/mixxx/pull/15320)
   [#14940](https://github.com/mixxxdj/mixxx/issues/14940)
@@ -378,6 +381,12 @@
 * Sidebar: expand items to full width to maximize click-responsive area [#15330](https://github.com/mixxxdj/mixxx/pull/15330)
 * focus tracks view when selecting a track via deck track menu [#15543](https://github.com/mixxxdj/mixxx/pull/15543)
 * Search: maintain cursor position when saving query [#15512](https://github.com/mixxxdj/mixxx/pull/15512)
+* Search: add proper DateAddedFilter [#15572](https://github.com/mixxxdj/mixxx/pull/15572)
+* Analyze view: avoid listing tracks that don't match the 'New' filter
+  [#15597](https://github.com/mixxxdj/mixxx/pull/15597)
+  [#14873](https://github.com/mixxxdj/mixxx/issues/14873)
+* Traktor feature: fixes to Traktor collection importer
+  [#15645](https://github.com/mixxxdj/mixxx/pull/15645)
 
 ### Preferences
 
@@ -433,8 +442,9 @@
 * Fix Menu checkbox behaviour, consistency & cleanup [#15365](https://github.com/mixxxdj/mixxx/pull/15365)
 * Fix time warping when click-and-dragging waveform
   [#15579](https://github.com/mixxxdj/mixxx/issues/15579)
-  [#15619](https://github.com/mixxxdj/mixxx/issues/15619)
+  [#15619](https://github.com/mixxxdj/mixxx/pull/15619)
   [#15610](https://github.com/mixxxdj/mixxx/pull/15610)
+* Update Keyboard SVG [#15635](https://github.com/mixxxdj/mixxx/pull/15635)
 
 ## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (2025-09-02)
 
