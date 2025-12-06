@@ -53,7 +53,11 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 
   signals:
     void trackChanged();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    void channelsChanged(Channels channels);
+#else
     void channelsChanged(mixxx::qml::QmlWaveformOverview::Channels channels);
+#endif
 #if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
     void rendererChanged(Renderer renderer);
 #else
