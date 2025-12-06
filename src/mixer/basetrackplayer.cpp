@@ -267,6 +267,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pVisualBpm = std::make_unique<ControlObject>(ConfigKey(getGroup(), "visual_bpm"));
     m_pKey = make_parented<ControlProxy>(getGroup(), "file_key", this);
     m_pFileIs432Hz = std::make_unique<ControlObject>(ConfigKey(getGroup(), "file_is_432hz"));
+    m_pFileTuningFrequencyHz = std::make_unique<ControlObject>(
+            ConfigKey(getGroup(), "file_tuning_frequency"));
     m_pVisualKey = std::make_unique<ControlObject>(ConfigKey(getGroup(), "visual_key"));
 
     m_pTimeElapsed = std::make_unique<ControlObject>(ConfigKey(getGroup(), "time_elapsed"));
@@ -649,6 +651,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pFileBPM->set(0);
         m_pKey->set(0);
         m_pFileIs432Hz->set(0);
+        m_pFileTuningFrequencyHz->set(0);
         slotSetTrackColor(std::nullopt);
         m_pLoopInPoint->set(kNoTrigger);
         m_pLoopOutPoint->set(kNoTrigger);
@@ -669,6 +672,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pFileBPM->set(m_pLoadedTrack->getBpm());
         m_pKey->set(m_pLoadedTrack->getKey());
         m_pFileIs432Hz->set(m_pLoadedTrack->is432Hz() ? 1.0 : 0.0);
+        m_pFileTuningFrequencyHz->set(m_pLoadedTrack->getTuningFrequencyHz());
         slotSetTrackColor(m_pLoadedTrack->getColor());
 
         if(m_pConfig->getValue(

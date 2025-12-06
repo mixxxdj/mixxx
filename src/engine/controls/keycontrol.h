@@ -42,6 +42,7 @@ class KeyControl : public EngineControl {
     void slotResetKey(double);
     void slot432HzPitchLockChanged(double);
     void slotFileIs432HzChanged(double);
+    void slotFileTuningFrequencyChanged(double);
 
   private:
     void setEngineKey(double key, double key_distance);
@@ -69,6 +70,7 @@ class KeyControl : public EngineControl {
     // 432Hz pitch lock controls
     parented_ptr<ControlProxy> m_p432HzPitchLock;
     parented_ptr<ControlProxy> m_pFileIs432Hz;
+    parented_ptr<ControlProxy> m_pFileTuningFrequencyHz;
 
     // The current loaded file's detected key
     std::unique_ptr<ControlObject> m_pFileKey;
@@ -81,4 +83,5 @@ class KeyControl : public EngineControl {
     QAtomicInt m_updatePitchRequest;
     QAtomicInt m_updatePitchAdjustRequest;
     QAtomicInt m_updateRateRequest;
+    bool m_bTuningAdjustmentApplied{false};
 };
