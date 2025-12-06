@@ -26,19 +26,22 @@ AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
         : LibraryTableModel(parent, pTrackCollectionManager,
                             "mixxx.db.model.prepare") {
     // Default to showing recent tracks.
-    setSearch("", recentFilter());
+    setExtraFilter(recentFilter());
 }
 
 void AnalysisLibraryTableModel::showRecentSongs() {
     // Search with the recent filter.
-    search(currentSearch(), recentFilter());
+    setExtraFilter(recentFilter());
+    select();
 }
 
 void AnalysisLibraryTableModel::showAllSongs() {
     // Clear the recent filter.
-    search(currentSearch(), "");
+    setExtraFilter({});
+    select();
 }
 
 void AnalysisLibraryTableModel::searchCurrentTrackSet(const QString& text, bool useRecentFilter) {
-    search(text, useRecentFilter ? recentFilter() : "");
+    setExtraFilter(useRecentFilter ? recentFilter() : QString{});
+    search(text);
 }

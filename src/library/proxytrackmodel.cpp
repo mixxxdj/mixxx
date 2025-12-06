@@ -78,8 +78,7 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackLocation(indexSource) : QString();
 }
 
-void ProxyTrackModel::search(const QString& searchText, const QString& extraFilter) {
-    Q_UNUSED(extraFilter);
+void ProxyTrackModel::search(const QString& searchText) {
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
         setFilterFixedString(searchText);
