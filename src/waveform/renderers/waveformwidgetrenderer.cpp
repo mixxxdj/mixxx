@@ -115,6 +115,10 @@ bool WaveformWidgetRenderer::init() {
                 m_group, QStringLiteral("track_samples"));
 
         m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
+    } else {
+        m_pRateRatioCO.reset();
+        m_pGainControlObject.reset();
+        m_pTrackSamplesControlObject.reset();
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_visualPlayPosition) {
@@ -138,6 +142,10 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
             m_pos[type] = -1.0;
             m_truePosSample[type] = -1.0;
         }
+        return;
+    }
+
+    if (!m_pTrack && !m_pTrackSamplesControlObject) {
         return;
     }
 
