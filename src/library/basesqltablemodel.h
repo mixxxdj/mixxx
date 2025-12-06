@@ -28,7 +28,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
         return m_bInitialized;
     }
 
-    void setSearch(const QString& searchText, const QString& extraFilter = QString());
+    void setExtraFilter(const QString& extraFilter);
+    void setSearch(const QString& searchText);
     void setSort(int column, Qt::SortOrder order);
 
     ///////////////////////////////////////////////////////////////////////////
@@ -59,7 +60,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
         return m_trackPosToRow.value(position);
     }
 
-    void search(const QString& searchText, const QString& extraFilter = QString()) override;
+    void search(const QString& searchText) override;
     const QString currentSearch() const override;
 
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) const override;
