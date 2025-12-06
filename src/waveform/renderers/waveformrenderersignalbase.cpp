@@ -181,8 +181,8 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         // Per-band gain from the EQ knobs.
         CSAMPLE_GAIN lowVisualGain = 1.0, midVisualGain = 1.0, highVisualGain = 1.0;
 
-        // Only adjust low/mid/high gains if EQs are enabled.
-        if (m_pEQEnabled && m_pEQEnabled->get() > 0.0) {
+        // Only adjust low/mid/high gains if EQs are enabled or if there is no EQs CO setup.
+        if (!m_pEQEnabled || m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
                     m_pMidFilterControlObject &&
                     m_pHighFilterControlObject) {
