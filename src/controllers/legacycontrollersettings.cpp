@@ -1,5 +1,8 @@
 #include "controllers/legacycontrollersettings.h"
 
+#include <qdom.h>
+#include <qglobal.h>
+
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QColorDialog>
@@ -13,6 +16,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QStringLiteral>
+#include <utility>
 
 #include "moc_legacycontrollersettings.cpp"
 #include "util/assert.h"
@@ -78,6 +82,18 @@ AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomEleme
     }
 }
 
+void AbstractLegacyControllerSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    e->setAttribute("type", getType());
+    e->setAttribute("variable", variableName());
+    e->setAttribute("label", label());
+    if (!description().isEmpty()) {
+        auto descr = doc->createElement("description");
+        QDomText textNode = doc->createTextNode(description());
+        descr.appendChild(textNode);
+        e->appendChild(descr);
+    }
+}
+
 QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
         LegacyControllerSettingsLayoutContainer::Disposition orientation) {
     auto pRoot = make_parented<QWidget>(pParent);
@@ -85,7 +101,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 
     pLayout->setContentsMargins(0, 0, 0, 0);
 
-    if (orientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
+    if (orientation == LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL) {
         auto* pSettingsContainer = dynamic_cast<WLegacyControllerSettingsContainer*>(pParent);
         if (pSettingsContainer) {
             connect(pSettingsContainer,
@@ -96,7 +112,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
                                     disposition) {
                         pLayout->setDirection(disposition ==
                                                 LegacyControllerSettingsLayoutContainer::
-                                                        HORIZONTAL
+                                                        Disposition::HORIZONTAL
                                         ? QBoxLayout::TopToBottom
                                         : QBoxLayout::LeftToRight);
                         pParent->layout()->invalidate();
@@ -134,6 +150,11 @@ LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
 QWidget* LegacyControllerBooleanSetting::buildWidget(
         QWidget* pParent, LegacyControllerSettingsLayoutContainer::Disposition) {
     return buildInputWidget(pParent);
+}
+
+void LegacyControllerBooleanSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    e->setAttribute("default", m_defaultValue);
 }
 
 QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
@@ -195,6 +216,21 @@ template<class SettingType,
         Serializer<SettingType> ValueSerializer,
         Deserializer<SettingType> ValueDeserializer,
         class InputWidget>
+void LegacyControllerNumberSetting<SettingType,
+        ValueSerializer,
+        ValueDeserializer,
+        InputWidget>::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin<SettingType>::serialize(doc, e);
+    e->setAttribute("type", "integer");
+    e->setAttribute("min", m_minValue);
+    e->setAttribute("max", m_maxValue);
+    e->setAttribute("step", m_stepValue);
+    e->setAttribute("default", m_defaultValue);
+}
+template<class SettingType,
+        Serializer<SettingType> ValueSerializer,
+        Deserializer<SettingType> ValueDeserializer,
+        class InputWidget>
 QWidget* LegacyControllerNumberSetting<SettingType,
         ValueSerializer,
         ValueDeserializer,
@@ -219,6 +255,16 @@ QWidget* LegacyControllerNumberSetting<SettingType,
             });
 
     return pSpinBox;
+}
+
+void LegacyControllerRealSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    LegacyControllerNumberSetting<double,
+            packSettingDoubleValue,
+            extractSettingDoubleValue,
+            QDoubleSpinBox>::serialize(doc, e);
+    e->setAttribute("type", "real");
+    e->setAttribute("precision", m_precisionValue);
 }
 
 QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
@@ -250,7 +296,8 @@ LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         !defined(_MSC_VER) // FIXME: Bug in MSVC preventing the use of this feature
         m_options.emplace_back(val, value.attribute(QStringLiteral("label"), val), color);
 #else
-        m_options.emplace_back(Item{val, value.attribute(QStringLiteral("label"), val), color});
+        m_options.emplace_back(LegacyControllerEnumItem{
+                val, value.attribute(QStringLiteral("label"), val), color});
 #endif
         if (value.hasAttribute(QStringLiteral("default"))) {
             m_defaultValue = pos;
@@ -279,6 +326,28 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
             return;
         }
         pos++;
+    }
+}
+
+void LegacyControllerEnumSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    qsizetype index = 0;
+    for (const auto& option : std::as_const(m_options)) {
+        auto value = doc->createElement("value");
+        if (option.color.isValid()) {
+            value.setAttribute("color", option.color.name());
+        }
+        if (!option.label.isEmpty()) {
+            value.setAttribute("label", option.label);
+        }
+        if (index && m_defaultValue == index) {
+            // No need to mark the first value as default explicitly
+            value.setAttribute("default", "true");
+        }
+        QDomText textNode = doc->createTextNode(option.value);
+        value.appendChild(textNode);
+        e->appendChild(value);
+        index++;
     }
 }
 
@@ -335,6 +404,11 @@ void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
         return;
     }
     m_editedValue = m_savedValue;
+}
+
+void LegacyControllerColorSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    e->setAttribute("default", m_defaultValue.name());
 }
 
 QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
@@ -397,6 +471,11 @@ void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
         return;
     }
     m_savedValue = m_editedValue;
+}
+
+void LegacyControllerFileSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    e->setAttribute("pattern", m_fileFilter);
 }
 
 QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
