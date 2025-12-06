@@ -524,8 +524,10 @@ void BaseTrackPlayerImpl::connectLoadedTrack() {
             [this] {
                 TrackPointer pTrack = m_pLoadedTrack;
                 if (pTrack) {
-                    const auto key = pTrack->getKeys().getGlobalKey();
-                    m_pKey->set(static_cast<double>(key));
+                    const auto keys = pTrack->getKeys();
+                    m_pKey->set(static_cast<double>(keys.getGlobalKey()));
+                    m_pFileIs432Hz->set(keys.is432Hz() ? 1.0 : 0.0);
+                    m_pFileTuningFrequencyHz->set(keys.getTuningFrequencyHz());
                 }
             });
 
@@ -671,8 +673,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pDuration->set(m_pLoadedTrack->getDuration());
         m_pFileBPM->set(m_pLoadedTrack->getBpm());
         m_pKey->set(m_pLoadedTrack->getKey());
-        m_pFileIs432Hz->set(m_pLoadedTrack->is432Hz() ? 1.0 : 0.0);
-        m_pFileTuningFrequencyHz->set(m_pLoadedTrack->getTuningFrequencyHz());
+        const bool isTrack432Hz = m_pLoadedTrack->is432Hz();
+        const int tuningFrequencyHz = m_pLoadedTrack->getTuningFrequencyHz();
         slotSetTrackColor(m_pLoadedTrack->getColor());
 
         if(m_pConfig->getValue(
@@ -749,6 +751,13 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             m_pStemColors[stemIdx]->forceSet(color);
         }
 #endif
+
+        // Force signals even if value matches previous track so downstream controls
+        // (e.g. 432Hz pitch lock) re-apply adjustments after load.
+        m_pFileIs432Hz->setAndConfirm(0.0); // ensure valueChanged fires even for same state
+        m_pFileIs432Hz->setAndConfirm(isTrack432Hz ? 1.0 : 0.0);
+        m_pFileTuningFrequencyHz->setAndConfirm(0.0);
+        m_pFileTuningFrequencyHz->setAndConfirm(tuningFrequencyHz);
 
         emit newTrackLoaded(m_pLoadedTrack);
         emit trackRatingChanged(m_pLoadedTrack->getRating());

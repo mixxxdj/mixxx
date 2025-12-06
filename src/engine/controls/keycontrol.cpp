@@ -21,6 +21,7 @@ static const double kKeepUnlockedKey = 1;
 // Pitch adjustment in semitones to convert from 440Hz to 432Hz tuning
 // Calculated as: log2(432/440) * 12 ≈ -0.31767 semitones
 static constexpr double k432HzPitchAdjustmentSemitones = -0.31767;
+static constexpr int kStandardTuningHertz440 = 440;
 static constexpr int kTarget432Hz = 432;
 
 double calculate432HzAdjustment(int detectedFrequencyHz) {
@@ -120,6 +121,25 @@ KeyControl::KeyControl(const QString& group,
     m_pRateRatio = make_parented<ControlProxy>(ConfigKey(group, "rate_ratio"), this);
     m_pRateRatio->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
+    m_pTrackLoaded = make_parented<ControlProxy>(ConfigKey(group, "track_loaded"), this);
+    m_pTrackLoaded->connectValueChanged(
+            this,
+            [this](double loaded) {
+                // Bind late-created controls and re-apply tuning when a track arrives.
+                if (loaded > 0.0) {
+                    ensureFileTuningControls();
+                    m_maybeResettingAfterLoad = true;
+                    // Queue to run after other load/reset handlers.
+                    QMetaObject::invokeMethod(
+                            this,
+                            [this]() {
+                                m_maybeResettingAfterLoad = false;
+                                apply432HzPitchAdjustment();
+                            },
+                            Qt::QueuedConnection);
+                }
+            },
+            Qt::DirectConnection);
 
     // VinylControl is only available on main decks
     if (PlayerManager::isDeckGroup(group)) {
@@ -135,17 +155,17 @@ KeyControl::KeyControl(const QString& group,
             Qt::DirectConnection);
 
     // 432Hz pitch lock controls
-    m_p432HzPitchLock = make_parented<ControlProxy>(group, "432hz_pitch_lock", this);
-    m_p432HzPitchLock->connectValueChanged(this, &KeyControl::slot432HzPitchLockChanged,
+    m_p432HzPitchLock = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "432hz_pitch_lock"),
+            true);
+    m_p432HzPitchLock->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    connect(m_p432HzPitchLock.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slot432HzPitchLockChanged,
             Qt::DirectConnection);
-
-    m_pFileIs432Hz = make_parented<ControlProxy>(group, "file_is_432hz", this);
-    m_pFileIs432Hz->connectValueChanged(this, &KeyControl::slotFileIs432HzChanged,
-            Qt::DirectConnection);
-
-    m_pFileTuningFrequencyHz = make_parented<ControlProxy>(group, "file_tuning_frequency", this);
-    m_pFileTuningFrequencyHz->connectValueChanged(
-            this, &KeyControl::slotFileTuningFrequencyChanged, Qt::DirectConnection);
+    // file_is_432hz and file_tuning_frequency are created later by BaseTrackPlayer.
+    ensureFileTuningControls();
 
     // m_pitchRateInfo members are initialized with default values, only keylock
     // is persistent and needs to be updated from config
@@ -521,17 +541,59 @@ void KeyControl::slotFileTuningFrequencyChanged(double value) {
     apply432HzPitchAdjustment();
 }
 
+void KeyControl::ensureFileTuningControls() {
+    if (!m_pFileIs432Hz &&
+            ControlObject::exists(ConfigKey(getGroup(), "file_is_432hz"))) {
+        m_pFileIs432Hz = make_parented<ControlProxy>(
+                ConfigKey(getGroup(), "file_is_432hz"), this);
+        m_pFileIs432Hz->connectValueChanged(
+                this,
+                &KeyControl::slotFileIs432HzChanged,
+                Qt::DirectConnection);
+    }
+
+    if (!m_pFileTuningFrequencyHz &&
+            ControlObject::exists(ConfigKey(getGroup(), "file_tuning_frequency"))) {
+        m_pFileTuningFrequencyHz = make_parented<ControlProxy>(
+                ConfigKey(getGroup(), "file_tuning_frequency"), this);
+        m_pFileTuningFrequencyHz->connectValueChanged(
+                this,
+                &KeyControl::slotFileTuningFrequencyChanged,
+                Qt::DirectConnection);
+    }
+}
+
+bool KeyControl::fileMarkedAs432Hz() const {
+    if (m_pFileIs432Hz) {
+        return m_pFileIs432Hz->toBool();
+    }
+    return ControlObject::toBool(ConfigKey(getGroup(), "file_is_432hz"));
+}
+
+int KeyControl::detectedTuningFrequencyHz() const {
+    if (m_pFileTuningFrequencyHz) {
+        return static_cast<int>(std::round(m_pFileTuningFrequencyHz->get()));
+    }
+    return static_cast<int>(std::round(
+            ControlObject::get(ConfigKey(getGroup(), "file_tuning_frequency"))));
+}
+
 void KeyControl::apply432HzPitchAdjustment() {
+    ensureFileTuningControls();
+
     // Apply pitch adjustment to convert 440Hz tracks to 432Hz tuning when:
     // - 432Hz pitch lock is enabled
     // - The track is tuned to a reference different from 432Hz
     const bool is432HzPitchLockEnabled = m_p432HzPitchLock && m_p432HzPitchLock->toBool();
-    int detectedHz = kStandardTuningHertz440;
-    if (m_pFileTuningFrequencyHz) {
-        detectedHz = static_cast<int>(m_pFileTuningFrequencyHz->get());
-    }
+    int detectedHz = detectedTuningFrequencyHz();
     if (detectedHz <= 0) {
         detectedHz = kStandardTuningHertz440;
+    }
+
+    // Avoid fighting with pitch auto-reset right after load: if track_loaded just toggled,
+    // defer until the controls have settled. The queued call from track_loaded covers this.
+    if (m_pTrackLoaded && m_pTrackLoaded->get() > 0.0 && m_maybeResettingAfterLoad) {
+        return;
     }
 
     if (!is432HzPitchLockEnabled) {
@@ -548,7 +610,7 @@ void KeyControl::apply432HzPitchAdjustment() {
     }
 
     // No adjustment needed if track already tuned to 432Hz
-    if ((m_pFileIs432Hz && m_pFileIs432Hz->toBool()) || detectedHz == kTarget432Hz) {
+    if (fileMarkedAs432Hz() || detectedHz == kTarget432Hz) {
         if (m_bTuningAdjustmentApplied) {
             m_pPitchAdjust->set(0);
             slotPitchAdjustChanged(0);
