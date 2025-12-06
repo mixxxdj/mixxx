@@ -45,6 +45,7 @@ class ControllerManager : public QObject {
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
   signals:
+    void initialized();
     void devicesChanged();
     void requestSetUpDevices();
     void requestShutdown();
