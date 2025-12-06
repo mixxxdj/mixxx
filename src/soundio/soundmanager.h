@@ -52,6 +52,10 @@ class SoundManager : public QObject {
     void queryDevicesPortaudio();
     void queryDevicesMixxx();
 
+    static SoundDevicePointer selectLocalTimeSyncRef(
+            const QHash<SoundDevicePointer, QList<AudioOutput>>& deviceOutputs,
+            const QList<SoundDevicePointer>& devices);
+
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
     SoundDeviceStatus setupDevices();
