@@ -40,7 +40,7 @@ jobs:
       #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
 
       - name: "Check out repository"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
           fetch-depth: 0
