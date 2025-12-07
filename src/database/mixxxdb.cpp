@@ -1,6 +1,8 @@
 #include "database/mixxxdb.h"
 
 #include <QDir>
+#include <QSqlQuery>
+#include <QVariant>
 
 #include "database/schemamanager.h"
 #include "moc_mixxxdb.cpp"
@@ -29,6 +31,45 @@ const QString kDefaultFileName = QStringLiteral("mixxxdb.sqlite");
 const QString kUserName = QStringLiteral("mixxx");
 
 const QString kPassword = QStringLiteral("mixxx");
+
+bool ensureColumnExists(const QSqlDatabase& database,
+        const QString& tableName,
+        const QString& columnName,
+        const QString& alterSql) {
+    QSqlQuery pragmaQuery(database);
+    pragmaQuery.prepare(QStringLiteral("PRAGMA table_info(%1)").arg(tableName));
+    if (!pragmaQuery.exec()) {
+        kLogger.warning() << "Failed to inspect table" << tableName
+                          << pragmaQuery.lastError().text();
+        return false;
+    }
+
+    while (pragmaQuery.next()) {
+        if (pragmaQuery.value(QStringLiteral("name")).toString() == columnName) {
+            return true;
+        }
+    }
+
+    QSqlQuery alterQuery(database);
+    if (!alterQuery.exec(alterSql)) {
+        kLogger.warning() << "Failed to add column" << columnName << "to" << tableName
+                          << alterQuery.lastError().text();
+        return false;
+    }
+
+    kLogger.info() << "Added missing column" << columnName << "to table" << tableName;
+    return true;
+}
+
+bool ensureTuningFrequencyColumn(const QSqlDatabase& database) {
+    // Some users might have databases stuck before schema 40. Ensure the column exists
+    // so queries using tuning_frequency_hz don't fail.
+    return ensureColumnExists(
+            database,
+            QStringLiteral("library"),
+            QStringLiteral("tuning_frequency_hz"),
+            QStringLiteral("ALTER TABLE library ADD COLUMN tuning_frequency_hz INTEGER DEFAULT 440"));
+}
 
 // The connection parameters for the main Mixxx DB
 mixxx::DbConnection::Params dbConnectionParams(
@@ -85,6 +126,16 @@ bool MixxxDb::initDatabaseSchema(
     case SchemaManager::Result::CurrentVersion:
     case SchemaManager::Result::UpgradeSucceeded:
     case SchemaManager::Result::NewerVersionBackwardsCompatible:
+        // Ensure tuning_frequency_hz exists even if a previous upgrade was skipped.
+        if (!ensureTuningFrequencyColumn(database)) {
+            QMessageBox::warning(nullptr,
+                    upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                            tr("Could not ensure tuning_frequency_hz column exists.") +
+                            "\n" + helpContact + "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false;
+        }
         return true; // done
     case SchemaManager::Result::UpgradeFailed:
         QMessageBox::warning(nullptr,
