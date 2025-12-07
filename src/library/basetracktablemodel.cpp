@@ -795,7 +795,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (!ok || freq <= 0) {
                 return QVariant();
             }
-            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+            if (role == Qt::DisplayRole || role == Qt::ToolTipRole || role == kDataExportRole) {
                 return QStringLiteral("%1 Hz").arg(freq);
             }
             return freq;
