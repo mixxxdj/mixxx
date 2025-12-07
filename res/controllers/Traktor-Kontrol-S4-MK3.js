@@ -935,12 +935,15 @@ class HotcueButton extends PushButton {
         } else if (this.deck.libraryPlayButton.pressed) {
             engine.setValue(this.deck.libraryPlayButton.group, this.inKey, pressed);
         } else {
-            engine.setValue(this.group, "scratch2_enable", false);
+            if (this.deck.wheelMode === wheelModes.vinyl && !this.deck.wheelTouch.touched) {
+                engine.setValue(this.group, "scratch2_enable", false);
+            }
             engine.setValue(this.group, this.inKey, pressed);
             if (this.shifted) {
                 this.indicatorColor = LedColors.off;
             }
         }
+
     }
     output(value) {
         if (value) {
