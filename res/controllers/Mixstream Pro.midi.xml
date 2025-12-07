@@ -72,7 +72,6 @@
             <control>
                 <group>[Channel2]</group>
                 <key>LoadSelectedTrack</key>
-                <key>LoadSelectedTrack</key>
                 <description>Deck 2 Load Selected Track</description>
                 <status>0x9F</status>
                 <midino>0x02</midino>
