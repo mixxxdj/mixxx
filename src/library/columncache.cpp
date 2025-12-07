@@ -126,7 +126,7 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
                 0},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY){
                 &LIBRARYTABLE_TUNING_FREQUENCY,
-                QT_TRANSLATE_NOOP("BaseTrackTableModel", "Concert Pitch"),
+                QT_TRANSLATE_NOOP("BaseTrackTableModel", "Pitch"),
                 kDefaultColumnWidth * 2},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK){&LIBRARYTABLE_BPM_LOCK,
                 nullptr,
