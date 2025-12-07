@@ -1020,7 +1020,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         pQuickEffectMenu->addSeparator();
         // Stem Quick Effects
         for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
-            const QString stemGroup = PlayerManager::groupForDeckStem(i, j - 1);
+            const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
             const QString stemQuickEffectGroup =
                     QuickEffectChain::formatEffectChainGroup(stemGroup);
             addControl(stemQuickEffectGroup,
@@ -1686,7 +1686,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
             for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
                 const QString stemPrefix = m_deckStemStr.arg(
                         QString::number(i), QString::number(j));
-                const QString stemGroup = PlayerManager::groupForDeckStem(i, j - 1);
+                const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
                 addSingleControl(stemGroup,
                         control,
                         controlTitle,
@@ -1714,7 +1714,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                 for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
                     const QString stemPrefix = m_deckStemStr.arg(
                             QString::number(i), QString::number(j));
-                    const QString stemGroup = PlayerManager::groupForDeckStem(i, j - 1);
+                    const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
                     addSingleControl(stemGroup,
                             control,
                             controlTitle,
