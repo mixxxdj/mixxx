@@ -338,7 +338,7 @@ class LegacyControllerMapping {
     }
 
     inline QString mixxxVersion() const {
-        return m_mixxxVersion.isNull() ? "" : m_mixxxVersion.toString();
+        return m_mixxxVersion.toString();
     }
 
     inline void addProductMatch(const ProductInfo& productInfo) {

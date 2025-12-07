@@ -501,12 +501,13 @@ class LegacyControllerEnumSetting
     }
 
 #ifdef MIXXX_USE_QML
-    void setValue(const QJSValue& value) override {
+    void setValue(const QJSValue& rawValue) override {
+        auto value = rawValue.toString();
         auto newValue = std::distance(m_options.cbegin(),
                 std::find_if(m_options.cbegin(),
                         m_options.cend(),
                         [value](const LegacyControllerEnumItem& item) {
-                            return item.value == value.toString();
+                            return item.value == value;
                         }));
         setCurrentIndex(newValue);
     }

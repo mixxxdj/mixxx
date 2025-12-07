@@ -153,11 +153,7 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
                         xmlElementAttributes
                                 .value(QStringLiteral("mixxxVersion"))
                                 .toString();
-                if (!mixxxVersion.isEmpty()) {
-                    m_mixxxVersion = sanitizeVersion(mixxxVersion);
-                } else {
-                    m_mixxxVersion = QVersionNumber();
-                }
+                m_mixxxVersion = sanitizeVersion(mixxxVersion);
             }
 
             m_hasScreens |= inController && xmlElementName == QStringLiteral("screens");
