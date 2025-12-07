@@ -15,7 +15,11 @@ QString resource(const QString& filename) {
 
 QByteArray loadShaderCodeFromFile(const QString& path) {
     QFile file(path);
-    file.open(QIODeviceBase::ReadOnly);
+    //Fix :Ensure the shader file opened successfully
+    if (!file.open(QIODeviceBase::ReadOnly)) {
+        qWarning() << "Failed to open the shader file:" << path;
+        return QByteArray();
+    }
     QShader qsbShader = QShader::fromSerialized(file.readAll());
     QShaderKey key(QShader::GlslShader, 120);
     return qsbShader.shader(key).shader();
@@ -27,7 +31,11 @@ QString resource(const QString& filename) {
 
 QByteArray loadShaderCodeFromFile(const QString& path) {
     QFile file(path);
-    file.open(QIODeviceBase::ReadOnly);
+     // The FIX : Ensure the shader file opened successfully
+    if (!file.open(QIODeviceBase::ReadOnly)) {
+        qWarning() << "Failed to open shader file:" << path;
+        return QByteArray();
+    }
     return file.readAll();
 }
 #endif
