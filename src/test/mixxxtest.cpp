@@ -11,7 +11,10 @@ namespace {
 
 QString makeTestConfigFile(const QString& path) {
     QFile test_cfg(path);
-    test_cfg.open(QIODevice::ReadWrite);
+    if (!test_cfg.open(QIODevice::ReadWrite)) {
+        qWarning() << "Failed to open The test config file:" << path;
+        return QString();
+    }
     test_cfg.close();
     return path;
 }

@@ -15,7 +15,6 @@ QString resource(const QString& filename) {
 
 QByteArray loadShaderCodeFromFile(const QString& path) {
     QFile file(path);
-    //Fix :Ensure the shader file opened successfully
     if (!file.open(QIODeviceBase::ReadOnly)) {
         qWarning() << "Failed to open the shader file:" << path;
         return QByteArray();
@@ -31,7 +30,6 @@ QString resource(const QString& filename) {
 
 QByteArray loadShaderCodeFromFile(const QString& path) {
     QFile file(path);
-     // The FIX : Ensure the shader file opened successfully
     if (!file.open(QIODeviceBase::ReadOnly)) {
         qWarning() << "Failed to open shader file:" << path;
         return QByteArray();
