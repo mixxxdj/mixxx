@@ -545,6 +545,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     }
     info.appendChild(devices);
 
+#ifdef MIXXX_USE_QML
     QDomElement settings = doc.createElement("settings");
     auto* pSettingRoot = mapping.getSettingsLayout();
 
@@ -595,6 +596,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         traverseSettingNode(pSettingRoot, &settings, &doc);
         rootNode.appendChild(settings);
     }
+#endif
 
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
