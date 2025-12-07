@@ -15,6 +15,7 @@
 * Reloop Beatmix 2/4: fix overriding persisted fx routing
   [#15574](https://github.com/mixxxdj/mixxx/pull/15574)
   [#14917](https://github.com/mixxxdj/mixxx/issues/14917)
+* Traktor S4Mk3: don't stop scratch mode if platter is being held [#15570](https://github.com/mixxxdj/mixxx/pull/15570)
 * Components JogwheelBasic: Disable scratching when leaving `vinylMode` [#15336](https://github.com/mixxxdj/mixxx/pull/15336)
 
 ### Skins
@@ -54,6 +55,7 @@
 * Analyze view: avoid listing tracks that don't match the 'New' filter
   [#15597](https://github.com/mixxxdj/mixxx/pull/15597)
   [#14873](https://github.com/mixxxdj/mixxx/issues/14873)
+  [#15693](https://github.com/mixxxdj/mixxx/pull/15693)
 * Traktor feature: fixes to Traktor collection importer
   [#15645](https://github.com/mixxxdj/mixxx/pull/15645)
 
@@ -114,6 +116,9 @@
   [#15619](https://github.com/mixxxdj/mixxx/pull/15619)
   [#15610](https://github.com/mixxxdj/mixxx/pull/15610)
 * Update Keyboard SVG [#15635](https://github.com/mixxxdj/mixxx/pull/15635)
+* SoundSourceFFmpeg: Fix opening files with non ASCII characters
+  [#15700](https://github.com/mixxxdj/mixxx/pull/15700)
+  [#15681](https://github.com/mixxxdj/mixxx/issues/15681)
 
 ## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (2025-09-02)
 
