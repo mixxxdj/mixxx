@@ -94,8 +94,9 @@ bool ensureLibraryNotEmpty(const QSqlDatabase& database) {
     }
 
     // If the library table is empty but track_locations has rows, force a full rescan by
-    // removing directory hashes and marking tracks for verification. This recovers from
-    // partially migrated databases that lost library rows.
+    // removing directory hashes and clearing track_locations. This recovers from
+    // partially migrated databases that lost library rows but kept track locations,
+    // which prevents re-import because the scanner thinks tracks already exist.
     if (libraryRows == 0 && trackLocationRows > 0) {
         kLogger.warning() << "Library table is empty but" << trackLocationRows
                           << "track locations exist; forcing full rescan";
@@ -105,12 +106,13 @@ bool ensureLibraryNotEmpty(const QSqlDatabase& database) {
                               << deleteHashes.lastError().text();
             return false;
         }
-        QSqlQuery markTracks(database);
-        if (!markTracks.exec(QStringLiteral("UPDATE track_locations SET needs_verification=1"))) {
-            kLogger.warning() << "Failed to flag track_locations for rescan"
-                              << markTracks.lastError().text();
+        QSqlQuery deleteTrackLocations(database);
+        if (!deleteTrackLocations.exec(QStringLiteral("DELETE FROM track_locations"))) {
+            kLogger.warning() << "Failed to clear track_locations for recovery"
+                              << deleteTrackLocations.lastError().text();
             return false;
         }
+        kLogger.info() << "Cleared LibraryHashes and track_locations to allow full rescan";
     }
     return true;
 }
