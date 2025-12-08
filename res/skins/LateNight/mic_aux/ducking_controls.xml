@@ -24,14 +24,33 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skins:LateNight/controls/knob.xml">
+          <Template src="skins:LateNight/controls/knob_with_label.xml">
             <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+            <SetVariable name="Label">Strength</SetVariable>
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="KnobColor">red</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
             <SetVariable name="ArcReversed">true</SetVariable>
             <SetVariable name="Group">[Master]</SetVariable>
             <SetVariable name="Control">duckStrength</SetVariable>
+          </Template>
+          <Template src="skins:LateNight/controls/knob_with_label.xml">
+            <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+            <SetVariable name="Label">Att</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="KnobColor"><Variable name="KnobColorFx34"/></SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorFx34"/></SetVariable>
+            <SetVariable name="Group">[Master]</SetVariable>
+            <SetVariable name="Control">duckAttackTime</SetVariable>
+          </Template>
+          <Template src="skins:LateNight/controls/knob_with_label.xml">
+            <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+            <SetVariable name="Label">Dec</SetVariable>
+            <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="KnobColor"><Variable name="KnobColorFx34"/></SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorFx34"/></SetVariable>
+            <SetVariable name="Group">[Master]</SetVariable>
+            <SetVariable name="Control">duckDecayTime</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- MicDuckingStrengthKnob -->
