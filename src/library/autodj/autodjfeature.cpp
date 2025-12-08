@@ -199,7 +199,7 @@ void AutoDJFeature::activate() {
 void AutoDJFeature::clear() {
     QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
             tr("Confirmation Clear"),
-            tr("Do you really want to remove all tracks from the Auto DJ queue?") +
+            tr("Do you really want to remove all tracks from the Auto DJ queue? ") +
                     tr("This can not be undone."),
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
