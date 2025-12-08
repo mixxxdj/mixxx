@@ -327,7 +327,11 @@ option(QT6 "Build with Qt6" ON)
 # Once this is fixed we can revert the commit introducing this.
 option(QML "Build with QML" OFF)
 
-option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+if(QT6)
+  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+else()
+  option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+endif()
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
@@ -1625,6 +1629,7 @@ add_library(
   src/waveform/renderers/waveformrendererpreroll.cpp
   src/waveform/renderers/waveformrendererrgb.cpp
   src/waveform/renderers/waveformrenderersignalbase.cpp
+  src/waveform/renderers/waveformrenderersimplesignal.cpp
   src/waveform/renderers/waveformrendermark.cpp
   src/waveform/renderers/waveformrendermarkbase.cpp
   src/waveform/renderers/waveformrendermarkrange.cpp
@@ -1641,6 +1646,7 @@ add_library(
   src/waveform/widgets/emptywaveformwidget.cpp
   src/waveform/widgets/hsvwaveformwidget.cpp
   src/waveform/widgets/rgbwaveformwidget.cpp
+  src/waveform/widgets/simplesignalwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
   src/waveform/widgets/glwaveformwidgetabstract.cpp
