@@ -68,6 +68,7 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void slotReloadCoverArt();
 
     void slotOpenInFileBrowser();
+    void slotSwapArtistTitle();
 
   private:
     void init();
