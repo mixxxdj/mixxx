@@ -2,13 +2,16 @@
 
 #include <QLineEdit>
 #include <QListView>
+#include <QRegularExpression>
 #include <QStyleFactory>
 #include <QtDebug>
+#include <utility>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/library_prefs.h"
+#include "library/trackcollection.h"
 #include "moc_dlgtrackinfomulti.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
@@ -22,8 +25,8 @@
 #include "util/stringformat.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
+#include "widget/wgenretaginput.h"
 #include "widget/wstarrating.h"
-
 namespace {
 
 const QString kVariousText = QChar('<') + QObject::tr("various") + QChar('>');
@@ -107,6 +110,9 @@ DlgTrackInfoMulti::DlgTrackInfoMulti(UserSettingsPointer pUserSettings)
           m_pUserSettings(std::move(pUserSettings)),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
+          m_pGenreWidget(nullptr),
+          m_pTrackCollection(nullptr),
+          m_genreAddMode(true),
           m_pWStarRating(make_parented<WStarRating>(this)),
           m_starRatingModified(false),
           m_newRating(0),
@@ -124,6 +130,8 @@ DlgTrackInfoMulti::DlgTrackInfoMulti(UserSettingsPointer pUserSettings)
 void DlgTrackInfoMulti::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
+
+    setupGenreWidget();
 
     // Store tag edit widget pointers to allow focusing a specific widgets when
     // this is opened by double-clicking a WTrackProperty label.
@@ -395,6 +403,9 @@ void DlgTrackInfoMulti::updateFromTracks() {
 
     // And the cover label
     updateCoverArtFromTracks();
+
+    qDebug() << "updateFromTracks: calling loadGenresFromTracks() at the end";
+    loadGenresFromTracks();
 }
 
 void DlgTrackInfoMulti::replaceTrackRecords(const QList<mixxx::TrackRecord>& trackRecords) {
@@ -651,6 +662,8 @@ void DlgTrackInfoMulti::saveTracks() {
     if (m_pLoadedTracks.isEmpty()) {
         return;
     }
+
+    saveGenresToTracks();
 
     // In case Apply is triggered by hotkey AND user did not yet hit Enter to
     // finish editing, we might have an editor with pending changes.
@@ -1117,4 +1130,363 @@ void DlgTrackInfoMulti::slotReloadCoverArt() {
         rec.setCoverInfo(cover);
     }
     updateCoverArtFromTracks();
+}
+
+void DlgTrackInfoMulti::setTrackCollection(TrackCollection* pTrackCollection) {
+    qDebug() << "=== setTrackCollection() ===";
+    qDebug() << "pTrackCollection:" << (pTrackCollection ? "OK" : "NULL");
+
+    m_pTrackCollection = pTrackCollection;
+
+    if (m_pGenreWidget && m_pTrackCollection) {
+        qDebug() << "Setting up genre completer on existing widget";
+        QStringList genreNames = m_pTrackCollection->getGenreDao().getAllGenreNames();
+        m_pGenreWidget->setGenreCompleter(genreNames); // NUOVO METODO
+    }
+}
+
+void DlgTrackInfoMulti::setupGenreWidget() {
+    qDebug() << "=== setupGenreWidget() Start ===";
+
+    m_pGenreWidget = make_parented<WGenreTagInput>(this);
+
+    m_pGenreWidget->setMultiTrackMode(true);
+    m_pGenreWidget->setAutoSave(false);
+
+    // Check if we have a txtGenre widget to replace
+    if (txtGenre && txtGenre->parentWidget()) {
+        QWidget* parentWidget = txtGenre->parentWidget();
+        QGridLayout* gridLayout = qobject_cast<QGridLayout*>(parentWidget->layout());
+
+        if (gridLayout) {
+            int row = -1, col = -1, rowSpan = 1, colSpan = 1;
+            int index = gridLayout->indexOf(txtGenre);
+            if (index >= 0) {
+                gridLayout->getItemPosition(index, &row, &col, &rowSpan, &colSpan);
+                gridLayout->removeWidget(txtGenre);
+                txtGenre->setVisible(false);
+                gridLayout->addWidget(m_pGenreWidget.get(), row, col, rowSpan, colSpan);
+                qDebug() << "Genre widget added to layout at position" << row << col;
+            }
+        } else {
+            txtGenre->setVisible(false);
+            QVBoxLayout* parentLayout = qobject_cast<QVBoxLayout*>(parentWidget->layout());
+            if (parentLayout) {
+                parentLayout->addWidget(m_pGenreWidget.get());
+            }
+        }
+    }
+    connect(m_pGenreWidget.get(),
+            &WGenreTagInput::genresChanged,
+            this,
+            &DlgTrackInfoMulti::slotGenresChanged);
+
+    connect(m_pGenreWidget.get(),
+            &WGenreTagInput::editingFinished,
+            this,
+            &DlgTrackInfoMulti::slotGenresChanged);
+
+    if (m_pTrackCollection) {
+        qDebug() << "Setting up genre completer";
+        QStringList genreNames = m_pTrackCollection->getGenreDao().getAllGenreNames();
+        m_pGenreWidget->setGenreCompleter(genreNames);
+    } else {
+        qDebug() << "WARNING: TrackCollection not available yet";
+    }
+
+    m_pGenreWidget->clear();
+
+    qDebug() << "=== setupGenreWidget() End ===";
+}
+
+void DlgTrackInfoMulti::loadGenresFromTracks() {
+    qDebug() << "=== loadGenresFromTracks() Start ===";
+
+    if (!m_pTrackCollection || !m_pGenreWidget) {
+        qDebug() << "Missing track collection or genre widget";
+        return;
+    }
+
+    qDebug() << "Processing" << m_pLoadedTracks.size() << "tracks";
+
+    QStringList commonGenres;
+    bool firstTrack = true;
+
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
+        if (!pTrack) {
+            qDebug() << "Skipping null track";
+            continue;
+        }
+
+        TrackId trackId = pTrack->getId();
+        qDebug() << "=== Processing track ID:" << trackId.toVariant();
+
+        // Get genres from the DAO
+        QStringList trackGenres = m_pTrackCollection->getGenreDao().getGenresForTrack(trackId);
+        qDebug() << "  - DAO genres:" << trackGenres;
+
+        // If the DAO genres are empty, try to parse from the track's genre field
+        if (trackGenres.isEmpty()) {
+            QString genreString = pTrack->getGenre();
+            qDebug() << "  - Track genre field:" << genreString;
+
+            if (!genreString.isEmpty()) {
+                static const QRegularExpression genreSeparator("[;,]");
+                trackGenres = genreString.split(genreSeparator, Qt::SkipEmptyParts);
+                for (QString& genre : trackGenres) {
+                    genre = genre.trimmed();
+                }
+                trackGenres.removeAll("");
+                qDebug() << "  - Parsed from field:" << trackGenres;
+
+                // Sync genres with the DAO if we found any
+                // This is important to ensure the DAO is up-to-date
+                // with the track's genre field, especially if the field was manually edited
+                // and the DAO was not updated yet.
+                if (!trackGenres.isEmpty()) {
+                    qDebug() << "  - Syncing DAO with track field...";
+                    bool syncSuccess =
+                            m_pTrackCollection->getGenreDao().setGenresForTrack(
+                                    trackId, trackGenres);
+                    qDebug() << "  - DAO sync success:" << syncSuccess;
+                }
+            }
+        }
+
+        qDebug() << "  - Final genres for track:" << trackGenres;
+
+        if (firstTrack) {
+            commonGenres = trackGenres;
+            firstTrack = false;
+            qDebug() << "  - First track - common genres:" << commonGenres;
+        } else {
+            m_intersection.clear();
+            for (const QString& genre : std::as_const(commonGenres)) {
+                if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
+                    m_intersection.append(genre);
+                }
+            }
+            commonGenres = m_intersection;
+            qDebug() << "  - After intersection with this track:" << commonGenres;
+        }
+        if (commonGenres.isEmpty()) {
+            qDebug() << "  - No common genres remaining, stopping";
+            break;
+        }
+    }
+
+    // Sort the common genres alphabetically
+    commonGenres.sort(Qt::CaseInsensitive);
+
+    qDebug() << "=== FINAL RESULT (INTERSECTION STRATEGY) ===";
+    qDebug() << "Common genres found:" << commonGenres;
+    qDebug() << "Total common genres:" << commonGenres.size();
+
+    if (commonGenres.isEmpty()) {
+        qDebug() << "No common genres found among all tracks";
+    }
+
+    // Set the common genres in the genre widget
+    {
+        const QSignalBlocker blocker(m_pGenreWidget.get());
+        m_pGenreWidget->setGenres(commonGenres);
+    }
+
+    qDebug() << "=== loadGenresFromTracks() End ===";
+}
+
+void DlgTrackInfoMulti::slotGenresChanged() {
+    qDebug() << "Genres changed in widget - will save on Apply/OK";
+}
+
+void DlgTrackInfoMulti::slotGenreActionChanged() {
+    m_genreAddMode = true;
+}
+
+void DlgTrackInfoMulti::saveGenresToTracks() {
+    qDebug() << "=== saveGenresToTracks() Start (SIMPLIFIED) ===";
+
+    if (!m_pTrackCollection || !m_pGenreWidget) {
+        qDebug() << "Missing track collection or genre widget";
+        return;
+    }
+
+    QStringList widgetGenres = m_pGenreWidget->getGenres();
+    qDebug() << "Genres currently in widget:" << widgetGenres;
+
+    static const QRegularExpression genreSeparator("[;,]");
+
+    // 1. Remove all common genres from the widget
+    // 2. Save the remaining genres to each track
+    QStringList originalCommonGenres = getOriginalCommonGenres();
+    QSet<QString> originalCommonGenresSet(originalCommonGenres.begin(), originalCommonGenres.end());
+    qDebug() << "Original common genres:" << originalCommonGenres;
+
+    QStringList finalGenres;
+    QSet<QString> finalGenresSet;
+
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
+        if (!pTrack)
+            continue;
+
+        TrackId trackId = pTrack->getId();
+
+        QStringList currentGenres = m_pTrackCollection->getGenreDao().getGenresForTrack(trackId);
+
+        finalGenres.clear();
+        finalGenresSet.clear();
+
+        if (currentGenres.isEmpty()) {
+            QString trackGenreField = pTrack->getGenre();
+            if (!trackGenreField.isEmpty()) {
+                currentGenres = trackGenreField.split(genreSeparator, Qt::SkipEmptyParts);
+                for (QString& genre : currentGenres) {
+                    genre = genre.trimmed();
+                }
+                currentGenres.removeAll("");
+            }
+        }
+
+        qDebug() << "Track" << trackId.toVariant() << "current genres:" << currentGenres;
+
+        // 1. Retrieve original common genres from the DAO
+        // 2. Add all non-common genres from the current track
+        // 3. Add all genres from the widget (might include new common genres)
+
+        // Add non-common genres from the current track
+        for (const QString& currentGenre : std::as_const(currentGenres)) {
+            if (!originalCommonGenresSet.contains(currentGenre)) {
+                finalGenres.append(currentGenre);
+                finalGenresSet.insert(currentGenre);
+                qDebug() << "Track" << trackId.toVariant()
+                         << "keeping non-common genre:" << currentGenre;
+            }
+        }
+
+        // Add all genres from the widget
+        for (const QString& widgetGenre : std::as_const(widgetGenres)) {
+            if (!finalGenresSet.contains(widgetGenre)) {
+                finalGenres.append(widgetGenre);
+                finalGenresSet.insert(widgetGenre);
+                qDebug() << "Track" << trackId.toVariant()
+                         << "adding widget genre:" << widgetGenre;
+            }
+        }
+
+        qDebug() << "Track" << trackId.toVariant() << "final genres:" << finalGenres;
+
+        bool daoSuccess = m_pTrackCollection->getGenreDao().setGenresForTrack(trackId, finalGenres);
+        qDebug() << "Track" << trackId.toVariant() << "DAO save success:" << daoSuccess;
+
+        QString genreString = finalGenres.join("; ");
+        for (auto& record : m_trackRecords) {
+            if (record.getId() == trackId) {
+                record.refMetadata().refTrackInfo().setGenre(genreString);
+                qDebug() << "Updated trackRecord genre field to:" << genreString;
+                pTrack->replaceRecord(record);
+                qDebug() << "Applied record changes to track";
+                break;
+            }
+        }
+    }
+
+    qDebug() << "=== saveGenresToTracks() End ===";
+}
+
+QStringList DlgTrackInfoMulti::getOriginalCommonGenres() {
+    if (!m_pTrackCollection) {
+        return QStringList();
+    }
+
+    QStringList commonGenres;
+    QStringList m_intersection;
+    bool firstTrack = true;
+
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
+        if (!pTrack)
+            continue;
+
+        TrackId trackId = pTrack->getId();
+        QStringList trackGenres = m_pTrackCollection->getGenreDao().getGenresForTrack(trackId);
+
+        if (trackGenres.isEmpty()) {
+            QString genreString = pTrack->getGenre();
+            if (!genreString.isEmpty()) {
+                static const QRegularExpression genreSeparator("[;,]");
+                trackGenres = genreString.split(genreSeparator, Qt::SkipEmptyParts);
+                for (QString& genre : trackGenres) {
+                    genre = genre.trimmed();
+                }
+                trackGenres.removeAll("");
+            }
+        }
+
+        if (firstTrack) {
+            commonGenres = trackGenres;
+            firstTrack = false;
+        } else {
+            m_intersection.clear();
+            for (const QString& genre : std::as_const(commonGenres)) {
+                if (trackGenres.contains(genre, Qt::CaseInsensitive)) {
+                    m_intersection.append(genre);
+                }
+            }
+            commonGenres = m_intersection;
+        }
+
+        if (commonGenres.isEmpty()) {
+            break;
+        }
+    }
+
+    return commonGenres;
+}
+
+void DlgTrackInfoMulti::testGenreDao() {
+    if (!m_pTrackCollection) {
+        qDebug() << "No TrackCollection for DAO test";
+        return;
+    }
+
+    qDebug() << "=== GenreDao Test ===";
+
+    // Test 1: Verify all genres in the database
+    QStringList allGenres = m_pTrackCollection->getGenreDao().getAllGenreNames();
+    qDebug() << "All genres in database:" << allGenres.size() << "genres:" << allGenres;
+
+    // Test 2: Try to create a test genre
+    int testGenreId = m_pTrackCollection->getGenreDao().createGenre("TEST_GENRE_DEBUG");
+    qDebug() << "Created test genre, ID:" << testGenreId;
+
+    // Test 3: For each loaded track, check genre field, DAO genres, and test genre assignment
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
+        if (!pTrack)
+            continue;
+
+        TrackId trackId = pTrack->getId();
+        qDebug() << "=== Track" << trackId.toVariant() << "===";
+        qDebug() << "  Location:" << pTrack->getLocation();
+        qDebug() << "  Track genre field:" << pTrack->getGenre();
+
+        // Verify genres from the DAO
+        QStringList daoGenres = m_pTrackCollection->getGenreDao().getGenresForTrack(trackId);
+        qDebug() << "  DAO genres:" << daoGenres;
+
+        // Verify if the test genre is present
+        QStringList testGenres = {"TEST_GENRE_DEBUG"};
+        bool testSuccess = m_pTrackCollection->getGenreDao().setGenresForTrack(trackId, testGenres);
+        qDebug() << "  Test genre assignment success:" << testSuccess;
+
+        if (testSuccess) {
+            QStringList confirmGenres =
+                    m_pTrackCollection->getGenreDao().getGenresForTrack(
+                            trackId);
+            qDebug() << "  Confirmed genres after test:" << confirmGenres;
+
+            // Remove the test genre
+            m_pTrackCollection->getGenreDao().setGenresForTrack(trackId, QStringList());
+        }
+    }
+
+    qDebug() << "=== GenreDao Test End ===";
 }
