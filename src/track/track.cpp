@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <atomic>
+#include <cmath>
 
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
@@ -1581,6 +1582,14 @@ bool Track::is432Hz() const {
     return m_record.getKeys().is432Hz();
 }
 
+void Track::setTuningFrequencyHz(int tuningFrequencyHz) {
+    auto locked = lockMutex(&m_qMutex);
+    Keys keys = m_record.getKeys();
+    keys.setTuningFrequencyHz(tuningFrequencyHz);
+    m_record.setKeys(std::move(keys));
+    afterKeysUpdated(&locked);
+}
+
 int Track::getTuningFrequencyHz() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getKeys().getTuningFrequencyHz();
@@ -1769,6 +1778,29 @@ ExportTrackMetadataResult Track::exportMetadata(
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();
         normalizedFromRecord.normalizeBeforeExport();
+        // Encode tuning offset (RapidEvolution style) into key text for tag roundtrip.
+        // Keep the database value untouched; only the exported metadata is modified.
+        const int tuningHz = m_record.getKeys().getTuningFrequencyHz();
+        if (tuningHz > 0 && tuningHz != 440) {
+            QString keyText = normalizedFromRecord.getTrackInfo().getKeyText();
+            if (keyText.isEmpty()) {
+                const auto key = m_record.getKeys().getGlobalKey();
+                if (key != mixxx::track::io::key::INVALID) {
+                    keyText = KeyUtils::keyToString(key);
+                }
+            }
+            if (!keyText.isEmpty()) {
+                const double cents = 1200.0 * std::log2(static_cast<double>(tuningHz) / 440.0);
+                const int centsRounded = static_cast<int>(std::lround(cents));
+                if (centsRounded != 0) {
+                    const QString offsetText = centsRounded > 0
+                            ? QStringLiteral("+%1").arg(centsRounded)
+                            : QString::number(centsRounded);
+                    normalizedFromRecord.refTrackInfo().setKeyText(
+                            QStringLiteral("%1 %2").arg(keyText, offsetText));
+                }
+            }
+        }
 
         // Finally the track's current metadata and the imported/adjusted metadata
         // can be compared for differences to decide whether the tags in the file

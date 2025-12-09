@@ -400,6 +400,7 @@ class Track : public QObject {
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
     bool is432Hz() const;
+    void setTuningFrequencyHz(int tuningFrequencyHz);
     int getTuningFrequencyHz() const;
 
     void setCoverInfo(const CoverInfoRelative& coverInfo);

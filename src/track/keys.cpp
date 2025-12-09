@@ -45,6 +45,12 @@ int Keys::getTuningFrequencyHz() const {
     return m_keyMap.tuning_frequency_hz();
 }
 
+void Keys::setTuningFrequencyHz(int tuningFrequencyHz) {
+    const int clamped = tuningFrequencyHz > 0 ? tuningFrequencyHz : 440;
+    m_keyMap.set_tuning_frequency_hz(clamped);
+    m_keyMap.set_is_432hz(clamped == 432);
+}
+
 bool Keys::readByteArray(const QByteArray& byteArray) {
     if (!m_keyMap.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse Keys from QByteArray of size"

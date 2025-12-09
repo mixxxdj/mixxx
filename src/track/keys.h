@@ -43,6 +43,9 @@ class Keys final {
     // This is the reference frequency A4 that best matches the track's tuning
     int getTuningFrequencyHz() const;
 
+    // Set the tuning frequency in Hz (<=0 falls back to 440Hz)
+    void setTuningFrequencyHz(int tuningFrequencyHz);
+
   private:
     explicit Keys(const mixxx::track::io::key::KeyMap& m_keyMap);
 

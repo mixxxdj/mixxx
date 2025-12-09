@@ -1,5 +1,7 @@
 #include <QtDebug>
 #include <QStringList>
+#include <QRegularExpression>
+#include <cmath>
 
 #include "track/keyfactory.h"
 #include "track/keys.h"
@@ -51,6 +53,20 @@ Keys KeyFactory::makeBasicKeysKeepText(
     key_map.set_global_key_text(global_key_text.toStdString());
     mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(global_key_text);
     key_map.set_global_key(global_key);
+    // RapidEvolution writes tuning offset in cents after the key text, e.g. "A#m +50".
+    // Preserve that as tuning_frequency_hz if present.
+    QRegularExpression offsetRegex(QStringLiteral(R"(([+-]\d+)\s*$)"));
+    const auto offsetMatch = offsetRegex.match(global_key_text);
+    if (offsetMatch.hasMatch()) {
+        bool ok = false;
+        const int cents = offsetMatch.captured(1).toInt(&ok);
+        if (ok) {
+            const double tuningHz = 440.0 * std::pow(2.0, static_cast<double>(cents) / 1200.0);
+            const int tuningRounded = static_cast<int>(std::lround(tuningHz));
+            key_map.set_tuning_frequency_hz(tuningRounded);
+            key_map.set_is_432hz(tuningRounded == 432);
+        }
+    }
     return Keys(key_map);
 }
 
