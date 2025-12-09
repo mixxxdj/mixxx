@@ -31,11 +31,12 @@ TreeItem::TreeItem(
         LibraryFeature* pFeature,
         QString label,
         QVariant data)
-    : m_pFeature(pFeature),
-      m_pParent(nullptr),
-      m_label(std::move(label)),
-      m_data(std::move(data)),
-      m_bold(false) {
+        : m_pFeature(pFeature),
+          m_pParent(nullptr),
+          m_label(std::move(label)),
+          m_data(std::move(data)),
+          m_bold(false),
+          m_isWatched(false) {
 }
 
 TreeItem::~TreeItem() {

@@ -62,7 +62,13 @@ class BrowseFeature : public LibraryFeature {
     QString extractNameFromPath(const QString& spath);
     bool isPathWatched(const QString& path) const;
     QStringList getDefaultQuickLinks() const;
-    std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
+    std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() const;
+    std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(
+            const QString& path,
+            bool isWatched) const;
+    std::unique_ptr<TreeItem> createPathTreeItem(const QString& name,
+            const QString& path,
+            bool parentIsWatched = false) const;
     void saveQuickLinks();
     void loadQuickLinks();
     QString getLastRightClickedPath() const;
