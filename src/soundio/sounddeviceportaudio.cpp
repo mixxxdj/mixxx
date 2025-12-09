@@ -56,6 +56,11 @@ constexpr int m_invalidTimeInfoWarningCount = 3;
 // Some PortAudio drivers return zero output latency, this is the detection threshold
 constexpr double kMinReasonableAudioLatencySecs = 0.001;
 
+// Number of points used in the HostTimeFilter for calculating a robust host time
+// This value is taken from the official Ableton Link examples, and was proved in
+// exensive testing (with the Windows SoundProviders) to provide good results.
+constexpr std::size_t kNumPointsInHostTimeFilter = 600;
+
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,
@@ -113,7 +118,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_invalidTimeInfoCount(0),
           m_lastCallbackEntrytoDacSecs(0),
           m_callbackResult(paAbort),
-          m_hostTimeFilter(512),
+          m_hostTimeFilter(kNumPointsInHostTimeFilter),
           m_cummulatedBufferTime(0),
           m_meanOutputLatency(MovingInterquartileMean(128)) {
     // Setting parent class members:
