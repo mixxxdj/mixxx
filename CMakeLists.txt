@@ -1336,6 +1336,7 @@ add_library(
   src/engine/sidechain/enginesidechain.cpp
   src/engine/sidechain/networkinputstreamworker.cpp
   src/engine/sidechain/networkoutputstreamworker.cpp
+  src/engine/sync/abletonlink.cpp
   src/engine/sync/enginesync.cpp
   src/engine/sync/internalclock.cpp
   src/engine/sync/synccontrol.cpp
@@ -1881,6 +1882,7 @@ set(
   src/util/font.h
   src/util/fpclassify.h
   src/util/gitinfostore.h
+  src/util/hosttimefilter.h
   src/util/imagefiledata.h
   src/util/imageutils.h
   src/util/indexrange.h
@@ -2130,6 +2132,7 @@ if(MSVC)
     target_compile_definitions(
       mixxx-lib
       PUBLIC
+        WIN32_LEAN_AND_MEAN
         _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
         _CRT_SECURE_NO_WARNINGS
     )
@@ -2223,6 +2226,9 @@ if(WIN32)
   # _WIN32_WINNT_WIN7 = 0x0601
   target_compile_definitions(mixxx-lib PUBLIC WINVER=0x0601)
   target_compile_definitions(mixxx-lib PUBLIC _WIN32_WINNT=0x0601)
+  # Exclude Win32 APIs such as Cryptography, DDE, RPC, Shell, and Windows Sockets where including Windows.h.
+  # This prevents "Winsock.h already included", when compiling the ASIO dependency of Ableton Link.
+  target_compile_definitions(mixxx-lib PUBLIC WIN32_LEAN_AND_MEAN)
   if(MSVC)
     target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
   endif()
@@ -3124,6 +3130,38 @@ if(WIN32)
       "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   )
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+
+# Ableton Link
+find_package(
+  AbletonLink
+  NAMES AbletonLink ableton ableton-link ableton-link-dev
+)
+# Note Debian Bug#993999 - Wrong CMake include path: https://salsa.debian.org/multimedia-team/ableton-link/-/commit/047f75abeeb6494256cb8d498995c17afd2a17e8
+
+if(AbletonLink_FOUND)
+  message(STATUS "Using existing system installation of Ableton Link")
+  target_link_libraries(mixxx-lib PUBLIC Ableton::Link)
+else()
+  message(STATUS "Fetch Ableton Link from GitHub")
+  include(FetchContent)
+
+  set(FETCHCONTENT_QUIET FALSE)
+
+  FetchContent_Declare(
+    AbletonLink
+    GIT_REPOSITORY https://github.com/Ableton/link.git
+    GIT_TAG Link-3.0.6
+  )
+  FetchContent_MakeAvailable(AbletonLink)
+
+  include(${abletonlink_SOURCE_DIR}/AbletonLinkConfig.cmake)
+  target_link_libraries(mixxx-lib PUBLIC Ableton::Link)
+  target_include_directories(
+    mixxx-lib
+    SYSTEM
+    PUBLIC ${abletonlink_SOURCE_DIR}/include/
+  )
 endif()
 
 # Chromaprint
