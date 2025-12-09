@@ -63,7 +63,7 @@
                 variable="jogWheelStuckTimeout"
                 type="integer"
                 label="Backspin Timeout"
-                description="If the jog wheel speed gets stuck, this will reset it every n miliseconds"
+                description="If the jog wheel speed gets stuck, this will reset it every n milliseconds"
                 default="500"
                 min="100"
                 step="100">

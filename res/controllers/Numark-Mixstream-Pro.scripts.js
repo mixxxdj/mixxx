@@ -1,22 +1,22 @@
 const SETTINGS = Object.freeze({
     // Stutter on shift + play, turning this to false makes shift+play do a slow start effect
-    shiftPlayBehaviour: engine.getSetting('shiftPlayBehaviour'),
+    shiftPlayBehaviour: engine.getSetting("shiftPlayBehaviour"),
     // Enable pressing hotcues while the track is moving
-    hotCueWhilePlaying: engine.getSetting('hotCueWhilePlaying'),
+    hotCueWhilePlaying: engine.getSetting("hotCueWhilePlaying"),
     // Default pad mode to load tracks with: hotcue, savedloop, autoloop, roll, empty (keeps current engaged mode)
-    defaultPadMode: engine.getSetting('defaultPadMode'),
+    defaultPadMode: engine.getSetting("defaultPadMode"),
     // Produces a lot of MIDI traffic that makes it difficult to debug
     enableVUMeter: true,
     // Enable backspinning (or forward spinning) when you lift your finger off the platter
     // Not compatible with Mixxx versions below 2.6
-    backspin: engine.getSetting('backspin'),
+    backspin: engine.getSetting("backspin"),
     // Amount of values to smooth jog speed over. Raising this makes it lag behind
     //  your movement and lowering it makes it sound warbly
-    jogWheelBufferSize: engine.getSetting('jogWheelBufferSize'),
+    jogWheelBufferSize: engine.getSetting("jogWheelBufferSize"),
     // Speed at which the scratching will turn off. This can make the track stuck in a speed if too low
-    jogWheelThreshold: engine.getSetting('jogWheelThreshold'),
-    // If the jog wheel speed gets stuck, this will reset it every n miliseconds
-    jogWheelStuckTimeout: engine.getSetting('jogWheelStuckTimeout'),
+    jogWheelThreshold: engine.getSetting("jogWheelThreshold"),
+    // If the jog wheel speed gets stuck, this will reset it every n milliseconds
+    jogWheelStuckTimeout: engine.getSetting("jogWheelStuckTimeout"),
 });
 
 // Pad configurations for each mode (Hotcue, Autoloop, BeatloopRoll)
@@ -452,7 +452,7 @@ MixstreamPro.loadTrack = function(_channel, _control, value, _status, group) {
     } else {
         engine.setValue(group, "LoadSelectedTrack", 1);
     }
-}
+};
 
 // Generic track loaded callback - works for both decks
 MixstreamPro.trackLoadedCallback = function(_value, group, _control) {
@@ -569,7 +569,7 @@ MixstreamPro.cue = function(_channel, _control, value, _status, group) {
     } else {
         engine.setValue(group, "cue_default", (value === 127));
     }
-}
+};
 
 // Generic JogWheel MSB handler for both decks
 const JogCombined = function(group) {
@@ -594,7 +594,7 @@ const JogCombined = function(group) {
 
     if (Math.abs(interval) > 45 || dt <= 0 || dt > 1000) {
         if (dt > 1000) {
-             deckState.jogWheel.buffer = [];
+            deckState.jogWheel.buffer = [];
         }
         return; // Ignore large jumps
     }
@@ -622,7 +622,7 @@ const JogCombined = function(group) {
             deckState.jogWheel.paused = false;
         }
         if (deckState.jogWheel.scratchMode === SCRATCH_MODE.smart) {
-            // It doesnt work to just flip this, there needs to be a delay before its turned back on
+            // It doesn't work to just flip this, there needs to be a delay before its turned back on
             engine.setValue(group, "slip_enabled", false);
             engine.beginTimer(400, function() {
                 engine.setValue(group, "slip_enabled", true);
@@ -973,4 +973,4 @@ MixstreamPro.effectButton = function(_channel, control, value, _status, _group) 
         MixstreamPro.effectToggleSwitch(4, null, deck1Value, null, null);
         MixstreamPro.effectToggleSwitch(5, null, deck2Value, null, null);
     }
-}
+};
