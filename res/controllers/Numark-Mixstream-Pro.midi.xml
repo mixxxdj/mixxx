@@ -5,6 +5,71 @@
         <author>danielkinahan and audministrator</author>
         <forums>https://mixxx.discourse.group/t/numark-mixstream-pro-mapping/24858</forums>
     </info>
+    <settings>
+        <group label="Buttons">
+            <option
+                variable="shiftPlayBehaviour"
+                type="enum"
+                label=":hwbtn:`Shift` + Play Behaviour"
+                description="Select which behaviour to have when pressing :hwbtn:`Shift` + Play">
+                <value label="Stutter-play (play from cue)" default="true">stutter</value>
+                <value label="Slow start/stop">slow</value>
+            </option>
+            <option
+                variable="hotCueWhilePlaying"
+                type="boolean"
+                label="HotCue while playing"
+                description="Enable hotcue usage and assignment while track is playing"
+                default="true">
+            </option>
+            <option
+                variable="defaultPadMode"
+                type="enum"
+                label="Default Pad Mode on Load"
+                description="Select which pad mode to load by default on loading a new track. The default will use the previously selected mode.">
+                <value label="Default" default="true"></value>
+                <value label="Hot Cue">hotcue</value>
+                <value label="Saved Loop">savedloop</value>
+                <value label="Auto Loop">autoloop</value>
+                <value label="Roll">roll</value>
+            </option>
+        </group>
+        <group label="Jog Wheels">
+            <option
+                variable="jogWheelBufferSize"
+                type="integer"
+                label="Jog Wheel Buffer Size"
+                description="The jog wheel uses a buffer to smooth the speed it turns. Raising this too high makes it lag behind your movement and lowering it makes it sound warbly"
+                default="4"
+                min="1">
+            </option>
+            <option
+                variable="backspin"
+                type="boolean"
+                label="Enable Backspin (Only in Mixxx 2.6+)"
+                description="Enable backspinning (or forward spinning) when you lift your finger off the platter. Not compatible with Mixxx versions below 2.6"
+                default="false">
+            </option>
+            <option
+                variable="jogWheelThreshold"
+                type="real"
+                label="Backspin Speed Threshold"
+                description="The speed at which the scratching will turn off. This can make the track stuck in a speed if too low"
+                default="0.5"
+                min="0.1"
+                step="0.1">
+            </option>
+            <option
+                variable="jogWheelStuckTimeout"
+                type="integer"
+                label="Backspin Timeout"
+                description="If the jog wheel speed gets stuck, this will reset it every n miliseconds"
+                default="500"
+                min="100"
+                step="100">
+            </option>
+        </group>
+    </settings>
     <controller id="MixstreamPro">
         <scriptfiles>
             <file filename="midi-components-0.0.js"/>

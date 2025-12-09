@@ -1,22 +1,22 @@
 const SETTINGS = Object.freeze({
     // Stutter on shift + play, turning this to false makes shift+play do a slow start effect
-    stutterPlayOnShiftPlay: true,
+    shiftPlayBehaviour: engine.getSetting('shiftPlayBehaviour'),
     // Enable pressing hotcues while the track is moving
-    hotCueWhilePlaying: true,
+    hotCueWhilePlaying: engine.getSetting('hotCueWhilePlaying'),
     // Default pad mode to load tracks with: hotcue, savedloop, autoloop, roll, empty (keeps current engaged mode)
-    defaultPadMode: "",
+    defaultPadMode: engine.getSetting('defaultPadMode'),
     // Produces a lot of MIDI traffic that makes it difficult to debug
     enableVUMeter: true,
     // Enable backspinning (or forward spinning) when you lift your finger off the platter
     // Not compatible with Mixxx versions below 2.6
-    backspin: false,
+    backspin: engine.getSetting('backspin'),
     // Amount of values to smooth jog speed over. Raising this makes it lag behind
     //  your movement and lowering it makes it sound warbly
-    jogWheelBufferSize: 4,
+    jogWheelBufferSize: engine.getSetting('jogWheelBufferSize'),
     // Speed at which the scratching will turn off. This can make the track stuck in a speed if too low
-    jogWheelThreshold: 0.5,
+    jogWheelThreshold: engine.getSetting('jogWheelThreshold'),
     // If the jog wheel speed gets stuck, this will reset it every n miliseconds
-    jogWheelStuckTimeout: 500,
+    jogWheelStuckTimeout: engine.getSetting('jogWheelStuckTimeout'),
 });
 
 // Pad configurations for each mode (Hotcue, Autoloop, BeatloopRoll)
@@ -545,7 +545,7 @@ MixstreamPro.play = function(_channel, _control, value, _status, group) {
 
     if (value === 127) {
         if (deckState.shift) {
-            if (SETTINGS.stutterPlayOnShiftPlay) {
+            if (SETTINGS.shiftPlayBehaviour === "stutter") {
                 engine.setValue(group, "cue_gotoandplay", 1);
             } else {
                 if (playStatus === 1) {
@@ -592,7 +592,10 @@ const JogCombined = function(group) {
     deckState.jogWheel.previousValue = value;
     deckState.jogWheel.previousTimestamp = timestamp;
 
-    if (Math.abs(interval) > 45 || dt <= 0 || dt > 10000) {
+    if (Math.abs(interval) > 45 || dt <= 0 || dt > 1000) {
+        if (dt > 1000) {
+             deckState.jogWheel.buffer = [];
+        }
         return; // Ignore large jumps
     }
 
