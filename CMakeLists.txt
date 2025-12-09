@@ -3164,6 +3164,11 @@ else()
   )
 endif()
 
+# Ensure Ableton Link headers see LINK_PLATFORM_LINUX set
+if(CMAKE_SYSTEM_NAME STREQUAL "Android")
+  target_compile_definitions(mixxx-lib PUBLIC LINK_PLATFORM_LINUX=1)
+endif()
+
 # Chromaprint
 find_package(Chromaprint)
 if(NOT Chromaprint_FOUND)
