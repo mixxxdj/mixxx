@@ -203,7 +203,7 @@ int AnalyzerQueenMaryKey::findBestTuningFrequency() const {
     auto computeScore = [](const FrequencyAnalyzer& fa) -> double {
         if (fa.currentFrame == 0 || fa.resultKeys.empty()) {
             // No data processed or no valid keys detected
-            return std::numeric_limits<double>::infinity();
+            return std::numeric_limits<double>::max();
         }
 
         const double totalFrames = static_cast<double>(fa.currentFrame);
@@ -223,7 +223,7 @@ int AnalyzerQueenMaryKey::findBestTuningFrequency() const {
 
         // Ignore frequencies that only produced sporadic key estimates
         if (validRatio < 0.05) {
-            return std::numeric_limits<double>::infinity();
+            return std::numeric_limits<double>::max();
         }
 
         const int keyChangeCount = static_cast<int>(fa.resultKeys.size());
@@ -242,7 +242,7 @@ int AnalyzerQueenMaryKey::findBestTuningFrequency() const {
     };
 
     int bestFrequency = kStandardTuningFrequency;
-    double bestScore = std::numeric_limits<double>::infinity();
+    double bestScore = std::numeric_limits<double>::max();
 
     for (const FrequencyAnalyzer& fa : m_frequencyAnalyzers) {
         const double score = computeScore(fa);
@@ -254,7 +254,7 @@ int AnalyzerQueenMaryKey::findBestTuningFrequency() const {
 
     // If 440Hz is close to the best score, prefer it to avoid false positives.
     if (bestFrequency != kStandardTuningFrequency) {
-        double score440 = std::numeric_limits<double>::infinity();
+        double score440 = std::numeric_limits<double>::max();
         for (const FrequencyAnalyzer& fa : m_frequencyAnalyzers) {
             if (fa.frequencyHz == kStandardTuningFrequency) {
                 score440 = computeScore(fa);
