@@ -19,13 +19,10 @@ AbletonLink::AbletonLink(const QString& group, EngineSync* pEngineSync)
           m_pEngineSync(pEngineSync),
           m_syncMode(SyncMode::None),
           m_oldTempo(kDefaultBpm),
-          m_audioBufferTimeMicros(0),
           m_absTimeWhenPrevOutputBufferReachesDac(0),
-          m_sampleTimeAtStartCallback(0),
           m_pLink(std::make_unique<ableton::BasicLink<MixxxClockRef>>(120.0)),
           m_pLinkButton(std::make_unique<ControlPushButton>(ConfigKey(group, "sync_enabled"))),
           m_pNumLinkPeers(std::make_unique<ControlObject>(ConfigKey(group, "num_peers"))) {
-    m_timeAtStartCallback = m_pLink->clock().micros();
 
     m_pLinkButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pLinkButton->setStates(2);
@@ -173,18 +170,6 @@ void AbletonLink::updateInstantaneousBpm(mixxx::Bpm) {
 void AbletonLink::onCallbackStart(int sampleRate,
         size_t bufferSize,
         std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac) {
-    m_timeAtStartCallback = m_pLink->clock().micros();
-
-    // auto latency = absTimeWhenPrevOutputBufferReachesDac - m_timeAtStartCallback;
-    /* qDebug() << "#####################:" << absTimeWhenPrevOutputBufferReachesDac.count()
-             << " ##################AbletonLatency " << latency.count()
-             << " Delta : "
-             << m_absTimeWhenPrevOutputBufferReachesDac.count() -
-                    absTimeWhenPrevOutputBufferReachesDac.count();
-                    */
-    m_audioBufferTimeMicros = std::chrono::microseconds(
-            bufferSize / mixxx::audio::ChannelCount::stereo() /
-            sampleRate * 1000000);
 
     m_absTimeWhenPrevOutputBufferReachesDac = absTimeWhenPrevOutputBufferReachesDac;
 

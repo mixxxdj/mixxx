@@ -110,10 +110,7 @@ class AbletonLink : public QObject, public Syncable {
 
     mixxx::Bpm m_oldTempo;
 
-    std::chrono::microseconds m_audioBufferTimeMicros;
     std::chrono::microseconds m_absTimeWhenPrevOutputBufferReachesDac;
-    std::chrono::microseconds m_sampleTimeAtStartCallback;
-    std::chrono::microseconds m_timeAtStartCallback;
 
     std::unique_ptr<ableton::BasicLink<MixxxClockRef>> m_pLink;
     std::unique_ptr<ControlPushButton> m_pLinkButton;
