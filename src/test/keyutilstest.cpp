@@ -5,6 +5,7 @@
 
 #include "proto/keys.pb.h"
 #include "track/keyutils.h"
+#include "track/keyfactory.h"
 
 using ::testing::UnorderedElementsAre;
 
