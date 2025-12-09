@@ -97,9 +97,7 @@ class AbletonLink : public QObject, public Syncable {
     /// occur.
     void updateInstantaneousBpm(mixxx::Bpm bpm) override;
 
-    void onCallbackStart(int sampleRate,
-            size_t bufferSize,
-            std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac);
+    void onCallbackStart(std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac);
     void onCallbackEnd(int sampleRate, size_t bufferSize);
 
   private:

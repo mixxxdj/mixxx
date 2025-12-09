@@ -23,7 +23,6 @@ AbletonLink::AbletonLink(const QString& group, EngineSync* pEngineSync)
           m_pLink(std::make_unique<ableton::BasicLink<MixxxClockRef>>(120.0)),
           m_pLinkButton(std::make_unique<ControlPushButton>(ConfigKey(group, "sync_enabled"))),
           m_pNumLinkPeers(std::make_unique<ControlObject>(ConfigKey(group, "num_peers"))) {
-
     m_pLinkButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pLinkButton->setStates(2);
 
@@ -167,10 +166,7 @@ void AbletonLink::updateInstantaneousBpm(mixxx::Bpm) {
 /// It captures the current time and updates the audio buffer time.
 /// If Ableton Link is enabled, it captures the session state and notifies
 /// the engine sync about any changes in tempo and beat distance.
-void AbletonLink::onCallbackStart(int sampleRate,
-        size_t bufferSize,
-        std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac) {
-
+void AbletonLink::onCallbackStart(std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac) {
     m_absTimeWhenPrevOutputBufferReachesDac = absTimeWhenPrevOutputBufferReachesDac;
 
     if (!m_pLink->isEnabled()) {

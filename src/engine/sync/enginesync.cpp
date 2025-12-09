@@ -658,7 +658,7 @@ void EngineSync::onCallbackStart(mixxx::audio::SampleRate sampleRate,
         std::size_t bufferSize,
         std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
-    m_pAbletonLink->onCallbackStart(sampleRate, bufferSize, absTimeWhenPrevOutputBufferReachesDac);
+    m_pAbletonLink->onCallbackStart(absTimeWhenPrevOutputBufferReachesDac);
 }
 
 void EngineSync::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
