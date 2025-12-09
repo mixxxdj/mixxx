@@ -9,6 +9,10 @@
 
 using mixxx::track::io::key::KeyMap;
 
+// Static regex for parsing RapidEvolution tuning offsets (e.g., "A +50")
+// Compiled once for performance during library scans
+static const QRegularExpression s_offsetRegex(QStringLiteral(R"(([+-]\d+)\s*$)"));
+
 // static
 Keys KeyFactory::loadKeysFromByteArray(const QString& keysVersion,
                                        const QString& keysSubVersion,
@@ -55,16 +59,19 @@ Keys KeyFactory::makeBasicKeysKeepText(
     key_map.set_global_key(global_key);
     // RapidEvolution writes tuning offset in cents after the key text, e.g. "A#m +50".
     // Preserve that as tuning_frequency_hz if present.
-    QRegularExpression offsetRegex(QStringLiteral(R"(([+-]\d+)\s*$)"));
-    const auto offsetMatch = offsetRegex.match(global_key_text);
+    const auto offsetMatch = s_offsetRegex.match(global_key_text);
     if (offsetMatch.hasMatch()) {
         bool ok = false;
         const int cents = offsetMatch.captured(1).toInt(&ok);
-        if (ok) {
+        // Validate cents range: +/- 1 octave (1200 cents) is reasonable
+        if (ok && cents >= -1200 && cents <= 1200) {
             const double tuningHz = 440.0 * std::pow(2.0, static_cast<double>(cents) / 1200.0);
             const int tuningRounded = static_cast<int>(std::lround(tuningHz));
-            key_map.set_tuning_frequency_hz(tuningRounded);
-            key_map.set_is_432hz(tuningRounded == 432);
+            // Additional sanity check: ensure frequency is in reasonable range
+            if (tuningRounded >= 220 && tuningRounded <= 880) {
+                key_map.set_tuning_frequency_hz(tuningRounded);
+                key_map.set_is_432hz(tuningRounded == 432);
+            }
         }
     }
     return Keys(key_map);
