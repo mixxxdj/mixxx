@@ -88,7 +88,7 @@ const padIndex = function(padNumber, bank, type) {
         return padNumber + ((bank - 1) * 8);
     } else if (type === "savedloop") {
         // Saved loops use 5-8, 14-17
-        return padNumber + 4 + ((bank -1) * 8);
+        return padNumber + 4 + ((bank - 1) * 8);
     } else if (type === "sampler") {
         return padNumber + (4 * (bank - 1));
     }
