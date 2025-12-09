@@ -313,13 +313,13 @@ TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsets) {
     {
         auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab +50"),
                 mixxx::track::io::key::USER);
-        EXPECT_EQ(453, keys.getTuningFrequencyHz()); // 440 * 2^(50/1200)
+        EXPECT_EQ(453, keys.getTuningFrequencyHz()); // 440 * 2^(50/1200) ≈ 452.9 -> 453
         EXPECT_FALSE(keys.is432Hz());
     }
     {
         auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab -50"),
                 mixxx::track::io::key::USER);
-        EXPECT_EQ(429, keys.getTuningFrequencyHz()); // 440 * 2^(-50/1200)
+        EXPECT_EQ(427, keys.getTuningFrequencyHz()); // 440 * 2^(-50/1200) ≈ 427.5 -> 427 (rounded)
         EXPECT_FALSE(keys.is432Hz());
     }
     {
