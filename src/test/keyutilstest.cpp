@@ -307,3 +307,24 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
                     mixxx::track::io::key::A_MINOR,
                     mixxx::track::io::key::G_MINOR));
 }
+
+TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsets) {
+    {
+        auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab +50"),
+                mixxx::track::io::key::USER);
+        EXPECT_EQ(453, keys.getTuningFrequencyHz()); // 440 * 2^(50/1200)
+        EXPECT_FALSE(keys.is432Hz());
+    }
+    {
+        auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab -50"),
+                mixxx::track::io::key::USER);
+        EXPECT_EQ(429, keys.getTuningFrequencyHz()); // 440 * 2^(-50/1200)
+        EXPECT_FALSE(keys.is432Hz());
+    }
+    {
+        auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("A  0"),
+                mixxx::track::io::key::USER);
+        EXPECT_EQ(440, keys.getTuningFrequencyHz());
+        EXPECT_FALSE(keys.is432Hz());
+    }
+}
