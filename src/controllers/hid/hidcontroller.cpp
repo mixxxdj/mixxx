@@ -103,8 +103,17 @@ int HidController::open(const QString& resourcePath) {
         return -1;
     }
 
-    // Acquire a persistent lock on the m_reportDescriptor/m_deviceUsesReportIds.
-    // The lock is released in close().
+    // Acquire a persistent lock protecting m_reportDescriptor and
+    // m_deviceUsesReportIds. The lock is intentionally kept for the entire time
+    // the device is considered "open":
+    // - It is acquired here in open() and moved into `m_reportDescriptorLock`
+    // so the `unique_lock` stays alive.
+    // - It is released only when `close()` calls
+    // `m_reportDescriptorLock.reset()` (or when the `HidController` is
+    // destroyed
+    //   and the stored `unique_lock` is destructed).
+    // Note: `fetchReportDescriptorInBackground()` uses `try_to_lock` on the
+    // same mutex and will skip fetching while the persistent lock is held.
     std::unique_lock<std::mutex> lock(m_reportDescriptorMutex);
     m_reportDescriptorLock.emplace(std::move(lock));
 
