@@ -34,7 +34,7 @@ class AbletonLink : public QObject, public Syncable {
     Q_OBJECT
   public:
     AbletonLink(const QString& group, EngineSync* pEngineSync);
-    ~AbletonLink() override = default;
+    ~AbletonLink() override;
 
     const QString& getGroup() const override {
         return m_group;

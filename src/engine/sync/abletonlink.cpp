@@ -33,8 +33,7 @@ AbletonLink::AbletonLink(const QString& group, EngineSync* pEngineSync)
     connect(m_pLinkButton.get(),
             &ControlObject::valueChanged,
             this,
-            &AbletonLink::slotControlSyncEnabled,
-            Qt::DirectConnection);
+            &AbletonLink::slotControlSyncEnabled);
 
     m_pNumLinkPeers->setReadOnly();
     m_pNumLinkPeers->forceSet(0);
@@ -51,6 +50,27 @@ AbletonLink::AbletonLink(const QString& group, EngineSync* pEngineSync)
     m_pLink->enableStartStopSync(false);
 
     audioThreadDebugOutput();
+}
+
+AbletonLink::~AbletonLink() {
+    // Stop Link activity and remove callbacks before destroying ControlObjects.
+    m_pLink->setNumPeersCallback([](std::size_t) {});
+    m_pLink->enable(false);
+
+    // Disconnect the connection from the Link GUI button
+    if (m_pLinkButton) {
+        QObject::disconnect(m_pLinkButton.get(),
+                &ControlObject::valueChanged,
+                this,
+                &AbletonLink::slotControlSyncEnabled);
+    }
+
+    // Destroy control objects before releasing Link.
+    m_pNumLinkPeers.reset();
+    m_pLinkButton.reset();
+
+    // Finally release Link
+    m_pLink.reset();
 }
 
 void AbletonLink::slotControlSyncEnabled(double controButtonlValue) {
