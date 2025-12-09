@@ -674,64 +674,6 @@ double BpmControl::getBeatDistance(mixxx::audio::FramePos thisPosition) const {
     return beatPercentage;
 }
 
-// static
-bool BpmControl::getBeatContext(
-        const mixxx::BeatsPointer& pBeats,
-        mixxx::audio::FramePos position,
-        mixxx::audio::FramePos* pPrevBeatPosition,
-        mixxx::audio::FramePos* pNextBeatPosition,
-        mixxx::audio::FrameDiff_t* pBeatLengthFrames,
-        double* pBeatPercentage) {
-    if (!pBeats) {
-        return false;
-    }
-
-    mixxx::audio::FramePos prevBeatPosition;
-    mixxx::audio::FramePos nextBeatPosition;
-    if (!pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
-        return false;
-    }
-
-    if (pPrevBeatPosition != nullptr) {
-        *pPrevBeatPosition = prevBeatPosition;
-    }
-
-    if (pNextBeatPosition != nullptr) {
-        *pNextBeatPosition = nextBeatPosition;
-    }
-
-    return getBeatContextNoLookup(position,
-            prevBeatPosition,
-            nextBeatPosition,
-            pBeatLengthFrames,
-            pBeatPercentage);
-}
-
-// static
-bool BpmControl::getBeatContextNoLookup(
-        mixxx::audio::FramePos position,
-        mixxx::audio::FramePos prevBeatPosition,
-        mixxx::audio::FramePos nextBeatPosition,
-        mixxx::audio::FrameDiff_t* pBeatLengthFrames,
-        double* pBeatPercentage) {
-    if (!prevBeatPosition.isValid() || !nextBeatPosition.isValid()) {
-        return false;
-    }
-
-    const mixxx::audio::FrameDiff_t beatLengthFrames = nextBeatPosition - prevBeatPosition;
-    if (pBeatLengthFrames != nullptr) {
-        *pBeatLengthFrames = beatLengthFrames;
-    }
-
-    if (pBeatPercentage != nullptr) {
-        *pBeatPercentage = (beatLengthFrames == 0.0)
-                ? 0.0
-                : (position - prevBeatPosition) / beatLengthFrames;
-    }
-
-    return true;
-}
-
 mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
         mixxx::audio::FramePos thisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
@@ -759,7 +701,7 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
         }
         // This happens if dThisPosition is the target position of a requested
         // seek command
-        if (!getBeatContext(pBeats,
+        if (!pBeats->getContext(
                     thisPosition,
                     &thisPrevBeatPosition,
                     &thisNextBeatPosition,
@@ -768,7 +710,8 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
             return thisPosition;
         }
     } else {
-        if (!getBeatContextNoLookup(thisPosition,
+        if (!mixxx::Beats::getContextNoLookup(
+                    thisPosition,
                     thisPrevBeatPosition,
                     thisNextBeatPosition,
                     &thisBeatLengthFrames,
@@ -808,7 +751,7 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
         }
 
         const auto otherPosition = pOtherEngineBuffer->getExactPlayPos();
-        if (!BpmControl::getBeatContext(otherBeats,
+        if (!otherBeats->getContext(
                     otherPosition,
                     nullptr,
                     nullptr,
@@ -956,8 +899,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
         }
         // This happens if thisPosition is the target position of a requested
         // seek command.  Get new prev and next beats for the calculation.
-        getBeatContext(
-                m_pBeats,
+        m_pBeats->getContext(
                 thisPosition,
                 &thisPrevBeatPosition,
                 &thisNextBeatPosition,
@@ -975,7 +917,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
         }
         // We are between the previous and next beats so we can try a standard
         // lookup of the beat length.
-        getBeatContextNoLookup(
+        mixxx::Beats::getContextNoLookup(
                 thisPosition,
                 thisPrevBeatPosition,
                 thisNextBeatPosition,
@@ -1012,8 +954,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
     mixxx::audio::FramePos otherNextBeatPosition;
     mixxx::audio::FrameDiff_t otherBeatLengthFrames = -1;
     double otherBeatFraction = -1;
-    if (!BpmControl::getBeatContext(
-                otherBeats,
+    if (!otherBeats->getContext(
                 otherPositionOfThisNextBeat,
                 &otherPrevBeatPosition,
                 &otherNextBeatPosition,
@@ -1319,7 +1260,8 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures, double speed
                     m_nextBeat.get());
     mixxx::audio::FrameDiff_t beatLengthFrames;
     double beatFraction;
-    if (getBeatContextNoLookup(info.currentPosition,
+    if (mixxx::Beats::getContextNoLookup(
+                info.currentPosition,
                 prevBeatPosition,
                 nextBeatPosition,
                 &beatLengthFrames,
