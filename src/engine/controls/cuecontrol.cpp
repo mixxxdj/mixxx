@@ -2538,10 +2538,13 @@ void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) 
     mixxx::CueType type = pCue->getType();
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
 
-    VERIFY_OR_DEBUG_ASSERT(
-            type == mixxx::CueType::Loop &&
-            pos.startPosition.isValid() &&
-            pos.endPosition.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(type == mixxx::CueType::Loop) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pos.startPosition.isValid()) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pos.endPosition.isValid()) {
         return;
     }
 
@@ -2567,14 +2570,15 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
     }
 
     DEBUG_ASSERT(pSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
-    DEBUG_ASSERT(pSavedLoopControl->getCue() &&
-            pSavedLoopControl->getCue()->getPosition() ==
-                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                            m_pLoopStartPosition->get()));
-    DEBUG_ASSERT(pSavedLoopControl->getCue() &&
-            pSavedLoopControl->getCue()->getEndPosition() ==
-                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                            m_pLoopEndPosition->get()));
+    DEBUG_ASSERT(pSavedLoopControl->getCue());
+    // Don't compare with == because there might be a tiny round-trip offset
+    // because LoopingControl::slotBeatLoop() uses beats to set the loop_in/_out COs
+    DEBUG_ASSERT(pSavedLoopControl->getCue()->getPosition().isNear(
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pLoopStartPosition->get())));
+    DEBUG_ASSERT(pSavedLoopControl->getCue()->getEndPosition().isNear(
+            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                    m_pLoopEndPosition->get())));
 
     if (enabled) {
         pSavedLoopControl->setStatus(HotcueControl::Status::Active);
