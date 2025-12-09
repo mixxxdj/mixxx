@@ -78,7 +78,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_xfCurveCO(make_parented<ControlProxy>(kXfaderCurveKey, this)),
           m_xfReverseCO(make_parented<ControlProxy>(kXfaderReverseKey, this)),
           m_xfCalibrationCO(make_parented<ControlProxy>(kXfaderCalibrationKey, this)),
-          m_crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
+          m_crossfader(QStringLiteral("[Mixer]"), QStringLiteral("crossfader")),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
           m_COHiFreq(kHighEqFreqKey),

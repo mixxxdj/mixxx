@@ -27,7 +27,7 @@ Description:
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <KnobCenterYOffset>2.000</KnobCenterYOffset>
             <Connection>
-              <ConfigKey>[Master],gain</ConfigKey>
+              <ConfigKey>[Mixer],main_gain</ConfigKey>
             </Connection>
           </KnobComposed>
         </Children>
@@ -47,12 +47,12 @@ Description:
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <KnobCenterYOffset>2.000</KnobCenterYOffset>
             <Connection>
-              <ConfigKey>[Master],booth_gain</ConfigKey>
+              <ConfigKey>[Mixer],booth_gain</ConfigKey>
             </Connection>
           </KnobComposed>
         </Children>
         <Connection>
-          <ConfigKey>[Master],booth_enabled</ConfigKey>
+          <ConfigKey>[Mixer],booth_enabled</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -65,7 +65,7 @@ Description:
         <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/balance_scale.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
-          <ConfigKey>[Master],balance</ConfigKey>
+          <ConfigKey>[Mixer],balance</ConfigKey>
         </Connection>
       </SliderComposed>
 

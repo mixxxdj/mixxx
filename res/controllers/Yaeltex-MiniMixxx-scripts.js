@@ -672,16 +672,16 @@ MiniMixxx.EncoderModeHeadGain = class extends MiniMixxx.Mode {
         super(parent, "HEADGAIN", channel, idx);
         this.color = MiniMixxx.HeadOutColor;
 
-        engine.makeConnection("[Master]", "headGain", this.gainIndicator.bind(this));
+        engine.makeConnection("[Master]", "headphone_gain", this.gainIndicator.bind(this));
     }
     handleSpin(velo) {
-        engine.setValue("[Master]", "headGain", engine.getValue("[Master]", "headGain") + .02 * velo);
+        engine.setValue("[Master]", "headphone_gain", engine.getValue("[Master]", "headphone_gain") + .02 * velo);
     }
     handlePress(value) {
         if (value === 0) {
             return;
         }
-        engine.setValue("[Master]", "headGain", 1.0);
+        engine.setValue("[Master]", "headphone_gain", 1.0);
     }
     gainIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -693,7 +693,7 @@ MiniMixxx.EncoderModeHeadGain = class extends MiniMixxx.Mode {
     }
     setLights() {
         midi.sendShortMsg(0x90, this.idx, this.color);
-        this.gainIndicator(engine.getValue("[Master]", "headGain"));
+        this.gainIndicator(engine.getValue("[Master]", "headphone_gain"));
     }
 };
 
@@ -742,16 +742,16 @@ MiniMixxx.EncoderModeHeadMix = class extends MiniMixxx.Mode {
         super(parent, "HEADMIX", channel, idx);
         this.color = MiniMixxx.HeadOutColor;
 
-        engine.makeConnection("[Master]", "headMix", this.mixIndicator.bind(this));
+        engine.makeConnection("[Master]", "headphone_mix", this.mixIndicator.bind(this));
     }
     handleSpin(velo) {
-        engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + .01 * velo);
+        engine.setValue("[Master]", "headphone_mix", engine.getValue("[Master]", "headphone_mix") + .01 * velo);
     }
     handlePress(value) {
         if (value === 0) {
             return;
         }
-        engine.setValue("[Master]", "headMix", 0.0);
+        engine.setValue("[Master]", "headphone_mix", 0.0);
     }
     mixIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -762,7 +762,7 @@ MiniMixxx.EncoderModeHeadMix = class extends MiniMixxx.Mode {
         midi.sendShortMsg(0xB0, this.idx, (value + 1.0) * 64.0 - 1.0);
     }
     setLights() {
-        this.mixIndicator(engine.getValue("[Master]", "headMix"));
+        this.mixIndicator(engine.getValue("[Master]", "headphone_mix"));
         midi.sendShortMsg(0x90, this.idx, this.color);
     }
 };

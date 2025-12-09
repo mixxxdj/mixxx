@@ -796,7 +796,7 @@ var AutoCut = function (deckNum) {
 AutoCut.prototype.On = function() {
     if (!this.enabled) {
         this.enabled = true;
-        engine.softTakeover("[Master]", "crossfader", false);
+        engine.softTakeover("[Mixer]", "crossfader", false);
     }
 };
 
@@ -812,15 +812,15 @@ AutoCut.prototype.FaderCut = function(jogValue) {
         if (this.deckNum == 1) {
             direction = -direction;
         } // else direction is of the good sign
-        engine.setValue('[Master]', 'crossfader', direction);
+        engine.setValue('[Mixer]', 'crossfader', direction);
     }
 };
 
 AutoCut.prototype.Off = function() {
     if (this.enabled) {
         this.enabled = false;
-        engine.setValue('[Master]', 'crossfader', 0);
-        engine.softTakeover("[Master]", "crossfader", true);
+        engine.setValue('[Mixer]', 'crossfader', 0);
+        engine.softTakeover("[Mixer]", "crossfader", true);
     }
 };
 
@@ -1653,7 +1653,7 @@ ReloopBeatpad.init = function(id, debug) {
         engine.softTakeover("[Channel" + i + "]", "filterLow", true);
     }
 
-    engine.softTakeover("[Master]", "crossfader", true);
+    engine.softTakeover("[Mixer]", "crossfader", true);
 
     for (i = 1; i <= 4; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "super1", true);
