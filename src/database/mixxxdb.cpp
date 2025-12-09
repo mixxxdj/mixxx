@@ -2,6 +2,7 @@
 
 #include <QDir>
 #include <QSqlQuery>
+#include <QSqlError>
 #include <QVariant>
 
 #include "database/schemamanager.h"
