@@ -649,6 +649,7 @@ bool Library::requestAddDir(const QString& dir) {
         return false;
     }
 
+    emit trackDirectoriesUpdated();
     return true;
 }
 
@@ -686,6 +687,7 @@ bool Library::requestRemoveDir(const QString& dir, LibraryRemovalType removalTyp
         DEBUG_ASSERT(!"unreachable");
     }
 
+    emit trackDirectoriesUpdated();
     return true;
 }
 
@@ -693,6 +695,7 @@ bool Library::requestRelocateDir(const QString& oldDir, const QString& newDir) {
     DirectoryDAO::RelocateResult result =
             m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
     if (result == DirectoryDAO::RelocateResult::Ok) {
+        emit trackDirectoriesUpdated();
         return true;
     }
 

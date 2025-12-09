@@ -1,23 +1,27 @@
 #include "library/browse/browsefeature.h"
 
 #include <QAction>
+#include <QDirIterator>
 #include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
 #include <QSortFilterProxyModel>
 #include <QStandardPaths>
 #include <QStringList>
+#include <QtConcurrentRun>
 #include <memory>
 
 #include "library/browse/browselibrarytablemodel.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_browsefeature.cpp"
+#include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -174,6 +178,34 @@ BrowseFeature::BrowseFeature(Library* pLibrary,
 
     // initialize the model
     m_pSidebarModel->setRootItem(std::move(pRootItem));
+
+    // Prepare everything for creating the symlink map of track directories.
+    // For reason and details updateSymlinkList().
+    // This is called by slotLibraryDirectoriesChanged() and then all items'
+    // `isWatchedLibraryPath` flags are updated accordingly.
+    connect(&m_future_watcher,
+            &QFutureWatcher<QMap<QString, QString>>::finished,
+            this,
+            &BrowseFeature::onSymLinkMapUpdated);
+    // We don't need to update now if we rescan on startup or scheduled a scan via
+    // command line; in both cases it's triggered by CoreServices after the library
+    // has been constructed, and we're listening to the libraryScanFinished() signal below.
+    bool rescan = CmdlineArgs::Instance().getRescanLibrary() ||
+            pConfig->getValue<bool>(mixxx::library::prefs::kRescanOnStartupConfigKey);
+    if (!rescan) {
+        slotLibraryDirectoriesChanged();
+    }
+
+    // Update symlink map after library scan and when library
+    // directories have been changed in the preferences.
+    connect(pLibrary,
+            &Library::trackDirectoriesUpdated,
+            this,
+            &BrowseFeature::slotLibraryDirectoriesChanged);
+    connect(pLibrary->trackCollectionManager(),
+            &TrackCollectionManager::libraryScanFinished,
+            this,
+            &BrowseFeature::slotLibraryDirectoriesChanged);
 }
 
 BrowseFeature::~BrowseFeature() {
@@ -280,6 +312,164 @@ void BrowseFeature::slotRefreshDirectoryTree() {
     onLazyChildExpandation(m_lastRightClickedIndex);
 }
 
+void BrowseFeature::slotLibraryDirectoriesChanged() {
+    // Let a worker thread do the XML parsing
+    // Cancel the current run.
+    if (!m_future_watcher.isFinished()) {
+        // After cancel() the watcher will also return finished()???
+        // qWarning() << "# cancel()";
+        // m_future_watcher.cancel();
+        m_future_watcher.waitForFinished();
+    }
+    // Run
+    const auto rootDirs =
+            m_pTrackCollection->getDirectoryDAO().loadAllDirectories(true /* ignore missing */);
+    m_future = QtConcurrent::run(&BrowseFeature::updateSymlinkList,
+            this,
+            rootDirs);
+    m_future_watcher.setFuture(m_future);
+}
+
+QMap<QString, QString> BrowseFeature::updateSymlinkList(const QList<mixxx::FileInfo>& rootDirs) {
+    // Create the map of all symlink'ed track (sub)directories.
+    // It's reverse, ie. <target, symlink>
+    //
+    // The purpose:
+    // "Unresolve" clicked symlink target paths to their respective canonical
+    // paths stored in the library.
+    //
+    // Let's say we have a library directory /home/user/Music which is a symlink
+    // to /mnt/SSD/music.
+    // In the tree this directory can be in multiple places, for example
+    //   QuickLinks -> Music
+    //   mnt -> SSD -> music
+    // When selecting either of those, we want the correct directory filter
+    // (/home/user/Music) for the library model to show all contained tracks.
+    //
+    // However, Library directories and track locations are stored as canonical
+    // locations and items in the Quick Links and drive nodes all have the
+    // resolved path. So, when selecting /mnt/SSD/music, the directory filter
+    // would not yield any results as only tracks in /home/user/Music are in the
+    // library.
+    //
+    // This reverse target/symlink map allows us to get the correct library
+    // (sub)directory for a given symlink target.
+    //
+    // NOTE: we could also use this map when creating new tree items paths
+    // so we work with the canonical library location right away and save the
+    // unresolve step on click.
+    // BUT in case library directories are removed/relocated we'd not only have
+    // to update the items' `isPathWatched` flag but also their path (item data)
+    //
+    // Also check symlik'ed directories, inside or outside library directories,
+    // that are effectively inside library dirs. Example
+    // /home/ is a library dir. Cases covered:
+    // /home/Abc links to /mnt/Abc
+    // /mnt/Cba links to /home/Abc
+    // /mnt/Bca links to /mnt/Abc
+
+    VERIFY_OR_DEBUG_ASSERT_THIS_QOBJECT_THREAD_ANTI_AFFINITY() {
+        // Must only be run in separate thread via QFutureWatcher and
+        // QtConcurrent::run()
+        return {};
+    }
+
+    // There's no need for high prio. Also, it may be triggered on startup due
+    // to scheduled
+    // at that point we don't want to push back other threads.
+    QThread* thisThread = QThread::currentThread();
+    thisThread->setPriority(QThread::LowPriority);
+
+    PerformanceTimer timer;
+    timer.start();
+
+    QMap<QString, QString> symLinksMap;
+
+    for (auto& rootDir : rootDirs) {
+        symLinksMap.insert(rootDir.location(), rootDir.location());
+        if (rootDir.location() != rootDir.canonicalLocation()) {
+            // some path segment is a symlink
+            symLinksMap.insert(rootDir.canonicalLocation(), rootDir.location());
+        }
+        // Scan all subdirectories
+        QDirIterator it(rootDir.location(),
+                QDir::Dirs | QDir::NoDotAndDotDot,
+                QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
+        while (it.hasNext()) {
+            it.next();
+            mixxx::FileInfo dirInfo(it.fileInfo());
+            if (dirInfo.canonicalLocation().isEmpty()) {
+                continue;
+            }
+            symLinksMap.insert(dirInfo.location(), dirInfo.location());
+            symLinksMap.insert(dirInfo.canonicalLocation(), dirInfo.location());
+        }
+    }
+    return symLinksMap;
+}
+
+void BrowseFeature::onSymLinkMapUpdated() {
+    m_mutex.lock();
+    // Swap the symlink map
+    m_trackDirSymlinksMap = m_future_watcher.result();
+    m_mutex.unlock();
+
+    slotUpdateAllTreeItemsIsWatchedPath();
+}
+
+void BrowseFeature::slotUpdateAllTreeItemsIsWatchedPath() {
+    // Update ALL items
+    // Iterate over top-level items and update each recursively
+    for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
+        const QModelIndex index = m_pSidebarModel->index(row, 0);
+        TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
+        VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+            continue;
+        }
+        updateItemIsWatchedPathRecursively(pTreeItem);
+    }
+    // Make sure we have a sidebar widget
+    if (m_pSidebarWidget) {
+        m_pSidebarWidget->update();
+        // If `isWatched` of the currently selected path doesn't match
+        // the used model anymore, update it.
+        const auto& selectedIndex = m_pSidebarWidget->selectedIndex();
+        auto* pSelectedItem = m_pSidebarModel->getItem(selectedIndex);
+        if (!pSelectedItem) {
+            return;
+        }
+        bool watched = pSelectedItem->isWatchedLibraryPath();
+        bool usingLibraryView =
+                static_cast<BrowseLibraryTableModel*>(m_pCurrentTrackModel) != nullptr;
+        if (watched != usingLibraryView) {
+            activateChild(selectedIndex);
+        }
+    }
+}
+
+void BrowseFeature::updateItemIsWatchedPathRecursively(TreeItem* pItem) {
+    VERIFY_OR_DEBUG_ASSERT(pItem) {
+        return;
+    }
+    const auto itemData = pItem->getData();
+    VERIFY_OR_DEBUG_ASSERT(itemData.isValid() && itemData.canConvert<QString>()) {
+        return;
+    }
+    const QString path = itemData.toString();
+    if (path.isEmpty()) {
+        return;
+    }
+
+    if (isPathWatched(path)) {
+        pItem->updateIsWatchedLibraryPathRecursively(true);
+    } else {
+        pItem->setIsWatchedLibraryPath(false);
+        for (auto* pChild : std::as_const(pItem->children())) {
+            updateItemIsWatchedPathRecursively(pChild);
+        }
+    }
+}
+
 TreeItemModel* BrowseFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
@@ -316,6 +506,8 @@ void BrowseFeature::activate() {
 /// 2. a library dir: track (library) view
 ///    Displays metadata from the library (database) like in other features,
 ///    has all columns and capabilities of Tracks.
+///    Note: this also applies if a library (sub)directory is a symlink and we
+///    clicked the symlink target (which may be outside the library dir).
 ///
 /// Note: single clicks will not expand or populate sub directories.
 void BrowseFeature::activateChild(const QModelIndex& index) {
@@ -363,7 +555,10 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     if (useLibraryTrackView) {
         // use LibraryTableModel
         // filter tracks by directory (not recursive)
-        m_pLibraryTableModel->setPath(std::move(path));
+        // Resolve path, ie. figure if it's symlink'ed in some library directory.
+        // If yes, use the un-resolved path to set the directory filter
+        const QString unresolvedPath = maybeUnResolveSymlink(std::move(path));
+        m_pLibraryTableModel->setPath(std::move(unresolvedPath));
         m_pLibraryTableModel->search(currSearch);
         m_pCurrentTrackModel = m_pLibraryTableModel;
         emit showTrackModel(m_pLibraryTableModel);
@@ -589,21 +784,39 @@ bool BrowseFeature::isPathWatched(const QString& path) const {
         qWarning() << "Directory can not be read";
         return false;
     }
-    const auto newCanonicalLocation = dir.canonicalLocation();
-    DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
-    const auto rootDirs =
-            m_pTrackCollection->getDirectoryDAO().loadAllDirectories(true /* ignore missing */);
-    for (auto&& oldDir : rootDirs) {
-        const auto oldCanonicalLocation = oldDir.canonicalLocation();
-        DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
-        if (mixxx::FileInfo::isRootSubCanonicalLocation(
-                    oldCanonicalLocation,
-                    newCanonicalLocation)) {
-            // New dir is a child of an existing dir, return
-            return true;
+
+    const auto dirCanLoc = dir.canonicalLocation();
+    VERIFY_OR_DEBUG_ASSERT(!dirCanLoc.isEmpty()) {
+        return false;
+    }
+
+    // Check if we have the path in the symlinks map.
+    // Returns true if this is a symlink or target.
+    // Includes library root dirs.
+    const QMap<QString, QString>::const_iterator itcan =
+            m_trackDirSymlinksMap.constFind(dirCanLoc);
+    if (itcan != m_trackDirSymlinksMap.constEnd()) {
+        qWarning() << "     ~ isPathWatched YES" << path;
+        if (dir.location() != itcan.value()) {
+            // qWarning() << "    resolved to" << itcan.value();
         }
+        return true;
     }
     return false;
+}
+
+QString BrowseFeature::maybeUnResolveSymlink(const QString& path) const {
+    // Check if path is a resolved path of a library (sub)directory.
+    // See updateSymlinkList() for details.
+    mixxx::FileInfo dir(path);
+    const QMap<QString, QString>::const_iterator it =
+            m_trackDirSymlinksMap.constFind(dir.canonicalLocation());
+    if (it == m_trackDirSymlinksMap.constEnd()) {
+        return path;
+    }
+
+    // location() misses the trailing '/' but we need it only for the file view
+    return it.value();
 }
 
 QString BrowseFeature::getRootViewHtml() const {
