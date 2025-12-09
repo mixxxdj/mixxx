@@ -18,9 +18,6 @@ constexpr bool kEnableDebugOutput = false;
 static const double kLockCurrentKey = 1;
 static const double kKeepUnlockedKey = 1;
 
-// Pitch adjustment in semitones to convert from 440Hz to 432Hz tuning
-// Calculated as: log2(432/440) * 12 ≈ -0.31767 semitones
-static constexpr double k432HzPitchAdjustmentSemitones = -0.31767;
 static constexpr int kStandardTuningHertz440 = 440;
 static constexpr int kTarget432Hz = 432;
 
