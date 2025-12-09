@@ -851,10 +851,8 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
     auto pQuery(m_parser.parseQuery(QString("crate: %1").arg(searchTerm), QString()));
 
     // locations for test tracks
-    const QString kTrackALocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
-    const QString kTrackBLocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-png.mp3")));
+    const QString kTrackALocationTest(getTestFile(QStringLiteral("-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestFile(QStringLiteral("-png.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -890,12 +888,9 @@ TEST_F(SearchQueryParserTest, ShortCrateFilter) {
     auto pQuery(m_parser.parseQuery(QString("%1").arg(searchTerm), QString()));
 
     // locations for test tracks
-    const QString kTrackALocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
-    const QString kTrackBLocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-png.mp3")));
-    const QString kTrackCLocationTest(
-            getTestDir().filePath(QStringLiteral("id3-test-data/artist.mp3")));
+    const QString kTrackALocationTest(getTestFile(QStringLiteral("-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestFile(QStringLiteral("-png.mp3")));
+    const QString kTrackCLocationTest(getTestFile(QStringLiteral("-vbr.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -944,10 +939,8 @@ TEST_F(SearchQueryParserTest, CrateFilterQuote){
     auto pQuery(m_parser.parseQuery(QString("crate: \"%1\"").arg(searchTerm), QString()));
 
     // locations for test tracks
-    const QString kTrackALocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
-    const QString kTrackBLocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-png.mp3")));
+    const QString kTrackALocationTest(getTestFile(QStringLiteral("-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestFile(QStringLiteral("-png.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -987,10 +980,8 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     auto pQuery(m_parser.parseQuery(QString("crate: %1 artist: asdf").arg(searchTerm), QString()));
 
     // locations for test tracks
-    const QString kTrackALocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
-    const QString kTrackBLocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-png.mp3")));
+    const QString kTrackALocationTest(getTestFile(QStringLiteral("-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestFile(QStringLiteral("-png.mp3")));
 
     // Create new crate and add it to the collection
     Crate testCrate;
@@ -1033,10 +1024,8 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
             QString()));
 
     // locations for test tracks
-    const QString kTrackALocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-jpg.mp3")));
-    const QString kTrackBLocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-png.mp3")));
+    const QString kTrackALocationTest(getTestFile(QStringLiteral("-jpg.mp3")));
+    const QString kTrackBLocationTest(getTestFile(QStringLiteral("-png.mp3")));
 
     // Create new crates and add them to the collection
     Crate testCrateA;
