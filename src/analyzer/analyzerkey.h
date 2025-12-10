@@ -27,8 +27,20 @@ class AnalyzerKey : public Analyzer {
     void cleanup() override;
 
   private:
+    // Legacy version info (for shouldAnalyze comparison)
     static QHash<QString, QString> getExtraVersionInfo(
-            const QString& pluginId, bool bPreferencesFastAnalysis);
+            const QString& pluginId, bool bPreferencesFastAnalysis, bool bDetect432Hz);
+
+    // Extended version info with tuning frequency detection
+    static QHash<QString, QString> getExtraVersionInfo(
+            const QString& pluginId,
+            bool bPreferencesFastAnalysis,
+            bool bDetect432Hz,
+            bool bDetectTuningFrequency,
+            int tuningFrequencyHz,
+            int tuningMinFrequency,
+            int tuningMaxFrequency,
+            int tuningStepFrequency);
 
     bool shouldAnalyze(TrackPointer tio) const;
 
@@ -44,4 +56,9 @@ class AnalyzerKey : public Analyzer {
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
+    bool m_bPreferencesDetect432Hz;
+    bool m_bPreferencesDetectTuningFrequency;
+    int m_tuningMinFreq;
+    int m_tuningMaxFreq;
+    int m_tuningStepFreq;
 };
