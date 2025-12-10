@@ -461,18 +461,6 @@ QVariant BaseTrackTableModel::data(
         }
     }
 
-    // Handle 432Hz role for key column
-    if (role == k432HzRole) {
-        const auto field = mapColumn(index.column());
-        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
-            TrackPointer pTrack = getTrack(index);
-            if (pTrack) {
-                return pTrack->is432Hz();
-            }
-        }
-        return false;
-    }
-
     // Handle tuning frequency role for key column
     if (role == kTuningFrequencyRole) {
         const auto field = mapColumn(index.column());
@@ -482,7 +470,7 @@ QVariant BaseTrackTableModel::data(
                 return pTrack->getTuningFrequencyHz();
             }
         }
-        return 440; // Default to 440Hz
+        return 440.0; // Default to 440Hz
     }
 
     // Only retrieve a value for supported roles
@@ -795,7 +783,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (!ok || freq <= 0) {
                 return QVariant();
             }
-            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+            if (role == Qt::DisplayRole || role == Qt::ToolTipRole || role == kDataExportRole) {
                 return QStringLiteral("%1 Hz").arg(freq);
             }
             return freq;

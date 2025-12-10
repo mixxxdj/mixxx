@@ -53,17 +53,12 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
         return m_resultKeys;
     }
 
-    // 432Hz detection support (legacy, kept for compatibility)
-    bool is432Hz() const override {
-        return m_detectedTuningFrequency == 432;
-    }
-
     void setDetect432Hz(bool enabled) override {
         m_bDetect432Hz = enabled;
     }
 
     // Dynamic tuning frequency detection
-    int getTuningFrequencyHz() const override {
+    double getTuningFrequencyHz() const override {
         return m_detectedTuningFrequency;
     }
 
@@ -109,7 +104,7 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
     int m_tuningMinFreq;
     int m_tuningMaxFreq;
     int m_tuningStepFreq;
-    int m_detectedTuningFrequency;
+    double m_detectedTuningFrequency;
 
     // Vector of analyzers for different frequencies
     std::vector<FrequencyAnalyzer> m_frequencyAnalyzers;

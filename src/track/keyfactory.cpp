@@ -66,11 +66,9 @@ Keys KeyFactory::makeBasicKeysKeepText(
         // Validate cents range: +/- 1 octave (1200 cents) is reasonable
         if (ok && cents >= -1200 && cents <= 1200) {
             const double tuningHz = 440.0 * std::pow(2.0, static_cast<double>(cents) / 1200.0);
-            const int tuningRounded = static_cast<int>(std::lround(tuningHz));
             // Additional sanity check: ensure frequency is in reasonable range
-            if (tuningRounded >= 220 && tuningRounded <= 880) {
-                key_map.set_tuning_frequency_hz(tuningRounded);
-                key_map.set_is_432hz(tuningRounded == 432);
+            if (tuningHz >= 220.0 && tuningHz <= 880.0) {
+                key_map.set_tuning_frequency_hz(tuningHz);
             }
         }
     }
@@ -114,8 +112,7 @@ Keys KeyFactory::makePreferredKeys(
         const QHash<QString, QString>& extraVersionInfo,
         const mixxx::audio::SampleRate sampleRate,
         SINT totalFrames,
-        bool is432Hz,
-        int tuningFrequencyHz) {
+        double tuningFrequencyHz) {
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
@@ -140,7 +137,6 @@ Keys KeyFactory::makePreferredKeys(
                 global_key, KeyUtils::KeyNotation::ID3v2);
         key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
-        key_map.set_is_432hz(is432Hz);
         key_map.set_tuning_frequency_hz(tuningFrequencyHz);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);

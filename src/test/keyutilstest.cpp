@@ -309,23 +309,22 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
                     mixxx::track::io::key::G_MINOR));
 }
 
-TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsets) {
-    {
-        auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab +50"),
-                mixxx::track::io::key::USER);
-        EXPECT_EQ(453, keys.getTuningFrequencyHz()); // 440 * 2^(50/1200) ≈ 452.9 -> 453
-        EXPECT_FALSE(keys.is432Hz());
-    }
-    {
-        auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab -50"),
-                mixxx::track::io::key::USER);
-        EXPECT_EQ(427, keys.getTuningFrequencyHz()); // 440 * 2^(-50/1200) ≈ 427.5 -> 427 (rounded)
-        EXPECT_FALSE(keys.is432Hz());
-    }
-    {
-        auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("A  0"),
-                mixxx::track::io::key::USER);
-        EXPECT_EQ(440, keys.getTuningFrequencyHz());
-        EXPECT_FALSE(keys.is432Hz());
-    }
+TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsetsPositive) {
+    auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab +50"),
+            mixxx::track::io::key::USER);
+    // 440 * 2^(50/1200) ≈ 452.89
+    EXPECT_NEAR(452.89, keys.getTuningFrequencyHz(), 0.01);
+}
+
+TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsetsNegative) {
+    auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab -50"),
+            mixxx::track::io::key::USER);
+    // 440 * 2^(-50/1200) ≈ 427.47
+    EXPECT_NEAR(427.47, keys.getTuningFrequencyHz(), 0.01);
+}
+
+TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsetsZero) {
+    auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("A  0"),
+            mixxx::track::io::key::USER);
+    EXPECT_NEAR(440.0, keys.getTuningFrequencyHz(), 0.01);
 }

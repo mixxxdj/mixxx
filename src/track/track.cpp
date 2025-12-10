@@ -1577,12 +1577,7 @@ QString Track::getKeyText() const {
     return KeyUtils::keyToString(getKey());
 }
 
-bool Track::is432Hz() const {
-    const auto locked = lockMutex(&m_qMutex);
-    return m_record.getKeys().is432Hz();
-}
-
-void Track::setTuningFrequencyHz(int tuningFrequencyHz) {
+void Track::setTuningFrequencyHz(double tuningFrequencyHz) {
     auto locked = lockMutex(&m_qMutex);
     Keys keys = m_record.getKeys();
     keys.setTuningFrequencyHz(tuningFrequencyHz);
@@ -1590,7 +1585,7 @@ void Track::setTuningFrequencyHz(int tuningFrequencyHz) {
     afterKeysUpdated(&locked);
 }
 
-int Track::getTuningFrequencyHz() const {
+double Track::getTuningFrequencyHz() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getKeys().getTuningFrequencyHz();
 }

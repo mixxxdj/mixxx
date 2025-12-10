@@ -253,8 +253,7 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
     }
 
     KeyChangeList key_changes = m_pPlugin->getKeyChanges();
-    int tuningFrequencyHz = m_pPlugin->getTuningFrequencyHz();
-    bool is432Hz = (tuningFrequencyHz == 432);
+    double tuningFrequencyHz = m_pPlugin->getTuningFrequencyHz();
 
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId,
@@ -267,10 +266,10 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
             m_tuningStepFreq);
     Keys track_keys = KeyFactory::makePreferredKeys(
             key_changes, extraVersionInfo, m_sampleRate, m_totalFrames,
-            is432Hz, tuningFrequencyHz);
+            tuningFrequencyHz);
     tio->setKeys(track_keys);
 
-    if (tuningFrequencyHz != 440) {
+    if (tuningFrequencyHz != 440.0) {
         qDebug() << "Track detected with tuning frequency:" << tuningFrequencyHz
                  << "Hz" << tio->getLocation();
     }
