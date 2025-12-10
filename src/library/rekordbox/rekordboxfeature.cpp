@@ -1411,10 +1411,10 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 std::unique_ptr<BaseSqlTableModel>
-RekordboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+RekordboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
     auto pModel = std::make_unique<RekordboxPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    pModel->setPlaylist(playlist);
+    pModel->setPlaylist(data.toList()[0].toString());
     return pModel;
 }
 
