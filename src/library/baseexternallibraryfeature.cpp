@@ -165,9 +165,13 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         return;
     }
 
-    DEBUG_ASSERT(pPlaylist);
     const auto* pTreeItem = static_cast<TreeItem*>(
             m_lastRightClickedIndex.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+        return;
+    }
+
+    DEBUG_ASSERT(pPlaylist);
     *pPlaylist = pTreeItem->getLabel();
     const std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
             createPlaylistModelForPlaylist(pTreeItem->getData().toString()));
