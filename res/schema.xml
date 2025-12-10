@@ -590,7 +590,7 @@ reapplying those migrations.
       Default is 440Hz for standard tuning.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN tuning_frequency_hz INTEGER DEFAULT 440;
+      ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 440.0;
     </sql>
   </revision>
 </schema>

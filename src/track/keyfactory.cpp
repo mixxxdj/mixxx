@@ -1,11 +1,17 @@
 #include <QtDebug>
 #include <QStringList>
+#include <QRegularExpression>
+#include <cmath>
 
 #include "track/keyfactory.h"
 #include "track/keys.h"
 #include "track/keyutils.h"
 
 using mixxx::track::io::key::KeyMap;
+
+// Static regex for parsing RapidEvolution tuning offsets (e.g., "A +50")
+// Compiled once for performance during library scans
+static const QRegularExpression s_offsetRegex(QStringLiteral(R"(([+-]\d+)\s*$)"));
 
 // static
 Keys KeyFactory::loadKeysFromByteArray(const QString& keysVersion,
@@ -51,6 +57,21 @@ Keys KeyFactory::makeBasicKeysKeepText(
     key_map.set_global_key_text(global_key_text.toStdString());
     mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(global_key_text);
     key_map.set_global_key(global_key);
+    // RapidEvolution writes tuning offset in cents after the key text, e.g. "A#m +50".
+    // Preserve that as tuning_frequency_hz if present.
+    const auto offsetMatch = s_offsetRegex.match(global_key_text);
+    if (offsetMatch.hasMatch()) {
+        bool ok = false;
+        const int cents = offsetMatch.captured(1).toInt(&ok);
+        // Validate cents range: +/- 1 octave (1200 cents) is reasonable
+        if (ok && cents >= -1200 && cents <= 1200) {
+            const double tuningHz = 440.0 * std::pow(2.0, static_cast<double>(cents) / 1200.0);
+            // Additional sanity check: ensure frequency is in reasonable range
+            if (tuningHz >= 220.0 && tuningHz <= 880.0) {
+                key_map.set_tuning_frequency_hz(tuningHz);
+            }
+        }
+    }
     return Keys(key_map);
 }
 
@@ -91,8 +112,7 @@ Keys KeyFactory::makePreferredKeys(
         const QHash<QString, QString>& extraVersionInfo,
         const mixxx::audio::SampleRate sampleRate,
         SINT totalFrames,
-        bool is432Hz,
-        int tuningFrequencyHz) {
+        double tuningFrequencyHz) {
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
@@ -117,7 +137,6 @@ Keys KeyFactory::makePreferredKeys(
                 global_key, KeyUtils::KeyNotation::ID3v2);
         key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
-        key_map.set_is_432hz(is432Hz);
         key_map.set_tuning_frequency_hz(tuningFrequencyHz);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
