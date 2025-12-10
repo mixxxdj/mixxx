@@ -10,9 +10,9 @@
 
 namespace {
 // Unicode symbols for tuning indicators
-const QString kTuningSymbol432Hz = QStringLiteral("✧"); // ✧ (sparkle) for 432Hz
-const QString kTuningSymbolLow = QStringLiteral("↓");   // ↓ (arrow down) for <440Hz
-const QString kTuningSymbolHigh = QStringLiteral("↑");  // ↑ (arrow up) for >440Hz
+const QString kTuningSymbol432Hz = QStringLiteral("\u2727"); // ✧ (sparkle) for 432Hz
+const QString kTuningSymbolLow = QStringLiteral("\u2193");   // ↓ (arrow down) for <440Hz
+const QString kTuningSymbolHigh = QStringLiteral("\u2191");  // ↑ (arrow up) for >440Hz
 constexpr int kTuningSymbolWidth = 14;
 constexpr double kStandardTuningHz = 440.0;
 constexpr double k432Hz = 432.0;
