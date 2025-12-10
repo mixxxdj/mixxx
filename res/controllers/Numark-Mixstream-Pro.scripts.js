@@ -353,7 +353,7 @@ MixstreamPro.padModeConfigs = {
         requiresTrack: true,
         onActivate: function(group, deckState) {
             engine.setValue("[Skin]", "show_stem_controls", 1);
-            stemCount = engine.getValue(group, "stem_count");
+            const stemCount = engine.getValue(group, "stem_count");
             for (let i = 1; i <= stemCount; i++) {
                 ledOn(deckState.midiStatus, padIndexToCC(i));
             }
