@@ -109,7 +109,7 @@ class WaveformMarkSet {
         m_marks.push_back(pMark);
     }
 
-    void setDefault(const QString& group,
+    QString setDefault(const QString& group,
             const DefaultMarkerStyle& model,
             const WaveformSignalColors& signalColors = {});
 
