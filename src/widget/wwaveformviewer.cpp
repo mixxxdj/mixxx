@@ -81,6 +81,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
+    qWarning() << "---- WWaveformViewer::mouse PRESS" << event;
+
     m_mouseAnchor = event->pos();
 
     if (event->button() == Qt::LeftButton) {
@@ -132,6 +134,8 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         return;
     }
 
+    qWarning() << "---- WWaveformViewer::mouse MOVE" << event;
+
     // Only send signals for mouse moving if the left button is pressed
     if (m_bScratching) {
         int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
@@ -177,7 +181,9 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
-void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
+void WWaveformViewer::mouseReleaseEvent(QMouseEvent* event) {
+    qWarning() << "---- WWaveformViewer::mouse RELEASE" << event;
+
     if (m_bScratching) {
         m_pScratchPositionEnable->set(0.0);
         m_bScratching = false;
