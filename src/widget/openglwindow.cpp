@@ -135,9 +135,26 @@ bool OpenGLWindow::event(QEvent* pEv) {
         // container widget that contains this QOpenGLWindow. With this mouse
         // events, keyboard events, etc all arrive as intended, including the
         // events for the WWaveformViewer that contains the waveform widget.
-        QMouseEvent* pME = static_cast<QMouseEvent*>(pEv);
-        if (pME) {
+        if (t == QEvent::MouseButtonPress ||
+                t == QEvent::MouseButtonRelease ||
+                t == QEvent::MouseButtonDblClick ||
+                t == QEvent::MouseMove) {
+            QMouseEvent* pME = static_cast<QMouseEvent*>(pEv);
             qWarning() << "-- OpenGLWindow" << pEv;
+            qWarning() << "-- OpenGLWindow" << pME;
+            // Map to parent's coordinate system
+            QPointF globalPos = pME->globalPosition();
+            QPointF parentLocalPos = m_pWidget->mapFromGlobal(globalPos.toPoint());
+
+            // Create FRESH event with parent's coordinates
+            QMouseEvent pNewME(pME->type(),
+                    parentLocalPos,
+                    globalPos,
+                    pME->button(),
+                    pME->buttons(),
+                    pME->modifiers());
+            QApplication::sendEvent(m_pWidget, &pNewME);
+            return result;
         }
         QApplication::sendEvent(m_pWidget, pEv);
     }
