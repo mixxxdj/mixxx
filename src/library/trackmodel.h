@@ -18,6 +18,8 @@ class TrackModel {
     static constexpr int kHeaderNameRole = Qt::UserRole + 1;
     // This role is used for data export like in CSV files
     static constexpr int kDataExportRole = Qt::UserRole + 2;
+    // This role provides the detected tuning frequency in Hz (default 440.0)
+    static constexpr int kTuningFrequencyRole = Qt::UserRole + 3;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)
@@ -94,6 +96,7 @@ class TrackModel {
         Color = 30,
         LastPlayedAt = 31,
         PlaylistDateTimeAdded = 32,
+        TuningFrequency = 33,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
