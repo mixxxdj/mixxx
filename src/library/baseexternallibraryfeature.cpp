@@ -158,7 +158,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxCrate() {
     }
 }
 
-// This is a common function for all external Librarys copied to Mixxx DB
+// This is a common function for all external libraries copied to Mixxx DB
 void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         QList<TrackId>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
