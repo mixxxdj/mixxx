@@ -18,17 +18,20 @@ constexpr bool kEnableDebugOutput = false;
 static const double kLockCurrentKey = 1;
 static const double kKeepUnlockedKey = 1;
 
-static constexpr int kStandardTuningHertz440 = 440;
-static constexpr int kTarget432Hz = 432;
+// Pitch adjustment in semitones to convert from 440Hz to 432Hz tuning
+// Calculated as: log2(432/440) * 12 ≈ -0.31767 semitones
+static constexpr double kStandardTuningHz = 440.0;
+static constexpr double kTarget432Hz = 432.0;
 
-double calculate432HzAdjustment(int detectedFrequencyHz) {
-    if (detectedFrequencyHz <= 0) {
+double calculate432HzAdjustment(double detectedFrequencyHz) {
+    if (detectedFrequencyHz <= 0.0) {
         return 0.0;
     }
-    if (detectedFrequencyHz == kTarget432Hz) {
+    // Allow small tolerance for 432Hz detection (within 0.5 Hz)
+    if (std::abs(detectedFrequencyHz - kTarget432Hz) < 0.5) {
         return 0.0;
     }
-    return std::log2(static_cast<double>(kTarget432Hz) / detectedFrequencyHz) * 12.0;
+    return std::log2(kTarget432Hz / detectedFrequencyHz) * 12.0;
 }
 
 KeyControl::KeyControl(const QString& group,
@@ -161,7 +164,7 @@ KeyControl::KeyControl(const QString& group,
             this,
             &KeyControl::slot432HzPitchLockChanged,
             Qt::DirectConnection);
-    // file_is_432hz and file_tuning_frequency are created later by BaseTrackPlayer.
+    // file_tuning_frequency is created later by BaseTrackPlayer.
     ensureFileTuningControls();
 
     // m_pitchRateInfo members are initialized with default values, only keylock
@@ -528,27 +531,12 @@ void KeyControl::slot432HzPitchLockChanged(double value) {
     apply432HzPitchAdjustment();
 }
 
-void KeyControl::slotFileIs432HzChanged(double value) {
-    Q_UNUSED(value);
-    apply432HzPitchAdjustment();
-}
-
 void KeyControl::slotFileTuningFrequencyChanged(double value) {
     Q_UNUSED(value);
     apply432HzPitchAdjustment();
 }
 
 void KeyControl::ensureFileTuningControls() {
-    if (!m_pFileIs432Hz &&
-            ControlObject::exists(ConfigKey(getGroup(), "file_is_432hz"))) {
-        m_pFileIs432Hz = make_parented<ControlProxy>(
-                ConfigKey(getGroup(), "file_is_432hz"), this);
-        m_pFileIs432Hz->connectValueChanged(
-                this,
-                &KeyControl::slotFileIs432HzChanged,
-                Qt::DirectConnection);
-    }
-
     if (!m_pFileTuningFrequencyHz &&
             ControlObject::exists(ConfigKey(getGroup(), "file_tuning_frequency"))) {
         m_pFileTuningFrequencyHz = make_parented<ControlProxy>(
@@ -560,19 +548,11 @@ void KeyControl::ensureFileTuningControls() {
     }
 }
 
-bool KeyControl::fileMarkedAs432Hz() const {
-    if (m_pFileIs432Hz) {
-        return m_pFileIs432Hz->toBool();
-    }
-    return ControlObject::toBool(ConfigKey(getGroup(), "file_is_432hz"));
-}
-
-int KeyControl::detectedTuningFrequencyHz() const {
+double KeyControl::detectedTuningFrequencyHz() const {
     if (m_pFileTuningFrequencyHz) {
-        return static_cast<int>(std::round(m_pFileTuningFrequencyHz->get()));
+        return m_pFileTuningFrequencyHz->get();
     }
-    return static_cast<int>(std::round(
-            ControlObject::get(ConfigKey(getGroup(), "file_tuning_frequency"))));
+    return ControlObject::get(ConfigKey(getGroup(), "file_tuning_frequency"));
 }
 
 void KeyControl::apply432HzPitchAdjustment() {
@@ -582,9 +562,9 @@ void KeyControl::apply432HzPitchAdjustment() {
     // - 432Hz pitch lock is enabled
     // - The track is tuned to a reference different from 432Hz
     const bool is432HzPitchLockEnabled = m_p432HzPitchLock && m_p432HzPitchLock->toBool();
-    int detectedHz = detectedTuningFrequencyHz();
-    if (detectedHz <= 0) {
-        detectedHz = kStandardTuningHertz440;
+    double detectedHz = detectedTuningFrequencyHz();
+    if (detectedHz <= 0.0) {
+        detectedHz = kStandardTuningHz;
     }
 
     // Avoid fighting with pitch auto-reset right after load: if track_loaded just toggled,
@@ -606,8 +586,8 @@ void KeyControl::apply432HzPitchAdjustment() {
         return;
     }
 
-    // No adjustment needed if track already tuned to 432Hz
-    if (fileMarkedAs432Hz() || detectedHz == kTarget432Hz) {
+    // No adjustment needed if track already tuned to 432Hz (with 0.5 Hz tolerance)
+    if (std::abs(detectedHz - kTarget432Hz) < 0.5) {
         if (m_bTuningAdjustmentApplied) {
             m_pPitchAdjust->set(0);
             slotPitchAdjustChanged(0);

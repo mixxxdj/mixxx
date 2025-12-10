@@ -84,20 +84,16 @@ class AnalyzerKeyPlugin : public AnalyzerPlugin {
 
     virtual KeyChangeList getKeyChanges() const = 0;
 
-    // Returns true if the track was detected to be tuned to 432Hz
-    virtual bool is432Hz() const {
-        return false;
-    }
-
     // Enable 432Hz detection mode (analyze at both 440Hz and 432Hz)
     virtual void setDetect432Hz(bool enabled) {
         Q_UNUSED(enabled);
     }
 
-    // Returns the detected tuning frequency in Hz (default 440Hz)
+    // Returns the detected tuning frequency in Hz (default 440.0 Hz)
     // This is the reference frequency A4 that best matches the track's tuning
-    virtual int getTuningFrequencyHz() const {
-        return 440;
+    // Stored as double to preserve cents precision
+    virtual double getTuningFrequencyHz() const {
+        return 440.0;
     }
 
     // Configure the tuning frequency detection range

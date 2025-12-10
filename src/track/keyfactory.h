@@ -41,6 +41,5 @@ class KeyFactory {
             const QHash<QString, QString>& extraVersionInfo,
             mixxx::audio::SampleRate sampleRate,
             SINT totalFrames,
-            bool is432Hz = false,
-            int tuningFrequencyHz = 440);
+            double tuningFrequencyHz = 440.0);
 };

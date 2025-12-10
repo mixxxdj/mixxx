@@ -68,7 +68,53 @@ bool ensureTuningFrequencyColumn(const QSqlDatabase& database) {
             database,
             QStringLiteral("library"),
             QStringLiteral("tuning_frequency_hz"),
-            QStringLiteral("ALTER TABLE library ADD COLUMN tuning_frequency_hz INTEGER DEFAULT 440"));
+            QStringLiteral("ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 440.0"));
+}
+
+bool ensureLibraryNotEmpty(const QSqlDatabase& database) {
+    QSqlQuery countLibrary(database);
+    if (!countLibrary.exec(QStringLiteral("SELECT COUNT(*) FROM library"))) {
+        kLogger.warning() << "Failed to count library rows" << countLibrary.lastError().text();
+        return false;
+    }
+    int libraryRows = 0;
+    if (countLibrary.next()) {
+        libraryRows = countLibrary.value(0).toInt();
+    }
+
+    QSqlQuery countTrackLocations(database);
+    if (!countTrackLocations.exec(QStringLiteral("SELECT COUNT(*) FROM track_locations"))) {
+        kLogger.warning() << "Failed to count track_locations rows"
+                          << countTrackLocations.lastError().text();
+        return false;
+    }
+    int trackLocationRows = 0;
+    if (countTrackLocations.next()) {
+        trackLocationRows = countTrackLocations.value(0).toInt();
+    }
+
+    // If the library table is empty but track_locations has rows, force a full rescan by
+    // removing directory hashes and clearing track_locations. This recovers from
+    // partially migrated databases that lost library rows but kept track locations,
+    // which prevents re-import because the scanner thinks tracks already exist.
+    if (libraryRows == 0 && trackLocationRows > 0) {
+        kLogger.warning() << "Library table is empty but" << trackLocationRows
+                          << "track locations exist; forcing full rescan";
+        QSqlQuery deleteHashes(database);
+        if (!deleteHashes.exec(QStringLiteral("DELETE FROM LibraryHashes"))) {
+            kLogger.warning() << "Failed to clear LibraryHashes for recovery"
+                              << deleteHashes.lastError().text();
+            return false;
+        }
+        QSqlQuery deleteTrackLocations(database);
+        if (!deleteTrackLocations.exec(QStringLiteral("DELETE FROM track_locations"))) {
+            kLogger.warning() << "Failed to clear track_locations for recovery"
+                              << deleteTrackLocations.lastError().text();
+            return false;
+        }
+        kLogger.info() << "Cleared LibraryHashes and track_locations to allow full rescan";
+    }
+    return true;
 }
 
 // The connection parameters for the main Mixxx DB
@@ -127,11 +173,12 @@ bool MixxxDb::initDatabaseSchema(
     case SchemaManager::Result::UpgradeSucceeded:
     case SchemaManager::Result::NewerVersionBackwardsCompatible:
         // Ensure tuning_frequency_hz exists even if a previous upgrade was skipped.
-        if (!ensureTuningFrequencyColumn(database)) {
+        if (!ensureTuningFrequencyColumn(database) ||
+                !ensureLibraryNotEmpty(database)) {
             QMessageBox::warning(nullptr,
                     upgradeFailed,
                     upgradeToVersionFailed + "\n" +
-                            tr("Could not ensure tuning_frequency_hz column exists.") +
+                            tr("Could not ensure database schema consistency.") +
                             "\n" + helpContact + "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false;
