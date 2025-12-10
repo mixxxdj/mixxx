@@ -757,8 +757,12 @@ std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen> ControllerScriptEngineLega
     }
 
     QDir dir(m_resourcePath + "/qml/");
+    if (!scene.open(QIODevice::ReadOnly)) {
+        qCWarning(m_logger) << "Unable to open QML scene file:"
+                            << qmlScript.file.absoluteFilePath();
+        return nullptr;
+    }
 
-    scene.open(QIODevice::ReadOnly);
     qmlComponent.setData(scene.readAll(),
             // Obfuscate the scene filename to make it appear in the QML folder.
             // This allows a smooth integration with QML components.
