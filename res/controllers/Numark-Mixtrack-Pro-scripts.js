@@ -541,13 +541,13 @@ NumarkMixTrackPro.playbutton = function(
         // Brake and Soft Start if scratch led is on
         // Mixxx v.2.6+ required
         if (engine.getParameter(group, "play") && !engine.isBrakeActive(deck)) {
-            if (NumarkMixTrackPro.scratchMode[deck - 1]) {
+            if (NumarkMixTrackPro.scratchMode[deck - 1] && !engine.isScratching(deck)) {
                 engine.brake(deck, true);
             } else {
                 engine.setParameter(group, "play", 0);
             }
         } else {
-            if (NumarkMixTrackPro.scratchMode[deck - 1]) {
+            if (NumarkMixTrackPro.scratchMode[deck - 1] && !engine.isScratching(deck)) {
                 engine.softStart(deck, true);
             } else {
                 engine.setParameter(group, "play", 1);
@@ -857,9 +857,9 @@ NumarkMixTrackPro.jogWheelStopScratch = function(deck) {
         !engine.isScratching(deck)
     ) {
         engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck - 1]);
-    NumarkMixTrackPro.scratchTimer[deck - 1] = -1;
+        NumarkMixTrackPro.scratchTimer[deck - 1] = -1;
         NumarkMixTrackPro.scratchLast[deck - 1] = -1;
-    engine.scratchDisable(deck);
+        engine.scratchDisable(deck);
     }
 };
 

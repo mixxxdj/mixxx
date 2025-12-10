@@ -58,6 +58,9 @@
                 type="integer"
                 label="Scratch Sensibility (default 600)"
                 default="600"
+                min="300"
+                max="1200"
+                step="100"
                 >
             </option>
         </group>
