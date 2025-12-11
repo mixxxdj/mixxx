@@ -1,6 +1,9 @@
 #pragma once
 
+#ifdef BUILD_TESTING
 #include <gtest/gtest_prod.h>
+#endif
+
 
 #include <QObject>
 #include <gsl/pointers>
