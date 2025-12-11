@@ -58,9 +58,11 @@ void LibraryTableModel::setTableModel() {
 int LibraryTableModel::addTracks(const QModelIndex& index,
         const QList<QString>& locations) {
     Q_UNUSED(index);
-    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
+    const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
             locations);
-    select();
+    if (trackIds.size() > 0) {
+        select();
+    }
     return trackIds.size();
 }
 
