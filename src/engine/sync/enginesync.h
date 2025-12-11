@@ -4,7 +4,6 @@
 #include <gtest/gtest_prod.h>
 #endif
 
-
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 

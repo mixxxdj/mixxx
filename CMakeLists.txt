@@ -2704,14 +2704,13 @@ if(BUILD_TESTING)
 endif()
 
 if(BUILD_BENCH)
-    find_package(benchmark)
-    if(BUILD_TESTING AND benchmark_FOUND)
-        message(STATUS "Found google-benchmark: mixxx-benchmark enabled")
-    elseif(BUILD_BENCH AND NOT BUILD_TESTING)
-        message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
-    endif()
+  find_package(benchmark)
+  if(BUILD_TESTING AND benchmark_FOUND)
+    message(STATUS "Found google-benchmark: mixxx-benchmark enabled")
+  elseif(BUILD_BENCH AND NOT BUILD_TESTING)
+    message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
+  endif()
 endif()
-
 
 # FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/

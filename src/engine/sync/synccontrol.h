@@ -4,7 +4,6 @@
 #include <gtest/gtest_prod.h>
 #endif
 
-
 #include <QScopedPointer>
 
 #include "engine/controls/enginecontrol.h"
