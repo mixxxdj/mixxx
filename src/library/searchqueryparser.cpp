@@ -81,6 +81,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
                   << "gr" << "grouping"
                   << "cm" << "comment"
                   << "lo" << "location"
+                  << "dir" << "directory"
                   << "c" << "crate"
                   << "type";
     m_numericFilters << "tr" << "track"
@@ -134,6 +135,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["loc"] << "location";
     m_fieldToSqlColumns["location"] << "location";
+    m_fieldToSqlColumns["dir"] << "directory";
+    m_fieldToSqlColumns["directory"] << "directory";
     m_fieldToSqlColumns["type"] << "filetype";
     m_fieldToSqlColumns["ad"] << "datetime_added";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";
