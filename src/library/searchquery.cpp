@@ -56,6 +56,8 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
         return pTrack->getTrackNumber();
     } else if (column == TRACKLOCATIONSTABLE_LOCATION) {
         return QDir::toNativeSeparators(pTrack->getLocation());
+    } else if (column == TRACKLOCATIONSTABLE_DIRECTORY) {
+        return QDir::toNativeSeparators(pTrack->getDirectory());
     } else if (column == LIBRARYTABLE_COMMENT) {
         return pTrack->getComment();
     } else if (column == LIBRARYTABLE_DURATION) {

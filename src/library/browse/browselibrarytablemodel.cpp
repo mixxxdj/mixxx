@@ -1,24 +1,24 @@
-#include "library/librarytablemodel.h"
+#include "library/browse/browselibrarytablemodel.h"
 
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
-#include "moc_librarytablemodel.cpp"
+#include "moc_browselibrarytablemodel.cpp"
+#include "recording/recordingmanager.h"
 
-LibraryTableModel::LibraryTableModel(QObject* parent,
-        TrackCollectionManager* pTrackCollectionManager,
-        const char* settingsNamespace)
-        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace) {
+BrowseLibraryTableModel::BrowseLibraryTableModel(
+        QObject* pParent,
+        TrackCollectionManager* pTrackCollectionManager)
+        : BaseSqlTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.browseLibrary") {
     setTableModel();
 }
 
-LibraryTableModel::~LibraryTableModel() {
-}
-
-void LibraryTableModel::setTableModel() {
-    const QString tableName("library_view");
+void BrowseLibraryTableModel::setTableModel(int id) {
+    // copied from LibraryTableModel
+    Q_UNUSED(id);
+    const QString tableName("browse_library_view");
 
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
@@ -34,7 +34,7 @@ void LibraryTableModel::setTableModel() {
             " FROM library "
             "INNER JOIN track_locations "
             "ON library.location=track_locations.id "
-            "WHERE (mixxx_deleted=0 AND fs_deleted=0)");
+            "WHERE fs_deleted=0");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -55,16 +55,23 @@ void LibraryTableModel::setTableModel() {
     setHeaderData(fi, Qt::Horizontal, tr("Sort items randomly"), Qt::ToolTipRole);
 }
 
-int LibraryTableModel::addTracks(const QModelIndex& index,
-        const QList<QString>& locations) {
-    Q_UNUSED(index);
-    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
-            locations);
-    select();
-    return trackIds.size();
+void BrowseLibraryTableModel::setPath(QString path) {
+    while (path.endsWith('/')) {
+        path.chop(1);
+    }
+    // Note: depending on operator we get strict or recursive search:
+    // dir:=path -> strict
+    // dir:path  -> recursive
+    // Note(ronso0) For now I'm using recursive mode since that is what almost
+    // all my b2b DJs expected (coming from Serato or VDJ).
+    // FIXME Default to strict mode and add strict/recursive toggle?
+    const QString newDirFilter = QStringLiteral("dir:\"%1\"").arg(path);
+    qWarning().noquote() << "--> new dirFilter:" << newDirFilter;
+    setExtraFilter(QStringLiteral("dir:\"%1\"").arg(path));
 }
 
-bool LibraryTableModel::isColumnInternal(int column) {
+bool BrowseLibraryTableModel::isColumnInternal(int column) {
+    // copied from LibraryTableModel
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_URL) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CUEPOINT) ||
@@ -74,7 +81,6 @@ bool LibraryTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BEATS_VERSION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_DIRECTORY) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
@@ -88,7 +94,8 @@ bool LibraryTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
 }
 
-TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
+TrackModel::Capabilities BrowseLibraryTableModel::getCapabilities() const {
+    // copied from LibraryTableModel
     return Capability::ReceiveDrops |
             Capability::AddToTrackSet |
             Capability::AddToAutoDJ |
@@ -102,9 +109,4 @@ TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
             Capability::Analyze |
             Capability::Properties |
             Capability::Sorting;
-}
-
-void LibraryTableModel::select() {
-    BaseSqlTableModel::select();
-    emit updateTrackCount();
 }
