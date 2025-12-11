@@ -443,6 +443,12 @@ void MixxxMainWindow::initialize() {
             &MixxxMainWindow::slotUpdateWindowTitle);
 
     // Start Auto DJ if the cmdline arg is passed.
+    if (CmdlineArgs::Instance().getStartAutoRecord()) { qDebug("Enabling Auto Recording from 
+        CLI flag."); ControlObject::set(ConfigKey("[Recording]"), 
+        "toggle_recording"), 1.0);
+    }
+}
+
     if (CmdlineArgs::Instance().getStartAutoDJ()) {
         qDebug("Enabling Auto DJ from CLI flag.");
         ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
