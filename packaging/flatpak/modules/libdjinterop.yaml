@@ -4,8 +4,8 @@ config-opts:
   - -DCMAKE_BUILD_TYPE=RelWithDebInfo
 sources:
   - type: archive
-    url: https://github.com/xsco/libdjinterop/archive/refs/tags/0.26.1.tar.gz
-    sha256: f4fbe728783c14acdc999b74ce3f03d680f9187e1ff676d6bf1233fdb64ae7b2
+    url: https://github.com/xsco/libdjinterop/archive/refs/tags/0.24.3.tar.gz
+    sha256: df41fe39bed9d16d27a3649d237b68edd2cdb6fc71a82cae5cd746d4e4ef6578
     x-checker-data:
       type: anitya
       project-id: 374896
