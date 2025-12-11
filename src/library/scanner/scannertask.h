@@ -25,10 +25,6 @@ class ScannerTask : public QObject, public QRunnable {
     void trackExists(const QString& filePath);
     void addNewTrack(const QString& filePath);
 
-    // Feedback to GUI
-    void progressLoading(const QString& fileName);
-    void progressHashing(const QString& directoryPath);
-
   protected:
     void setSuccess(bool success) {
         m_success = success;
