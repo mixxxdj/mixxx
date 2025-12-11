@@ -40,7 +40,7 @@ Column {
                     case MicrophoneDuckingPanel.DuckingMode.Auto:
                         return "Auto";
                     case MicrophoneDuckingPanel.DuckingMode.Manual:
-                        return "Manual";
+                            return "Manual";
                     default:
                         return "Off";
                 }

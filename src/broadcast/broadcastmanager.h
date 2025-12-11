@@ -11,6 +11,10 @@ class ControlPushButton;
 class EngineNetworkStream;
 class SettingsManager;
 
+class ControlObject;
+class ControlProxy;
+
+
 class BroadcastManager : public QObject {
     Q_OBJECT
   public:
@@ -55,4 +59,10 @@ class BroadcastManager : public QObject {
 
     ControlPushButton* m_pBroadcastEnabled;
     ControlObject* m_pStatusCO;
+    
+    // NEW: recording control objects
+    ControlProxy* m_pRecordingStatus;
+    ControlProxy* m_pRecordingToggle;
+    bool m_autoStartedRecording = false;
+    
 };
