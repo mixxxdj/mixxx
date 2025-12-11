@@ -192,7 +192,7 @@ ColumnLayout {
     }
 
     Skin.SyncButton {
-        id: rangeButton
+        id: syncButton
         Layout.fillWidth: true
         height: 22
         Layout.alignment: Qt.AlignHCenter
@@ -200,7 +200,7 @@ ColumnLayout {
     }
 
     Skin.RangeButton {
-        id: syncButton
+        id: rangeButton
         Layout.fillWidth: true
         height: 22
         Layout.alignment: Qt.AlignHCenter

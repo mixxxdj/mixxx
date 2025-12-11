@@ -200,25 +200,25 @@ Rectangle {
             color: root.buttonColor
 
             function update() {
-                this.text = Qt.bindind(function() { return beatjumpSize.value < 1 ? `1/${1/beatjumpSize.value}` : beatjumpSize.value; })
+                this.text = Qt.binding(function() { return beatjumpSize.value < 1 ? `1/${1/beatjumpSize.value}` : beatjumpSize.value; })
             }
 
             onAccepted: {
                 this.focus = false
-                let [num, denum] = this.text.split("/")
-                if (denum !== undefined) {
-                    denum = parseInt(denum)
-                    if (Number.isNaN(denum)) {
+                let [numerator, denominator] = this.text.split("/")
+                if (denominator !== undefined) {
+                    denominator = parseInt(denominator)
+                    if (Number.isNaN(denominator)) {
                         return update()
                     }
                 } else {
-                    denum = 1
+                    denominator = 1
                 }
-                num = parseInt(num)
-                if (Number.isNaN(num)) {
+                numerator = parseInt(numerator)
+                if (Number.isNaN(numerator)) {
                     return update()
                 }
-                beatjumpSize.value = num / denum
+                beatjumpSize.value = numerator / denominator
             }
         }
     }

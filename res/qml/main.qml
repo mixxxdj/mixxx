@@ -240,7 +240,7 @@ ApplicationWindow {
                     anchors {
                         top: parent.top
                         left: parent.left
-                        bottom:parent.bottom
+                        bottom: parent.bottom
                     }
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
@@ -261,7 +261,7 @@ ApplicationWindow {
                     anchors {
                         top: parent.top
                         right: parent.right
-                        bottom:parent.bottom
+                        bottom: parent.bottom
                     }
                     gradient: Gradient {
                         orientation: Gradient.Horizontal

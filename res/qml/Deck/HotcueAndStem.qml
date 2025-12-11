@@ -20,6 +20,13 @@ Item {
         key: "stem_count"
     }
 
+    Mixxx.ControlProxy {
+        id: trackLoadedControl
+
+        group: root.group
+        key: "track_loaded"
+    }
+
     Rectangle {
         anchors {
             left: parent.left

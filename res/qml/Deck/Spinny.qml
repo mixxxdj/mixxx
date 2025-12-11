@@ -10,6 +10,13 @@ Item {
 
     required property string group
 
+    Mixxx.ControlProxy {
+        id: trackLoadedControl
+
+        group: root.group
+        key: "track_loaded"
+    }
+
     Rectangle {
         id: spinner
         radius: width / 2

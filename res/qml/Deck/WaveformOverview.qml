@@ -13,7 +13,7 @@ Rectangle {
     height: 50
 
     Skin.WaveformOverview {
-        group: root.group
+        group: overview.group
         anchors.fill: parent
     }
 
