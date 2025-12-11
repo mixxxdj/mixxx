@@ -584,4 +584,36 @@ reapplying those migrations.
       UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
+  <revision version="40" min_compatible="3">
+ <sql>
+      CREATE TABLE IF NOT EXISTS genres (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL COLLATE NOCASE,
+      name_level_1 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_2 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_3 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_4 TEXT DEFAULT NULL COLLATE NOCASE,
+      name_level_5 TEXT DEFAULT NULL COLLATE NOCASE,
+      display_group TEXT DEFAULT NULL,
+      display_order INTEGER DEFAULT 0,
+      is_visible INTEGER DEFAULT 1,
+      is_model_defined INTEGER DEFAULT 0,
+      count integer DEFAULT 0,
+      show integer DEFAULT 1,
+      locked integer DEFAULT 0,
+      autodj_source integer DEFAULT 0
+      );
+
+      CREATE TABLE IF NOT EXISTS genre_tracks (
+      track_id INTEGER NOT NULL,
+      genre_id INTEGER NOT NULL,
+      PRIMARY KEY (track_id, genre_id),
+      FOREIGN KEY (track_id) REFERENCES library(id) ON DELETE CASCADE,
+      FOREIGN KEY (genre_id) REFERENCES genres(id) ON DELETE CASCADE
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_genre_tracks_genre_id ON genre_tracks(genre_id);
+</sql>
+</revision>
+
 </schema>
