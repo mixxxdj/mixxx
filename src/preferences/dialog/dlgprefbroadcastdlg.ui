@@ -128,6 +128,17 @@
         </property>
        </widget>
       </item>
+      <!-- NEW Checkbox for Auto Recording -->
+      <item>
+        <widget class="QCheckBox" name="autoRecordOnLive">
+          <property name="text">
+              <string>Automatically start recording when going live</string>
+          </property>
+          <property name="checked">
+              <bool>false</bool>
+          </property>
+        </widget>
+      </item>
      </layout>
     </widget>
    </item>
