@@ -63,6 +63,8 @@ modules:
     config-opts:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DINSTALL_USER_UDEV_RULES=OFF
+      - -DBUILD_BENCH=OFF
+      - -DBUILD_TESTING=OFF
     sources:
       - type: dir
         path: ../../
