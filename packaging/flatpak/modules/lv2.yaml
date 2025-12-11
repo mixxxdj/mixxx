@@ -20,4 +20,3 @@ cleanup:
   - /lib/lv2
 post-install:
   - install -Dm644 -t $FLATPAK_DEST/share/licenses/lv2 ../COPYING
-  - ln -sf lv2.pc $FLATPAK_DEST/lib/pkgconfig/lv2core.pc
