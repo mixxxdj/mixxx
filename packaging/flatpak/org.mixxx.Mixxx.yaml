@@ -1,0 +1,82 @@
+app-id: org.mixxx.Mixxx
+runtime: org.kde.Platform
+runtime-version: "6.10"
+sdk: org.kde.Sdk
+command: mixxx
+rename-icon: mixxx
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=all
+  - --share=network
+  - --share=ipc
+  - --filesystem=xdg-run/pipewire-0
+  - --filesystem=xdg-music
+  - --filesystem=/media
+  - --filesystem=/run/media
+  - --system-talk-name=org.freedesktop.UPower
+  - --system-talk-name=org.freedesktop.RealtimeKit1
+  - --talk-name=org.freedesktop.ScreenSaver
+  - --env=ALSA_CONFIG_PATH=
+  - --metadata=X-DConf=migrate-path=/org/mixxx/Mixxx
+  - --persist=.mixxx
+add-extensions:
+  org.freedesktop.LinuxAudio.Plugins:
+    directory: extensions/Plugins
+    version: "25.08"
+    add-ld-path: lib
+    merge-dirs: lv2
+    subdirectories: true
+    no-autodownload: true
+cleanup:
+  - "*.a"
+  - "*.la"
+modules:
+  - modules/libmad.yaml
+  - modules/lv2.yaml
+  - modules/serd.yaml
+  - modules/zix.yaml
+  - modules/sord.yaml
+  - modules/sratom.yaml
+  - modules/lilv.yaml
+  - modules/googletest.yaml
+  - modules/benchmark.yaml
+  - modules/gsl.yaml
+  - modules/protobuf.yaml
+  - modules/portaudio.yaml
+  - modules/portmidi.yaml
+  - modules/hidapi.yaml
+  - modules/chromaprint.yaml
+  - modules/rubberband.yaml
+  - modules/soundtouch.yaml
+  - modules/libid3tag.yaml
+  - modules/upower.yaml
+  - modules/fdk-aac-free.yaml
+  - modules/libmodplug.yaml
+  - modules/qtkeychain.yaml
+  - modules/libebur128.yaml
+  - modules/libkeyfinder.yaml
+  - modules/libdjinterop.yaml
+  - name: mixxx
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+      - -DINSTALL_USER_UDEV_RULES=OFF
+    sources:
+      - type: dir
+        path: ../../
+      - commands:
+          - export LV2_PATH=$HOME/.lv2:/app/extensions/Plugins/lv2:/app/lib/lv2
+          - exec mixxx.bin "$@"
+        type: script
+        dest-filename: mixxx.sh
+    cleanup:
+      - /share/icons/hicolor/scalable/apps/mixxx_ios.svg
+      - /share/icons/hicolor/scalable/apps/mixxx_macos.svg
+    post-install:
+      - desktop-file-edit --set-key="Exec" --set-value="mixxx %U" ${FLATPAK_DEST}/share/applications/org.mixxx.Mixxx.desktop
+      - mv ${FLATPAK_DEST}/bin/mixxx ${FLATPAK_DEST}/bin/mixxx.bin
+      - install -Dm755 mixxx.sh ${FLATPAK_DEST}/bin/mixxx
+      - install -Dm644 ./res/linux/org.mixxx.Mixxx.metainfo.xml /app/share/metainfo/org.mixxx.Mixxx.metainfo.xml
+      - install -d /app/extensions/Plugins

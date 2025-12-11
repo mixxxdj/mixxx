@@ -1,0 +1,23 @@
+name: lv2
+buildsystem: meson
+config-opts:
+  - -Dbuildtype=debugoptimized
+  - -Ddocs=disabled
+  - -Dtests=disabled
+sources:
+  - type: archive
+    url: https://gitlab.com/lv2/lv2/-/archive/v1.18.10/lv2-v1.18.10.tar.gz
+    sha256: edc39ae4170d21574d7fe4da2d83d9f1cdf97316b87b4dfeda390a1864c4a8d6
+    x-checker-data:
+      type: anitya
+      project-id: 230934
+      stable-only: true
+      url-template: https://gitlab.com/lv2/lv2/-/archive/v$version/lv2-v$version.tar.gz
+cleanup:
+  - /bin
+  - /include
+  - /lib/pkgconfig
+  - /lib/lv2
+post-install:
+  - install -Dm644 -t $FLATPAK_DEST/share/licenses/lv2 ../COPYING
+  - ln -sf lv2.pc $FLATPAK_DEST/lib/pkgconfig/lv2core.pc

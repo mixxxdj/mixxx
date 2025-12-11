@@ -1,0 +1,22 @@
+name: sord
+buildsystem: meson
+config-opts:
+  - -Dbuildtype=debugoptimized
+  - -Ddocs=disabled
+  - -Dman=disabled
+  - -Dtests=disabled
+  - -Dtools=disabled
+sources:
+  - type: archive
+    url: https://gitlab.com/drobilla/sord/-/archive/v0.16.20/sord-v0.16.20.tar.gz
+    sha256: 00f5b551ce93e5c0696b96b8d284af13190a15d7d04fb6fa2e9c4964f626e675
+    x-checker-data:
+      type: anitya
+      project-id: 230536
+      stable-only: true
+      url-template: https://gitlab.com/drobilla/sord/-/archive/v$version/sord-v$version.tar.gz
+cleanup:
+  - /include
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t $FLATPAK_DEST/share/licenses/sord ../COPYING

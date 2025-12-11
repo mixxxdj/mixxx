@@ -1,0 +1,19 @@
+name: libdjinterop
+buildsystem: cmake-ninja
+config-opts:
+  - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+sources:
+  - type: archive
+    url: https://github.com/xsco/libdjinterop/archive/refs/tags/0.26.1.tar.gz
+    sha256: f4fbe728783c14acdc999b74ce3f03d680f9187e1ff676d6bf1233fdb64ae7b2
+    x-checker-data:
+      type: anitya
+      project-id: 374896
+      stable-only: true
+      url-template: https://github.com/xsco/libdjinterop/archive/refs/tags/$version.tar.gz
+cleanup:
+  - /include
+  - /lib/cmake
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/libdjinterop LICENSE
