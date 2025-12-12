@@ -12,14 +12,13 @@ Item {
     Skin.SectionBackground {
         anchors.fill: microphoneRow
     }
-
     Row {
         id: microphoneRow
 
-        anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: crossfader.left
+        anchors.top: parent.top
         layoutDirection: Qt.RightToLeft
         padding: 5
         spacing: 10
@@ -27,55 +26,49 @@ Item {
         Skin.MicrophoneUnit {
             unitNumber: 1
         }
-
         Skin.MicrophoneUnit {
             unitNumber: 2
         }
-
         Skin.MicrophoneUnit {
             unitNumber: 3
         }
-
         Skin.MicrophoneUnit {
             unitNumber: 4
         }
-
         Skin.MicrophoneDuckingPanel {
         }
     }
-
     Skin.SectionBackground {
         id: crossfader
 
         anchors.centerIn: parent
-        width: root.crossfaderWidth
         height: crossfaderSlider.height + 20
+        width: root.crossfaderWidth
 
         Skin.ControlFader {
             id: crossfaderSlider
 
             anchors.left: parent.left
-            anchors.right: parent.right
             anchors.leftMargin: 5
+            anchors.right: parent.right
             anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
-            orientation: Qt.Horizontal
-            group: "[Master]"
-            key: "crossfader"
             barColor: Theme.crossfaderBarColor
             barStart: 0.5
-            fg: Theme.imgCrossfaderHandle
             bg: Theme.imgCrossfaderBackground
+            fg: Theme.imgCrossfaderHandle
+            group: "[Master]"
+            key: "crossfader"
+            orientation: Qt.Horizontal
         }
     }
-
     Row {
         id: auxiliaryRow
 
-        anchors.left: crossfader.right
-        anchors.top: parent.top
         anchors.bottom: parent.bottom
+        anchors.left: crossfader.right
         anchors.right: parent.right
+        anchors.top: parent.top
         padding: 5
         spacing: 10
 
@@ -83,17 +76,14 @@ Item {
             layoutDirection: Qt.RightToLeft
             unitNumber: 1
         }
-
         Skin.AuxiliaryUnit {
             layoutDirection: Qt.RightToLeft
             unitNumber: 2
         }
-
         Skin.AuxiliaryUnit {
             layoutDirection: Qt.RightToLeft
             unitNumber: 3
         }
-
         Skin.AuxiliaryUnit {
             layoutDirection: Qt.RightToLeft
             unitNumber: 4

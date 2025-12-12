@@ -13,26 +13,23 @@ Column {
     spacing: 4
 
     Skin.EqKnob {
-        statusKey: "button_parameter3"
+        knob.color: Theme.eqHighColor
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter3"
-        knob.color: Theme.eqHighColor
+        statusKey: "button_parameter3"
     }
-
     Skin.EqKnob {
-        statusKey: "button_parameter2"
+        knob.color: Theme.eqMidColor
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter2"
-        knob.color: Theme.eqMidColor
+        statusKey: "button_parameter2"
     }
-
     Skin.EqKnob {
+        knob.color: Theme.eqLowColor
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter1"
         statusKey: "button_parameter1"
-        knob.color: Theme.eqLowColor
     }
-
     Skin.QuickFxKnob {
         group: "[QuickEffectRack1_" + root.group + "]"
         knob.arcStyle: ShapePath.DashLine
@@ -45,22 +42,22 @@ Column {
         group: "[QuickEffectRack1_" + root.group + "]"
         key: "loaded_chain_preset"
     }
-
     Skin.ComboBox {
         id: effectSelector
-        width: parent.width
-        spacing: 2
-        indicator.width: 0
-        popupWidth: 100
-        popupMaxItem: 8
-        clip: true
 
-        textRole: "display"
-        font.pixelSize: 10
-        model: Mixxx.EffectsManager.quickChainPresetModel
+        clip: true
         currentIndex: fxSelect.value == -1 ? 0 : fxSelect.value
-        onActivated: (index) => {
-            fxSelect.value = index
+        font.pixelSize: 10
+        indicator.width: 0
+        model: Mixxx.EffectsManager.quickChainPresetModel
+        popupMaxItem: 8
+        popupWidth: 100
+        spacing: 2
+        textRole: "display"
+        width: parent.width
+
+        onActivated: index => {
+            fxSelect.value = index;
         }
     }
 }

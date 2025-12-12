@@ -9,61 +9,53 @@ import "../Theme"
 Rectangle {
     id: root
 
-    required property string group
-
     property color buttonColor: trackLoadedControl.value > 0 ? Theme.buttonActiveColor : Theme.buttonDisableColor
+    required property string group
 
     color: Theme.deckLoopBackgroundColor
 
     Label {
-        anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "Loop"
+        anchors.top: parent.top
         color: Theme.deckLoopLabelColor
+        text: "Loop"
     }
-
     Mixxx.ControlProxy {
         id: trackLoadedControl
 
         group: root.group
         key: "track_loaded"
     }
-
     Mixxx.ControlProxy {
         id: loopEnabled
 
         group: root.group
         key: "loop_enabled"
     }
-
     Mixxx.ControlProxy {
         id: beatloopSize
 
         group: root.group
         key: "beatloop_size"
     }
-
     Mixxx.ControlProxy {
         id: beatloopActivate
 
         group: root.group
         key: "beatloop_activate"
     }
-
     Mixxx.ControlProxy {
         id: loopHalve
 
         group: root.group
         key: "loop_halve"
     }
-
     Mixxx.ControlProxy {
         id: loopDouble
 
         group: root.group
         key: "loop_double"
     }
-
     RowLayout {
         anchors {
             left: parent.left
@@ -73,48 +65,42 @@ Rectangle {
             top: parent.top
             topMargin: 22
         }
-
         Skin.ControlButton {
-            Layout.fillWidth: true
-            Layout.minimumWidth: 28
             id: loopInButton
 
-            implicitHeight: 26
-
-            group: root.group
-            normalColor: root.buttonColor
-            activeColor: root.buttonColor
-            key: "loop_in"
-            text: "In"
-        }
-
-        Skin.ControlButton {
             Layout.fillWidth: true
             Layout.minimumWidth: 28
+            activeColor: root.buttonColor
+            group: root.group
+            implicitHeight: 26
+            key: "loop_in"
+            normalColor: root.buttonColor
+            text: "In"
+        }
+        Skin.ControlButton {
             id: loopOutButton
 
-            implicitHeight: 26
-
-            group: root.group
-            normalColor: root.buttonColor
+            Layout.fillWidth: true
+            Layout.minimumWidth: 28
             activeColor: root.buttonColor
+            group: root.group
+            implicitHeight: 26
             key: "loop_out"
+            normalColor: root.buttonColor
             text: "Out"
         }
-
         Skin.ControlButton {
-            Layout.fillWidth: true
-            Layout.minimumWidth: 40
             id: loopRecallButton
 
-            implicitHeight: 26
-
-            group: root.group
-            normalColor: root.buttonColor
+            Layout.fillWidth: true
+            Layout.minimumWidth: 40
             activeColor: root.buttonColor
-            toggleable: loopEnabled.value
+            group: root.group
+            implicitHeight: 26
             key: loopEnabled.value ? "loop_enabled" : "reloop_toggle"
+            normalColor: root.buttonColor
             text: loopEnabled.value ? "exit" : "Recall"
+            toggleable: loopEnabled.value
         }
     }
     RowLayout {
@@ -129,74 +115,80 @@ Rectangle {
         Skin.Button {
             id: loopSizeHalfButton
 
-            implicitWidth: 22
+            activeColor: root.buttonColor
             implicitHeight: 28
+            implicitWidth: 22
 
             contentItem: Item {
                 anchors.fill: parent
+
                 Shape {
                     anchors.centerIn: parent
-                    width: 12
-                    height: 10
                     antialiasing: true
+                    height: 10
                     layer.enabled: true
                     layer.samples: 4
+                    width: 12
+
                     ShapePath {
                         fillColor: root.buttonColor
+                        startX: 0
+                        startY: 5
                         strokeColor: 'transparent'
-                        startX: 0; startY: 5
-                        PathLine { x: 12; y: 0 }
-                        PathLine { x: 12; y: 10 }
-                        PathLine { x: 0; y: 5 }
+
+                        PathLine {
+                            x: 12
+                            y: 0
+                        }
+                        PathLine {
+                            x: 12
+                            y: 10
+                        }
+                        PathLine {
+                            x: 0
+                            y: 5
+                        }
                     }
                 }
             }
-            activeColor: root.buttonColor
+
             MouseArea {
-                anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onPressed: (mouse) => {
+                anchors.fill: parent
+
+                onPressed: mouse => {
                     if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
-                        loopHalve.trigger()
+                        loopHalve.trigger();
                     }
-                    loopSizeRepeater.selectedIndex = Math.max(0, loopSizeRepeater.selectedIndex-1)
+                    loopSizeRepeater.selectedIndex = Math.max(0, loopSizeRepeater.selectedIndex - 1);
                 }
             }
         }
-
         Repeater {
             id: loopSizeRepeater
-            property int valueCount: Math.min(Math.max(1, parseInt((root.width - 56)/40)), 4);
-            property list<double> values: {
-                let values = [1/32];
-                while (values[values.length-1] < 512) {
-                    values.push(values[values.length-1]*2);
-                }
-                return values
-            }
+
             property int selectedIndex: 0
-            Component.onCompleted: {
-                update()
-                selectedIndex = values.indexOf(beatloopSize.value)
-                if (selectedIndex < 0) {
-                    selectedIndex = values.indexOf(4)
+            property int valueCount: Math.min(Math.max(1, parseInt((root.width - 56) / 40)), 4)
+            property list<double> values: {
+                let values = [1 / 32];
+                while (values[values.length - 1] < 512) {
+                    values.push(values[values.length - 1] * 2);
                 }
+                return values;
             }
-            onValueCountChanged: update()
-            onSelectedIndexChanged: update()
 
             function update() {
                 let values = [this.values[selectedIndex]];
                 let appendMode = values[0] <= this.values[0];
                 while (values.length < valueCount) {
                     if (appendMode) {
-                        values.push(values[values.length-1] * 2);
+                        values.push(values[values.length - 1] * 2);
                     } else {
                         values = [values[0] / 2, ...values];
                     }
                     if (values[0] == this.values[0]) {
                         appendMode = true;
-                    } else if (values[values.length-1] == this.values[this.values.length-1]) {
+                    } else if (values[values.length - 1] == this.values[this.values.length - 1]) {
                         appendMode = false;
                     } else {
                         appendMode = !appendMode;
@@ -205,29 +197,46 @@ Rectangle {
                 model = values;
             }
 
-            Connections {
-                target: beatloopSize
-                function onValueChanged() {
-                    if (loopEnabled.value) {
-                        parent.selectedIndex = parent.values.indexOf(beatloopSize.value)
-                    }
-                    parent.update()
+            Component.onCompleted: {
+                update();
+                selectedIndex = values.indexOf(beatloopSize.value);
+                if (selectedIndex < 0) {
+                    selectedIndex = values.indexOf(4);
                 }
             }
+            onSelectedIndexChanged: update()
+            onValueCountChanged: update()
 
+            Connections {
+                function onValueChanged() {
+                    if (loopEnabled.value) {
+                        parent.selectedIndex = parent.values.indexOf(beatloopSize.value);
+                    }
+                    parent.update();
+                }
+
+                target: beatloopSize
+            }
             Skin.Button {
-                required property int index
-                required property var modelData
-
                 id: loopSizeOpt1Button
 
                 property double currentSize: modelData
+                required property int index
+                required property var modelData
 
+                activeColor: root.buttonColor
                 highlight: currentSize == beatloopSize.value && trackLoadedControl.value > 0
-
                 implicitHeight: 28
                 implicitWidth: 33
-                activeColor: root.buttonColor
+                text: currentSize < 1 ? `1/${1 / currentSize}` : currentSize
+
+                onPressed: {
+                    if (loopEnabled.value) {
+                        beatloopSize.value = currentSize;
+                    } else {
+                        sizedBeatloopActivate.trigger();
+                    }
+                }
 
                 Mixxx.ControlProxy {
                     id: sizedBeatloopActivate
@@ -235,55 +244,59 @@ Rectangle {
                     group: root.group
                     key: `beatloop_${currentSize}_activate`
                 }
-
-                text: currentSize < 1 ? `1/${1/currentSize}` : currentSize
-
-                onPressed: {
-                    if (loopEnabled.value) {
-                        beatloopSize.value = currentSize;
-                    } else {
-                        sizedBeatloopActivate.trigger()
-                    }
-                }
             }
         }
-
         Skin.Button {
             id: loopSizeDoubleButton
 
-            implicitWidth: 22
+            activeColor: root.buttonColor
             implicitHeight: 28
+            implicitWidth: 22
 
             contentItem: Item {
                 anchors.fill: parent
+
                 Shape {
                     anchors.centerIn: parent
-                    width: 12
-                    height: 10
                     antialiasing: true
+                    height: 10
                     layer.enabled: true
                     layer.samples: 4
+                    width: 12
+
                     ShapePath {
-                        fillColor: root.buttonColor
-                        strokeColor: 'transparent'
-                        startX: 0; startY: 0
-                        fillRule: ShapePath.WindingFill
                         capStyle: ShapePath.RoundCap
-                        PathLine { x: 12; y: 5 }
-                        PathLine { x: 0; y: 10 }
-                        PathLine { x: 0; y: 0 }
+                        fillColor: root.buttonColor
+                        fillRule: ShapePath.WindingFill
+                        startX: 0
+                        startY: 0
+                        strokeColor: 'transparent'
+
+                        PathLine {
+                            x: 12
+                            y: 5
+                        }
+                        PathLine {
+                            x: 0
+                            y: 10
+                        }
+                        PathLine {
+                            x: 0
+                            y: 0
+                        }
                     }
                 }
             }
-            activeColor: root.buttonColor
+
             MouseArea {
-                anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onPressed: (mouse) => {
+                anchors.fill: parent
+
+                onPressed: mouse => {
                     if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
-                        loopDouble.trigger()
+                        loopDouble.trigger();
                     }
-                    loopSizeRepeater.selectedIndex = Math.min(loopSizeRepeater.values.length - 1, loopSizeRepeater.selectedIndex+1)
+                    loopSizeRepeater.selectedIndex = Math.min(loopSizeRepeater.values.length - 1, loopSizeRepeater.selectedIndex + 1);
                 }
             }
         }

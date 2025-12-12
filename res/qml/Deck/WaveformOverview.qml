@@ -5,19 +5,19 @@ import "../Theme"
 Rectangle {
     id: overview
 
-    required property string group
     required property var currentTrack
+    required property string group
 
-    radius: 5
     color: Theme.deckBackgroundColor
     height: 50
-
-    Skin.WaveformOverview {
-        group: overview.group
-        anchors.fill: parent
-    }
+    radius: 5
 
     Skin.FadeBehavior on visible {
         fadeTarget: overview
+    }
+
+    Skin.WaveformOverview {
+        anchors.fill: parent
+        group: overview.group
     }
 }

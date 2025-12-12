@@ -16,7 +16,6 @@ Item {
         group: root.group
         key: "track_loaded"
     }
-
     Rectangle {
         id: spinner
 
@@ -25,10 +24,15 @@ Item {
         radius: width / 2
         width: 130
 
+        transform: Rotation {
+            angle: 45
+            origin.x: spinner.width / 2
+            origin.y: spinner.height / 2
+        }
+
         anchors {
             top: parent.top
         }
-
         MixxxControls.Spinny {
             id: spinnyIndicator
 
@@ -37,17 +41,19 @@ Item {
             indicatorVisible: trackLoadedControl.value
 
             indicator: Item {
-                width: spinnyIndicator.width
                 height: spinnyIndicator.height
+                width: spinnyIndicator.width
 
                 Rectangle {
                     id: tick
-                    width: 2
-                    height: 70
+
                     color: '#0E0E0E'
+                    height: 70
+                    width: 2
+
                     anchors {
-                        top: parent.top
                         horizontalCenter: parent.horizontalCenter
+                        top: parent.top
                     }
                 }
             }
@@ -55,24 +61,32 @@ Item {
     }
     Rectangle {
         id: tempoInfo
+
         anchors.centerIn: spinner
-        width: spinner.width /2 - 10
-        height: trackLoadedControl.value ? spinner.height / 4 : 0
         clip: true
-        radius: height / 2 - 5
         color: '#0E0E0E'
+        height: trackLoadedControl.value ? spinner.height / 4 : 0
+        radius: height / 2 - 5
+        width: spinner.width / 2 - 10
 
         Behavior on height {
             SpringAnimation {
                 id: heightAnimation
+
+                damping: 0.2
                 duration: 500
                 spring: 2
-                damping: 0.2
             }
         }
 
         Label {
             id: tempo
+
+            readonly property real bpm: bpmControl.value
+            readonly property int precision: 2
+
+            color: '#BDBDBD'
+            text: `${Math.round(bpm)}.${((bpm % 1) * Math.pow(10, precision)).toFixed().padEnd(precision, "0")}`
 
             Mixxx.ControlProxy {
                 id: bpmControl
@@ -80,20 +94,19 @@ Item {
                 group: root.group
                 key: "bpm"
             }
-
-            readonly property real bpm: bpmControl.value
-            readonly property int precision: 2
-
-            color: '#BDBDBD'
-            text: `${Math.round(bpm)}.${((bpm%1)*Math.pow(10, precision)).toFixed().padEnd(precision, "0")}`
             anchors {
+                horizontalCenter: parent.horizontalCenter
                 top: parent.top
                 topMargin: 2
-                horizontalCenter: parent.horizontalCenter
             }
         }
         Label {
             id: pitchRatio
+
+            readonly property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
+
+            color: Theme.darkGray3
+            text: ((ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)) + "%"
 
             Mixxx.ControlProxy {
                 id: rateRatioControl
@@ -101,11 +114,6 @@ Item {
                 group: root.group
                 key: "rate_ratio"
             }
-
-            readonly property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
-
-            color: Theme.darkGray3
-            text: ((ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)) + "%"
             anchors {
                 bottom: parent.bottom
                 bottomMargin: 2

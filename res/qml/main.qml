@@ -10,13 +10,12 @@ import "Theme"
 ApplicationWindow {
     id: root
 
+    property alias editDeck: editDeckButton.checked
+    property var focusedDeck: null
     property alias maximizeLibrary: maximizeLibraryButton.checked
     property alias show4decks: show4DecksButton.checked
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
-    property alias editDeck: editDeckButton.checked
-
-    property var focusedDeck: null
 
     color: Theme.backgroundColor
     height: 1080
@@ -25,6 +24,7 @@ ApplicationWindow {
 
     Column {
         id: content
+
         anchors.fill: parent
 
         move: Transition {
@@ -36,6 +36,7 @@ ApplicationWindow {
 
         Rectangle {
             id: toolbar
+
             color: Theme.toolbarBackgroundColor
             height: 36
             radius: 1
@@ -46,42 +47,50 @@ ApplicationWindow {
 
                 Skin.Button {
                     id: show4DecksButton
+
                     activeColor: Theme.white
                     checkable: true
                     text: "4 Decks"
                 }
                 Skin.Button {
                     id: maximizeLibraryButton
+
                     activeColor: Theme.white
                     checkable: true
                     text: "Library"
+
+                    onCheckedChanged: () => {
+                        showMaximizedLibrary.value = this.checked;
+                    }
+
                     Mixxx.ControlProxy {
                         id: showMaximizedLibrary
+
                         group: "[Skin]"
                         key: "show_maximized_library"
+
                         onValueChanged: () => {
-                            maximizeLibraryButton.checked = this.value
+                            maximizeLibraryButton.checked = this.value;
                         }
-                    }
-                    onCheckedChanged: () => {
-                        showMaximizedLibrary.value = this.checked
                     }
                 }
                 Skin.Button {
                     id: showEffectsButton
+
                     activeColor: Theme.white
                     checkable: true
                     text: "Effects"
                 }
                 Skin.Button {
                     id: showAuxButton
+
                     activeColor: Theme.white
                     checkable: true
                     text: "Aux"
                 }
-
                 Skin.Button {
                     id: showSamplersButton
+
                     activeColor: Theme.white
                     checkable: true
                     text: "Sampler"
@@ -91,12 +100,14 @@ ApplicationWindow {
                 }
                 Skin.Button {
                     id: editDeckButton
+
                     activeColor: Theme.white
                     checkable: true
                     text: "Edit"
                 }
                 Skin.Button {
                     id: showDevToolsButton
+
                     activeColor: Theme.white
                     checkable: true
                     checked: devToolsWindow.visible
@@ -111,12 +122,14 @@ ApplicationWindow {
 
                     DeveloperToolsWindow {
                         id: devToolsWindow
+
                         height: 480
                         width: 640
                     }
                 }
                 Skin.Button {
                     id: showPreferencesButton
+
                     activeColor: Theme.white
                     checked: settingsPopup.opened
                     icon.height: 16
@@ -137,53 +150,63 @@ ApplicationWindow {
         }
         SplitView {
             id: splitView
-            width: parent.width
-            height: parent.height - y
 
+            height: parent.height - y
             orientation: Qt.Vertical
+            width: parent.width
 
             handle: Rectangle {
                 id: handleDelegate
-                implicitWidth: 8
-                implicitHeight: 4
-                color: Theme.libraryPanelSplitterBackground
-                clip: true
+
                 property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.libraryPanelSplitterHandleActive : Theme.libraryPanelSplitterHandle
                 property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 3
 
-                RowLayout {
-                    anchors.centerIn: parent
-                    Repeater {
-                        model: 3
-                        Rectangle {
-                            width: handleSize
-                            height: handleSize
-                            radius: handleSize
-                            color: handleColor
-                        }
-                    }
-                }
+                clip: true
+                color: Theme.libraryPanelSplitterBackground
+                implicitHeight: 4
+                implicitWidth: 8
 
                 containmentMask: Item {
-                    x: (handleDelegate.width - width) / 2
                     height: 8
                     width: splitView.width
+                    x: (handleDelegate.width - width) / 2
+                }
+
+                RowLayout {
+                    anchors.centerIn: parent
+
+                    Repeater {
+                        model: 3
+
+                        Rectangle {
+                            color: handleColor
+                            height: handleSize
+                            radius: handleSize
+                            width: handleSize
+                        }
+                    }
                 }
             }
 
             Item {
                 id: waveforms
-                SplitView.preferredHeight: library.active ? 120 : undefined
+
                 SplitView.fillHeight: !library.active
+                SplitView.preferredHeight: library.active ? 120 : undefined
                 visible: !root.maximizeLibrary
+
+                FadeBehavior on visible {
+                    fadeTarget: waveforms
+                }
+
                 Loader {
                     id: deck3waveform
 
-                    anchors.top: parent.top
-
                     readonly property string group: "[Channel3]"
-                    height: parent.height / 4
+
                     active: root.show4decks
+                    anchors.top: parent.top
+                    height: parent.height / 4
                     width: root.width
 
                     sourceComponent: Component {
@@ -196,12 +219,10 @@ ApplicationWindow {
                         }
                     }
                 }
-
                 Skin.WaveformDisplay {
                     id: deck1waveform
 
                     anchors.top: root.show4decks ? deck3waveform.bottom : parent.top
-
                     group: "[Channel1]"
                     height: parent.height / (root.show4decks ? 4 : 2)
                     width: root.width
@@ -210,7 +231,6 @@ ApplicationWindow {
                     id: deck2waveform
 
                     anchors.bottom: root.show4decks ? deck4waveform.top : parent.bottom
-
                     group: "[Channel2]"
                     height: parent.height / (root.show4decks ? 4 : 2)
                     width: root.width
@@ -218,11 +238,11 @@ ApplicationWindow {
                 Loader {
                     id: deck4waveform
 
-                    anchors.bottom: parent.bottom
-
                     readonly property string group: "[Channel4]"
-                    height: parent.height / 4
+
                     active: root.show4decks
+                    anchors.bottom: parent.bottom
+                    height: parent.height / 4
                     width: root.width
 
                     sourceComponent: Component {
@@ -237,216 +257,224 @@ ApplicationWindow {
                 }
                 Rectangle {
                     width: 125
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                        bottom: parent.bottom
-                    }
+
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
 
                         GradientStop {
-                            position: 0
                             color: Theme.darkGray
+                            position: 0
                         }
-
                         GradientStop {
-                            position: 1
                             color: 'transparent'
+                            position: 1
                         }
+                    }
+
+                    anchors {
+                        bottom: parent.bottom
+                        left: parent.left
+                        top: parent.top
                     }
                 }
                 Rectangle {
                     width: 125
-                    anchors {
-                        top: parent.top
-                        right: parent.right
-                        bottom: parent.bottom
-                    }
+
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
 
                         GradientStop {
-                            position: 0
                             color: 'transparent'
+                            position: 0
                         }
-
                         GradientStop {
-                            position: 1
                             color: Theme.darkGray
+                            position: 1
                         }
                     }
-                }
 
-                FadeBehavior on visible {
-                    fadeTarget: waveforms
+                    anchors {
+                        bottom: parent.bottom
+                        right: parent.right
+                        top: parent.top
+                    }
                 }
             }
-
             Item {
                 SplitView.fillHeight: library.active
-                SplitView.minimumHeight: mixer.height
                 SplitView.maximumHeight: library.active ? undefined : mixer.height
+                SplitView.minimumHeight: mixer.height
+
                 Deck {
                     id: deck1
 
                     anchors.top: parent.top
                     anchors.right: mixer.left
-                    width: (root.width - mixer.width) / 2
-
-                    minimized: root.maximizeLibrary
-                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
-                    group: "[Channel1]"
-
                     editMode: root.editDeck
-
-                    onToggleFocus: {
-                        root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1
-                    }
-
-                    states: [
-                        State {
-                            when: root.maximizeLibrary
-                            AnchorChanges { target: deck1; anchors.right: parent.horizontalCenter}
-                        }
-                    ]
+                    group: "[Channel1]"
+                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
+                    minimized: root.maximizeLibrary
+                    width: (root.width - mixer.width) / 2
 
                     Behavior on height {
                         SpringAnimation {
                             id: deck1HeightAnimation
+
+                            damping: 0.2
                             duration: 500
                             spring: 2
-                            damping: 0.2
                         }
                     }
-                }
+                    states: [
+                        State {
+                            when: root.maximizeLibrary
 
-                Mixer {
-                    id: mixer
-                    show4decks: root.show4decks
-                    groups: [
-                             deck1.group,
-                             deck2.group,
-                             deck3.group,
-                             deck4.group
+                            AnchorChanges {
+                                anchors.right: parent.horizontalCenter
+                                target: deck1
+                            }
+                        }
                     ]
 
-                    anchors.top: parent.top
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    visible: !root.maximizeLibrary
-
-                    FadeBehavior on visible {
-                        fadeTarget: mixer
+                    onToggleFocus: {
+                        root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
                     }
+                }
+                Mixer {
+                    id: mixer
+
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    groups: [deck1.group, deck2.group, deck3.group, deck4.group]
+                    show4decks: root.show4decks
+                    visible: !root.maximizeLibrary
 
                     Behavior on height {
                         SpringAnimation {
                             id: mixerHeightAnimation
+
+                            damping: 0.2
                             duration: 500
                             spring: 2
-                            damping: 0.2
                         }
                     }
-
                     states: [
                         State {
                             when: root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
-                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.right}
-                            PropertyChanges { target: deck1; width: root.width - (mixer.width / 2) }
+
+                            AnchorChanges {
+                                anchors.horizontalCenter: parent.right
+                                target: mixer
+                            }
+                            PropertyChanges {
+                                target: deck1
+                                width: root.width - (mixer.width / 2)
+                            }
                         },
                         State {
                             when: root.focusedDeck === deck2 && root.width < 1400 && !root.maximizeLibrary
-                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.left}
-                            PropertyChanges { target: deck2; width: root.width - (mixer.width / 2) }
+
+                            AnchorChanges {
+                                anchors.horizontalCenter: parent.left
+                                target: mixer
+                            }
+                            PropertyChanges {
+                                target: deck2
+                                width: root.width - (mixer.width / 2)
+                            }
                         },
                         State {
                             when: (!root.focusedDeck || root.width > 1400) && !root.maximizeLibrary
-                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.horizontalCenter}
-                            PropertyChanges { target: deck1; width: (root.width - mixer.width) / 2 }
-                            PropertyChanges { target: deck2; width: (root.width - mixer.width) / 2 }
+
+                            AnchorChanges {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                target: mixer
+                            }
+                            PropertyChanges {
+                                target: deck1
+                                width: (root.width - mixer.width) / 2
+                            }
+                            PropertyChanges {
+                                target: deck2
+                                width: (root.width - mixer.width) / 2
+                            }
                         },
                         State {
                             when: root.maximizeLibrary
-                            AnchorChanges { target: mixer; anchors.horizontalCenter: parent.horizontalCenter}
-                            PropertyChanges { target: deck1; width: root.width / 2 }
-                            PropertyChanges { target: deck2; width: root.width / 2 }
+
+                            AnchorChanges {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                target: mixer
+                            }
+                            PropertyChanges {
+                                target: deck1
+                                width: root.width / 2
+                            }
+                            PropertyChanges {
+                                target: deck2
+                                width: root.width / 2
+                            }
                         }
                     ]
-
                     transitions: Transition {
-                        AnchorAnimation { duration: 200 }
+                        AnchorAnimation {
+                            duration: 200
+                        }
+                    }
+                    FadeBehavior on visible {
+                        fadeTarget: mixer
                     }
                 }
-
                 Deck {
                     id: deck2
 
                     anchors.top: parent.top
                     anchors.left: mixer.right
-                    width: (root.width - mixer.width) / 2
-
-                    minimized: root.maximizeLibrary
-                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
-                    group: "[Channel2]"
-
                     editMode: root.editDeck
-
-                    onToggleFocus: {
-                        root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2
-                    }
-
-                    states: [
-                        State {
-                            when: root.maximizeLibrary
-                            AnchorChanges { target: deck2; anchors.left: parent.horizontalCenter}
-                        }
-                    ]
+                    group: "[Channel2]"
+                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
+                    minimized: root.maximizeLibrary
+                    width: (root.width - mixer.width) / 2
 
                     Behavior on height {
                         SpringAnimation {
                             id: deck2HeightAnimation
+
+                            damping: 0.2
                             duration: 500
                             spring: 2
-                            damping: 0.2
                         }
                     }
-                }
-
-                Loader {
-                    id: deck3
-
-                    anchors {
-                        top: deck1.bottom
-                        left: parent.left
-                        right: mixer.left
-                    }
-
-                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
-                    readonly property string group: "[Channel3]"
-                    active: root.show4decks
-
-                    sourceComponent: Component {
-                        Deck {
-                            minimized: root.maximizeLibrary
-                            group: deck3.group
-
-                            editMode: root.editDeck
-                        }
-                    }
-
                     states: [
                         State {
                             when: root.maximizeLibrary
-                            AnchorChanges { target: deck3; anchors.right: parent.horizontalCenter}
+
+                            AnchorChanges {
+                                anchors.left: parent.horizontalCenter
+                                target: deck2
+                            }
                         }
                     ]
+
+                    onToggleFocus: {
+                        root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2;
+                    }
+                }
+                Loader {
+                    id: deck3
+
+                    readonly property string group: "[Channel3]"
+
+                    active: root.show4decks
+                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
 
                     Behavior on height {
                         SpringAnimation {
                             id: deck3HeightAnimation
+
+                            damping: 0.2
                             duration: 500
                             spring: 2
-                            damping: 0.2
                         }
                     }
                     sourceComponent: Component {
@@ -475,41 +503,21 @@ ApplicationWindow {
                         top: deck1.bottom
                     }
                 }
-
                 Loader {
                     id: deck4
 
-                    anchors {
-                        top: deck2.bottom
-                        left: mixer.right
-                        right: parent.right
-                    }
-                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
                     readonly property string group: "[Channel4]"
+
                     active: root.show4decks
-
-                    sourceComponent: Component {
-                        Deck {
-                            minimized: root.maximizeLibrary
-                            group: deck4.group
-
-                            editMode: root.editDeck
-                        }
-                    }
-
-                    states: [
-                        State {
-                            when: root.maximizeLibrary
-                            AnchorChanges { target: deck4; anchors.left: parent.horizontalCenter}
-                        }
-                    ]
+                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
 
                     Behavior on height {
                         SpringAnimation {
                             id: deck4HeightAnimation
+
+                            damping: 0.2
                             duration: 500
                             spring: 2
-                            damping: 0.2
                         }
                     }
                     sourceComponent: Component {
@@ -559,34 +567,46 @@ ApplicationWindow {
                 // }
                 Loader {
                     id: library
+
+                    active: root.maximizeLibrary || root.height - mixer.height >= 400
                     height: parent.height - y
-                    anchors {
-                        top: mixer.bottom
-                        bottom: parent.bottom
-                    }
                     width: parent.width
+
                     sourceComponent: Component {
                         Skin.Library {
                             anchors.fill: parent
                         }
                     }
-                    active: root.maximizeLibrary || root.height - mixer.height >= 400
                     states: [
                         State {
                             when: root.maximizeLibrary && root.show4decks
-                            AnchorChanges { target: library; anchors.top: deck4.bottom}
+
+                            AnchorChanges {
+                                anchors.top: deck4.bottom
+                                target: library
+                            }
                         },
                         State {
                             when: root.maximizeLibrary && !root.show4decks
-                            AnchorChanges { target: library; anchors.top: deck1.bottom}
+
+                            AnchorChanges {
+                                anchors.top: deck1.bottom
+                                target: library
+                            }
                         }
                     ]
+
+                    anchors {
+                        bottom: parent.bottom
+                        top: mixer.bottom
+                    }
                 }
             }
         }
     }
     Skin.Settings {
         id: settingsPopup
+
         height: Math.max(840, parent.height * 0.7)
         modal: true
         width: Math.max(1400, parent.width * 0.8)
@@ -595,15 +615,16 @@ ApplicationWindow {
 
         Overlay.modal: Rectangle {
             id: overlayModal
-            property real radius: 12
 
             readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration()
+            property real radius: 12
 
             anchors.fill: parent
             color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
 
             Repeater {
                 model: hasHardwareAcceleration ? 1 : 0
+
                 GaussianBlur {
                     anchors.fill: overlayModal
                     deviation: 4

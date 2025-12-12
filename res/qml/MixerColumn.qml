@@ -10,75 +10,72 @@ Item {
     Rectangle {
         id: gainKnobFrame
 
-        anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        height: width
+        anchors.top: parent.top
         color: Theme.knobBackgroundColor
+        height: width
         radius: 5
 
         Skin.ControlKnob {
             id: gainKnob
 
             anchors.centerIn: parent
-            width: 36
-            height: 36
-            group: root.group
-            key: "pregain"
             color: Theme.gainKnobColor
+            group: root.group
+            height: 36
+            key: "pregain"
+            width: 36
         }
     }
-
     Item {
-        anchors.top: gainKnobFrame.bottom
-        anchors.topMargin: 5
+        anchors.bottom: pflButton.top
         anchors.bottomMargin: 5
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: pflButton.top
+        anchors.top: gainKnobFrame.bottom
+        anchors.topMargin: 5
 
         Skin.VuMeter {
+            group: root.group
+            height: parent.height - 22
+            key: "vu_meter_left"
+            width: 4
             x: 15
             y: (parent.height - height) / 2
-            width: 4
-            height: parent.height - 22
-            group: root.group
-            key: "vu_meter_left"
         }
-
         Skin.VuMeter {
+            group: root.group
+            height: parent.height - 22
+            key: "vu_meter_right"
+            width: 4
             x: parent.width - width - 15
             y: (parent.height - height) / 2
-            width: 4
-            height: parent.height - 22
-            group: root.group
-            key: "vu_meter_right"
         }
-
         Skin.ControlFader {
             id: volumeSlider
 
             anchors.fill: parent
-            group: root.group
-            key: "volume"
             barColor: Theme.volumeSliderBarColor
             bg: Theme.imgVolumeSliderBackground
+            group: root.group
+            key: "volume"
+
             handleImage {
                 width: parent.width - 4
             }
         }
     }
-
     Skin.ControlButton {
         id: pflButton
 
-        group: root.group
-        key: "pfl"
+        activeColor: Theme.pflActiveButtonColor
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+        group: root.group
+        key: "pfl"
         text: "PFL"
-        activeColor: Theme.pflActiveButtonColor
         toggleable: true
     }
 }
