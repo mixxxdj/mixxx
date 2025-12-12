@@ -178,23 +178,33 @@ Item {
 
     component LayoutMouseArea: MouseArea {
         property Item target: parent
+        function selectParent() {
+            let currentParent = target.parent
+            while (currentParent != root) {
+                if (currentParent.selected === false) {
+                    let updatedRecursive = (children) => {
+                        for (let i = 1; i < children.length; i++) {
+                            if (children[i].selected === true) children[i].selected = false
+                            updatedRecursive(children[i].children)
+                        }
+                    }
+                    updatedRecursive(currentParent.children)
+                    currentParent.selected = true
+                    break;
+                }
+                currentParent = currentParent.parent
+            }
+        }
+        onPressAndHold: () => {
+            selectParent()
+            if (!target.beginDrag) {
+                target.beginDrag = Qt.point(target.x, target.y);
+            }
+            target.z = 100
+        }
         onPressed: (event) => {
             if (event.modifiers & Qt.ControlModifier) {
-                let currentParent = target.parent
-                while (currentParent != root) {
-                    if (currentParent.selected === false) {
-                        let updatedRecursive = (children) => {
-                            for (let i = 1; i < children.length; i++) {
-                                if (children[i].selected === true) children[i].selected = false
-                                updatedRecursive(children[i].children)
-                            }
-                        }
-                        updatedRecursive(currentParent.children)
-                        currentParent.selected = true
-                        break;
-                    }
-                    currentParent = currentParent.parent
-                }
+                selectParent()
             }
 
             if (!target.beginDrag) {
@@ -696,6 +706,157 @@ Item {
             candidate = null
         }
 
+        function handleCardinalityWest(drag, modelRef, child, i, sourceIdx){
+            let spacing = child.x - drag.source.beginDrag.x - drag.source.width
+            child.x -= drag.source.width + spacing
+            drag.source.beginDrag.x += child.width + spacing
+
+            if (drag.source.move) {
+                drag.source.move.source++
+            } else {
+                drag.source.move = {
+                    ref: modelRef,
+                    source: i,
+                    target: sourceIdx,
+                    count: 1
+                }
+            }
+        }
+
+        function handleCardinalityEast(drag, modelRef, child, i, sourceIdx){
+            let spacing = drag.source.beginDrag.x - child.x - child.width
+            child.x += drag.source.width + spacing
+            drag.source.beginDrag.x -= child.width + spacing
+
+            if (drag.source.move) {
+                drag.source.move.child = i
+                drag.source.move.count++
+            } else {
+                drag.source.move = {
+                    ref: modelRef,
+                    source: sourceIdx,
+                    target: i,
+                    count: 1
+                }
+            }
+        }
+
+        function handleCardinalityNorth(drag, modelRef, child, i, sourceIdx){
+            let spacing = child.y - drag.source.beginDrag.y - drag.source.height
+            child.y = drag.source.beginDrag.y
+            drag.source.beginDrag.y += child.height + spacing
+
+            if (drag.source.move) {
+                drag.source.move.source++
+            } else {
+                drag.source.move = {
+                    ref: modelRef,
+                    source: i,
+                    target: sourceIdx,
+                    count: 1
+                }
+            }
+        }
+
+        function handleCardinalitySouth(drag, modelRef, child, i, sourceIdx){
+            let spacing = drag.source.beginDrag.y - child.y - child.height
+            drag.source.beginDrag.y = child.y
+            child.y += drag.source.height + spacing
+
+            if (drag.source.move) {
+                drag.source.move.target = i
+                drag.source.move.count++
+            } else {
+                drag.source.move = {
+                    ref: modelRef,
+                    source: sourceIdx,
+                    target: i,
+                    count: 1
+                }
+            }
+        }
+
+        function handleChild(i, child, sourceIdx, position){
+            let topParent = root.minimized ? minimizedGrid : grid
+            let itemArea = child.mapToItem(topParent, 0, 0, child.width, child.height)
+
+            if (position.x >= itemArea.x && position.x < itemArea.x + itemArea.width && position.y >= itemArea.y && position.y < itemArea.y + itemArea.height) {
+                let currentCenter = Qt.point(itemArea.x + itemArea.width/2, itemArea.y + itemArea.height/2)
+                let sourceCenter = drag.source.mapToItem(topParent, drag.source.width/2, drag.source.height/2)
+
+                if (candidate == null || candidate.target != child) {
+                    let distance = Qt.point(Math.abs(sourceCenter.x - currentCenter.x), Math.abs(sourceCenter.y - currentCenter.y))
+
+                    let cardinality
+                    if (distance.x >= distance.y) {
+                        cardinality = sourceCenter.x > currentCenter.x ? Deck.Cardinality.East : Deck.Cardinality.West
+                    } else {
+                        cardinality = sourceCenter.y > currentCenter.y ? Deck.Cardinality.South : Deck.Cardinality.North
+                    }
+                    candidate = {
+                        target: child,
+                        cardinality: cardinality,
+                        completed: false,
+                    }
+                    return true
+                }
+
+                if (candidate.completed) {
+                    return true;
+                }
+
+                switch (candidate.cardinality) {
+                case Deck.Cardinality.West:
+                    candidate.completed = sourceCenter.x+ drag.source.width/2 > currentCenter.x
+                    break;
+                case Deck.Cardinality.North:
+                    candidate.completed = drag.source.y + drag.source.height > currentCenter.y - parent.height/2
+                    break;
+                case Deck.Cardinality.East:
+                    candidate.completed = sourceCenter.x - drag.source.width/2 < currentCenter.x
+                    break;
+                case Deck.Cardinality.South:
+                    candidate.completed = drag.source.y < currentCenter.y
+                    break;
+                default:
+                    console.error(`Unhandled cardinality value: '${candidate.cardinality}'`);
+                    return true;
+                }
+
+                if (!candidate.completed) {
+                    return true
+                }
+
+                let delta = Qt.point(drag.source.beginDrag.x - child.x, drag.source.beginDrag.y - child.y)
+                let currentParent = drag.source.parent;
+                let reverse = []
+                while (currentParent != topParent) {
+                    reverse.push(currentParent.index)
+                    currentParent = currentParent.parent
+                }
+                let modelRef = root.minimized ? minimizedItemModel : itemModel
+                while (reverse.length > 0) {
+                    modelRef = modelRef.get(reverse.pop()).items
+                }
+
+                switch (candidate.cardinality) {
+                case Deck.Cardinality.West:
+                    handleCardinalityWest(drag, modelRef, child, i, sourceIdx);
+                    break;
+                case Deck.Cardinality.East:
+                    handleCardinalityEast(drag, modelRef, child, i, sourceIdx);
+                    break;
+                case Deck.Cardinality.North:
+                    handleCardinalityNorth(drag, modelRef, child, i, sourceIdx);
+                    break;
+                case Deck.Cardinality.South:
+                    handleCardinalitySouth(drag, modelRef, child, i, sourceIdx);
+                    break;
+                }
+                return true
+            }
+        }
+
         onPositionChanged: (drag) => {
             let parentArea = drag.source.parent.mapToItem(grid, 0, 0, drag.source.parent.width, drag.source.parent.height)
             let position = Qt.point(drag.x, drag.y)
@@ -709,7 +870,6 @@ Item {
                 candidate = null
                 return
             }
-            let target = null
             let sourceIdx
             for (let i = 0; i < drag.source.parent.children.length; i++) {
                 if (drag.source.parent.children[i] == drag.source) {
@@ -726,142 +886,7 @@ Item {
                 if (drag.source.parent.children[i] == drag.source) {
                     continue
                 }
-                let topParent = root.minimized ? minimizedGrid : grid
-                let itemArea = drag.source.parent.children[i].mapToItem(topParent, 0, 0, drag.source.parent.children[i].width, drag.source.parent.children[i].height)
-
-                if (position.x >= itemArea.x && position.x < itemArea.x + itemArea.width && position.y >= itemArea.y && position.y < itemArea.y + itemArea.height) {
-                    target = drag.source.parent.children[i]
-
-                    let currentCenter = Qt.point(itemArea.x + itemArea.width/2, itemArea.y + itemArea.height/2)
-                    let sourceCenter = drag.source.mapToItem(topParent, drag.source.width/2, drag.source.height/2)
-
-                    if (candidate == null || candidate.target != target) {
-                        let distance = Qt.point(Math.abs(sourceCenter.x - currentCenter.x), Math.abs(sourceCenter.y - currentCenter.y))
-
-                        let cardinality
-                        if (distance.x >= distance.y) {
-                            cardinality = sourceCenter.x > currentCenter.x ? Deck.Cardinality.East : Deck.Cardinality.West
-                        } else if (distance.y > distance.x) {
-                            cardinality = sourceCenter.y > currentCenter.y ? Deck.Cardinality.South : Deck.Cardinality.North
-                        }
-                        candidate = {
-                            target: target,
-                            cardinality: cardinality,
-                            completed: false,
-                        }
-                        return
-                    }
-
-                    if (candidate.completed) {
-                        return;
-                    }
-
-                    switch (candidate.cardinality) {
-                        case Deck.Cardinality.West:
-                            candidate.completed = sourceCenter.x+ drag.source.width/2 > currentCenter.x
-                            break;
-                        case Deck.Cardinality.North:
-                            candidate.completed = drag.source.y + drag.source.height > currentCenter.y - parent.height/2
-                            break;
-                        case Deck.Cardinality.East:
-                            candidate.completed = sourceCenter.x - drag.source.width/2 < currentCenter.x
-                            break;
-                        case Deck.Cardinality.South:
-                            candidate.completed = drag.source.y < currentCenter.y
-                            break;
-                    }
-
-                    if (!candidate.completed) {
-                        return
-                    }
-
-                    let delta = Qt.point(drag.source.beginDrag.x - target.x, drag.source.beginDrag.y - target.y)
-                    let currentParent = drag.source.parent;
-                    let reverse = []
-                    while (currentParent != topParent) {
-                        reverse.push(currentParent.index)
-                        currentParent = currentParent.parent
-                    }
-                    let modelRef = root.minimized ? minimizedItemModel : itemModel
-                    while (reverse.length > 0) {
-                        modelRef = modelRef.get(reverse.pop()).items
-                    }
-                    let spacing
-
-                    switch (candidate.cardinality) {
-                        case Deck.Cardinality.West: {
-                            spacing = target.x - drag.source.beginDrag.x - drag.source.width
-                            target.x -= drag.source.width + spacing
-                            drag.source.beginDrag.x += target.width + spacing
-
-                            if (drag.source.move) {
-                                drag.source.move.source++
-                                } else {
-                                drag.source.move = {
-                                    ref: modelRef,
-                                    source: i,
-                                    target: sourceIdx,
-                                    count: 1
-                                }
-                            }
-                        }
-                        break;
-                        case Deck.Cardinality.East: {
-                            spacing = drag.source.beginDrag.x - target.x - target.width
-                            target.x += drag.source.width + spacing
-                            drag.source.beginDrag.x -= target.width + spacing
-
-                            if (drag.source.move) {
-                                drag.source.move.target = i
-                                drag.source.move.count++
-                                } else {
-                                drag.source.move = {
-                                    ref: modelRef,
-                                    source: sourceIdx,
-                                    target: i,
-                                    count: 1
-                                }
-                            }
-                        }
-                        break;
-                        case Deck.Cardinality.North: {
-                            spacing = target.y - drag.source.beginDrag.y - drag.source.height
-                            target.y = drag.source.beginDrag.y
-                            drag.source.beginDrag.y += target.height + spacing
-
-                            if (drag.source.move) {
-                                drag.source.move.source++
-                                } else {
-                                drag.source.move = {
-                                    ref: modelRef,
-                                    source: i,
-                                    target: sourceIdx,
-                                    count: 1
-                                }
-                            }
-                        }
-                        break;
-                        case Deck.Cardinality.South: {
-                            spacing = drag.source.beginDrag.y - target.y - target.height
-                            drag.source.beginDrag.y = target.y
-                            target.y += drag.source.height + spacing
-
-                            if (drag.source.move) {
-                                drag.source.move.target = i
-                                drag.source.move.count++
-                                } else {
-                                drag.source.move = {
-                                    ref: modelRef,
-                                    source: sourceIdx,
-                                    target: i,
-                                    count: 1
-                                }
-                            }
-                        }
-                        break;
-                    }
-                    break
-                }
+                if (handleChild(i, drag.source.parent.children[i], sourceIdx, position)) break;
             }
         }
     }
