@@ -69,7 +69,7 @@ void WaveformRendererRGB::paintGL() {
 
     // Fixes a sporadic crash caused by a division by zero on waveform initialization
     if (visualIncrementPerPixel == 0.0) {
-        return false;
+        return;
     }
 
     // Per-band gain from the EQ knobs.
