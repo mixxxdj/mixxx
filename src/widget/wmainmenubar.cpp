@@ -891,6 +891,8 @@ void WMainMenuBar::hideMenuBar() {
 
 void WMainMenuBar::slotAutoHideMenuBarToggled(bool autoHide) {
     m_pConfig->setValue(kHideMenuCfgKey, autoHide);
+    // Trigger slotUpdateMenuBarAltKeyConnection() inorder to get Alt work immediately
+    emit menubarAutoHideChanged(autoHide);
     // Just in case it was hidden after toggling the menu action
     if (!autoHide) {
         showMenuBar();

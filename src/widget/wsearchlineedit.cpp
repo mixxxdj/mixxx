@@ -544,14 +544,17 @@ void WSearchLineEdit::slotTriggerSearch() {
 void WSearchLineEdit::slotSaveSearch() {
     m_saveTimer.stop();
     // Keep original text for UI, potentially with trailing spaces
-    QString cText = currentText();
+    int curPos = lineEdit()->cursorPosition();
+    const QString origText = currentText();
+    QString cText = origText;
     int cIndex = findCurrentTextIndex();
     if (kLogger.traceEnabled()) {
         kLogger.trace()
                 << "save search. Text:"
                 << cText
-                << "Index:"
-                << cIndex;
+                << "| Index:"
+                << cIndex
+                << "| curpos:" << curPos;
     }
     if (cText.isEmpty() || !isEnabled()) {
         return;
@@ -571,8 +574,11 @@ void WSearchLineEdit::slotSaveSearch() {
         removeItem(kMaxSearchEntries);
     }
 
-    // Set the text without spaces for UI
-    setTextBlockSignals(cText);
+    if (currentText() != origText) {
+        // Set the text without spaces for UI
+        setTextBlockSignals(cText);
+        lineEdit()->setCursorPosition(curPos);
+    }
 }
 
 void WSearchLineEdit::slotMoveSelectedHistory(int steps) {

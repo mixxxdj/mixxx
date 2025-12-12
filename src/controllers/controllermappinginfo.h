@@ -1,13 +1,10 @@
 #pragma once
 
-#include <QDomElement>
 #include <QList>
-#include <QMap>
 #include <QString>
 
-#include "controllers/legacycontrollermapping.h"
-#include "controllers/legacycontrollermappingfilehandler.h"
-#include "preferences/usersettings.h"
+class QXmlStreamAttributes;
+class QFileInfo;
 
 struct ProductInfo {
     QString protocol;
@@ -31,8 +28,8 @@ struct ProductInfo {
 /// show details for a mapping.
 class MappingInfo {
   public:
-    MappingInfo();
-    MappingInfo(const QString& path);
+    MappingInfo() = default;
+    explicit MappingInfo(const QFileInfo& fileInfo);
 
     inline bool isValid() const {
         return m_valid;
@@ -65,10 +62,10 @@ class MappingInfo {
     }
 
   private:
-    ProductInfo parseBulkProduct(const QDomElement& element) const;
-    ProductInfo parseHIDProduct(const QDomElement& element) const;
+    static ProductInfo parseBulkProduct(const QXmlStreamAttributes& xmlElementAttributes);
+    static ProductInfo parseHIDProduct(const QXmlStreamAttributes& xmlElementAttributes);
 
-    bool m_valid;
+    bool m_valid = false;
     QString m_path;
     QString m_dirPath;
     QString m_name;

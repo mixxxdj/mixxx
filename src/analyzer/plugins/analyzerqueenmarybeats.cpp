@@ -77,22 +77,21 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, SINT iLen) {
 bool AnalyzerQueenMaryBeats::finalize() {
     m_helper.finalize();
 
-    int nonZeroCount = static_cast<int>(m_detectionResults.size());
+    std::size_t nonZeroCount = m_detectionResults.size();
     while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {
         --nonZeroCount;
     }
 
+    std::size_t required_size = std::max(static_cast<std::size_t>(2), nonZeroCount) - 2;
+
     std::vector<double> df;
-    std::vector<double> beatPeriod;
-    const auto required_size = std::max(0, nonZeroCount - 2);
     df.reserve(required_size);
-    beatPeriod.reserve(required_size);
+    auto beatPeriod = std::vector<double>(required_size);
 
     // skip first 2 results as it might have detect noise as onset
     // that's how vamp does and seems works best this way
-    for (int i = 2; i < nonZeroCount; ++i) {
+    for (std::size_t i = 2; i < nonZeroCount; ++i) {
         df.push_back(m_detectionResults.at(i));
-        beatPeriod.push_back(0.0);
     }
 
     TempoTrackV2 tt(m_sampleRate, m_stepSizeFrames);
@@ -102,7 +101,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
     tt.calculateBeats(df, beatPeriod, beats);
 
     m_resultBeats.reserve(static_cast<int>(beats.size()));
-    for (size_t i = 0; i < beats.size(); ++i) {
+    for (std::size_t i = 0; i < beats.size(); ++i) {
         // we add the halve m_stepSizeFrames here, because the beat
         // is detected between the two samples.
         const auto result = mixxx::audio::FramePos(

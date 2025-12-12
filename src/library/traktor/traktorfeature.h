@@ -57,8 +57,8 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     // processes a particular playlist
     void parsePlaylistEntries(QXmlStreamReader& xml,
             const QString& playlist_path,
-            QSqlQuery query_insert_into_playlist,
-            QSqlQuery query_insert_into_playlisttracks);
+            QSqlQuery* pQueryInsertIntoPlaylist,
+            QSqlQuery* pQueryInsertIntoPlaylistTracks);
     void clearTable(const QString& table_name);
     static QString getTraktorMusicDatabase();
     // private fields

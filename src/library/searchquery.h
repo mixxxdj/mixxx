@@ -1,6 +1,7 @@
 #ifndef SEARCHQUERY_H
 #define SEARCHQUERY_H
 
+#include <QDateTime>
 #include <QList>
 #include <QSqlDatabase>
 #include <QString>
@@ -279,6 +280,24 @@ class YearFilterNode : public NumericFilterNode {
   public:
     YearFilterNode(const QStringList& sqlColumns, const QString& argument);
     QString toSql() const override;
+};
+
+class DateAddedFilterNode : public QueryNode {
+  public:
+    DateAddedFilterNode(const QString& argument);
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+  private:
+    QDateTime parseDate(const QString& dateStr) const;
+    QString dateStringIsoNoZ(const QDateTime& date) const;
+
+    bool m_operatorQuery;
+    bool m_equalsQuery;
+    QString m_operator;
+    QDateTime m_opDate;
+    QDateTime m_dateStart;
+    QDateTime m_dateEnd;
 };
 
 #endif /* SEARCHQUERY_H */

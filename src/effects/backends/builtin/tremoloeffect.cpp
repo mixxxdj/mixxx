@@ -140,7 +140,7 @@ void TremoloEffect::processChannel(
     if (enableState == EffectEnableState::Enabling || quantizeEnabling || tripletDisabling) {
         if (gf.beat_length.has_value() && gf.beat_fraction_buffer_end.has_value()) {
             currentFrame = static_cast<unsigned int>(*gf.beat_fraction_buffer_end *
-                    gf.beat_length->frames);
+                    gf.beat_length->seconds * engineParameters.sampleRate());
         } else {
             currentFrame = 0;
         }
@@ -158,7 +158,8 @@ void TremoloEffect::processChannel(
                 rate *= 3.0;
             }
         }
-        const auto framePerBeat = static_cast<int>(gf.beat_length->frames);
+        const auto framePerBeat = static_cast<int>(
+                gf.beat_length->seconds * engineParameters.sampleRate());
         framePerPeriod = static_cast<int>(framePerBeat / rate);
     } else {
         framePerPeriod = static_cast<int>(engineParameters.sampleRate() / rate);

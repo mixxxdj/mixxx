@@ -76,6 +76,11 @@ class WTrackTableViewHeader : public QHeaderView {
     // We could also catch font change via changeEvent() -> QEvent::FontChange
     // but that's called way too often with no-ops and causes hilarious effects.
 
+    // These two track the hovered section which is considered in paintSection().
+    // This essentially restores the qss `hover` style.
+    void mouseMoveEvent(QMouseEvent* pEvent) override;
+    void leaveEvent(QEvent* pEvent) override;
+
     // Required to set the preferred height with custom padding
     QSize sizeHint() const override;
     // Work around Qt6 paint bug with sort indicator
@@ -99,4 +104,6 @@ class WTrackTableViewHeader : public QHeaderView {
 
     int m_preferredHeight;
     QMap<int, int> m_hiddenColumnSizes;
+    int m_hoveredSection;
+    int m_previousHoveredSection;
 };

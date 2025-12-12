@@ -11,7 +11,7 @@
 #include <QGLFormat>
 #endif
 
-#ifdef __LINUX__
+#if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #endif
@@ -847,6 +847,14 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotShowKeywheel,
             Qt::UniqueConnection);
+#ifndef __APPLE__
+    // Menubar auto-hide
+    connect(m_pMenuBar,
+            &WMainMenuBar::menubarAutoHideChanged,
+            this,
+            &MixxxMainWindow::slotUpdateMenuBarAltKeyConnection,
+            Qt::UniqueConnection);
+#endif
 
     // Fullscreen
     connect(m_pMenuBar,

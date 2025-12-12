@@ -394,6 +394,13 @@ void DlgTrackInfo::replaceTrackRecord(
                     mixxx::localDateTimeFromUtc(
                             m_trackRecord.getDateAdded())));
 
+    QFileInfo info(trackLocation);
+    if (info.exists() && info.isFile()) {
+        int size = info.size();
+        QString sizeStr = QLocale().formattedDataSize(size);
+        txtFileSize->setText(sizeStr);
+    }
+
     updateTrackMetadataFields();
 }
 

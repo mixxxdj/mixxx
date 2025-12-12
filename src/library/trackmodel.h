@@ -139,7 +139,7 @@ class TrackModel {
         return {};
     }
 
-    virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
+    virtual void search(const QString& searchText) = 0;
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can
@@ -242,6 +242,11 @@ class TrackModel {
 
     virtual void select() {
     }
+
+    /// This is an interface to stop any potentially running
+    /// model population when switching models in WTrackTableView.
+    /// Only implemented in ProxyTrackModel.
+    virtual void maybeStopModelPopulation() {};
 
     /// @brief modelKey returns a unique identifier for the model
     /// @param noSearch don't include the current search in the key

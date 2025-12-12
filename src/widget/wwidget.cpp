@@ -49,6 +49,12 @@ bool WWidget::event(QEvent* e) {
                     static_cast<int>(fonti.pixelSize() * m_scaleFactor));
         }
     } else if (isEnabled()) {
+        // With Qt6 on Windows this touch -> mouse translation is apparently not
+        // required anymore, QMouseEvents are received correctly.
+        // If enabled we receive both QTouch and QMouse events, see
+        // https://github.com/mixxxdj/mixxx/issues/15546
+        // TODO Test with other OS, maybe we can drop it entirely.
+#ifndef __WINDOWS__
         switch(e->type()) {
         case QEvent::TouchBegin:
         case QEvent::TouchUpdate:
@@ -114,6 +120,7 @@ bool WWidget::event(QEvent* e) {
         default:
             break;
         }
+#endif
     }
 
     return QWidget::event(e);

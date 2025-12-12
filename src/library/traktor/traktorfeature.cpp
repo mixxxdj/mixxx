@@ -407,78 +407,94 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
 }
 
 // Purpose: Parsing all the folder and playlists of Traktor
-// This is a complex operation since Traktor uses the concept of folders and playlist.
-// A folder can contain folders and playlists. A playlist contains entries but no folders.
-// In other words, Traktor uses a tree structure to organize music.
-// Inner nodes represent folders while leaves are playlists.
+// This is a complex operation since Traktor uses the concept of folders and
+// playlist. A folder can contain folders and playlists. A playlist contains
+// entries but no folders. In other words, Traktor uses a tree structure to
+// organize music. Inner nodes represent folders while leaves are playlists.
 TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     qDebug() << "Process RootFolder";
-    //Each playlist is unique and can be identified by a path in the tree structure.
+    // Each playlist is unique and can be identified by a path in the
+    // tree structure.
     QString current_path = "";
-    QMap<QString,QString> map;
+    QSet<QString> playlists;
 
-    QString delimiter = "-->";
+    const QString delimiter = QStringLiteral("-->");
 
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
     TreeItem* parent = rootItem.get();
 
     QSqlQuery query_insert_to_playlists(m_database);
-    query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
-                  "VALUES (:name)");
+    query_insert_to_playlists.prepare(
+            "INSERT INTO traktor_playlists (name) "
+            "VALUES (:name)");
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
     query_insert_to_playlist_tracks.prepare(
-        "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
-        "VALUES (:playlist_id, :track_id, :position)");
+            "INSERT INTO traktor_playlist_tracks (playlist_id, "
+            "track_id, position) VALUES (:playlist_id, :track_id, :position)");
 
     while (!xml.atEnd() && !m_cancelImport) {
-        //read next XML element
+        // Read next XML element
         xml.readNext();
 
         if (xml.isStartElement()) {
-            if (xml.name() == QLatin1String("NODE")) {
+            if (xml.name() == QStringLiteral("NODE")) {
                 QXmlStreamAttributes attr = xml.attributes();
-                QString name = attr.value("NAME").toString();
-                QString type = attr.value("TYPE").toString();
-               //TODO: What happens if the folder node is a leaf (empty folder)
-               // Idea: Hide empty folders :-)
-               if (type == "FOLDER") {
-                    current_path += delimiter;
-                    current_path += name;
-                    //qDebug() << "Folder: " +current_path << " has parent " << parent->getData().toString();
-                    map.insert(current_path, "FOLDER");
-                    parent = parent->appendChild(name, current_path);
-               } else if (type == "PLAYLIST") {
-                    current_path += delimiter;
-                    current_path += name;
-                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
-                    map.insert(current_path, "PLAYLIST");
+                const QStringView name = attr.value(QStringLiteral("NAME"));
+                const QStringView type = attr.value(QStringLiteral("TYPE"));
 
-                    parent->appendChild(name, current_path);
-                    // process all the entries within the playlist 'name' having path 'current_path'
+                current_path += delimiter;
+                current_path += name;
+                parent = parent->appendChild(name.toString(),
+                        current_path);
+
+                if (type == QStringLiteral("PLAYLIST")) {
+                    // qDebug() << "Playlist: " + current_path << " has parent "
+                    // << parent->getData().toString();
+
+                    playlists += current_path;
+
+                    // Process all the entries within the playlist 'name'
+                    // having path 'current_path'
                     parsePlaylistEntries(xml,
                             current_path,
-                            std::move(query_insert_to_playlists),
-                            std::move(query_insert_to_playlist_tracks));
+                            &query_insert_to_playlists,
+                            &query_insert_to_playlist_tracks);
+
+                    query_insert_to_playlists.finish();
+                    query_insert_to_playlist_tracks.finish();
                 }
             }
         }
 
         if (xml.isEndElement()) {
-            if (xml.name() == QLatin1String("NODE")) {
-                if (map.value(current_path) == "FOLDER") {
-                    parent = parent->parent();
+            if (xml.name() == QStringLiteral("NODE")) {
+                bool last_non_playlist_was_empty = false;
+                if (!parent->hasChildren() and
+                        !playlists.contains(current_path)) {
+                    last_non_playlist_was_empty = true;
                 }
 
-                //Whenever we find a closing NODE, remove the last component of the path
-                int lastSlash = current_path.lastIndexOf (delimiter);
-                int path_length = current_path.size();
+                parent = parent->parent();
+
+                if (last_non_playlist_was_empty) {
+                    // If the last node was not a playlist (FOLDER, SMARTLIST,
+                    // etc... and was empty we remove it from the item tree so
+                    // that it doesn't show for the user.
+                    parent->removeChildren(parent->children().count() - 1,
+                            1);
+                }
+
+                // Whenever we find a closing NODE, remove the last component
+                // of the path
+                const int lastSlash = current_path.lastIndexOf(delimiter);
+                const int path_length = current_path.size();
 
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
-            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
-            if (xml.name() == QLatin1String("PLAYLISTS")) {
+            // We leave the infinite loop, if we have the closing "PLAYLIST" tag
+            if (xml.name() == QStringLiteral("PLAYLISTS")) {
                 break;
             }
         }
@@ -489,14 +505,14 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 void TraktorFeature::parsePlaylistEntries(
         QXmlStreamReader& xml,
         const QString& playlist_path,
-        QSqlQuery query_insert_into_playlist,
-        QSqlQuery query_insert_into_playlisttracks) {
+        QSqlQuery* pQueryInsertIntoPlaylist,
+        QSqlQuery* pQueryInsertIntoPlaylistTracks) {
     // In the database, the name of a playlist is specified by the unique path,
     // e.g., /someFolderA/someFolderB/playlistA"
-    query_insert_into_playlist.bindValue(":name", playlist_path);
+    pQueryInsertIntoPlaylist->bindValue(":name", playlist_path);
 
-    if (!query_insert_into_playlist.exec()) {
-        LOG_FAILED_QUERY(query_insert_into_playlist)
+    if (!pQueryInsertIntoPlaylist->exec()) {
+        LOG_FAILED_QUERY(*pQueryInsertIntoPlaylist)
                 << "Failed to insert playlist in TraktorTableModel:"
                 << playlist_path;
         return;
@@ -550,13 +566,13 @@ void TraktorFeature::parsePlaylistEntries(
                         track_id = finder_query.value(finder_query.record().indexOf("id")).toInt();
                     }
 
-                    query_insert_into_playlisttracks.bindValue(":playlist_id", playlist_id);
-                    query_insert_into_playlisttracks.bindValue(":track_id", track_id);
-                    query_insert_into_playlisttracks.bindValue(":position", playlist_position++);
-                    if (!query_insert_into_playlisttracks.exec()) {
-                        LOG_FAILED_QUERY(query_insert_into_playlisttracks)
+                    pQueryInsertIntoPlaylistTracks->bindValue(":playlist_id", playlist_id);
+                    pQueryInsertIntoPlaylistTracks->bindValue(":track_id", track_id);
+                    pQueryInsertIntoPlaylistTracks->bindValue(":position", playlist_position++);
+                    if (!pQueryInsertIntoPlaylistTracks->exec()) {
+                        LOG_FAILED_QUERY(*pQueryInsertIntoPlaylistTracks)
                                 << "trackid" << track_id << " with path " << key
-                                << "playlistname; " << playlist_path <<" with ID " << playlist_id;
+                                << "playlistname; " << playlist_path << " with ID " << playlist_id;
                     }
                 }
             }

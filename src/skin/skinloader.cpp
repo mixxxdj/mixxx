@@ -14,6 +14,8 @@
 #include "util/debug.h"
 #include "util/timer.h"
 
+const QString kSkinsDirName = QStringLiteral("skins");
+
 namespace mixxx {
 namespace skin {
 
@@ -30,20 +32,25 @@ SkinLoader::~SkinLoader() {
     LegacySkinParser::clearSharedGroupStrings();
 }
 
-QList<SkinPointer> SkinLoader::getSkins() const {
-    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+QList<SkinPointer> SkinLoader::getUserSkins() const {
+    return getSkinsFromDir(getUserSkinDir());
+}
+
+QList<SkinPointer> SkinLoader::getSystemSkins() const {
+    return getSkinsFromDir(getSytemSkinDir());
+}
+
+QList<SkinPointer> SkinLoader::getSkinsFromDir(const QDir& dir) const {
     QList<SkinPointer> skins;
-    for (const QDir& dir : skinSearchPaths) {
-        const QList<QFileInfo> fileInfos = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-        for (const QFileInfo& fileInfo : fileInfos) {
-            QDir skinDir(fileInfo.absoluteFilePath());
-            SkinPointer pSkin = skinFromDirectory(skinDir);
-            if (pSkin) {
-                VERIFY_OR_DEBUG_ASSERT(pSkin->isValid()) {
-                    continue;
-                }
-                skins.append(pSkin);
+    const QList<QFileInfo> fileInfos = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QFileInfo& fileInfo : fileInfos) {
+        QDir skinDir(fileInfo.absoluteFilePath());
+        SkinPointer pSkin = skinFromDirectory(skinDir);
+        if (pSkin) {
+            VERIFY_OR_DEBUG_ASSERT(pSkin->isValid()) {
+                continue;
             }
+            skins.append(pSkin);
         }
     }
 
@@ -53,25 +60,38 @@ QList<SkinPointer> SkinLoader::getSkins() const {
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
     QList<QDir> searchPaths;
 
-    // Add user skin path to search paths
-    QDir userSkinsPath(m_pConfig->getSettingsPath());
-    if (userSkinsPath.cd("skins")) {
-        searchPaths.append(userSkinsPath);
+    const auto userSkinDir = getUserSkinDir();
+    if (!userSkinDir.path().isEmpty()) {
+        searchPaths.append(userSkinDir);
     }
 
-    // If we can't find the skins folder then we can't load a skin at all. This
-    // is a critical error in the user's Mixxx installation.
-    QDir skinsPath(m_pConfig->getResourcePath());
-    if (!skinsPath.cd("skins")) {
-        reportCriticalErrorAndQuit("Skin directory does not exist: " +
-                                   skinsPath.absoluteFilePath("skins"));
-    }
-    searchPaths.append(skinsPath);
+    searchPaths.append(getSytemSkinDir());
 
     return searchPaths;
 }
 
+QDir SkinLoader::getUserSkinDir() const {
+    QDir userSkinsPath(m_pConfig->getSettingsPath());
+    if (userSkinsPath.cd(kSkinsDirName)) {
+        return userSkinsPath;
+    }
+    return {};
+}
+
+QDir SkinLoader::getSytemSkinDir() const {
+    // If we can't find the skins folder then we can't load a skin at all. This
+    // is a critical error in the user's Mixxx installation.
+    QDir skinsPath(m_pConfig->getResourcePath());
+    if (!skinsPath.cd(kSkinsDirName)) {
+        reportCriticalErrorAndQuit("Skin directory does not exist: " +
+                skinsPath.absoluteFilePath(kSkinsDirName));
+    }
+    return skinsPath;
+}
+
 SkinPointer SkinLoader::getSkin(const QString& skinName) const {
+    // If there are skins with identical name in both the resource and user
+    // directory, we'll discover the one from the user dir first
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
     for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {

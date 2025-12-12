@@ -37,7 +37,7 @@ class AutoDJFeature : public LibraryFeature {
     void deleteItem(const QModelIndex& index) override;
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
-    bool dragMoveAccept(const QUrl& url) override;
+    bool dragMoveAccept(const QList<QUrl>& urls) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;

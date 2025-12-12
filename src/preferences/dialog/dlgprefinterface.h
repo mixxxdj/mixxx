@@ -40,6 +40,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetScheme(int);
     void slotSetSkinDescription();
     void slotSetSkinPreview();
+    void slotUpdateSkins();
     void slotUpdateSchemes();
 
   signals:

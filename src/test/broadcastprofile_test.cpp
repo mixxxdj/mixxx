@@ -35,6 +35,23 @@ TEST(BroadcastProfileTest, ForbiddenChars) {
     ASSERT_FALSE(BroadcastProfile::validName("<marquee>Scrolltext<marquee/>"));
     ASSERT_FALSE(BroadcastProfile::validName("It's called a \"profile\"."));
 
+    // Test if validPassword works properly with valid password
+    ASSERT_TRUE(BroadcastProfile::validPassword("superS4f3/&%#pass;word--"));
+
+    // Test if validPassword works properly with invalid password
+    ASSERT_FALSE(BroadcastProfile::validPassword("superS4f3/&%password--\r"));
+
+    // Test if control characters are properly removed
+    bool fixedString = false;
+    const QString invStr = QStringLiteral("yeah.com\r");
+    const QString retStr = BroadcastProfile::removeControlCharacters(
+            invStr,
+            QStringLiteral("someField"),
+            &fixedString);
+    ASSERT_TRUE(fixedString);
+    ASSERT_FALSE(invStr == retStr);
+    ASSERT_TRUE(retStr == QStringLiteral("yeah.com"));
+
     // Test if forbidden chars are properly stripped
     ASSERT_FALSE(BroadcastProfile::stripForbiddenChars(
                         "This is an invalid profile name: ?/").contains("?"));

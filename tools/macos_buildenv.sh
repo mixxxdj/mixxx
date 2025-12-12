@@ -29,7 +29,7 @@ fi
 
 HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
 
-if [ "$HOST_ARCH" == "x86_64" ]; then
+if [ "$HOST_ARCH" = "x86_64" ]; then
 	if [ -n "${BUILDENV_ARM64_CROSS}" ]; then
 	    if [ -n "${BUILDENV_RELEASE}" ]; then
 	        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
@@ -55,7 +55,7 @@ if [ "$HOST_ARCH" == "x86_64" ]; then
 	        BUILDENV_SHA256="0c75b39d6c03e34e794ab95cc460b1d11a0b976d572e31451b7c0798d9035d73"
 	    fi
 	fi
-elif [ "$HOST_ARCH" == "arm64" ]; then
+elif [ "$HOST_ARCH" = "arm64" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
         VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
         BUILDENV_BRANCH="2.6-rel"

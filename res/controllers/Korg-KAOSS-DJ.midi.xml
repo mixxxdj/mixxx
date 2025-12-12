@@ -144,7 +144,7 @@
                 <group>[Channel1]</group>
                 <key>KAOSSDJ.wheelTurn</key>
                 <description>Left Jog Wheel Turn Scratch</description>
-                <status>0x97</status>
+                <status>0xB7</status>
                 <midino>0x10</midino>
                 <options>
                     <script-binding/>

@@ -9,7 +9,15 @@
 
 using namespace mixxx;
 
+#define STEM_FILE QStringLiteral("stems/sin_%1.stem.mp4").arg(QString::fromStdString(GetParam()))
+
 namespace {
+
+const std::vector<std::string> supportedCodecs = {
+#if !defined(Q_OS_WIN)
+        "AAC_256kbps_VBR",
+#endif
+        "ALAC_24bit"};
 
 const QList<QString> kStemFiles = {
         "01-drum.wav",
@@ -18,7 +26,7 @@ const QList<QString> kStemFiles = {
         "04-vocal.wav",
 };
 
-class StemTest : public MixxxTest {
+class StemFixture : public MixxxTest, public ::testing::WithParamInterface<std::string> {
   protected:
     void SetUp() override {
         ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported("stem.mp4") ||
@@ -26,8 +34,8 @@ class StemTest : public MixxxTest {
     }
 };
 
-TEST_F(StemTest, FetchStemInfo) {
-    TrackPointer pTrack(Track::newTemporary(getTestDir().filePath("stems/test.stem.mp4")));
+TEST_P(StemFixture, FetchStemInfo) {
+    TrackPointer pTrack(Track::newTemporary(getTestDir().filePath(STEM_FILE)));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -42,7 +50,7 @@ TEST_F(StemTest, FetchStemInfo) {
     ASSERT_EQ(stemInfo.at(3), StemInfo("Vox", QColor(0xad, 0x65, 0xff)));    // #ad65ff
 }
 
-TEST_F(StemTest, FetchStemEmptyInfo) {
+TEST_P(StemFixture, FetchStemEmptyInfo) {
     TrackPointer pTrack(Track::newTemporary(
             getTestDir().filePath("stems/test_missing_stem_details.stem.mp4")));
 
@@ -59,10 +67,10 @@ TEST_F(StemTest, FetchStemEmptyInfo) {
     ASSERT_EQ(stemInfo.at(3), StemInfo("Stem #4", QColor(0x56, 0xB4, 0xE9)));
 }
 
-TEST_F(StemTest, ReadMainMix) {
+TEST_P(StemFixture, ReadMainMix) {
     SoundSourceFFmpeg sourceMainMix(
             QUrl::fromLocalFile(getTestDir().filePath("stems/mainmix.wav")));
-    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath("stems/test.stem.mp4")));
+    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath(STEM_FILE)));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -96,14 +104,14 @@ TEST_F(StemTest, ReadMainMix) {
     EXPECT_TRUE(0 == std::memcmp(buffer1.data(), buffer1.data(), sizeof(buffer1)));
 }
 
-TEST_F(StemTest, ReadEachStem) {
+TEST_P(StemFixture, ReadEachStem) {
     int stemIdx = 0;
     for (auto& stem : kStemFiles) {
         SoundSourceFFmpeg sourceStandaloneStem(
                 QUrl::fromLocalFile(getTestDir().filePath("stems/" + stem)));
         SoundSourceSingleSTEM sourceStem(
                 QUrl::fromLocalFile(
-                        getTestDir().filePath("stems/test.stem.mp4")),
+                        getTestDir().filePath(STEM_FILE)),
                 stemIdx++);
 
         mixxx::AudioSource::OpenParams config;
@@ -139,8 +147,8 @@ TEST_F(StemTest, ReadEachStem) {
     }
 }
 
-TEST_F(StemTest, OpenStem) {
-    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath("stems/test.stem.mp4")));
+TEST_P(StemFixture, OpenStem) {
+    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath(STEM_FILE)));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(8));
@@ -151,5 +159,13 @@ TEST_F(StemTest, OpenStem) {
                       mixxx::audio::SampleRate(44100)),
             sourceStem.getSignalInfo());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+        StemTest,
+        StemFixture,
+        ::testing::ValuesIn(supportedCodecs),
+        [](const testing::TestParamInfo<StemFixture::ParamType>& info) {
+            return info.param;
+        });
 
 } // namespace

@@ -7,7 +7,9 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "moc_controllermanager.cpp"
+#include "preferences/usersettings.h"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
@@ -354,7 +356,7 @@ void ControllerManager::slotPollDevices() {
     // we are cooperative a skip the next cycle to free at least some
     // CPU time
     //
-    // Some random test data form a i5-3317U CPU @ 1.70GHz Running
+    // Some random test data from a i5-3317U CPU @ 1.70GHz Running
     // Ubuntu Trusty:
     // * Idle poll: ~5 µs.
     // * 5 messages burst (full midi bandwidth): ~872 µs.
@@ -412,6 +414,8 @@ void ControllerManager::closeController(Controller* pController) {
             ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 0);
 }
 
+// This needs to be called in a Qt::BlockingQueuedConnection so that the
+// signaling thread can't alter the LegacyControllerMapping during applying
 void ControllerManager::slotApplyMapping(Controller* pController,
         std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
@@ -434,7 +438,6 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         qWarning() << "Mapping is dirty, changes might be lost on restart!";
     }
 
-
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
     m_pConfig->set(key, pMapping->filePath());
@@ -442,11 +445,19 @@ void ControllerManager::slotApplyMapping(Controller* pController,
     pController->setMapping(std::move(pMapping));
 
     if (bEnabled) {
-        openController(pController);
         emit mappingApplied(pController->isMappable());
     } else {
         emit mappingApplied(false);
+        return;
     }
+
+    // Note: openController() may call ControllerRenderingEngine::setup()
+    // Which has a blocking invokeMethod() call for QOffscreenSurface::create()
+    // That why we need to return from this blocking call first.
+    QMetaObject::invokeMethod(
+            this,
+            [this, pController]() { openController(pController); },
+            Qt::QueuedConnection);
 }
 
 // static

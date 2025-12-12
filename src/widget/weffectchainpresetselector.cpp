@@ -31,6 +31,7 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
 
+#ifdef __STEM__
     VERIFY_OR_DEBUG_ASSERT(m_pChain != nullptr) {
         SKIN_WARNING(node,
                 context,
@@ -38,6 +39,12 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
                                "attach to EffectChain"));
         return;
     }
+#else
+    if (m_pChain == nullptr) {
+        // This happens if the skin has stem nodes but Mixxx has no stem support.
+        return;
+    }
+#endif
 
     auto* pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
     if (pQuickEffectChain) {

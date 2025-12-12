@@ -54,6 +54,9 @@ ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
 }
 
 void ControllerScriptEngineLegacy::watchFilePath(const QString& path) {
+#ifdef __ANDROID__
+    return;
+#endif
     if (m_fileWatcher.files().contains(path) || m_fileWatcher.directories().contains(path)) {
         qCDebug(m_logger) << "File" << path << "is already being watch for controller auto-reload";
         return;
@@ -757,8 +760,12 @@ std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen> ControllerScriptEngineLega
     }
 
     QDir dir(m_resourcePath + "/qml/");
+    if (!scene.open(QIODevice::ReadOnly)) {
+        qCWarning(m_logger) << "Unable to open QML scene file:"
+                            << qmlScript.file.absoluteFilePath();
+        return nullptr;
+    }
 
-    scene.open(QIODevice::ReadOnly);
     qmlComponent.setData(scene.readAll(),
             // Obfuscate the scene filename to make it appear in the QML folder.
             // This allows a smooth integration with QML components.
