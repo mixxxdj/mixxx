@@ -83,6 +83,16 @@ class TreeItem final {
     const QList<TreeItem*>& children() const {
         return m_children;
     }
+    /// Get the tree level of the item. Returns 0 if this is the root.
+    int childLevel() const {
+        int level = 0;
+        TreeItem* pTempItem = const_cast<TreeItem*>(this);
+        while (pTempItem->hasParent()) {
+            level++;
+            pTempItem = pTempItem->parent();
+        }
+        return level;
+    }
 
     TreeItem* appendChild(
             QString label,

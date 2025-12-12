@@ -3019,15 +3019,26 @@ WTrackTableView::item:selected,
     color: #fff;
   }
 
-WLibrarySidebar::item:selected:focus {
-  outline: none;
-}
-WLibrarySidebar::item:!selected:focus,
-/* This, in conjunction with the c++ counterpart, styles only items hovered while dragging */
-WLibrarySidebar[dragHover="true"]::item:hover {
-  outline: none;
-  border: 1px solid white;
-}
+WLibrarySidebar::item {
+  /* add a dummy border so item text is not shifted when item is focused */
+  border-left: 1px solid transparent;
+  /* add right border so text is not elided when focus border is added */
+  border-right: 1px solid transparent;
+  }
+  /* subtle highlight if item is selected */
+  WLibrarySidebar::item:focus {
+    outline: none;
+    border: 1px solid #999;
+  }
+  WLibrarySidebar::item:selected:focus {
+    outline: none;
+  }
+  WLibrarySidebar::item:!selected:focus,
+  /* This, in conjunction with the c++ counterpart, styles only items hovered while dragging */
+  WLibrarySidebar[dragHover="true"]::item:hover {
+    outline: none;
+    border: 1px solid white;
+  }
 
 WTrackTableView:focus,
 WLibrarySidebar:focus,
