@@ -67,6 +67,11 @@ void WaveformRendererRGB::paintGL() {
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
 
+    // Fixes a sporadic crash caused by a division by zero on waveform initialization
+    if (visualIncrementPerPixel == 0.0) {
+        return;
+    }
+
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     // applyCompensation = false, as we scale to match filtered.all

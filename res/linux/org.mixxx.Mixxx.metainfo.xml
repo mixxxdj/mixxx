@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.4" type="development" date="2025-11-15" timestamp="1763214302">
+    <release version="2.5.4" type="development" date="2025-12-12" timestamp="1765498789">
       <description>
  <p>
   Controller Mappings
@@ -121,6 +121,10 @@
    Reloop Beatmix 2/4: fix overriding persisted fx routing
    #15574
    #14917
+  </li>
+  <li>
+   Traktor S4Mk3: don't stop scratch mode if platter is being held
+   #15570
   </li>
   <li>
    Components JogwheelBasic: Disable scratching when leaving
@@ -189,6 +193,11 @@
    #15302
   </li>
   <li>
+   Computer: stop model population when switching to another feature
+   #11445
+   #15677
+  </li>
+  <li>
    Library scanner: make Cancel button work again
    #15320
    #14940
@@ -208,6 +217,20 @@
   <li>
    Search: maintain cursor position when saving query
    #15512
+  </li>
+  <li>
+   Search: add proper DateAddedFilter
+   #15572
+  </li>
+  <li>
+   Analyze view: avoid listing tracks that don't match the 'New' filter
+   #15597
+   #14873
+   #15693
+  </li>
+  <li>
+   Traktor feature: fixes to Traktor collection importer
+   #15645
   </li>
  </ul>
  <p>
@@ -338,6 +361,20 @@
    #15579
    #15619
    #15610
+  </li>
+  <li>
+   Update Keyboard SVG
+   #15635
+  </li>
+  <li>
+   SoundSourceFFmpeg: Fix opening files with non ASCII characters
+   #15700
+   #15681
+  </li>
+  <li>
+   Fix possible crash due to division by zereo in waveform code
+   #15738
+   #15737
   </li>
  </ul>
 </description>
