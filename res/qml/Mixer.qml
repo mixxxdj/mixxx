@@ -10,21 +10,20 @@ Item {
     required property var groups
     property bool show4decks: false
 
-    implicitWidth: 190
     implicitHeight: content.height + crossfader.height
+    implicitWidth: 190
 
     Skin.SectionBackground {
         anchors.fill: parent
     }
-
     Column {
         anchors.fill: parent
 
         Item {
             id: content
 
-            width: root.implicitWidth
             height: (root.show4decks ? eqDeck1.height * 2 : eqDeck1.height) + 10
+            width: root.implicitWidth
 
             Skin.SectionBackground {
                 anchors.fill: parent
@@ -33,112 +32,14 @@ Item {
                 anchors.fill: parent
                 anchors.margins: 5
 
-                Skin.EqColumn {
-                    id: eqDeck3
-                    visible: root.show4decks
-                    width: 42
-                    group: root.groups[2]
-                    anchors {
-                        left: parent.left
-                        top: parent.top
-                        rightMargin: 4
-                    }
-                }
-
-                Skin.EqColumn {
-                    id: eqDeck1
-                    width: 42
-                    group: root.groups[0]
-                    anchors {
-                        left: parent.left
-                        top: parent.top
-                        leftMargin: root.show4decks ? 4 : 0
-                        rightMargin: 4
-                    }
-                }
-
-                Skin.MixerColumn {
-                    id: mixerDeck3
-                    visible: root.show4decks
-                    width: 42
-                    height: eqDeck2.height
-                    group: root.groups[2]
-                    anchors {
-                        left: parent.left
-                        top: eqDeck3.bottom
-                        rightMargin: 4
-                    }
-                }
-
-                Skin.MixerColumn {
-                    id: mixerDeck1
-                    width: 42
-                    height: eqDeck1.height
-                    group: root.groups[0]
-                    anchors {
-                        left: eqDeck1.right
-                        top: parent.top
-                        leftMargin: 4
-                        rightMargin: 2
-                    }
-                }
-
-                Skin.MixerColumn {
-                    id: mixerDeck2
-                    width: 42
-                    height: eqDeck2.height
-                    group: root.groups[1]
-                    anchors {
-                        right: eqDeck2.left
-                        top: parent.top
-                        leftMargin: 2
-                        rightMargin: 4
-                    }
-                }
-
-                Skin.MixerColumn {
-                    id: mixerDeck4
-                    visible: root.show4decks
-                    width: 42
-                    height: eqDeck2.height
-                    group: root.groups[3]
-                    anchors {
-                        right: parent.right
-                        top: eqDeck4.bottom
-                        leftMargin: 4
-                    }
-                }
-
-                Skin.EqColumn {
-                    id: eqDeck2
-                    width: 42
-                    group: root.groups[1]
-                    anchors {
-                        right: parent.right
-                        top: parent.top
-                        // leftMargin: 4
-                        rightMargin: root.show4decks ? 4 : 0
-                    }
-                }
-
-                Skin.EqColumn {
-                    id: eqDeck4
-                    visible: root.show4decks
-                    width: 42
-                    group: root.groups[3]
-                    anchors {
-                        right: parent.right
-                        top: parent.top
-                        leftMargin: 4
-                    }
-                }
-
                 states: [
                     State {
                         name: "2decks"
                         when: root.show4decks
+
                         AnchorChanges {
                             target: eqDeck1
+
                             anchors {
                                 left: eqDeck3.right
                                 top: parent.top
@@ -146,6 +47,7 @@ Item {
                         }
                         AnchorChanges {
                             target: mixerDeck1
+
                             anchors {
                                 left: mixerDeck3.right
                                 top: eqDeck1.bottom
@@ -153,6 +55,7 @@ Item {
                         }
                         AnchorChanges {
                             target: mixerDeck2
+
                             anchors {
                                 right: mixerDeck4.left
                                 top: eqDeck2.bottom
@@ -160,6 +63,7 @@ Item {
                         }
                         AnchorChanges {
                             target: eqDeck2
+
                             anchors {
                                 right: eqDeck4.left
                                 top: parent.top
@@ -167,13 +71,122 @@ Item {
                         }
                     }
                 ]
+
+                Skin.EqColumn {
+                    id: eqDeck3
+
+                    group: root.groups[2]
+                    visible: root.show4decks
+                    width: 42
+
+                    anchors {
+                        left: parent.left
+                        rightMargin: 4
+                        top: parent.top
+                    }
+                }
+                Skin.EqColumn {
+                    id: eqDeck1
+
+                    group: root.groups[0]
+                    width: 42
+
+                    anchors {
+                        left: parent.left
+                        leftMargin: root.show4decks ? 4 : 0
+                        rightMargin: 4
+                        top: parent.top
+                    }
+                }
+                Skin.MixerColumn {
+                    id: mixerDeck3
+
+                    group: root.groups[2]
+                    height: eqDeck2.height
+                    visible: root.show4decks
+                    width: 42
+
+                    anchors {
+                        left: parent.left
+                        rightMargin: 4
+                        top: eqDeck3.bottom
+                    }
+                }
+                Skin.MixerColumn {
+                    id: mixerDeck1
+
+                    group: root.groups[0]
+                    height: eqDeck1.height
+                    width: 42
+
+                    anchors {
+                        left: eqDeck1.right
+                        leftMargin: 4
+                        rightMargin: 2
+                        top: parent.top
+                    }
+                }
+                Skin.MixerColumn {
+                    id: mixerDeck2
+
+                    group: root.groups[1]
+                    height: eqDeck2.height
+                    width: 42
+
+                    anchors {
+                        leftMargin: 2
+                        right: eqDeck2.left
+                        rightMargin: 4
+                        top: parent.top
+                    }
+                }
+                Skin.MixerColumn {
+                    id: mixerDeck4
+
+                    group: root.groups[3]
+                    height: eqDeck2.height
+                    visible: root.show4decks
+                    width: 42
+
+                    anchors {
+                        leftMargin: 4
+                        right: parent.right
+                        top: eqDeck4.bottom
+                    }
+                }
+                Skin.EqColumn {
+                    id: eqDeck2
+
+                    group: root.groups[1]
+                    width: 42
+
+                    anchors {
+                        right: parent.right
+                        // leftMargin: 4
+                        rightMargin: root.show4decks ? 4 : 0
+                        top: parent.top
+                    }
+                }
+                Skin.EqColumn {
+                    id: eqDeck4
+
+                    group: root.groups[3]
+                    visible: root.show4decks
+                    width: 42
+
+                    anchors {
+                        leftMargin: 4
+                        right: parent.right
+                        top: parent.top
+                    }
+                }
             }
         }
         Item {
             id: crossfader
 
-            width: root.implicitWidth
             height: 40
+            width: root.implicitWidth
 
             Skin.SectionBackground {
                 anchors.fill: parent
@@ -185,42 +198,41 @@ Item {
                 Skin.SectionBackground {
                     anchors.fill: parent
                 }
-
                 GridLayout {
                     id: leftDeckAssignment
 
+                    anchors.left: parent.left
                     columnSpacing: 0
                     rowSpacing: 0
-
                     width: root.show4decks ? 34 : 17
-                    anchors.left: parent.left
 
                     Repeater {
                         model: root.show4decks ? 4 : 2
+
                         Item {
                             required property int index
+
                             Layout.column: show4decks ? index % 2 : 0
                             Layout.row: root.show4decks ? parseInt(index / 2) : index
-
-                            implicitWidth: 17
                             implicitHeight: 17
+                            implicitWidth: 17
 
                             Skin.SectionBackground {
                                 anchors.fill: parent
                             }
-
                             Skin.ControlButton {
                                 id: deckButton
+
+                                activeColor: Theme.deckActiveColor
+                                group: `[Channel${index + 1}]`
+                                key: "orientation_left"
+                                text: `${index + 1}`
+                                toggleable: true
+
                                 anchors {
                                     fill: parent
                                     margins: 1
                                 }
-
-                                group: `[Channel${index+1}]`
-                                key: "orientation_left"
-                                text: `${index+1}`
-                                toggleable: true
-                                activeColor: Theme.deckActiveColor
                             }
                         }
                     }
@@ -228,19 +240,19 @@ Item {
                 Skin.ControlFader {
                     id: crossfaderSlider
 
+                    barColor: Theme.crossfaderBarColor
+                    barStart: 0.5
+                    bg: Theme.imgCrossfaderBackground
+                    fg: Theme.imgCrossfaderHandle
+                    group: "[Master]"
+                    key: "crossfader"
+                    orientation: Qt.Horizontal
+
                     anchors {
                         left: leftDeckAssignment.right
                         right: rightDeckAssignment.left
                         verticalCenter: parent.verticalCenter
                     }
-
-                    orientation: Qt.Horizontal
-                    group: "[Master]"
-                    key: "crossfader"
-                    barColor: Theme.crossfaderBarColor
-                    barStart: 0.5
-                    fg: Theme.imgCrossfaderHandle
-                    bg: Theme.imgCrossfaderBackground
                     handleImage {
                         height: 34
                     }
@@ -248,38 +260,38 @@ Item {
                 GridLayout {
                     id: rightDeckAssignment
 
+                    anchors.right: parent.right
                     columnSpacing: 0
                     rowSpacing: 0
-
                     width: root.show4decks ? 34 : 17
-                    anchors.right: parent.right
 
                     Repeater {
                         model: root.show4decks ? 4 : 2
+
                         Item {
                             required property int index
+
                             Layout.column: show4decks ? index % 2 : 0
                             Layout.row: root.show4decks ? parseInt(index / 2) : index
-
-                            implicitWidth: 17
                             implicitHeight: 17
+                            implicitWidth: 17
 
                             Skin.SectionBackground {
                                 anchors.fill: parent
                             }
-
                             Skin.ControlButton {
                                 id: deckButton
+
+                                activeColor: Theme.deckActiveColor
+                                group: `[Channel${index + 1}]`
+                                key: "orientation_right"
+                                text: `${index + 1}`
+                                toggleable: true
+
                                 anchors {
                                     fill: parent
                                     margins: 1
                                 }
-
-                                group: `[Channel${index+1}]`
-                                key: "orientation_right"
-                                text: `${index+1}`
-                                toggleable: true
-                                activeColor: Theme.deckActiveColor
                             }
                         }
                     }

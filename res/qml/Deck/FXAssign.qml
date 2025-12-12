@@ -15,45 +15,57 @@ Item {
     states: [
         State {
             when: holder.index == 0
-            AnchorChanges { target: root; anchors.top: parent.top; anchors.bottom: undefined }
+
+            AnchorChanges {
+                anchors.bottom: undefined
+                anchors.top: parent.top
+                target: root
+            }
         },
         State {
             when: holder.index != 0
-            AnchorChanges { target: root; anchors.top: undefined; anchors.bottom: parent.bottom }
+
+            AnchorChanges {
+                anchors.bottom: parent.bottom
+                anchors.top: undefined
+                target: root
+            }
         }
     ]
-
     transitions: Transition {
-        AnchorAnimation { duration: 250 }
+        AnchorAnimation {
+            duration: 250
+        }
     }
 
     Label {
-        anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        text: "FX Assign"
-        font.pixelSize: 8
+        anchors.top: parent.top
         color: '#626262'
+        font.pixelSize: 8
+        text: "FX Assign"
     }
-
     RowLayout {
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.bottom: parent.bottom
+
         Repeater {
             model: 4
+
             Skin.ControlButton {
-                required property int index
-                Layout.maximumWidth: 30
-                Layout.minimumWidth: 22
                 id: fx1AssignButton
 
-                implicitHeight: 22
+                required property int index
 
-                group: `[EffectRack1_EffectUnit${index+1}]`
-                key: `group_${root.group}_enable`
-                text: `${index+1}`
-                toggleable: true
+                Layout.maximumWidth: 30
+                Layout.minimumWidth: 22
                 activeColor: Theme.deckActiveColor
+                group: `[EffectRack1_EffectUnit${index + 1}]`
+                implicitHeight: 22
+                key: `group_${root.group}_enable`
+                text: `${index + 1}`
+                toggleable: true
             }
         }
     }

@@ -11,25 +11,23 @@ Rectangle {
     required property string statusKey
 
     color: Theme.knobBackgroundColor
-    width: 42
     height: 42
-    radius: 5
     opacity: statusControl.value ? 0.4 : 1
+    radius: 5
+    width: 42
 
     TapHandler {
         onDoubleTapped: {
-            statusControl.value = !statusControl.value
+            statusControl.value = !statusControl.value;
         }
     }
-
     Skin.ControlKnob {
         id: knob
 
         anchors.centerIn: root
-        width: 36
         height: 36
+        width: 36
     }
-
     Mixxx.ControlProxy {
         id: statusControl
 

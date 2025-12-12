@@ -1,5 +1,5 @@
-import QtQuick 2.12
 pragma Singleton
+import QtQuick 2.12
 
 QtObject {
     property color accent: "#2D4EA1"
@@ -7,9 +7,10 @@ QtObject {
     property color backgroundColor: "#1e1e1e"
     property color blue: "#01dcfc"
     property color bpmSliderBarColor: blue
-    property color buttonNormalColor: midGray
     property color buttonActiveColor: white
     property color buttonDisableColor: lightGray
+    property int buttonFontPixelSize: 10
+    property color buttonNormalColor: midGray
     property color crossfaderBarColor: blue
     property color crossfaderOrientationColor: lightGray
     property color darkGray: "#0f0f0f"
@@ -17,13 +18,13 @@ QtObject {
     property color darkGray3: "#3F3F3F"
     property color deckActiveColor: white
     property color deckBackgroundColor: "#1e1e1e"
-    property color deckInfoBarBackgroundColor: '#0e0e0e'
     property color deckBeatjumpBackgroundColor: midGray3
     property color deckBeatjumpLabelColor: darkGray3
+    property color deckEmptyCoverArt: darkGray3
+    property color deckInfoBarBackgroundColor: '#0e0e0e'
+    property color deckLineColor: darkGray2
     property color deckLoopBackgroundColor: midGray3
     property color deckLoopLabelColor: darkGray3
-    property color deckEmptyCoverArt: darkGray3
-    property color deckLineColor: darkGray2
     property color deckTextColor: white
     property color effectColor: yellow
     property color effectUnitColor: red
@@ -32,44 +33,9 @@ QtObject {
     property color eqHighColor: white
     property color eqLowColor: white
     property color eqMidColor: white
+    property string fontFamily: "Open Sans"
     property color gainKnobColor: blue
     property color green: "#85c85b"
-    property color knobBackgroundColor: "#262626"
-    property color lightGray2: "#b0b0b0"
-    property color lightGray: "#747474"
-    property color lightGray3: "#939393"
-    property color libraryPanelSplitterBackground: "#1e1e1e"
-    property color libraryPanelSplitterHandleActive: "#7a7a7a"
-    property color libraryPanelSplitterHandle: "#5f5f5f"
-    property color midGray: "#696969"
-    property color midGray2: "#676767"
-    property color midGray3: "#626262"
-    property color panelSplitterBackground: backgroundColor
-    property color panelSplitterHandleActive: lightGray2
-    property color panelSplitterHandle: midGray
-    property color pflActiveButtonColor: blue
-    property color red: "#ea2a4e"
-    property color samplerColor: blue
-    property color sunkenBackgroundColor: "#0C0C0C"
-    property color textColor: white
-    property color toolbarActiveColor: white
-    property color toolbarBackgroundColor: darkGray2
-    property color volumeSliderBarColor: blue
-    property color warningColor: "#7D3B3B"
-    property color waveformBeatColor: lightGray
-    property color waveformCursorColor: white
-    property color waveformMarkerDefault: '#ff7a01'
-    property color waveformMarkerIntroOutroColor: '#2c5c9a'
-    property color waveformMarkerLabel: Qt.rgba(255, 255, 255, 0.8)
-    property color waveformMarkerLoopColor: '#00b400'
-    property color waveformMarkerLoopColorDisabled: '#FFFFFF'
-    property color waveformPostrollColor: midGray
-    property color waveformPrerollColor: midGray
-    property color white: "#D9D9D9"
-    property color yellow: "#fca001"
-    property int buttonFontPixelSize: 10
-    property int textFontPixelSize: 14
-    property string fontFamily: "Open Sans"
     property string imgBpmSliderBackground: "images/slider_bpm.svg"
     property string imgButton: "images/button.svg"
     property string imgButtonPressed: "images/button_pressed.svg"
@@ -85,4 +51,38 @@ QtObject {
     property string imgSectionBackground: "images/section.svg"
     property string imgSliderHandle: "images/slider_handle.svg"
     property string imgVolumeSliderBackground: "images/slider_volume.svg"
+    property color knobBackgroundColor: "#262626"
+    property color libraryPanelSplitterBackground: "#1e1e1e"
+    property color libraryPanelSplitterHandle: "#5f5f5f"
+    property color libraryPanelSplitterHandleActive: "#7a7a7a"
+    property color lightGray: "#747474"
+    property color lightGray2: "#b0b0b0"
+    property color lightGray3: "#939393"
+    property color midGray: "#696969"
+    property color midGray2: "#676767"
+    property color midGray3: "#626262"
+    property color panelSplitterBackground: backgroundColor
+    property color panelSplitterHandle: midGray
+    property color panelSplitterHandleActive: lightGray2
+    property color pflActiveButtonColor: blue
+    property color red: "#ea2a4e"
+    property color samplerColor: blue
+    property color sunkenBackgroundColor: "#0C0C0C"
+    property color textColor: white
+    property int textFontPixelSize: 14
+    property color toolbarActiveColor: white
+    property color toolbarBackgroundColor: darkGray2
+    property color volumeSliderBarColor: blue
+    property color warningColor: "#7D3B3B"
+    property color waveformBeatColor: lightGray
+    property color waveformCursorColor: white
+    property color waveformMarkerDefault: '#ff7a01'
+    property color waveformMarkerIntroOutroColor: '#2c5c9a'
+    property color waveformMarkerLabel: Qt.rgba(255, 255, 255, 0.8)
+    property color waveformMarkerLoopColor: '#00b400'
+    property color waveformMarkerLoopColorDisabled: '#FFFFFF'
+    property color waveformPostrollColor: midGray
+    property color waveformPrerollColor: midGray
+    property color white: "#D9D9D9"
+    property color yellow: "#fca001"
 }
