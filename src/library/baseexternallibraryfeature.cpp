@@ -220,7 +220,6 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
 
 std::unique_ptr<BaseSqlTableModel>
 BaseExternalLibraryFeature::createPlaylistModelForPlaylist(
-        const QVariant& data) {
-    Q_UNUSED(data);
+        const QVariant&) {
     return {};
 }
