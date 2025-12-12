@@ -119,6 +119,9 @@
 * SoundSourceFFmpeg: Fix opening files with non ASCII characters
   [#15700](https://github.com/mixxxdj/mixxx/pull/15700)
   [#15681](https://github.com/mixxxdj/mixxx/issues/15681)
+* Fix possible crash due to division by zereo in waveform code
+  [#15738](https://github.com/mixxxdj/mixxx/pull/15738)
+  [#15737](https://github.com/mixxxdj/mixxx/issues/15737)
 
 ## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (2025-09-02)
 

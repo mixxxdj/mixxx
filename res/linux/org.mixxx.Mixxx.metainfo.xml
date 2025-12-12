@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.4" type="development" date="2025-12-06" timestamp="1765034213">
+    <release version="2.5.4" type="development" date="2025-12-12" timestamp="1765498789">
       <description>
  <p>
   Controller Mappings
@@ -370,6 +370,11 @@
    SoundSourceFFmpeg: Fix opening files with non ASCII characters
    #15700
    #15681
+  </li>
+  <li>
+   Fix possible crash due to division by zereo in waveform code
+   #15738
+   #15737
   </li>
  </ul>
 </description>
