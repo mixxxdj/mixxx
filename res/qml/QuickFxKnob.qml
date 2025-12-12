@@ -6,34 +6,32 @@ import "Theme"
 Rectangle {
     id: root
 
-    property alias knob: knob
     required property string group
+    property alias knob: knob
 
     color: Theme.knobBackgroundColor
-    width: 42
     height: 42
-    radius: 5
     opacity: statusControl.value ? 1 : 0.4
+    radius: 5
+    width: 42
 
     Skin.ControlKnob {
         id: knob
 
-        group: root.group
-        key: "super1"
-
         anchors.horizontalCenter: root.horizontalCenter
         anchors.top: root.top
-        width: 36
+        group: root.group
         height: 36
+        key: "super1"
+        width: 36
     }
-
     TapHandler {
         acceptedButtons: Qt.LeftButton
+
         onDoubleTapped: {
-            statusControl.value = !statusControl.value
+            statusControl.value = !statusControl.value;
         }
     }
-
     Mixxx.ControlProxy {
         id: statusControl
 

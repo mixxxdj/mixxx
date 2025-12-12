@@ -6,10 +6,10 @@ Slider {
     id: root
 
     property bool bar: false
-    property real barMargin: 0
     property alias barColor: barPath.strokeColor
-    property alias barWidth: barPath.strokeWidth
+    property real barMargin: 0
     property real barStart: 0
+    property alias barWidth: barPath.strokeWidth
 
     orientation: Qt.Vertical
     wheelEnabled: true
@@ -25,11 +25,11 @@ Slider {
         ShapePath {
             id: barPath
 
-            strokeColor: "transparent"
-            strokeWidth: 2
             fillColor: "transparent"
             startX: barShape.width * (root.horizontal ? (1 - root.barStart) : 0.5)
             startY: barShape.height * (root.vertical ? (1 - root.barStart) : 0.5)
+            strokeColor: "transparent"
+            strokeWidth: 2
 
             PathLine {
                 x: root.horizontal ? (barShape.width * root.value) : barPath.startX
