@@ -375,9 +375,11 @@
   <li>
    Fix possible crash due to division by zereo in waveform code
    #15738
-   #15737
   </li>
  </ul>
+ <p>
+  #15737
+ </p>
 </description>
     </release>
     <release version="2.5.3" type="stable" date="2025-09-02" timestamp="1756771200">
