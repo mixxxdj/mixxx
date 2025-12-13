@@ -597,9 +597,14 @@ TEST_F(LegacyControllerMappingSettingsTest, fileSettingsHandleQMLValue) {
                         getTestDir().filePath("id3-test-data/empty.mp3")))));
         setting.setValue(aUrl);
 
-        ASSERT_EQ(setting.value().toVariant().value<QUrl>(),
-                QUrl(QStringLiteral("file:%1").arg(
-                        getTestDir().filePath("id3-test-data/empty.mp3"))));
+#if defined(__WINDOWS__)
+        // On Windows, an absolute URL will start with the drive latter, which needs escaping
+        auto expected = QUrl(QStringLiteral("file:///%1").arg(
+#else
+        auto expected = QUrl(QStringLiteral("file:%1").arg(
+#endif
+                getTestDir().filePath("id3-test-data/empty.mp3")));
+        ASSERT_EQ(setting.value().toVariant().value<QUrl>(), expected);
     }
 }
 #endif
