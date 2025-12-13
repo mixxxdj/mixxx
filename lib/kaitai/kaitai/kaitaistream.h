@@ -2,15 +2,20 @@
 #define KAITAI_STREAM_H
 
 // Kaitai Struct runtime API version: x.y.z = 'xxxyyyzzz' decimal
-#define KAITAI_STRUCT_VERSION 10000L
+#define KAITAI_STRUCT_VERSION 11000L
 
-#include <istream>
-#include <sstream>
-#include <stdint.h>
-#include <sys/types.h>
-#include <limits>
-#include <stdexcept>
-#include <errno.h>
+// check for C++11 support - https://stackoverflow.com/a/40512515
+#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#define KAITAI_STREAM_H_CPP11_SUPPORT
+#endif
+
+#include <stdint.h> // int8_t, int16_t, int32_t, int64_t, uint8_t, uint16_t, uint32_t, uint64_t
+
+#include <ios> // std::streamsize, forward declaration of std::istream  // IWYU pragma: keep
+#include <cstddef> // std::size_t
+#include <climits> // LLONG_MAX, ULLONG_MAX
+#include <sstream> // std::istringstream  // IWYU pragma: keep
+#include <string> // std::string
 
 namespace kaitai {
 
@@ -163,15 +168,13 @@ public:
     std::string read_bytes(std::streamsize len);
     std::string read_bytes_full();
     std::string read_bytes_term(char term, bool include, bool consume, bool eos_error);
+    std::string read_bytes_term_multi(std::string term, bool include, bool consume, bool eos_error);
     std::string ensure_fixed_contents(std::string expected);
 
     static std::string bytes_strip_right(std::string src, char pad_byte);
     static std::string bytes_terminate(std::string src, char term, bool include);
+    static std::string bytes_terminate_multi(std::string src, std::string term, bool include);
     static std::string bytes_to_str(const std::string src, const char *src_enc);
-    // workaround for https://github.com/kaitai-io/kaitai_struct_cpp_stl_runtime/issues/67
-    static std::string bytes_to_str(const std::string src, const std::string& enc) {
-      return bytes_to_str(src, enc.c_str());                       
-    }
 
     //@}
 
@@ -179,18 +182,18 @@ public:
     //@{
 
     /**
-     * Performs a XOR processing with given data, XORing every byte of input with a single
-     * given value.
+     * Performs XOR processing on the given data, XORing each byte of the input with a
+     * single-byte key.
      * @param data data to process
-     * @param key value to XOR with
+     * @param key byte value to XOR with
      * @return processed data
      */
     static std::string process_xor_one(std::string data, uint8_t key);
 
     /**
-     * Performs a XOR processing with given data, XORing every byte of input with a key
-     * array, repeating key array many times, if necessary (i.e. if data array is longer
-     * than key array).
+     * Performs XOR processing on the given data, XORing all bytes of the input with a
+     * multi-byte key, repeating the key as many times as necessary (if the input data is
+     * longer than the key).
      * @param data data to process
      * @param key array of bytes to XOR with
      * @return processed data
@@ -226,70 +229,77 @@ public:
      */
     static int mod(int a, int b);
 
+    // NB: the following 6 overloads of `to_string` are exactly the ones that
+    // [`std::to_string`](https://en.cppreference.com/w/cpp/string/basic_string/to_string) has.
+    // Testing has shown that they are all necessary: if you remove any of them, you will get
+    // something like `error: call to 'to_string' is ambiguous` when trying to call `to_string`
+    // with the integer type for which you removed the overload.
+
     /**
      * Converts given integer `val` to a decimal string representation.
-     * Should be used in place of std::to_string() (which is available only
+     * Should be used in place of `std::to_string(int)` (which is available only
      * since C++11) in older C++ implementations.
      */
-    template<typename I>
-// check for C++11 support - https://stackoverflow.com/a/40512515
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
-    // https://stackoverflow.com/a/27913885
-    typename std::enable_if<
-            std::is_integral<I>::value &&
-            // check if we don't have something too large like GCC's `__int128_t`
-            std::numeric_limits<I>::max() >= 0 &&
-            std::numeric_limits<I>::max() <= std::numeric_limits<uint64_t>::max(),
-            std::string
-    >::type
-#else
-    std::string
-#endif
-    static to_string(I val) {
-        // in theory, `digits10 + 3` would be enough (minus sign + leading digit
-        // + null terminator), but let's add a little more to be safe
-        char buf[std::numeric_limits<I>::digits10 + 5];
-        if (val < 0) {
-            buf[0] = '-';
-
-            // NB: `val` is negative and we need to get its absolute value (i.e. minus `val`). However, since
-            // `int64_t` uses two's complement representation, its range is `[-2**63, 2**63 - 1] =
-            // [-0x8000_0000_0000_0000, 0x7fff_ffff_ffff_ffff]` (both ends inclusive) and thus the naive
-            // `-val` operation will overflow for `val = std::numeric_limits<int64_t>::min() =
-            // -0x8000_0000_0000_0000` (because the result of `-val` is mathematically
-            // `-(-0x8000_0000_0000_0000) = 0x8000_0000_0000_0000`, but the `int64_t` type can represent at
-            // most `0x7fff_ffff_ffff_ffff`). And signed integer overflow is undefined behavior in C++.
-            //
-            // To avoid undefined behavior for `val = -0x8000_0000_0000_0000 = -2**63`, we do the following
-            // steps for all negative `val`s:
-            //
-            // 1. Convert the signed (and negative) `val` to an unsigned `uint64_t` type. This is a
-            //    well-defined operation in C++: the resulting `uint64_t` value will be `val mod 2**64` (`mod`
-            //    is modulo). The maximum `val` we can have here is `-1` (because `val < 0`), a theoretical
-            //    minimum we are able to support would be `-2**64 + 1 = -0xffff_ffff_ffff_ffff` (even though
-            //    in practice the widest standard type is `int64_t` with the minimum of `-2**63`):
-            //
-            //    * `static_cast<uint64_t>(-1) = -1 mod 2**64 = 2**64 + (-1) = 0xffff_ffff_ffff_ffff = 2**64 - 1`
-            //    * `static_cast<uint64_t>(-2**64 + 1) = (-2**64 + 1) mod 2**64 = 2**64 + (-2**64 + 1) = 1`
-            //
-            // 2. Subtract `static_cast<uint64_t>(val)` from `2**64 - 1 = 0xffff_ffff_ffff_ffff`. Since
-            //    `static_cast<uint64_t>(val)` is in range `[1, 2**64 - 1]` (see step 1), the result of this
-            //    subtraction will be mathematically in range `[0, (2**64 - 1) - 1] = [0, 2**64 - 2]`. So the
-            //    mathematical result cannot be negative, hence this unsigned integer subtraction can never
-            //    wrap around (which wouldn't be a good thing to rely upon because it confuses programmers and
-            //    code analysis tools).
-            //
-            // 3. Since we did mathematically `(2**64 - 1) - (2**64 + val) = -val - 1` so far (and we wanted
-            //    to do `-val`), we add `1` to correct that. From step 2 we know that the result of `-val - 1`
-            //    is in range `[0, 2**64 - 2]`, so adding `1` will not wrap (at most we could get `2**64 - 1 =
-            //    0xffff_ffff_ffff_ffff`, which is still in the valid range of `uint64_t`).
-
-            unsigned_to_decimal((std::numeric_limits<uint64_t>::max() - static_cast<uint64_t>(val)) + 1, &buf[1]);
-        } else {
-            unsigned_to_decimal(val, buf);
-        }
-        return std::string(buf);
+    static std::string to_string(int val) {
+        return to_string_signed(val);
     }
+
+    /**
+     * Converts given integer `val` to a decimal string representation.
+     * Should be used in place of `std::to_string(long)` (which is available only
+     * since C++11) in older C++ implementations.
+     */
+    static std::string to_string(long val) {
+        return to_string_signed(val);
+    }
+
+// The `long long` type is technically available only since C++11. It is usually
+// supported even by ancient compilers that have very limited C++11 support, but we can
+// still check if the `LLONG_MAX` macro is defined (it seems very unlikely that it is not,
+// though).
+#ifdef LLONG_MAX
+    /**
+     * Converts given integer `val` to a decimal string representation.
+     * Should be used in place of `std::to_string(long long)` (which is available only
+     * since C++11) in older C++ implementations.
+     */
+    static std::string to_string(long long val) {
+        return to_string_signed(val);
+    }
+#endif
+
+    /**
+     * Converts given integer `val` to a decimal string representation.
+     * Should be used in place of `std::to_string(unsigned)` (which is available only
+     * since C++11) in older C++ implementations.
+     */
+    static std::string to_string(unsigned val) {
+        return to_string_unsigned(val);
+    }
+
+    /**
+     * Converts given integer `val` to a decimal string representation.
+     * Should be used in place of `std::to_string(unsigned long)` (which is available only
+     * since C++11) in older C++ implementations.
+     */
+    static std::string to_string(unsigned long val) {
+        return to_string_unsigned(val);
+    }
+
+// The `unsigned long long` type is technically available only since C++11. It is usually
+// supported even by ancient compilers that have very limited C++11 support, but we can
+// still check if the `LLONG_MAX` macro is defined (it seems very unlikely that it is not,
+// though).
+#ifdef ULLONG_MAX
+    /**
+     * Converts given integer `val` to a decimal string representation.
+     * Should be used in place of `std::to_string(unsigned long long)` (which is available only
+     * since C++11) in older C++ implementations.
+     */
+    static std::string to_string(unsigned long long val) {
+        return to_string_unsigned(val);
+    }
+#endif
 
     /**
      * Converts string `str` to an integer value. Throws an exception if the
@@ -342,7 +352,9 @@ private:
     void init();
     void exceptions_enable() const;
 
-    static void unsigned_to_decimal(uint64_t number, char *buffer);
+    static void unsigned_to_decimal(uint64_t number, char *buf, std::size_t &buf_contents_start);
+    static std::string to_string_signed(int64_t val);
+    static std::string to_string_unsigned(uint64_t val);
 
 #ifdef KS_STR_ENCODING_WIN32API
     enum {
