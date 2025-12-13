@@ -39,6 +39,7 @@ class EffectChain : public QObject {
     virtual ~EffectChain();
 
     QString group() const;
+    void resetToDefault();
 
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
