@@ -946,10 +946,10 @@ void SeratoFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 std::unique_ptr<BaseSqlTableModel>
-SeratoFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+SeratoFeature::createPlaylistModelForPlaylist(const QVariant& data) {
     auto pModel = std::make_unique<SeratoPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    pModel->setPlaylist(playlist);
+    pModel->setPlaylist(data.toList()[0].toString());
     return pModel;
 }
 
