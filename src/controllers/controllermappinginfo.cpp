@@ -9,6 +9,11 @@
 Q_LOGGING_CATEGORY(kLogger, "controllers.mappinginfo")
 
 namespace {
+// Sanitize a string to a version number, often extracted from the XML property,
+// which aims to contain a Mixxx version, from which a given mapping is
+// supported. In the current official mapping included in the code base, we have
+// a variety of format such as "1.0.0" (correct semver), "2.4" (partial semver),
+// "1.7.0+", "1.10.0-beta1+" or ""  (invalid semver)
 QVersionNumber sanitizeVersion(QString rawVersion) {
     return !rawVersion.isEmpty()
             ? QVersionNumber::fromString(rawVersion.remove(QChar('+')))
