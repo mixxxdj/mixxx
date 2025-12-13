@@ -168,6 +168,7 @@ void ControllerManager::slotInitialize() {
 #ifdef __HID__
     m_enumerators.append(new HidEnumerator());
 #endif
+    emit initialized();
 }
 
 void ControllerManager::slotShutdown() {
