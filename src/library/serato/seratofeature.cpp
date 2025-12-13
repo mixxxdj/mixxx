@@ -949,7 +949,14 @@ std::unique_ptr<BaseSqlTableModel>
 SeratoFeature::createPlaylistModelForPlaylist(const QVariant& data) {
     auto pModel = std::make_unique<SeratoPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    pModel->setPlaylist(data.toList()[0].toString());
+    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QVariantList>()) {
+        return pModel;
+    }
+    QVariantList playlists = data.toList();
+    VERIFY_OR_DEBUG_ASSERT(playlists.size() > 0) {
+        return pModel;
+    }
+    pModel->setPlaylist(playlists.at(0).toString());
     return pModel;
 }
 

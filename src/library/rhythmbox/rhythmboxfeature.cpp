@@ -104,6 +104,9 @@ RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
             "rhythmbox_playlists",
             "rhythmbox_playlist_tracks",
             m_trackSource);
+    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QString>()) {
+        return pModel;
+    }
     pModel->setPlaylist(data.toString());
     return pModel;
 }

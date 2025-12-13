@@ -136,7 +136,12 @@ ITunesFeature::createPlaylistModelForPlaylist(const QVariant& data) {
             "itunes_playlists",
             "itunes_playlist_tracks",
             m_trackSource);
-    pModel->setPlaylistById(data.toInt());
+    bool ok;
+    const int playlistId = data.toInt(&ok);
+    VERIFY_OR_DEBUG_ASSERT(ok) {
+        return pModel;
+    }
+    pModel->setPlaylistById(playlistId);
     return pModel;
 }
 
