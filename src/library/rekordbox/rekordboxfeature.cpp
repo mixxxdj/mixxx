@@ -1414,6 +1414,9 @@ std::unique_ptr<BaseSqlTableModel>
 RekordboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
     auto pModel = std::make_unique<RekordboxPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
+    VERIFY_OR_DEBUG_ASSERT(data.toList().size() > 0) {
+        return {};
+    }
     pModel->setPlaylist(data.toList()[0].toString());
     return pModel;
 }
