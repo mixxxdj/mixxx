@@ -161,6 +161,13 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return QStringLiteral("[Channel") + QString::number(deckIdx + 1) +
                 QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
     }
+
+    // Returns the group for the deck and stem where deckIndex and stemInde are zero based
+    static QString groupForDeckStem(const QString& channel, int stemIdx) {
+        DEBUG_ASSERT(!channel.isEmpty() && stemIdx >= 0 && stemIdx < 4);
+        return channel.chopped(1) +
+                QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
+    }
 #endif
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
