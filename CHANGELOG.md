@@ -56,8 +56,9 @@
   [#15597](https://github.com/mixxxdj/mixxx/pull/15597)
   [#14873](https://github.com/mixxxdj/mixxx/issues/14873)
   [#15693](https://github.com/mixxxdj/mixxx/pull/15693)
-* Traktor feature: fixes to Traktor collection importer
+* Traktor feature: fixes to Traktor and Rekordbox collection importer
   [#15645](https://github.com/mixxxdj/mixxx/pull/15645)
+  [#15671](https://github.com/mixxxdj/mixxx/pull/15671)
 
 ### Preferences
 
