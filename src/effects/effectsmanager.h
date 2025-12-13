@@ -12,6 +12,7 @@
 #include "util/class.h"
 
 class EngineEffectsManager;
+class Library;
 
 /// EffectsManager initializes and shuts down the effects system. It creates and
 /// destroys a fixed set of StandardEffectChains on Mixxx startup/shutdown
@@ -28,6 +29,7 @@ class EffectsManager {
     void setup();
     void addDeck(const ChannelHandleAndGroup& deckHandleGroup);
     void addStem(const ChannelHandleAndGroup& stemHandleGroup);
+    void resetStemQuickFxKnob(const ChannelHandleAndGroup& stemHandleGroup);
 
     void loadDefaultEqsAndQuickEffects();
 
