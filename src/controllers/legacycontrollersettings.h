@@ -503,12 +503,14 @@ class LegacyControllerEnumSetting
 #ifdef MIXXX_USE_QML
     void setValue(const QJSValue& rawValue) override {
         auto value = rawValue.toString();
-        auto newValue = std::distance(m_options.cbegin(),
-                std::find_if(m_options.cbegin(),
-                        m_options.cend(),
-                        [value](const LegacyControllerEnumItem& item) {
-                            return item.value == value;
-                        }));
+
+        int newValue = 0;
+        for (int i = 0; i < m_options.size(); i++) {
+            if (m_options[i].value == value) {
+                newValue = i;
+                break;
+            }
+        }
         setCurrentIndex(newValue);
     }
 
@@ -590,6 +592,10 @@ class LegacyControllerColorSetting
     }
 
 #ifdef MIXXX_USE_QML
+    // We expect the JS value to be set to from a QColor-compatible JS value,
+    // which include a QML color, a string with CSS named color or a string with
+    // CXX (A)RGB hex color code See more details in
+    // https://doc.qt.io/qt-6/qml-color.html
     void setValue(const QJSValue& rawValue) override {
         QColor value = rawValue.toVariant().value<QColor>();
         if (value == m_editedValue) {
@@ -659,10 +665,13 @@ class LegacyControllerFileSetting
     virtual ~LegacyControllerFileSetting();
 
     QJSValue value() const override {
-        return QJSValue(stringify());
+        return QJSValue(QUrl::fromLocalFile(stringify()).toString());
     }
 
 #ifdef MIXXX_USE_QML
+    // We expect the JS value to be set to from a QUrl-compatible JS value,
+    // which include a QML url, a URL in a string See more details in
+    // https://doc.qt.io/qt-6/qml-url.html
     void setValue(const QJSValue& rawValue) override {
         QUrl path = rawValue.toVariant().value<QUrl>();
         QFileInfo value;
