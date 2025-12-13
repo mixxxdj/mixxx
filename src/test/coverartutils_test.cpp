@@ -36,68 +36,54 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     QImage referenceJPGImage = QImage(getTestDir().filePath(kReferenceJPGLocationTest));
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("aiff"))) {
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral("id3-test-data/cover-test.aiff")),
-                referencePNGImage);
+        extractEmbeddedCover(getTestFile(QStringLiteral(".aiff")), referencePNGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("flac"))) {
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral("id3-test-data/cover-test.flac")),
-                referencePNGImage);
+        extractEmbeddedCover(getTestFile(QStringLiteral(".flac")), referencePNGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("m4a"))) {
-        extractEmbeddedCover(
-                getTestDir().filePath(QStringLiteral(
-                        "id3-test-data/cover-test-itunes-12.3.0-aac.m4a")),
+        extractEmbeddedCover(getTestFile(QStringLiteral("-itunes-12.3.0-aac.m4a")),
                 referencePNGImage);
-        extractEmbeddedCover(
-                getTestDir().filePath(QStringLiteral(
-                        "id3-test-data/cover-test-itunes-12.7.0-aac.m4a")),
+        extractEmbeddedCover(getTestFile(QStringLiteral("-itunes-12.7.0-aac.m4a")),
                 referencePNGImage);
-        extractEmbeddedCover(
-                getTestDir().filePath(QStringLiteral(
-                        "id3-test-data/cover-test-itunes-12.7.0-alac.m4a")),
+        extractEmbeddedCover(getTestFile(QStringLiteral("-itunes-12.7.0-alac.m4a")),
                 referencePNGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("m4v"))) {
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral(
-                                     "id3-test-data/cover-test.m4v")),
+        extractEmbeddedCover(getTestFile(QStringLiteral(".m4v")),
                 referencePNGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("mp3"))) {
         // PNG
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral(
-                                     "id3-test-data/cover-test-png.mp3")),
+        extractEmbeddedCover(getTestFile(QStringLiteral("-png.mp3")),
                 referencePNGImage);
         // JPEG
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral(
-                                     "id3-test-data/cover-test-jpg.mp3")),
+        extractEmbeddedCover(getTestFile(QStringLiteral("-jpg.mp3")),
                 referenceJPGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("ogg"))) {
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral(
-                                     "id3-test-data/cover-test.ogg")),
+        extractEmbeddedCover(getTestFile(QStringLiteral(".ogg")),
                 referencePNGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("opus"))) {
         // opus
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral("id3-test-data/cover-test.opus")),
+        extractEmbeddedCover(getTestFile(QStringLiteral(".opus")),
                 referencePNGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("wav"))) {
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral(
-                                     "id3-test-data/cover-test.wav")),
+        extractEmbeddedCover(getTestFile(QStringLiteral(".wav")),
                 referencePNGImage);
     }
 
     if (SoundSourceProxy::isFileSuffixSupported(QStringLiteral("wv"))) {
-        extractEmbeddedCover(getTestDir().filePath(QStringLiteral(
-                                     "id3-test-data/cover-test.wv")),
+        extractEmbeddedCover(getTestFile(QStringLiteral(".wv")),
                 referencePNGImage);
     }
 }
@@ -108,8 +94,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     ASSERT_TRUE(tempTrackDir.isValid());
     QString trackdir = QString(tempTrackDir.path());
 
-    const QString kTrackLocationTest(getTestDir().filePath(
-            QStringLiteral("id3-test-data/cover-test-png.mp3")));
+    const QString kTrackLocationTest(getTestFile(QStringLiteral("-png.mp3")));
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
     QList<QFileInfo> covers;

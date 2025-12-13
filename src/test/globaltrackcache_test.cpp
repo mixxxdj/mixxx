@@ -9,9 +9,6 @@
 
 namespace {
 
-const QString kTestFile = QStringLiteral("id3-test-data/cover-test.flac");
-const QString kTestFile2 = QStringLiteral("id3-test-data/cover-test.ogg");
-
 class TrackTitleThread: public QThread {
   public:
     explicit TrackTitleThread()
@@ -95,7 +92,8 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 
     TrackPointer pTrack;
     { // resolver scope
-        auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile)));
+        auto testFileAccess = mixxx::FileAccess(
+                mixxx::FileInfo(getTestFile(QStringLiteral("flac"))));
         auto resolver = GlobalTrackCacheResolver(testFileAccess);
         pTrack = resolver.getTrack();
         EXPECT_TRUE(static_cast<bool>(pTrack));
@@ -147,7 +145,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     TrackTitleThread workerThread;
     workerThread.start();
 
-    const auto testFile = mixxx::FileInfo(getTestDir().filePath(kTestFile));
+    const auto testFile = mixxx::FileInfo(getTestFile(QStringLiteral("flac")));
 
     // #9097: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
@@ -217,12 +215,12 @@ TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
     ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
     TrackPointer track1 = GlobalTrackCacheResolver(
-            mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile))))
+            mixxx::FileAccess(mixxx::FileInfo(getTestFile(QStringLiteral("flac")))))
                                   .getTrack();
     EXPECT_TRUE(static_cast<bool>(track1));
 
     TrackPointer track2 = GlobalTrackCacheResolver(
-            mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile2))))
+            mixxx::FileAccess(mixxx::FileInfo(getTestFile(QStringLiteral("ogg")))))
                                   .getTrack();
     EXPECT_TRUE(static_cast<bool>(track2));
 
