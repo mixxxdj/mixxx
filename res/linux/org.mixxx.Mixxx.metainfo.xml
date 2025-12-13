@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.4" type="development" date="2025-12-12" timestamp="1765498789">
+    <release version="2.5.4" type="development" date="2025-12-13" timestamp="1765619130">
       <description>
  <p>
   Controller Mappings
@@ -229,8 +229,17 @@
    #15693
   </li>
   <li>
-   Traktor feature: fixes to Traktor collection importer
+   Traktor feature: fixes to Traktor and Rekordbox collection importer
    #15645
+   #15671
+  </li>
+  <li>
+   Fix possible crash and other issues with Rekordbox USB
+   #15745
+   #13624
+   #13309
+   #10672
+   #11373
   </li>
  </ul>
  <p>
