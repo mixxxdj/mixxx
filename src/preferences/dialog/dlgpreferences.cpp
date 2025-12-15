@@ -99,9 +99,10 @@ DlgPreferences::DlgPreferences(
         m_iconsPath.setPath(":/images/preferences/dark/");
     }
 
-    // Construct widgets for use in tabs.
+    // Construct page widgets and associated sidebar items
+    m_pSoundDlg = std::make_unique<DlgPrefSound>(this, pSoundManager, m_pConfig);
     m_soundPage = PreferencesPage(
-            new DlgPrefSound(this, pSoundManager, m_pConfig),
+            m_pSoundDlg.get(),
             new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type));
     addPageWidget(m_soundPage,
             tr("Sound Hardware"),
@@ -309,9 +310,13 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
     }
 }
 
-void DlgPreferences::showSoundHardwarePage() {
+void DlgPreferences::showSoundHardwarePage(
+        std::optional<mixxx::preferences::SoundHardwareTab> tab) {
     switchToPage(m_soundPage.pTreeItem->text(0), m_soundPage.pDlg);
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
+    if (tab.has_value()) {
+        m_pSoundDlg->selectIOTab(*tab);
+    }
 }
 
 bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
@@ -427,14 +432,17 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         break;
     case QDialogButtonBox::ApplyRole:
         emit applyPreferences();
+        if (!pendingConfigValidOnAllPages()) {
+            return;
+        }
         break;
     case QDialogButtonBox::AcceptRole:
-        // Same as Apply but close the dialog
         emit applyPreferences();
-        // TODO Unfortunately this will accept() even if DlgPrefSound threw a warning
-        // due to inaccessible device(s) or inapplicable samplerate.
-        // https://github.com/mixxxdj/mixxx/issues/6077
+        if (!pendingConfigValidOnAllPages()) {
+            return;
+        }
         accept();
+        // Same as Apply but close the dialog
         break;
     case QDialogButtonBox::RejectRole:
         emit cancelPreferences();
@@ -450,6 +458,20 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     default:
         break;
     }
+}
+
+bool DlgPreferences::pendingConfigValidOnAllPages() {
+    for (const PreferencesPage& page : std::as_const(m_allPages)) {
+        if (page.pDlg && !page.pDlg->okayToClose()) {
+            // If any page is not okay to close, eg. with an invalid sound config,
+            // switch to it and don't accept.
+            // Fixes https://github.com/mixxxdj/mixxx/issues/6077
+            // and may help with other pages in the future.
+            contentsTreeWidget->setCurrentItem(page.pTreeItem);
+            return false;
+        }
+    }
+    return true;
 }
 
 void DlgPreferences::addPageWidget(PreferencesPage page,

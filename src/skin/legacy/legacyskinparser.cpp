@@ -36,8 +36,10 @@
 #include "widget/wbasewidget.h"
 #include "widget/wbattery.h"
 #include "widget/wbeatspinbox.h"
+#include "widget/wbpmeditor.h"
 #include "widget/wcombobox.h"
 #include "widget/wcoverart.h"
+#include "widget/wcuebutton.h"
 #include "widget/wdisplay.h"
 #include "widget/weffectbuttonparametername.h"
 #include "widget/weffectchain.h"
@@ -539,6 +541,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
     } else if (nodeName == "PlayButton") {
         result = wrapWidget(parsePlayButton(node));
+    } else if (nodeName == "CueButton") {
+        result = wrapWidget(parseCueButton(node));
     } else if (nodeName == "EffectPushButton") {
         result = wrapWidget(parseEffectPushButton(node));
     } else if (nodeName == "HotcueButton") {
@@ -572,17 +576,17 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
         // NumberBpm is deprecated, and is now the same as a Number
         result = wrapWidget(parseLabelWidget<WNumber>(node));
+    } else if (nodeName == "BpmEditor") {
+        result = wrapWidget(parseBpmEditor(node));
     } else if (nodeName == "NumberDb") {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
-    }
+    } else if (nodeName == "StemLabel") {
 #ifdef __STEM__
-    else if (nodeName == "StemLabel") {
         result = wrapWidget(parseStemLabelWidget(node));
-    }
 #endif
-    else if (nodeName == "Knob") {
+    } else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
     } else if (nodeName == "KnobComposed") {
         result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
@@ -1030,6 +1034,24 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
 }
 #endif
 
+QWidget* LegacySkinParser::parseBpmEditor(const QDomElement& node) {
+    const QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+    WBpmEditor* pBpmEditor = new WBpmEditor(group, m_pParent);
+    pBpmEditor->setup(node, *m_pContext);
+    commonWidgetSetup(node, pBpmEditor);
+    // Set tooltips of child widgets for mode selection & editing
+    const QString tapTooltip = m_tooltips.tooltipForId("tempo_tap_bpm_tap");
+    const QString editTooltip = m_tooltips.tooltipForId("tempo_edit");
+    pBpmEditor->setTapButtonTooltip(tapTooltip);
+    pBpmEditor->setEditButtonTooltip(editTooltip);
+    return pBpmEditor;
+}
+
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
     if (CmdlineArgs::Instance().isQml()) {
@@ -1319,6 +1341,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     WNumberRate* p = new WNumberRate(group, m_pParent);
     setupLabelWidget(node, p);
 
+    // TODO check this and other BgColor/palette hacks
     // TODO(rryan): Let's look at removing this palette change in 1.12.0. I
     // don't think it's needed anymore.
     p->setPalette(palette);
@@ -1335,7 +1358,7 @@ QWidget* LegacySkinParser::parseNumberPos(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseEngineKey(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    WKey* pEngineKey = new WKey(group, m_pParent);
+    WKey* pEngineKey = new WKey(group, m_pConfig, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
 }
@@ -1534,6 +1557,19 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent, m_pConfig);
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
+
+    // Translate shortcuts to native text
+    QString searchInCurrentViewShortcut =
+            localizeShortcutKeys(m_pKeyboard->getKeyboardConfig()->getValue(
+                    ConfigKey("[KeyboardShortcuts]",
+                            "LibraryMenu_SearchInCurrentView"),
+                    "Ctrl+f"));
+    QString searchInAllTracksShortcut =
+            localizeShortcutKeys(m_pKeyboard->getKeyboardConfig()->getValue(
+                    ConfigKey("[KeyboardShortcuts]",
+                            "LibraryMenu_SearchInAllTracks"),
+                    "Ctrl+Shift+F"));
+    pLineEditSearch->setupToolTip(searchInCurrentViewShortcut, searchInAllTracksShortcut);
 
     m_pLibrary->bindSearchboxWidget(pLineEditSearch);
 
@@ -1955,6 +1991,18 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
 QWidget* LegacySkinParser::parsePlayButton(const QDomElement& element) {
     QString group = lookupNodeGroup(element);
     WPlayButton* pWidget = new WPlayButton(m_pParent, group);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
+}
+
+QWidget* LegacySkinParser::parseCueButton(const QDomElement& element) {
+    QString group = lookupNodeGroup(element);
+    WCueButton* pWidget = new WCueButton(m_pParent, group);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
@@ -2609,9 +2657,6 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
 
     QString tooltip;
 
-    // translate shortcut to native text
-    QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText).toString(QKeySequence::NativeText);
-
     tooltip += "\n";
     tooltip += tr("Shortcut");
     if (!cmd.isEmpty()) {
@@ -2619,8 +2664,14 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
         tooltip += cmd;
     }
     tooltip += ": ";
-    tooltip += nativeShortcut;
+    tooltip += localizeShortcutKeys(shortcut);
     pWidget->appendBaseTooltip(tooltip);
+}
+
+QString LegacySkinParser::localizeShortcutKeys(const QString& shortcut) {
+    // Translate shortcut to native text
+    return QKeySequence(shortcut, QKeySequence::PortableText)
+            .toString(QKeySequence::NativeText);
 }
 
 QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& skinDoc) {

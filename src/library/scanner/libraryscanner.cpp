@@ -1,6 +1,7 @@
 #include "library/scanner/libraryscanner.h"
 
 #include "library/coverartutils.h"
+#include "library/library_decl.h"
 #include "library/queryutil.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/scanner/recursivescandirectorytask.h"
@@ -99,11 +100,10 @@ LibraryScanner::LibraryScanner(
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_analysisDao(pConfig),
-          m_trackDao(m_cueDao, m_playlistDao,
-                  m_analysisDao, m_libraryHashDao,
-                  pConfig),
+          m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
-          m_state(IDLE) {
+          m_state(IDLE),
+          m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
     moveToThread(this);
@@ -138,7 +138,8 @@ LibraryScanner::LibraryScanner(
     connect(m_pProgressDlg.data(),
             &LibraryScannerDlg::scanCancelled,
             this,
-            &LibraryScanner::slotCancel);
+            &LibraryScanner::slotCancel,
+            Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::progressVerifyTracksOutside,
             m_pProgressDlg.data(),
@@ -199,12 +200,17 @@ void LibraryScanner::slotStartScan() {
     changeScannerState(SCANNING);
 
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
+    // Store number of existing tracks so we can calculate the number
+    // of missing tracks in slotFinishUnhashedScan().
+    m_previouslyMissingTracks = m_trackDao.getAllMissingTrackLocations();
+    m_numPreviouslyExistingTracks = m_trackDao.getAllExistingTrackLocations().size();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegularExpression coverExtensionFilter =
             QRegularExpression(CoverArtUtils::supportedCoverArtExtensionsRegex(),
                     QRegularExpression::CaseInsensitiveOption);
     QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
+    m_numRelocatedTracks = 0;
 
     m_scannerGlobal = ScannerGlobalPointer(
             new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
@@ -219,6 +225,11 @@ void LibraryScanner::slotStartScan() {
     // when we rescan, we'll mark any directory that does still exist as
     // verified.
     m_libraryHashDao.invalidateAllDirectories();
+
+    // Make sure that `directory` in in track_locations table is indeed a
+    // directory path. This works around / removes residues of a bug where tracks
+    // are falsely marked missing because `directory` == `location`.
+    m_trackDao.cleanupTrackLocationsDirectory();
 
     // Mark all the tracks in the library as needing verification of their
     // existence. (ie. we want to check they're still on your hard drive where
@@ -301,6 +312,7 @@ void LibraryScanner::slotFinishHashedScan() {
     pWatcher->taskDone();
 }
 
+// Quick hack: return number of relocated tracks
 void LibraryScanner::cleanUpScan() {
     // At the end of a scan, mark all tracks and directories that weren't
     // "verified" as "deleted" (as long as the scan wasn't canceled half way
@@ -358,9 +370,10 @@ void LibraryScanner::cleanUpScan() {
             return;
         }
         if (!relocatedTracks.isEmpty()) {
+            m_numRelocatedTracks = relocatedTracks.size();
             kLogger.info()
                     << "Found"
-                    << relocatedTracks.size()
+                    << m_numRelocatedTracks
                     << "moved track(s)";
             emit tracksRelocated(relocatedTracks);
         }
@@ -384,7 +397,6 @@ void LibraryScanner::cleanUpScan() {
         emit tracksChanged(coverArtTracksChanged);
     }
 }
-
 
 // is called when all tasks of the second stage are done (threads are finished)
 void LibraryScanner::slotFinishUnhashedScan() {
@@ -422,27 +434,73 @@ void LibraryScanner::slotFinishUnhashedScan() {
         kLogger.debug() << "Scan cancelled";
     }
 
-    // TODO(XXX) doesn't take into account verifyRemainingTracks.
-    qDebug("Scan took: %s. "
-           "%d unchanged directories. "
-           "%d changed/added directories. "
-           "%d tracks verified from changed/added directories. "
-           "%d new tracks.",
-            m_scannerGlobal->timerElapsed().formatNanosWithUnit().toLocal8Bit().constData(),
-            static_cast<int>(m_scannerGlobal->verifiedDirectories().size()),
-            m_scannerGlobal->numScannedDirectories(),
-            static_cast<int>(m_scannerGlobal->verifiedTracks().size()),
-            static_cast<int>(m_scannerGlobal->addedTracks().size()));
+    const auto duration = m_scannerGlobal->timerElapsed();
+    double seconds = duration.toDoubleSeconds();
+    QString durationString;
+    // Pick a comfortable format for the duration display
+    if (seconds < 2.0) { // 812 ms
+        durationString = duration.formatMillisWithUnit();
+    } else if (seconds < 60) { // 12 s
+        durationString = duration.formatSecondsWithUnit();
+    } else { // 3:48
+        durationString = mixxx::Duration::formatTime(seconds);
+    }
+    const int numVerifiedDirs = static_cast<int>(m_scannerGlobal->verifiedDirectories().size());
+    const int numScannedDirs = m_scannerGlobal->numScannedDirectories();
+    const int numVerifiedTracks = static_cast<int>(m_scannerGlobal->verifiedTracks().size());
+    const int numNewTracks = m_scannerGlobal->addedTracks().size() - m_numRelocatedTracks;
+
+    const QSet<QString> existingTracks = m_trackDao.getAllExistingTrackLocations();
+    int numRediscoveredTracks = 0;
+    for (const QString& loc : std::as_const(m_previouslyMissingTracks)) {
+        if (existingTracks.contains(loc)) {
+            numRediscoveredTracks++;
+        }
+    }
+    const auto missingTracks = m_trackDao.getAllMissingTrackLocations();
+    const int numMissingTracks = missingTracks.size();
+    int numNewMissingTracks = 0;
+    for (const QString& loc : std::as_const(missingTracks)) {
+        if (!m_previouslyMissingTracks.contains(loc)) {
+            numNewMissingTracks++;
+        }
+    }
+    const int tracksTotal = existingTracks.size();
+
+    qInfo() << "-------------------------------------------------------";
+    qInfo("Library scan finished after %s", durationString.toLocal8Bit().constData());
+    qInfo(" %d unchanged directories", numVerifiedDirs);
+    qInfo(" %d scanned directories", numScannedDirs);
+    qInfo(" %d tracks verified from changed/added directories", numVerifiedTracks);
+    qInfo(" %d new tracks", numNewTracks);
+    qInfo(" %d moved tracks", m_numRelocatedTracks);
+    qInfo(" %d new missing tracks", numNewMissingTracks);
+    qInfo(" %d missing tracks total", numMissingTracks);
+    qInfo(" %d rediscovered tracks", numRediscoveredTracks);
+    qInfo(" %d tracks total", tracksTotal);
+    qInfo() << "-------------------------------------------------------";
+
+    LibraryScanResultSummary result;
+    result.durationString = durationString;
+    result.numNewTracks = numNewTracks;
+    result.numMovedTracks = m_numRelocatedTracks;
+    result.numNewMissingTracks = numNewMissingTracks;
+    result.numMissingTracks = numMissingTracks;
+    result.numRediscoveredTracks = numRediscoveredTracks;
+    result.tracksTotal = tracksTotal;
+    result.autoscan = m_manualScan;
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);
     // now we may accept new scan commands
 
     emit scanFinished();
+    emit scanSummary(result);
 }
 
-void LibraryScanner::scan() {
+void LibraryScanner::scan(bool autoscan) {
     if (changeScannerState(STARTING)) {
+        m_manualScan = autoscan;
         emit startScan();
     }
 }
@@ -491,6 +549,8 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
     //kLogger.debug() << "queueTask" << pTask;
     ScopedTimer timer(QStringLiteral("LibraryScanner::queueTask"));
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
+        delete pTask;
+        m_pool.clear();
         return;
     }
     m_scannerGlobal->getTaskWatcher().watchTask();
@@ -566,37 +626,43 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
     }
 }
 
+// triggered by ScannerTask::addNewTrack / in ImportFilesTask::run()
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
-    //kLogger.debug() << "slotAddNewTrack" << trackPath;
+    // kLogger.debug() << "slotAddNewTrack" << trackPath;
+    if (!m_scannerGlobal || m_scannerGlobal->shouldCancel()) {
+        // Fix/workaround for Cancel not cancelling the entire scan process
+        // https://github.com/mixxxdj/mixxx/issues/14940
+        // Pretty quickly after starting the scan, many ImportFilesTask queue
+        // many addNewTrack() signals connected to this slot. When cancelling the
+        // scan via Cancel button in the progress dialog, all signals are usually
+        // already queued, hence Cancel has no effect on these calls and Mixxx
+        // keeps adding/analyzing tracks as if nothing happened.
+        // Simply abort here does the trick.
+        return;
+    }
     ScopedTimer timer(QStringLiteral("LibraryScanner::addNewTrack"));
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack = m_trackDao.addTracksAddFile(
             trackPath,
             false);
-    if (pTrack) {
-        DEBUG_ASSERT(!pTrack->isDirty());
-        // The track's actual location might differ from the
-        // given trackPath
-        const QString trackLocation(pTrack->getLocation());
-        // Acknowledge successful track addition
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackLocation);
-        }
-        // Signal the main instance of TrackDAO, that there is
-        // a new track in the database.
-        emit trackAdded(pTrack);
-        emit progressLoading(trackLocation);
-    } else {
-        // Acknowledge failed track addition
-        // TODO(XXX): Is it really intended to acknowledge a failed
-        // track addition with a trackAdded() signal??
-        if (m_scannerGlobal) {
-            m_scannerGlobal->trackAdded(trackPath);
-        }
-        kLogger.warning()
-                << "Failed to add track to library:"
-                << trackPath;
+    if (!pTrack) {
+        // This happens only when there is an issue with the database which
+        // has been logged already. No need for yet another warning here.
+        return;
     }
+
+    DEBUG_ASSERT(!pTrack->isDirty());
+    // The track's actual location might differ from the
+    // given trackPath
+    const QString trackLocation = pTrack->getLocation();
+    // Acknowledge successful track addition
+    if (m_scannerGlobal) {
+        m_scannerGlobal->trackAdded(trackLocation);
+    }
+    // Signal the main instance of TrackDAO, that there is
+    // a new track in the database.
+    emit trackAdded(pTrack);
+    emit progressLoading(trackLocation);
 }
 
 bool LibraryScanner::changeScannerState(ScannerState newState) {

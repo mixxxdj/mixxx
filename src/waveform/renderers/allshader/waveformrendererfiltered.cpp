@@ -12,8 +12,10 @@ using namespace rendergraph;
 namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
-        WaveformWidgetRenderer* waveformWidget, bool bRgbStacked)
-        : WaveformRendererSignalBase(waveformWidget),
+        WaveformWidgetRenderer* waveformWidget,
+        bool bRgbStacked,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_bRgbStacked(bRgbStacked) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
@@ -55,7 +57,7 @@ bool WaveformRendererFiltered::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif
@@ -189,7 +191,9 @@ bool WaveformRendererFiltered::preprocessInner() {
 
     DEBUG_ASSERT(reserved ==
             vertexUpdater[0].index() + vertexUpdater[1].index() +
-                    vertexUpdater[2].index());
+                    vertexUpdater[2].index() +
+                    numVerticesPerLine); // all lines on the three channels and
+                                         // the axis
 
     markDirtyMaterial();
 

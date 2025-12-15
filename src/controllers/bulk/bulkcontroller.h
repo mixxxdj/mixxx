@@ -3,6 +3,9 @@
 #include <QAtomicInt>
 #include <QThread>
 #include <optional>
+#ifdef Q_OS_ANDROID
+#include <QJniObject>
+#endif
 
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
@@ -34,16 +37,27 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
+#ifndef Q_OS_ANDROID
     BulkController(
             libusb_context* context,
             libusb_device_handle* handle,
             struct libusb_device_descriptor* desc);
+#else
+    BulkController(
+            const QJniObject& usbDevice);
+#endif
     ~BulkController() override;
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
 
     PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
         return PhysicalTransportProtocol::USB;
@@ -82,11 +96,10 @@ class BulkController : public Controller {
   protected:
     void send(const QList<int>& data, unsigned int length) override;
 
-  private slots:
-    int open() override;
+  private:
+    int open(const QString& resourcePath) override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     bool sendBytes(const QByteArray& data) override;
@@ -95,6 +108,10 @@ class BulkController : public Controller {
 
     libusb_context* m_context;
     libusb_device_handle *m_phandle;
+#ifdef Q_OS_ANDROID
+    QJniObject m_androidUsbDevice;
+    QJniObject m_androidConnection;
+#endif
 
     // Local copies of things we need from desc
 

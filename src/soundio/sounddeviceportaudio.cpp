@@ -5,6 +5,7 @@
 #include <QRegularExpression>
 #include <QThread>
 #include <QtDebug>
+#include <cstddef>
 
 #include "control/controlobject.h"
 #include "sounddevicenetwork.h"
@@ -25,6 +26,11 @@
 #include <pa_linux_alsa.h>
 // for sched_getscheduler
 #include <sched.h>
+#endif
+
+#ifdef PA_USE_OBOE
+// for PaOboe_InitializeStreamInfo
+#include <pa_oboe.h>
 #endif
 
 namespace {
@@ -241,7 +247,24 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     m_outputParams.device = m_deviceId.portAudioIndex;
     m_outputParams.sampleFormat = paFloat32;
     m_outputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_outputParams.hostApiSpecificStreamInfo = nullptr;
+#ifdef PA_USE_OBOE
+    PaOboeStreamInfo obeoStreamInfo;
+    if (m_deviceTypeId == PaHostApiTypeId::paOboe) {
+        PaOboe_InitializeStreamInfo(&obeoStreamInfo);
+        obeoStreamInfo.androidOutputUsage = PaOboe_Usage::Media,
+        obeoStreamInfo.androidInputPreset = PaOboe_InputPreset::Generic,
+        obeoStreamInfo.performanceMode = PaOboe_PerformanceMode::LowLatency,
+        obeoStreamInfo.sharingMode = PaOboe_SharingMode::Exclusive,
+        obeoStreamInfo.contentType = PaOboe_ContentType::Music,
+        obeoStreamInfo.packageName = ANDROID_PACKAGE_NAME;
+
+        m_outputParams.hostApiSpecificStreamInfo = (void*)&obeoStreamInfo;
+    } else {
+#endif
+        m_outputParams.hostApiSpecificStreamInfo = nullptr;
+#ifdef PA_USE_OBOE
+    }
+#endif
 
     m_inputParams.device  = m_deviceId.portAudioIndex;
     m_inputParams.sampleFormat  = paFloat32;
@@ -718,7 +741,7 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                        copyCount = qMin(readAvailable, copyCount + m_numOutputChannels);
+                        copyCount = qMin(readAvailable, copyCount + m_outputParams.channelCount);
                     } else {
                         m_outputDrift = true;
                     }

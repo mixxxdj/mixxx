@@ -58,7 +58,8 @@ DlgAbout::DlgAbout()
             << "J&ouml;rg Wartenberg"
             << "Fredrik Wieczerkowski"
             << "Maarten de Boer"
-            << "Antoine Colombier";
+            << "Antoine Colombier"
+            << "Evelynne Veys";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
@@ -68,28 +69,15 @@ DlgAbout::DlgAbout()
             << "Be"
             << "Uwe Klotz"
             << "D&aacute;vid Szak&aacute;llas"
-            << "Philip Gottschling"
-            << "Adam Szmigin"
             << "Christian"
             << "Geraldo Nascimento"
             << "Allen Wittenauer"
             << "Raphael Bigal"
             << "Filok"
-            << "tcoyvwac"
             << "Tobias Oszlanyi (OsZ)"
-            << "Fatih Emre YILDIZ"
             << "Neil Naveen"
-            << "Javier Vilalta"
             << "David Chocholat&yacute;"
-            << "Fabian Wolter"
-            << "Matteo Gheza"
-            << "Michael Bacarella"
-            << "Bilal Ahmed Karbelkar"
-            << "Alice Psykose"
             << "Jakob Leifhelm"
-            << "Florian Goth"
-            << "Chase Durand"
-            << "John Last"
             << "Jakub Kopa&nacute;ko"
             << "Saksham Hans"
             << "Robbert van der Helm"
@@ -127,10 +115,38 @@ DlgAbout::DlgAbout()
             << "Frank Grimy"
             << "Al Hadebe"
             << "Emilien Colombier"
-            << "Chris Tallon"
-            << "Evelynne Veys"
-            << "Lorenzo Manacorda"
-            << "David L Morris";
+            << "DJ aK"
+            << "Sam Whited"
+            << "Ryan Bell"
+            << "Nicolas Parlant"
+            << "Ralf Pachali"
+            << "Patrick Taels"
+            << "armaan"
+            << "Karam Assany"
+            << "Anmol Mishra"
+            << "Alec Peng"
+            << "Arthur Vimond"
+            << "Johan Jnn"
+            << "Shiraz McClennon"
+            << "Lubosz Sarnecki"
+            << "Falk Ebert"
+            << "13dixi37"
+            << "endcredits33"
+            << "Jakob Stolberg"
+            << "evoixmr"
+            << "Jos&eacute; Carlos Cuevas"
+            << "cucucat"
+            << "Hetarth Jodha"
+            << "Harsh Barhate"
+            << "Nikhil Bisht"
+            << "Jan Claußen"
+            << "Nisarg Shah"
+            << "Manish Sehrawat"
+            << "xuijuthub"
+            << "Nicolay Leiva"
+            << "Didier Malenfant"
+            << "Rene E"
+            << "Owen Turnbull";
 
     QStringList specialThanks;
     specialThanks
@@ -180,7 +196,6 @@ DlgAbout::DlgAbout()
             << "Max Linke"
             << "Marcos Cardinot"
             << "Nicu Badescu"
-            << "Uwe Klotz"
             << "Sean Pappalardo"
             << "S. Brandt";
 
@@ -405,7 +420,20 @@ DlgAbout::DlgAbout()
             << "Maty&aacute;&scaron; Bobek"
             << "Mr. Rincewind"
             << "Stefan N&uuml;rnberger"
-            << "motific";
+            << "motific"
+            << "Philip Gottschling"
+            << "Adam Szmigin"
+            << "tcoyvwac"
+            << "Fatih Emre YILDIZ"
+            << "Javier Vilalta"
+            << "Fabian Wolter"
+            << "Matteo Gheza"
+            << "Michael Bacarella"
+            << "Bilal Ahmed Karbelkar"
+            << "Alice Psykose"
+            << "Florian Goth"
+            << "Chase Durand"
+            << "John Last";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");

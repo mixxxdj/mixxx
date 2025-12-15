@@ -2,15 +2,16 @@
 
 #include "control/controlobject.h"
 #include "effects/chains/equalizereffectchain.h"
+#include "effects/chains/quickeffectchain.h"
 #include "effects/chains/standardeffectchain.h"
 #include "effects/defs.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectknobparameterslot.h"
-#include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
 #include "moc_controlpickermenu.cpp"
 #include "recording/defs_recording.h"
+#include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
@@ -22,6 +23,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     m_effectMainOutputStr = tr("Main Output");
     m_effectHeadphoneOutputStr = tr("Headphone Output");
     m_deckStr = tr("Deck %1");
+    m_deckStemStr = tr("Deck %1 Stem %2");
     m_samplerStr = tr("Sampler %1");
     m_previewdeckStr = tr("Preview Deck %1");
     m_microphoneStr = tr("Microphone %1");
@@ -131,7 +133,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         // Since 3-band is by far the most common, stick with that.
         const int kMaxEqs = 3;
         for (int deck = 1; deck <= iNumDecks; ++deck) {
-            QMenu* pDeckMenu = addSubmenu(QString("Deck %1").arg(deck), pEqMenu);
+            //: %1 is the deck number 1 ... 4
+            QMenu* pDeckMenu = addSubmenu(tr("Deck %1").arg(deck), pEqMenu);
             for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
                 const QString group = EqualizerEffectChain::formatEffectSlotGroup(
                         QString("[Channel%1]").arg(deck));
@@ -143,11 +146,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         tr("Adjust %1").arg(eqNames[effect]),
                         pBandMenu,
                         true,
+                        //: %1 is the deck number 1 ... 4
                         tr("Deck %1").arg(deck));
 
                 control = "button_parameter%1";
                 addControl(group,
                         control.arg(effect + 1),
+                        //: %1 is "Low EQ" "Mid EQ" or "High EQ"
                         tr("Kill %1").arg(eqNames[effect]),
                         tr("Kill %1").arg(eqNames[effect]),
                         pBandMenu,
@@ -158,21 +163,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     }
     pMixerMenu->addSeparator();
     // Volume / Pfl controls
-    addDeckAndSamplerControl("volume", tr("Volume"), tr("Volume Fader"), pMixerMenu, true);
+    addDeckAndSamplerControl("volume",
+            tr("Volume"),
+            tr("Volume Fader"),
+            pMixerMenu,
+#ifdef __STEM__
+            true,
+#endif
+            true);
     addDeckAndSamplerControl("volume_set_one",
             tr("Full Volume"),
             tr("Set to full volume"),
-            pMixerMenu);
+            pMixerMenu,
+            true);
     addDeckAndSamplerControl("volume_set_zero",
             tr("Zero Volume"),
             tr("Set to zero volume"),
-            pMixerMenu);
+            pMixerMenu,
+            true);
     addDeckAndSamplerAndPreviewDeckControl("pregain",
             tr("Track Gain"),
             tr("Track Gain knob"),
             pMixerMenu,
+#ifdef __STEM__
+            true,
+#endif
             true);
-    addDeckAndSamplerControl("mute", tr("Mute"), tr("Mute button"), pMixerMenu);
+    addDeckAndSamplerControl("mute",
+            tr("Mute"),
+            tr("Mute button"),
+            pMixerMenu,
+            true);
     pMixerMenu->addSeparator();
     addDeckAndSamplerControl("pfl",
             tr("Headphone Listen"),
@@ -312,6 +333,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("beats_translate_move",
             tr("Move Beatgrid"),
             tr("Adjust the beatgrid to the left or right"),
+            pBpmMenu);
+    addDeckControl("beats_translate_half",
+            tr("Move Beatgrid Half a Beat"),
+            tr("Adjust the beatgrid by exactly one half beat. Usable only for "
+               "tracks with constant tempo."),
             pBpmMenu);
     addDeckControl("beats_translate_curpos",
             tr("Adjust Beatgrid"),
@@ -494,21 +520,29 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Cues
     QMenu* pCueMenu = addSubmenu(tr("Cues"));
-    addDeckControl("cue_default", tr("Cue"), tr("Cue button"), pCueMenu);
-    addDeckControl("cue_set", tr("Set Cue"), tr("Set cue point"), pCueMenu);
-    addDeckControl("cue_goto", tr("Go-To Cue"), tr("Go to cue point"), pCueMenu);
+    addDeckAndSamplerControl("cue_default", tr("Cue"), tr("Cue button"), pCueMenu);
+    addDeckAndSamplerControl("cue_set", tr("Set Cue"), tr("Set cue point"), pCueMenu);
+    addDeckAndSamplerControl(
+            "cue_goto", tr("Go-To Cue"), tr("Go to cue point"), pCueMenu);
     addDeckAndSamplerAndPreviewDeckControl("cue_gotoandplay",
             tr("Go-To Cue And Play"),
             tr("Go to cue point and play"),
             pCueMenu);
-    addDeckControl("cue_gotoandstop",
+    addDeckAndSamplerControl("cue_gotoandstop",
             tr("Go-To Cue And Stop"),
             tr("Go to cue point and stop"),
             pCueMenu);
-    addDeckControl("cue_preview", tr("Preview Cue"), tr("Preview from cue point"), pCueMenu);
-    addDeckControl("cue_cdj", tr("Cue (CDJ Mode)"), tr("Cue button (CDJ mode)"), pCueMenu);
-    addDeckControl("play_stutter", tr("Stutter Cue"), tr("Stutter cue"), pCueMenu);
-    addDeckControl("cue_play",
+    addDeckAndSamplerControl("cue_preview",
+            tr("Preview Cue"),
+            tr("Preview from cue point"),
+            pCueMenu);
+    addDeckAndSamplerControl("cue_cdj",
+            tr("Cue (CDJ Mode)"),
+            tr("Cue button (CDJ mode)"),
+            pCueMenu);
+    addDeckAndSamplerControl(
+            "play_stutter", tr("Stutter Cue"), tr("Stutter cue"), pCueMenu);
+    addDeckAndSamplerControl("cue_play",
             tr("CUP (Cue + Play)"),
             tr("Go to cue point and play after release"),
             pCueMenu);
@@ -561,14 +595,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     int moreMenuThreshold = 4;
     QMenu* pParentMenu = pHotcueMainMenu;
     QMenu* pHotcueMoreMenu = nullptr;
-    bool moreHotcues = NUM_HOT_CUES >= preferredHotcuesVisible + moreMenuThreshold;
+    bool moreHotcues = kMaxNumberOfHotcues >= preferredHotcuesVisible + moreMenuThreshold;
     if (moreHotcues) {
         // populate menu here, add it below #preferredHotcuesVisible
         pHotcueMoreMenu = new QMenu(
-                tr("Hotcues %1-%2").arg(preferredHotcuesVisible + 1).arg(NUM_HOT_CUES),
+                tr("Hotcues %1-%2").arg(preferredHotcuesVisible + 1).arg(kMaxNumberOfHotcues),
                 pHotcueMainMenu);
     }
-    for (int i = 1; i <= NUM_HOT_CUES; ++i) {
+    for (int i = 1; i <= kMaxNumberOfHotcues; ++i) {
         if (moreHotcues && i > preferredHotcuesVisible) {
             pParentMenu = pHotcueMoreMenu;
         }
@@ -962,11 +996,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Effect Controls
     QMenu* pEffectsMenu = addSubmenu(tr("Effects"));
-
-    // Quick Effect Rack COs
-    QMenu* pQuickEffectMenu = addSubmenu(tr("Quick Effects"), pEffectsMenu);
+    // Deck Quick Effects
     for (int i = 1; i <= iNumDecks; ++i) {
-        addControl(QString("[QuickEffectRack1_[Channel%1]]").arg(i),
+        const QString deckGroup = PlayerManager::groupForDeck(i);
+        const QString quickEffectGroup = QuickEffectChain::formatEffectChainGroup(deckGroup);
+        QMenu* pQuickEffectMenu = addSubmenu(tr("Quick Effects Deck %1").arg(i), pEffectsMenu);
+        addControl(quickEffectGroup,
                 "super1",
                 tr("Deck %1 Quick Effect Super Knob").arg(i),
                 tr("Quick Effect Super Knob (control linked effect "
@@ -974,13 +1009,39 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 pQuickEffectMenu,
                 false,
                 tr("Quick Effect"));
-        addControl(QString("[QuickEffectRack1_[Channel%1]_Effect1]").arg(i),
+        addControl(quickEffectGroup,
                 "enabled",
                 tr("Deck %1 Quick Effect Enable Button").arg(i),
                 tr("Quick Effect Enable Button"),
                 pQuickEffectMenu,
                 false,
                 tr("Quick Effect"));
+#ifdef __STEM__
+        pQuickEffectMenu->addSeparator();
+        // Stem Quick Effects
+        for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
+            const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
+            const QString stemQuickEffectGroup =
+                    QuickEffectChain::formatEffectChainGroup(stemGroup);
+            addControl(stemQuickEffectGroup,
+                    "super1",
+                    tr("Deck %1 Stem %2 Quick Effect Super Knob")
+                            .arg(QString::number(i), QString::number(j)),
+                    tr("Quick Effect Super Knob (control linked effect "
+                       "parameters)"),
+                    pQuickEffectMenu,
+                    false,
+                    tr("Quick Effect"));
+            addControl(stemQuickEffectGroup,
+                    "enabled",
+                    tr("Deck %1 Stem %2 Quick Effect Enable Button")
+                            .arg(QString::number(i), QString::number(j)),
+                    tr("Quick Effect Enable Button"),
+                    pQuickEffectMenu,
+                    false,
+                    tr("Quick Effect"));
+        }
+#endif
     }
 
     pEffectsMenu->addSeparator();
@@ -1297,7 +1358,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Microphone Ducking Mode"),
             tr("Toggle microphone ducking mode (OFF, AUTO, MANUAL)"),
             pMicrophoneMenu);
-    addMicrophoneAndAuxControl("passthrough",
+    addMicrophoneAndAuxControl("main_mix",
             tr("Auxiliary On/Off"),
             tr("Auxiliary on/off"),
             pMicrophoneMenu,
@@ -1584,6 +1645,9 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
         const QString& controlDescription,
         QMenu* pMenu,
         bool deckControls,
+#ifdef __STEM__
+        bool deckStemControls,
+#endif
         bool samplerControls,
         bool previewdeckControls,
         bool addReset) {
@@ -1607,8 +1671,8 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
 
     for (int i = 1; deckControls && i <= iNumDecks; ++i) {
         // PlayerManager::groupForDeck is 0-indexed.
-        QString prefix = m_deckStr.arg(i);
-        QString group = PlayerManager::groupForDeck(i - 1);
+        const QString prefix = m_deckStr.arg(i);
+        const QString group = PlayerManager::groupForDeck(i - 1);
         addSingleControl(group,
                 control,
                 controlTitle,
@@ -1616,7 +1680,23 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                 pControlMenu,
                 prefix,
                 prefix);
-
+#ifdef __STEM__
+        if (deckStemControls) {
+            QMenu* pStemsControlMenu = addSubmenu(tr("Deck %1 Stems").arg(i), pControlMenu);
+            for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
+                const QString stemPrefix = m_deckStemStr.arg(
+                        QString::number(i), QString::number(j));
+                const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
+                addSingleControl(stemGroup,
+                        control,
+                        controlTitle,
+                        controlDescription,
+                        pStemsControlMenu,
+                        stemPrefix,
+                        stemPrefix);
+            }
+        }
+#endif
         if (pResetControlMenu) {
             QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
             QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
@@ -1627,6 +1707,24 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                     pResetControlMenu,
                     prefix,
                     prefix);
+#ifdef __STEM__
+            if (deckStemControls) {
+                QMenu* pStemsControlMenu = addSubmenu(
+                        tr("Deck %1 Stems").arg(i), pResetControlMenu);
+                for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
+                    const QString stemPrefix = m_deckStemStr.arg(
+                            QString::number(i), QString::number(j));
+                    const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
+                    addSingleControl(stemGroup,
+                            control,
+                            controlTitle,
+                            controlDescription,
+                            pStemsControlMenu,
+                            stemPrefix,
+                            stemPrefix);
+                }
+            }
+#endif
         }
     }
 
@@ -1791,32 +1889,84 @@ void ControlPickerMenu::addDeckAndSamplerControl(const QString& control,
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
+        bool stemsControls,
+#endif
         bool addReset) {
-    addPlayerControl(control, title, controlDescription, pMenu, true, true, false, addReset);
+    addPlayerControl(control,
+            title,
+            controlDescription,
+            pMenu,
+            true,
+#ifdef __STEM__
+            stemsControls,
+#endif
+            true,
+            false,
+            addReset);
 }
 
 void ControlPickerMenu::addDeckAndPreviewDeckControl(const QString& control,
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
+        bool stemsControls,
+#endif
         bool addReset) {
-    addPlayerControl(control, title, controlDescription, pMenu, true, false, true, addReset);
+    addPlayerControl(control,
+            title,
+            controlDescription,
+            pMenu,
+            true,
+#ifdef __STEM__
+            stemsControls,
+#endif
+            false,
+            true,
+            addReset);
 }
 
 void ControlPickerMenu::addDeckAndSamplerAndPreviewDeckControl(const QString& control,
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
+        bool stemsControls,
+#endif
         bool addReset) {
-    addPlayerControl(control, title, controlDescription, pMenu, true, true, true, addReset);
+    addPlayerControl(control,
+            title,
+            controlDescription,
+            pMenu,
+            true,
+#ifdef __STEM__
+            stemsControls,
+#endif
+            true,
+            true,
+            addReset);
 }
 
 void ControlPickerMenu::addDeckControl(const QString& control,
         const QString& title,
         const QString& controlDescription,
         QMenu* pMenu,
+#ifdef __STEM__
+        bool stemsControls,
+#endif
         bool addReset) {
-    addPlayerControl(control, title, controlDescription, pMenu, true, false, false, addReset);
+    addPlayerControl(control,
+            title,
+            controlDescription,
+            pMenu,
+            true,
+#ifdef __STEM__
+            stemsControls,
+#endif
+            false,
+            false,
+            addReset);
 }
 
 void ControlPickerMenu::addSamplerControl(const QString& control,
@@ -1824,7 +1974,17 @@ void ControlPickerMenu::addSamplerControl(const QString& control,
         const QString& controlDescription,
         QMenu* pMenu,
         bool addReset) {
-    addPlayerControl(control, title, controlDescription, pMenu, false, true, false, addReset);
+    addPlayerControl(control,
+            title,
+            controlDescription,
+            pMenu,
+            false,
+#ifdef __STEM__
+            false,
+#endif
+            true,
+            false,
+            addReset);
 }
 
 void ControlPickerMenu::addPreviewDeckControl(const QString& control,
@@ -1832,7 +1992,17 @@ void ControlPickerMenu::addPreviewDeckControl(const QString& control,
         const QString& controlDescription,
         QMenu* pMenu,
         bool addReset) {
-    addPlayerControl(control, title, controlDescription, pMenu, false, false, true, addReset);
+    addPlayerControl(control,
+            title,
+            controlDescription,
+            pMenu,
+            false,
+#ifdef __STEM__
+            false,
+#endif
+            false,
+            true,
+            addReset);
 }
 
 void ControlPickerMenu::addLibraryControl(const QString& control,

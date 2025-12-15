@@ -166,6 +166,7 @@ class WTrackMenu : public QMenu {
     void slotUnlockBpm();
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
     void slotUndoBeatsChange();
+    void slotTranslateBeatsHalf();
 
     // Hotcues
     void slotSortHotcuesByPosition(HotcueSortMode sortMode);
@@ -345,6 +346,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pBpmThreeHalvesAction;
     parented_ptr<QAction> m_pBpmResetAction;
     parented_ptr<QAction> m_pBpmUndoAction;
+    parented_ptr<QAction> m_pTranslateBeatsHalf;
 
     // Track rating and color
     parented_ptr<WStarRatingAction> m_pStarRatingAction;
@@ -400,6 +402,7 @@ class WTrackMenu : public QMenu {
     QString m_trackProperty;
 
     static bool s_showPurgeSuccessPopup;
+    static bool s_confirmForAutoDjReplace;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

@@ -14,8 +14,6 @@
 #include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 
-#define NUM_HOT_CUES 37
-
 class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
@@ -91,6 +89,7 @@ class HotcueControl : public QObject {
     mixxx::audio::FramePos getEndPosition() const;
     void setEndPosition(mixxx::audio::FramePos endPosition);
 
+    mixxx::CueType getType() const;
     void setType(mixxx::CueType type);
 
     void setStatus(HotcueControl::Status status);
@@ -168,6 +167,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlObject> m_hotcueEndPosition;
     std::unique_ptr<ControlObject> m_pHotcueStatus;
     std::unique_ptr<ControlObject> m_hotcueType;
+    std::unique_ptr<ControlObject> m_hotcueDirection;
     std::unique_ptr<ControlObject> m_hotcueColor;
     // Hotcue button controls
     std::unique_ptr<ControlPushButton> m_hotcueSet;
@@ -196,6 +196,15 @@ class CueControl : public EngineControl {
             UserSettingsPointer pConfig);
     ~CueControl() override;
 
+    void notifySeek(mixxx::audio::FramePos position) override;
+
+    /// nextTrigger returns the sample at which the engine will be triggered to
+    /// take a jump. This is only used for active saved jumps.
+    virtual mixxx::audio::FramePos nextTrigger(bool reverse,
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos* pTargetPosition,
+            mixxx::audio::FrameDiff_t lookAheadFrames);
+
     void hintReader(gsl::not_null<HintVector*> pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
@@ -217,6 +226,7 @@ class CueControl : public EngineControl {
 
   private slots:
     void quantizeChanged(double v);
+    void slotCueModeChanged(double v);
 
     void cueUpdated();
     void trackAnalyzed();
@@ -295,6 +305,10 @@ class CueControl : public EngineControl {
     int getHotcueFocusIndex() const;
     mixxx::RgbColor colorFromConfig(const ConfigKey& configKey);
 
+    void jumpTo(mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos source,
+            mixxx::audio::FramePos target);
+
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     QAtomicInt m_currentlyPreviewingIndex;
@@ -310,12 +324,11 @@ class CueControl : public EngineControl {
     bool m_bypassCueSetByPlay;
     ControlValueAtomic<mixxx::audio::FramePos> m_usedSeekOnLoadPosition;
 
-    const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;
 
     ControlObject* m_pTrackSamples;
-    ControlObject* m_pCuePoint;
-    ControlObject* m_pCueMode;
+    std::unique_ptr<ControlObject> m_pCuePoint;
+    std::unique_ptr<ControlObject> m_pCueMode;
     std::unique_ptr<ControlPushButton> m_pCueSet;
     std::unique_ptr<ControlPushButton> m_pCueClear;
     std::unique_ptr<ControlPushButton> m_pCueCDJ;
@@ -369,6 +382,7 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pSortHotcuesByPosCompress;
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
+    QAtomicPointer<HotcueControl> m_pCurrentSavedJumpControl;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

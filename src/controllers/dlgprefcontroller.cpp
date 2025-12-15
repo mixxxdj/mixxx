@@ -18,7 +18,10 @@
 #endif
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgcontrollerlearning.h"
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
 #include "controllers/hid/hidcontroller.h"
+#endif
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -29,8 +32,12 @@
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/string.h"
+#include "widget/wcollapsiblegroupbox.h"
 
 namespace {
+
+constexpr int kNoMappingIndex = 0; // "No Mapping" is always at the first position;
+
 const QString kMappingExt(".midi.xml");
 
 QString mappingNameToPath(const QString& directory, const QString& mappingName) {
@@ -84,18 +91,42 @@ DlgPrefController::DlgPrefController(
           m_inputMappingsTabIndex(-1),
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
-          m_screensTabIndex(-1) {
+          m_screensTabIndex(-1)
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
+          ,
+          m_hidReportTabsManager(nullptr) {
+    qRegisterMetaType<const hid::reportDescriptor::Control*>();
+#else
+{
+#endif
+
     m_ui.setupUi(this);
     // Create text color for the file and wiki links
     createLinkColor();
+
+    QString refreshIconPath;
+    if (!Color::isDimColor(palette().text().color())) {
+        refreshIconPath = QStringLiteral(
+                ":/images/preferences/light/"
+                "ic_preferences_controllers_reload.svg");
+    } else {
+        refreshIconPath = QStringLiteral(
+                ":/images/preferences/dark/"
+                "ic_preferences_controllers_reload.svg");
+    }
+    m_ui.btnRefreshMappingList->setIcon(QIcon(refreshIconPath));
+    connect(m_ui.btnRefreshMappingList,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefController::slotRefreshMappingList);
 
     m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 
     initTableView(m_ui.midiInputMappingTableView);
     initTableView(m_ui.midiOutputMappingTableView);
 
-    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
-    slotShowMapping(pMapping);
+    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->getMapping();
+    showMapping(pMapping);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
 
@@ -174,8 +205,9 @@ DlgPrefController::DlgPrefController(
         m_ui.labelUsbInterfaceNumberValue->setVisible(false);
     }
 
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
     // Display HID UsagePage and Usage if the controller is an HidController
-    if (auto* hidController = dynamic_cast<HidController*>(m_pController)) {
+    if (auto* hidController = qobject_cast<HidController*>(m_pController)) {
         m_ui.labelHidUsagePageValue->setText(QStringLiteral("%1 (%2)")
                         .arg(formatHex(hidController->getUsagePage()),
                                 hidController->getUsagePageDescription()));
@@ -187,7 +219,15 @@ DlgPrefController::DlgPrefController(
         m_ui.labelHidUsagePageValue->setVisible(true);
         m_ui.labelHidUsage->setVisible(true);
         m_ui.labelHidUsageValue->setVisible(true);
-    } else {
+
+        // Create HID report tabs
+        m_hidReportTabsManager =
+                std::make_unique<ControllerHidReportTabsManager>(
+                        m_ui.controllerTabs, hidController);
+        m_hidReportTabsManager->createReportTypeTabs();
+    } else
+#endif
+    {
         m_ui.labelHidUsagePage->setVisible(false);
         m_ui.labelHidUsagePageValue->setVisible(false);
         m_ui.labelHidUsage->setVisible(false);
@@ -230,7 +270,11 @@ DlgPrefController::DlgPrefController(
     connect(this,
             &DlgPrefController::applyMapping,
             m_pControllerManager.get(),
-            &ControllerManager::slotApplyMapping);
+            &ControllerManager::slotApplyMapping,
+            Qt::BlockingQueuedConnection);
+    // Wait until the mapping has been cloned in the controller thread
+    // and we can continue to edit our copy
+
     // Update GUI
     connect(m_pControllerManager.get(),
             &ControllerManager::mappingApplied,
@@ -311,13 +355,6 @@ DlgPrefController::DlgPrefController(
     m_outputMappingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.outputMappingsTab);
     m_settingsTabIndex = m_ui.controllerTabs->indexOf(m_ui.settingsTab);
     m_screensTabIndex = m_ui.controllerTabs->indexOf(m_ui.screensTab);
-
-#ifndef MIXXX_USE_QML
-    // Remove the screens tab
-    m_ui.controllerTabs->removeTab(m_screensTabIndex);
-    // Just to be save
-    m_screensTabIndex = -1;
-#endif
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -346,10 +383,10 @@ void DlgPrefController::showLearningWizard() {
     slotApply();
 
     if (!m_pMapping) {
-        m_pMapping = std::shared_ptr<LegacyControllerMapping>(new LegacyMidiControllerMapping());
+        m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
         emit applyMapping(m_pController, m_pMapping, true);
         // shortcut for creating and assigning required I/O table models
-        slotShowMapping(m_pMapping);
+        showMapping(m_pMapping);
     }
 
     // Note that DlgControllerLearning is set to delete itself on close using
@@ -566,16 +603,18 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     }
 
     // Preselect configured or matching mapping
-    int index = -1;
+    int index = kNoMappingIndex;
     if (!selectedMappingPath.isEmpty()) {
         index = m_ui.comboBoxMapping->findData(selectedMappingPath);
     } else if (match.isValid()) {
         index = m_ui.comboBoxMapping->findText(match.getName());
     }
-    QString newMappingFilePath = mappingFilePathFromIndex(index);
-    if (index == -1) {
+    QString newMappingFilePath;
+    if (index <= kNoMappingIndex) { // findData() returns -1 for not found
+        index = kNoMappingIndex;
         m_ui.chkEnabledDevice->setEnabled(false);
     } else {
+        newMappingFilePath = mappingFilePathFromIndex(index);
         m_ui.comboBoxMapping->setCurrentIndex(index);
     }
     m_ui.comboBoxMapping->blockSignals(false);
@@ -611,8 +650,12 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
 void DlgPrefController::slotUpdate() {
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
-    // Force updating the controller settings
-    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    // Note: this is called by closeDlg() when MIDI learning starts
+    // "No Mapping" is selected but we have a mapping for learning
+    if (m_ui.comboBoxMapping->currentIndex() > kNoMappingIndex || !m_pMapping) {
+        // Force updating the controller settings
+        slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    }
 
     // enumerateMappings() calls slotMappingSelected() which will tick the 'Enabled'
     // checkbox if there is a valid mapping saved in the mixxx.cfg file.
@@ -627,6 +670,11 @@ void DlgPrefController::slotUpdate() {
     // When slotUpdate() is run for the first time, this bool keeps slotPresetSelected()
     // from setting a false-postive 'dirty' flag when updating the fresh GUI.
     m_GuiInitialized = true;
+}
+
+void DlgPrefController::slotRefreshMappingList() {
+    enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
+            m_pController->getName()));
 }
 
 void DlgPrefController::slotHide() {
@@ -719,8 +767,7 @@ void DlgPrefController::enableWizardAndIOTabs(bool enable) {
 }
 
 QString DlgPrefController::mappingFilePathFromIndex(int index) const {
-    if (index == 0) {
-        // "No Mapping" item
+    if (index <= kNoMappingIndex) {
         return QString();
     }
 
@@ -761,6 +808,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         if (m_pControllerManager->getConfiguredMappingFileForDevice(
                     m_pController->getName()) != mappingFilePath) {
             setDirty(true);
+            m_settingsCollapsedStates.clear();
         } else if (m_pMapping && m_pMapping->isDirty()) {
             // We have pending changes, don't reload the mapping from file!
             // This is called by show()/slotUpdate() after MIDI learning ended
@@ -794,7 +842,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         // the preset combobox.
         enumerateMappings(mappingFilePath);
     }
-    slotShowMapping(pMapping);
+    showMapping(pMapping);
 
     // These tabs are only usable for MIDI controllers
     bool showMidiTabs = m_pController->getDataRepresentationProtocol() ==
@@ -802,6 +850,9 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             !mappingFilePath.isEmpty();
     m_ui.controllerTabs->setTabVisible(m_inputMappingsTabIndex, showMidiTabs);
     m_ui.controllerTabs->setTabVisible(m_outputMappingsTabIndex, showMidiTabs);
+    // Also disable accordingly so hidden tabs can not get keyboard focus
+    m_ui.controllerTabs->setTabEnabled(m_inputMappingsTabIndex, showMidiTabs);
+    m_ui.controllerTabs->setTabEnabled(m_outputMappingsTabIndex, showMidiTabs);
 
     // Hide the entire QTabWidget if all tabs are removed
     m_ui.controllerTabs->setVisible(getNumberOfVisibleTabs() > 0);
@@ -1026,7 +1077,7 @@ void DlgPrefController::slotShowPreviewScreens(
 }
 #endif
 
-void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
     QString name, description, author, supportLinks, scriptFileLinks;
 
     if (pMapping) {
@@ -1068,7 +1119,40 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         }
 
         if (pLayout != nullptr && !settings.isEmpty()) {
-            m_ui.settingsTab->layout()->addWidget(pLayout->build(m_ui.settingsTab));
+            QWidget* pSettingsWidget = pLayout->build(m_ui.settingsTab);
+            m_ui.settingsTab->layout()->addWidget(pSettingsWidget);
+
+            // Add an expanding spacer so that when we collapse all groups,
+            // they are pushed to the top.
+            m_ui.settingsTab->layout()->addItem(new QSpacerItem(
+                    1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+            // Make all top-level groupboxes checkable so we get the
+            // collapse/expand functionality. Qt::FindDirectChildrenOnly
+            // ensures we only iterate over the top-level groupboxes.
+            const QList<WCollapsibleGroupBox*> boxes =
+                    pSettingsWidget->findChildren<WCollapsibleGroupBox*>(
+                            QString() /* match any ObjectName */,
+                            Qt::FindDirectChildrenOnly);
+            for (auto* pBox : std::as_const(boxes)) {
+                const QString title = pBox->title();
+                pBox->setCheckable(true);
+                // The collapsed state is saved/restored via the groupbox' title.
+                // Note: If multiple top-levle groups happen to have the same title
+                // (which should not normally happen in well-behaved controller mappings,
+                // but is not strictly prohibited), the last one to be expanded/
+                // collapsed determines the state that will be restored.
+                if (m_settingsCollapsedStates.contains(title)) {
+                    pBox->setChecked(m_settingsCollapsedStates.value(title));
+                }
+
+                connect(pBox,
+                        &WCollapsibleGroupBox::toggled,
+                        this,
+                        [this, title](bool checked) {
+                            m_settingsCollapsedStates.insert(title, checked);
+                        });
+            }
 
             for (const auto& setting : std::as_const(settings)) {
                 connect(setting.get(),
@@ -1080,8 +1164,9 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     }
 
     // Show or hide the settings tab based on the presence of settings
-    m_ui.controllerTabs->setTabVisible(
-            m_settingsTabIndex, pMapping && !pMapping->getSettings().isEmpty());
+    bool showSettings = pMapping && !pMapping->getSettings().isEmpty();
+    m_ui.controllerTabs->setTabVisible(m_settingsTabIndex, showSettings);
+    m_ui.controllerTabs->setTabEnabled(m_settingsTabIndex, showSettings);
 
     // If there is still settings that may be saved and no new mapping selected
     // (e.g restored default), we keep the the dirty mapping live so it can be
@@ -1100,15 +1185,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         auto screens = pMapping->getInfoScreens();
         bool hasScreens = !screens.isEmpty();
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, hasScreens);
+        m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, hasScreens);
         if (hasScreens) {
             slotShowPreviewScreens(m_pController->getScriptEngine().get());
         }
     } else {
+#endif
         m_ui.controllerTabs->setTabVisible(m_screensTabIndex, false);
+        m_ui.controllerTabs->setTabEnabled(m_screensTabIndex, false);
+#ifdef MIXXX_USE_QML
     }
 #endif
 
-    // Inputs tab
+    // MIDI Inputs tab
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this,
                     m_pControlPickerMenu,
@@ -1136,7 +1225,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     // Trigger search when the model was recreated after hitting Apply
     slotInputControlSearch();
 
-    // Outputs tab
+    // MIDI Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
             new ControllerOutputMappingTableModel(this,
                     m_pControlPickerMenu,

@@ -43,11 +43,13 @@ constexpr std::size_t framesPerBeat(
 // If there the span is empty, no click should be played yet.
 std::span<CSAMPLE> syncedClickOutput(double beatFractionBufferEnd,
         std::optional<GroupFeatureBeatLength> beatLengthAndScratch,
+        const mixxx::EngineParameters& engineParameters,
         std::span<CSAMPLE> output) {
     if (!beatLengthAndScratch.has_value() || beatLengthAndScratch->scratch_rate == 0.0) {
         return {};
     }
-    double beatLength = beatLengthAndScratch->frames / beatLengthAndScratch->scratch_rate;
+    double beatLength = beatLengthAndScratch->seconds *
+            engineParameters.sampleRate() / beatLengthAndScratch->scratch_rate;
 
     const bool needsPreviousBeat = beatLength < 0;
     double beatToBufferEndFrames = std::abs(beatLength) *
@@ -176,6 +178,7 @@ void MetronomeEffect::processChannel(
     std::span<CSAMPLE> outputBufferOffset = shouldSync && hasBeatInfo
             ? syncedClickOutput(*groupFeatures.beat_fraction_buffer_end,
                       groupFeatures.beat_length,
+                      engineParameters,
                       output)
             : unsyncedClickOutput(
                       engineParameters

@@ -9,10 +9,12 @@
 #include <QMimeData>
 #include <QMouseEvent>
 
+#include "engine/controls/cuecontrol.h"
 #include "mixer/playerinfo.h"
 #include "moc_whotcuebutton.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
+#include "util/defs.h"
 #include "util/dnd.h"
 #include "util/valuetransformer.h"
 #include "widget/controlwidgetconnection.h"
@@ -43,13 +45,15 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     bool ok;
     int hotcue = context.selectInt(node, QStringLiteral("Hotcue"), &ok);
-    if (ok && hotcue > 0) {
+    if (ok && hotcue > 0 && hotcue <= kMaxNumberOfHotcues) {
         m_hotcue = hotcue - 1;
     } else {
+        // HotcueControls are created only for 0..kMaxNumberOfHotcues-1
         SKIN_WARNING(node,
                 context,
-                QStringLiteral("Hotcue index '%1' invalid")
-                        .arg(context.selectString(node, QStringLiteral("Hotcue"))));
+                QStringLiteral("Hotcue index '%1' invalid. Valid range is 1..%2")
+                        .arg(context.selectString(node, QStringLiteral("Hotcue")),
+                                kMaxNumberOfHotcues));
     }
 
     bool okay;
@@ -63,6 +67,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     // For dnd/swapping hotcues we use the rendered widget pixmap as dnd cursor.
     // Unfortnately the margin that constraints the bg color is not considered,
     // so we shrink the rect by custom margins.
+    // TODO Turn this into a qproperty, set in qss
     okay = false;
     int dndMargin = context.selectInt(node, QStringLiteral("DndRectMargin"), &okay);
     if (okay && dndMargin > 0) {
@@ -90,6 +95,23 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     m_pCoType->connectValueChanged(this, &WHotcueButton::slotTypeChanged);
     slotTypeChanged(m_pCoType->get());
 
+    m_pCoPosition = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("position")),
+            this,
+            ControlFlag::NoAssertIfMissing);
+    m_pCoPosition->connectValueChanged(this, &WHotcueButton::slotUpdateDirection);
+    m_pCoEndPosition = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("endposition")),
+            this,
+            ControlFlag::NoAssertIfMissing);
+    m_pCoEndPosition->connectValueChanged(this, &WHotcueButton::slotUpdateDirection);
+    slotUpdateDirection();
+
+    m_pCoActive = make_parented<ControlProxy>(
+            createConfigKey(QStringLiteral("status")),
+            this,
+            ControlFlag::NoAssertIfMissing);
+
     addConnection(std::make_unique<ControlParameterWidgetConnection>(
                           this,
                           getLeftClickConfigKey(), // "activate"
@@ -110,6 +132,12 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     if (!con.isNull()) {
         SKIN_WARNING(node, context, QStringLiteral("Additional Connections are not allowed"));
     }
+}
+
+bool WHotcueButton::isActive() const {
+    return m_pCoActive &&
+            m_pCoActive->get() ==
+            static_cast<double>(HotcueControl::Status::Active);
 }
 
 void WHotcueButton::mousePressEvent(QMouseEvent* pEvent) {
@@ -155,6 +183,7 @@ void WHotcueButton::mousePressEvent(QMouseEvent* pEvent) {
     // starting the preview.
     if (!pEvent->modifiers().testFlag(Qt::ShiftModifier)) {
         WPushButton::mousePressEvent(pEvent);
+        DragAndDropHelper::mousePressed(pEvent);
     }
 }
 
@@ -211,7 +240,7 @@ void WHotcueButton::mouseMoveEvent(QMouseEvent* pEvent) {
 }
 
 void WHotcueButton::dragEnterEvent(QDragEnterEvent* pEvent) {
-    if (isValidHotcueDragEvent(pEvent, m_group, m_hotcue)) {
+    if (isValidHotcueDragEvent(pEvent, m_group, QList<int>{kMainCueIndex})) {
         pEvent->acceptProposedAction();
     } else {
         pEvent->ignore();
@@ -226,7 +255,7 @@ void WHotcueButton::dropEvent(QDropEvent* pEvent) {
                     pEvent,
                     m_group,
                     this,
-                    m_hotcue,
+                    QList<int>{m_hotcue, kMainCueIndex},
                     &dragData)) {
         pTrack->swapHotcues(dragData.hotcue, m_hotcue);
     } else {
@@ -266,6 +295,13 @@ void WHotcueButton::slotColorChanged(double color) {
     }
 
     setStyleSheet(style);
+    restyleAndRepaint();
+}
+
+void WHotcueButton::slotUpdateDirection(double) {
+    m_direction = m_pCoPosition->get() >= m_pCoEndPosition->get()
+            ? QStringLiteral("forward")
+            : QStringLiteral("backward");
     restyleAndRepaint();
 }
 

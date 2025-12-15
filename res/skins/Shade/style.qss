@@ -57,6 +57,15 @@ WSearchLineEdit QAbstractScrollArea,
   font-weight: normal;
   font-style: normal;
 }
+WTrackTableViewHeader,
+WTrackTableViewHeader::section {
+  /* On Linux all weight variants of Open Sans are identified
+  as "Open Sans" and we need to set the `font-weight`.
+  On Windows however, the semi-bold variant is identified as
+  "Open Sans Semibold", so look for that first. */
+  font-family: "Open Sans Semibold", "Open Sans";
+  font-weight: 500; /* semi-bold */
+}
 
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
@@ -101,6 +110,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
@@ -154,6 +164,7 @@ WBeatSpinBox,
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu::item:selected,
 WTrackTableViewHeader QMenu QCheckBox:selected,
 WTrackTableViewHeader QMenu QCheckBox:focus,
 WTrackTableViewHeader QMenu QCheckBox:hover,
@@ -424,7 +435,10 @@ WEffectSelector QAbstractScrollArea,
 WCueMenuPopup QLabel {
   color: #060613;
 }
-#CueDeleteButton {
+#CueDeleteButton,
+#CueStandardButton,
+#CueSavedLoopButton,
+#CueSavedJumpButton {
   /* set any border to allow styles for other properties as well */
   border: 1px solid #060613;
 /* To get the final size for the Delete button consider border width.
@@ -433,27 +447,35 @@ WCueMenuPopup QLabel {
   height: 43px;
   padding: 0px;
   background-color: #aab2b7;
-  qproperty-icon: url(skin:/btn/btn_delete.svg);
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
   outline: none;
+}
+#CueDeleteButton {
+  qproperty-icon: url(skin:/btn/btn_delete.svg);
+}
+#CueStandardButton {
+  qproperty-icon: url(skin:/btn/btn_vinylcontrol.png);
 }
 #CueSavedLoopButton {
-  /* set any border to allow styles for other properties as well */
-  border: 1px solid #060613;
-/* To get the final size for the Delete button consider border width.
-  tall button, about the same height as cue number + label edit box */
-  width: 24px;
-  height: 43px;
-  padding: 0px;
-  background-color: #aab2b7;
-  qproperty-icon: url(skin:/btn/btn_hotcue_loop.png);
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  outline: none;
+  qproperty-icon: url(skin:/btn/btn_repeat.png);
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueSavedJumpButton[direction="impossible"],
+#CueSavedJumpButton[direction="forward"] {
+  qproperty-icon: url(skin:/btn/btn_beatjump_forward.png);
+}
+#CueSavedJumpButton[direction="backward"] {
+  qproperty-icon: url(skin:/btn/btn_beatjump_backward.png);
+}
+#CueDeleteButton:pressed, #CueDeleteButton:checked, #CueDeleteButton:clicked,
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #F90562;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
 }
 #CueLabelEdit {
   border: 1px solid #060613;
@@ -521,8 +543,21 @@ WLibrarySidebar::item:selected,
 WLibrarySidebar::branch:selected,
 #LibraryBPMButton::item:selected,
 #LibraryPlayedCheckbox::item:selected {
-  color: #fff;
+  /* disabled since it interferes with selection-color
+     which we use in DefaultDelegate and TableItemDelegate to
+     blend the highlight color with the played/missing color.
+  color: #fff; */
+  /* This is not required for painting the background,
+     but it is for applying the focus outline. */
   background-color: #656d75;
+  }
+  /* Highlight currentIndex which can be moved with Ctrl + arrow keys */
+  WTrackTableView::item:!selected:focus {
+    /* For outline to be applied, background-color must be set, too ...
+       Use a value between #0f0f0f and #1a1a1a (alternate-background-color) */
+    background-color: #151515;
+    outline: 1px solid #fff;
+    color: #fff;
   }
   WSearchLineEdit::item:checked:!selected {
     color: #fff;
@@ -564,6 +599,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #eb4123; /* orange like the faders */
 }
 
   /* Table cell in edit mode */
@@ -755,15 +792,13 @@ WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
 }
 WTrackTableViewHeader {
   /* Don't set a font size to pick up the system font size. */
-  font-weight: bold;
   color: #000;
   border-radius: 0px;
   border-bottom: 1px solid #0f0f0f;
 }
 /*	Library header 'buttons'	*/
 WTrackTableViewHeader::section {
-  height: 1.1em;
-  padding: 0.1em -0.7em 0.1em 0.1em;
+  padding: 2px;
   /*	set right border so that first column header
   on the left doesn't have double border on the left	*/
   border-right: 1px solid #0f0f0f;
@@ -774,8 +809,6 @@ WTrackTableViewHeader::section {
 WTrackTableViewHeader::up-arrow,
 WTrackTableViewHeader::down-arrow {
   width: 0.6em;
-  padding-right: 0.1em;
-  margin-right: 1px;
   background-color: rgba(98,111,135,255);
   }
   WTrackTableViewHeader::up-arrow {

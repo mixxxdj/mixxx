@@ -10,6 +10,7 @@
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
 
@@ -61,22 +62,23 @@ class WaveformWidgetAbstractHandle {
     }
 
 #ifdef MIXXX_USE_QOPENGL
-    allshader::WaveformRendererSignalBase::Options supportedOptions(
+    WaveformRendererSignalBase::Options supportedOptions(
             WaveformWidgetBackend backend) const {
         return backend == WaveformWidgetBackend::AllShader
                 ? m_supportedOption
-                : allshader::WaveformRendererSignalBase::Option::None;
+                : WaveformRendererSignalBase::Option::None;
     }
 #endif
 
     QString getDisplayName() const;
+    static QString getDisplayName(WaveformWidgetType::Type type);
 
   private:
     WaveformWidgetType::Type m_type;
     QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
     // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
-    allshader::WaveformRendererSignalBase::Options m_supportedOption;
+    WaveformRendererSignalBase::Options m_supportedOption;
 #endif
 
     friend class WaveformWidgetFactory;
@@ -104,12 +106,10 @@ class WaveformWidgetHolder {
 
 //########################################
 
-class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
+class WaveformWidgetFactory : public QObject,
+                              public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
-    //TODO merge this enum with the waveform analyzer one
-    enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
-
     bool setConfig(UserSettingsPointer config);
 
     /// Creates the waveform widget using the type set with setWidgetType
@@ -122,7 +122,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
-//    bool getVSync() const { return m_vSyncType;}
+    // bool getVSync() const { return m_vSyncType;}
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
@@ -132,10 +132,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
+    WaveformWidgetBackend getBackendFromConfig() const;
     WaveformWidgetBackend preferredBackend() const;
     static WaveformWidgetType::Type defaultType() {
         return WaveformWidgetType::RGB;
     }
+    void setDefaultBackend();
 
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid
@@ -147,16 +149,27 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     /// dialog.
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
+    QString getTypeDisplayName() const {
+        return WaveformWidgetAbstractHandle::getDisplayName(m_type);
+    }
     int getHandleIndex() {
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsAcceleration(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
+    bool widgetTypeSupportsStems() const;
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
+
+    void setStemReorderOnChange(bool value);
+    void setStemOutlineOpacity(float value);
+    void setStemOpacity(float value);
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -172,6 +185,15 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     }
     float getUntilMarkTextHeightLimit() const {
         return m_untilMarkTextHeightLimit;
+    }
+    bool isStemReorderOnChange() const {
+        return m_stemReorderOnChange;
+    }
+    float getStemOutlineOpacity() const {
+        return m_stemOutlineOpacity;
+    }
+    float getStemOpacity() const {
+        return m_stemOpacity;
     }
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
@@ -196,8 +218,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setDisplayBeatGridAlpha(int alpha);
     int getBeatGridAlpha() const { return m_beatGridAlpha; }
 
-    void setVisualGain(FilterIndex index, double gain);
-    double getVisualGain(FilterIndex index) const;
+    void setVisualGain(BandIndex index, double gain);
+    double getVisualGain(BandIndex index) const;
 
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
@@ -211,12 +233,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void addVuMeter(WVuMeterLegacy* pWidget);
     void addVuMeter(WVuMeterBase* pWidget);
 
-    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML);
 
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
+
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
@@ -225,8 +248,18 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void renderVuMeters(VSyncThread*);
     void swapVuMeters();
 
-    void overviewNormalizeChanged();
-    void overallVisualGainChanged();
+    void overviewScalingChanged();
+    void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
+
+    void untilMarkShowBeatsChanged(bool value);
+    void untilMarkShowTimeChanged(bool value);
+    void untilMarkAlignChanged(Qt::Alignment align);
+    void untilMarkTextPointSizeChanged(int value);
+    void untilMarkTextHeightLimitChanged(float value);
+
+    void stemReorderOnChangeChanged(bool value);
+    void stemOutlineOpacityChanged(float value);
+    void stemOpacityChanged(float value);
 
   public slots:
     void slotSkinLoaded();
@@ -256,7 +289,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
-            WaveformWidgetType::Type type, WWaveformViewer* viewer);
+            WaveformWidgetType::Type type,
+            WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
@@ -279,7 +314,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_endOfTrackWarningTime;
     double m_defaultZoom;
     bool m_zoomSync;
-    double m_visualGain[FilterCount];
+    double m_visualGain[BandCount];
     bool m_overviewNormalized;
 
     bool m_untilMarkShowBeats;
@@ -287,6 +322,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;
+
+    bool m_stemReorderOnChange;
+    float m_stemOutlineOpacity;
+    float m_stemOpacity;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;
@@ -299,11 +338,17 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     VisualsManager* m_pVisualsManager;  // not owned
 
     // TODO(#13245): Migrate the following methods to smart pointer.
-    WaveformWidgetAbstract* createFilteredWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createFilteredWaveformWidget(
+            WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);
 
     //Debug

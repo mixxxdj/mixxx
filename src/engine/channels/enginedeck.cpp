@@ -9,7 +9,6 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
-#include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -26,6 +25,9 @@ EngineDeck::EngineDeck(
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),
+#ifdef __STEM__
+          m_stemClonedState(false),
+#endif
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
@@ -89,13 +91,14 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
         return;
     }
     if (m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
+                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true) &&
+            !m_stemClonedState) {
         for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
-            ;
         }
     }
+    m_stemClonedState = false;
     if (pNewTrack) {
         int stemCount = pNewTrack->getStemInfo().size();
         m_pStemCount->forceSet(stemCount);
@@ -153,7 +156,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     // effect manager so we can also apply the individual stem quick FX
     GroupFeatureState featureState;
     collectFeatures(&featureState);
-    for (std::size_t stemIdx = 0; stemIdx < stemCount;
+    for (unsigned int stemIdx = 0; stemIdx < stemCount;
             stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
         float stemGain = m_stemMute[stemIdx]->toBool()
@@ -212,6 +215,7 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
     }
+    m_stemClonedState = true;
 }
 #endif
 

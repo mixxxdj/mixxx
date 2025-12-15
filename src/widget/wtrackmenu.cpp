@@ -46,6 +46,7 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
+#include "widget/wmenucheckbox.h"
 #include "widget/wsearchrelatedtracksmenu.h"
 // WStarRating is required for DlgTrackInfo
 #include "widget/wstarrating.h"
@@ -98,6 +99,7 @@ void storeActionTextAndScaleInProperties(QAction* pAction, const double scale) {
 } // namespace
 
 bool WTrackMenu::s_showPurgeSuccessPopup = true;
+bool WTrackMenu::s_confirmForAutoDjReplace = true;
 
 WTrackMenu::WTrackMenu(
         QWidget* parent,
@@ -544,6 +546,15 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotUndoBeatsChange);
     }
 
+    if (!m_pTrackModel && featureIsEnabled(Feature::BPM)) {
+        m_pTranslateBeatsHalf = make_parented<QAction>(tr("Shift Beatgrid Half Beat"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pTranslateBeatsHalf, 2.0);
+
+        connect(m_pTranslateBeatsHalf, &QAction::triggered, this, [this] {
+            slotTranslateBeatsHalf();
+        });
+    }
+
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeAction = make_parented<QAction>(tr("Analyze"), this);
         connect(m_pAnalyzeAction, &QAction::triggered, this, &WTrackMenu::slotAnalyze);
@@ -645,6 +656,10 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
+        if (m_pTranslateBeatsHalf) {
+            m_pBPMMenu->addSeparator();
+            m_pBPMMenu->addAction(m_pTranslateBeatsHalf);
+        }
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
@@ -1161,6 +1176,10 @@ void WTrackMenu::updateMenus() {
         m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
     }
 
+    if (m_pTranslateBeatsHalf) {
+        m_pTranslateBeatsHalf->setEnabled(!m_deckGroup.isEmpty());
+    }
+
     if (featureIsEnabled(Feature::Color)) {
         m_pColorPickerAction->setColorPalette(
                 ColorPaletteSettings(m_pConfig).getTrackColorPalette());
@@ -1265,7 +1284,7 @@ TrackIdList WTrackMenu::getTrackIds() const {
     TrackIdList trackIds;
     if (m_pTrackModel) {
         trackIds.reserve(m_trackIndexList.size());
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             const auto trackId = m_pTrackModel->getTrackId(index);
             if (!trackId.isValid()) {
                 // Skip unavailable tracks
@@ -1287,7 +1306,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
     QList<TrackRef> trackRefs;
     if (m_pTrackModel) {
         trackRefs.reserve(m_trackIndexList.size());
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             auto trackRef = TrackRef::fromFilePath(
                     m_pTrackModel->getTrackLocation(index),
                     m_pTrackModel->getTrackId(index));
@@ -1308,7 +1327,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
 
 TrackPointer WTrackMenu::getFirstTrackPointer() const {
     if (m_pTrackModel) {
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             const auto pTrack = m_pTrackModel->getTrack(index);
             if (pTrack) {
                 return pTrack;
@@ -1323,7 +1342,7 @@ TrackPointer WTrackMenu::getFirstTrackPointer() const {
 TrackPointerList WTrackMenu::getTrackPointers() const {
     TrackPointerList tracks;
     if (m_pTrackModel) {
-        for (const auto& index : m_trackIndexList) {
+        for (const auto& index : std::as_const(m_trackIndexList)) {
             const auto pTrack = m_pTrackModel->getTrack(index);
             if (pTrack) {
                 tracks.append(pTrack);
@@ -1431,7 +1450,22 @@ void WTrackMenu::slotUpdateReplayGainFromPregain() {
     if (gain == 1.0) {
         return;
     }
-    m_pTrack->adjustReplayGainFromPregain(gain);
+    m_pTrack->adjustReplayGainFromPregain(gain, m_deckGroup);
+}
+
+void WTrackMenu::slotTranslateBeatsHalf() {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto translatedBeats = pBeats->tryTranslateBeats(0.5);
+    if (!translatedBeats) {
+        return;
+    }
+    m_pTrack->trySetBeats(*translatedBeats);
 }
 
 void WTrackMenu::slotImportMetadataFromFileTags() {
@@ -1598,7 +1632,8 @@ void WTrackMenu::slotPopulateCrateMenu() {
     while (allCrates.populateNext(&crate)) {
         auto pAction = make_parented<QWidgetAction>(
                 m_pCrateMenu);
-        auto pCheckBox = make_parented<QCheckBox>(
+        // Use a custom QCheckBox with fixed hover behavior.
+        auto pCheckBox = make_parented<WMenuCheckBox>(
                 mixxx::escapeTextPropertyWithoutShortcuts(crate.getName()),
                 m_pCrateMenu);
         pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
@@ -2534,6 +2569,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     for (const QString& group : groups) {
         ControlObject::set(ConfigKey(group, "stop"), 1.0);
         ControlObject::set(ConfigKey(group, "eject"), 1.0);
+        ControlObject::set(ConfigKey(group, "eject"), 0.0);
     }
 
     // Set up and initiate the track batch operation
@@ -2688,8 +2724,12 @@ void WTrackMenu::slotShowDlgTrackInfo() {
                 });
         QList<TrackPointer> tracks;
         tracks.reserve(getTrackCount());
-        for (int i = 0; i < m_trackIndexList.size(); i++) {
-            tracks.append(m_pTrackModel->getTrack(m_trackIndexList.at(i)));
+        for (const auto& index : std::as_const(m_trackIndexList)) {
+            const auto pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                tracks.append(pTrack);
+            }
+            // Skip unavailable tracks
         }
         m_pDlgTrackInfoMulti->loadTracks(tracks);
         m_pDlgTrackInfoMulti->show();
@@ -2769,9 +2809,35 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
+    // If the "Replace" action was clicked and there are tracks in the
+    // AutoDJ queue, ask for confirmation.
     PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                        ->internalCollection()
                                        ->getPlaylistDAO();
+    const auto autoDjTracks = playlistDao.getAutoDJTrackIds();
+    if (loc == PlaylistDAO::AutoDJSendLoc::REPLACE &&
+            autoDjTracks.size() > 0 &&
+            s_confirmForAutoDjReplace) {
+        QMessageBox pReplaceMsg;
+        pReplaceMsg.setWindowTitle(tr("Replace current Auto DJ queue?"));
+        pReplaceMsg.setText(
+                tr("Do you want to replace the entire Auto DJ queue with the "
+                   "selected tracks?"));
+
+        QCheckBox notAgainCB(tr("Don't ask again during this session"));
+        notAgainCB.setCheckState(Qt::Unchecked);
+        pReplaceMsg.setCheckBox(&notAgainCB);
+        pReplaceMsg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        pReplaceMsg.setDefaultButton(QMessageBox::Cancel);
+
+        if (pReplaceMsg.exec() == QMessageBox::Cancel) {
+            return;
+        }
+
+        if (notAgainCB.isChecked()) {
+            s_confirmForAutoDjReplace = false;
+        }
+    }
 
     // TODO(XXX): Care whether the append succeeded.
     m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);

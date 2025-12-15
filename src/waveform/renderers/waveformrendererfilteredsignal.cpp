@@ -7,8 +7,9 @@
 #include "util/painterscope.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 WaveformRendererFilteredSignal::~WaveformRendererFilteredSignal() {
@@ -96,7 +97,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_pColors->getAxesColor());
+        painter->setPen(m_waveformRenderer->getWaveformSignalColors()->getAxesColor());
         painter->drawLine(QLineF(0, halfBreadth, length, halfBreadth));
     }
 
@@ -237,16 +238,26 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     }
 
     double lineThickness = math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel());
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
 
-    painter->setPen(QPen(QBrush(m_pColors->getLowColor()), lineThickness, Qt::SolidLine, Qt::FlatCap));
+    painter->setPen(QPen(QBrush(pColors->getLowColor()),
+            lineThickness,
+            Qt::SolidLine,
+            Qt::FlatCap));
     if (m_pLowKillControlObject && m_pLowKillControlObject->get() == 0.0) {
        painter->drawLines(&m_lowLines[0], actualLowLineNumber);
     }
-    painter->setPen(QPen(QBrush(m_pColors->getMidColor()), lineThickness, Qt::SolidLine, Qt::FlatCap));
+    painter->setPen(QPen(QBrush(pColors->getMidColor()),
+            lineThickness,
+            Qt::SolidLine,
+            Qt::FlatCap));
     if (m_pMidKillControlObject && m_pMidKillControlObject->get() == 0.0) {
         painter->drawLines(&m_midLines[0], actualMidLineNumber);
     }
-    painter->setPen(QPen(QBrush(m_pColors->getHighColor()), lineThickness, Qt::SolidLine, Qt::FlatCap));
+    painter->setPen(QPen(QBrush(pColors->getHighColor()),
+            lineThickness,
+            Qt::SolidLine,
+            Qt::FlatCap));
     if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 0.0) {
         painter->drawLines(&m_highLines[0], actualHighLineNumber);
     }

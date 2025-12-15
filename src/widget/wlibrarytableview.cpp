@@ -10,6 +10,7 @@
 
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
+#include "widget/wtracktableviewheader.h"
 
 class QFocusEvent;
 
@@ -185,6 +186,21 @@ void WLibraryTableView::setTrackTableFont(const QFont& font) {
             "height: %1px;"
             "width: %1px;}")
                           .arg(metrics.height() * 0.7));
+
+    // Apply the font to the header as well.
+    // Note: remember to also apply the font to new headers created in
+    // WTrackTableView::loadTrackModel()
+    // Note: since WTrackTableViewHeader::setFont() does not override
+    // QHeaderView::setFont() we need to cast to WTrackTableViewHeader
+    WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->setFont(font);
+    } else {
+        // _Might_ happen in case we did not yet WTrackTableView::loadTrackModel()
+        // hence might not have a WTrackTableViewHeader yet but still default QHeaderView.
+        // Header height will not be adjusted correctly now, only after loading the model.
+        horizontalHeader()->setFont(font);
+    }
 }
 
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {

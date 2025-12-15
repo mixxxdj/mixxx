@@ -6,6 +6,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
@@ -55,9 +56,10 @@ WEffectSelector::indicator:unchecked,
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WTrackTableViewHeader QMenu:selected,
-WTrackTableViewHeader QMenu:focus,
-WTrackTableViewHeader QMenu:hover,
+WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
 WLibraryTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
@@ -151,8 +153,21 @@ WEffectSelector::indicator:unchecked:selected,
 #CueDeleteButton {
   background-color: #8a8a8a;
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
+}
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #b79d00;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
 }
 #CueLabelEdit {
   background-color: #3F3041;
@@ -184,7 +199,12 @@ WTrackTableView::item:selected,
 WLibrarySidebar::branch:selected,
 #LibraryBPMButton::item:selected,
 #LibraryPlayedCheckbox::item:selected {
-  color: #000;
+  /* disabled since it interferes with selection-color
+     which we use in DefaultDelegate and TableItemDelegate to
+     blend the highlight color with the played/missing color.
+  color: #000; */
+  /* This is not required for painting the background,
+     but it is for applying the focus outline. */
   selection-color: #000;
   background-color: #666;
 }
@@ -210,6 +230,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #69a50f; /* green like fader highlight */
 }
 
   /* Table cell in edit mode */

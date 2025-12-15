@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "moc_waveformrendererendoftrack.cpp"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
@@ -16,6 +17,7 @@
 namespace {
 
 constexpr int kBlinkingPeriodMillis = 1000;
+constexpr int kDefaultRemainingSeccondTrigger = 30;
 
 } // anonymous namespace
 
@@ -27,7 +29,8 @@ WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidget)
         : ::WaveformRendererAbstract(waveformWidget),
           m_pEndOfTrackControl(nullptr),
-          m_pTimeRemainingControl(nullptr) {
+          m_pTimeRemainingControl(nullptr),
+          m_remainingTimeTriggerSeconds(kDefaultRemainingSeccondTrigger) {
     initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);
 }
@@ -40,6 +43,12 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
 
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
+
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        m_pEndOfTrackControl.reset();
+        m_pTimeRemainingControl.reset();
+        return true;
+    }
 
     m_pEndOfTrackControl.reset(new ControlProxy(
             m_waveformRenderer->getGroup(), "end_of_track"));
@@ -67,7 +76,7 @@ void WaveformRendererEndOfTrack::preprocess() {
 }
 
 bool WaveformRendererEndOfTrack::preprocessInner() {
-    if (!m_pEndOfTrackControl->toBool()) {
+    if (!m_pEndOfTrackControl || !m_pEndOfTrackControl->toBool()) {
         return false;
     }
 
@@ -79,10 +88,8 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
             kBlinkingPeriodMillis;
 
     const double remainingTime = m_pTimeRemainingControl->get();
-    const double remainingTimeTriggerSeconds =
-            WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
-    const double criticalIntensity = (remainingTimeTriggerSeconds - remainingTime) /
-            remainingTimeTriggerSeconds;
+    const double criticalIntensity = (m_remainingTimeTriggerSeconds - remainingTime) /
+            m_remainingTimeTriggerSeconds;
 
     const double alpha = std::clamp(criticalIntensity * blinkIntensity, 0.0, 1.0);
 

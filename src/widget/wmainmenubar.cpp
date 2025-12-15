@@ -156,8 +156,9 @@ void WMainMenuBar::initialize() {
     pLibraryMenu->addAction(pLibraryRescan);
 
 #ifdef __ENGINEPRIME__
-    QString exportTitle = tr("E&xport Library to Engine Prime");
-    QString exportText = tr("Export the library to the Engine Prime format");
+    //: "Engine DJ" must not be translated
+    QString exportTitle = tr("E&xport Library to Engine DJ");
+    QString exportText = tr("Export the library to the Engine DJ format");
     auto* pLibraryExport = new QAction(exportTitle, this);
     pLibraryExport->setStatusTip(exportText);
     pLibraryExport->setWhatsThis(buildWhatsThis(exportTitle, exportText));
@@ -165,6 +166,34 @@ void WMainMenuBar::initialize() {
     connect(pLibraryExport, &QAction::triggered, this, &WMainMenuBar::exportLibrary);
     pLibraryMenu->addAction(pLibraryExport);
 #endif
+
+    pLibraryMenu->addSeparator();
+
+    QString searchHereTitle = tr("Search in Current View...");
+    QString searchHereText = tr("Search for tracks in the current library view");
+    auto* pSearchHere = new QAction(searchHereTitle, this);
+    pSearchHere->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_SearchInCurrentView"),
+            tr("Ctrl+f"))));
+    pSearchHere->setShortcutContext(Qt::ApplicationShortcut);
+    pSearchHere->setStatusTip(searchHereText);
+    pSearchHere->setWhatsThis(buildWhatsThis(searchHereTitle, searchHereText));
+    connect(pSearchHere, &QAction::triggered, this, &WMainMenuBar::searchInCurrentView);
+    pLibraryMenu->addAction(pSearchHere);
+
+    QString searchAllTitle = tr("Search in Tracks Library...");
+    QString searchAllText =
+            tr("Search in the internal track collection under \"Tracks\" in "
+               "the library");
+    auto* pSearchAll = new QAction(searchAllTitle, this);
+    pSearchAll->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_SearchInAllTracks"),
+            tr("Ctrl+Shift+F"))));
+    pSearchAll->setShortcutContext(Qt::ApplicationShortcut);
+    pSearchAll->setStatusTip(searchAllText);
+    pSearchAll->setWhatsThis(buildWhatsThis(searchAllText, searchAllText));
+    connect(pSearchAll, &QAction::triggered, this, &WMainMenuBar::searchInAllTracks);
+    pLibraryMenu->addAction(pSearchAll);
 
     pLibraryMenu->addSeparator();
 
@@ -345,6 +374,20 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary,
             ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")));
     pViewMenu->addAction(pViewMaximizeLibrary);
+
+    pViewMenu->addSeparator();
+
+    QString autoDJTitle = tr("Show Auto DJ");
+    QString autoDJText = tr("Switch to the Auto DJ view.");
+    auto* pViewAutoDJ = new QAction(autoDJTitle, this);
+    // pViewAutoDJ->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+    //         ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowAutoDJ"),
+    //         tr("Ctrl+9", "Menubar|View|Show Auto DJ"))));
+    pViewAutoDJ->setStatusTip(autoDJText);
+    pViewAutoDJ->setWhatsThis(buildWhatsThis(autoDJTitle, autoDJText));
+    pViewAutoDJ->setCheckable(false);
+    connect(pViewAutoDJ, &QAction::triggered, this, &WMainMenuBar::showAutoDJ);
+    pViewMenu->addAction(pViewAutoDJ);
 
     pViewMenu->addSeparator();
 
@@ -851,6 +894,8 @@ void WMainMenuBar::hideMenuBar() {
 
 void WMainMenuBar::slotAutoHideMenuBarToggled(bool autoHide) {
     m_pConfig->setValue(ConfigKey("[Config]", "hide_menubar"), autoHide ? 1 : 0);
+    // Trigger slotUpdateMenuBarAltKeyConnection() inorder to get Alt work immediately
+    emit menubarAutoHideChanged(autoHide);
     // Just in case it was hidden after toggling the menu action
     if (!autoHide) {
         showMenuBar();

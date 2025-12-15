@@ -43,8 +43,8 @@ QmlDlgPreferencesProxy* QmlDlgPreferencesProxy::create(
 
     // Explicitly specify C++ ownership so that the engine doesn't delete
     // the instance.
-    QJSEngine::setObjectOwnership(s_pInstance, QJSEngine::CppOwnership);
-    return s_pInstance;
+    QJSEngine::setObjectOwnership(s_pInstance.get(), QJSEngine::CppOwnership);
+    return s_pInstance.get();
 }
 
 } // namespace qml

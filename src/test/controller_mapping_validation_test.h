@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-
 #include "control/controlindicatortimer.h"
 #include "controllers/controller.h"
 #include "controllers/controllermappinginfoenumerator.h"
@@ -109,14 +108,43 @@ class FakeController : public Controller {
         }
     }
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override {
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override {
         if (m_pMidiMapping) {
-            return std::make_shared<LegacyMidiControllerMapping>(*m_pMidiMapping);
+            return m_pMidiMapping->getScriptFiles();
         } else if (m_pHidMapping) {
-            return std::make_shared<LegacyHidControllerMapping>(*m_pHidMapping);
+            return m_pHidMapping->getScriptFiles();
         }
-        return nullptr;
-    };
+        return {};
+    }
+
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getSettings();
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getSettings();
+        }
+        return {};
+    }
+
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getModules();
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getModules();
+        }
+        return {};
+    }
+
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getInfoScreens();
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getInfoScreens();
+        }
+        return {};
+    }
+#endif
 
     bool isMappable() const override;
 
@@ -161,8 +189,8 @@ class FakeController : public Controller {
         return true;
     }
 
-  private slots:
-    int open() override {
+  private:
+    int open(const QString&) override {
         return 0;
     }
 
@@ -170,7 +198,6 @@ class FakeController : public Controller {
         return 0;
     }
 
-  private:
     bool m_bMidiMapping;
     bool m_bHidMapping;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
@@ -194,7 +221,6 @@ class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourcePro
 
   protected:
     void SetUp() override;
-#ifdef MIXXX_USE_QML
     void TearDown() override;
 
     TrackPointer getOrAddTrackByLocation(
@@ -211,7 +237,6 @@ class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourcePro
     std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;
     std::shared_ptr<Library> m_pLibrary;
-#endif
 
     bool testLoadMapping(const MappingInfo& mapping);
 

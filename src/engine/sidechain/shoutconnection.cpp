@@ -1,6 +1,5 @@
 #include "engine/sidechain/shoutconnection.h"
 
-#include <QRegularExpression>
 #include <QTextCodec>
 #include <QUrl>
 
@@ -34,9 +33,6 @@ constexpr int kMaxNetworkCache = 491520; // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 constexpr int kMaxShoutFailures = 3;
-
-const QRegularExpression kArtistOrTitleRegex(QStringLiteral("\\$artist|\\$title"));
-const QRegularExpression kArtistRegex(QStringLiteral("\\$artist"));
 
 const mixxx::Logger kLogger("ShoutConnection");
 
@@ -816,9 +812,7 @@ void ShoutConnection::updateMetaData() {
     // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_format_is_aac || m_ogg_dynamic_update)) {
         if (m_pMetaData != nullptr) {
-
             QString artist = m_pMetaData->getArtist();
-            QString title = m_pMetaData->getTitle();
 
             // shoutcast uses only "song" as field for "artist - title".
             // icecast2 supports separate fields for "artist" and "title",
@@ -831,41 +825,24 @@ void ShoutConnection::updateMetaData() {
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-            	setFunctionCode(9);
-            	insertMetaData("artist", encodeString(artist).constData());
-            	insertMetaData("title", encodeString(title).constData());
-            } else {
-                // we are going to take the metadata format and replace all
-                // the references to $title and $artist by doing a single
-                // pass over the string
-                int replaceIndex = 0;
-
-                // Make a copy so we don't overwrite the references only
-                // once per streaming session.
-                QString metadataFinal = m_metadataFormat;
-                do {
-                    // find the next occurrence
-                    replaceIndex = metadataFinal.indexOf(
-                            kArtistOrTitleRegex,
-                            replaceIndex);
-
-                    if (replaceIndex != -1) {
-                        if (metadataFinal.indexOf(
-                                    kArtistRegex, replaceIndex) == replaceIndex) {
-                            metadataFinal.replace(replaceIndex, 7, artist);
-                            // skip to the end of the replacement
-                            replaceIndex += artist.length();
-                        } else {
-                            metadataFinal.replace(replaceIndex, 6, title);
-                            replaceIndex += title.length();
-                        }
-                    }
-                } while (replaceIndex != -1);
-
-                QByteArray baSong = encodeString(metadataFinal);
-                setFunctionCode(10);
-                insertMetaData("song",  baSong.constData());
+                setFunctionCode(9);
+                insertMetaData("artist", encodeString(artist).constData());
             }
+
+            // Make a copy so we don't overwrite the references only
+            // once per streaming session.
+            QString metadataFinal = m_metadataFormat;
+
+            metadataFinal.replace("$artist", artist);
+            metadataFinal.replace("$title", m_pMetaData->getTitle());
+            metadataFinal.replace("$year", m_pMetaData->getYear());
+            metadataFinal.replace("$album", m_pMetaData->getAlbum());
+            metadataFinal.replace("$genre", m_pMetaData->getGenre());
+            metadataFinal.replace("$bpm", QString::number(m_pMetaData->getBpm()));
+
+            QByteArray baSong = encodeString(metadataFinal);
+            setFunctionCode(10);
+            insertMetaData("song", baSong.constData());
             setFunctionCode(11);
             int ret = shout_set_metadata(m_pShout, m_pShoutMetaData);
             if (ret != SHOUTERR_SUCCESS) {

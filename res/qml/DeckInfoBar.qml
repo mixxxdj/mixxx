@@ -11,6 +11,7 @@ Rectangle {
     required property string group
     required property int rightColumnWidth
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
+    property var currentTrack: deckPlayer.currentTrack
     property color lineColor: Theme.deckLineColor
 
     border.width: 2
@@ -26,7 +27,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 5
         width: height
-        source: root.deckPlayer.coverArtUrl
+        source: root.currentTrack.coverArtUrl
         visible: false
         asynchronous: true
     }
@@ -95,7 +96,7 @@ Rectangle {
     Skin.EmbeddedText {
         id: infoBarTitle
 
-        text: root.deckPlayer.title
+        text: root.currentTrack.title
         anchors.top: infoBarHSeparator1.top
         anchors.left: infoBarVSeparator.left
         anchors.right: infoBarHSeparator1.left
@@ -119,7 +120,7 @@ Rectangle {
     Skin.EmbeddedText {
         id: infoBarArtist
 
-        text: root.deckPlayer.artist
+        text: root.currentTrack.artist
         anchors.top: infoBarVSeparator.bottom
         anchors.left: infoBarVSeparator.left
         anchors.right: infoBarHSeparator1.left
@@ -144,7 +145,7 @@ Rectangle {
     Skin.EmbeddedText {
         id: infoBarKey
 
-        text: root.deckPlayer.keyText
+        text: root.currentTrack.keyText
         anchors.top: infoBarHSeparator1.top
         anchors.bottom: infoBarVSeparator.top
         anchors.right: infoBarHSeparator2.left
@@ -206,11 +207,11 @@ Rectangle {
         GradientStop {
             position: 0
             color: {
-                const trackColor = root.deckPlayer.color;
+                const trackColor = root.currentTrack.color;
                 if (!trackColor.valid)
                     return Theme.deckBackgroundColor;
 
-                return Qt.darker(root.deckPlayer.color, 2);
+                return Qt.darker(root.currentTrack.color, 2);
             }
         }
 

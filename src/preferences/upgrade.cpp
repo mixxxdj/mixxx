@@ -37,7 +37,7 @@ namespace {
 // mapping to proactively move users to the new all-shader waveform types
 std::tuple<WaveformWidgetType::Type,
         WaveformWidgetBackend,
-        allshader::WaveformRendererSignalBase::Options>
+        WaveformRendererSignalBase::Options>
 upgradeToAllShaders(int unsafeWaveformType,
         int unsafeWaveformBackend,
         int unsafeWaveformOption) {
@@ -45,10 +45,10 @@ upgradeToAllShaders(int unsafeWaveformType,
     using WWT = WaveformWidgetType;
 
     if (static_cast<int>(WaveformWidgetBackend::AllShader) == unsafeWaveformBackend) {
-        allshader::WaveformRendererSignalBase::Options waveformOption =
-                static_cast<allshader::WaveformRendererSignalBase::Options>(
+        WaveformRendererSignalBase::Options waveformOption =
+                static_cast<WaveformRendererSignalBase::Options>(
                         unsafeWaveformOption) &
-                allshader::WaveformRendererSignalBase::Option::AllOptionsCombined;
+                WaveformRendererSignalBase::Option::AllOptionsCombined;
         switch (unsafeWaveformType) {
         case WWT::Simple:
         case WWT::Filtered:
@@ -67,8 +67,8 @@ upgradeToAllShaders(int unsafeWaveformType,
     }
 
     // Reset the options
-    allshader::WaveformRendererSignalBase::Options waveformOption =
-            allshader::WaveformRendererSignalBase::Option::None;
+    WaveformRendererSignalBase::Options waveformOption =
+            WaveformRendererSignalBase::Option::None;
     WaveformWidgetType::Type waveformType =
             static_cast<WaveformWidgetType::Type>(unsafeWaveformType);
     WaveformWidgetBackend waveformBackend = WaveformWidgetBackend::AllShader;
@@ -97,7 +97,7 @@ upgradeToAllShaders(int unsafeWaveformType,
     // Filtered waveforms
     case WWT::Filtered: // GLSLFilteredWaveform
     case 22:            // AllShaderTexturedFiltered
-        waveformOption = allshader::WaveformRendererSignalBase::Option::HighDetail;
+        waveformOption = WaveformRendererSignalBase::Option::HighDetail;
         [[fallthrough]];
     case 2:  // SoftwareWaveform
     case 4:  // QtWaveform
@@ -116,7 +116,7 @@ upgradeToAllShaders(int unsafeWaveformType,
     // Stacked waveform
     case 24:           // AllShaderTexturedStacked
     case WWT::Stacked: // GLSLRGBStackedWaveform
-        waveformOption = allshader::WaveformRendererSignalBase::Option::HighDetail;
+        waveformOption = WaveformRendererSignalBase::Option::HighDetail;
         [[fallthrough]];
     case 26: // AllShaderRGBStackedWaveform
         waveformType = WaveformWidgetType::Stacked;
@@ -127,8 +127,8 @@ upgradeToAllShaders(int unsafeWaveformType,
     case 23: // AllShaderTexturedRGB
     case 12: // GLSLRGBWaveform
         waveformOption = unsafeWaveformType == 18
-                ? allshader::WaveformRendererSignalBase::Option::SplitStereoSignal
-                : allshader::WaveformRendererSignalBase::Option::HighDetail;
+                ? WaveformRendererSignalBase::Option::SplitStereoSignal
+                : WaveformRendererSignalBase::Option::HighDetail;
         [[fallthrough]];
     default:
         waveformType = WaveformWidgetFactory::defaultType();
@@ -357,9 +357,20 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         else {
 #endif
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to"
-                     << VersionStore::version();
-            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+#ifdef MIXXX_USE_QML
+            if (CmdlineArgs::Instance().isQml()) {
+                // If running the QML version (aka 3.0 unstable), we set a dummy
+                // unstable version in the settings. This is used to detect if
+                // the current user profile is being used for testing purpose
+                // and if it is safe for the user to potentially lose their data
+                config->setValue(ConfigKey("[Config]", "Version"), VersionStore::FUTURE_UNSTABLE);
+            } else
+#endif
+            {
+                qDebug() << "No version number in configuration file. Setting to"
+                         << VersionStore::version();
+                config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+            }
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__
@@ -617,7 +628,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     // If additional upgrades are added for later versions, they should go before
     // this block and cleanVersion should be bumped to the latest version.
     const QVersionNumber cleanVersion(2, 6, 0);
-    if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
+    if (QVersionNumber::fromString(configVersion) >= cleanVersion &&
+            configVersion != VersionStore::FUTURE_UNSTABLE) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
@@ -625,6 +637,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion == VersionStore::version()) {
         qDebug() << "Configuration file is now at the current version" << VersionStore::version();
+    } else if (configVersion == VersionStore::FUTURE_UNSTABLE) {
+        qDebug() << "Configuration file is now at the unstable version"
+                 << VersionStore::FUTURE_UNSTABLE;
     } else {
         qWarning() << "Configuration file is at version" << configVersion
                    << "instead of the current" << VersionStore::version();

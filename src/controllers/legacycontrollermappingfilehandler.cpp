@@ -5,7 +5,7 @@
 #include "util/logger.h"
 #include "util/xml.h"
 
-#ifdef __HID__
+#if defined(__HID__) || defined(__BULK__)
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #endif
 
@@ -200,10 +200,13 @@ std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loa
                 MIDI_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
         pHandler = std::make_unique<LegacyMidiControllerMappingFileHandler>();
     } else if (mappingFile.fileName().endsWith(
-                       HID_MAPPING_EXTENSION, Qt::CaseInsensitive) ||
-            mappingFile.fileName().endsWith(
-                    BULK_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
+                       HID_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
 #ifdef __HID__
+        pHandler = std::make_unique<LegacyHidControllerMappingFileHandler>();
+#endif
+    } else if (mappingFile.fileName().endsWith(
+                       BULK_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
+#ifdef __BULK__
         pHandler = std::make_unique<LegacyHidControllerMappingFileHandler>();
 #endif
     }
@@ -288,8 +291,8 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
             element = element.nextSiblingElement()) {
         const QString& tagName = element.tagName().toLower();
         if (tagName == "option") {
-            std::shared_ptr<AbstractLegacyControllerSetting> pSetting(
-                    LegacyControllerSettingBuilder::build(element));
+            std::shared_ptr<AbstractLegacyControllerSetting> pSetting =
+                    LegacyControllerSettingBuilder::build(element);
             if (pSetting.get() == nullptr) {
                 qDebug() << "Ignoring unsupported controller setting in file"
                          << pMapping->filePath() << "at line"

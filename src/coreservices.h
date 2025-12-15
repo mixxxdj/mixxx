@@ -24,6 +24,7 @@ class SkinControls;
 class ControlPushButton;
 class MixxxMainWindow;
 class ScrobblingManager;
+struct LibraryScanResultSummary;
 
 namespace mixxx {
 
@@ -107,6 +108,7 @@ class CoreServices : public QObject {
 
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
+    void libraryScanSummary(const LibraryScanResultSummary& result);
 
   public slots:
     void slotOptionsKeyboard(bool toggle);

@@ -5,9 +5,12 @@
 
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/math.h"
+#include "waveform/isynctimeprovider.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/waveform.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
@@ -83,16 +86,40 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
 }
 
 bool WaveformWidgetRenderer::init() {
-    //qDebug() << "WaveformWidgetRenderer::init, m_group=" << m_group;
+    m_trackPixelCount = 0.0;
+    m_visualSamplePerPixel = 1.0;
+    m_audioSamplePerPixel = 1.0;
+    m_totalVSamples = 0;
+    m_gain = 1.0;
+    m_trackSamples = 0.0;
 
-    m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
+    for (int type = ::WaveformRendererAbstract::Play;
+            type <= ::WaveformRendererAbstract::Slip;
+            type++) {
+        m_firstDisplayedPosition[type] = 0.0;
+        m_lastDisplayedPosition[type] = 0.0;
+        m_posVSample[type] = 0.0;
+        m_pos[type] = -1.0; // disable renderers
+        m_truePosSample[type] = -1.0;
+    }
 
-    m_pRateRatioCO = std::make_unique<ControlProxy>(
-            m_group, QStringLiteral("rate_ratio"));
-    m_pGainControlObject = std::make_unique<ControlProxy>(
-            m_group, QStringLiteral("total_gain"));
-    m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
-            m_group, QStringLiteral("track_samples"));
+    // It is possible for a renderer to be defined with no group. This usually
+    // indicate that the position and track will be controlled by the owner.
+    // This is used in QML currently.
+    if (!m_group.isEmpty()) {
+        m_pRateRatioCO = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("rate_ratio"));
+        m_pGainControlObject = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("total_gain"));
+        m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("track_samples"));
+
+        m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(m_visualPlayPosition) {
+        return false;
+    }
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
@@ -102,7 +129,7 @@ bool WaveformWidgetRenderer::init() {
     return true;
 }
 
-void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
+void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
     if (m_passthroughEnabled) {
         // disables renderers in draw()
         for (int type = ::WaveformRendererAbstract::Play;
@@ -115,15 +142,17 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     }
 
     // For a valid track to render we need
-    m_trackSamples = m_pTrackSamplesControlObject->get();
+    m_trackSamples = m_pTrackSamplesControlObject
+            ? m_pTrackSamplesControlObject->get()
+            : m_pTrack->getSampleRate() * m_pTrack->getDuration();
     if (m_trackSamples <= 0) {
         return;
     }
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
-    double rateRatio = m_pRateRatioCO->get();
+    double rateRatio = m_pRateRatioCO ? m_pRateRatioCO->get() : 1.0;
 
-    m_gain = m_pGainControlObject->get();
+    m_gain = m_pGainControlObject ? m_pGainControlObject->get() : 1.0;
 
     // Compute visual sample to pixel ratio
     // Allow waveform to spread one visual sample across a hundred pixels
@@ -361,10 +390,10 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     if (!enabled) {
         return;
     }
-    // If passthrough is activated while no track has been loaded previously mark
-    // the renderer state dirty in order trigger the render process. This is only
-    // required for the background renderer since that's the only one that'll
-    // be processed if passtrhough is active.
+    // If passthrough is activated while no track has been loaded previously,
+    // mark the renderer state dirty in order trigger the render process.
+    // This is only required for the background renderer since that's the only
+    // one that'll be processed if passthrough is active.
     if (!m_rendererStack.isEmpty()) {
         m_rendererStack[0]->setDirty(true);
     }

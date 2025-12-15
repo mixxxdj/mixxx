@@ -77,11 +77,10 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #ifndef __APPLE__
         } else {
             // getKeySeq() returns empty string if the press was a modifier only
-            if ((ke->modifiers() & Qt::AltModifier) && !m_altPressedWithoutKey) {
-                // on Linux pressing Alt sends Alt+Qt::Key_Alt, so checking for
-                // Alt modifier is sufficient.
-                // Activate this in case there are issues on Windows
-                // || ke->key() == Qt::Key_Alt) {
+            // On most system Alt sends Alt + Qt::Key_Alt, but with Qt 6.9 (on Linux)
+            // this changed apparently so that it's just Qt::Key_Alt
+            if (((ke->modifiers() & Qt::AltModifier) || ke->key() == Qt::Key_Alt) &&
+                    !m_altPressedWithoutKey) {
                 m_altPressedWithoutKey = true;
             }
 #endif

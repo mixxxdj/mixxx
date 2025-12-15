@@ -15,14 +15,14 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
   public:
     explicit WLibrarySidebar(QWidget* parent = nullptr);
 
-    void contextMenuEvent(QContextMenuEvent * event) override;
-    void dragMoveEvent(QDragMoveEvent * event) override;
-    void dragEnterEvent(QDragEnterEvent * event) override;
-    void dropEvent(QDropEvent * event) override;
-    void keyPressEvent(QKeyEvent* event) override;
-    void mousePressEvent(QMouseEvent* event) override;
-    void focusInEvent(QFocusEvent* event) override;
-    void timerEvent(QTimerEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* pEvent) override;
+    void dragMoveEvent(QDragMoveEvent* pEvent) override;
+    void dragEnterEvent(QDragEnterEvent* pEvent) override;
+    void dropEvent(QDropEvent* pEvent) override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
+    void mousePressEvent(QMouseEvent* pEvent) override;
+    void focusInEvent(QFocusEvent* pEvent) override;
+    void timerEvent(QTimerEvent* pEvent) override;
     void toggleSelectedItem();
     void renameSelectedItem();
     bool isLeafNodeSelected();
@@ -30,7 +30,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     bool isFeatureRootIndexSelected(LibraryFeature* pFeature);
 
   public slots:
-    void selectIndex(const QModelIndex&);
+    void selectIndex(const QModelIndex& index, bool scrollToIndex = true);
     void selectChildIndex(const QModelIndex&, bool selectItem = true);
     void slotSetFont(const QFont& font);
 
@@ -38,7 +38,8 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void rightClicked(const QPoint&, const QModelIndex&);
     void renameItem(const QModelIndex&);
     void deleteItem(const QModelIndex&);
-    FocusWidget setLibraryFocus(FocusWidget newFocus);
+    FocusWidget setLibraryFocus(FocusWidget newFocus,
+            Qt::FocusReason focusReason = Qt::OtherFocusReason);
 
   protected:
     bool event(QEvent* pEvent) override;
@@ -47,6 +48,9 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void focusSelectedIndex();
     QModelIndex selectedIndex();
 
+    void resetHoverIndexAndDragMoveResult();
+
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
+    bool m_lastDragMoveAccepted;
 };

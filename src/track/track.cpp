@@ -364,13 +364,13 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     }
 }
 
-void Track::adjustReplayGainFromPregain(double gain) {
+void Track::adjustReplayGainFromPregain(double gain, const QString& requestingPlayerGroup) {
     auto locked = lockMutex(&m_qMutex);
     mixxx::ReplayGain replayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     replayGain.setRatio(gain * replayGain.getRatio());
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrReplayGain(), replayGain)) {
         markDirtyAndUnlock(&locked);
-        emit replayGainAdjusted(replayGain);
+        emit replayGainAdjusted(replayGain, requestingPlayerGroup);
     }
 }
 
@@ -1000,9 +1000,14 @@ void Track::setHotcueIndicesSortedByPosition(HotcueSortMode sortMode) {
     indices.reserve(m_cuePoints.size());
     positions.reserve(m_cuePoints.size());
     for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
-        if (pCue->getType() != mixxx::CueType::HotCue &&
-                pCue->getType() != mixxx::CueType::Loop &&
-                pCue->getType() != mixxx::CueType::Jump) {
+        // We only want hotcues (regular, loop, jump) with a valid index.
+        // Note: Loop with index -1 is the temporary, unsaved loop.
+        // Also note that there may be orphaned hotcues with index -1.
+        // Remember to also run this check when setting the new indices.
+        if (pCue->getHotCue() == Cue::kNoHotCue ||
+                (pCue->getType() != mixxx::CueType::HotCue &&
+                        pCue->getType() != mixxx::CueType::Loop &&
+                        pCue->getType() != mixxx::CueType::Jump)) {
             continue;
         }
         const auto pos = pCue->getPosition();
@@ -1039,9 +1044,10 @@ void Track::setHotcueIndicesSortedByPosition(HotcueSortMode sortMode) {
 
     // Finally set new indices on hotcues
     for (CuePointer& pCue : m_cuePoints) {
-        if (pCue->getType() != mixxx::CueType::HotCue &&
-                pCue->getType() != mixxx::CueType::Loop &&
-                pCue->getType() != mixxx::CueType::Jump) {
+        if (pCue->getHotCue() == Cue::kNoHotCue ||
+                (pCue->getType() != mixxx::CueType::HotCue &&
+                        pCue->getType() != mixxx::CueType::Loop &&
+                        pCue->getType() != mixxx::CueType::Jump)) {
             continue;
         }
         int newIndex = posIndexHash.take(pCue->getPosition());

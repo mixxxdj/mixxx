@@ -8,8 +8,9 @@
 #include "waveformwidgetrenderer.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 WaveformRendererHSV::~WaveformRendererHSV() {
@@ -76,13 +77,14 @@ void WaveformRendererHSV::draw(
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) / length;
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
 
     float allGain(1.0);
     getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
-    getHsvF(m_pColors->getLowColor(), &h, &s, &v);
+    getHsvF(pColors->getLowColor(), &h, &s, &v);
 
     QColor color;
     float lo, hi, total;
@@ -97,7 +99,7 @@ void WaveformRendererHSV::draw(
     const float heightFactor = allGain * halfBreadth / 255.0f;
 
     //draw reference line
-    painter->setPen(m_pColors->getAxesColor());
+    painter->setPen(pColors->getAxesColor());
     painter->drawLine(QLineF(0, halfBreadth, length, halfBreadth));
 
     for (int x = 0; x < static_cast<int>(length); ++x) {

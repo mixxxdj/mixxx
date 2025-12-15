@@ -208,10 +208,11 @@ void BrowseTableModel::setPath(mixxx::FileAccess path) {
 
     if (path.info().hasLocation() && path.info().isDir()) {
         m_currentDirectory = path.info().location();
+        m_pBrowseThread->executePopulation(std::move(path), this);
     } else {
-        m_currentDirectory = QString();
+        m_currentDirectory = {};
+        m_pBrowseThread->executePopulation({}, this);
     }
-    m_pBrowseThread->executePopulation(std::move(path), this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -219,7 +220,9 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
 }
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
-    if (m_pRecordingManager->getRecordingLocation() == trackRef.getLocation()) {
+    if (m_pRecordingManager &&
+            m_pRecordingManager->getRecordingLocation() ==
+                    trackRef.getLocation()) {
         QMessageBox::critical(nullptr,
                 tr("Mixxx Library"),
                 tr("Could not load the following file because it is in use by "
@@ -286,9 +289,7 @@ const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
     return QVector<int>();
 }
 
-void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
-    Q_UNUSED(extraFilter);
-    Q_UNUSED(searchText);
+void BrowseTableModel::search(const QString&) {
 }
 
 const QString BrowseTableModel::currentSearch() const {
@@ -367,10 +368,10 @@ void BrowseTableModel::slotClear(BrowseTableModel* caller_object) {
 
 void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*>>& rows,
         BrowseTableModel* caller_object) {
-    // There exists more than one BrowseTableModel in Mixxx We only want to
-    // receive items here, this object has 'ordered' by the BrowserThread
-    // (singleton)
+    // There exists more than one BrowseTableModel in Mixxx and we only want to
+    // receive items this object has 'ordered' from the BrowseThread (singleton)
     if (caller_object == this) {
+        emit saveModelState();
         //qDebug() << "BrowseTableModel::slotInsert";
         for (int i = 0; i < rows.size(); ++i) {
             appendRow(rows.at(i));
@@ -385,7 +386,8 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
             Capability::LoadToSampler |
-            Capability::RemoveFromDisk;
+            Capability::RemoveFromDisk |
+            Capability::Sorting;
 }
 
 QString BrowseTableModel::modelKey(bool noSearch) const {

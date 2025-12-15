@@ -25,6 +25,12 @@
 
 #ifdef Q_OS_IOS
 #include "soundio/soundmanagerios.h"
+#elif defined(Q_OS_ANDROID)
+#include <QtCore/private/qandroidextras_p.h>
+#include <jni.h>
+#include <pa_oboe.h>
+
+#include <QJniObject>
 #endif
 
 typedef PaError (*SetJackClientName)(const char *name);
@@ -121,6 +127,9 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         // make sure to include any devices that have >0 channels.
         const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
         const bool hasInputs = pDevice->getNumInputChannels().isValid();
+        qDebug() << "SoundManager::getDeviceList" << pDevice->getHostAPI()
+                 << filterAPI << pDevice->getNumOutputChannels()
+                 << pDevice->getNumInputChannels();
         if (pDevice->getHostAPI() != filterAPI ||
                 (bOutputDevices && !bInputDevices && !hasOutputs) ||
                 (bInputDevices && !bOutputDevices && !hasInputs) ||
@@ -145,27 +154,48 @@ QList<QString> SoundManager::getHostAPIList() const {
     return apiList;
 }
 
-void SoundManager::closeDevices(bool sleepAfterClosing) {
-    //qDebug() << "SoundManager::closeDevices()";
+void SoundManager::closeDevices(
+        [[maybe_unused]] bool sleepAfterClosing, [[maybe_unused]] bool async) {
+    // sleepAfterClosing and async maybe unused depending on platform support
+    // qDebug() << "SoundManager::closeDevices()";
 
+#ifdef __LINUX__
     bool closed = false;
+#endif
     for (const auto& pDevice : std::as_const(m_devices)) {
         if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
             pDevice->close();
+#ifdef __LINUX__
             closed = true;
+#endif
         }
     }
 
-    if (closed && sleepAfterClosing) {
 #ifdef __LINUX__
+    if (closed && sleepAfterClosing) {
         // Sleep for 5 sec to allow asynchronously sound APIs like "pulse" to free
         // its resources as well
+        if (async) {
+            // Async mode - the caller will wait for `devicesClosed` before
+            // trying to reconfigure or reopen audio devices
+            QTimer::singleShot(
+                    std::chrono::seconds(kSleepSecondsAfterClosingDevice),
+                    this,
+                    &SoundManager::completeDevicesClosing);
+            return;
+        }
+        // Sync mode, legacy - we sleep the current thread for 5 seconds
         QThread::sleep(kSleepSecondsAfterClosingDevice);
+    } else if (!closed)
 #endif
+    {
+        completeDevicesClosing();
     }
+}
 
+void SoundManager::completeDevicesClosing() {
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
@@ -199,6 +229,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
+    emit devicesClosed();
 }
 
 void SoundManager::clearDeviceList(bool sleepAfterClosing) {
@@ -235,7 +266,7 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
 }
 
 void SoundManager::queryDevices() {
-    //qDebug() << "SoundManager::queryDevices()";
+    qDebug() << "SoundManager::queryDevices()";
     queryDevicesPortaudio();
     queryDevicesMixxx();
 
@@ -252,11 +283,122 @@ void SoundManager::clearAndQueryDevices() {
 void SoundManager::queryDevicesPortaudio() {
     PaError err = paNoError;
     if (!m_paInitialized) {
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
         setJACKName();
 #endif
 #ifdef Q_OS_IOS
         mixxx::initializeAVAudioSession();
+#elif defined(Q_OS_ANDROID)
+        QNativeInterface::QAndroidApplication::runOnAndroidMainThread([]() {
+            QJniObject context = QNativeInterface::QAndroidApplication::context();
+            QJniObject AUDIO_SERVICE =
+                    QJniObject::getStaticObjectField(
+                            "android/content/Context",
+                            "AUDIO_SERVICE",
+                            "Ljava/lang/String;");
+            auto audioManager = context.callObjectMethod("getSystemService",
+                    "(Ljava/lang/String;)Ljava/lang/Object;",
+                    AUDIO_SERVICE.object());
+            if (!audioManager.isValid()) {
+                qDebug() << "audioManager invalid";
+                return;
+            }
+            qDebug() << "audioManager valid:" << audioManager.toString();
+
+            jint GET_DEVICES_INPUTS =
+                    QJniObject::getStaticField<jint>(
+                            "android/media/AudioManager",
+                            "GET_DEVICES_INPUTS");
+            jint GET_DEVICES_OUTPUTS =
+                    QJniObject::getStaticField<jint>(
+                            "android/media/AudioManager",
+                            "GET_DEVICES_OUTPUTS");
+
+            auto const isSupported = [](int type) {
+                switch (type) {
+                case 1:  // AudioDeviceInfo.TYPE_BUILTIN_EARPIECE
+                case 2:  // AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                case 3:  // AudioDeviceInfo.TYPE_WIRED_HEADSET
+                case 8:  // AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
+                case 11: // AudioDeviceInfo.TYPE_USB_DEVICE
+                case 22: // AudioDeviceInfo.TYPE_USB_HEADSET
+                case 9:  // AudioDeviceInfo.TYPE_HDMI
+                case 10: // AudioDeviceInfo.TYPE_HDMI_ARC
+                case 13: // AudioDeviceInfo.TYPE_DOCK
+                case 15: // AudioDeviceInfo.TYPE_BUILTIN_MIC
+                case 12: // AudioDeviceInfo.TYPE_USB_ACCESSORY
+                case 26: // AudioDeviceInfo.TYPE_BLE_HEADSET
+                case 27: // AudioDeviceInfo.TYPE_BLE_SPEAKER
+                case 23: // AudioDeviceInfo.TYPE_HEARING_AID
+                case 25: // AudioDeviceInfo.TYPE_REMOTE_SUBMIX:
+                    // supported
+                    return true;
+                default:
+                    // unsupported
+                    break;
+                }
+                return false;
+            };
+
+            auto const parse = [isSupported](PaOboe_Direction direction,
+                                       QJniArray<QJniObject>& devices) {
+                for (const auto& device : devices) {
+                    jint type = device->callMethod<jint>("getType");
+                    if (!isSupported(type)) {
+                        continue;
+                    }
+                    QString name = device->callObjectMethod("getProductName",
+                                                 "()Ljava/lang/CharSequence;")
+                                           .toString();
+                    auto channelCounts = device->callMethod<QJniArray<jint>>("getChannelCounts");
+                    int channelCount = *std::max_element(
+                            channelCounts.begin(), channelCounts.end());
+                    auto sampleRates = device->callMethod<QJniArray<jint>>("getSampleRates");
+                    qDebug() << "audioManager - Type:" << type
+                             << "- Name:" << name
+                             << "- ChannelCount:" << channelCount
+                             << channelCounts.size();
+                    if (!sampleRates.isEmpty()) {
+                        int sampleRate = *sampleRates.cbegin();
+                        qDebug() << "audioManager - SampleRates:" << sampleRate;
+                        PaOboe_RegisterDevice(name.toStdString().c_str(),
+                                direction,
+                                channelCount,
+                                sampleRate);
+                    }
+                }
+            };
+
+            auto inputDevices =
+                    audioManager.callMethod<QJniArray<QJniObject>>("getDevices",
+                            "(I)[Landroid/media/AudioDeviceInfo;",
+                            GET_DEVICES_INPUTS);
+            qDebug() << "audioManager inputDevices:" << inputDevices.size();
+            parse(PaOboe_Direction::Input, inputDevices);
+
+            auto outputDevices =
+                    audioManager.callMethod<QJniArray<QJniObject>>("getDevices",
+                            "(I)[Landroid/media/AudioDeviceInfo;",
+                            GET_DEVICES_OUTPUTS);
+            qDebug() << "audioManager outputDevices:" << outputDevices.size();
+            parse(PaOboe_Direction::Output, outputDevices);
+
+            QJniObject PROPERTY_OUTPUT_FRAMES_PER_BUFFER =
+                    QJniObject::getStaticField<jstring>(
+                            "android/media/AudioManager",
+                            "PROPERTY_OUTPUT_FRAMES_PER_BUFFER");
+            auto outputFramePerBuffer =
+                    audioManager
+                            .callMethod<jstring>("getProperty",
+                                    "(Ljava/lang/String;)Ljava/lang/String;",
+                                    PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
+                            .toString()
+                            .toUInt();
+            qDebug() << "audioManager outputFramePerBuffer:" << outputFramePerBuffer;
+            PaOboe_SetNativeBufferSize(outputFramePerBuffer);
+        }).waitForFinished();
+        PaOboe_SetNumberOfBuffers(1);
+
 #endif
         err = Pa_Initialize();
         m_paInitialized = true;
@@ -269,9 +411,14 @@ void SoundManager::queryDevicesPortaudio() {
 
     int iNumDevices = Pa_GetDeviceCount();
     if (iNumDevices < 0) {
-        qDebug() << "ERROR: Pa_CountDevices returned" << iNumDevices;
+        qDebug() << "ERROR: Pa_CountDevices returned" << Pa_GetErrorText(iNumDevices);
         return;
+    } else if (iNumDevices == 0) {
+        qWarning() << "Pa_CountDevices returned no devices!";
+    } else {
+        qDebug() << "Pa_CountDevices found" << iNumDevices << "devices";
     }
+    qDebug() << "Pa_GetHostApiCount returns" << Pa_GetHostApiCount();
 
     // PaDeviceInfo structs have a PaHostApiIndex member, but PortAudio
     // unfortunately provides no good way to associate this with a persistent,
@@ -288,6 +435,7 @@ void SoundManager::queryDevicesPortaudio() {
     const PaDeviceInfo* deviceInfo;
     for (int i = 0; i < iNumDevices; i++) {
         deviceInfo = Pa_GetDeviceInfo(i);
+        qDebug() << "Pa_GetDeviceInfo on" << i << deviceInfo;
         if (!deviceInfo) {
             continue;
         }
@@ -553,12 +701,12 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-void SoundManager::closeActiveConfig() {
+void SoundManager::closeActiveConfig(bool async) {
     // Close open devices. After this call we will not get any more
     // onDeviceOutputCallback() or pushBuffer() calls because all the
     // SoundDevices are closed. closeDevices() blocks and can take a while.
     const bool sleepAfterClosing = true;
-    closeDevices(sleepAfterClosing);
+    closeDevices(sleepAfterClosing, async);
 }
 
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {

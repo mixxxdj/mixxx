@@ -3,6 +3,7 @@
 #include "rendergraph/material/rgbmaterial.h"
 #include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
+#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -19,8 +20,8 @@ inline float math_pow2(float x) {
 
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_options(options) {
     initForRectangles<RGBMaterial>(0);
@@ -66,7 +67,7 @@ bool WaveformRendererRGB::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif
@@ -98,7 +99,7 @@ bool WaveformRendererRGB::preprocessInner() {
 
     const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
     const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
-    const bool splitLeftRight = m_options & WaveformRendererSignalBase::Option::SplitStereoSignal;
+    const bool splitLeftRight = m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal;
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
     const float mid_r = static_cast<float>(m_rgbMidColor_r);
@@ -117,7 +118,7 @@ bool WaveformRendererRGB::preprocessInner() {
     const int numVerticesPerLine = 6; // 2 triangles
 
     const int reserved = numVerticesPerLine *
-            // Slip rendere only render a single channel, so the vertices count doesn't change
+            // Slip renderer only render a single channel, so the vertices count doesn't change
             ((splitLeftRight && !m_isSlipRenderer ? pixelLength * 2 : pixelLength) + 1);
 
     geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
@@ -163,7 +164,8 @@ bool WaveformRendererRGB::preprocessInner() {
                 u8maxLow[signalChn] = math_max(u8maxLow[signalChn], waveformData.filtered.low);
                 u8maxMid[signalChn] = math_max(u8maxMid[signalChn], waveformData.filtered.mid);
                 u8maxHigh[signalChn] = math_max(u8maxHigh[signalChn], waveformData.filtered.high);
-                u8maxAllChn[chn] = math_max(u8maxAllChn[chn], waveformData.filtered.all);
+                u8maxAllChn[signalChn] = math_max(
+                        u8maxAllChn[signalChn], waveformData.filtered.all);
             }
         }
         float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
@@ -227,11 +229,11 @@ bool WaveformRendererRGB::preprocessInner() {
             // Lines are thin rectangles
             if (!splitLeftRight) {
                 vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                                   halfBreadth - heightFactorAbs * maxAllChn[0]},
+                                                   halfBreadth - heightFactorAbs * maxAllChn[chn]},
                         {fpos + halfPixelSize,
                                 m_isSlipRenderer
                                         ? halfBreadth
-                                        : halfBreadth + heightFactorAbs * maxAllChn[1]},
+                                        : halfBreadth + heightFactorAbs * maxAllChn[chn]},
                         {red,
                                 green,
                                 blue});

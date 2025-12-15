@@ -1,8 +1,14 @@
 #pragma once
 
+#include <qglobal.h>
+
 #include <memory>
 
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
+#include "controllers/controllerhidreporttabsmanager.h"
+#endif
 #include "controllers/controllermappinginfo.h"
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -58,14 +64,12 @@ class DlgPrefController : public DlgPreferencePage {
   private slots:
     /// Called when the user selects another mapping in the combobox
     void slotMappingSelected(int index);
-    /// Used to selected the current mapping in the combobox and display the
-    /// mapping information.
-    void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     void slotInputControlSearch();
     void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
     void enableWizardAndIOTabs(bool enable);
+    void slotRefreshMappingList();
 
 #ifdef MIXXX_USE_QML
     // Onboard screen controller.
@@ -90,6 +94,9 @@ class DlgPrefController : public DlgPreferencePage {
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
+    /// Used to selected the current mapping in the combobox and display the
+    /// mapping information.
+    void showMapping(std::shared_ptr<LegacyControllerMapping> mapping);
     QString mappingShortName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
@@ -146,4 +153,9 @@ class DlgPrefController : public DlgPreferencePage {
     int m_outputMappingsTabIndex; // Index of the output mappings tab
     int m_settingsTabIndex;       // Index of the settings tab
     int m_screensTabIndex;        // Index of the screens tab
+    QHash<QString, bool> m_settingsCollapsedStates;
+
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
+    std::unique_ptr<ControllerHidReportTabsManager> m_hidReportTabsManager;
+#endif
 };
