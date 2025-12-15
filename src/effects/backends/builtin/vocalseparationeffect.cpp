@@ -4,6 +4,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
+#include "util/rampingvalue.h"
 #include "util/sample.h"
 
 namespace {
@@ -80,26 +81,22 @@ VocalSeparationGroupState::VocalSeparationGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
           m_oldIntensity(0.0),
-          m_oldCenterFreq(kDefaultCenterFreq) {
+          m_oldCenterFreq(kDefaultCenterFreq),
+          m_previousIntensity(0.0) {
     m_tempBuffer = mixxx::SampleBuffer(engineParameters.samplesPerBuffer());
     
     // Create filters for vocal enhancement
-    m_pVocalEnhancer1 = new EngineFilterBiquad1Peaking(
+    m_pVocalEnhancer1 = std::make_unique<EngineFilterBiquad1Peaking>(
             engineParameters.sampleRate(), 800.0, kVocalQ);
-    m_pVocalEnhancer2 = new EngineFilterBiquad1Peaking(
+    m_pVocalEnhancer2 = std::make_unique<EngineFilterBiquad1Peaking>(
             engineParameters.sampleRate(), 2500.0, kVocalQ);
-    m_pHighPass = new EngineFilterBiquad1High(
+    m_pHighPass = std::make_unique<EngineFilterBiquad1High>(
             engineParameters.sampleRate(), kMinVocalFreq, 0.707);
-    m_pLowPass = new EngineFilterBiquad1Low(
+    m_pLowPass = std::make_unique<EngineFilterBiquad1Low>(
             engineParameters.sampleRate(), kMaxVocalFreq, 0.707);
 }
 
-VocalSeparationGroupState::~VocalSeparationGroupState() {
-    delete m_pVocalEnhancer1;
-    delete m_pVocalEnhancer2;
-    delete m_pHighPass;
-    delete m_pLowPass;
-}
+VocalSeparationGroupState::~VocalSeparationGroupState() = default;
 
 void VocalSeparationEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
@@ -139,33 +136,32 @@ void VocalSeparationEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    const CSAMPLE intensity = m_pIntensity ? m_pIntensity->value() : 0.0;
+    CSAMPLE intensity = m_pIntensity ? m_pIntensity->value() : 0.0;
     const CSAMPLE centerFreq = m_pCenterFreq ? m_pCenterFreq->value() : kDefaultCenterFreq;
     const CSAMPLE stereoWidth = m_pStereoWidth ? m_pStereoWidth->value() : 0.5;
 
     if (enableState == EffectEnableState::Disabling) {
-        // Ramp to dry signal
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
-        return;
+        // Ramp to dry signal by setting intensity to 0
+        // This allows the wet/dry mix to crossfade smoothly
+        intensity = 0.0;
     }
 
-    if (intensity <= 0.0) {
-        // Pass through when no intensity
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
-        return;
-    }
+    // Ramp intensity from previous value to avoid discontinuities
+    RampingValue<CSAMPLE_GAIN> intensityRamped(
+            intensity, pState->m_previousIntensity, engineParameters.framesPerBuffer());
 
     // Update filter parameters
     pState->setFilters(engineParameters.sampleRate(), intensity, centerFreq);
 
-    // Copy input to output first
-    SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+    // Process signal through filters to maintain consistent group delay
+    // even when intensity is 0. This prevents clicks from phase misalignment.
+    SampleUtil::copy(pState->m_tempBuffer.data(), pInput, engineParameters.samplesPerBuffer());
 
     // Apply stereo width reduction for center vocal isolation
     if (stereoWidth < 1.0) {
         for (SINT i = 0; i < engineParameters.samplesPerBuffer(); i += 2) {
-            CSAMPLE left = pOutput[i];
-            CSAMPLE right = pOutput[i + 1];
+            CSAMPLE left = pState->m_tempBuffer[i];
+            CSAMPLE right = pState->m_tempBuffer[i + 1];
             
             // Extract mid (mono/center) and side (stereo) components
             CSAMPLE mid = (left + right) * 0.5;
@@ -174,26 +170,42 @@ void VocalSeparationEffect::processChannel(
             // Reduce side component based on stereoWidth
             side *= stereoWidth * 2.0; // Scale to 0-2 range
             
-            pOutput[i] = mid + side;
-            pOutput[i + 1] = mid - side;
+            pState->m_tempBuffer[i] = mid + side;
+            pState->m_tempBuffer[i + 1] = mid - side;
         }
     }
 
     // Apply high-pass filter
-    pState->m_pHighPass->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
+    pState->m_pHighPass->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
     
     // Apply low-pass filter
-    pState->m_pLowPass->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
+    pState->m_pLowPass->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
     
     // Apply vocal enhancement peaking filters
-    pState->m_pVocalEnhancer1->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
-    pState->m_pVocalEnhancer2->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
+    pState->m_pVocalEnhancer1->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
+    pState->m_pVocalEnhancer2->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
 
-    // Apply intensity as wet/dry mix
-    const CSAMPLE wet = intensity;
-    const CSAMPLE dry = 1.0 - intensity;
+    // Output the processed signal
+    // No wet/dry mixing here to avoid comb filtering from group delay
+    // The effect rack's dry/wet knob handles the final mix
+    SampleUtil::copy(pOutput, pState->m_tempBuffer.data(), engineParameters.samplesPerBuffer());
     
-    for (SINT i = 0; i < engineParameters.samplesPerBuffer(); ++i) {
-        pOutput[i] = (pOutput[i] * wet) + (pInput[i] * dry);
+    // Update previous intensity for next callback
+    if (enableState == EffectEnableState::Disabling) {
+        pState->m_previousIntensity = 0.0;
+    } else {
+        pState->m_previousIntensity = intensity;
     }
 }

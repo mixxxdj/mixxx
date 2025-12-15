@@ -5,6 +5,8 @@
 #include "util/samplebuffer.h"
 #include "util/types.h"
 
+#include <memory>
+
 class EngineFilterBiquad1Peaking;
 class EngineFilterBiquad1High;
 class EngineFilterBiquad1Low;
@@ -22,15 +24,18 @@ struct InstrumentalSeparationGroupState : public EffectState {
     mixxx::SampleBuffer m_tempBuffer;
     
     // Multi-band filters for instrumental extraction
-    EngineFilterBiquad1Peaking* m_pBassEnhancer;
-    EngineFilterBiquad1Peaking* m_pMidCut;
-    EngineFilterBiquad1Peaking* m_pHighEnhancer;
-    EngineFilterBiquad1Band* m_pVocalNotch1;
-    EngineFilterBiquad1Band* m_pVocalNotch2;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_pBassEnhancer;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_pMidCut;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_pHighEnhancer;
+    std::unique_ptr<EngineFilterBiquad1Band> m_pVocalNotch1;
+    std::unique_ptr<EngineFilterBiquad1Band> m_pVocalNotch2;
     
     double m_oldIntensity;
     double m_oldBassBoost;
     double m_oldHighBoost;
+    
+    // Previous intensity for ramping
+    CSAMPLE m_previousIntensity;
 };
 
 class InstrumentalSeparationEffect : public EffectProcessorImpl<InstrumentalSeparationGroupState> {

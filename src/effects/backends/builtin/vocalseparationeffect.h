@@ -5,6 +5,8 @@
 #include "util/samplebuffer.h"
 #include "util/types.h"
 
+#include <memory>
+
 class EngineFilterBiquad1Peaking;
 class EngineFilterBiquad1High;
 class EngineFilterBiquad1Low;
@@ -20,13 +22,16 @@ struct VocalSeparationGroupState : public EffectState {
     mixxx::SampleBuffer m_tempBuffer;
     
     // Multi-band filters for vocal extraction
-    EngineFilterBiquad1Peaking* m_pVocalEnhancer1;
-    EngineFilterBiquad1Peaking* m_pVocalEnhancer2;
-    EngineFilterBiquad1High* m_pHighPass;
-    EngineFilterBiquad1Low* m_pLowPass;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_pVocalEnhancer1;
+    std::unique_ptr<EngineFilterBiquad1Peaking> m_pVocalEnhancer2;
+    std::unique_ptr<EngineFilterBiquad1High> m_pHighPass;
+    std::unique_ptr<EngineFilterBiquad1Low> m_pLowPass;
     
     double m_oldIntensity;
     double m_oldCenterFreq;
+    
+    // Previous intensity for ramping
+    CSAMPLE m_previousIntensity;
 };
 
 class VocalSeparationEffect : public EffectProcessorImpl<VocalSeparationGroupState> {

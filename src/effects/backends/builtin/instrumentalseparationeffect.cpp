@@ -4,6 +4,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
+#include "util/rampingvalue.h"
 #include "util/sample.h"
 
 namespace {
@@ -82,29 +83,24 @@ InstrumentalSeparationGroupState::InstrumentalSeparationGroupState(
         : EffectState(engineParameters),
           m_oldIntensity(0.0),
           m_oldBassBoost(0.5),
-          m_oldHighBoost(0.5) {
+          m_oldHighBoost(0.5),
+          m_previousIntensity(0.0) {
     m_tempBuffer = mixxx::SampleBuffer(engineParameters.samplesPerBuffer());
     
     // Create filters for instrumental enhancement
-    m_pBassEnhancer = new EngineFilterBiquad1Peaking(
+    m_pBassEnhancer = std::make_unique<EngineFilterBiquad1Peaking>(
             engineParameters.sampleRate(), kBassFreq, kBoostQ);
-    m_pMidCut = new EngineFilterBiquad1Peaking(
+    m_pMidCut = std::make_unique<EngineFilterBiquad1Peaking>(
             engineParameters.sampleRate(), kMidFreq, kBoostQ);
-    m_pHighEnhancer = new EngineFilterBiquad1Peaking(
+    m_pHighEnhancer = std::make_unique<EngineFilterBiquad1Peaking>(
             engineParameters.sampleRate(), kHighFreq, kBoostQ);
-    m_pVocalNotch1 = new EngineFilterBiquad1Band(
+    m_pVocalNotch1 = std::make_unique<EngineFilterBiquad1Band>(
             engineParameters.sampleRate(), kVocalNotch1Freq, kNotchQ);
-    m_pVocalNotch2 = new EngineFilterBiquad1Band(
+    m_pVocalNotch2 = std::make_unique<EngineFilterBiquad1Band>(
             engineParameters.sampleRate(), kVocalNotch2Freq, kNotchQ);
 }
 
-InstrumentalSeparationGroupState::~InstrumentalSeparationGroupState() {
-    delete m_pBassEnhancer;
-    delete m_pMidCut;
-    delete m_pHighEnhancer;
-    delete m_pVocalNotch1;
-    delete m_pVocalNotch2;
-}
+InstrumentalSeparationGroupState::~InstrumentalSeparationGroupState() = default;
 
 void InstrumentalSeparationEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
@@ -123,18 +119,22 @@ void InstrumentalSeparationGroupState::setFilters(
         std::abs(bassBoost - m_oldBassBoost) > 0.05 ||
         std::abs(highBoost - m_oldHighBoost) > 0.05) {
         
+        // Scale all filter gains by intensity to avoid wet/dry mixing
+        // At intensity=0, all filters have 0dB gain (transparent)
+        // At intensity=1, filters have full effect
+        
         // Boost bass frequencies
-        double bassGain = bassBoost * 12.0; // Up to +12dB
+        double bassGain = intensity * bassBoost * 12.0; // Up to +12dB
         m_pBassEnhancer->setFrequencyCorners(
                 sampleRate, kBassFreq, kBoostQ, bassGain);
         
         // Cut mid frequencies (vocal range) based on intensity
-        double midCut = -(intensity * 15.0); // Up to -15dB
+        double midCut = -(intensity * intensity * 15.0); // Up to -15dB, squared for smoother ramp
         m_pMidCut->setFrequencyCorners(
                 sampleRate, kMidFreq, kBoostQ, midCut);
         
         // Boost high frequencies
-        double highGain = highBoost * 10.0; // Up to +10dB
+        double highGain = intensity * highBoost * 10.0; // Up to +10dB
         m_pHighEnhancer->setFrequencyCorners(
                 sampleRate, kHighFreq, kBoostQ, highGain);
         
@@ -159,85 +159,83 @@ void InstrumentalSeparationEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    const CSAMPLE intensity = m_pIntensity ? m_pIntensity->value() : 0.0;
+    CSAMPLE intensity = m_pIntensity ? m_pIntensity->value() : 0.0;
     const CSAMPLE bassBoost = m_pBassBoost ? m_pBassBoost->value() : 0.5;
     const CSAMPLE highBoost = m_pHighBoost ? m_pHighBoost->value() : 0.5;
 
     if (enableState == EffectEnableState::Disabling) {
-        // Ramp to dry signal
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
-        return;
+        // Ramp to dry signal by setting intensity to 0
+        // This allows the wet/dry mix to crossfade smoothly
+        intensity = 0.0;
     }
 
-    if (intensity <= 0.0) {
-        // Pass through when no intensity
-        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
-        return;
-    }
+    // Ramp intensity from previous value to avoid discontinuities
+    RampingValue<CSAMPLE_GAIN> intensityRamped(
+            intensity, pState->m_previousIntensity, engineParameters.framesPerBuffer());
 
     // Update filter parameters
     pState->setFilters(engineParameters.sampleRate(), intensity, bassBoost, highBoost);
 
-    // Copy input to output first
-    SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+    // Process signal through filters to maintain consistent group delay
+    // even when intensity is 0. This prevents clicks from phase misalignment.
+    SampleUtil::copy(pState->m_tempBuffer.data(), pInput, engineParameters.samplesPerBuffer());
 
     // Enhance stereo width for instrumental elements (opposite of vocal)
     // Instrumentals typically have wider stereo spread
     for (SINT i = 0; i < engineParameters.samplesPerBuffer(); i += 2) {
-        CSAMPLE left = pOutput[i];
-        CSAMPLE right = pOutput[i + 1];
+        CSAMPLE_GAIN intensity_ramped = intensityRamped.getNth(i / 2);
+        
+        CSAMPLE left = pState->m_tempBuffer[i];
+        CSAMPLE right = pState->m_tempBuffer[i + 1];
         
         // Extract mid and side components
         CSAMPLE mid = (left + right) * 0.5;
         CSAMPLE side = (left - right) * 0.5;
         
         // Enhance side component slightly (up to 50% wider)
-        side *= (1.0 + intensity * 0.5);
+        side *= (1.0 + intensity_ramped * 0.5);
         
-        pOutput[i] = mid + side;
-        pOutput[i + 1] = mid - side;
+        pState->m_tempBuffer[i] = mid + side;
+        pState->m_tempBuffer[i + 1] = mid - side;
     }
 
     // Apply bass enhancement
-    if (bassBoost > 0.0) {
-        pState->m_pBassEnhancer->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
-    }
+    pState->m_pBassEnhancer->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
     
     // Apply mid-range cut (vocal suppression)
-    pState->m_pMidCut->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
+    pState->m_pMidCut->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
     
     // Apply high frequency enhancement
-    if (highBoost > 0.0) {
-        pState->m_pHighEnhancer->process(pOutput, pOutput, engineParameters.samplesPerBuffer());
-    }
+    pState->m_pHighEnhancer->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
     
-    // Apply vocal notch filters with intensity scaling
-    if (intensity > 0.3) {
-        // Create notched version in temp buffer
-        SampleUtil::copy(pState->m_tempBuffer.data(), pOutput, engineParameters.samplesPerBuffer());
-        
-        pState->m_pVocalNotch1->process(
-                pState->m_tempBuffer.data(), 
-                pState->m_tempBuffer.data(), 
-                engineParameters.samplesPerBuffer());
-        pState->m_pVocalNotch2->process(
-                pState->m_tempBuffer.data(), 
-                pState->m_tempBuffer.data(), 
-                engineParameters.samplesPerBuffer());
-        
-        // Mix notched signal based on intensity
-        double notchMix = (intensity - 0.3) / 0.7; // Scale from 0.3-1.0 to 0-1
-        for (SINT i = 0; i < engineParameters.samplesPerBuffer(); ++i) {
-            pOutput[i] = pOutput[i] * (1.0 - notchMix) + 
-                         pState->m_tempBuffer[i] * notchMix;
-        }
-    }
+    // Apply vocal notch filters (always process to maintain group delay)
+    pState->m_pVocalNotch1->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
+    pState->m_pVocalNotch2->process(
+            pState->m_tempBuffer.data(),
+            pState->m_tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
 
-    // Apply intensity as wet/dry mix
-    const CSAMPLE wet = intensity;
-    const CSAMPLE dry = 1.0 - intensity;
+    // Output the processed signal
+    // No wet/dry mixing here to avoid comb filtering from group delay
+    // The effect rack's dry/wet knob handles the final mix
+    SampleUtil::copy(pOutput, pState->m_tempBuffer.data(), engineParameters.samplesPerBuffer());
     
-    for (SINT i = 0; i < engineParameters.samplesPerBuffer(); ++i) {
-        pOutput[i] = (pOutput[i] * wet) + (pInput[i] * dry);
+    // Update previous intensity for next callback
+    if (enableState == EffectEnableState::Disabling) {
+        pState->m_previousIntensity = 0.0;
+    } else {
+        pState->m_previousIntensity = intensity;
     }
 }
