@@ -2,13 +2,14 @@
 
 #include "widget/wfindonwebmenu.h"
 
+class QMenu;
 class Track;
 class FindOnWebLast;
 
-class FindOnWebMenuSoundcloud : public WFindOnWebMenu {
+class FindOnWebMenuYouTubeMusic : public WFindOnWebMenu {
     Q_OBJECT
   public:
-    FindOnWebMenuSoundcloud(QMenu* pFindOnWebMenu,
+    FindOnWebMenuYouTubeMusic(QMenu* pFindOnWebMenu,
             FindOnWebLast* pFindOnWebLast,
             const Track& track);
 };
