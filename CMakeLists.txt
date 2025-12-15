@@ -1251,6 +1251,8 @@ add_library(
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
+  src/effects/backends/builtin/vocalseparationeffect.cpp
+  src/effects/backends/builtin/instrumentalseparationeffect.cpp
   src/effects/backends/effectmanifest.cpp
   src/effects/backends/effectmanifestparameter.cpp
   src/effects/backends/effectsbackend.cpp
