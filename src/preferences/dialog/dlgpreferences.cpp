@@ -12,7 +12,6 @@
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreferences.cpp"
-#include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefmetadata.h"
 #include "preferences/dialog/dlgprefsound.h"

@@ -9,9 +9,8 @@
 #include "moc_mediaplayer2.cpp"
 #include "sources/soundsourceproxy.h"
 
-MediaPlayer2::MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent)
-        : QDBusAbstractAdaptor(parent),
-          m_pMixxx(pMixxx) {
+MediaPlayer2::MediaPlayer2(QObject* parent)
+        : QDBusAbstractAdaptor(parent) {
 }
 
 bool MediaPlayer2::canQuit() const {
@@ -19,21 +18,12 @@ bool MediaPlayer2::canQuit() const {
 }
 
 bool MediaPlayer2::fullscreen() const {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // TODO use CO
     return false;
-#else
-    return m_pMixxx && m_pMixxx->isFullScreen();
-#endif
 }
 
-void MediaPlayer2::setFullscreen(bool fullscreen) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    if (m_pMixxx) {
-        m_pMixxx->slotViewFullScreen(fullscreen);
-    }
-#else
-    Q_UNUSED(fullscreen);
-#endif
+void MediaPlayer2::setFullscreen(bool) {
+    // TODO use CO
 }
 
 bool MediaPlayer2::canSetFullscreen() const {
@@ -74,11 +64,7 @@ QStringList MediaPlayer2::supportedMimeTypes() const {
 }
 
 void MediaPlayer2::Raise() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    if (m_pMixxx) {
-        m_pMixxx->raise();
-    }
-#endif
+    // TODO use signal
 }
 
 void MediaPlayer2::Quit() {

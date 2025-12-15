@@ -22,7 +22,6 @@ class TrackCollectionManager;
 class Library;
 class SkinControls;
 class ControlPushButton;
-class MixxxMainWindow;
 class ScrobblingManager;
 struct LibraryScanResultSummary;
 
@@ -40,7 +39,7 @@ class CoreServices : public QObject {
     ~CoreServices();
 
     /// The secondary long run which should be called after displaying the start up screen
-    void initialize(QApplication* pApp, MixxxMainWindow* pMixxx);
+    void initialize(QApplication* pApp);
 
     std::shared_ptr<KeyboardEventFilter> getKeyboardEventFilter() const {
         return m_pKeyboardEventFilter;

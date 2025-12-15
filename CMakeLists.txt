@@ -1154,10 +1154,6 @@ add_library(
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
   src/audio/types.cpp
-  src/broadcast/filelistener/filelistener.cpp
-  src/broadcast/filelistener/metadatafileworker.cpp
-  src/broadcast/listenbrainzlistener/listenbrainzservice.cpp
-  src/broadcast/listenbrainzlistener/networkrequest.cpp
   src/broadcast/metadatabroadcast.cpp
   src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
@@ -1501,7 +1497,6 @@ add_library(
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
-  src/preferences/dialog/dlgfilelistenerbox.ui
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -1538,8 +1533,6 @@ add_library(
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/effectchainpresetlistmodel.cpp
   src/preferences/effectmanifesttablemodel.cpp
-  src/preferences/listenbrainzsettings.cpp
-  src/preferences/metadatafilesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp

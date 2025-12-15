@@ -53,8 +53,7 @@ class ScrobblingManager : public QObject {
     Q_OBJECT
   public:
     ScrobblingManager(UserSettingsPointer pConfig,
-            std::shared_ptr<PlayerManager> pPlayerManager,
-            MixxxMainWindow* pWindow);
+            std::shared_ptr<PlayerManager> pPlayerManager);
     ~ScrobblingManager() = default;
     void setAudibleStrategy(TrackAudibleStrategy* pStrategy);
     void setTimer(TrackTimers::RegularTimer* timer);

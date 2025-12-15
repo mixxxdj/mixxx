@@ -456,7 +456,7 @@ void CoreServices::initializeLogging() {
             logFlags);
 }
 
-void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
+void CoreServices::initialize(QApplication* pApp) {
     VERIFY_OR_DEBUG_ASSERT(!m_isInitialized) {
         return;
     }
@@ -564,6 +564,8 @@ void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
     }
 
     m_pPlayerManager->addPreviewDeck();
+
+    m_pScrobblingManager = std::make_shared<ScrobblingManager>(pConfig, m_pPlayerManager);
 
     m_pEffectsManager->setup();
 
@@ -901,9 +903,6 @@ void CoreServices::finalize() {
     Timer t("CoreServices::~CoreServices");
     t.start();
 
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ScrobblingManager";
-    CLEAR_AND_CHECK_DELETED(m_pScrobblingManager);
-
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
@@ -915,6 +914,9 @@ void CoreServices::finalize() {
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
     ControllerScriptEngineBase::registerPlayerManager(nullptr);
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ScrobblingManager";
+    CLEAR_AND_CHECK_DELETED(m_pScrobblingManager);
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

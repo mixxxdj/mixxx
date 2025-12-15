@@ -96,7 +96,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         QPixmapCache::setCacheLimit(static_cast<int>(kPixmapCacheLimitAt100PercentZoom *
                 pow(pApp->devicePixelRatio(), 2.0f)));
 
-        pCoreServices->initialize(pApp, &mainWindow);
+        pCoreServices->initialize(pApp);
 
         if (pCoreServices->getSettings()->getValue(
                     ConfigKey("[Config]", "did_run_with_unstable"), false)) {

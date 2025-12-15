@@ -24,7 +24,7 @@ class MediaPlayer2 : public QDBusAbstractAdaptor {
     Q_PROPERTY(QStringList SupportedMimeTypes READ supportedMimeTypes)
 
   public:
-    explicit MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent = 0);
+    explicit MediaPlayer2(QObject* parent = nullptr);
 
     bool canQuit() const;
     bool fullscreen() const;

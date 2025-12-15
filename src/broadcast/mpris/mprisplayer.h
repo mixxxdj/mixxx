@@ -72,7 +72,6 @@ class MprisPlayer : public QObject {
 
     ControlProxy* m_pCPAutoDjEnabled;
     ControlProxy* m_pCPFadeNow;
-    ControlProxy* m_pCPAutoDJIdle;
     ControlProxy* m_pCPMasterGain;
     PlayerManagerInterface* m_pPlayerManager;
     bool m_bPropertiesEnabled;

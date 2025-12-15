@@ -2,8 +2,6 @@
 
 #include <QObject>
 
-#include "broadcast/filelistener/filelistener.h"
-#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 #ifdef __MPRIS__
 #include "broadcast/mpris/mprisservice.h"
 #endif
@@ -74,8 +72,7 @@ void TotalVolumeThreshold::setVolumeThreshold(double volume) {
 }
 
 ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
-        std::shared_ptr<PlayerManager> pPlayerManager,
-        MixxxMainWindow* pWindow)
+        std::shared_ptr<PlayerManager> pPlayerManager)
         : m_pPlayerManager(pPlayerManager),
           m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
           m_pTimer(new TrackTimers::GUITickTimer),
@@ -89,13 +86,9 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
     m_pTimer->start(1000);
 
     m_pBroadcaster = std::make_unique<MetadataBroadcaster>();
-    m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
-    m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
 #ifdef __MPRIS__
     m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(
-            new MprisService(pWindow, pPlayerManager.get(), pConfig)));
-#else
-    Q_UNUSED(pWindow);
+            new MprisService(pPlayerManager.get(), pConfig)));
 #endif
 
     connect(pPlayerManager.get(),

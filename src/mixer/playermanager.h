@@ -7,7 +7,6 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
-#include "broadcast/scrobblingmanager.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -22,7 +21,6 @@ class Deck;
 class EffectsManager;
 class EngineMixer;
 class Library;
-class MetadataBroadcast;
 class Microphone;
 class PreviewDeck;
 class Sampler;

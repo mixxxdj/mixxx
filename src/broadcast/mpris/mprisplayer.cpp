@@ -64,9 +64,6 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
     m_pCPAutoDjEnabled = new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
     m_pCPAutoDjEnabled->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
 
-    m_pCPAutoDJIdle = new ControlProxy(ConfigKey("[AutoDJ]", "idle"), this);
-    m_pCPAutoDJIdle->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
-
     m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
 
     m_pCPMasterGain = new ControlProxy(ConfigKey("[Master]", "gain"), this);
@@ -451,5 +448,5 @@ bool MprisPlayer::autoDjEnabled() const {
 }
 
 bool MprisPlayer::autoDjIdle() const {
-    return autoDjEnabled() && m_pCPAutoDJIdle->toBool();
+    return autoDjEnabled();
 }

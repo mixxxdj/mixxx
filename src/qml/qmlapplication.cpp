@@ -45,7 +45,7 @@ QmlApplication::QmlApplication(
           m_autoReload() {
     QQuickStyle::setStyle("Basic");
 
-    m_pCoreServices->initialize(app, nullptr);
+    m_pCoreServices->initialize(app);
 
     QString configVersion = m_pCoreServices->getSettings()->getValue(
             ConfigKey("[Config]", "Version"), "");

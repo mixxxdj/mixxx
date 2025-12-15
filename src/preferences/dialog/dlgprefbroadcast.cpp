@@ -1,6 +1,5 @@
 #include "preferences/dialog/dlgprefbroadcast.h"
 
-#include <QFileDialog>
 #include <QHeaderView>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -9,13 +8,11 @@
 #include <shoutidjc/shout.h>
 
 #include "broadcast/defs_broadcast.h"
-#include "broadcast/filelistener/filelistener.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "encoder/encodersettings.h"
 #include "moc_dlgprefbroadcast.cpp"
 #include "preferences/broadcastsettingsmodel.h"
-#include "preferences/configobject.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
 

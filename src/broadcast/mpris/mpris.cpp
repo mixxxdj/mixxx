@@ -16,8 +16,7 @@ const QString KObjectPath = QStringLiteral("/org/mpris/MediaPlayer2");
 
 } // namespace
 
-Mpris::Mpris(MixxxMainWindow* pMixxx,
-        PlayerManagerInterface* pPlayerManager,
+Mpris::Mpris(PlayerManagerInterface* pPlayerManager,
         UserSettingsPointer pSettings)
         : m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus, kServiceName)),
           m_pPlayer(new MediaPlayer2Player(pPlayerManager,
@@ -28,7 +27,7 @@ Mpris::Mpris(MixxxMainWindow* pMixxx,
     // by the user (they will be deleted automatically when the object
     // they are connected to is also deleted).
     // http://doc.qt.io/qt-5/qdbusabstractadaptor.html
-    new MediaPlayer2(pMixxx, this);
+    new MediaPlayer2(this);
     m_busConnection.registerObject(KObjectPath, this);
     m_busConnection.registerService(kServiceName);
 }

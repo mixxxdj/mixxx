@@ -1,6 +1,5 @@
 #pragma once
 
-#include "control/controlproxy.h"
 #include "preferences/broadcastsettings.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbroadcastdlg.h"

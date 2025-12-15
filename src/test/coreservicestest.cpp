@@ -18,7 +18,7 @@ TEST_F(CoreServicesTest, DISABLED_TestInitialization) {
     cmdlineArgs.parse(argc, argv);
 
     const auto pCoreServices = std::make_unique<mixxx::CoreServices>(cmdlineArgs, application());
-    pCoreServices->initialize(application(), nullptr);
+    pCoreServices->initialize(application());
 
     EXPECT_NE(pCoreServices->getControllerManager(), nullptr);
     EXPECT_NE(pCoreServices->getEffectsManager(), nullptr);

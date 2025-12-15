@@ -848,7 +848,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 }
 
                 m_pIdleState->set(false);
-                
+
                 // Now that we have started the other deck playing, remove the track
                 // that was "on deck" from the top of the queue.
                 // Note: This is a DB call and takes long.
