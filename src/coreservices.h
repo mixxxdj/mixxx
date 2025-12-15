@@ -61,6 +61,10 @@ class CoreServices : public QObject {
         return m_pPlayerManager;
     }
 
+    std::shared_ptr<ScrobblingManager> getScrobblingManager() const {
+        return m_pScrobblingManager;
+    }
+
     std::shared_ptr<RecordingManager> getRecordingManager() const {
         return m_pRecordingManager;
     }

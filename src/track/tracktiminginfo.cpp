@@ -1,11 +1,18 @@
 #include "track/tracktiminginfo.h"
 
 #include "moc_tracktiminginfo.cpp"
+#include "util/parented_ptr.h"
 
-TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack)
-        : m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()),
-          m_pTimer(new TrackTimers::GUITickTimer()),
-          m_pTrackPtr(pTrack),
+namespace {
+const double kMsInOneSecond = 1000;
+const double kAbsoluteDurationInSecondBeforeScrobbling = 240;
+} // namespace
+
+TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack, QObject* parent)
+        : QObject(parent),
+          m_pElapsedTimer(new TrackTimers::ElapsedTimerQt()),
+          m_pTimer(make_parented<TrackTimers::GUITickTimer>(this)),
+          m_pTrack(pTrack),
           m_playedMs(0),
           m_isTrackScrobbable(false),
           m_isTimerPaused(true) {
@@ -47,8 +54,8 @@ void TrackTimingInfo::setElapsedTimer(TrackTimers::ElapsedTimer* elapsedTimer) {
     m_pElapsedTimer->invalidate();
 }
 
-void TrackTimingInfo::setTimer(TrackTimers::RegularTimer* timer) {
-    m_pTimer.reset(timer);
+void TrackTimingInfo::setTimer(parented_ptr<TrackTimers::RegularTimer> timer) {
+    m_pTimer = std::move(timer);
 }
 
 void TrackTimingInfo::slotCheckIfScrobbable() {
@@ -61,15 +68,17 @@ void TrackTimingInfo::slotCheckIfScrobbable() {
     } else {
         return;
     }
-    if (!m_pTrackPtr) {
+    if (!m_pTrack) {
         qDebug() << "Track pointer is null when checking if track is scrobbable";
         return;
     }
-    if ((msInTimer + m_playedMs) / 1000.0 >=
-                    m_pTrackPtr->getDuration() / 2.0 ||
-            (msInTimer + m_playedMs) / 1000.0 >= 240.0) {
+    bool overHalfTrackDuration = (msInTimer + m_playedMs) / kMsInOneSecond >=
+            m_pTrack->getDuration() / 2.0;
+    bool overAbsoluteMark = (msInTimer + m_playedMs) / kMsInOneSecond >=
+            kAbsoluteDurationInSecondBeforeScrobbling;
+    if (overHalfTrackDuration || overAbsoluteMark) {
         m_isTrackScrobbable = true;
-        emit readyToBeScrobbled(m_pTrackPtr);
+        emit readyToBeScrobbled(m_pTrack);
     } else {
         m_pTimer->start(1000);
     }
@@ -84,7 +93,7 @@ bool TrackTimingInfo::isScrobbable() const {
 }
 
 void TrackTimingInfo::setTrackPointer(TrackPointer pTrack) {
-    m_pTrackPtr = pTrack;
+    m_pTrack = pTrack;
 }
 
 void TrackTimingInfo::slotGuiTick(double timeSinceLastTick) {

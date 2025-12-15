@@ -18,9 +18,6 @@ class MetadataBroadcasterInterface : public QObject {
     virtual void slotAllTracksPaused() = 0;
 
   public:
-    virtual ~MetadataBroadcasterInterface() = default;
-    virtual MetadataBroadcasterInterface&
-    addNewScrobblingService(const ScrobblingServicePtr& newService) = 0;
     virtual void newTrackLoaded(TrackPointer pTrack) = 0;
     virtual void trackUnloaded(TrackPointer pTrack) = 0;
 };
@@ -42,8 +39,29 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
 
   public:
     MetadataBroadcaster();
-    MetadataBroadcasterInterface&
-    addNewScrobblingService(const ScrobblingServicePtr& newService) override;
+
+    template<class T, typename... Args>
+    void addScrobblingService(Args&&... args) {
+        static_assert(std::is_base_of<ScrobblingService, T>::value,
+                "Service is not derived from ScrobblingService");
+        VERIFY_OR_DEBUG_ASSERT(!m_scrobblingServices.contains(typeid(T).hash_code())) {
+            return;
+        };
+        m_scrobblingServices.emplace(typeid(T).hash_code(), std::make_shared<T>(args...));
+    }
+    template<class T>
+    void removeScrobblingService() {
+        static_assert(std::is_base_of<ScrobblingService, T>::value,
+                "Service is not derived from ScrobblingService");
+        m_scrobblingServices.remove(typeid(T).hash_code());
+    }
+    template<class T>
+    bool isScrobblingServiceActivated() {
+        static_assert(std::is_base_of<ScrobblingService, T>::value,
+                "Service is not derived from ScrobblingService");
+        return m_scrobblingServices.contains(typeid(T).hash_code());
+    }
+
     void newTrackLoaded(TrackPointer pTrack) override;
     void trackUnloaded(TrackPointer pTrack) override;
     void slotNowListening(TrackPointer pTrack) override;
@@ -54,5 +72,5 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
   private:
     unsigned int m_gracePeriodSeconds;
     QHash<TrackId, GracePeriod> m_trackedTracks;
-    QList<ScrobblingServicePtr> m_scrobblingServices;
+    QHash<size_t, ScrobblingServicePtr> m_scrobblingServices;
 };

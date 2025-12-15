@@ -7,12 +7,12 @@
 
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
+#include "library/autodj/autodjprocessor.h"
 #include "mixxxmainwindow.h"
 
 class PlayerManager;
 class MixxxMainWindow;
 class PlayerManagerInterface;
-class DeckAttributes;
 
 class MprisPlayer : public QObject {
     Q_OBJECT
@@ -21,7 +21,6 @@ class MprisPlayer : public QObject {
             Mpris* pMpris,
             UserSettingsPointer pSettings);
 
-    ~MprisPlayer() override;
     QString playbackStatus() const;
     QString loopStatus() const;
     void setLoopStatus(const QString& value);
@@ -58,39 +57,46 @@ class MprisPlayer : public QObject {
   private:
     void broadcastPropertiesChange(bool enabled);
     void requestMetadataFromTrack(TrackPointer pTrack, bool requestCover);
-    void requestCoverartUrl(TrackPointer pTrack);
+    void requestCoverArtUrl(TrackPointer pTrack);
     void broadcastCurrentMetadata();
     QVariantMap getVariantMapMetadata();
     DeckAttributes* findPlayingDeck() const;
     bool autoDjEnabled() const;
-    bool autoDjIdle() const;
     const QString autoDJDependentProperties[4] = {
             "CanGoNext",
             "CanPlay",
             "CanPause",
             "CanSeek"};
 
-    ControlProxy* m_pCPAutoDjEnabled;
-    ControlProxy* m_pCPFadeNow;
-    ControlProxy* m_pCPMasterGain;
+    ControlProxy m_pCPAutoDjEnabled;
+    ControlProxy m_pCPFadeNow;
+    ControlProxy m_pCPMasterGain;
     PlayerManagerInterface* m_pPlayerManager;
     bool m_bPropertiesEnabled;
     Mpris* m_pMpris;
-    QList<DeckAttributes*> m_deckAttributes;
+    std::vector<std::unique_ptr<DeckAttributes>> m_deckAttributes;
     DeckAttributes* m_pPlayableDeck;
     UserSettingsPointer m_pSettings;
 
-    struct CurrentMetadata {
+    class CurrentMetadata {
+      public:
+        CurrentMetadata();
+        void idle(bool autoDjEnabled);
+        void newCoverArt();
+        QString coverArtUrl() const;
+
         QString trackPath;
-        long long int trackDuration;
+        double trackDuration;
         QStringList artists;
         QString title;
-        QString coverartUrl;
         QString album;
         int userRating;
         int useCount;
+        std::unique_ptr<QTemporaryFile> pCoverArtFile;
+
+      private:
+        QTemporaryFile defaultCoverArtFile;
     };
 
     CurrentMetadata m_currentMetadata;
-    QTemporaryFile m_currentCoverArtFile;
 };

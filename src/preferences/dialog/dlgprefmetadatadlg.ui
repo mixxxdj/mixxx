@@ -21,7 +21,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QCheckBox" name="enableListenbrainzBox">
+       <widget class="QCheckBox" name="enableDBusMPRISBox">
         <property name="text">
          <string>Enable DBus MPRIS interface</string>
         </property>

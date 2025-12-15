@@ -25,21 +25,15 @@ void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
 }
 
 void MetadataBroadcaster::slotNowListening(TrackPointer pTrack) {
-    for (const auto& service : qAsConst(m_scrobblingServices)) {
+    for (const auto& service : std::as_const(m_scrobblingServices)) {
         service->slotBroadcastCurrentTrack(pTrack);
     }
 }
 
 void MetadataBroadcaster::slotAllTracksPaused() {
-    for (const auto& service : qAsConst(m_scrobblingServices)) {
+    for (const auto& service : std::as_const(m_scrobblingServices)) {
         service->slotAllTracksPaused();
     }
-}
-
-MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(
-        const ScrobblingServicePtr& newService) {
-    m_scrobblingServices.push_back(newService);
-    return *this;
 }
 
 void MetadataBroadcaster::newTrackLoaded(TrackPointer pTrack) {

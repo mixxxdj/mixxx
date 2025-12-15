@@ -565,8 +565,6 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pPlayerManager->addPreviewDeck();
 
-    m_pScrobblingManager = std::make_shared<ScrobblingManager>(pConfig, m_pPlayerManager);
-
     m_pEffectsManager->setup();
 
 #ifdef __VINYLCONTROL__
@@ -603,6 +601,8 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pTrackCollectionManager.get(),
             m_pPlayerManager.get(),
             m_pRecordingManager.get());
+
+    m_pScrobblingManager = std::make_shared<ScrobblingManager>(pConfig, m_pPlayerManager);
 
     OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
     connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
@@ -890,6 +890,7 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
+            getScrobblingManager(),
             getLibrary());
     return pDlgPreferences;
 }

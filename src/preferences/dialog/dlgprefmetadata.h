@@ -4,11 +4,15 @@
 #include "preferences/dialog/ui_dlgprefmetadatadlg.h"
 #include "preferences/usersettings.h"
 
+class ScrobblingManager;
+
 /// Dialog class for the metadata broadcasting preferences
 class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg {
     Q_OBJECT
   public:
-    DlgPrefMetadata(QWidget* pParent, const UserSettingsPointer& pSettings);
+    DlgPrefMetadata(QWidget* pParent,
+            const UserSettingsPointer& pSettings,
+            std::shared_ptr<ScrobblingManager> pScrobblingManager);
   public slots:
     void slotApply() override;
     void slotCancel() override;
@@ -17,4 +21,5 @@ class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg 
 
   private:
     UserSettingsPointer m_pSettings;
+    std::shared_ptr<ScrobblingManager> m_pScrobblingManager;
 };

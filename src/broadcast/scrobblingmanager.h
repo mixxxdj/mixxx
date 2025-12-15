@@ -1,5 +1,7 @@
 #include <memory>
 
+#include "util/parented_ptr.h"
+
 #pragma once
 
 #include <QHash>
@@ -41,8 +43,6 @@ class TotalVolumeThreshold : public TrackAudibleStrategy {
     ControlProxy m_CPXFaderMode;
     ControlProxy m_CPXFaderReverse;
 
-    QObject* m_pParent;
-
     double m_volumeThreshold;
 };
 
@@ -55,12 +55,24 @@ class ScrobblingManager : public QObject {
     ScrobblingManager(UserSettingsPointer pConfig,
             std::shared_ptr<PlayerManager> pPlayerManager);
     ~ScrobblingManager() = default;
+    // Take ownership of the timer
     void setAudibleStrategy(TrackAudibleStrategy* pStrategy);
-    void setTimer(TrackTimers::RegularTimer* timer);
+    void setTimer(parented_ptr<TrackTimers::RegularTimer> timer);
     void setTrackInfoFactory(
             const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>&
                     factory);
     bool hasScrobbledAnyTrack() const;
+
+    template<class T, typename... Args>
+    void addScrobblingService(Args&&... args);
+    template<class T>
+    void removeScrobblingService() {
+        m_pBroadcaster->removeScrobblingService<T>();
+    }
+    template<class T>
+    bool isScrobblingServiceActivated() {
+        return m_pBroadcaster->isScrobblingServiceActivated<T>();
+    }
 
   public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
@@ -82,16 +94,13 @@ class ScrobblingManager : public QObject {
         }
     };
 
-#ifdef MIXXX_BUILD_DEBUG
-    friend QDebug operator<<(QDebug debug, const ScrobblingManager::TrackInfo& info);
-#endif
-
     QHash<TrackId, TrackInfo> m_trackInfoHashDict;
 
     std::shared_ptr<PlayerManager> m_pPlayerManager;
-    std::unique_ptr<MetadataBroadcasterInterface> m_pBroadcaster;
+    UserSettingsPointer m_pConfig;
+    std::unique_ptr<MetadataBroadcaster> m_pBroadcaster;
     std::unique_ptr<TrackAudibleStrategy> m_pAudibleStrategy;
-    std::unique_ptr<TrackTimers::RegularTimer> m_pTimer;
+    parented_ptr<TrackTimers::RegularTimer> m_pTimer;
 
     TrackTimingFactory m_trackInfoFactory;
 

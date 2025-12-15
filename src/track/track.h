@@ -637,7 +637,6 @@ class Track : public QObject {
     QElapsedTimer m_playedSincePause;
 
     int m_timerId;
-
     qint64 m_msPlayed;
 
     friend class TrackDAO;
