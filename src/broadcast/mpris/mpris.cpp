@@ -1,6 +1,6 @@
 #include "broadcast/mpris/mpris.h"
 
-#include <QtDBus/QtDBus>
+#include <QDBusMessage>
 
 #include "broadcast/mpris/mediaplayer2.h"
 #include "broadcast/mpris/mediaplayer2player.h"

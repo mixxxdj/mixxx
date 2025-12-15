@@ -7,12 +7,10 @@ MprisService::MprisService(PlayerManagerInterface* pPlayer,
         : m_mpris(pPlayer, pSettings) {
 }
 
-void MprisService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+void MprisService::slotBroadcastCurrentTrack(TrackPointer) {
 }
 
-void MprisService::slotScrobbleTrack(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+void MprisService::slotScrobbleTrack(TrackPointer) {
 }
 
 void MprisService::slotAllTracksPaused() {

@@ -1,8 +1,14 @@
 #include "broadcast/mpris/mprisplayer.h"
 
+#include <qfileinfo.h>
+
 #include <QCryptographicHash>
 #include <QStringRef>
+#include <QThread>
+#include <QtConcurrentRun>
 #include <QtGlobal>
+#include <memory>
+#include <optional>
 
 #include "library/autodj/autodjprocessor.h"
 #include "library/coverartcache.h"
@@ -10,6 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_mprisplayer.cpp"
+#include "util/assert.h"
 
 namespace {
 
@@ -17,6 +24,7 @@ namespace {
 const QString kPlaybackStatusPlaying = QStringLiteral("Playing");
 const QString kPlaybackStatusPaused = QStringLiteral("Paused");
 const QString kPlaybackStatusStopped = QStringLiteral("Stopped");
+const QString kTemporaryCoverArtNameTemplate = QStringLiteral("mixxx-dbus-mpris-XXXXXXXX.png");
 
 // the playback will stop when there are no more tracks to play
 const QString kLoopStatusNone = QStringLiteral("None");
@@ -26,14 +34,27 @@ const QString kLoopStatusTrack = QStringLiteral("Track");
 const QString kLoopStatusPlaylist = QStringLiteral("Playlist");
 
 const QString kPlayerInterfaceName = QStringLiteral("org.mpris.MediaPlayer2.Player");
+const ConfigKey kAutoDJRequeueKey = ConfigKey("[Auto DJ]", "Requeue");
+
+std::optional<std::size_t> getCurrentPlayingDeck() {
+    auto deck = PlayerInfo::instance().getCurrentPlayingDeck();
+    if (deck == -1) {
+        return std::nullopt;
+    }
+    return static_cast<std::size_t>(deck);
+}
 
 } // namespace
 
 MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
         Mpris* pMpris,
         UserSettingsPointer pSettings)
-        : m_pPlayerManager(pPlayerManager),
+        : m_pCPAutoDjEnabled(ConfigKey("[AutoDJ]", "enabled"), this),
+          m_pCPFadeNow(ConfigKey("[AutoDJ]", "fade_now"), this),
+          m_pCPMasterGain(ConfigKey("[Master]", "gain"), this),
+          m_pPlayerManager(pPlayerManager),
           m_bPropertiesEnabled(false),
+
           m_pMpris(pMpris),
           m_pPlayableDeck(nullptr),
           m_pSettings(pSettings) {
@@ -51,36 +72,30 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
             &MprisPlayer::slotPlayingTrackChanged);
 
     for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
-        DeckAttributes* attributes = new DeckAttributes(i,
+        auto attributes = std::make_unique<DeckAttributes>(i,
                 m_pPlayerManager->getDeck(i));
-        m_deckAttributes.append(attributes);
-        connect(attributes, &DeckAttributes::playChanged, this, &MprisPlayer::slotPlayChanged);
-        connect(attributes,
+        connect(attributes.get(),
+                &DeckAttributes::playChanged,
+                this,
+                &MprisPlayer::slotPlayChanged);
+        connect(attributes.get(),
                 &DeckAttributes::playPositionChanged,
                 this,
                 &MprisPlayer::slotPlayPositionChanged);
+        m_deckAttributes.emplace_back(std::move(attributes));
     }
 
-    m_pCPAutoDjEnabled = new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
-    m_pCPAutoDjEnabled->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
+    m_pCPAutoDjEnabled.connectValueChanged(this, &MprisPlayer::slotChangeProperties);
+    m_pCPMasterGain.connectValueChanged(this, &MprisPlayer::slotMasterGainChanged);
 
-    m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
-
-    m_pCPMasterGain = new ControlProxy(ConfigKey("[Master]", "gain"), this);
-    m_pCPMasterGain->connectValueChanged(this, &MprisPlayer::slotMasterGainChanged);
-}
-
-MprisPlayer::~MprisPlayer() {
-    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
-        delete attrib;
-    }
+    requestMetadataFromTrack(PlayerInfo::instance().getCurrentPlayingTrack(), true).then([this]() {
+        broadcastCurrentMetadata();
+    });
 }
 
 QString MprisPlayer::playbackStatus() const {
-    int playingDeckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
-    if (playingDeckIndex >= 0 && playingDeckIndex < m_deckAttributes.size()) {
-        // We have a playing deck
-        qDebug() << kPlaybackStatusPlaying;
+    auto playingDeckIndex = getCurrentPlayingDeck();
+    if (playingDeckIndex.has_value() && playingDeckIndex < m_deckAttributes.size()) {
         return kPlaybackStatusPlaying;
     }
     if (autoDjEnabled()) {
@@ -90,64 +105,57 @@ QString MprisPlayer::playbackStatus() const {
 }
 
 QString MprisPlayer::loopStatus() const {
-    if (!autoDjEnabled())
+    if (!autoDjEnabled()) {
         return kLoopStatusNone;
-    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
-        if (attrib->isRepeat() && attrib->isPlaying())
-            return kLoopStatusTrack;
     }
-    return m_pSettings->getValue(ConfigKey("[Auto DJ]", "Requeue"), false)
+    for (const auto& pAttrib : std::as_const(m_deckAttributes)) {
+        if (pAttrib->isRepeat() && pAttrib->isPlaying()) {
+            return kLoopStatusTrack;
+        }
+    }
+    return m_pSettings->getValue(kAutoDJRequeueKey, false)
             ? kLoopStatusPlaylist
             : kLoopStatusNone;
 }
 
 void MprisPlayer::setLoopStatus(const QString& value) {
     if (value == kLoopStatusNone || value == kLoopStatusTrack) {
-        for (DeckAttributes* attribute : qAsConst(m_deckAttributes)) {
-            attribute->setRepeat(value == kLoopStatusTrack);
+        for (const auto& pAttribute : std::as_const(m_deckAttributes)) {
+            pAttribute->setRepeat(value == kLoopStatusTrack);
         }
-        m_pSettings->setValue(ConfigKey("[Auto DJ]", "Requeue"), false);
+        m_pSettings->setValue(kAutoDJRequeueKey, false);
     } else {
-        for (DeckAttributes* attribute : qAsConst(m_deckAttributes)) {
-            attribute->setRepeat(false);
+        for (const auto& pAttribute : std::as_const(m_deckAttributes)) {
+            pAttribute->setRepeat(false);
         }
-        m_pSettings->setValue(ConfigKey("[Auto DJ]", "Requeue"), true);
+        m_pSettings->setValue(kAutoDJRequeueKey, true);
     }
 }
 
 QVariantMap MprisPlayer::metadata() {
-    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    requestMetadataFromTrack(pTrack, false);
     return getVariantMapMetadata();
 }
 
 double MprisPlayer::volume() const {
-    return m_pCPMasterGain->get();
+    return m_pCPMasterGain.get();
 }
 
 void MprisPlayer::setVolume(double value) {
-    return m_pCPMasterGain->set(value);
+    return m_pCPMasterGain.set(value);
 }
 
 qlonglong MprisPlayer::position() const {
-    if (autoDjIdle()) {
-        for (unsigned int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-            ControlProxy playing(ConfigKey(PlayerManager::groupForDeck(i), "play"));
-            if (playing.toBool()) {
-                DeckAttributes* pDeck = m_deckAttributes.at(i);
-                qlonglong playPosition =
-                        static_cast<qlonglong>(pDeck->playPosition() *   // Fraction of duration
-                                pDeck->getLoadedTrack()->getDuration() * // Duration in seconds
-                                1e6);
-                return playPosition;
-            }
-        }
+    DeckAttributes* pDeck = findPlayingDeck();
+    if (!pDeck) {
+        return 0;
     }
-    return 0;
+    return static_cast<qlonglong>(pDeck->playPosition() * // Fraction of duration
+            pDeck->getLoadedTrack()->getDuration() *      // Duration in seconds
+            1e6);
 }
 
 bool MprisPlayer::canGoNext() const {
-    return autoDjIdle();
+    return autoDjEnabled();
 }
 
 bool MprisPlayer::canGoPrevious() const {
@@ -163,23 +171,24 @@ bool MprisPlayer::canPause() const {
 }
 
 bool MprisPlayer::canSeek() const {
-    return autoDjIdle();
+    return getCurrentPlayingDeck().has_value();
 }
 
 void MprisPlayer::nextTrack() {
-    if (autoDjIdle()) {
-        m_pCPFadeNow->set(true);
+    if (autoDjEnabled()) {
+        m_pCPFadeNow.set(true);
     }
 }
 
 void MprisPlayer::pause() {
-    int playingDeckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
-    for (DeckAttributes* attribute : qAsConst(m_deckAttributes)) {
-        attribute->stop();
+    auto playingDeckIndex = getCurrentPlayingDeck();
+    for (const auto& pAttribute : std::as_const(m_deckAttributes)) {
+        pAttribute->stop();
     }
-    if (playingDeckIndex >= 0 && playingDeckIndex < m_deckAttributes.size()) {
-        m_pMpris->notifyPropertyChanged(kPlayerInterfaceName, "Metadata", QVariantMap());
-        m_pPlayableDeck = m_deckAttributes[playingDeckIndex];
+    if (playingDeckIndex.has_value() && playingDeckIndex < m_deckAttributes.size()) {
+        m_currentMetadata.idle(autoDjEnabled());
+        broadcastCurrentMetadata();
+        m_pPlayableDeck = m_deckAttributes[playingDeckIndex.value()].get();
     }
 }
 
@@ -187,13 +196,13 @@ void MprisPlayer::stop() {
     pause();
     if (autoDjEnabled()) {
         // Also disable Auto-DJ.
-        m_pCPAutoDjEnabled->set(false);
+        m_pCPAutoDjEnabled.set(false);
     }
 }
 
 void MprisPlayer::playPause() {
-    int playingDeckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
-    if (playingDeckIndex >= 0 && playingDeckIndex < m_deckAttributes.size()) {
+    auto playingDeckIndex = getCurrentPlayingDeck();
+    if (playingDeckIndex.has_value() && playingDeckIndex < m_deckAttributes.size()) {
         // We have a playing deck
         pause();
     } else {
@@ -202,90 +211,70 @@ void MprisPlayer::playPause() {
 }
 
 void MprisPlayer::play() {
-    int playingDeckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
-    if (playingDeckIndex >= 0 && playingDeckIndex < m_deckAttributes.size()) {
+    auto playingDeckIndex = getCurrentPlayingDeck();
+    if (playingDeckIndex.has_value() && playingDeckIndex < m_deckAttributes.size()) {
         // We have already a playing deck
         return;
     }
-    if (!autoDjEnabled()) {
-        // Let Auto DJ take care what to play.
-        m_pCPAutoDjEnabled->set(true);
+    if (m_pPlayableDeck) {
+        m_pPlayableDeck->play();
         return;
-    }
-
-    if (autoDjIdle()) {
-        if (m_pPlayableDeck) {
-            m_pPlayableDeck->play();
-        }
-    } else {
-        VERIFY_OR_DEBUG_ASSERT(m_deckAttributes.size() >= 2) {
-            return;
-        }
-        m_deckAttributes[0]->play();
-        m_deckAttributes[1]->play();
     }
 }
 
 qlonglong MprisPlayer::seek(qlonglong offset, bool& success) {
-    if (canSeek()) {
-        DeckAttributes* playingDeck = findPlayingDeck();
-        VERIFY_OR_DEBUG_ASSERT(playingDeck) {
-            success = false;
-            return 0;
-        }
-        double durationSeconds = playingDeck->getLoadedTrack()->getDuration();
-        double newPosition = playingDeck->playPosition() + offset / (durationSeconds * 1e6);
-        if (newPosition < 0.0) {
-            success = true;
-            newPosition = 0.0;
-            playingDeck->setPlayPosition(newPosition);
-            return 0;
-        }
-        if (newPosition > 1.0) {
-            success = true;
-            nextTrack();
-            return 0;
-        }
-        playingDeck->setPlayPosition(newPosition);
-        success = true;
-        return static_cast<qlonglong>(durationSeconds * 1e6) + offset;
-    }
     success = false;
-    return 0;
+    if (!canSeek()) {
+        return 0;
+    }
+    DeckAttributes* playingDeck = findPlayingDeck();
+    VERIFY_OR_DEBUG_ASSERT(playingDeck) {
+        success = false;
+        return 0;
+    }
+    double durationSeconds = playingDeck->getLoadedTrack()->getDuration();
+    double newPosition = playingDeck->playPosition() + offset / (durationSeconds * 1e6);
+    if (newPosition < 0.0) {
+        success = true;
+        newPosition = 0.0;
+        playingDeck->setPlayPosition(newPosition);
+        return 0;
+    }
+    if (newPosition > 1.0) {
+        success = true;
+        nextTrack();
+        return 0;
+    }
+    playingDeck->setPlayPosition(newPosition);
+    success = true;
+    return static_cast<qlonglong>(durationSeconds * 1e6) + offset;
 }
 
 qlonglong MprisPlayer::setPosition(
         const QDBusObjectPath& trackId,
         qlonglong position,
         bool& success) {
-    if (autoDjIdle()) {
-        DeckAttributes* playingDeck = findPlayingDeck();
-        VERIFY_OR_DEBUG_ASSERT(playingDeck) {
-            success = false;
-            return 0;
-        }
-        QString path = trackId.path();
-        int lastSlashIndex = path.lastIndexOf('/');
-        VERIFY_OR_DEBUG_ASSERT(lastSlashIndex != -1) {
-            success = false;
-            return 0;
-        }
-        QString id = path.right(path.size() - lastSlashIndex - 1);
-        if (id != playingDeck->getLoadedTrack()->getId().toString()) {
-            success = false;
-            return 0;
-        }
-        double newPosition = position / (playingDeck->getLoadedTrack()->getDuration() * 1e6);
-        if (newPosition < 0.0 || newPosition > 1.0) {
-            success = false;
-            return 0;
-        }
-        playingDeck->setPlayPosition(newPosition);
-        success = true;
-        return position;
-    }
     success = false;
-    return 0;
+    DeckAttributes* pDeck = findPlayingDeck();
+    if (!pDeck) {
+        return 0;
+    }
+    QString path = trackId.path();
+    int lastSlashIndex = path.lastIndexOf('/');
+    VERIFY_OR_DEBUG_ASSERT(lastSlashIndex != -1) {
+        return 0;
+    }
+    QString id = path.right(path.size() - lastSlashIndex - 1);
+    if (id != pDeck->getLoadedTrack()->getId().toString()) {
+        return 0;
+    }
+    double newPosition = position / (pDeck->getLoadedTrack()->getDuration() * 1e6);
+    if (newPosition < 0.0 || newPosition > 1.0) {
+        return 0;
+    }
+    pDeck->setPlayPosition(newPosition);
+    success = true;
+    return position;
 }
 
 void MprisPlayer::openUri(const QString& uri) {
@@ -307,74 +296,80 @@ void MprisPlayer::broadcastPropertiesChange(bool enabled) {
     }
 }
 
-void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCover) {
+QFuture<void> MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCover) {
+    m_currentMetadata.idle(autoDjEnabled());
     if (!pTrack) {
-        return;
-    }
-    m_currentMetadata.trackPath = QStringLiteral("/org/mixxx/") + pTrack->getId().toString();
-    double trackDurationSeconds = pTrack->getDuration();
-    trackDurationSeconds *= 1e6;
-    m_currentMetadata.trackDuration =
-            static_cast<long long int>(trackDurationSeconds);
-    QStringList artists;
-    artists << pTrack->getArtist();
-    m_currentMetadata.artists = artists;
-    m_currentMetadata.title = pTrack->getTitle();
-    if (requestCover) {
-        requestCoverartUrl(pTrack);
+        return {};
     }
     m_currentMetadata.album = pTrack->getAlbum();
-    m_currentMetadata.userRating = pTrack->getRating();
+    m_currentMetadata.artists = {pTrack->getArtist()};
+    m_currentMetadata.title = pTrack->getTitle();
+    m_currentMetadata.url = QUrl::fromLocalFile(pTrack->getLocation());
+    m_currentMetadata.trackDuration = pTrack->getDuration() * 1e6;
+    m_currentMetadata.trackPath = QStringLiteral("/org/mixxx/") + pTrack->getId().toString();
     m_currentMetadata.useCount = pTrack->getTimesPlayed();
+    m_currentMetadata.userRating = pTrack->getRating();
+    if (requestCover) {
+        return requestCoverArtUrl(pTrack);
+    }
+    return {};
 }
 
-void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
+QFuture<void> MprisPlayer::requestCoverArtUrl(TrackPointer pTrack) {
     CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
     if (coverInfo.type == CoverInfoRelative::FILE) {
-        QFileInfo fileInfo;
-        if (!coverInfo.trackLocation.isEmpty()) {
-            fileInfo = QFileInfo(coverInfo.trackLocation);
-        }
-        QFileInfo coverFile(fileInfo.dir(), coverInfo.coverLocation);
-        QString path = coverFile.absoluteFilePath();
-        qDebug() << "Cover art path: " << path;
-        QUrl fileUrl = QUrl::fromLocalFile(path);
-        if (!fileUrl.isValid()) {
-            qDebug() << "Invalid URL: " << fileUrl;
-            return;
-        }
-        m_currentMetadata.coverartUrl = fileUrl.toString();
+        return QtConcurrent::run(QThreadPool::globalInstance(), [pTrack, coverInfo, this]() {
+            QFileInfo fileInfo;
+            if (!coverInfo.trackLocation.isEmpty()) {
+                fileInfo = QFileInfo(coverInfo.trackLocation);
+            }
+            QFileInfo coverFile(fileInfo.dir(), coverInfo.coverLocation);
+            if (!coverFile.exists()) {
+                return;
+            }
+            QImage cover(coverFile.absoluteFilePath());
+            if (cover.isNull()) {
+                return;
+            }
+            m_currentMetadata.newCoverArt();
+            m_currentMetadata.pCoverArtFile->open();
+            bool success = cover.save(m_currentMetadata.pCoverArtFile.get(), "PNG");
+            if (!success) {
+                qWarning() << "Couldn't write metadata cover art";
+            }
+            m_currentMetadata.pCoverArtFile->close();
+        });
     } else if (coverInfo.type == CoverInfoRelative::METADATA) {
         CoverArtCache::requestCover(this, coverInfo);
-    } else {
-        m_currentMetadata.coverartUrl.clear();
     }
+    return {};
 }
 
-void MprisPlayer::slotPlayChanged(DeckAttributes* pDeck, bool playing) {
-    Q_UNUSED(pDeck);
-    Q_UNUSED(playing);
+void MprisPlayer::slotPlayChanged(DeckAttributes*, bool) {
     m_pMpris->notifyPropertyChanged(kPlayerInterfaceName,
             "PlaybackStatus",
             playbackStatus());
 }
 
 void MprisPlayer::slotPlayPositionChanged(DeckAttributes* pDeck, double position) {
-    if (autoDjIdle()) {
-        qlonglong playPosition = static_cast<qlonglong>(position * // Fraction of duration
-                pDeck->getLoadedTrack()->getDuration() *           // Duration in seconds
-                1e6);
-        m_pMpris->notifyPropertyChanged(kPlayerInterfaceName, "Position", playPosition);
+    auto pTrack = pDeck->getLoadedTrack();
+    if (!pTrack) {
+        return;
     }
+    auto playPosition = position *  // Fraction of duration
+            pTrack->getDuration() * // Duration in seconds
+            1e6;
+    m_pMpris->notifyPropertyChanged(kPlayerInterfaceName,
+            "Position",
+            static_cast<qlonglong>(playPosition));
 }
 
 DeckAttributes* MprisPlayer::findPlayingDeck() const {
-    for (int i = 0; i < m_deckAttributes.count(); ++i) {
-        if (m_deckAttributes.at(i)->isPlaying()) {
-            return m_deckAttributes.at(i);
-        }
+    auto playingDeckIndex = getCurrentPlayingDeck();
+    if (!playingDeckIndex.has_value() || playingDeckIndex >= m_deckAttributes.size()) {
+        return nullptr;
     }
-    return nullptr;
+    return m_deckAttributes.at(playingDeckIndex.value()).get();
 }
 
 void MprisPlayer::slotMasterGainChanged(double value) {
@@ -383,47 +378,45 @@ void MprisPlayer::slotMasterGainChanged(double value) {
 
 double MprisPlayer::rate() const {
     DeckAttributes* playingDeck = findPlayingDeck();
-    if (playingDeck != nullptr) {
-        ControlProxy rate(ConfigKey(
-                PlayerManager::groupForDeck(playingDeck->index - 1), "rate"));
-        return rate.get();
+    if (playingDeck == nullptr) {
+        return 0;
     }
-    return 0;
+    ControlProxy rate(ConfigKey(
+            PlayerManager::groupForDeck(playingDeck->index - 1), "rate"));
+    return rate.get();
 }
 
 void MprisPlayer::setRate(double value) {
     DeckAttributes* playingDeck = findPlayingDeck();
-    if (playingDeck != nullptr) {
-        ControlProxy rate(ConfigKey(
-                PlayerManager::groupForDeck(playingDeck->index - 1), "rate"));
-        double clampedValue = qBound(-1.0, value, 1.0);
-        rate.set(clampedValue);
+    if (playingDeck == nullptr) {
+        return;
     }
+    ControlProxy rate(ConfigKey(
+            PlayerManager::groupForDeck(playingDeck->index - 1), "rate"));
+    rate.set(qBound(-1.0, value, 1.0));
 }
 
 void MprisPlayer::slotCoverArtFound(const QObject* requester,
-        const CoverInfoRelative& info,
+        const CoverInfoRelative&,
         const QPixmap& pixmap) {
-    Q_UNUSED(info);
-
-    if (!pixmap.isNull() && requester == this) {
-        QImage coverImage = pixmap.toImage();
-        m_currentCoverArtFile.open();
-        bool success = coverImage.save(&m_currentCoverArtFile, "JPG");
-        if (!success) {
-            qDebug() << "Couldn't write metadata cover art";
-            return;
-        }
-        m_currentCoverArtFile.close();
-        QUrl fileUrl = QUrl::fromLocalFile(m_currentCoverArtFile.fileName());
-        m_currentMetadata.coverartUrl = fileUrl.toString();
-        broadcastCurrentMetadata();
+    if (pixmap.isNull() || requester != this) {
+        return;
     }
+    QImage coverImage = pixmap.toImage();
+    m_currentMetadata.newCoverArt();
+    m_currentMetadata.pCoverArtFile->open();
+    bool success = coverImage.save(m_currentMetadata.pCoverArtFile.get(), "PNG");
+    if (!success) {
+        qWarning() << "Couldn't write metadata cover art";
+    }
+    m_currentMetadata.pCoverArtFile->close();
+    broadcastCurrentMetadata();
 }
 
 void MprisPlayer::slotPlayingTrackChanged(TrackPointer pTrack) {
-    requestMetadataFromTrack(pTrack, true);
-    broadcastCurrentMetadata();
+    requestMetadataFromTrack(pTrack, true).then([this]() {
+        broadcastCurrentMetadata();
+    });
 }
 
 void MprisPlayer::broadcastCurrentMetadata() {
@@ -431,22 +424,61 @@ void MprisPlayer::broadcastCurrentMetadata() {
 }
 
 QVariantMap MprisPlayer::getVariantMapMetadata() {
-    QVariantMap metadata;
-    metadata.insert("mpris:trackid", m_currentMetadata.trackPath);
-    metadata.insert("mpris:length", m_currentMetadata.trackDuration);
-    metadata.insert("xesam:artist", m_currentMetadata.artists);
-    metadata.insert("xesam:title", m_currentMetadata.title);
-    metadata.insert("mpris:artUrl", m_currentMetadata.coverartUrl);
-    metadata.insert("xesam:album", m_currentMetadata.album);
-    metadata.insert("xesam:userRating", m_currentMetadata.userRating);
-    metadata.insert("xesam:useCount", m_currentMetadata.useCount);
-    return metadata;
+    return {
+            {"mpris:artUrl", m_currentMetadata.coverArtUrl()},
+            {"mpris:length", static_cast<long long int>(m_currentMetadata.trackDuration)},
+            {"mpris:trackid", m_currentMetadata.trackPath},
+            {"xesam:album", m_currentMetadata.album},
+            {"xesam:artist", m_currentMetadata.artists},
+            {"xesam:title", m_currentMetadata.title},
+            {"xesam:url", m_currentMetadata.url.toString()},
+            {"xesam:useCount", m_currentMetadata.useCount},
+            {"xesam:userRating", m_currentMetadata.userRating},
+    };
 }
 
 bool MprisPlayer::autoDjEnabled() const {
-    return m_pCPAutoDjEnabled->toBool();
+    return m_pCPAutoDjEnabled.toBool();
 }
 
-bool MprisPlayer::autoDjIdle() const {
-    return autoDjEnabled();
+MprisPlayer::CurrentMetadata::CurrentMetadata()
+        : defaultCoverArtFile(QDir::temp().filePath(kTemporaryCoverArtNameTemplate)) {
+    VERIFY_OR_DEBUG_ASSERT(defaultCoverArtFile.open()) {
+        return;
+    }
+    QImage logo(":/images/icons/128x128/apps/mixxx.png");
+    VERIFY_OR_DEBUG_ASSERT(!logo.isNull()) {
+        qWarning() << "Couldn't load Mixxx logo";
+        defaultCoverArtFile.close();
+        return;
+    }
+    bool success = logo.save(&defaultCoverArtFile, "PNG");
+    VERIFY_OR_DEBUG_ASSERT(success) {
+        qWarning() << "Couldn't write Mixxx logo in metadata cover art";
+    }
+    defaultCoverArtFile.close();
+}
+void MprisPlayer::CurrentMetadata::newCoverArt() {
+    pCoverArtFile = std::make_unique<QTemporaryFile>(
+            QDir::temp().filePath(kTemporaryCoverArtNameTemplate));
+}
+
+QString MprisPlayer::CurrentMetadata::coverArtUrl() const {
+    if (pCoverArtFile && QFileInfo::exists(pCoverArtFile->fileName()) &&
+            !QImage(pCoverArtFile->fileName()).isNull()) {
+        return QUrl::fromLocalFile(pCoverArtFile->fileName()).toString();
+    }
+    return QUrl::fromLocalFile(defaultCoverArtFile.fileName()).toString();
+}
+
+void MprisPlayer::CurrentMetadata::idle(bool autoDjEnabled) {
+    pCoverArtFile.reset();
+    trackPath.clear();
+    trackDuration = 0;
+    artists = {autoDjEnabled ? tr("AutoDJ is ready!") : tr("No track playing")};
+    title = "Mixxx";
+    album.clear();
+    url.clear();
+    userRating = 0;
+    useCount = 0;
 }

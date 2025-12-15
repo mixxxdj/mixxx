@@ -23,8 +23,9 @@ class ElapsedTimer {
 class RegularTimer : public QObject {
     Q_OBJECT
   public:
-    RegularTimer() = default;
-    virtual ~RegularTimer() = default;
+    explicit RegularTimer(QObject* parent = nullptr)
+            : QObject(parent) {
+    }
     virtual void start(double msec) = 0;
     virtual bool isActive() const = 0;
   public slots:
@@ -37,8 +38,7 @@ class RegularTimer : public QObject {
 class GUITickTimer : public RegularTimer {
     Q_OBJECT
   public:
-    GUITickTimer();
-    ~GUITickTimer() override = default;
+    explicit GUITickTimer(QObject* parent = nullptr);
     void start(double msec) override;
     bool isActive() const override;
     void stop() override;

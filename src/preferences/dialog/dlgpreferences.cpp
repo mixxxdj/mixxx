@@ -8,6 +8,7 @@
 #include <QScrollArea>
 #include <QtGlobal>
 
+#include "broadcast/scrobblingmanager.h"
 #include "controllers/dlgprefcontrollers.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
@@ -56,6 +57,7 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
+        [[maybe_unused]] std::shared_ptr<ScrobblingManager> pScrobblingManager,
         std::shared_ptr<Library> pLibrary)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
@@ -207,11 +209,15 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
 
+#ifdef __MPRIS__
+    // There is no other options at the moment, so excluding this category
+    // entirely if MPRIS is not available.
     addPageWidget(PreferencesPage(
-                          new DlgPrefMetadata(this, m_pConfig),
+                          new DlgPrefMetadata(this, m_pConfig, pScrobblingManager),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Metadata Output"),
             "ic_preferences_broadcast.svg");
+#endif
 
     addPageWidget(PreferencesPage(
                           new DlgPrefRecord(this, m_pConfig),

@@ -5,7 +5,6 @@
 #include <QtDBus/QDBusObjectPath>
 
 #include "broadcast/mpris/mprisplayer.h"
-#include "control/controlproxy.h"
 
 class AutoDJProcessor;
 class PlayerManager;

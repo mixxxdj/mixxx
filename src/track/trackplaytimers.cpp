@@ -2,8 +2,9 @@
 
 #include "moc_trackplaytimers.cpp"
 
-TrackTimers::GUITickTimer::GUITickTimer()
-        : m_msSoFar(0.0),
+TrackTimers::GUITickTimer::GUITickTimer(QObject* parent)
+        : RegularTimer(parent),
+          m_msSoFar(0.0),
           m_msTarget(0.0),
           m_isActive(false),
           m_timeoutSent(false) {

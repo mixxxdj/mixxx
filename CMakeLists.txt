@@ -2105,6 +2105,25 @@ if(APPLE)
   endif()
 endif()
 
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+  # MPRIS implementation using QtDbus
+  option(MPRIS "MPRIS implementation using QtDbus" ON)
+  if(MPRIS)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/broadcast/mpris/mediaplayer2.cpp
+        src/broadcast/mpris/mediaplayer2player.cpp
+        src/broadcast/mpris/mediaplayer2playlists.cpp
+        src/broadcast/mpris/mediaplayer2tracklist.cpp
+        src/broadcast/mpris/mpris.cpp
+        src/broadcast/mpris/mprisplayer.cpp
+        src/broadcast/mpris/mprisservice.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __MPRIS__)
+  endif()
+endif()
+
 if(EMSCRIPTEN)
   # We need asyncify to support asynchronous calls (e.g. QDialog::exec)
   # when targeting Emscripten/WebAssembly.
@@ -3657,7 +3676,6 @@ set(
   QT_COMPONENTS
   Concurrent
   Core
-  DBus
   Gui
   Network
   OpenGL
@@ -3670,6 +3688,9 @@ set(
   Xml
 )
 set(QT_EXTRA_COMPONENTS "")
+if(MPRIS)
+  list(APPEND QT_EXTRA_COMPONENTS "DBus")
+endif()
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
@@ -4876,25 +4897,6 @@ if(BROADCAST)
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __BROADCAST__)
-  endif()
-endif()
-
-if(UNIX AND NOT APPLE)
-  # MPRIS implementation using QtDbus
-  option(MPRIS "MPRIS implementation using QtDbus" ON)
-  if(MPRIS)
-    target_sources(
-      mixxx-lib
-      PRIVATE
-        src/broadcast/mpris/mediaplayer2.cpp
-        src/broadcast/mpris/mediaplayer2player.cpp
-        src/broadcast/mpris/mediaplayer2playlists.cpp
-        src/broadcast/mpris/mediaplayer2tracklist.cpp
-        src/broadcast/mpris/mpris.cpp
-        src/broadcast/mpris/mprisplayer.cpp
-        src/broadcast/mpris/mprisservice.cpp
-    )
-    target_compile_definitions(mixxx-lib PUBLIC __MPRIS__)
   endif()
 endif()
 
