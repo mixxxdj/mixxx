@@ -71,13 +71,6 @@ void main(void) {
       lowShowing = signalDistance.x >= 0.0;
       midShowing = signalDistance.y >= 0.0;
       highShowing = signalDistance.z >= 0.0;
-
-      // Now do it all over again for the unscaled version of the waveform,
-      // which we will draw at very low opacity.
-      vec4 signalDistanceUnscaled = new_currentDataUnscaled - ourDistance;
-      lowShowingUnscaled = signalDistanceUnscaled.x >= 0.0;
-      midShowingUnscaled = signalDistanceUnscaled.y >= 0.0;
-      highShowingUnscaled = signalDistanceUnscaled.z >= 0.0;
     }
 
     // Draw the axes color as the lowest item on the screen.
@@ -86,22 +79,6 @@ void main(void) {
     // value should be based on the size of the widget.
     if (abs(framebufferSize.y / 2 - pixel.y) <= 4) {
       outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-      outputColor.w = 1.0;
-    }
-
-    if (lowShowingUnscaled) {
-      float lowAlpha = 0.2;
-      outputColor.xyz = mix(outputColor.xyz, lowColor.xyz, lowAlpha);
-      outputColor.w = 1.0;
-    }
-    if (midShowingUnscaled) {
-      float midAlpha = 0.2;
-      outputColor.xyz = mix(outputColor.xyz, midColor.xyz, midAlpha);
-      outputColor.w = 1.0;
-    }
-    if (highShowingUnscaled) {
-      float highAlpha = 0.2;
-      outputColor.xyz = mix(outputColor.xyz, highColor.xyz, highAlpha);
       outputColor.w = 1.0;
     }
 
