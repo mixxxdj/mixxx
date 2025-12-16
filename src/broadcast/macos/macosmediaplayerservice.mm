@@ -10,6 +10,7 @@
 
 #import <AppKit/AppKit.h>
 #import <MediaPlayer/MediaPlayer.h>
+#include <utility>
 
 #include <QPixmap>
 #include <cstdlib>
@@ -34,8 +35,7 @@ void setCoverArt(NSMutableDictionary* nowPlayingInfo, const QPixmap& pixmap) {
 
         // Wrap the converted image in an artwork object as required
         // Since the block escapes, we need to de-stackify it with 'copy'
-        auto fetchArtworkImage = ^NSImage*(CGSize size) {
-            Q_UNUSED(size);
+        auto fetchArtworkImage = ^NSImage*(CGSize) {
             return nsImage;
         };
         MPMediaItemArtwork* artwork = [[MPMediaItemArtwork alloc]
@@ -48,20 +48,20 @@ void setCoverArt(NSMutableDictionary* nowPlayingInfo, const QPixmap& pixmap) {
 } // anonymous namespace
 
 MacOSMediaPlayerService::MacOSMediaPlayerService(
-        PlayerManagerInterface& pPlayerManager) {
+        PlayerManagerInterface* pPlayerManager) {
     // Set up deck attributes to track and control playback state
-    for (unsigned i = 1; i <= pPlayerManager.numberOfDecks(); i++) {
-        DeckAttributes* attributes =
-                new DeckAttributes(i, pPlayerManager.getDeck(i));
-        m_deckAttributes.append(attributes);
-        connect(attributes,
+    for (unsigned i = 1; i <= pPlayerManager->numberOfDecks(); i++) {
+        auto pAttributes =
+                std::make_unique<DeckAttributes>(i, pPlayerManager->getDeck(i));
+        connect(pAttributes.get(),
                 &DeckAttributes::playChanged,
                 this,
                 &MacOSMediaPlayerService::slotPlayChanged);
-        connect(attributes,
+        connect(pAttributes.get(),
                 &DeckAttributes::playPositionChanged,
                 this,
                 &MacOSMediaPlayerService::slotPlayPositionChanged);
+        m_deckAttributes.emplace_back(std::move(pAttributes));
     }
 
     // Set up control proxies for Auto-DJ (used to implemented 'skip to next
@@ -88,33 +88,24 @@ MacOSMediaPlayerService::MacOSMediaPlayerService(
     setupCommandHandlers();
 }
 
-MacOSMediaPlayerService::~MacOSMediaPlayerService() {
-    for (DeckAttributes* attributes : qAsConst(m_deckAttributes)) {
-        delete attributes;
-    }
-}
-
 void MacOSMediaPlayerService::setupCommandHandlers() {
     MPRemoteCommandCenter* center = [MPRemoteCommandCenter sharedCommandCenter];
 
     [center.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-            MPRemoteCommandEvent* event) {
-        Q_UNUSED(event);
+            MPRemoteCommandEvent*) {
         bool success = updatePlayState(true);
         return commandHandlerStatusFor(success);
     }];
 
     [center.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-            MPRemoteCommandEvent* event) {
-        Q_UNUSED(event);
+            MPRemoteCommandEvent*) {
         bool success = updatePlayState(false);
         return commandHandlerStatusFor(success);
     }];
 
     [center.togglePlayPauseCommand
             addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-                    MPRemoteCommandEvent* event) {
-                Q_UNUSED(event);
+                    MPRemoteCommandEvent*) {
                 bool success = togglePlayState();
                 return commandHandlerStatusFor(success);
             }];
@@ -129,8 +120,7 @@ void MacOSMediaPlayerService::setupCommandHandlers() {
             }];
 
     [center.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-            MPRemoteCommandEvent* event) {
-        Q_UNUSED(event);
+            MPRemoteCommandEvent*) {
         bool success = skipToNextTrack();
         return commandHandlerStatusFor(success);
     }];
@@ -186,7 +176,7 @@ void MacOSMediaPlayerService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
 DeckAttributes* MacOSMediaPlayerService::getCurrentDeck() {
     int i = PlayerInfo::instance().getCurrentPlayingDeck();
     if (i >= 0) {
-        return m_deckAttributes[i];
+        return m_deckAttributes[i].get();
     } else {
         return nullptr;
     }
@@ -273,11 +263,8 @@ void MacOSMediaPlayerService::slotPlayPositionChanged(
     }
 }
 
-void MacOSMediaPlayerService::slotCoverFound(const QObject* pRequestor,
-        const CoverInfo& coverInfo,
-        const QPixmap& pixmap) {
-    Q_UNUSED(coverInfo);
-
+void MacOSMediaPlayerService::slotCoverFound(
+        const QObject* pRequestor, const CoverInfo&, const QPixmap& pixmap) {
     if (pRequestor != this) {
         return;
     }

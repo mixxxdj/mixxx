@@ -31,6 +31,22 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="MacOSMediaPlayer">
+     <property name="title">
+      <string>MediaPlayer options</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="enableMacOSMediaPlayerBox">
+        <property name="text">
+         <string>Enable MacOS MediaPlayer interface</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

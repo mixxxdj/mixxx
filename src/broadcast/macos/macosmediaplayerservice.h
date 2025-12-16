@@ -3,31 +3,32 @@
 #include <QList>
 #include <QObject>
 
+#include "broadcast/scrobblingservice.h"
 #include "control/controlproxy.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/coverart.h"
 #include "mixer/playermanager.h"
 #include "util/cache.h"
 
-// TODO: Implement ScrobblingService once merged
-
 /// A service that interfaces with macOS's media controls and allows the user to
 /// view and control the playback through the system-wide control center, media
 /// keys etc.
-class MacOSMediaPlayerService : public QObject {
+class MacOSMediaPlayerService : public ScrobblingService {
     Q_OBJECT
   public:
-    MacOSMediaPlayerService(PlayerManagerInterface& pPlayerManager);
-    ~MacOSMediaPlayerService() override;
+    MacOSMediaPlayerService(PlayerManagerInterface* pPlayerManager);
 
   public slots:
     /// Sends the updated track info to the external 'now playing' center.
-    void slotBroadcastCurrentTrack(TrackPointer pTrack); // TODO: override
+    void slotBroadcastCurrentTrack(TrackPointer pTrack) override;
     /// Notifies the external 'now playing' center that all tracks are paused.
-    void slotAllTracksPaused(); // TODO: override
+    void slotAllTracksPaused() override;
+    /// Unused
+    void slotScrobbleTrack(TrackPointer) override {
+    }
 
   private:
-    QList<DeckAttributes*> m_deckAttributes;
+    std::vector<std::unique_ptr<DeckAttributes>> m_deckAttributes;
     ControlProxy* m_pCPAutoDjEnabled;
     ControlProxy* m_pCPFadeNow;
     double m_lastSentPosition;

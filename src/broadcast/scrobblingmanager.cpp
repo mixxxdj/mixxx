@@ -8,6 +8,9 @@
 #ifdef __MPRIS__
 #include "broadcast/mpris/mprisservice.h"
 #endif
+#ifdef __MACOS_MEDIAPLAYER__
+#include "broadcast/macos/macosmediaplayerservice.h"
+#endif
 #include "control/controlproxy.h"
 #include "engine/enginexfader.h"
 #include "mixer/deck.h"
@@ -17,13 +20,22 @@
 #include "util/make_const_iterator.h"
 
 namespace {
-#ifdef __MPRIS__
+#if defined(__MPRIS__) || defined(__MACOS_MEDIAPLAYER__)
 const QString kAppGroup = QStringLiteral("[App]");
+#endif
+#ifdef __MPRIS__
 const ConfigKey kEnabledMpris =
         ConfigKey(
                 kAppGroup,
                 QStringLiteral("enabled_mpris"));
 const bool kEnabledMprisDefault = false;
+#endif
+#ifdef __MACOS_MEDIAPLAYER__
+const ConfigKey kEnabledMacOSMediaPlayer =
+        ConfigKey(
+                kAppGroup,
+                QStringLiteral("enabled_macos_mediaplayer"));
+const bool kEnabledkEnabledMacOSMediaPlayerDefault = false;
 #endif
 } // namespace
 
@@ -83,6 +95,13 @@ void ScrobblingManager::addScrobblingService<MprisService>() {
 }
 #endif
 
+#ifdef __MACOS_MEDIAPLAYER__
+template<>
+void ScrobblingManager::addScrobblingService<MacOSMediaPlayerService>() {
+    m_pBroadcaster->addScrobblingService<MacOSMediaPlayerService>(m_pPlayerManager.get());
+}
+#endif
+
 ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
         std::shared_ptr<PlayerManager> pPlayerManager)
         : m_pPlayerManager(pPlayerManager),
@@ -102,6 +121,12 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
 #ifdef __MPRIS__
     if (pConfig->getValue(kEnabledMpris, kEnabledMprisDefault)) {
         addScrobblingService<MprisService>();
+    }
+#endif
+
+#ifdef __MACOS_MEDIAPLAYER__
+    if (pConfig->getValue(kEnabledMacOSMediaPlayer, kEnabledkEnabledMacOSMediaPlayerDefault)) {
+        addScrobblingService<MacOSMediaPlayerService>();
     }
 #endif
 

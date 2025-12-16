@@ -143,9 +143,6 @@ class CoreServices : public QObject {
 #ifdef __BROADCAST__
     std::shared_ptr<BroadcastManager> m_pBroadcastManager;
 #endif
-#ifdef __MACOS_MEDIAPLAYER__
-    std::shared_ptr<MacOSMediaPlayerService> m_pMacOSMediaPlayerService;
-#endif
     std::shared_ptr<ControllerManager> m_pControllerManager;
 
     std::shared_ptr<VinylControlManager> m_pVCManager;
