@@ -1322,8 +1322,32 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
     // in case of issue when we release, we can communicate workaround on
     // editing the INI file to target a specific rendering backend. If no
     // complains come back, we can convert this safely to a backend eventually.
-    return m_config->getValue(kHardwareAccelerationKey, preferredBackend());
-}
+    WaveformWidgetBackend backend = m_config->getValue(
+            kHardwareAccelerationKey,
+            preferredBackend());
+    switch (backend) {
+    case WaveformWidgetBackend::None:
+        break;
+    case WaveformWidgetBackend::GL:
+        if (!m_openGlAvailable) {
+            backend = WaveformWidgetBackend::None;
+        }
+        break;
+    case WaveformWidgetBackend::GLSL:
+        if (!m_openGlAvailable || !m_openGLShaderAvailable) {
+            backend = WaveformWidgetBackend::None;
+        }
+        break;
+#ifdef MIXXX_USE_QOPENGL
+    case WaveformWidgetBackend::AllShader:
+        if (!m_openGlAvailable && !m_openGlesAvailable) {
+            backend = WaveformWidgetBackend::None;
+        }
+        break;
+#endif
+    }
+    return backend;
+};
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
 #ifdef MIXXX_USE_QOPENGL
