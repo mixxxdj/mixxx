@@ -209,9 +209,9 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
 
-#ifdef __MPRIS__
+#if defined(__MPRIS__) || defined(__MACOS_MEDIAPLAYER__)
     // There is no other options at the moment, so excluding this category
-    // entirely if MPRIS is not available.
+    // entirely if MPRIS and MacOS MediaPlayer are not available.
     addPageWidget(PreferencesPage(
                           new DlgPrefMetadata(this, m_pConfig, pScrobblingManager),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
