@@ -279,7 +279,7 @@ void DlgPrefWaveform::slotUpdate() {
                 WaveformWidgetBackend::None;
         useAccelerationCheckBox->setChecked(isAccelerationEnabled);
     } else {
-        openGlStatusData->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
+        openGlStatusData->setText(tr("OpenGL not available"));
         useAccelerationCheckBox->setEnabled(false);
         useAccelerationCheckBox->setChecked(false);
     }
