@@ -2,7 +2,7 @@
 /* proto_http.c: Implementation of protocol HTTP.
  *
  *  Copyright (C) 2002-2004 the Icecast team <team@icecast.org>,
- *  Copyright (C) 2012-2015 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
+ *  Copyright (C) 2012-2019 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -28,18 +28,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef _MSC_VER
-#include <strings.h>
-#endif
 
 #include <shoutidjc/shout.h>
 #include "shout_private.h"
 #include "common/httpp/httpp.h"
 
-char *shout_http_basic_authorization(shout_t *self)
+typedef enum {
+    STATE_CHALLENGE = 0,
+    STATE_SOURCE,
+    STATE_UPGRADE,
+    STATE_POKE
+} shout_http_protocol_state_t;
+
+static char *shout_http_basic_authorization(shout_t *self)
 {
     char *out, *in;
-    size_t len;
+    int   len;
 
     if (!self || !self->user || !self->password)
         return NULL;
@@ -62,9 +66,21 @@ char *shout_http_basic_authorization(shout_t *self)
     return in;
 }
 
-int shout_create_http_request(shout_t *self)
+static shout_connection_return_state_t shout_parse_http_select_next_state(shout_t *self, shout_connection_t *connection, int can_reuse, shout_http_protocol_state_t state)
 {
-    char        *auth;
+    if (!can_reuse) {
+        shout_connection_disconnect(connection);
+        shout_connection_connect(connection, self);
+    }
+    connection->current_message_state = SHOUT_MSGSTATE_CREATING0;
+    connection->target_message_state = SHOUT_MSGSTATE_SENDING1;
+    connection->current_protocol_state = state;
+    return SHOUT_RS_NOTNOW;
+}
+
+static shout_connection_return_state_t shout_create_http_request_source(shout_t *self, shout_connection_t *connection, int auth, int poke)
+{
+    char        *basic_auth;
     char        *ai;
     int          ret = SHOUTERR_MALLOC;
     util_dict   *dict;
@@ -72,48 +88,69 @@ int shout_create_http_request(shout_t *self)
     const char  *mimetype;
     char        *mount = NULL;
 
-    if (!(mimetype = shout_get_mimetype(self)))
-        return SHOUTERR_INSANE;
-        
+    mimetype = shout_get_mimetype_from_self(self);
+    if (!mimetype) {
+        shout_connection_set_error(connection, SHOUTERR_INSANE);
+        return SHOUT_RS_ERROR;
+    }
+
     /* this is lazy code that relies on the only error from queue_* being
      * SHOUTERR_MALLOC
      */
     do {
         if (!(mount = _shout_util_url_encode_resource(self->mount)))
             break;
-        if (shout_queue_printf(self, "SOURCE %s HTTP/1.0\r\n", mount))
-            break;
-        if (self->password && (self->server_caps & LIBSHOUT_CAP_GOTCAPS)) {
-            if (! (auth = shout_http_basic_authorization(self)))
+        if (connection->server_caps & LIBSHOUT_CAP_PUT) {
+            if (shout_queue_printf(connection, "PUT %s HTTP/1.1\r\n", mount))
                 break;
-            if (shout_queue_str(self, auth)) {
-                free(auth);
+        } else {
+            if (shout_queue_printf(connection, "SOURCE %s HTTP/1.0\r\n", mount))
+                break;
+        }
+        if (self->password && auth) {
+            if (! (basic_auth = shout_http_basic_authorization(self)))
+                break;
+            if (shout_queue_str(connection, basic_auth)) {
+                free(basic_auth);
                 break;
             }
-            free(auth);
+            free(basic_auth);
         }
-        if (self->useragent && shout_queue_printf(self, "Host: %s:%i\r\n", self->host, self->port))
+        if (shout_queue_printf(connection, "Host: %s:%i\r\n", self->host, self->port))
             break;
-        if (self->useragent && shout_queue_printf(self, "User-Agent: %s\r\n", self->useragent))
+        if (self->useragent && shout_queue_printf(connection, "User-Agent: %s\r\n", self->useragent))
             break;
-        if (shout_queue_printf(self, "Content-Type: %s\r\n", mimetype))
+        if (shout_queue_printf(connection, "Content-Type: %s\r\n", mimetype))
             break;
-        if (shout_queue_printf(self, "ice-public: %d\r\n", self->public))
+        if (self->content_language && shout_queue_printf(connection, "Content-Language: %s\r\n", self->content_language))
+            break;
+        if (poke) {
+            if (shout_queue_str(connection, "Content-Length: 0\r\nConnection: Keep-Alive\r\n"))
+                break;
+        } else if (connection->server_caps & LIBSHOUT_CAP_PUT) {
+            if (shout_queue_printf(connection, "Expect: 100-continue\r\n", mount))
+                break;
+            /* Set timeout for 100-continue to 4s = 4000 ms. This is a little less than the default source_timeout/2. */
+            shout_connection_set_wait_timeout(connection, self, 4000 /* [ms] */);
+        }
+        if (shout_queue_printf(connection, "ice-public: %d\r\n", self->public))
             break;
 
         _SHOUT_DICT_FOREACH(self->meta, dict, key, val) {
-            if (val && shout_queue_printf(self, "ice-%s: %s\r\n", key, val))
+            if (val && shout_queue_printf(connection, "ice-%s: %s\r\n", key, val))
                 break;
         }
 
         if ((ai = _shout_util_dict_urlencode(self->audio_info, ';'))) {
-            if (shout_queue_printf(self, "ice-audio-info: %s\r\n", ai)) {
+            if (shout_queue_printf(connection, "ice-audio-info: %s\r\n", ai)) {
                 free(ai);
                 break;
             }
             free(ai);
         }
-        if (shout_queue_str(self, "\r\n"))
+        if (shout_queue_str(connection, "Prefer: return=minimal\r\n"))
+            break;
+        if (shout_queue_str(connection, "\r\n"))
             break;
 
         ret = SHOUTERR_SUCCESS;
@@ -122,38 +159,185 @@ int shout_create_http_request(shout_t *self)
     if (mount)
         free(mount);
 
-    return ret;
+    shout_connection_set_error(connection, ret);
+    return ret == SHOUTERR_SUCCESS ? SHOUT_RS_DONE : SHOUT_RS_ERROR;
 }
 
-int shout_create_http_request_upgrade(shout_t *self, const char *proto)
+static shout_connection_return_state_t shout_create_http_request_generic(shout_t *self, shout_connection_t *connection, const char *method, const char *res, const char *param, int fake_ua, const char *upgrade, int auth)
 {
+    int          ret = SHOUTERR_MALLOC;
+    int          is_post = 0;
+    char        *basic_auth;
+
+    if (method) {
+        is_post = strcmp(method, "POST") == 0;
+    } else {
+        if (connection->server_caps & LIBSHOUT_CAP_POST) {
+            method = "POST";
+            is_post = 1;
+        } else {
+            method = "GET";
+            is_post = 0;
+        }
+    }
+
+    /* this is lazy code that relies on the only error from queue_* being
+     * SHOUTERR_MALLOC
+     */
     do {
-        if (shout_queue_str(self, "GET / HTTP/1.1\r\nConnection: Upgrade\r\n"))
-            break;
-        if (shout_queue_printf(self, "Upgrade: %s\r\n", proto))
-            break;
+        ret = SHOUTERR_SUCCESS;
+
+        if (!param || is_post) {
+            if (shout_queue_printf(connection, "%s %s HTTP/1.1\r\n", method, res))
+                break;
+        } else {
+            if (shout_queue_printf(connection, "%s %s?%s HTTP/1.1\r\n", method, res, param))
+                break;
+        }
+
         /* Send Host:-header as this one may be used to select cert! */
-        if (shout_queue_printf(self, "Host: %s:%i\r\n", self->host, self->port))
+        if (shout_queue_printf(connection, "Host: %s:%i\r\n", self->host, self->port))
             break;
-        if (shout_queue_str(self, "\r\n"))
+
+        if (fake_ua) {
+            /* Thank you Nullsoft for your broken software. */
+            if (self->useragent && shout_queue_printf(connection, "User-Agent: %s (Mozilla compatible)\r\n", self->useragent))
+                break;
+        } else {
+            if (self->useragent && shout_queue_printf(connection, "User-Agent: %s\r\n", self->useragent))
+                break;
+        }
+
+        if (self->password && auth) {
+            if (! (basic_auth = shout_http_basic_authorization(self)))
+                break;
+            if (shout_queue_str(connection, basic_auth)) {
+                free(basic_auth);
+                break;
+            }
+            free(basic_auth);
+        }
+
+        if (upgrade) {
+            if (shout_queue_printf(connection, "Connection: Upgrade\r\nUpgrade: %s\r\n", upgrade))
+                break;
+        }
+
+        if (param && is_post) {
+            if (shout_queue_printf(connection, "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: %llu\r\n", (long long unsigned int)strlen(param)))
+                break;
+        }
+
+        /* End of request */
+        if (shout_queue_str(connection, "\r\n"))
             break;
-        return SHOUTERR_SUCCESS;
+        if (param && is_post) {
+            if (shout_queue_str(connection, param))
+                break;
+        }
     } while (0);
 
-    return SHOUTERR_MALLOC;
+    shout_connection_set_error(connection, ret);
+    return ret == SHOUTERR_SUCCESS ? SHOUT_RS_DONE : SHOUT_RS_ERROR;
 }
 
-int shout_get_http_response(shout_t *self)
+static shout_connection_return_state_t shout_create_http_request(shout_t *self, shout_connection_t *connection)
+{
+    const shout_http_plan_t *plan = connection->plan;
+
+    if (!plan) {
+        shout_connection_set_error(connection, SHOUTERR_INSANE);
+        return SHOUT_RS_ERROR;
+    }
+
+#ifdef HAVE_OPENSSL
+    if (!connection->tls) {
+        /* Why not try Upgrade? */
+        if ((connection->selected_tls_mode == SHOUT_TLS_AUTO || connection->selected_tls_mode == SHOUT_TLS_AUTO_NO_PLAIN) &&
+                !(connection->server_caps & LIBSHOUT_CAP_GOTCAPS) &&
+                connection->current_protocol_state == STATE_CHALLENGE) {
+            connection->current_protocol_state = STATE_UPGRADE;
+        }
+
+        if (connection->selected_tls_mode == SHOUT_TLS_RFC2817) {
+            connection->current_protocol_state = STATE_UPGRADE;
+        }
+    }
+#endif
+
+    switch ((shout_http_protocol_state_t)connection->current_protocol_state) {
+        case STATE_CHALLENGE:
+            connection->server_caps |= LIBSHOUT_CAP_CHALLENGED;
+            if (plan->is_source) {
+                return shout_create_http_request_source(self, connection, 0, 1);
+            } else {
+                return shout_create_http_request_generic(self, connection, plan->method, plan->resource, plan->param, plan->fake_ua, NULL, 0);
+            }
+        break;
+        case STATE_SOURCE:
+            /* Just an extra layer of safety */
+            switch (connection->selected_tls_mode) {
+                case SHOUT_TLS_AUTO_NO_PLAIN:
+                case SHOUT_TLS_RFC2817:
+                case SHOUT_TLS_RFC2818:
+#ifdef HAVE_OPENSSL
+                    if (!connection->tls) {
+                        /* TLS requested but for some reason not established. NOT sending credentials. */
+                        shout_connection_set_error(connection, SHOUTERR_INSANE);
+                        return SHOUT_RS_ERROR;
+                    }
+#else
+                    shout_connection_set_error(connection, SHOUTERR_UNSUPPORTED);
+                    return SHOUT_RS_ERROR;
+#endif
+                break;
+            }
+
+            if (plan->is_source) {
+                return shout_create_http_request_source(self, connection, 1, 0);
+            } else {
+                return shout_create_http_request_generic(self, connection, plan->method, plan->resource, plan->param, plan->fake_ua, NULL, plan->auth);
+            }
+        break;
+        case STATE_UPGRADE:
+            return shout_create_http_request_generic(self, connection, "OPTIONS", "*", NULL, 0, "TLS/1.0, HTTP/1.1", 0);
+        break;
+        case STATE_POKE:
+            return shout_create_http_request_generic(self, connection, "GET", "/admin/!POKE", NULL, 0, NULL, 0);
+        break;
+        default:
+            shout_connection_set_error(connection, SHOUTERR_INSANE);
+            return SHOUT_RS_ERROR;
+        break;
+    }
+}
+
+static shout_connection_return_state_t shout_get_http_response(shout_t *self, shout_connection_t *connection)
 {
     int          blen;
     char        *pc;
     shout_buf_t *queue;
     int          newlines = 0;
 
+    if (!connection->rqueue.len) {
+#ifdef HAVE_OPENSSL
+        if (!connection->tls && (connection->selected_tls_mode == SHOUT_TLS_AUTO || connection->selected_tls_mode == SHOUT_TLS_AUTO_NO_PLAIN)) {
+            if (connection->current_protocol_state == STATE_POKE) {
+                shout_connection_select_tlsmode(connection, SHOUT_TLS_RFC2818);
+                return shout_parse_http_select_next_state(self, connection, 0, STATE_CHALLENGE);
+            } else {
+                return shout_parse_http_select_next_state(self, connection, 0, STATE_POKE);
+            }
+        }
+#endif
+        shout_connection_set_error(connection, SHOUTERR_SOCKET);
+        return SHOUT_RS_ERROR;
+    }
+
     /* work from the back looking for \r?\n\r?\n. Anything else means more
      * is coming.
      */
-    for (queue = self->rqueue.head; queue->next; queue = queue->next) ;
+    for (queue = connection->rqueue.head; queue->next; queue = queue->next) ;
     pc = (char*)queue->data + queue->len - 1;
     blen = queue->len;
     while (blen) {
@@ -166,8 +350,9 @@ int shout_get_http_response(shout_t *self)
             newlines = 0;
         }
 
-        if (newlines == 2)
-            return SHOUTERR_SUCCESS;
+        if (newlines == 2) {
+            return SHOUT_RS_DONE;
+        }
 
         blen--;
         pc--;
@@ -179,10 +364,10 @@ int shout_get_http_response(shout_t *self)
         }
     }
 
-    return SHOUTERR_BUSY;
+    return SHOUT_RS_NOTNOW;
 }
 
-static inline void parse_http_response_caps(shout_t *self, const char *header, const char *str) {
+static inline void parse_http_response_caps(shout_t *self, shout_connection_t *connection, const char *header, const char *str) {
     const char *end;
     size_t      len;
     char        buf[64];
@@ -206,21 +391,23 @@ static inline void parse_http_response_caps(shout_t *self, const char *header, c
 
         if (strcmp(header, "Allow") == 0) {
             if (strcasecmp(buf, "SOURCE") == 0) {
-                self->server_caps |= LIBSHOUT_CAP_SOURCE;
+                connection->server_caps |= LIBSHOUT_CAP_SOURCE;
             } else if (strcasecmp(buf, "PUT") == 0) {
-                self->server_caps |= LIBSHOUT_CAP_PUT;
+                connection->server_caps |= LIBSHOUT_CAP_PUT;
             } else if (strcasecmp(buf, "POST") == 0) {
-                self->server_caps |= LIBSHOUT_CAP_POST;
+                connection->server_caps |= LIBSHOUT_CAP_POST;
             } else if (strcasecmp(buf, "GET") == 0) {
-                self->server_caps |= LIBSHOUT_CAP_GET;
+                connection->server_caps |= LIBSHOUT_CAP_GET;
+            } else if (strcasecmp(buf, "OPTIONS") == 0) {
+                connection->server_caps |= LIBSHOUT_CAP_OPTIONS;
             }
         } else if (strcmp(header, "Accept-Encoding") == 0) {
             if (strcasecmp(buf, "chunked") == 0) {
-                self->server_caps |= LIBSHOUT_CAP_CHUNKED;
+                connection->server_caps |= LIBSHOUT_CAP_CHUNKED;
             }
         } else if (strcmp(header, "Upgrade") == 0) {
             if (strcasecmp(buf, "TLS/1.0") == 0) {
-                self->server_caps |= LIBSHOUT_CAP_UPGRADETLS;
+                connection->server_caps |= LIBSHOUT_CAP_UPGRADETLS;
             }
         } else {
             return;             /* unknown header */
@@ -232,7 +419,7 @@ static inline void parse_http_response_caps(shout_t *self, const char *header, c
     return;
 }
 
-static inline int eat_body(shout_t *self, size_t len, const char *buf, size_t buflen)
+static inline int eat_body(shout_t *self, shout_connection_t *connection, size_t len, const char *buf, size_t buflen)
 {
     const char  *p;
     size_t       header_len = 0;
@@ -263,8 +450,8 @@ static inline int eat_body(shout_t *self, size_t len, const char *buf, size_t bu
     len -= buflen - header_len;
 
     while (len) {
-        got = shout_conn_read(self, buffer, len > sizeof(buffer) ? sizeof(buffer) : len);
-        if (got == -1 && shout_conn_recoverable(self)) {
+        got = shout_connection__read(connection, self, buffer, len > sizeof(buffer) ? sizeof(buffer) : len);
+        if (got == -1 && shout_connection__recoverable(connection, self)) {
             continue;
         } else if (got == -1) {
             return -1;
@@ -276,7 +463,7 @@ static inline int eat_body(shout_t *self, size_t len, const char *buf, size_t bu
     return 0;
 }
 
-int shout_parse_http_response(shout_t *self)
+static shout_connection_return_state_t shout_parse_http_response(shout_t *self, shout_connection_t *connection)
 {
     http_parser_t   *parser;
     char            *header = NULL;
@@ -285,12 +472,25 @@ int shout_parse_http_response(shout_t *self)
     const char      *retcode;
     int              ret;
     char            *mount;
+    int              consider_retry = 0;
+    int              can_reuse = 0;
+#ifdef HAVE_STRCASESTR
+    const char      *tmp;
+#endif
 
     /* all this copying! */
-    hlen = shout_queue_collect(self->rqueue.head, &header);
-    if (hlen <= 0)
-        return SHOUTERR_MALLOC;
-    shout_queue_free(&self->rqueue);
+    hlen = shout_queue_collect(connection->rqueue.head, &header);
+    if (hlen <= 0) {
+        if (connection->current_protocol_state == STATE_SOURCE && shout_connection_get_wait_timeout_happened(connection, self) > 0) {
+            connection->current_message_state = SHOUT_MSGSTATE_SENDING1;
+            connection->target_message_state = SHOUT_MSGSTATE_WAITING1;
+            return SHOUT_RS_DONE;
+        } else {
+            shout_connection_set_error(connection, SHOUTERR_MALLOC);
+            return SHOUT_RS_ERROR;
+        }
+    }
+    shout_queue_free(&connection->rqueue);
 
     parser = httpp_create_parser();
     httpp_initialize(parser, NULL);
@@ -298,7 +498,8 @@ int shout_parse_http_response(shout_t *self)
     if (!(mount = _shout_util_url_encode(self->mount))) {
         httpp_destroy(parser);
         free(header);
-        return SHOUTERR_MALLOC;
+        shout_connection_set_error(connection, SHOUTERR_MALLOC);
+        return SHOUT_RS_ERROR;
     }
 
     ret = httpp_parse_response(parser, header, hlen, mount);
@@ -308,47 +509,125 @@ int shout_parse_http_response(shout_t *self)
         /* TODO: Headers to Handle:
          * Allow:, Accept-Encoding:, Warning:, Upgrade:
          */
-        parse_http_response_caps(self, "Allow", httpp_getvar(parser, "allow"));
-        parse_http_response_caps(self, "Accept-Encoding", httpp_getvar(parser, "accept-encoding"));
-        parse_http_response_caps(self, "Upgrade", httpp_getvar(parser, "upgrade"));
-        self->server_caps |= LIBSHOUT_CAP_GOTCAPS;
+        parse_http_response_caps(self, connection, "Allow", httpp_getvar(parser, "allow"));
+        parse_http_response_caps(self, connection, "Accept-Encoding", httpp_getvar(parser, "accept-encoding"));
+        parse_http_response_caps(self, connection, "Upgrade", httpp_getvar(parser, "upgrade"));
+        connection->server_caps |= LIBSHOUT_CAP_GOTCAPS;
         retcode = httpp_getvar(parser, HTTPP_VAR_ERROR_CODE);
         code = atoi(retcode);
-        if (code >= 200 && code < 300) {
+
+#ifdef HAVE_STRCASESTR
+        tmp = httpp_getvar(parser, HTTPP_VAR_VERSION);
+        if (tmp && strcmp(tmp, "1.1") == 0) {
+            can_reuse = 1;
+        }
+        tmp = httpp_getvar(parser, "connection");
+        if (tmp && strcasestr(tmp, "keep-alive")) {
+            can_reuse = 1;
+        }
+        if (tmp && strcasestr(tmp, "close")) {
+            can_reuse = 0;
+        }
+#else
+        /* get a real OS */
+        can_reuse = 0;
+#endif
+
+        if ((code == 100 || (code >= 200 && code < 300)) && connection->current_protocol_state == STATE_SOURCE) {
             httpp_destroy(parser);
             free(header);
-            return SHOUTERR_SUCCESS;
-        } else if (code == 401 || code == 405 || code == 426 || code == 101) {
+            connection->current_message_state = SHOUT_MSGSTATE_SENDING1;
+            connection->target_message_state = SHOUT_MSGSTATE_WAITING1;
+            return SHOUT_RS_DONE;
+        } else if ((code >= 200 && code < 300) || code == 400 || code == 401 || code == 405 || code == 426 || code == 101) {
             const char *content_length = httpp_getvar(parser, "content-length");
             if (content_length) {
-                if (eat_body(self, atoi(content_length), header, hlen) == -1)
+                if (eat_body(self, connection, atoi(content_length), header, hlen) == -1) {
+                    can_reuse = 0;
                     goto failure;
+                }
             }
 #ifdef HAVE_OPENSSL
             switch (code) {
+                case 400:
+                    if (connection->current_protocol_state != STATE_UPGRADE && connection->current_protocol_state != STATE_POKE) {
+                        free(header);
+                        httpp_destroy(parser);
+                        shout_connection_set_error(connection, SHOUTERR_NOLOGIN);
+                        return SHOUT_RS_ERROR;
+                    }
+                    if (connection->selected_tls_mode == SHOUT_TLS_AUTO_NO_PLAIN) {
+                        can_reuse = 0;
+                        shout_connection_select_tlsmode(connection, SHOUT_TLS_RFC2818);
+                    }
+                break;
+
                 case 426:
-                    self->tls_mode = SHOUT_TLS_RFC2817;
+                    if (connection->tls) {
+                        free(header);
+                        httpp_destroy(parser);
+                        shout_connection_set_error(connection, SHOUTERR_NOLOGIN);
+                        return SHOUT_RS_ERROR;
+                    } else if (connection->selected_tls_mode == SHOUT_TLS_DISABLED) {
+                        free(header);
+                        httpp_destroy(parser);
+                        shout_connection_set_error(connection, SHOUTERR_NOCONNECT);
+                        return SHOUT_RS_ERROR;
+                    } else {
+                        /* Reset challenge state here as we do not know if it's the same inside TLS */
+                        connection->server_caps |= LIBSHOUT_CAP_CHALLENGED;
+                        connection->server_caps -= LIBSHOUT_CAP_CHALLENGED;
+                        shout_connection_select_tlsmode(connection, SHOUT_TLS_RFC2817);
+                        free(header);
+                        httpp_destroy(parser);
+                        return shout_parse_http_select_next_state(self, connection, can_reuse, STATE_UPGRADE);
+                    }
                 break;
 
                 case 101:
-                    self->upgrade_to_tls = 1;
+                    shout_connection_select_tlsmode(connection, SHOUT_TLS_RFC2817);
+                    shout_connection_starttls(connection, self);
                 break;
             }
 #endif
-            self->retry++;
-            if (self->retry > LIBSHOUT_MAX_RETRY)
-                self->retry = 0;
+            consider_retry = 1;
+        }
 
-            goto retry;
-        } else {
-            self->retry = 0;
+        if (code >= 100 && code < 200) {
+            connection->current_message_state = SHOUT_MSGSTATE_WAITING0;
+            return SHOUT_RS_NOTNOW;
         }
     }
 
 failure:
-    self->retry = 0;
-retry:
     free(header);
     httpp_destroy(parser);
-    return self->error = SHOUTERR_NOLOGIN;
+
+    if (consider_retry) {
+        switch ((shout_http_protocol_state_t)connection->current_protocol_state) {
+            case STATE_CHALLENGE:
+                return shout_parse_http_select_next_state(self, connection, can_reuse, STATE_SOURCE);
+            break;
+            case STATE_UPGRADE:
+            case STATE_POKE:
+                if (connection->server_caps & LIBSHOUT_CAP_CHALLENGED) {
+                    return shout_parse_http_select_next_state(self, connection, can_reuse, STATE_SOURCE);
+                } else {
+                    return shout_parse_http_select_next_state(self, connection, can_reuse, STATE_CHALLENGE);
+                }
+            break;
+            case STATE_SOURCE:
+                /* no-op */
+            break;
+        }
+    }
+    shout_connection_set_error(connection, SHOUTERR_NOLOGIN);
+    return SHOUT_RS_ERROR;
 }
+
+static const shout_protocol_impl_t shout_http_impl_real = {
+    .msg_create = shout_create_http_request,
+    .msg_get = shout_get_http_response,
+    .msg_parse = shout_parse_http_response
+};
+const shout_protocol_impl_t * shout_http_impl = &shout_http_impl_real;
