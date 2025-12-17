@@ -156,6 +156,56 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
                 }
             });
 
+    m_pStarsOne = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_one"));
+    connect(m_pStarsOne.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(1);
+                }
+            });
+
+    m_pStarsTwo = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_two"));
+    connect(m_pStarsTwo.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(2);
+                }
+            });
+
+    m_pStarsThree = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_three"));
+    connect(m_pStarsThree.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(3);
+                }
+            });
+
+    m_pStarsFour = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_four"));
+    connect(m_pStarsFour.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(4);
+                }
+            });
+
+    m_pStarsFive = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_five"));
+    connect(m_pStarsFive.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(5);
+                }
+            });
+
     // Deck cloning
     m_pCloneFromDeck = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "CloneFromDeck"),
