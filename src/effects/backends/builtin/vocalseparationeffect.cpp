@@ -91,9 +91,9 @@ VocalSeparationGroupState::VocalSeparationGroupState(
     m_pVocalEnhancer2 = std::make_unique<EngineFilterBiquad1Peaking>(
             engineParameters.sampleRate(), 2500.0, kVocalQ);
     m_pHighPass = std::make_unique<EngineFilterBiquad1High>(
-            engineParameters.sampleRate(), kMinVocalFreq, 0.707);
+            engineParameters.sampleRate(), kMinVocalFreq, 0.707, true);
     m_pLowPass = std::make_unique<EngineFilterBiquad1Low>(
-            engineParameters.sampleRate(), kMaxVocalFreq, 0.707);
+            engineParameters.sampleRate(), kMaxVocalFreq, 0.707, true);
 }
 
 VocalSeparationGroupState::~VocalSeparationGroupState() = default;
@@ -136,14 +136,14 @@ void VocalSeparationEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    CSAMPLE intensity = m_pIntensity ? m_pIntensity->value() : 0.0;
-    const CSAMPLE centerFreq = m_pCenterFreq ? m_pCenterFreq->value() : kDefaultCenterFreq;
-    const CSAMPLE stereoWidth = m_pStereoWidth ? m_pStereoWidth->value() : 0.5;
+    CSAMPLE intensity = m_pIntensity ? static_cast<CSAMPLE>(m_pIntensity->value()) : 0.0f;
+    const CSAMPLE centerFreq = m_pCenterFreq ? static_cast<CSAMPLE>(m_pCenterFreq->value()) : static_cast<CSAMPLE>(kDefaultCenterFreq);
+    const CSAMPLE stereoWidth = m_pStereoWidth ? static_cast<CSAMPLE>(m_pStereoWidth->value()) : 0.5f;
 
     if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry signal by setting intensity to 0
         // This allows the wet/dry mix to crossfade smoothly
-        intensity = 0.0;
+        intensity = 0.0f;
     }
 
     // Ramp intensity from previous value to avoid discontinuities
@@ -164,11 +164,11 @@ void VocalSeparationEffect::processChannel(
             CSAMPLE right = pState->m_tempBuffer[i + 1];
             
             // Extract mid (mono/center) and side (stereo) components
-            CSAMPLE mid = (left + right) * 0.5;
-            CSAMPLE side = (left - right) * 0.5;
+            CSAMPLE mid = (left + right) * 0.5f;
+            CSAMPLE side = (left - right) * 0.5f;
             
             // Reduce side component based on stereoWidth
-            side *= stereoWidth * 2.0; // Scale to 0-2 range
+            side *= stereoWidth * 2.0f; // Scale to 0-2 range
             
             pState->m_tempBuffer[i] = mid + side;
             pState->m_tempBuffer[i + 1] = mid - side;

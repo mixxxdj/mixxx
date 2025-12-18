@@ -159,14 +159,14 @@ void InstrumentalSeparationEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
-    CSAMPLE intensity = m_pIntensity ? m_pIntensity->value() : 0.0;
-    const CSAMPLE bassBoost = m_pBassBoost ? m_pBassBoost->value() : 0.5;
-    const CSAMPLE highBoost = m_pHighBoost ? m_pHighBoost->value() : 0.5;
+    CSAMPLE intensity = m_pIntensity ? static_cast<CSAMPLE>(m_pIntensity->value()) : 0.0f;
+    const CSAMPLE bassBoost = m_pBassBoost ? static_cast<CSAMPLE>(m_pBassBoost->value()) : 0.5f;
+    const CSAMPLE highBoost = m_pHighBoost ? static_cast<CSAMPLE>(m_pHighBoost->value()) : 0.5f;
 
     if (enableState == EffectEnableState::Disabling) {
         // Ramp to dry signal by setting intensity to 0
         // This allows the wet/dry mix to crossfade smoothly
-        intensity = 0.0;
+        intensity = 0.0f;
     }
 
     // Ramp intensity from previous value to avoid discontinuities
@@ -189,11 +189,11 @@ void InstrumentalSeparationEffect::processChannel(
         CSAMPLE right = pState->m_tempBuffer[i + 1];
         
         // Extract mid and side components
-        CSAMPLE mid = (left + right) * 0.5;
-        CSAMPLE side = (left - right) * 0.5;
+        CSAMPLE mid = (left + right) * 0.5f;
+        CSAMPLE side = (left - right) * 0.5f;
         
         // Enhance side component slightly (up to 50% wider)
-        side *= (1.0 + intensity_ramped * 0.5);
+        side *= (1.0f + intensity_ramped * 0.5f);
         
         pState->m_tempBuffer[i] = mid + side;
         pState->m_tempBuffer[i + 1] = mid - side;

@@ -33,7 +33,7 @@ struct InstrumentalSeparationGroupState : public EffectState {
     double m_oldIntensity;
     double m_oldBassBoost;
     double m_oldHighBoost;
-    
+
     // Previous intensity for ramping
     CSAMPLE m_previousIntensity;
 };
