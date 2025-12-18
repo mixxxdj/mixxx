@@ -3711,6 +3711,25 @@ if(QT_EXTRA_COMPONENTS)
   endforeach()
 endif()
 
+set(MIXXX_HAS_HTTP_SERVER OFF)
+if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
+  find_package(Qt6 COMPONENTS HttpServer QUIET)
+  if(Qt6HttpServer_FOUND)
+    set(MIXXX_HAS_HTTP_SERVER ON)
+    target_link_libraries(mixxx-lib PUBLIC Qt6::HttpServer)
+    target_compile_definitions(mixxx-lib PUBLIC MIXXX_HAS_HTTP_SERVER)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/network/rest/restapigateway.cpp
+        src/network/rest/restserver.cpp
+        src/network/rest/restservercontroller.cpp
+    )
+  else()
+    message(STATUS "Qt HttpServer module not found; REST API server disabled")
+  endif()
+endif()
+
 if(QT_KNOWN_POLICY_QTP0002 AND ANDROID)
   qt6_policy(SET QTP0002 NEW)
 endif()

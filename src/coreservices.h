@@ -23,6 +23,11 @@ class Library;
 class SkinControls;
 class ControlPushButton;
 struct LibraryScanResultSummary;
+#if defined(MIXXX_HAS_HTTP_SERVER)
+namespace mixxx::network::rest {
+class RestServerController;
+}
+#endif
 
 namespace mixxx {
 
@@ -154,6 +159,9 @@ class CoreServices : public QObject {
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;
     bool m_isInitialized;
+#if defined(MIXXX_HAS_HTTP_SERVER)
+    std::unique_ptr<mixxx::network::rest::RestServerController> m_pRestServerController;
+#endif
 };
 
 } // namespace mixxx
