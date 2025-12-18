@@ -10,6 +10,7 @@
 #include <QPointer>
 #include <QSslConfiguration>
 #include <QThread>
+#include <QString>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -20,7 +21,7 @@ class QObject;
 
 namespace mixxx::network::rest {
 
-class RestApiGateway;
+class RestApiProvider;
 class CertificateGenerator;
 
 class RestServer : public QObject {
@@ -29,8 +30,11 @@ class RestServer : public QObject {
   public:
     struct Settings {
         bool enabled{false};
+        QString host;
+        bool hostValid{true};
         QHostAddress address{QHostAddress::LocalHost};
-        quint16 port{0};
+        int port{0};
+        bool portValid{true};
         bool useHttps{false};
         bool autoGenerateCertificate{false};
         bool requireTls{false};
@@ -40,8 +44,11 @@ class RestServer : public QObject {
 
         friend bool operator==(const Settings& lhs, const Settings& rhs) {
             return lhs.enabled == rhs.enabled &&
+                    lhs.host == rhs.host &&
+                    lhs.hostValid == rhs.hostValid &&
                     lhs.address == rhs.address &&
                     lhs.port == rhs.port &&
+                    lhs.portValid == rhs.portValid &&
                     lhs.useHttps == rhs.useHttps &&
                     lhs.autoGenerateCertificate == rhs.autoGenerateCertificate &&
                     lhs.requireTls == rhs.requireTls &&
@@ -64,7 +71,7 @@ class RestServer : public QObject {
         QSslConfiguration configuration;
     };
 
-    explicit RestServer(RestApiGateway* gateway, QObject* parent = nullptr);
+    explicit RestServer(RestApiProvider* gateway, QObject* parent = nullptr);
     ~RestServer() override;
 
     static TlsResult prepareTlsConfiguration(
@@ -111,7 +118,7 @@ class RestServer : public QObject {
     std::unique_ptr<QHttpServer> m_httpServer;
     std::optional<TlsResult> m_tlsConfiguration;
     Settings m_settings;
-    QPointer<RestApiGateway> m_gateway;
+    QPointer<RestApiProvider> m_gateway;
     QThread m_thread;
     bool m_isRunning;
     bool m_tlsActive{false};

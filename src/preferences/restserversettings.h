@@ -10,8 +10,10 @@ class RestServerSettings {
   public:
     struct Values {
         bool enabled{false};
+        bool enableHttp{true};
         QString host;
-        int port{0};
+        int httpPort{0};
+        int httpsPort{0};
         bool useHttps{false};
         bool autoGenerateCert{false};
         QString certificatePath;
@@ -29,6 +31,7 @@ class RestServerSettings {
     };
 
     static constexpr int kDefaultPort = 8989;
+    static constexpr int kDefaultHttpsPort = 8990;
 
     explicit RestServerSettings(UserSettingsPointer pConfig);
 
