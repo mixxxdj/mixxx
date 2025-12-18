@@ -2,8 +2,14 @@
 
 #ifdef MIXXX_HAS_HTTP_SERVER
 
+#include <QDateTime>
+#include <QFile>
 #include <QJsonDocument>
 #include <QJsonValue>
+#include <QThread>
+#ifdef Q_OS_LINUX
+#include <unistd.h>
+#endif
 
 #include "moc_restapigateway.cpp"
 #include "control/controlproxy.h"
@@ -41,6 +47,7 @@ RestApiGateway::RestApiGateway(
           m_settings(settings) {
     DEBUG_ASSERT(m_playerManager);
     DEBUG_ASSERT(m_trackCollectionManager);
+    m_uptime.start();
 }
 
 QHttpServerResponse RestApiGateway::errorResponse(
@@ -65,7 +72,19 @@ QHttpServerResponse RestApiGateway::successResponse(
 }
 
 QHttpServerResponse RestApiGateway::health() const {
-    return successResponse(QJsonObject{{"status", "ok"}});
+    const QJsonObject readiness = readinessPayload();
+    return successResponse(QJsonObject{
+            {"status", "ok"},
+            {"ready", readiness.value("ready")},
+            {"issues", readiness.value("issues")},
+            {"system", systemHealth()},
+            {"uptime_ms", static_cast<qint64>(m_uptime.elapsed())},
+            {"timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)},
+    });
+}
+
+QHttpServerResponse RestApiGateway::ready() const {
+    return successResponse(readinessPayload());
 }
 
 QJsonObject RestApiGateway::deckSummary(int deckIndex) const {
@@ -78,12 +97,18 @@ QJsonObject RestApiGateway::deckSummary(int deckIndex) const {
     ControlProxy rate(group, QStringLiteral("rate"), nullptr);
     ControlProxy gain(group, QStringLiteral("gain"), nullptr);
     ControlProxy volume(group, QStringLiteral("volume"), nullptr);
+    ControlProxy syncEnabled(group, QStringLiteral("sync_enabled"), nullptr);
+    ControlProxy keylock(group, QStringLiteral("keylock"), nullptr);
+    ControlProxy loopEnabled(group, QStringLiteral("loop_enabled"), nullptr);
     deck.insert("playing", playControl.toBool());
     deck.insert("track_loaded", trackLoaded.toBool());
     deck.insert("position", playPosition.get());
     deck.insert("rate", rate.get());
     deck.insert("gain", gain.get());
     deck.insert("volume", volume.get());
+    deck.insert("sync", syncEnabled.toBool());
+    deck.insert("keylock", keylock.toBool());
+    deck.insert("loop_enabled", loopEnabled.toBool());
 
     BaseTrackPlayer* const player = m_playerManager->getDeck(deckIndex + 1);
     if (player != nullptr) {
@@ -107,15 +132,45 @@ QJsonArray RestApiGateway::deckStatuses() const {
 }
 
 QHttpServerResponse RestApiGateway::status() const {
+    const QJsonObject readiness = readinessPayload();
     const QJsonObject payload{
             {"app", appInfo()},
+            {"ready", readiness},
+            {"system", systemHealth()},
             {"decks", deckStatuses()},
             {"mixer", mixerState()},
             {"broadcast", broadcastState()},
             {"recording", recordingState()},
             {"autodj", autoDjOverview()},
+            {"uptime_ms", static_cast<qint64>(m_uptime.elapsed())},
+            {"timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)},
     };
     return successResponse(payload);
+}
+
+QHttpServerResponse RestApiGateway::deck(int deckNumber) const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    if (deckNumber <= 0) {
+        return errorResponse(
+                QHttpServerResponse::StatusCode::BadRequest,
+                tr("Deck number must be positive"));
+    }
+
+    const int deckIndex = deckNumber - 1;
+    const auto totalDecks = m_playerManager->numberOfDecks();
+    if (deckIndex < 0 || deckIndex >= static_cast<int>(totalDecks)) {
+        return errorResponse(
+                QHttpServerResponse::StatusCode::NotFound,
+                tr("Deck %1 does not exist").arg(deckNumber));
+    }
+
+    return successResponse(QJsonObject{{"deck", deckSummary(deckIndex)}});
+}
+
+QHttpServerResponse RestApiGateway::decks() const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    return successResponse(QJsonObject{{"decks", deckStatuses()}});
 }
 
 QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
@@ -480,6 +535,21 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
             return successResponse(QJsonObject{{"playlist_id", playlistId}, {"name", name}});
         }
 
+        if (action == QStringLiteral("send_to_autodj")) {
+            QString locString = body.value("position").toString(QStringLiteral("bottom")).toLower();
+            PlaylistDAO::AutoDJSendLoc loc = PlaylistDAO::AutoDJSendLoc::BOTTOM;
+            if (locString == QStringLiteral("top")) {
+                loc = PlaylistDAO::AutoDJSendLoc::TOP;
+            } else if (locString == QStringLiteral("replace")) {
+                loc = PlaylistDAO::AutoDJSendLoc::REPLACE;
+            }
+            playlistDao.addPlaylistToAutoDJQueue(playlistId, loc);
+            return successResponse(QJsonObject{
+                    {"playlist_id", playlistId},
+                    {"position", locString},
+            });
+        }
+
         if (action == QStringLiteral("set_active")) {
             m_activePlaylistId = playlistId;
             return successResponse(QJsonObject{{"active_playlist_id", m_activePlaylistId}});
@@ -595,6 +665,27 @@ QHttpServerResponse RestApiGateway::autoDjStatus() const {
     });
 }
 
+QJsonObject RestApiGateway::readinessPayload() const {
+    QJsonArray issues;
+    bool ready = true;
+
+    if (!m_playerManager || m_playerManager->numberOfDecks() == 0) {
+        issues.append(tr("No decks available"));
+        ready = false;
+    }
+
+    auto* const collection = m_trackCollectionManager->internalCollection();
+    if (collection == nullptr) {
+        issues.append(tr("Track collection is not available"));
+        ready = false;
+    }
+
+    return QJsonObject{
+            {"ready", ready},
+            {"issues", issues},
+    };
+}
+
 QJsonObject RestApiGateway::appInfo() const {
     QJsonObject info;
     info.insert("name", VersionStore::applicationName());
@@ -653,6 +744,25 @@ QJsonObject RestApiGateway::autoDjOverview() const {
     return autodj;
 }
 
+QJsonObject RestApiGateway::systemHealth() const {
+    QJsonObject system;
+    system.insert("logical_cores", QThread::idealThreadCount());
+
+    if (const auto cpu = cpuUsagePercent()) {
+        system.insert("cpu_usage_percent", *cpu);
+    } else {
+        system.insert("cpu_usage_percent", QJsonValue());
+    }
+
+    if (const auto rss = rssBytes()) {
+        system.insert("rss_bytes", static_cast<qint64>(*rss));
+    } else {
+        system.insert("rss_bytes", QJsonValue());
+    }
+
+    return system;
+}
+
 QJsonObject RestApiGateway::trackPayload(const TrackPointer& track) const {
     QJsonObject payload;
     payload.insert("id", track->getId().toString());
@@ -699,6 +809,103 @@ int RestApiGateway::ensureAutoDjPlaylistId(PlaylistDAO& playlistDao) const {
         playlistId = playlistDao.createPlaylist(AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
     }
     return playlistId;
+}
+
+std::optional<double> RestApiGateway::cpuUsagePercent() const {
+#ifdef Q_OS_LINUX
+    auto readCpuTotals = []() -> std::optional<quint64> {
+        QFile file(QStringLiteral("/proc/stat"));
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return std::nullopt;
+        }
+        const QByteArray line = file.readLine();
+        const QList<QByteArray> parts = line.split(' ');
+        quint64 total = 0;
+        for (const auto& part : parts.mid(1)) {
+            if (part.isEmpty()) {
+                continue;
+            }
+            bool ok = false;
+            const quint64 value = part.toULongLong(&ok);
+            if (ok) {
+                total += value;
+            }
+        }
+        return total;
+    };
+
+    auto readProcessTime = []() -> std::optional<quint64> {
+        QFile file(QStringLiteral("/proc/self/stat"));
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return std::nullopt;
+        }
+        const QList<QByteArray> parts = file.readAll().split(' ');
+        // utime (14) + stime (15)
+        if (parts.size() < 16) {
+            return std::nullopt;
+        }
+        bool ok1 = false;
+        bool ok2 = false;
+        const quint64 utime = parts.at(13).toULongLong(&ok1);
+        const quint64 stime = parts.at(14).toULongLong(&ok2);
+        if (!ok1 || !ok2) {
+            return std::nullopt;
+        }
+        return utime + stime;
+    };
+
+    static quint64 s_prevProcess = 0;
+    static quint64 s_prevTotal = 0;
+    const auto process = readProcessTime();
+    const auto total = readCpuTotals();
+    if (!process.has_value() || !total.has_value()) {
+        return std::nullopt;
+    }
+    if (s_prevProcess == 0 || s_prevTotal == 0) {
+        s_prevProcess = *process;
+        s_prevTotal = *total;
+        return std::nullopt;
+    }
+
+    const quint64 deltaProc = *process - s_prevProcess;
+    const quint64 deltaTotal = *total - s_prevTotal;
+    s_prevProcess = *process;
+    s_prevTotal = *total;
+    if (deltaTotal == 0) {
+        return std::nullopt;
+    }
+
+    const int cores = QThread::idealThreadCount();
+    const double usage = (static_cast<double>(deltaProc) / static_cast<double>(deltaTotal)) * cores * 100.0;
+    return usage;
+#else
+    return std::nullopt;
+#endif
+}
+
+std::optional<quint64> RestApiGateway::rssBytes() const {
+#ifdef Q_OS_LINUX
+    QFile file(QStringLiteral("/proc/self/statm"));
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return std::nullopt;
+    }
+    const QList<QByteArray> parts = file.readAll().split(' ');
+    if (parts.size() < 2) {
+        return std::nullopt;
+    }
+    bool ok = false;
+    const quint64 rssPages = parts.at(1).toULongLong(&ok);
+    if (!ok) {
+        return std::nullopt;
+    }
+    const long pageSize = sysconf(_SC_PAGESIZE);
+    if (pageSize <= 0) {
+        return std::nullopt;
+    }
+    return rssPages * static_cast<quint64>(pageSize);
+#else
+    return std::nullopt;
+#endif
 }
 
 } // namespace mixxx::network::rest

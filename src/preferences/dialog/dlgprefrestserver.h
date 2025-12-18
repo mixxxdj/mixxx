@@ -3,6 +3,8 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <memory>
+#include <QDateTime>
+#include <QList>
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefrestserverdlg.h"
@@ -28,7 +30,13 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void slotEnableHttpChanged(bool checked);
     void slotBrowseCertificate();
     void slotBrowseKey();
-    void slotTokenChanged(const QString& token);
+    void slotAddToken();
+    void slotRemoveToken();
+    void slotRegenerateToken();
+    void slotTokenSelectionChanged();
+    void slotTokenDescriptionChanged(const QString& text);
+    void slotTokenPermissionChanged(int index);
+    void slotTokenExpiresChanged(const QDateTime& dateTime);
 
   private:
     void loadValues(const RestServerSettings::Values& values);
@@ -37,8 +45,16 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void updateAuthWarning();
     void updateStatusLabels(const RestServerSettings::Status& status);
     QString browseForFile(const QString& title, const QString& startDirectory) const;
+    QString makeToken() const;
+    void refreshTokenTable();
+    void updateSelection(int row);
+    void applyEditsToSelectedToken();
+    void syncEditorsFromSelection();
+    RestServerToken* selectedToken();
 
     std::shared_ptr<RestServerSettings> m_settings;
+    QList<RestServerToken> m_tokens;
+    int m_selectedToken{-1};
 };
 
 #endif // MIXXX_HAS_HTTP_SERVER
