@@ -16,6 +16,7 @@
 #include <optional>
 
 #include "util/logger.h"
+#include "util/ratelimitedlogger.h"
 
 class QObject;
 
@@ -97,20 +98,28 @@ class RestServer : public QObject {
     void stopped();
 
   private:
-    QHttpServerResponse invokeGateway(const std::function<QHttpServerResponse()>& action) const;
-    QHttpServerResponse unauthorizedResponse() const;
-    QHttpServerResponse badRequestResponse(const QString& message) const;
-    QHttpServerResponse methodNotAllowedResponse() const;
-    QHttpServerResponse serviceUnavailableResponse() const;
+    QHttpServerResponse invokeGateway(
+            const QHttpServerRequest& request,
+            const std::function<QHttpServerResponse()>& action) const;
+    QHttpServerResponse unauthorizedResponse(const QHttpServerRequest& request) const;
+    QHttpServerResponse badRequestResponse(
+            const QHttpServerRequest& request, const QString& message) const;
+    QHttpServerResponse methodNotAllowedResponse(const QHttpServerRequest& request) const;
+    QHttpServerResponse serviceUnavailableResponse(const QHttpServerRequest* request) const;
     QHttpServerResponse jsonResponse(
             const QJsonObject& body,
             QHttpServerResponse::StatusCode status) const;
 
-    QHttpServerResponse tlsRequiredResponse() const;
+    QHttpServerResponse tlsRequiredResponse(const QHttpServerRequest& request) const;
     bool applyTlsConfiguration();
     bool checkAuthorization(const QHttpServerRequest& request) const;
     bool controlRouteRequiresTls(const QHttpServerRequest& request) const;
     void registerRoutes();
+    void logRouteError(
+            const QHttpServerRequest& request,
+            QHttpServerResponse::StatusCode status,
+            const QString& message) const;
+    QString requestDescription(const QHttpServerRequest& request) const;
     bool startOnThread();
     void stopOnThread();
 
@@ -124,6 +133,7 @@ class RestServer : public QObject {
     bool m_tlsActive{false};
     quint16 m_listeningPort;
     QString m_lastError;
+    mutable RateLimitedLogger m_routeErrorLogger;
 
     static const Logger kLogger;
 };
