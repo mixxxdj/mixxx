@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
                 static_cast<int>(source->getSignalInfo().getSampleRate() /
                         source->getSignalInfo().getChannelCount()));
         output.insert("runtime", static_cast<int>(duration_ms));
-        output.insert("offset", result->firstBeat().value());
+        output.insert("first_beat", result->firstBeat().value());
         output.insert("bpm", result->getLastMarkerBpm().value());
 
         std::cout << QJsonDocument(output).toJson().data();

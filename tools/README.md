@@ -24,14 +24,16 @@ sudo chown "$USER" "$(ls -1t /dev/hidraw* | head -n 1)"
 
 In order to assess the quality of the beat analyzer, you can use the following command:
 
-```
-python3 tools/analyzer_benchmark.py /path/to/dataset.csv
+```sh
+python3 tools/analyzer_benchmark.py /path/to/dataset.csv [/output/path/to/report.md] [/output/path/to/manifest.json] [/path/to/comparing/manifest.json]
 ```
 
 You can use the following envvar:
 
 - `DOWNLOAD_FOLDER`: Path the folder where to download music. This is only used if your dataset contains remote files. It will use the current directory if unset.
 - `DB_PATH`: Path to your Mixxx DB. THis will be used to complete your dataset, with expected BPM and grid position.
+- `MIXXX_TEST_PATH`: Path to your `mixxx-test` executable. Default to your current active directory.
+- `DISABLE_DATASET_UPDATE`: Set this variable if you want to skip the dataset auto update.
 
 ### Dataset
 
@@ -48,3 +50,17 @@ Example:
 source,title,artist,tags
 /path/to/my/file,,Four to the floor electro
 ```
+
+### Reference dataset
+
+While we recommend using your own dataset locally, to test with your library or tracks you may use with Mixxx, we want to use a common reference across all contributor,
+as source of truth to judge the quality of the beat analyzer. For legal and ethic reasons, this dataset must use royalty-free tracks. If you want to add more tracks in
+this dataset, for example to add better coverage of a specific genre of music, you may add it in `tools/analyzer_free_dataset.csv`. As requirement, the track must be
+available publicly online. This allows automation or developers to easily test this dataset.
+
+### Artifacts
+
+The script can produce 2 types of artifacts:
+
+- A Markdown report
+- A snapshot manifest, which can be use to compare future runs

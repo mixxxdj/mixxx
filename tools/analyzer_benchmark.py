@@ -7,6 +7,10 @@ import sqlite3
 import multiprocessing
 import subprocess
 import json
+import math
+import dataclasses
+
+from typing import Optional
 
 """Generated protocol buffer code for beats.proto."""
 from google.protobuf.internal import builder as _builder
@@ -43,25 +47,152 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
 datasets = []
 
-with open(sys.argv[1]) as f:
-    datasets = list(csv.DictReader(f))
-    for record in datasets:
-        record.update(
-            dict(
-                first_beat=(
-                    int(record["first_beat"]) if record["first_beat"] else 0
-                ),
-                bpm=float(record["bpm"]) if record["bpm"] else 0,
-                samplerate=(
-                    float(record["samplerate"]) if record["samplerate"] else 0
-                ),
-            )
-        )
-
 DOWNLOAD_FOLDER = os.getenv("DOWNLOAD_FOLDER") or os.getcwd()
 DB_PATH = os.getenv("DB_PATH") or os.path.expanduser("~/.mixxx/mixxxdb.sqlite")
+MIXXX_TEST_PATH = os.getenv("MIXXX_TEST_PATH") or os.path.expanduser(
+    "./mixxx-test"
+)
+UPDATE_DATASET = not os.getenv("DISABLE_DATASET_UPDATE")
+BPM_ACCURATE_THRESHOLD = 0.02
+GRID_ACCURATE_THRESHOLD = 0.98
 
 con = sqlite3.connect(DB_PATH)
+
+
+@dataclasses.dataclass
+class Result:
+    title: Optional[str] = None
+    artist: Optional[str] = None
+    source: str = ""
+    expected_bpm: float = 0
+    actual_bpm: float = 0
+    expected_first_beat: int = 0
+    actual_first_beat: int = 0
+    samplerate: int = 0
+    runtime: float = 0
+
+    @property
+    def is_valid(self):
+        return (
+            self.source != ""
+            and self.expected_bpm != 0
+            and self.actual_bpm != 0
+            and self.expected_first_beat != 0
+            and self.actual_first_beat != 0
+            and self.samplerate != 0
+            and self.runtime != 0
+        )
+
+    @property
+    def sorting_key(self):
+        bpm_weight = 1000
+        if self.bpm_error_multiplier:
+            bpm_weight = 10 / self.bpm_error_multiplier
+        elif not self.is_bpm_accurate:
+            bpm_weight = 1 / abs(self.bpm_error_delta)
+
+        return bpm_weight * (1 + self.grid_offset)
+
+    @property
+    def grid_offset(self):
+        beat_length = self.samplerate * 60 / self.expected_bpm
+        grid_offset = (
+            abs(self.expected_first_beat - self.actual_first_beat)
+            / beat_length
+        ) % 1
+        return abs(2 * grid_offset - 1)
+
+    @property
+    def bpm_error_multiplier(self):
+        values = [self.expected_bpm, self.actual_bpm]
+        ratio = max(values) / min(values)
+
+        if int(ratio) == ratio and ratio > 1:
+            return int(ratio)
+        return 0
+
+    @property
+    def bpm_error_delta(self):
+        delta = self.expected_bpm - self.actual_bpm
+        return delta
+
+    @property
+    def is_bpm_accurate(self):
+        return (
+            abs(self.expected_bpm - self.actual_bpm) <= BPM_ACCURATE_THRESHOLD
+        )
+
+    @property
+    def is_grid_accurate(self):
+        return self.grid_offset >= GRID_ACCURATE_THRESHOLD
+
+    @property
+    def label_column(self):
+        return f"[{self.title} - {self.artist}]({self.source})".replace(
+            "|", "\\|"
+        )
+
+    @property
+    def expected_bpm_column(self):
+        return f"{self.expected_bpm:<6.2f}"
+
+    @property
+    def actual_bpm_column(self):
+        return f"{self.actual_bpm:<6.2f}"
+
+    @property
+    def bpm_error_column(self):
+        if self.is_bpm_accurate:
+            return "="
+
+        ratio = self.bpm_error_multiplier
+        if ratio:
+            return f"x {ratio}"
+        else:
+            delta = self.bpm_error_delta
+            return f"{'+' if delta > 0 else ''}{delta:.2f}"
+
+    @property
+    def grid_offset_column(self):
+        return f"{int(self.grid_offset * 100):>3}%"
+
+    @property
+    def runtime_column(self):
+        return f"{(self.runtime/1000):>6.2f} sec/min"
+
+
+class Wrapper(object):
+    _result = None
+    _previous = None
+    _WRAPPED_COLUMNS = {
+        "bpm_error": "bpm_error_delta",
+        "grid_offset": "grid_offset",
+    }
+
+    def __init__(self, result, previous):
+        self._result = result
+        self._previous = previous
+
+    def __getattribute__(self, attr):
+        result = super(Wrapper, self).__getattribute__("_result")
+        previous = super(Wrapper, self).__getattribute__("_previous")
+        _WRAPPED_COLUMNS = super(Wrapper, self).__getattribute__(
+            "_WRAPPED_COLUMNS"
+        )
+
+        col_attr = attr.removesuffix("_column")
+        if attr.endswith("_column") and col_attr in _WRAPPED_COLUMNS.keys():
+            prop = _WRAPPED_COLUMNS[col_attr]
+            ret = getattr(result, attr).strip()
+            if previous and getattr(result, prop) != getattr(previous, prop):
+                return f"**{ret} (was {getattr(previous, attr).strip()})**"
+            return ret
+
+        try:
+            return super(Wrapper, self).__getattribute__(attr)
+        except AttributeError:
+            result = super(Wrapper, self).__getattribute__("_result")
+            return getattr(result, attr)
 
 
 def fetch(record):
@@ -114,22 +245,16 @@ def fetch(record):
     return filename
 
 
-def process(record):
+def process(args):
+    record, previous = args
     filename = fetch(record)
 
     if record.get("color") is not None:
         # A color suggest that this track cannot use a static grid
-        return record, [
-            f"{record['title']} - {record['artist']}]({record['source']})",
-            0,
-            0,
-            "-",
-            "-",
-            0,
-        ]
+        return record, Result()
 
     proc = subprocess.Popen(
-        ["/workspaces/mixxx/build/mixxx-test", "--analyser", filename],
+        [MIXXX_TEST_PATH, "--analyser", filename],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
@@ -138,72 +263,224 @@ def process(record):
         print(f"Got error code {proc.returncode} on {filename}")
         raise Exception(proc.stderr.read())
     output = json.loads(proc.stdout.read())
-    expected_bpm = record["bpm"]
 
-    delta = "?"
-    offset = "?"
-    runtime = output["runtime"]
-    try:
-        beat_length = record["samplerate"] * 60 / expected_bpm
-        grid_offset = (
-            abs(record["first_beat"] - output["offset"]) / beat_length
-        ) % 1
-        offset = abs(2 * grid_offset - 1)
-        delta = expected_bpm - output["bpm"]
-        delta = (
-            f"+{delta:.2f}"
-            if delta > 0
-            else (f"{delta:.2f}" if delta < 0 else "-")
-        )
-        offset = int(offset * 100)
-    except:
+    result = Result(
+        title=record["title"],
+        artist=record["artist"],
+        source=record["source"],
+        expected_bpm=record.get("bpm", 0),
+        actual_bpm=output.get("bpm", 0),
+        expected_first_beat=record.get("first_beat", 0),
+        actual_first_beat=output.get("first_beat", 0),
+        samplerate=output["track_samplerate"],
+        runtime=output["runtime"],
+    )
+    return record, result if not previous else Wrapper(result, previous)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2 or len(sys.argv) > 5:
         print(
-            f"File {repr(filename)} doesn't have an expected BPM and a grid. Load it in Mixxx and set the right metadata before re-running this script!",
+            f"Usage: {sys.argv[0]} <PathToCSVDataset> [<PathToOutputReport>] [PathToManifest] [PathTPreviousManifest]",
             file=sys.stderr,
         )
-        pass
-    return record, [
-        f"{record['title']} - {record['artist']}]({record['source']})",
-        expected_bpm,
-        output["bpm"],
-        delta,
-        offset,
-        runtime / 1000 / (output["track_duration"] / 60),
+        sys.exit(1)
+
+    datasets = []
+    with open(sys.argv[1]) as f:
+        datasets = list(csv.DictReader(f))
+        for record in datasets:
+            record.update(
+                dict(
+                    first_beat=(
+                        int(record["first_beat"])
+                        if record["first_beat"]
+                        else 0
+                    ),
+                    bpm=float(record["bpm"]) if record["bpm"] else 0,
+                    samplerate=(
+                        float(record["samplerate"])
+                        if record["samplerate"]
+                        else 0
+                    ),
+                )
+            )
+
+    previous_stats = {}
+    previous_results = {}
+    if len(sys.argv) == 5:
+        with open(sys.argv[4], "r") as f:
+            data = json.load(f)
+            previous_results = {
+                d["source"]: Result(**d) for d in data.get("results", [])
+            }
+
+    header = list(datasets[0].keys())
+    output = []
+    args = [(data, previous_results.get(data["source"])) for data in datasets]
+
+    with multiprocessing.Pool(multiprocessing.cpu_count()) as p:
+        output = p.map(process, args)
+
+    datasets = []
+    results = []
+    for record, result in output:
+        datasets.append(record)
+        results.append(result)
+
+    # Filter out records without expected BPM
+    results = list(filter(lambda record: result.is_valid, results))
+
+    # Order "poor" results first
+    results.sort(key=lambda result: result.sorting_key)
+
+    columns = {
+        "label": "Label",
+        "expected_bpm": "Expected BPM",
+        "actual_bpm": "Actual BPM",
+        "bpm_error": "BPM Error",
+        "grid_offset": "Grid Offset",
+        "runtime": "Runtime",
+    }
+    columns_size = [
+        max(
+            [
+                len(getattr(result, f"{col_name}_column"))
+                for result in results
+                if result.is_valid
+            ]
+            + [len(col_label)]
+        )
+        for col_name, col_label in columns.items()
     ]
 
+    stats = {
+        "bpm_accuracy": 0,
+        "grid_accuracy": 0,
+        "grid_accuracy_avg": 0,
+        "bpm_offset_avg": 0,
+        "bpm_offset_max": 0,
+        "runtime_avg": 0,
+    }
 
-with multiprocessing.Pool(multiprocessing.cpu_count()) as p:
-    header = list(datasets[0].keys())
-    results = p.map(process, datasets)
-    datasets = []
-    report = []
-    for record, data in results:
-        datasets.append(record)
-        report.append(data)
-    # Filter out records without expected BPM
-    records = list(filter(lambda record: record[1], report))
-    # Order "poor" result first
-    records.sort(
-        key=lambda record: (
-            100000 if record[3] == "-" else (1 / abs(float(record[3])))
-        )
-        * (1 + record[4])
+    f = (
+        open(sys.argv[2], "w")
+        if len(sys.argv) >= 3 and sys.argv[2] != "-"
+        else sys.stdout
     )
-    # TODO array max
+
+    result_table = []
+    incomplete_table = []
+    for result in results:
+        if not result.is_valid:
+            incomplete_table.append(
+                f"| {result.label_column.ljust(columns_size[0])} |"
+            )
+            continue
+        if result.is_bpm_accurate:
+            stats["bpm_accuracy"] += 1
+        if result.is_bpm_accurate:
+            stats["grid_accuracy"] += 1
+        stats["grid_accuracy_avg"] += result.grid_offset
+        stats["bpm_offset_avg"] += result.bpm_error_delta
+        stats["runtime_avg"] += result.runtime
+        if not result.bpm_error_multiplier:
+            stats["bpm_offset_avg"] += result.bpm_error_delta
+        stats["bpm_offset_max"] = max(
+            abs(result.bpm_error_delta), stats["bpm_offset_max"]
+        )
+        # stats["grid_accuracy_avg"] += result.grid_offset
+        result_table.append(
+            "| "
+            + " | ".join(
+                [
+                    getattr(result, f"{col_name}_column").ljust(col_size)
+                    for col_name, col_size in zip(columns, columns_size)
+                ]
+            )
+            + " |"
+        )
+
+    stats["grid_accuracy_avg"] /= len(result_table)
+    stats["bpm_offset_avg"] /= len(result_table)
+    stats["runtime_avg"] /= len(result_table)
+
+    print("# BPM and grid analyzer report\n", file=f)
     print(
-        "\n".join(
-            [
-                f"| [{record[0]:<145} | {record[1]:<6.2f} | {record[2]:<6.2f} | {record[3]:<6} | {record[4]:>3}% | {record[5]:>6.2f} sec/min |"
-                for record in records
-            ]
-        )
+        f'**Accurate BPM results**: {stats["bpm_accuracy"]}/{len(result_table)} ({(100 * stats["bpm_accuracy"]/len(result_table)):.2f}%)',
+        file=f,
     )
-    with open(sys.argv[1], "w") as f:
-        c = csv.DictWriter(f, header)
-        c.writeheader()
-        c.writerows(
+    print(
+        f'**Accurate grid results**: {stats["grid_accuracy"]}/{len(result_table)} ({(100 * stats["grid_accuracy"]/len(result_table)):.2f}%)',
+        file=f,
+    )
+    print(
+        f'**Grid accuracy average**: {(100 * stats["grid_accuracy_avg"]):.2f}%',
+        file=f,
+    )
+    print(f'**BPM offset average**: {stats["bpm_offset_avg"]:.2f}', file=f)
+    print(f'**BPM maximum offset**: {stats["bpm_offset_max"]:.2f}', file=f)
+    print(
+        f'**Runtime average**: {(stats["runtime_avg"]/1000):.2f} sec/min',
+        file=f,
+    )
+    print("\n", file=f)
+    print("## Result table\n", file=f)
+
+    print(
+        "| "
+        + " | ".join(
             [
-                {k: v for k, v in record.items() if k in header}
-                for record in datasets
+                col_name.ljust(col_size)
+                for col_name, col_size in zip(columns.values(), columns_size)
             ]
         )
+        + " |",
+        file=f,
+    )
+    print(
+        "|"
+        + "|".join(["-" * (col_size + 2) for col_size in columns_size])
+        + "|",
+        file=f,
+    )
+    print("\n".join(result_table), file=f)
+
+    if incomplete_table:
+        print(
+            "## Incomplete data\n\nThe following files do not have an expected BPM and/or a grid. Load it in Mixxx and set the right metadata before re-running this script to fill the gap in the dataset.\n",
+            file=f,
+        )
+
+        print(f"| {next(columns.values()).ljust(columns_size[0])} |", file=f)
+        print(f'|{"-" * columns_size[0]}|', file=f)
+        print("\n".join(incomplete_table), file=f)
+
+    print("\n", file=f)
+    f.close()
+
+    if len(sys.argv) >= 4:
+
+        def serialize(obj):
+            d = obj.__dict__
+            return d.get("_result", d)
+
+        with open(sys.argv[3], "w") as f:
+            json.dump(
+                dict(results=results, stats=stats),
+                f,
+                sort_keys=True,
+                indent=4,
+                default=serialize,
+            )
+
+    if UPDATE_DATASET:
+        with open(sys.argv[1], "w") as f:
+            c = csv.DictWriter(f, header)
+            c.writeheader()
+            c.writerows(
+                [
+                    {k: v for k, v in record.items() if k in header}
+                    for record in datasets
+                ]
+            )
