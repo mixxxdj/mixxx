@@ -8,13 +8,12 @@
 #include <QJsonObject>
 #include <QMetaObject>
 #include <QSemaphore>
-#include <QSslConfiguration>
-#include <QSslKey>
 #include <QSslSocket>
 #include <utility>
 
 #include "moc_restserver.cpp"
 #include "network/rest/restapigateway.h"
+#include "network/rest/certificategenerator.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 
@@ -30,6 +29,7 @@ RestServer::RestServer(RestApiGateway* gateway, QObject* parent)
         : QObject(parent),
           m_gateway(gateway),
           m_isRunning(false),
+          m_tlsActive(false),
           m_listeningPort(0) {
     DEBUG_ASSERT(m_gateway);
 }
@@ -38,15 +38,26 @@ RestServer::~RestServer() {
     stop();
 }
 
-bool RestServer::start(const Settings& settings) {
-    stop();
+bool RestServer::start(
+        const Settings& settings,
+        const std::optional<TlsResult>& tlsConfiguration,
+        QString* error) {
+    if (m_thread.isRunning()) {
+        stop();
+    }
+    m_lastError.clear();
 
     if (m_gateway.isNull()) {
         kLogger.warning() << "REST API gateway is not available; aborting startup";
+        if (error) {
+            *error = tr("REST API gateway is not available");
+        }
         return false;
     }
 
     m_settings = settings;
+    m_tlsConfiguration = tlsConfiguration;
+    m_tlsActive = false;
 
     m_threadObject = std::make_unique<QObject>();
     m_threadObject->moveToThread(&m_thread);
@@ -62,6 +73,9 @@ bool RestServer::start(const Settings& settings) {
 
     if (!success) {
         stop();
+        if (error) {
+            *error = m_lastError.isEmpty() ? tr("Failed to start REST server") : m_lastError;
+        }
         return false;
     }
 
@@ -86,7 +100,9 @@ void RestServer::stop() {
     m_thread.wait();
 
     m_threadObject.reset();
+    m_tlsConfiguration.reset();
     m_isRunning = false;
+    m_tlsActive = false;
     m_listeningPort = 0;
     emit stopped();
 }
@@ -98,6 +114,52 @@ QHttpServerResponse RestServer::jsonResponse(
             status,
             QJsonDocument(body).toJson(QJsonDocument::Compact),
             "application/json");
+}
+
+RestServer::TlsResult RestServer::prepareTlsConfiguration(
+        const Settings& settings, CertificateGenerator* certificateGenerator) {
+    TlsResult result;
+    if (!settings.useHttps) {
+        result.success = true;
+        return result;
+    }
+
+#if QT_CONFIG(ssl)
+    if (certificateGenerator == nullptr) {
+        result.error = QObject::tr("Certificate generator is unavailable");
+        return result;
+    }
+    const CertificateGenerator::Result certificateResult = certificateGenerator->loadOrGenerate(
+            settings.certificatePath,
+            settings.privateKeyPath,
+            settings.autoGenerateCertificate);
+    result.certificatePath = certificateResult.certificatePath;
+    result.privateKeyPath = certificateResult.privateKeyPath;
+    if (!certificateResult.success) {
+        result.error = certificateResult.error;
+        return result;
+    }
+
+    QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
+    sslConfig.setLocalCertificate(certificateResult.certificate);
+    sslConfig.setPrivateKey(certificateResult.privateKey);
+    sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
+
+    result.configuration = sslConfig;
+    result.generated = certificateResult.generated;
+    result.success = true;
+#else
+    Q_UNUSED(settings);
+    Q_UNUSED(certificateGenerator);
+    result.error = QObject::tr("Qt is built without SSL support");
+#endif
+    return result;
+}
+
+QHttpServerResponse RestServer::tlsRequiredResponse() const {
+    return jsonResponse(
+            QJsonObject{{"error", "TLS is required for this route"}},
+            QHttpServerResponse::StatusCode::Forbidden);
 }
 
 QHttpServerResponse RestServer::unauthorizedResponse() const {
@@ -137,37 +199,13 @@ QHttpServerResponse RestServer::invokeGateway(
 bool RestServer::applyTlsConfiguration() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
 
-    if (m_settings.certificatePath.isEmpty() || m_settings.privateKeyPath.isEmpty()) {
-        kLogger.warning()
-                << "TLS is enabled but certificate or private key paths are not configured";
-        return false;
-    }
-
 #if QT_CONFIG(ssl)
-    QFile certificateFile(m_settings.certificatePath);
-    QFile privateKeyFile(m_settings.privateKeyPath);
-    if (!certificateFile.open(QIODevice::ReadOnly)) {
-        kLogger.warning() << "Failed to open REST TLS certificate" << m_settings.certificatePath;
+    if (!m_tlsConfiguration.has_value()) {
+        kLogger.warning() << "TLS is enabled but no TLS configuration was provided";
         return false;
     }
-    if (!privateKeyFile.open(QIODevice::ReadOnly)) {
-        kLogger.warning() << "Failed to open REST TLS private key" << m_settings.privateKeyPath;
-        return false;
-    }
-
-    const auto certificate = QSslCertificate(certificateFile.readAll(), QSsl::Pem);
-    const auto privateKey = QSslKey(privateKeyFile.readAll(), QSsl::Rsa);
-
-    if (certificate.isNull() || privateKey.isNull()) {
-        kLogger.warning() << "Invalid REST TLS certificate or key";
-        return false;
-    }
-
-    QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
-    sslConfig.setLocalCertificate(certificate);
-    sslConfig.setPrivateKey(privateKey);
-    sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
-    m_httpServer->sslSetup(sslConfig);
+    m_httpServer->sslSetup(m_tlsConfiguration->configuration);
+    m_tlsActive = true;
     return true;
 #else
     Q_UNUSED(m_settings);
@@ -186,6 +224,10 @@ bool RestServer::checkAuthorization(const QHttpServerRequest& request) const {
     }
     const QByteArray expected = "Bearer " + m_settings.authToken.toUtf8();
     return headerValue.trimmed() == expected;
+}
+
+bool RestServer::controlRouteRequiresTls(const QHttpServerRequest& /*request*/) const {
+    return m_settings.requireTls && !m_tlsActive;
 }
 
 void RestServer::registerRoutes() {
@@ -213,6 +255,9 @@ void RestServer::registerRoutes() {
         if (!checkAuthorization(request)) {
             return unauthorizedResponse();
         }
+        if (controlRouteRequiresTls(request)) {
+            return tlsRequiredResponse();
+        }
 
         const auto document = QJsonDocument::fromJson(request.body());
         if (!document.isObject()) {
@@ -236,6 +281,9 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/autodj/<arg>", [this](const QString& action, const QHttpServerRequest& request) {
         if (!checkAuthorization(request)) {
             return unauthorizedResponse();
+        }
+        if (controlRouteRequiresTls(request)) {
+            return tlsRequiredResponse();
         }
         return invokeGateway([this, action]() {
             return m_gateway->autoDj(action);
@@ -273,7 +321,16 @@ bool RestServer::startOnThread() {
     m_httpServer = std::make_unique<QHttpServer>();
     registerRoutes();
 
-    if (m_settings.tlsEnabled && !applyTlsConfiguration()) {
+    if (!m_settings.authToken.isEmpty() && !m_settings.useHttps) {
+        kLogger.warning() << "REST API authentication is enabled without TLS";
+    }
+
+    if (m_settings.requireTls && !m_settings.useHttps) {
+        kLogger.warning() << "REST API control routes require TLS but HTTPS is disabled";
+    }
+
+    if (m_settings.useHttps && !applyTlsConfiguration()) {
+        m_lastError = tr("Failed to configure TLS for REST API");
         return false;
     }
 
@@ -281,6 +338,7 @@ bool RestServer::startOnThread() {
     if (port == 0) {
         kLogger.warning()
                 << "Failed to start REST API listener on" << m_settings.address << m_settings.port;
+        m_lastError = tr("Failed to bind REST API listener");
         return false;
     }
 

@@ -30,7 +30,12 @@
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefwebserver.h"
 #include "preferences/dialog/dlgprefwaveform.h"
+#ifdef MIXXX_HAS_HTTP_SERVER
+#include "preferences/dialog/dlgprefrestserver.h"
+#include "preferences/restserversettings.h"
+#endif
 #include "preferences/webserversettings.h"
+#include "preferences/restserversettings.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -199,6 +204,16 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Auto DJ"),
             "ic_preferences_autodj.svg");
+
+#ifdef MIXXX_HAS_HTTP_SERVER
+    addPageWidget(PreferencesPage(
+                          new DlgPrefRestServer(
+                                  this,
+                                  std::make_shared<RestServerSettings>(m_pConfig)),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("REST API"),
+            "ic_custom.svg");
+#endif
 
     addPageWidget(PreferencesPage(
                           new DlgPrefWebServer(

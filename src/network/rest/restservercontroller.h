@@ -5,9 +5,12 @@
 #include <QObject>
 #include <QTimer>
 #include <memory>
+#include <optional>
 
 #include "network/rest/restapigateway.h"
 #include "network/rest/restserver.h"
+#include "network/rest/certificategenerator.h"
+#include "preferences/restserversettings.h"
 #include "preferences/usersettings.h"
 
 class PlayerManager;
@@ -41,9 +44,13 @@ class RestServerController : public QObject {
     const UserSettingsPointer m_settings;
     PlayerManager* const m_playerManager;
     TrackCollectionManager* const m_trackCollectionManager;
+    RestServerSettings m_settingsStore;
+    CertificateGenerator m_certificateGenerator;
     std::unique_ptr<RestApiGateway> m_gateway;
     std::unique_ptr<RestServer> m_server;
+    std::optional<RestServer::TlsResult> m_lastTlsConfiguration;
     RestServer::Settings m_activeSettings;
+    RestServerSettings::Status m_status;
     QTimer m_reloadTimer;
     bool m_loggedStartFailure{false};
 };
