@@ -10,18 +10,9 @@
 #include "moc_restservercontroller.cpp"
 #include "mixer/playermanager.h"
 #include "network/rest/restapigateway.h"
-#include "preferences/configobject.h"
 #include "util/logger.h"
 
 namespace {
-constexpr quint16 kDefaultRestPort = 8989;
-const ConfigKey kEnabledKey(QStringLiteral("[Rest]"), QStringLiteral("enabled"));
-const ConfigKey kHostKey(QStringLiteral("[Rest]"), QStringLiteral("host"));
-const ConfigKey kPortKey(QStringLiteral("[Rest]"), QStringLiteral("port"));
-const ConfigKey kTlsEnabledKey(QStringLiteral("[Rest]"), QStringLiteral("tls_enabled"));
-const ConfigKey kCertificatePathKey(QStringLiteral("[Rest]"), QStringLiteral("tls_certificate_path"));
-const ConfigKey kPrivateKeyPathKey(QStringLiteral("[Rest]"), QStringLiteral("tls_private_key_path"));
-const ConfigKey kAuthTokenKey(QStringLiteral("[Rest]"), QStringLiteral("token"));
 constexpr int kRefreshIntervalMs = 2000;
 } // namespace
 
@@ -40,6 +31,8 @@ RestServerController::RestServerController(
           m_settings(settings),
           m_playerManager(playerManager),
           m_trackCollectionManager(trackCollectionManager),
+          m_settingsStore(m_settings),
+          m_certificateGenerator(m_settings->getSettingsPath()),
           m_gateway(std::make_unique<RestApiGateway>(
                   m_playerManager,
                   m_trackCollectionManager,
@@ -60,30 +53,52 @@ RestServerController::~RestServerController() {
 
 RestServer::Settings RestServerController::loadSettings() const {
     RestServer::Settings settings;
-    if (m_settings) {
-        settings.enabled = m_settings->getValue<bool>(kEnabledKey, false);
-        const QString hostValue = m_settings->getValue<QString>(
-                kHostKey, QHostAddress(QHostAddress::LocalHost).toString());
-        QHostAddress address;
-        if (!address.setAddress(hostValue)) {
-            kLogger.warning()
-                    << "Invalid REST API host address configured:"
-                    << hostValue
-                    << "falling back to localhost";
-            address = QHostAddress::LocalHost;
-        }
-        settings.address = address;
-        const int configuredPort = m_settings->getValue<int>(kPortKey, kDefaultRestPort);
-        settings.port = qBound(1, configuredPort, 65535);
-        settings.tlsEnabled = m_settings->getValue<bool>(kTlsEnabledKey, false);
-        settings.certificatePath = m_settings->getValue<QString>(kCertificatePathKey);
-        settings.privateKeyPath = m_settings->getValue<QString>(kPrivateKeyPathKey);
-        settings.authToken = m_settings->getValue<QString>(kAuthTokenKey);
+    const RestServerSettings::Values values = m_settingsStore.get();
+    settings.enabled = values.enabled;
+
+    QHostAddress address;
+    if (!address.setAddress(values.host)) {
+        kLogger.warning()
+                << "Invalid REST API host address configured:"
+                << values.host
+                << "falling back to localhost";
+        address = QHostAddress::LocalHost;
     }
+    settings.address = address;
+    settings.port = qBound(1, values.port, 65535);
+    settings.useHttps = values.useHttps;
+    settings.autoGenerateCertificate = values.autoGenerateCert;
+    settings.requireTls = values.requireTls;
+    settings.certificatePath = values.certificatePath;
+    settings.privateKeyPath = values.privateKeyPath;
+    settings.authToken = values.authToken;
     return settings;
 }
 
 void RestServerController::applySettings(const RestServer::Settings& settings) {
+    auto publishStatus = [this](const RestServerSettings::Status& status) {
+        if (status.running == m_status.running &&
+                status.tlsActive == m_status.tlsActive &&
+                status.certificateGenerated == m_status.certificateGenerated &&
+                status.lastError == m_status.lastError &&
+                status.tlsError == m_status.tlsError) {
+            return;
+        }
+        m_status = status;
+        m_settingsStore.setStatus(status);
+    };
+
+    auto publishStartFailure = [&](const QString& message, const QString& tlsMessage, bool running) {
+        RestServerSettings::Status status;
+        status.running = running;
+        status.tlsActive = running && m_activeSettings.useHttps;
+        status.certificateGenerated = m_lastTlsConfiguration.has_value() &&
+                m_lastTlsConfiguration->generated && status.tlsActive;
+        status.lastError = message;
+        status.tlsError = tlsMessage;
+        publishStatus(status);
+    };
+
     if (settings != m_activeSettings) {
         m_loggedStartFailure = false;
     }
@@ -95,25 +110,101 @@ void RestServerController::applySettings(const RestServer::Settings& settings) {
         }
         m_loggedStartFailure = false;
         m_activeSettings = settings;
-        return;
-    }
-
-    if (settings == m_activeSettings && m_server && m_server->isRunning()) {
+        m_lastTlsConfiguration.reset();
+        publishStatus(RestServerSettings::Status{});
         return;
     }
 
     if (!m_server) {
         kLogger.warning() << "REST API server missing; cannot start";
+        publishStartFailure(tr("REST API server is unavailable"), QString(), false);
         return;
     }
 
-    if (m_server->start(settings)) {
-        m_activeSettings = settings;
+    const bool wasRunning = m_server->isRunning();
+    const RestServer::Settings previousSettings = m_activeSettings;
+    const std::optional<RestServer::TlsResult> previousTlsConfiguration = m_lastTlsConfiguration;
+
+    RestServer::Settings settingsToApply = settings;
+    std::optional<RestServer::TlsResult> tlsConfiguration;
+    QString tlsError;
+    if (settingsToApply.useHttps) {
+        const RestServer::TlsResult tlsResult = RestServer::prepareTlsConfiguration(
+                settingsToApply, &m_certificateGenerator);
+        if (!tlsResult.success) {
+            if (!m_loggedStartFailure) {
+                kLogger.warning() << "Failed to prepare REST API TLS configuration:" << tlsResult.error;
+                m_loggedStartFailure = true;
+            }
+            publishStartFailure(tr("TLS configuration failed"), tlsResult.error, wasRunning);
+            return;
+        }
+        tlsConfiguration = tlsResult;
+        settingsToApply.certificatePath = tlsResult.certificatePath;
+        settingsToApply.privateKeyPath = tlsResult.privateKeyPath;
+    }
+
+    if (settingsToApply == m_activeSettings && wasRunning) {
+        RestServerSettings::Status status;
+        status.running = true;
+        status.tlsActive = settingsToApply.useHttps;
+        status.certificateGenerated = tlsConfiguration.has_value() && tlsConfiguration->generated;
+        publishStatus(status);
+        return;
+    }
+
+    if (wasRunning) {
+        m_server->stop();
+    }
+
+    QString startError;
+    if (m_server->start(settingsToApply, tlsConfiguration, &startError)) {
+        m_activeSettings = settingsToApply;
+        m_lastTlsConfiguration = tlsConfiguration;
         m_loggedStartFailure = false;
-    } else {
-        if (!m_loggedStartFailure) {
-            kLogger.warning() << "Failed to start REST API server";
-            m_loggedStartFailure = true;
+
+        if (settingsToApply.autoGenerateCertificate) {
+            RestServerSettings::Values storedValues = m_settingsStore.get();
+            storedValues.certificatePath = settingsToApply.certificatePath;
+            storedValues.privateKeyPath = settingsToApply.privateKeyPath;
+            m_settingsStore.set(storedValues);
+        }
+
+        RestServerSettings::Status status;
+        status.running = true;
+        status.tlsActive = settingsToApply.useHttps;
+        status.certificateGenerated = tlsConfiguration.has_value() && tlsConfiguration->generated;
+        publishStatus(status);
+        return;
+    }
+
+    if (!m_loggedStartFailure) {
+        kLogger.warning() << "Failed to start REST API server:" << startError;
+        m_loggedStartFailure = true;
+    }
+    publishStartFailure(
+            startError.isEmpty() ? tr("Failed to start REST API server") : startError,
+            tlsError,
+            wasRunning);
+
+    if (wasRunning && previousSettings.enabled) {
+        QString restartError;
+        if (m_server->start(previousSettings, previousTlsConfiguration, &restartError)) {
+            m_activeSettings = previousSettings;
+            m_lastTlsConfiguration = previousTlsConfiguration;
+            RestServerSettings::Status status;
+            status.running = true;
+            status.tlsActive = previousSettings.useHttps;
+            status.certificateGenerated = previousTlsConfiguration.has_value() &&
+                    previousTlsConfiguration->generated;
+            publishStatus(status);
+        } else {
+            publishStartFailure(
+                    restartError.isEmpty()
+                            ? tr("Failed to restart REST API with previous settings")
+                            : restartError,
+                    QString(),
+                    false);
         }
     }
 }

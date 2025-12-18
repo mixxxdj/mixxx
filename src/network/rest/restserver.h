@@ -8,6 +8,7 @@
 #include <QHttpServerResponse>
 #include <QJsonObject>
 #include <QPointer>
+#include <QSslConfiguration>
 #include <QThread>
 #include <functional>
 #include <memory>
@@ -20,6 +21,7 @@ class QObject;
 namespace mixxx::network::rest {
 
 class RestApiGateway;
+class CertificateGenerator;
 
 class RestServer : public QObject {
     Q_OBJECT
@@ -29,7 +31,9 @@ class RestServer : public QObject {
         bool enabled{false};
         QHostAddress address{QHostAddress::LocalHost};
         quint16 port{0};
-        bool tlsEnabled{false};
+        bool useHttps{false};
+        bool autoGenerateCertificate{false};
+        bool requireTls{false};
         QString certificatePath;
         QString privateKeyPath;
         QString authToken;
@@ -38,7 +42,9 @@ class RestServer : public QObject {
             return lhs.enabled == rhs.enabled &&
                     lhs.address == rhs.address &&
                     lhs.port == rhs.port &&
-                    lhs.tlsEnabled == rhs.tlsEnabled &&
+                    lhs.useHttps == rhs.useHttps &&
+                    lhs.autoGenerateCertificate == rhs.autoGenerateCertificate &&
+                    lhs.requireTls == rhs.requireTls &&
                     lhs.certificatePath == rhs.certificatePath &&
                     lhs.privateKeyPath == rhs.privateKeyPath &&
                     lhs.authToken == rhs.authToken;
@@ -49,14 +55,34 @@ class RestServer : public QObject {
         }
     };
 
+    struct TlsResult {
+        bool success{false};
+        bool generated{false};
+        QString error;
+        QString certificatePath;
+        QString privateKeyPath;
+        QSslConfiguration configuration;
+    };
+
     explicit RestServer(RestApiGateway* gateway, QObject* parent = nullptr);
     ~RestServer() override;
 
-    bool start(const Settings& settings);
+    static TlsResult prepareTlsConfiguration(
+            const Settings& settings,
+            CertificateGenerator* certificateGenerator);
+
+    bool start(
+            const Settings& settings,
+            const std::optional<TlsResult>& tlsConfiguration = std::nullopt,
+            QString* error = nullptr);
     void stop();
 
     bool isRunning() const {
         return m_isRunning;
+    }
+
+    QString lastError() const {
+        return m_lastError;
     }
 
   signals:
@@ -72,19 +98,24 @@ class RestServer : public QObject {
             const QJsonObject& body,
             QHttpServerResponse::StatusCode status) const;
 
+    QHttpServerResponse tlsRequiredResponse() const;
     bool applyTlsConfiguration();
     bool checkAuthorization(const QHttpServerRequest& request) const;
+    bool controlRouteRequiresTls(const QHttpServerRequest& request) const;
     void registerRoutes();
     bool startOnThread();
     void stopOnThread();
 
     std::unique_ptr<QObject> m_threadObject;
     std::unique_ptr<QHttpServer> m_httpServer;
+    std::optional<TlsResult> m_tlsConfiguration;
     Settings m_settings;
     QPointer<RestApiGateway> m_gateway;
     QThread m_thread;
     bool m_isRunning;
+    bool m_tlsActive{false};
     quint16 m_listeningPort;
+    QString m_lastError;
 
     static const Logger kLogger;
 };

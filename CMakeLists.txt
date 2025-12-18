@@ -3725,8 +3725,12 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
       mixxx-lib
       PRIVATE
         src/network/rest/restapigateway.cpp
+        src/network/rest/certificategenerator.cpp
         src/network/rest/restserver.cpp
         src/network/rest/restservercontroller.cpp
+        src/preferences/restserversettings.cpp
+        src/preferences/dialog/dlgprefrestserver.cpp
+        src/preferences/dialog/dlgprefrestserverdlg.ui
     )
   else()
     message(STATUS "Qt HttpServer module not found; REST API server disabled")
