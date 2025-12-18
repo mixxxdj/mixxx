@@ -6,6 +6,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
+#include <QElapsedTimer>
 #include <optional>
 #include <functional>
 
@@ -25,7 +26,10 @@ class RestApiProvider : public QObject {
     ~RestApiProvider() override = default;
 
     virtual QHttpServerResponse health() const = 0;
+    virtual QHttpServerResponse ready() const = 0;
     virtual QHttpServerResponse status() const = 0;
+    virtual QHttpServerResponse deck(int deckNumber) const = 0;
+    virtual QHttpServerResponse decks() const = 0;
     virtual QHttpServerResponse control(const QJsonObject& body) const = 0;
     virtual QHttpServerResponse autoDjStatus() const = 0;
     virtual QHttpServerResponse autoDj(const QJsonObject& body) const = 0;
@@ -44,7 +48,10 @@ class RestApiGateway : public RestApiProvider {
             QObject* parent = nullptr);
 
     QHttpServerResponse health() const;
+    QHttpServerResponse ready() const;
     QHttpServerResponse status() const;
+    QHttpServerResponse deck(int deckNumber) const;
+    QHttpServerResponse decks() const;
     QHttpServerResponse control(
             const QString& group,
             const QString& key,
@@ -67,7 +74,9 @@ class RestApiGateway : public RestApiProvider {
             const std::function<QHttpServerResponse(PlaylistDAO&)>& handler) const;
     QJsonArray deckStatuses() const;
     QJsonObject deckSummary(int deckIndex) const;
+    QJsonObject readinessPayload() const;
     QJsonObject appInfo() const;
+    QJsonObject systemHealth() const;
     QJsonObject mixerState() const;
     QJsonObject broadcastState() const;
     QJsonObject recordingState() const;
@@ -75,11 +84,14 @@ class RestApiGateway : public RestApiProvider {
     QJsonObject trackPayload(const TrackPointer& track) const;
     QList<TrackId> parseTrackIds(const QJsonArray& values, QStringList* errors) const;
     int ensureAutoDjPlaylistId(PlaylistDAO& playlistDao) const;
+    std::optional<double> cpuUsagePercent() const;
+    std::optional<quint64> rssBytes() const;
 
     PlayerManager* const m_playerManager;
     TrackCollectionManager* const m_trackCollectionManager;
     [[maybe_unused]] const UserSettingsPointer m_settings;
     int m_activePlaylistId{-1};
+    QElapsedTimer m_uptime;
 };
 
 } // namespace mixxx::network::rest

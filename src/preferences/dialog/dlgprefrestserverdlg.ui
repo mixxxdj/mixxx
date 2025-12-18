@@ -56,23 +56,144 @@
     </layout>
    </widget>
   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBoxAuthentication">
-     <property name="title">
-      <string>Authentication</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayoutAuth">
+  <item>
+   <widget class="QGroupBox" name="groupBoxAuthentication">
+    <property name="title">
+     <string>Authentication</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayoutAuth">
+     <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutTokens">
+        <item>
+         <widget class="QTableWidget" name="tableTokens">
+          <property name="columnCount">
+           <number>4</number>
+          </property>
+          <column>
+           <property name="text">
+            <string>Token</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Description</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Permission</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Expires</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayoutTokenButtons">
+          <item>
+           <widget class="QPushButton" name="pushButtonAddToken">
+            <property name="text">
+             <string>Add</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonRemoveToken">
+            <property name="text">
+             <string>Remove</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonRegenerateToken">
+            <property name="text">
+             <string>Regenerate</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacerTokens">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
       <item>
-       <layout class="QFormLayout" name="formLayoutAuth">
+       <layout class="QFormLayout" name="formLayoutTokenDetails">
         <item row="0" column="0">
-         <widget class="QLabel" name="labelToken">
+         <widget class="QLabel" name="labelTokenValue">
           <property name="text">
            <string>Token:</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEditAuthToken"/>
+         <widget class="QLineEdit" name="lineEditTokenValue">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelTokenDescription">
+          <property name="text">
+           <string>Description:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEditTokenDescription"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelTokenPermission">
+          <property name="text">
+           <string>Permission:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboTokenPermission">
+          <item>
+           <property name="text">
+            <string>read</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>full</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelTokenExpires">
+          <property name="text">
+           <string>Expires:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDateTimeEdit" name="dateTimeEditTokenExpires">
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+          <property name="specialValueText">
+           <string>Never</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -93,9 +214,9 @@
           <property name="visible">
            <bool>false</bool>
           </property>
-          <property name="text">
-           <string>Basic authentication without TLS will expose your credentials. Enable HTTPS to protect the REST API.</string>
-          </property>
+         <property name="text">
+           <string>Access tokens sent without HTTPS can be intercepted. Enable HTTPS to protect the REST API.</string>
+         </property>
           <property name="wordWrap">
            <bool>true</bool>
           </property>

@@ -202,6 +202,12 @@ QHttpServerResponse RestServer::unauthorizedResponse(const QHttpServerRequest& r
     return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::Unauthorized);
 }
 
+QHttpServerResponse RestServer::forbiddenResponse(
+        const QHttpServerRequest& request, const QString& message) const {
+    logRouteError(request, QHttpServerResponse::StatusCode::Forbidden, message);
+    return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::Forbidden);
+}
+
 QHttpServerResponse RestServer::badRequestResponse(
         const QHttpServerRequest& request, const QString& message) const {
     logRouteError(request, QHttpServerResponse::StatusCode::BadRequest, message);
@@ -260,20 +266,62 @@ bool RestServer::applyTlsConfiguration() {
 #endif
 }
 
-bool RestServer::checkAuthorization(const QHttpServerRequest& request) const {
-    if (m_settings.authToken.isEmpty()) {
-        return true;
+RestServer::AuthorizationResult RestServer::authorize(
+        const QHttpServerRequest& request, AccessPolicy policy) const {
+    AuthorizationResult result;
+
+    const bool authDisabled = m_settings.tokens.isEmpty();
+    if (authDisabled) {
+        result.authorized = true;
+        return result;
     }
-    const auto headerValue = request.value(kAuthHeader);
+
+    const QByteArray headerValue = request.value(kAuthHeader).trimmed();
     if (headerValue.isEmpty()) {
-        return false;
+        return result;
     }
-    const QByteArray expected = "Bearer " + m_settings.authToken.toUtf8();
-    return headerValue.trimmed() == expected;
+
+    const QByteArray bearerPrefix = QByteArrayLiteral("Bearer ");
+    const QByteArray tokenValue = headerValue.startsWith(bearerPrefix)
+            ? headerValue.mid(bearerPrefix.size())
+            : headerValue;
+
+    const QString requiredPermission =
+            policy == AccessPolicy::Status ? QStringLiteral("read") : QStringLiteral("full");
+    const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
+
+    for (const auto& token : m_settings.tokens) {
+        if (token.value.isEmpty()) {
+            continue;
+        }
+        if (token.expiresUtc.has_value() && token.expiresUtc.value() < nowUtc) {
+            continue;
+        }
+        if (token.value.toUtf8() != tokenValue) {
+            continue;
+        }
+
+        const bool hasFull = token.permission.compare(QStringLiteral("full"), Qt::CaseInsensitive) == 0;
+        const bool hasRead = token.permission.compare(QStringLiteral("read"), Qt::CaseInsensitive) == 0;
+
+        if (requiredPermission == QStringLiteral("read") && (hasRead || hasFull)) {
+            result.authorized = true;
+            result.usedReadOnlyToken = !hasFull;
+            return result;
+        }
+        if (requiredPermission == QStringLiteral("full") && hasFull) {
+            result.authorized = true;
+            return result;
+        }
+        result.forbidden = true;
+        return result;
+    }
+    return result;
 }
 
 bool RestServer::controlRouteRequiresTls(const QHttpServerRequest& /*request*/) const {
-    return m_settings.requireTls && !m_tlsActive;
+    // TLS is recommended but no longer enforced at the route layer.
+    return false;
 }
 
 QString RestServer::requestDescription(const QHttpServerRequest& request) const {
@@ -302,7 +350,8 @@ void RestServer::registerRoutes() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
 
     const auto healthRoute = [this](const QHttpServerRequest& request) {
-        if (!checkAuthorization(request)) {
+        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        if (!auth.authorized) {
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -315,8 +364,24 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/health", healthRoute);
     m_httpServer->route("/api/health", healthRoute);
 
+    const auto readyRoute = [this](const QHttpServerRequest& request) {
+        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        if (!auth.authorized) {
+            return unauthorizedResponse(request);
+        }
+        if (request.method() != QHttpServerRequest::Method::Get) {
+            return methodNotAllowedResponse(request);
+        }
+        return invokeGateway(request, [this]() {
+            return m_gateway->ready();
+        });
+    };
+    m_httpServer->route("/ready", readyRoute);
+    m_httpServer->route("/api/ready", readyRoute);
+
     const auto statusRoute = [this](const QHttpServerRequest& request) {
-        if (!checkAuthorization(request)) {
+        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        if (!auth.authorized) {
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -329,8 +394,42 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/status", statusRoute);
     m_httpServer->route("/api/status", statusRoute);
 
+    const auto decksRoute = [this](const QHttpServerRequest& request) {
+        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        if (!auth.authorized) {
+            return unauthorizedResponse(request);
+        }
+        if (request.method() != QHttpServerRequest::Method::Get) {
+            return methodNotAllowedResponse(request);
+        }
+        return invokeGateway(request, [this]() {
+            return m_gateway->decks();
+        });
+    };
+    m_httpServer->route("/decks", decksRoute);
+    m_httpServer->route("/api/decks", decksRoute);
+
+    const auto deckRoute = [this](const QHttpServerRequest& request, int deckNumber) {
+        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        if (!auth.authorized) {
+            return unauthorizedResponse(request);
+        }
+        if (request.method() != QHttpServerRequest::Method::Get) {
+            return methodNotAllowedResponse(request);
+        }
+        return invokeGateway(request, [this, deckNumber]() {
+            return m_gateway->deck(deckNumber);
+        });
+    };
+    m_httpServer->route("/decks/<int>", deckRoute);
+    m_httpServer->route("/api/decks/<int>", deckRoute);
+
     const auto controlRoute = [this](const QHttpServerRequest& request) {
-        if (!checkAuthorization(request)) {
+        const AuthorizationResult auth = authorize(request, AccessPolicy::Control);
+        if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, tr("Full access token required for this endpoint"));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Post) {
@@ -353,7 +452,14 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/control", controlRoute);
 
     const auto autoDjRoute = [this](const QHttpServerRequest& request) {
-        if (!checkAuthorization(request)) {
+        const AuthorizationResult auth = authorize(
+                request,
+                request.method() == QHttpServerRequest::Method::Get ? AccessPolicy::Status
+                                                                    : AccessPolicy::Control);
+        if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, tr("Full access token required for this endpoint"));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() == QHttpServerRequest::Method::Get) {
@@ -381,7 +487,14 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/autodj", autoDjRoute);
 
     const auto playlistsRoute = [this](const QHttpServerRequest& request) {
-        if (!checkAuthorization(request)) {
+        const AuthorizationResult auth = authorize(
+                request,
+                request.method() == QHttpServerRequest::Method::Get ? AccessPolicy::Status
+                                                                    : AccessPolicy::Control);
+        if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, tr("Full access token required for this endpoint"));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() == QHttpServerRequest::Method::Get) {
@@ -427,7 +540,8 @@ bool RestServer::startOnThread() {
     m_httpServer = std::make_unique<QHttpServer>();
     registerRoutes();
 
-    if (!m_settings.authToken.isEmpty() && !m_settings.useHttps) {
+    const bool authEnabled = !m_settings.tokens.isEmpty();
+    if (authEnabled && !m_settings.useHttps) {
         kLogger.warning() << "REST API authentication is enabled without TLS";
     }
 

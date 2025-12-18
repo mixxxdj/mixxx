@@ -4,6 +4,10 @@
 
 #include <QHostAddress>
 #include <QtGlobal>
+#include <QDateTime>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <limits>
 
 namespace {
@@ -17,7 +21,7 @@ const QString kConfigUseHttps = QStringLiteral("tls_enabled");
 const QString kConfigAutoGenerate = QStringLiteral("auto_generate_certificate");
 const QString kConfigCertificatePath = QStringLiteral("tls_certificate_path");
 const QString kConfigPrivateKeyPath = QStringLiteral("tls_private_key_path");
-const QString kConfigAuthToken = QStringLiteral("token");
+const QString kConfigTokens = QStringLiteral("tokens");
 const QString kConfigRequireTls = QStringLiteral("require_tls");
 const QString kConfigStatusRunning = QStringLiteral("status_running");
 const QString kConfigStatusTlsActive = QStringLiteral("status_tls_active");
@@ -37,6 +41,9 @@ RestServerSettings::Values applyDefaults(const RestServerSettings::Values& value
     sanitized.httpsPort = ensurePort(sanitized.httpsPort, RestServerSettings::kDefaultHttpsPort);
     if (sanitized.enableHttp && sanitized.useHttps && sanitized.httpPort == sanitized.httpsPort) {
         sanitized.httpsPort = ensurePort(sanitized.httpPort + 1, RestServerSettings::kDefaultHttpsPort);
+    }
+    if (sanitized.tokens.size() > RestServerSettings::kMaxTokens) {
+        sanitized.tokens = sanitized.tokens.mid(0, RestServerSettings::kMaxTokens);
     }
     return sanitized;
 }
@@ -59,7 +66,32 @@ RestServerSettings::Values RestServerSettings::get() const {
     values.autoGenerateCert = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigAutoGenerate), false);
     values.certificatePath = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigCertificatePath), QString());
     values.privateKeyPath = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigPrivateKeyPath), QString());
-    values.authToken = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigAuthToken), QString());
+    const QString tokensJson = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigTokens), QString());
+    const QJsonDocument tokensDoc = QJsonDocument::fromJson(tokensJson.toUtf8());
+    const QJsonArray tokenArray = tokensDoc.isArray() ? tokensDoc.array() : QJsonArray{};
+    for (const auto& value : tokenArray) {
+        if (!value.isObject()) {
+            continue;
+        }
+        const QJsonObject obj = value.toObject();
+        RestServerToken token;
+        token.value = obj.value(QStringLiteral("token")).toString();
+        token.description = obj.value(QStringLiteral("description")).toString();
+        token.permission = obj.value(QStringLiteral("permission")).toString();
+        token.createdUtc = QDateTime::fromString(
+                obj.value(QStringLiteral("created_utc")).toString(),
+                Qt::ISODate);
+        if (!token.createdUtc.isValid()) {
+            token.createdUtc = QDateTime::currentDateTimeUtc();
+        }
+        const QString expires = obj.value(QStringLiteral("expires_utc")).toString();
+        if (!expires.isEmpty()) {
+            token.expiresUtc = QDateTime::fromString(expires, Qt::ISODate);
+        }
+        if (!token.value.isEmpty()) {
+            values.tokens.append(token);
+        }
+    }
     values.requireTls = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigRequireTls), false);
     return applyDefaults(values);
 }
@@ -75,7 +107,29 @@ void RestServerSettings::set(const Values& values) {
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigAutoGenerate), sanitized.autoGenerateCert);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigCertificatePath), sanitized.certificatePath);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigPrivateKeyPath), sanitized.privateKeyPath);
-    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigAuthToken), sanitized.authToken);
+    QJsonArray tokenArray;
+    tokenArray.reserve(sanitized.tokens.size());
+    int count = 0;
+    for (const auto& token : sanitized.tokens) {
+        if (token.value.isEmpty()) {
+            continue;
+        }
+        if (count >= kMaxTokens) {
+            break;
+        }
+        QJsonObject object;
+        object.insert(QStringLiteral("token"), token.value);
+        object.insert(QStringLiteral("description"), token.description);
+        object.insert(QStringLiteral("permission"), token.permission);
+        object.insert(QStringLiteral("created_utc"), token.createdUtc.toString(Qt::ISODate));
+        if (token.expiresUtc.has_value()) {
+            object.insert(QStringLiteral("expires_utc"), token.expiresUtc->toString(Qt::ISODate));
+        }
+        tokenArray.append(object);
+        ++count;
+    }
+    const QJsonDocument tokensDoc(tokenArray);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigTokens), QString::fromUtf8(tokensDoc.toJson(QJsonDocument::Compact)));
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigRequireTls), sanitized.requireTls);
 }
 
@@ -90,7 +144,7 @@ RestServerSettings::Values RestServerSettings::defaults() const {
     values.autoGenerateCert = false;
     values.certificatePath = QString();
     values.privateKeyPath = QString();
-    values.authToken = QString();
+    values.tokens.clear();
     values.requireTls = false;
     return values;
 }

@@ -2,11 +2,13 @@
 
 #ifdef MIXXX_HAS_HTTP_SERVER
 
+#include <QDateTime>
 #include <QHostAddress>
 #include <QHttpServer>
 #include <QHttpServerRequest>
 #include <QHttpServerResponse>
 #include <QJsonObject>
+#include <QList>
 #include <QPointer>
 #include <QSslConfiguration>
 #include <QThread>
@@ -29,6 +31,33 @@ class RestServer : public QObject {
     Q_OBJECT
 
   public:
+    enum class AccessPolicy {
+        Status,
+        Control,
+    };
+
+    struct Token {
+        QString value;
+        QString description;
+        QString permission; // e.g. "read", "full"
+        QDateTime createdUtc;
+        std::optional<QDateTime> expiresUtc;
+
+        friend bool operator==(const Token& lhs, const Token& rhs) {
+            return lhs.value == rhs.value &&
+                    lhs.description == rhs.description &&
+                    lhs.permission == rhs.permission &&
+                    lhs.createdUtc == rhs.createdUtc &&
+                    lhs.expiresUtc == rhs.expiresUtc;
+        }
+    };
+
+    struct AuthorizationResult {
+        bool authorized{false};
+        bool forbidden{false};
+        bool usedReadOnlyToken{false};
+    };
+
     struct Settings {
         bool enabled{false};
         QString host;
@@ -41,7 +70,7 @@ class RestServer : public QObject {
         bool requireTls{false};
         QString certificatePath;
         QString privateKeyPath;
-        QString authToken;
+        QList<Token> tokens;
 
         friend bool operator==(const Settings& lhs, const Settings& rhs) {
             return lhs.enabled == rhs.enabled &&
@@ -55,7 +84,7 @@ class RestServer : public QObject {
                     lhs.requireTls == rhs.requireTls &&
                     lhs.certificatePath == rhs.certificatePath &&
                     lhs.privateKeyPath == rhs.privateKeyPath &&
-                    lhs.authToken == rhs.authToken;
+                    lhs.tokens == rhs.tokens;
         }
 
         friend bool operator!=(const Settings& lhs, const Settings& rhs) {
@@ -102,6 +131,9 @@ class RestServer : public QObject {
             const QHttpServerRequest& request,
             const std::function<QHttpServerResponse()>& action) const;
     QHttpServerResponse unauthorizedResponse(const QHttpServerRequest& request) const;
+    QHttpServerResponse forbiddenResponse(
+            const QHttpServerRequest& request,
+            const QString& message) const;
     QHttpServerResponse badRequestResponse(
             const QHttpServerRequest& request, const QString& message) const;
     QHttpServerResponse methodNotAllowedResponse(const QHttpServerRequest& request) const;
@@ -112,7 +144,9 @@ class RestServer : public QObject {
 
     QHttpServerResponse tlsRequiredResponse(const QHttpServerRequest& request) const;
     bool applyTlsConfiguration();
-    bool checkAuthorization(const QHttpServerRequest& request) const;
+    AuthorizationResult authorize(
+            const QHttpServerRequest& request,
+            AccessPolicy policy) const;
     bool controlRouteRequiresTls(const QHttpServerRequest& request) const;
     void registerRoutes();
     void logRouteError(

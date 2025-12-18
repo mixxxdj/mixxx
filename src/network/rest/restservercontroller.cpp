@@ -73,7 +73,16 @@ RestServerController::ListenerConfiguration RestServerController::loadSettings()
         settings.requireTls = values.requireTls;
         settings.certificatePath = values.certificatePath;
         settings.privateKeyPath = values.privateKeyPath;
-        settings.authToken = values.authToken;
+        settings.tokens.clear();
+        for (const auto& token : values.tokens) {
+            RestServer::Token restToken;
+            restToken.value = token.value;
+            restToken.description = token.description;
+            restToken.permission = token.permission;
+            restToken.createdUtc = token.createdUtc;
+            restToken.expiresUtc = token.expiresUtc;
+            settings.tokens.append(restToken);
+        }
         return settings;
     };
 

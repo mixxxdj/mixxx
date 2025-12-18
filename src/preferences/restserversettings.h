@@ -3,8 +3,27 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <QString>
+#include <QList>
+#include <optional>
+#include <QDateTime>
 
 #include "preferences/usersettings.h"
+
+struct RestServerToken {
+    QString value;
+    QString description;
+    QString permission;
+    QDateTime createdUtc;
+    std::optional<QDateTime> expiresUtc;
+
+    friend bool operator==(const RestServerToken& lhs, const RestServerToken& rhs) {
+        return lhs.value == rhs.value &&
+                lhs.description == rhs.description &&
+                lhs.permission == rhs.permission &&
+                lhs.createdUtc == rhs.createdUtc &&
+                lhs.expiresUtc == rhs.expiresUtc;
+    }
+};
 
 class RestServerSettings {
   public:
@@ -18,7 +37,7 @@ class RestServerSettings {
         bool autoGenerateCert{false};
         QString certificatePath;
         QString privateKeyPath;
-        QString authToken;
+        QList<RestServerToken> tokens;
         bool requireTls{false};
     };
 
@@ -29,6 +48,8 @@ class RestServerSettings {
         QString lastError;
         QString tlsError;
     };
+
+    static constexpr int kMaxTokens = 16;
 
     static constexpr int kDefaultPort = 8989;
     static constexpr int kDefaultHttpsPort = 8990;

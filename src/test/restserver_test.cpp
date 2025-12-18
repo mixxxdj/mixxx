@@ -3,6 +3,7 @@
 
 #ifdef MIXXX_HAS_HTTP_SERVER
 
+#include <QDateTime>
 #include <QEventLoop>
 #include <QFile>
 #include <QJsonDocument>
@@ -44,8 +45,20 @@ class StubRestApiGateway : public RestApiProvider {
         return jsonResponse("health");
     }
 
+    QHttpServerResponse ready() const override {
+        return jsonResponse("ready");
+    }
+
     QHttpServerResponse status() const override {
         return jsonResponse("status");
+    }
+
+    QHttpServerResponse deck(int /*deckNumber*/) const override {
+        return jsonResponse("deck");
+    }
+
+    QHttpServerResponse decks() const override {
+        return jsonResponse("decks");
     }
 
     QHttpServerResponse control(const QJsonObject&) const override {
@@ -207,7 +220,11 @@ TEST(RestServerRoutesTest, EnforcesAuthorization) {
     const int port = findFreePort();
 
     RestServer::Settings settings = baseSettings(port);
-    settings.authToken = QStringLiteral("secret-token");
+    RestServer::Token token;
+    token.value = QStringLiteral("secret-token");
+    token.permission = QStringLiteral("full");
+    token.createdUtc = QDateTime::currentDateTimeUtc();
+    settings.tokens.append(token);
 
     QString error;
     ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
@@ -225,6 +242,46 @@ TEST(RestServerRoutesTest, EnforcesAuthorization) {
             QByteArray(),
             {{"Authorization", "Bearer secret-token"}});
     EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), authorized.status);
+
+    server.stop();
+}
+
+TEST(RestServerRoutesTest, ReadOnlyTokenAllowsStatusButBlocksControl) {
+    StubRestApiGateway gateway;
+    RestServer server(&gateway);
+    const int port = findFreePort();
+
+    RestServer::Settings settings = baseSettings(port);
+    RestServer::Token token;
+    token.value = QStringLiteral("ro-token");
+    token.permission = QStringLiteral("read");
+    token.createdUtc = QDateTime::currentDateTimeUtc();
+    settings.tokens.append(token);
+
+    QString error;
+    ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
+
+    QNetworkAccessManager manager;
+    const QUrl statusUrl(QStringLiteral("http://127.0.0.1:%1/status").arg(port));
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+
+    const auto statusResponse = sendRequest(
+            &manager,
+            statusUrl,
+            "GET",
+            QByteArray(),
+            {{"Authorization", "Bearer ro-token"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), statusResponse.status);
+
+    const QByteArray controlBody = QJsonDocument(QJsonObject{{"group", "[Master]"}, {"key", "volume"}})
+                                           .toJson(QJsonDocument::Compact);
+    const auto controlResponse = sendRequest(
+            &manager,
+            controlUrl,
+            "POST",
+            controlBody,
+            {{"Authorization", "Bearer ro-token"}, {"Content-Type", "application/json"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), controlResponse.status);
 
     server.stop();
 }
