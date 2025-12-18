@@ -1,5 +1,7 @@
 name: lilv
 buildsystem: meson
+build-options:
+  prepend-pkg-config-path: /app/lib64/pkgconfig
 config-opts:
   - -Dbuildtype=debugoptimized
   - -Dbindings_py=disabled
