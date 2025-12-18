@@ -2891,6 +2891,7 @@ if(BUILD_TESTING)
     src/test/rangelist_test.cpp
     src/test/readaheadmanager_test.cpp
     src/test/replaygaintest.cpp
+    src/test/restserver_test.cpp
     src/test/rescalertest.cpp
     src/test/rgbcolor_test.cpp
     src/test/rotary_test.cpp
@@ -3728,6 +3729,7 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
         src/network/rest/certificategenerator.cpp
         src/network/rest/restserver.cpp
         src/network/rest/restservercontroller.cpp
+        src/network/rest/restservervalidator.cpp
         src/preferences/restserversettings.cpp
         src/preferences/dialog/dlgprefrestserver.cpp
         src/preferences/dialog/dlgprefrestserverdlg.ui

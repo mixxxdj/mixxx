@@ -3,12 +3,16 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <QHostAddress>
+#include <QtGlobal>
+#include <limits>
 
 namespace {
 const QString kConfigGroup = QStringLiteral("[Rest]");
 const QString kConfigEnabled = QStringLiteral("enabled");
+const QString kConfigHttpEnabled = QStringLiteral("http_enabled");
 const QString kConfigHost = QStringLiteral("host");
 const QString kConfigPort = QStringLiteral("port");
+const QString kConfigHttpsPort = QStringLiteral("tls_port");
 const QString kConfigUseHttps = QStringLiteral("tls_enabled");
 const QString kConfigAutoGenerate = QStringLiteral("auto_generate_certificate");
 const QString kConfigCertificatePath = QStringLiteral("tls_certificate_path");
@@ -23,8 +27,16 @@ const QString kConfigStatusTlsError = QStringLiteral("status_tls_error");
 
 RestServerSettings::Values applyDefaults(const RestServerSettings::Values& values) {
     RestServerSettings::Values sanitized = values;
-    if (sanitized.port <= 0 || sanitized.port > 65535) {
-        sanitized.port = RestServerSettings::kDefaultPort;
+    auto ensurePort = [](int port, int fallback) {
+        if (port <= 0 || port > std::numeric_limits<quint16>::max()) {
+            return fallback;
+        }
+        return port;
+    };
+    sanitized.httpPort = ensurePort(sanitized.httpPort, RestServerSettings::kDefaultPort);
+    sanitized.httpsPort = ensurePort(sanitized.httpsPort, RestServerSettings::kDefaultHttpsPort);
+    if (sanitized.enableHttp && sanitized.useHttps && sanitized.httpPort == sanitized.httpsPort) {
+        sanitized.httpsPort = ensurePort(sanitized.httpPort + 1, RestServerSettings::kDefaultHttpsPort);
     }
     return sanitized;
 }
@@ -37,10 +49,12 @@ RestServerSettings::RestServerSettings(UserSettingsPointer pConfig)
 RestServerSettings::Values RestServerSettings::get() const {
     Values values;
     values.enabled = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigEnabled), false);
+    values.enableHttp = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigHttpEnabled), true);
     values.host = m_pConfig->getValue<QString>(
             ConfigKey(kConfigGroup, kConfigHost),
             QHostAddress(QHostAddress::LocalHost).toString());
-    values.port = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kConfigPort), kDefaultPort);
+    values.httpPort = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kConfigPort), kDefaultPort);
+    values.httpsPort = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kConfigHttpsPort), kDefaultHttpsPort);
     values.useHttps = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigUseHttps), false);
     values.autoGenerateCert = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigAutoGenerate), false);
     values.certificatePath = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigCertificatePath), QString());
@@ -53,8 +67,10 @@ RestServerSettings::Values RestServerSettings::get() const {
 void RestServerSettings::set(const Values& values) {
     const Values sanitized = applyDefaults(values);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigEnabled), sanitized.enabled);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigHttpEnabled), sanitized.enableHttp);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigHost), sanitized.host);
-    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigPort), sanitized.port);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigPort), sanitized.httpPort);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigHttpsPort), sanitized.httpsPort);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigUseHttps), sanitized.useHttps);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigAutoGenerate), sanitized.autoGenerateCert);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigCertificatePath), sanitized.certificatePath);
@@ -66,8 +82,10 @@ void RestServerSettings::set(const Values& values) {
 RestServerSettings::Values RestServerSettings::defaults() const {
     Values values;
     values.enabled = false;
+    values.enableHttp = true;
     values.host = QHostAddress(QHostAddress::LocalHost).toString();
-    values.port = kDefaultPort;
+    values.httpPort = kDefaultPort;
+    values.httpsPort = kDefaultHttpsPort;
     values.useHttps = false;
     values.autoGenerateCert = false;
     values.certificatePath = QString();

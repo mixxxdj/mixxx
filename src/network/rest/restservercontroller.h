@@ -38,18 +38,28 @@ class RestServerController : public QObject {
     void refreshFromSettings();
 
   private:
-    RestServer::Settings loadSettings() const;
-    void applySettings(const RestServer::Settings& settings);
+    struct ListenerConfiguration {
+        RestServer::Settings httpSettings;
+        RestServer::Settings httpsSettings;
+        bool enabled{false};
+        bool enableHttp{false};
+        bool enableHttps{false};
+    };
+
+    ListenerConfiguration loadSettings() const;
+    void applySettings(const ListenerConfiguration& configuration);
 
     const UserSettingsPointer m_settings;
     PlayerManager* const m_playerManager;
     TrackCollectionManager* const m_trackCollectionManager;
     RestServerSettings m_settingsStore;
     CertificateGenerator m_certificateGenerator;
-    std::unique_ptr<RestApiGateway> m_gateway;
-    std::unique_ptr<RestServer> m_server;
-    std::optional<RestServer::TlsResult> m_lastTlsConfiguration;
-    RestServer::Settings m_activeSettings;
+    std::unique_ptr<RestApiProvider> m_gateway;
+    std::unique_ptr<RestServer> m_httpServer;
+    std::unique_ptr<RestServer> m_httpsServer;
+    std::optional<RestServer::TlsResult> m_lastHttpsTlsConfiguration;
+    RestServer::Settings m_activeHttpSettings;
+    RestServer::Settings m_activeHttpsSettings;
     RestServerSettings::Status m_status;
     QTimer m_reloadTimer;
     bool m_loggedStartFailure{false};

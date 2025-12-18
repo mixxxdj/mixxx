@@ -25,6 +25,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void slotUseHttpsChanged(bool checked);
     void slotAutoGenerateCertificateChanged(bool checked);
     void slotEnableRestServerChanged(bool checked);
+    void slotEnableHttpChanged(bool checked);
     void slotBrowseCertificate();
     void slotBrowseKey();
     void slotTokenChanged(const QString& token);

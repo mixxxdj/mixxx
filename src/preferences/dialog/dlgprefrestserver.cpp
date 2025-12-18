@@ -4,6 +4,8 @@
 
 #include <QFileDialog>
 #include <QIcon>
+#include <limits>
+#include <QtGlobal>
 
 #include "moc_dlgprefrestserver.cpp"
 
@@ -13,13 +15,19 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     setupUi(this);
     createLinkColor();
 
-    spinBoxPort->setMinimum(1);
-    spinBoxPort->setMaximum(65535);
+    spinBoxHttpPort->setMinimum(1);
+    spinBoxHttpPort->setMaximum(std::numeric_limits<quint16>::max());
+    spinBoxHttpsPort->setMinimum(1);
+    spinBoxHttpsPort->setMaximum(std::numeric_limits<quint16>::max());
 
     labelAuthWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelTlsStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
 
+    connect(checkBoxEnableHttp,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefRestServer::slotEnableHttpChanged);
     connect(checkBoxUseHttps,
             &QCheckBox::toggled,
             this,
@@ -75,6 +83,11 @@ void DlgPrefRestServer::slotUseHttpsChanged(bool /*checked*/) {
     updateAuthWarning();
 }
 
+void DlgPrefRestServer::slotEnableHttpChanged(bool checked) {
+    spinBoxHttpPort->setEnabled(checked);
+    updateAuthWarning();
+}
+
 void DlgPrefRestServer::slotAutoGenerateCertificateChanged(bool /*checked*/) {
     updateTlsState();
 }
@@ -106,12 +119,14 @@ void DlgPrefRestServer::slotTokenChanged(const QString& /*token*/) {
 
 void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     checkBoxEnableRestServer->setChecked(values.enabled);
+    checkBoxEnableHttp->setChecked(values.enableHttp);
     groupBoxNetwork->setEnabled(values.enabled);
     groupBoxAuthentication->setEnabled(values.enabled);
     groupBoxTls->setEnabled(values.enabled);
 
     lineEditHost->setText(values.host);
-    spinBoxPort->setValue(values.port);
+    spinBoxHttpPort->setValue(values.httpPort);
+    spinBoxHttpsPort->setValue(values.httpsPort);
     lineEditAuthToken->setText(values.authToken);
     checkBoxUseHttps->setChecked(values.useHttps);
     checkBoxAutoGenerateCertificate->setChecked(values.autoGenerateCert);
@@ -119,6 +134,7 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     lineEditKeyPath->setText(values.privateKeyPath);
     checkBoxRequireTls->setChecked(values.requireTls);
 
+    slotEnableHttpChanged(values.enableHttp);
     updateTlsState();
     updateAuthWarning();
 }
@@ -126,8 +142,10 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
 RestServerSettings::Values DlgPrefRestServer::gatherValues() const {
     RestServerSettings::Values values;
     values.enabled = checkBoxEnableRestServer->isChecked();
+    values.enableHttp = checkBoxEnableHttp->isChecked();
     values.host = lineEditHost->text();
-    values.port = spinBoxPort->value();
+    values.httpPort = spinBoxHttpPort->value();
+    values.httpsPort = spinBoxHttpsPort->value();
     values.authToken = lineEditAuthToken->text();
     values.useHttps = checkBoxUseHttps->isChecked();
     values.autoGenerateCert = values.useHttps && checkBoxAutoGenerateCertificate->isChecked();
@@ -141,6 +159,8 @@ void DlgPrefRestServer::updateTlsState() {
     const bool useHttps = checkBoxUseHttps->isChecked();
     const bool autoGenerate = checkBoxAutoGenerateCertificate->isChecked();
 
+    spinBoxHttpsPort->setEnabled(useHttps);
+
     checkBoxAutoGenerateCertificate->setEnabled(useHttps);
     checkBoxRequireTls->setEnabled(useHttps || checkBoxRequireTls->isChecked());
     lineEditCertPath->setEnabled(useHttps && !autoGenerate);
@@ -153,6 +173,7 @@ void DlgPrefRestServer::updateTlsState() {
 
 void DlgPrefRestServer::updateAuthWarning() {
     const bool showWarning = checkBoxEnableRestServer->isChecked() &&
+            checkBoxEnableHttp->isChecked() &&
             !lineEditAuthToken->text().isEmpty() &&
             !checkBoxUseHttps->isChecked();
     labelAuthWarningIcon->setVisible(showWarning);

@@ -915,6 +915,13 @@ void CoreServices::finalize() {
     Timer t("CoreServices::~CoreServices");
     t.start();
 
+#if defined(MIXXX_HAS_HTTP_SERVER)
+    if (m_pRestServerController) {
+        m_pRestServerController->shutdown();
+        m_pRestServerController.reset();
+    }
+#endif
+
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
@@ -926,13 +933,6 @@ void CoreServices::finalize() {
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
     ControllerScriptEngineBase::registerPlayerManager(nullptr);
-
-#if defined(MIXXX_HAS_HTTP_SERVER)
-    if (m_pRestServerController) {
-        m_pRestServerController->shutdown();
-        m_pRestServerController.reset();
-    }
-#endif
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

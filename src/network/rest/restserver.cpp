@@ -26,7 +26,7 @@ constexpr auto kAuthHeader = "Authorization";
 
 const Logger RestServer::kLogger("mixxx::network::rest::RestServer");
 
-RestServer::RestServer(RestApiGateway* gateway, QObject* parent)
+RestServer::RestServer(RestApiProvider* gateway, QObject* parent)
         : QObject(parent),
           m_gateway(gateway),
           m_isRunning(false),
@@ -382,7 +382,9 @@ bool RestServer::startOnThread() {
         return false;
     }
 
-    const auto port = m_httpServer->listen(m_settings.address, m_settings.port);
+    DEBUG_ASSERT(m_settings.portValid);
+    const auto port = m_httpServer->listen(
+            m_settings.address, static_cast<quint16>(m_settings.port));
     if (port == 0) {
         kLogger.warning()
                 << "Failed to start REST API listener on" << m_settings.address << m_settings.port;

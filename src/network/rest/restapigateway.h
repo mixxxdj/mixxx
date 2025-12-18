@@ -17,7 +17,23 @@ class PlaylistDAO;
 
 namespace mixxx::network::rest {
 
-class RestApiGateway : public QObject {
+class RestApiProvider : public QObject {
+    Q_OBJECT
+
+  public:
+    using QObject::QObject;
+    ~RestApiProvider() override = default;
+
+    virtual QHttpServerResponse health() const = 0;
+    virtual QHttpServerResponse status() const = 0;
+    virtual QHttpServerResponse control(const QJsonObject& body) const = 0;
+    virtual QHttpServerResponse autoDjStatus() const = 0;
+    virtual QHttpServerResponse autoDj(const QJsonObject& body) const = 0;
+    virtual QHttpServerResponse playlists(const std::optional<int>& playlistId) const = 0;
+    virtual QHttpServerResponse playlistCommand(const QJsonObject& body) const = 0;
+};
+
+class RestApiGateway : public RestApiProvider {
     Q_OBJECT
 
   public:
