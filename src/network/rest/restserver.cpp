@@ -9,6 +9,7 @@
 #include <QMetaObject>
 #include <QSemaphore>
 #include <QSslSocket>
+#include <QUrlQuery>
 #include <utility>
 
 #include "moc_restserver.cpp"
@@ -174,6 +175,12 @@ QHttpServerResponse RestServer::badRequestResponse(const QString& message) const
             QHttpServerResponse::StatusCode::BadRequest);
 }
 
+QHttpServerResponse RestServer::methodNotAllowedResponse() const {
+    return jsonResponse(
+            QJsonObject{{"error", "Method not allowed"}},
+            QHttpServerResponse::StatusCode::MethodNotAllowed);
+}
+
 QHttpServerResponse RestServer::serviceUnavailableResponse() const {
     return jsonResponse(
             QJsonObject{{"error", "REST gateway unavailable"}},
@@ -187,12 +194,15 @@ QHttpServerResponse RestServer::invokeGateway(
     }
 
     QHttpServerResponse response(QHttpServerResponse::StatusCode::InternalServerError);
+    QSemaphore semaphore;
     QMetaObject::invokeMethod(
             m_gateway,
             [&]() {
                 response = action();
+                semaphore.release();
             },
-            Qt::BlockingQueuedConnection);
+            Qt::QueuedConnection);
+    semaphore.acquire();
     return response;
 }
 
@@ -233,27 +243,40 @@ bool RestServer::controlRouteRequiresTls(const QHttpServerRequest& /*request*/) 
 void RestServer::registerRoutes() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
 
-    m_httpServer->route("/api/health", [this](const QHttpServerRequest& request) {
+    const auto healthRoute = [this](const QHttpServerRequest& request) {
         if (!checkAuthorization(request)) {
             return unauthorizedResponse();
+        }
+        if (request.method() != QHttpServerRequest::Method::Get) {
+            return methodNotAllowedResponse();
         }
         return invokeGateway([this]() {
             return m_gateway->health();
         });
-    });
+    };
+    m_httpServer->route("/health", healthRoute);
+    m_httpServer->route("/api/health", healthRoute);
 
-    m_httpServer->route("/api/status", [this](const QHttpServerRequest& request) {
+    const auto statusRoute = [this](const QHttpServerRequest& request) {
         if (!checkAuthorization(request)) {
             return unauthorizedResponse();
+        }
+        if (request.method() != QHttpServerRequest::Method::Get) {
+            return methodNotAllowedResponse();
         }
         return invokeGateway([this]() {
             return m_gateway->status();
         });
-    });
+    };
+    m_httpServer->route("/status", statusRoute);
+    m_httpServer->route("/api/status", statusRoute);
 
-    m_httpServer->route("/api/control", [this](const QHttpServerRequest& request) {
+    const auto controlRoute = [this](const QHttpServerRequest& request) {
         if (!checkAuthorization(request)) {
             return unauthorizedResponse();
+        }
+        if (request.method() != QHttpServerRequest::Method::Post) {
+            return methodNotAllowedResponse();
         }
         if (controlRouteRequiresTls(request)) {
             return tlsRequiredResponse();
@@ -264,55 +287,80 @@ void RestServer::registerRoutes() {
             return badRequestResponse(QStringLiteral("Expected JSON request body"));
         }
         const auto body = document.object();
-        const auto group = body.value("group").toString();
-        const auto key = body.value("key").toString();
-        if (group.isEmpty() || key.isEmpty()) {
-            return badRequestResponse(QStringLiteral("Missing group or key in request body"));
-        }
-        const auto valueVariant = body.value("value");
-        const std::optional<double> controlValue = valueVariant.isUndefined()
-                ? std::optional<double>{}
-                : std::optional<double>{valueVariant.toDouble()};
-        return invokeGateway([this, group, key, controlValue]() {
-            return m_gateway->control(group, key, controlValue);
+        return invokeGateway([this, body]() {
+            return m_gateway->control(body);
         });
-    });
+    };
+    m_httpServer->route("/control", controlRoute);
+    m_httpServer->route("/api/control", controlRoute);
 
-    m_httpServer->route("/api/autodj/<arg>", [this](const QString& action, const QHttpServerRequest& request) {
+    const auto autoDjRoute = [this](const QHttpServerRequest& request) {
         if (!checkAuthorization(request)) {
             return unauthorizedResponse();
+        }
+        if (request.method() == QHttpServerRequest::Method::Get) {
+            return invokeGateway([this]() {
+                return m_gateway->autoDjStatus();
+            });
+        }
+        if (request.method() != QHttpServerRequest::Method::Post) {
+            return methodNotAllowedResponse();
         }
         if (controlRouteRequiresTls(request)) {
             return tlsRequiredResponse();
         }
-        return invokeGateway([this, action]() {
-            return m_gateway->autoDj(action);
-        });
-    });
 
-    m_httpServer->route("/api/playlists", [this](const QHttpServerRequest& request) {
+        const auto document = QJsonDocument::fromJson(request.body());
+        if (!document.isObject()) {
+            return badRequestResponse(QStringLiteral("Expected JSON request body"));
+        }
+        const auto body = document.object();
+        return invokeGateway([this, body]() {
+            return m_gateway->autoDj(body);
+        });
+    };
+    m_httpServer->route("/autodj", autoDjRoute);
+    m_httpServer->route("/api/autodj", autoDjRoute);
+
+    const auto playlistsRoute = [this](const QHttpServerRequest& request) {
         if (!checkAuthorization(request)) {
             return unauthorizedResponse();
         }
-        return invokeGateway([this]() {
-            return m_gateway->playlists();
-        });
-    });
-
-    m_httpServer->route("/api/playlists/<arg>/tracks",
-            [this](const QString& playlistId, const QHttpServerRequest& request) {
-                if (!checkAuthorization(request)) {
-                    return unauthorizedResponse();
-                }
+        if (request.method() == QHttpServerRequest::Method::Get) {
+            std::optional<int> playlistId;
+            const QString playlistIdParam = request.query().queryItemValue("id");
+            if (!playlistIdParam.isEmpty()) {
                 bool ok = false;
-                const int numericId = playlistId.toInt(&ok);
+                const int idValue = playlistIdParam.toInt(&ok);
                 if (!ok) {
                     return badRequestResponse(QStringLiteral("Playlist id must be numeric"));
                 }
-                return invokeGateway([this, numericId]() {
-                    return m_gateway->playlistTracks(numericId);
-                });
+                playlistId = idValue;
+            }
+            return invokeGateway([this, playlistId]() {
+                return m_gateway->playlists(playlistId);
             });
+        }
+
+        if (request.method() != QHttpServerRequest::Method::Post) {
+            return methodNotAllowedResponse();
+        }
+
+        if (controlRouteRequiresTls(request)) {
+            return tlsRequiredResponse();
+        }
+
+        const auto document = QJsonDocument::fromJson(request.body());
+        if (!document.isObject()) {
+            return badRequestResponse(QStringLiteral("Expected JSON request body"));
+        }
+        const auto body = document.object();
+        return invokeGateway([this, body]() {
+            return m_gateway->playlistCommand(body);
+        });
+    };
+    m_httpServer->route("/playlists", playlistsRoute);
+    m_httpServer->route("/api/playlists", playlistsRoute);
 }
 
 bool RestServer::startOnThread() {

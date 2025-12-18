@@ -93,6 +93,7 @@ class RestServer : public QObject {
     QHttpServerResponse invokeGateway(const std::function<QHttpServerResponse()>& action) const;
     QHttpServerResponse unauthorizedResponse() const;
     QHttpServerResponse badRequestResponse(const QString& message) const;
+    QHttpServerResponse methodNotAllowedResponse() const;
     QHttpServerResponse serviceUnavailableResponse() const;
     QHttpServerResponse jsonResponse(
             const QJsonObject& body,
