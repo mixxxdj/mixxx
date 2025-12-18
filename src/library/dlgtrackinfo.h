@@ -69,6 +69,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotSpinBpmValueChanged(double value);
 
     void slotKeyTextChanged();
+    void slotTuningChanged(int tuningHz);
     void slotRatingChanged(int rating);
     void slotImportMetadataFromFile();
     void slotImportMetadataFromMusicBrainz();

@@ -5,6 +5,7 @@
 
 #include "proto/keys.pb.h"
 #include "track/keyutils.h"
+#include "track/keyfactory.h"
 
 using ::testing::UnorderedElementsAre;
 
@@ -306,4 +307,24 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
                     mixxx::track::io::key::D_MINOR,
                     mixxx::track::io::key::A_MINOR,
                     mixxx::track::io::key::G_MINOR));
+}
+
+TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsetsPositive) {
+    auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab +50"),
+            mixxx::track::io::key::USER);
+    // 440 * 2^(50/1200) ≈ 452.89
+    EXPECT_NEAR(452.89, keys.getTuningFrequencyHz(), 0.01);
+}
+
+TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsetsNegative) {
+    auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("Ab -50"),
+            mixxx::track::io::key::USER);
+    // 440 * 2^(-50/1200) ≈ 427.47
+    EXPECT_NEAR(427.47, keys.getTuningFrequencyHz(), 0.01);
+}
+
+TEST_F(KeyUtilsTest, RapidEvolutionTuningOffsetsZero) {
+    auto keys = KeyFactory::makeBasicKeysKeepText(QStringLiteral("A  0"),
+            mixxx::track::io::key::USER);
+    EXPECT_NEAR(440.0, keys.getTuningFrequencyHz(), 0.01);
 }

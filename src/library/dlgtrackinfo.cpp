@@ -23,6 +23,7 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
+#include <algorithm>
 
 namespace {
 
@@ -75,6 +76,7 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert(kBpmPropertyName, spinBpm);
     m_propertyWidgets.insert("tracknumber", txtTrackNumber);
     m_propertyWidgets.insert("key", txtKey);
+    m_propertyWidgets.insert("tuning_frequency_hz", spinTuning);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
 
@@ -162,6 +164,11 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             &DlgTrackInfo::slotKeyTextChanged);
+
+    connect(spinTuning,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgTrackInfo::slotTuningChanged);
 
     connect(bpmTap,
             &QPushButton::pressed,
@@ -429,6 +436,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtBpm->setText(
             m_trackRecord.getMetadata().getTrackInfo().getBpmText());
     displayKeyText();
+    spinTuning->setValue(m_trackRecord.getKeys().getTuningFrequencyHz());
 
     // Non-editable fields
     txtDuration->setText(
@@ -770,6 +778,20 @@ void DlgTrackInfo::displayKeyText() {
 
 void DlgTrackInfo::slotKeyTextChanged() {
     updateKeyText();
+}
+
+void DlgTrackInfo::slotTuningChanged(int tuningHz) {
+    const int clamped = std::clamp(tuningHz, spinTuning->minimum(), spinTuning->maximum());
+    if (clamped != tuningHz) {
+        spinTuning->setValue(clamped);
+        return;
+    }
+    Keys keys = m_trackRecord.getKeys();
+    if (keys.getTuningFrequencyHz() == clamped) {
+        return;
+    }
+    keys.setTuningFrequencyHz(clamped);
+    m_trackRecord.setKeys(std::move(keys));
 }
 
 void DlgTrackInfo::slotRatingChanged(int rating) {

@@ -374,6 +374,9 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         return QVariant{static_cast<int>(pTrack->getKey())};
     }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY) == column) {
+        return QVariant{pTrack->getTuningFrequencyHz()};
+    }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         return QVariant{pTrack->isBpmLocked()};
     }
