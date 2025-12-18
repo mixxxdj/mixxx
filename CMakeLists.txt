@@ -1634,6 +1634,7 @@ add_library(
   src/util/imageutils.cpp
   src/util/indexrange.cpp
   src/util/logger.cpp
+  src/util/ratelimitedlogger.cpp
   src/util/logging.cpp
   src/util/mac.cpp
   src/util/moc_included_test.cpp
