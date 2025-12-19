@@ -451,6 +451,28 @@ QHttpServerResponse RestApiGateway::autoDj(const QJsonObject& body) const {
                         tr("Move command is missing destination position"));
             }
 
+            const int queueSize = playlistDao.getAutoDJTrackIds().size();
+            if (queueSize == 0) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("AutoDJ queue is empty"));
+            }
+            const int maxPosition = queueSize - 1;
+            if (from < 0 || from > maxPosition) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("AutoDJ from position %1 is out of range (valid 0-%2)")
+                                .arg(from)
+                                .arg(maxPosition));
+            }
+            if (to < 0 || to > maxPosition) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("AutoDJ destination position %1 is out of range (valid 0-%2)")
+                                .arg(to)
+                                .arg(maxPosition));
+            }
+
             playlistDao.moveTrack(autoDjPlaylistId, from, to);
             return resultWithEnabled(action);
         });
@@ -631,6 +653,14 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Playlist position must be numeric"));
                 }
+                const int trackCount = playlistDao.tracksInPlaylist(playlistId);
+                if (position < 0 || position > trackCount) {
+                    return errorResponse(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Playlist position %1 is out of range (valid 0-%2)")
+                                    .arg(position)
+                                    .arg(trackCount));
+                }
                 playlistDao.insertTracksIntoPlaylist(trackIds, playlistId, position);
             }
             return successResponse(QJsonObject{{"playlist_id", playlistId}});
@@ -676,6 +706,27 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
                 return errorResponse(
                         QHttpServerResponse::StatusCode::BadRequest,
                         tr("Reorder requires a destination position"));
+            }
+            const int trackCount = playlistDao.tracksInPlaylist(playlistId);
+            if (trackCount == 0) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("Playlist is empty"));
+            }
+            const int maxPosition = trackCount - 1;
+            if (from < 0 || from > maxPosition) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("Reorder from position %1 is out of range (valid 0-%2)")
+                                .arg(from)
+                                .arg(maxPosition));
+            }
+            if (to < 0 || to > maxPosition) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("Reorder destination position %1 is out of range (valid 0-%2)")
+                                .arg(to)
+                                .arg(maxPosition));
             }
             playlistDao.moveTrack(playlistId, from, to);
             return successResponse(QJsonObject{
