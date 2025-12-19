@@ -160,6 +160,7 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     lineEditHost->setText(values.host);
     spinBoxHttpPort->setValue(values.httpPort);
     spinBoxHttpsPort->setValue(values.httpsPort);
+    lineEditCorsAllowlist->setText(values.corsAllowlist);
     spinBoxMaxRequestSize->setValue(qMax(1, (values.maxRequestBytes + 1023) / 1024));
     m_tokens = values.tokens;
     refreshTokenTable();
@@ -182,6 +183,7 @@ RestServerSettings::Values DlgPrefRestServer::gatherValues() const {
     values.host = lineEditHost->text();
     values.httpPort = spinBoxHttpPort->value();
     values.httpsPort = spinBoxHttpsPort->value();
+    values.corsAllowlist = lineEditCorsAllowlist->text();
     values.maxRequestBytes = spinBoxMaxRequestSize->value() * 1024;
     values.tokens = m_tokens;
     values.useHttps = checkBoxUseHttps->isChecked();

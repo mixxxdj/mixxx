@@ -74,6 +74,14 @@ RestServerController::ListenerConfiguration RestServerController::loadSettings()
         settings.certificatePath = values.certificatePath;
         settings.privateKeyPath = values.privateKeyPath;
         settings.maxRequestBytes = values.maxRequestBytes;
+        const QStringList allowlistEntries =
+                values.corsAllowlist.split(',', Qt::SkipEmptyParts);
+        for (const auto& entry : allowlistEntries) {
+            const QString trimmed = entry.trimmed();
+            if (!trimmed.isEmpty()) {
+                settings.corsAllowlist.append(trimmed);
+            }
+        }
         settings.tokens.clear();
         for (const auto& token : values.tokens) {
             RestServer::Token restToken;
