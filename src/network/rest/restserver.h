@@ -58,6 +58,7 @@ class RestServer : public QObject {
         bool forbidden{false};
         bool usedReadOnlyToken{false};
         QString tokenValue;
+        QString tokenDescription;
     };
 
     struct Settings {
@@ -135,7 +136,8 @@ class RestServer : public QObject {
   private:
     QHttpServerResponse invokeGateway(
             const QHttpServerRequest& request,
-            const std::function<QHttpServerResponse()>& action) const;
+            const std::function<QHttpServerResponse()>& action,
+            const QString& requestId = QString()) const;
     QHttpServerResponse unauthorizedResponse(const QHttpServerRequest& request) const;
     QHttpServerResponse forbiddenResponse(
             const QHttpServerRequest& request,
@@ -186,8 +188,10 @@ class RestServer : public QObject {
     quint16 m_listeningPort;
     QString m_lastError;
     mutable RateLimitedLogger m_routeErrorLogger;
+    mutable RateLimitedLogger m_authFailureLogger;
 
     static const Logger kLogger;
+    static const Logger kAuditLogger;
 };
 
 } // namespace mixxx::network::rest

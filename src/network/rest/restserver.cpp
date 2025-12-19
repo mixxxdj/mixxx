@@ -67,6 +67,7 @@ bool isJsonContentType(const QHttpServerRequest& request) {
 } // namespace
 
 const Logger RestServer::kLogger("mixxx::network::rest::RestServer");
+const Logger RestServer::kAuditLogger("mixxx::network::rest::RestServer::Audit");
 
 RestServer::RestServer(RestApiProvider* gateway, QObject* parent)
         : QObject(parent),
@@ -302,12 +303,14 @@ QHttpServerResponse RestServer::serviceUnavailableResponse(const QHttpServerRequ
 
 QHttpServerResponse RestServer::invokeGateway(
         const QHttpServerRequest& request,
-        const std::function<QHttpServerResponse()>& action) const {
+        const std::function<QHttpServerResponse()>& action,
+        const QString& requestIdOverride) const {
     if (m_gateway.isNull()) {
         return serviceUnavailableResponse(&request);
     }
 
-    const QString requestId = requestIdFor(request);
+    const QString requestId =
+            requestIdOverride.isEmpty() ? requestIdFor(request) : requestIdOverride;
     kLogger.info() << "REST audit"
                    << requestDescription(request)
                    << "requestId" << requestId;
@@ -357,8 +360,24 @@ RestServer::AuthorizationResult RestServer::authorize(
         return result;
     }
 
+    const QString requestId = requestIdFor(request);
     const QByteArray headerValue = request.value(kAuthHeader).trimmed();
     if (headerValue.isEmpty()) {
+        const QString key = QStringLiteral("%1 missing-authorization")
+                                    .arg(requestDescription(request));
+        m_authFailureLogger.log(key, [&](int suppressed) {
+            auto stream = kAuditLogger.warning();
+            stream << "REST auth failure" << requestDescription(request)
+                   << "policy"
+                   << (policy == AccessPolicy::Status ? QStringLiteral("status")
+                                                      : QStringLiteral("control"))
+                   << "reason"
+                   << QStringLiteral("missing authorization header")
+                   << "requestId" << requestId;
+            if (suppressed > 0) {
+                stream << "(suppressed" << suppressed << "similar messages)";
+            }
+        });
         return result;
     }
 
@@ -366,6 +385,22 @@ RestServer::AuthorizationResult RestServer::authorize(
     const QByteArray tokenValue = headerValue.startsWith(bearerPrefix)
             ? headerValue.mid(bearerPrefix.size())
             : headerValue;
+    if (tokenValue.isEmpty()) {
+        const QString key = QStringLiteral("%1 empty-token").arg(requestDescription(request));
+        m_authFailureLogger.log(key, [&](int suppressed) {
+            auto stream = kAuditLogger.warning();
+            stream << "REST auth failure" << requestDescription(request)
+                   << "policy"
+                   << (policy == AccessPolicy::Status ? QStringLiteral("status")
+                                                      : QStringLiteral("control"))
+                   << "reason" << QStringLiteral("empty token")
+                   << "requestId" << requestId;
+            if (suppressed > 0) {
+                stream << "(suppressed" << suppressed << "similar messages)";
+            }
+        });
+        return result;
+    }
 
     const QString requiredPermission =
             policy == AccessPolicy::Status ? QStringLiteral("read") : QStringLiteral("full");
@@ -375,11 +410,28 @@ RestServer::AuthorizationResult RestServer::authorize(
         if (token.value.isEmpty()) {
             continue;
         }
-        if (token.expiresUtc.has_value() && token.expiresUtc.value() < nowUtc) {
-            continue;
-        }
         if (token.value.toUtf8() != tokenValue) {
             continue;
+        }
+        const QString tokenDescription =
+                token.description.isEmpty() ? QStringLiteral("<unnamed>") : token.description;
+        if (token.expiresUtc.has_value() && token.expiresUtc.value() < nowUtc) {
+            const QString key =
+                    QStringLiteral("%1 expired-token").arg(requestDescription(request));
+            m_authFailureLogger.log(key, [&](int suppressed) {
+                auto stream = kAuditLogger.warning();
+                stream << "REST auth failure" << requestDescription(request)
+                       << "policy"
+                       << (policy == AccessPolicy::Status ? QStringLiteral("status")
+                                                          : QStringLiteral("control"))
+                       << "reason" << QStringLiteral("token expired")
+                       << "token" << tokenDescription
+                       << "requestId" << requestId;
+                if (suppressed > 0) {
+                    stream << "(suppressed" << suppressed << "similar messages)";
+                }
+            });
+            return result;
         }
 
         const bool hasFull = token.permission.compare(QStringLiteral("full"), Qt::CaseInsensitive) == 0;
@@ -389,16 +441,46 @@ RestServer::AuthorizationResult RestServer::authorize(
             result.authorized = true;
             result.usedReadOnlyToken = !hasFull;
             result.tokenValue = token.value;
+            result.tokenDescription = tokenDescription;
             return result;
         }
         if (requiredPermission == QStringLiteral("full") && hasFull) {
             result.authorized = true;
             result.tokenValue = token.value;
+            result.tokenDescription = tokenDescription;
             return result;
         }
         result.forbidden = true;
+        const QString key =
+                QStringLiteral("%1 insufficient-permissions").arg(requestDescription(request));
+        m_authFailureLogger.log(key, [&](int suppressed) {
+            auto stream = kAuditLogger.warning();
+            stream << "REST auth failure" << requestDescription(request)
+                   << "policy"
+                   << (policy == AccessPolicy::Status ? QStringLiteral("status")
+                                                      : QStringLiteral("control"))
+                   << "reason" << QStringLiteral("insufficient permissions")
+                   << "token" << tokenDescription
+                   << "requestId" << requestId;
+            if (suppressed > 0) {
+                stream << "(suppressed" << suppressed << "similar messages)";
+            }
+        });
         return result;
     }
+    const QString key = QStringLiteral("%1 unknown-token").arg(requestDescription(request));
+    m_authFailureLogger.log(key, [&](int suppressed) {
+        auto stream = kAuditLogger.warning();
+        stream << "REST auth failure" << requestDescription(request)
+               << "policy"
+               << (policy == AccessPolicy::Status ? QStringLiteral("status")
+                                                  : QStringLiteral("control"))
+               << "reason" << QStringLiteral("unknown token")
+               << "requestId" << requestId;
+        if (suppressed > 0) {
+            stream << "(suppressed" << suppressed << "similar messages)";
+        }
+    });
     return result;
 }
 
@@ -575,13 +657,19 @@ void RestServer::registerRoutes() {
         const QString idempotencyKey = idempotencyKeyFor(request);
         const QString endpoint = request.url().path();
         const QString token = auth.tokenValue;
-        return invokeGateway(request, [this, body, token, idempotencyKey, endpoint]() {
+        const QString requestId = requestIdFor(request);
+        kAuditLogger.info() << "REST control action" << requestDescription(request)
+                            << "token" << auth.tokenDescription
+                            << "requestId" << requestId;
+        return invokeGateway(request,
+                [this, body, token, idempotencyKey, endpoint]() {
             return m_gateway->withIdempotencyCache(
                     token,
                     idempotencyKey,
                     endpoint,
                     [this, body]() { return m_gateway->control(body); });
-        });
+        },
+                requestId);
     };
     m_httpServer->route("/api/v1/control", controlRoute);
 
@@ -632,13 +720,19 @@ void RestServer::registerRoutes() {
         const QString idempotencyKey = idempotencyKeyFor(request);
         const QString endpoint = request.url().path();
         const QString token = auth.tokenValue;
-        return invokeGateway(request, [this, body, token, idempotencyKey, endpoint]() {
+        const QString requestId = requestIdFor(request);
+        kAuditLogger.info() << "REST control action" << requestDescription(request)
+                            << "token" << auth.tokenDescription
+                            << "requestId" << requestId;
+        return invokeGateway(request,
+                [this, body, token, idempotencyKey, endpoint]() {
             return m_gateway->withIdempotencyCache(
                     token,
                     idempotencyKey,
                     endpoint,
                     [this, body]() { return m_gateway->autoDj(body); });
-        });
+        },
+                requestId);
     };
     m_httpServer->route("/api/v1/autodj", autoDjRoute);
 
@@ -701,13 +795,19 @@ void RestServer::registerRoutes() {
         const QString idempotencyKey = idempotencyKeyFor(request);
         const QString endpoint = request.url().path();
         const QString token = auth.tokenValue;
-        return invokeGateway(request, [this, body, token, idempotencyKey, endpoint]() {
+        const QString requestId = requestIdFor(request);
+        kAuditLogger.info() << "REST control action" << requestDescription(request)
+                            << "token" << auth.tokenDescription
+                            << "requestId" << requestId;
+        return invokeGateway(request,
+                [this, body, token, idempotencyKey, endpoint]() {
             return m_gateway->withIdempotencyCache(
                     token,
                     idempotencyKey,
                     endpoint,
                     [this, body]() { return m_gateway->playlistCommand(body); });
-        });
+        },
+                requestId);
     };
     m_httpServer->route("/api/v1/playlists", playlistsRoute);
 }
