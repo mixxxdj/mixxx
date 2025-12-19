@@ -319,9 +319,18 @@ RestServer::AuthorizationResult RestServer::authorize(
     return result;
 }
 
-bool RestServer::controlRouteRequiresTls(const QHttpServerRequest& /*request*/) const {
-    // TLS is recommended but no longer enforced at the route layer.
-    return false;
+bool RestServer::controlRouteRequiresTls(const QHttpServerRequest& request) const {
+    if (!m_settings.requireTls) {
+        return false;
+    }
+
+    bool isSecure = false;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    isSecure = request.isSecure();
+#else
+    isSecure = request.url().scheme().compare(QStringLiteral("https"), Qt::CaseInsensitive) == 0;
+#endif
+    return !isSecure;
 }
 
 QString RestServer::requestDescription(const QHttpServerRequest& request) const {
