@@ -105,7 +105,7 @@
           </column>
           <column>
            <property name="text">
-            <string>Permission</string>
+            <string>Scopes</string>
            </property>
           </column>
           <column>
@@ -182,24 +182,65 @@
          <widget class="QLineEdit" name="lineEditTokenDescription"/>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="labelTokenPermission">
+         <widget class="QLabel" name="labelTokenScopes">
           <property name="text">
-           <string>Permission:</string>
+           <string>Scopes:</string>
           </property>
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QComboBox" name="comboTokenPermission">
-          <item>
-           <property name="text">
-            <string>read</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>full</string>
-           </property>
-          </item>
+         <widget class="QWidget" name="widgetTokenScopes" native="true">
+          <layout class="QGridLayout" name="gridLayoutTokenScopes">
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="checkScopeStatusRead">
+             <property name="text">
+              <string>status:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QCheckBox" name="checkScopeDecksRead">
+             <property name="text">
+              <string>decks:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QCheckBox" name="checkScopeAutoDjRead">
+             <property name="text">
+              <string>autodj:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="checkScopeAutoDjWrite">
+             <property name="text">
+              <string>autodj:write</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QCheckBox" name="checkScopePlaylistsRead">
+             <property name="text">
+              <string>playlists:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QCheckBox" name="checkScopePlaylistsWrite">
+             <property name="text">
+              <string>playlists:write</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="checkScopeControlWrite">
+             <property name="text">
+              <string>control:write</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item row="3" column="0">

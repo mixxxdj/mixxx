@@ -35,7 +35,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void slotRegenerateToken();
     void slotTokenSelectionChanged();
     void slotTokenDescriptionChanged(const QString& text);
-    void slotTokenPermissionChanged(int index);
+    void slotTokenScopesChanged();
     void slotTokenExpiresChanged(const QDateTime& dateTime);
 
   private:
@@ -50,6 +50,8 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void updateSelection(int row);
     void applyEditsToSelectedToken();
     void syncEditorsFromSelection();
+    QStringList selectedScopes() const;
+    void updateScopeEditors(const QStringList& scopes);
     RestServerToken* selectedToken();
 
     std::shared_ptr<RestServerSettings> m_settings;

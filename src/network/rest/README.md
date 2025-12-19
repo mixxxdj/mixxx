@@ -14,14 +14,26 @@ This document summarizes defaults, security, and available routes.
 ## Authentication and authorization
 
 - Multiple bearer tokens are supported (up to 16). Each token stores:
-  - Permission: `read` (health/status/GET routes) or `full` (all routes including control/mutation).
+  - Scopes: granular permissions such as `status:read`, `autodj:write`, or `control:write`.
   - Description: optional user-provided label.
   - Created at: recorded in UTC.
   - Expiration: optional (UTC). Leave blank for “never expires”.
-- Manage tokens in Preferences ➜ REST API: add, remove, regenerate, edit description/permission/expiration.
+- Manage tokens in Preferences ➜ REST API: add, remove, regenerate, edit description/scopes/expiration.
 - Leave all tokens empty to allow unauthenticated access (not recommended).
 - Include tokens as `Authorization: Bearer <token>`.
 - Using tokens without HTTPS exposes them; enable TLS whenever tokens are set, especially off localhost.
+
+### Scopes
+
+Each endpoint declares one or more required scopes. Tokens must include all required scopes to access
+the route.
+
+Available scopes:
+- `status:read` — health, ready, and status endpoints.
+- `decks:read` — deck status endpoints.
+- `autodj:read` / `autodj:write` — AutoDJ status or control.
+- `playlists:read` / `playlists:write` — playlist listing and mutations.
+- `control:write` — `POST /control`.
 
 ## TLS certificates
 
@@ -90,19 +102,19 @@ available on all Mixxx-supported platforms.
 
 ### Health and status
 
-- `GET /health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes).
-- `GET /ready` — readiness summary with dependency issues.
+- `GET /health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes). Requires `status:read`.
+- `GET /ready` — readiness summary with dependency issues. Requires `status:read`.
 - `GET /status` — application info, decks, mixer state, broadcast/recording status, AutoDJ overview, uptime, timestamp,
-  and system metrics.
+  and system metrics. Requires `status:read`.
 
 ### Deck status
 
-- `GET /decks` — status for all decks (same payload as the deck list in `/status`).
-- `GET /decks/<n>` — status for a single deck (1-based index).
+- `GET /decks` — status for all decks (same payload as the deck list in `/status`). Requires `decks:read`.
+- `GET /decks/<n>` — status for a single deck (1-based index). Requires `decks:read`.
 
 ### Control
 
-- `POST /control` — control Mixxx via JSON body. Supported styles include:
+- `POST /control` — control Mixxx via JSON body. Requires `control:write`. Supported styles include:
   - Commands: `{ "command": "play", "group": "[Channel1]" }`, `{ "command": "seek", "position": 0.5 }`.
   - Direct control values: `{ "group": "[Master]", "key": "gain", "value": 1.2 }`.
   - Multiple commands: `{ "commands": [ { "command": "play", "group": "[Channel1]" }, { "group": "[Master]", "key": "gain", "value": 1.2 } ] }`.
@@ -111,17 +123,17 @@ available on all Mixxx-supported platforms.
 
 ### AutoDJ
 
-- `GET /autodj` — fetch AutoDJ status and a sample of queued tracks.
-- `POST /autodj` — manage AutoDJ with an `action` field:
+- `GET /autodj` — fetch AutoDJ status and a sample of queued tracks. Requires `autodj:read`.
+- `POST /autodj` — manage AutoDJ with an `action` field. Requires `autodj:write`:
   - `enable`, `disable`, `skip`, `fade`, `shuffle`, `add_random`, `clear`
   - `add` with `track_ids` and optional `position`
   - `move` with `from`/`to`
 
 ### Playlists
 
-- `GET /playlists` — list playlists with metadata and the active playlist id.
-- `GET /playlists?id=<id>` — fetch tracks for a specific playlist.
-- `POST /playlists` — manage playlists with an `action` field:
+- `GET /playlists` — list playlists with metadata and the active playlist id. Requires `playlists:read`.
+- `GET /playlists?id=<id>` — fetch tracks for a specific playlist. Requires `playlists:read`.
+- `POST /playlists` — manage playlists with an `action` field. Requires `playlists:write`:
   - `create` with `name`
   - `delete`
   - `rename`

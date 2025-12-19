@@ -6,20 +6,21 @@
 #include <QList>
 #include <optional>
 #include <QDateTime>
+#include <QStringList>
 
 #include "preferences/usersettings.h"
 
 struct RestServerToken {
     QString value;
     QString description;
-    QString permission;
+    QStringList scopes;
     QDateTime createdUtc;
     std::optional<QDateTime> expiresUtc;
 
     friend bool operator==(const RestServerToken& lhs, const RestServerToken& rhs) {
         return lhs.value == rhs.value &&
                 lhs.description == rhs.description &&
-                lhs.permission == rhs.permission &&
+                lhs.scopes == rhs.scopes &&
                 lhs.createdUtc == rhs.createdUtc &&
                 lhs.expiresUtc == rhs.expiresUtc;
     }
