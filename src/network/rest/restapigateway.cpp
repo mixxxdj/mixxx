@@ -295,9 +295,17 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
     }
 
     const auto valueVariant = body.value("value");
-    const std::optional<double> controlValue = valueVariant.isUndefined()
-            ? std::optional<double>{}
-            : std::optional<double>{valueVariant.toDouble()};
+    std::optional<double> controlValue;
+    if (!valueVariant.isUndefined()) {
+        bool ok = false;
+        const double numericValue = valueVariant.toDouble(&ok);
+        if (!ok) {
+            return errorResponse(
+                    QHttpServerResponse::StatusCode::BadRequest,
+                    tr("Control value must be numeric"));
+        }
+        controlValue = numericValue;
+    }
 
     const double resultValue = applyValue(control, controlValue);
     return finalizeResponse(key, group, resultValue);
@@ -575,7 +583,13 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
             if (positionValue.isUndefined()) {
                 playlistDao.appendTracksToPlaylist(trackIds, playlistId);
             } else {
-                int position = positionValue.toInt();
+                bool ok = false;
+                const int position = positionValue.toInt(&ok);
+                if (!ok) {
+                    return errorResponse(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Playlist position must be numeric"));
+                }
                 playlistDao.insertTracksIntoPlaylist(trackIds, playlistId, position);
             }
             return successResponse(QJsonObject{{"playlist_id", playlistId}});
@@ -586,7 +600,14 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
             const auto positionsValue = body.value("positions").toArray();
             positions.reserve(positionsValue.size());
             for (const auto& value : positionsValue) {
-                positions.append(value.toInt());
+                bool ok = false;
+                const int position = value.toInt(&ok);
+                if (!ok) {
+                    return errorResponse(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Playlist positions must be numeric"));
+                }
+                positions.append(position);
             }
             if (positions.isEmpty()) {
                 return errorResponse(
