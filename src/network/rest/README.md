@@ -6,8 +6,9 @@ This document summarizes defaults, security, and available routes.
 ## Defaults
 
 - The REST server is disabled by default. Enable it from Preferences ➜ REST API.
-- When enabled, HTTP listens on `localhost:8989` unless you change the host or port.
-  HTTPS uses `localhost:8990` when TLS is enabled.
+- When enabled, the default listeners are:
+  - HTTP: `localhost:8989`
+  - HTTPS: `localhost:8990` (when TLS is enabled)
 - HTTP access is allowed unless you disable it. TLS is off by default and must be
   explicitly turned on. Control routes are accessible without TLS but HTTPS is strongly recommended.
 
@@ -33,7 +34,7 @@ Available scopes:
 - `decks:read` — deck status endpoints.
 - `autodj:read` / `autodj:write` — AutoDJ status or control.
 - `playlists:read` / `playlists:write` — playlist listing and mutations.
-- `control:write` — `POST /control`.
+- `control:write` — `POST /api/v1/control`.
 
 ## TLS certificates
 
@@ -43,10 +44,6 @@ Available scopes:
 - The same files are reused on future launches. You can also point Mixxx at existing certificate and key paths
   instead of auto-generation.
 - Startup logs report whether the certificate was generated or loaded, and log errors if TLS preparation fails.
-
-## Endpoints
-
-All routes are served under the versioned base path `/api/v1` (for example, `/api/v1/health`).
 
 ## REST API architecture and control flow
 
@@ -70,10 +67,10 @@ RestApiGateway (JSON parsing + response shaping)
     +--> TrackCollectionManager/DAO -> Library database
 ```
 
-Control flow for a control request (for example, `POST /control`) looks like:
+Control flow for a control request (for example, `POST /api/v1/control`) looks like:
 
 ```
-POST /control
+POST /api/v1/control
   -> RestServer::route()
   -> authorize() / parse JSON
   -> invokeGateway()
@@ -100,24 +97,28 @@ system. Using ControlProxy keeps the REST API aligned with that existing model:
 This keeps the REST API lightweight, consistent with existing control logic, and
 available on all Mixxx-supported platforms.
 
+## Endpoints
+
+All routes are served under the versioned base path `/api/v1` (for example, `/api/v1/health`).
+
 ### Health and status
 
-- `GET /health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes). Requires `status:read`.
-- `GET /ready` — readiness summary with dependency issues. Requires `status:read`.
-- `GET /status` — application info, decks, mixer state, broadcast/recording status, AutoDJ overview, uptime, timestamp,
+- `GET /api/v1/health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes). Requires `status:read`.
+- `GET /api/v1/ready` — readiness summary with dependency issues. Requires `status:read`.
+- `GET /api/v1/status` — application info, decks, mixer state, broadcast/recording status, AutoDJ overview, uptime, timestamp,
   and system metrics. Requires `status:read`.
-- `GET /stream/status` — server-sent events stream that emits status deltas at the configured interval. Requires `status:read`.
+- `GET /api/v1/stream/status` — server-sent events stream that emits status deltas at the configured interval. Requires `status:read`.
   Each event uses `event: status` and a JSON payload in `data:` containing only changed top-level fields since the last
   update (removed fields are sent as `null`). The first event includes the full status payload.
 
 ### Deck status
 
-- `GET /decks` — status for all decks (same payload as the deck list in `/status`). Requires `decks:read`.
-- `GET /decks/<n>` — status for a single deck (1-based index). Requires `decks:read`.
+- `GET /api/v1/decks` — status for all decks (same payload as the deck list in `/api/v1/status`). Requires `decks:read`.
+- `GET /api/v1/decks/<n>` — status for a single deck (1-based index). Requires `decks:read`.
 
 ### Control
 
-- `POST /control` — control Mixxx via JSON body. Requires `control:write`. Supported styles include:
+- `POST /api/v1/control` — control Mixxx via JSON body. Requires `control:write`. Supported styles include:
   - Commands: `{ "command": "play", "group": "[Channel1]" }`, `{ "command": "seek", "position": 0.5 }`.
   - Direct control values: `{ "group": "[Master]", "key": "gain", "value": 1.2 }`.
   - Multiple commands: `{ "commands": [ { "command": "play", "group": "[Channel1]" }, { "group": "[Master]", "key": "gain", "value": 1.2 } ] }`.
@@ -126,17 +127,17 @@ available on all Mixxx-supported platforms.
 
 ### AutoDJ
 
-- `GET /autodj` — fetch AutoDJ status and a sample of queued tracks. Requires `autodj:read`.
-- `POST /autodj` — manage AutoDJ with an `action` field. Requires `autodj:write`:
+- `GET /api/v1/autodj` — fetch AutoDJ status and a sample of queued tracks. Requires `autodj:read`.
+- `POST /api/v1/autodj` — manage AutoDJ with an `action` field. Requires `autodj:write`:
   - `enable`, `disable`, `skip`, `fade`, `shuffle`, `add_random`, `clear`
   - `add` with `track_ids` and optional `position`
   - `move` with `from`/`to`
 
 ### Playlists
 
-- `GET /playlists` — list playlists with metadata and the active playlist id. Requires `playlists:read`.
-- `GET /playlists?id=<id>` — fetch tracks for a specific playlist. Requires `playlists:read`.
-- `POST /playlists` — manage playlists with an `action` field. Requires `playlists:write`:
+- `GET /api/v1/playlists` — list playlists with metadata and the active playlist id. Requires `playlists:read`.
+- `GET /api/v1/playlists?id=<id>` — fetch tracks for a specific playlist. Requires `playlists:read`.
+- `POST /api/v1/playlists` — manage playlists with an `action` field. Requires `playlists:write`:
   - `create` with `name`
   - `delete`
   - `rename`
