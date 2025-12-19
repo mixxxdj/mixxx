@@ -69,7 +69,7 @@ For help using Mixxx, there are a variety of options:
 - [Mixxx wiki][wiki]
 - [Hardware Compatibility]
 - [Creating Skins]
-- [REST API developer notes](src/network/rest/README.md) (includes `/api/v1/schema` endpoint details)
+- [REST API developer notes](src/network/rest/README.md)
 
 ## Translation
 
