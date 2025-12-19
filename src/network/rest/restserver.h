@@ -138,6 +138,8 @@ class RestServer : public QObject {
             const QString& message) const;
     QHttpServerResponse badRequestResponse(
             const QHttpServerRequest& request, const QString& message) const;
+    QHttpServerResponse unsupportedMediaTypeResponse(
+            const QHttpServerRequest& request, const QString& message) const;
     QHttpServerResponse payloadTooLargeResponse(const QHttpServerRequest& request) const;
     QHttpServerResponse methodNotAllowedResponse(const QHttpServerRequest& request) const;
     QHttpServerResponse serviceUnavailableResponse(const QHttpServerRequest* request) const;

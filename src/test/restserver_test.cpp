@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonParseError>
 #include <QHostAddress>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -327,6 +328,74 @@ TEST(RestServerRoutesTest, RequiresTlsForControlRoutesWhenRequested) {
             QJsonDocument(QJsonObject{{"command", "enable"}}).toJson(QJsonDocument::Compact),
             {{"Content-Type", "application/json"}});
     EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), playlistsResponse.status);
+
+    server.stop();
+}
+
+TEST(RestServerRoutesTest, RejectsInvalidContentTypes) {
+    StubRestApiGateway gateway;
+    RestServer server(&gateway);
+    const int port = findFreePort();
+
+    RestServer::Settings settings = baseSettings(port);
+
+    QString error;
+    ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
+
+    QNetworkAccessManager manager;
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+    const QByteArray body = QJsonDocument(QJsonObject{{"group", "[Master]"}, {"key", "volume"}})
+                                    .toJson(QJsonDocument::Compact);
+
+    const auto missingContentType = sendRequest(&manager, controlUrl, "POST", body);
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::UnsupportedMediaType),
+            missingContentType.status);
+
+    const auto invalidContentType = sendRequest(
+            &manager,
+            controlUrl,
+            "POST",
+            body,
+            {{"Content-Type", "text/plain"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::UnsupportedMediaType),
+            invalidContentType.status);
+
+    server.stop();
+}
+
+TEST(RestServerRoutesTest, ReportsJsonParseErrors) {
+    StubRestApiGateway gateway;
+    RestServer server(&gateway);
+    const int port = findFreePort();
+
+    RestServer::Settings settings = baseSettings(port);
+
+    QString error;
+    ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
+
+    QNetworkAccessManager manager;
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+    const QByteArray invalidJson("{");
+
+    QJsonParseError parseError;
+    QJsonDocument::fromJson(invalidJson, &parseError);
+
+    const auto response = sendRequest(
+            &manager,
+            controlUrl,
+            "POST",
+            invalidJson,
+            {{"Content-Type", "application/json"}});
+
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::BadRequest), response.status);
+
+    QJsonParseError responseError;
+    const auto responseDoc = QJsonDocument::fromJson(response.body, &responseError);
+    ASSERT_EQ(responseError.error, QJsonParseError::NoError);
+    ASSERT_TRUE(responseDoc.isObject());
+    const QString errorMessage = responseDoc.object().value("error").toString();
+    EXPECT_THAT(errorMessage.toStdString(),
+            ::testing::HasSubstr(parseError.errorString().toStdString()));
 
     server.stop();
 }

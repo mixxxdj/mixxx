@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonParseError>
 #include <QMetaObject>
 #include <QSemaphore>
 #include <QSslSocket>
@@ -23,6 +24,7 @@ namespace mixxx::network::rest {
 
 namespace {
 constexpr auto kAuthHeader = "Authorization";
+constexpr auto kContentTypeHeader = "Content-Type";
 
 QString methodToString(QHttpServerRequest::Method method) {
     switch (method) {
@@ -39,6 +41,20 @@ QString methodToString(QHttpServerRequest::Method method) {
     default:
         return QStringLiteral("OTHER");
     }
+}
+
+bool isJsonContentType(const QHttpServerRequest& request) {
+    const QByteArray headerValue =
+            request.headers().value(QByteArrayLiteral(kContentTypeHeader)).trimmed();
+    if (headerValue.isEmpty()) {
+        return false;
+    }
+    const int separatorIndex = headerValue.indexOf(';');
+    const QByteArray mediaType = (separatorIndex >= 0 ? headerValue.left(separatorIndex)
+                                                      : headerValue)
+                                         .trimmed()
+                                         .toLower();
+    return mediaType == QByteArrayLiteral("application/json");
 }
 } // namespace
 
@@ -212,6 +228,13 @@ QHttpServerResponse RestServer::badRequestResponse(
         const QHttpServerRequest& request, const QString& message) const {
     logRouteError(request, QHttpServerResponse::StatusCode::BadRequest, message);
     return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::BadRequest);
+}
+
+QHttpServerResponse RestServer::unsupportedMediaTypeResponse(
+        const QHttpServerRequest& request, const QString& message) const {
+    logRouteError(request, QHttpServerResponse::StatusCode::UnsupportedMediaType, message);
+    return jsonResponse(QJsonObject{{"error", message}},
+            QHttpServerResponse::StatusCode::UnsupportedMediaType);
 }
 
 QHttpServerResponse RestServer::payloadTooLargeResponse(const QHttpServerRequest& request) const {
@@ -461,11 +484,23 @@ void RestServer::registerRoutes() {
             return tlsRequiredResponse(request);
         }
 
+        if (!isJsonContentType(request)) {
+            return unsupportedMediaTypeResponse(
+                    request,
+                    QStringLiteral("Expected Content-Type application/json"));
+        }
+
         if (requestTooLarge(request)) {
             return payloadTooLargeResponse(request);
         }
 
-        const auto document = QJsonDocument::fromJson(request.body());
+        QJsonParseError parseError;
+        const auto document = QJsonDocument::fromJson(request.body(), &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            return badRequestResponse(
+                    request,
+                    tr("Invalid JSON: %1").arg(parseError.errorString()));
+        }
         if (!document.isObject()) {
             return badRequestResponse(request, QStringLiteral("Expected JSON request body"));
         }
@@ -500,11 +535,23 @@ void RestServer::registerRoutes() {
             return tlsRequiredResponse(request);
         }
 
+        if (!isJsonContentType(request)) {
+            return unsupportedMediaTypeResponse(
+                    request,
+                    QStringLiteral("Expected Content-Type application/json"));
+        }
+
         if (requestTooLarge(request)) {
             return payloadTooLargeResponse(request);
         }
 
-        const auto document = QJsonDocument::fromJson(request.body());
+        QJsonParseError parseError;
+        const auto document = QJsonDocument::fromJson(request.body(), &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            return badRequestResponse(
+                    request,
+                    tr("Invalid JSON: %1").arg(parseError.errorString()));
+        }
         if (!document.isObject()) {
             return badRequestResponse(request, QStringLiteral("Expected JSON request body"));
         }
@@ -551,11 +598,23 @@ void RestServer::registerRoutes() {
             return tlsRequiredResponse(request);
         }
 
+        if (!isJsonContentType(request)) {
+            return unsupportedMediaTypeResponse(
+                    request,
+                    QStringLiteral("Expected Content-Type application/json"));
+        }
+
         if (requestTooLarge(request)) {
             return payloadTooLargeResponse(request);
         }
 
-        const auto document = QJsonDocument::fromJson(request.body());
+        QJsonParseError parseError;
+        const auto document = QJsonDocument::fromJson(request.body(), &parseError);
+        if (parseError.error != QJsonParseError::NoError) {
+            return badRequestResponse(
+                    request,
+                    tr("Invalid JSON: %1").arg(parseError.errorString()));
+        }
         if (!document.isObject()) {
             return badRequestResponse(request, QStringLiteral("Expected JSON request body"));
         }
