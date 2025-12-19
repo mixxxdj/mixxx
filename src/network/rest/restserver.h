@@ -13,6 +13,7 @@
 #include <QSslConfiguration>
 #include <QThread>
 #include <QString>
+#include <QStringList>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -72,6 +73,7 @@ class RestServer : public QObject {
         QString privateKeyPath;
         QList<Token> tokens;
         int maxRequestBytes{64 * 1024};
+        QStringList corsAllowlist;
 
         friend bool operator==(const Settings& lhs, const Settings& rhs) {
             return lhs.enabled == rhs.enabled &&
@@ -86,7 +88,8 @@ class RestServer : public QObject {
                     lhs.certificatePath == rhs.certificatePath &&
                     lhs.privateKeyPath == rhs.privateKeyPath &&
                     lhs.tokens == rhs.tokens &&
-                    lhs.maxRequestBytes == rhs.maxRequestBytes;
+                    lhs.maxRequestBytes == rhs.maxRequestBytes &&
+                    lhs.corsAllowlist == rhs.corsAllowlist;
         }
 
         friend bool operator!=(const Settings& lhs, const Settings& rhs) {
@@ -144,6 +147,7 @@ class RestServer : public QObject {
     QHttpServerResponse methodNotAllowedResponse(const QHttpServerRequest& request) const;
     QHttpServerResponse serviceUnavailableResponse(const QHttpServerRequest* request) const;
     QHttpServerResponse jsonResponse(
+            const QHttpServerRequest& request,
             const QJsonObject& body,
             QHttpServerResponse::StatusCode status) const;
 
@@ -159,6 +163,11 @@ class RestServer : public QObject {
             QHttpServerResponse::StatusCode status,
             const QString& message) const;
     QString requestDescription(const QHttpServerRequest& request) const;
+    void addCorsHeaders(
+            QHttpServerResponse* response,
+            const QHttpServerRequest& request,
+            bool includeAllowHeaders) const;
+    QString allowedCorsOrigin(const QHttpServerRequest& request) const;
     bool startOnThread();
     void stopOnThread();
 

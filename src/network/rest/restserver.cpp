@@ -25,6 +25,11 @@ namespace mixxx::network::rest {
 namespace {
 constexpr auto kAuthHeader = "Authorization";
 constexpr auto kContentTypeHeader = "Content-Type";
+constexpr auto kCorsOriginHeader = "Origin";
+constexpr auto kCorsAllowOriginHeader = "Access-Control-Allow-Origin";
+constexpr auto kCorsAllowMethodsHeader = "Access-Control-Allow-Methods";
+constexpr auto kCorsAllowHeadersHeader = "Access-Control-Allow-Headers";
+constexpr auto kCorsRequestHeadersHeader = "Access-Control-Request-Headers";
 
 QString methodToString(QHttpServerRequest::Method method) {
     switch (method) {
@@ -146,12 +151,15 @@ void RestServer::stop() {
 }
 
 QHttpServerResponse RestServer::jsonResponse(
+        const QHttpServerRequest& request,
         const QJsonObject& body,
         QHttpServerResponse::StatusCode status) const {
-    return QHttpServerResponse(
+    QHttpServerResponse response(
             status,
             QJsonDocument(body).toJson(QJsonDocument::Compact),
             "application/json");
+    addCorsHeaders(&response, request, false);
+    return response;
 }
 
 RestServer::TlsResult RestServer::prepareTlsConfiguration(
@@ -209,31 +217,35 @@ RestServer::TlsResult RestServer::prepareTlsConfiguration(
 QHttpServerResponse RestServer::tlsRequiredResponse(const QHttpServerRequest& request) const {
     const QString message = QStringLiteral("TLS is required for this route");
     logRouteError(request, QHttpServerResponse::StatusCode::Forbidden, message);
-    return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::Forbidden);
+    return jsonResponse(request, QJsonObject{{"error", message}},
+            QHttpServerResponse::StatusCode::Forbidden);
 }
 
 QHttpServerResponse RestServer::unauthorizedResponse(const QHttpServerRequest& request) const {
     const QString message = QStringLiteral("Unauthorized");
     logRouteError(request, QHttpServerResponse::StatusCode::Unauthorized, message);
-    return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::Unauthorized);
+    return jsonResponse(request, QJsonObject{{"error", message}},
+            QHttpServerResponse::StatusCode::Unauthorized);
 }
 
 QHttpServerResponse RestServer::forbiddenResponse(
         const QHttpServerRequest& request, const QString& message) const {
     logRouteError(request, QHttpServerResponse::StatusCode::Forbidden, message);
-    return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::Forbidden);
+    return jsonResponse(request, QJsonObject{{"error", message}},
+            QHttpServerResponse::StatusCode::Forbidden);
 }
 
 QHttpServerResponse RestServer::badRequestResponse(
         const QHttpServerRequest& request, const QString& message) const {
     logRouteError(request, QHttpServerResponse::StatusCode::BadRequest, message);
-    return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::BadRequest);
+    return jsonResponse(request, QJsonObject{{"error", message}},
+            QHttpServerResponse::StatusCode::BadRequest);
 }
 
 QHttpServerResponse RestServer::unsupportedMediaTypeResponse(
         const QHttpServerRequest& request, const QString& message) const {
     logRouteError(request, QHttpServerResponse::StatusCode::UnsupportedMediaType, message);
-    return jsonResponse(QJsonObject{{"error", message}},
+    return jsonResponse(request, QJsonObject{{"error", message}},
             QHttpServerResponse::StatusCode::UnsupportedMediaType);
 }
 
@@ -241,14 +253,15 @@ QHttpServerResponse RestServer::payloadTooLargeResponse(const QHttpServerRequest
     const QString message =
             tr("Request payload exceeds the maximum size of %1 bytes").arg(m_settings.maxRequestBytes);
     logRouteError(request, QHttpServerResponse::StatusCode::PayloadTooLarge, message);
-    return jsonResponse(QJsonObject{{"error", message}},
+    return jsonResponse(request, QJsonObject{{"error", message}},
             QHttpServerResponse::StatusCode::PayloadTooLarge);
 }
 
 QHttpServerResponse RestServer::methodNotAllowedResponse(const QHttpServerRequest& request) const {
     const QString message = QStringLiteral("Method not allowed");
     logRouteError(request, QHttpServerResponse::StatusCode::MethodNotAllowed, message);
-    return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::MethodNotAllowed);
+    return jsonResponse(request, QJsonObject{{"error", message}},
+            QHttpServerResponse::StatusCode::MethodNotAllowed);
 }
 
 QHttpServerResponse RestServer::serviceUnavailableResponse(const QHttpServerRequest* request) const {
@@ -256,7 +269,14 @@ QHttpServerResponse RestServer::serviceUnavailableResponse(const QHttpServerRequ
     if (request != nullptr) {
         logRouteError(*request, QHttpServerResponse::StatusCode::ServiceUnavailable, message);
     }
-    return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::ServiceUnavailable);
+    if (request != nullptr) {
+        return jsonResponse(*request, QJsonObject{{"error", message}},
+                QHttpServerResponse::StatusCode::ServiceUnavailable);
+    }
+    return QHttpServerResponse(
+            QHttpServerResponse::StatusCode::ServiceUnavailable,
+            QJsonDocument(QJsonObject{{"error", message}}).toJson(QJsonDocument::Compact),
+            "application/json");
 }
 
 QHttpServerResponse RestServer::invokeGateway(
@@ -276,6 +296,7 @@ QHttpServerResponse RestServer::invokeGateway(
             },
             Qt::QueuedConnection);
     semaphore.acquire();
+    addCorsHeaders(&response, request, false);
     return response;
 }
 
@@ -388,6 +409,13 @@ void RestServer::logRouteError(
 
 void RestServer::registerRoutes() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
+
+    const auto optionsRoute = [this](const QHttpServerRequest& request) {
+        QHttpServerResponse response(QHttpServerResponse::StatusCode::NoContent);
+        addCorsHeaders(&response, request, true);
+        return response;
+    };
+    m_httpServer->route("/*", QHttpServerRequest::Method::Options, optionsRoute);
 
     const auto requestTooLarge = [this](const QHttpServerRequest& request) {
         return m_settings.maxRequestBytes > 0 &&
@@ -625,6 +653,49 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/playlists", playlistsRoute);
     m_httpServer->route("/api/playlists", playlistsRoute);
+}
+
+void RestServer::addCorsHeaders(
+        QHttpServerResponse* response,
+        const QHttpServerRequest& request,
+        bool includeAllowHeaders) const {
+    const QString allowedOrigin = allowedCorsOrigin(request);
+    if (allowedOrigin.isEmpty()) {
+        return;
+    }
+    response->setHeader(QByteArrayLiteral(kCorsAllowOriginHeader), allowedOrigin.toUtf8());
+    if (includeAllowHeaders) {
+        response->setHeader(QByteArrayLiteral(kCorsAllowMethodsHeader),
+                QByteArrayLiteral("GET, POST, PUT, PATCH, DELETE, OPTIONS"));
+        const QByteArray requestedHeaders =
+                request.headers().value(QByteArrayLiteral(kCorsRequestHeadersHeader)).trimmed();
+        const QByteArray allowHeaders = requestedHeaders.isEmpty()
+                ? QByteArrayLiteral("Authorization, Content-Type")
+                : requestedHeaders;
+        response->setHeader(QByteArrayLiteral(kCorsAllowHeadersHeader), allowHeaders);
+    }
+}
+
+QString RestServer::allowedCorsOrigin(const QHttpServerRequest& request) const {
+    const QByteArray originHeader =
+            request.headers().value(QByteArrayLiteral(kCorsOriginHeader)).trimmed();
+    if (originHeader.isEmpty()) {
+        return QString();
+    }
+    const QString origin = QString::fromUtf8(originHeader);
+    for (const auto& allowed : m_settings.corsAllowlist) {
+        const QString trimmed = allowed.trimmed();
+        if (trimmed.isEmpty()) {
+            continue;
+        }
+        if (trimmed == QStringLiteral("*")) {
+            return QStringLiteral("*");
+        }
+        if (trimmed == origin) {
+            return origin;
+        }
+    }
+    return QString();
 }
 
 bool RestServer::startOnThread() {

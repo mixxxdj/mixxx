@@ -8,6 +8,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QStringList>
 #include <limits>
 
 namespace {
@@ -24,6 +25,7 @@ const QString kConfigPrivateKeyPath = QStringLiteral("tls_private_key_path");
 const QString kConfigTokens = QStringLiteral("tokens");
 const QString kConfigRequireTls = QStringLiteral("require_tls");
 const QString kConfigMaxRequestBytes = QStringLiteral("max_request_bytes");
+const QString kConfigCorsAllowlist = QStringLiteral("cors_allowlist");
 const QString kConfigStatusRunning = QStringLiteral("status_running");
 const QString kConfigStatusTlsActive = QStringLiteral("status_tls_active");
 const QString kConfigStatusCertificateGenerated = QStringLiteral("status_certificate_generated");
@@ -48,6 +50,21 @@ RestServerSettings::Values applyDefaults(const RestServerSettings::Values& value
     }
     if (sanitized.maxRequestBytes <= 0) {
         sanitized.maxRequestBytes = RestServerSettings::kDefaultMaxRequestBytes;
+    }
+    const QStringList allowlistEntries =
+            sanitized.corsAllowlist.split(',', Qt::SkipEmptyParts);
+    QStringList normalized;
+    normalized.reserve(allowlistEntries.size());
+    for (const auto& entry : allowlistEntries) {
+        const QString trimmed = entry.trimmed();
+        if (!trimmed.isEmpty()) {
+            normalized.append(trimmed);
+        }
+    }
+    sanitized.corsAllowlist = normalized.join(QStringLiteral(", "));
+    if (sanitized.corsAllowlist.isEmpty()) {
+        sanitized.corsAllowlist =
+                QString::fromLatin1(RestServerSettings::kDefaultCorsAllowlist);
     }
     return sanitized;
 }
@@ -100,6 +117,9 @@ RestServerSettings::Values RestServerSettings::get() const {
     values.maxRequestBytes = m_pConfig->getValue<int>(
             ConfigKey(kConfigGroup, kConfigMaxRequestBytes),
             kDefaultMaxRequestBytes);
+    values.corsAllowlist = m_pConfig->getValue<QString>(
+            ConfigKey(kConfigGroup, kConfigCorsAllowlist),
+            QString::fromLatin1(kDefaultCorsAllowlist));
     return applyDefaults(values);
 }
 
@@ -139,6 +159,7 @@ void RestServerSettings::set(const Values& values) {
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigTokens), QString::fromUtf8(tokensDoc.toJson(QJsonDocument::Compact)));
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigRequireTls), sanitized.requireTls);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigMaxRequestBytes), sanitized.maxRequestBytes);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigCorsAllowlist), sanitized.corsAllowlist);
 }
 
 RestServerSettings::Values RestServerSettings::defaults() const {
@@ -155,6 +176,7 @@ RestServerSettings::Values RestServerSettings::defaults() const {
     values.tokens.clear();
     values.requireTls = false;
     values.maxRequestBytes = kDefaultMaxRequestBytes;
+    values.corsAllowlist = QString::fromLatin1(kDefaultCorsAllowlist);
     return values;
 }
 

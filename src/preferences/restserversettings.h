@@ -40,6 +40,7 @@ class RestServerSettings {
         QList<RestServerToken> tokens;
         bool requireTls{false};
         int maxRequestBytes{0};
+        QString corsAllowlist;
     };
 
     struct Status {
@@ -55,6 +56,7 @@ class RestServerSettings {
     static constexpr int kDefaultPort = 8989;
     static constexpr int kDefaultHttpsPort = 8990;
     static constexpr int kDefaultMaxRequestBytes = 64 * 1024;
+    static constexpr const char* kDefaultCorsAllowlist = "*";
 
     explicit RestServerSettings(UserSettingsPointer pConfig);
 

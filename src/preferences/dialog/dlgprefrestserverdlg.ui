@@ -54,13 +54,23 @@
        <widget class="QSpinBox" name="spinBoxHttpPort"/>
       </item>
       <item row="3" column="0">
+       <widget class="QLabel" name="labelCorsAllowlist">
+        <property name="text">
+         <string>Allowed origins (comma-separated):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lineEditCorsAllowlist"/>
+      </item>
+      <item row="4" column="0">
        <widget class="QLabel" name="labelMaxRequestSize">
         <property name="text">
          <string>Max request size:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="4" column="1">
        <widget class="QSpinBox" name="spinBoxMaxRequestSize">
         <property name="suffix">
          <string> KiB</string>
