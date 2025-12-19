@@ -101,6 +101,11 @@ available on all Mixxx-supported platforms.
 
 All routes are served under the versioned base path `/api/v1` (for example, `/api/v1/health`).
 
+### Schema
+
+- `GET /schema` — static JSON description of the REST API, including `base_path`, links to core endpoints, required scopes,
+  and supported actions for AutoDJ/playlists plus the control payload styles. Requires `status:read`.
+
 ### Health and status
 
 - `GET /api/v1/health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes). Requires `status:read`.
