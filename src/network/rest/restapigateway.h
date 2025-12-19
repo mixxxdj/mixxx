@@ -31,6 +31,7 @@ class RestApiProvider : public QObject {
     virtual QHttpServerResponse health() const = 0;
     virtual QHttpServerResponse ready() const = 0;
     virtual QHttpServerResponse status() const = 0;
+    virtual QJsonObject statusPayload() const = 0;
     virtual QHttpServerResponse deck(int deckNumber) const = 0;
     virtual QHttpServerResponse decks() const = 0;
     virtual QHttpServerResponse control(const QJsonObject& body) const = 0;
@@ -60,6 +61,7 @@ class RestApiGateway : public RestApiProvider {
     QHttpServerResponse health() const;
     QHttpServerResponse ready() const;
     QHttpServerResponse status() const;
+    QJsonObject statusPayload() const override;
     QHttpServerResponse deck(int deckNumber) const;
     QHttpServerResponse decks() const;
     QHttpServerResponse control(

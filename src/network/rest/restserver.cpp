@@ -28,6 +28,7 @@ namespace mixxx::network::rest {
 namespace {
 constexpr auto kAuthHeader = "Authorization";
 constexpr auto kContentTypeHeader = "Content-Type";
+constexpr auto kEventStreamContentType = "text/event-stream";
 constexpr auto kIdempotencyKeyHeader = "Idempotency-Key";
 constexpr auto kRequestIdHeader = "X-Request-Id";
 constexpr auto kCorsOriginHeader = "Origin";
@@ -35,6 +36,12 @@ constexpr auto kCorsAllowOriginHeader = "Access-Control-Allow-Origin";
 constexpr auto kCorsAllowMethodsHeader = "Access-Control-Allow-Methods";
 constexpr auto kCorsAllowHeadersHeader = "Access-Control-Allow-Headers";
 constexpr auto kCorsRequestHeadersHeader = "Access-Control-Request-Headers";
+constexpr auto kCacheControlHeader = "Cache-Control";
+constexpr auto kConnectionHeader = "Connection";
+constexpr auto kNoCacheValue = "no-cache";
+constexpr auto kKeepAliveValue = "keep-alive";
+constexpr auto kAccelBufferingHeader = "X-Accel-Buffering";
+constexpr auto kAccelBufferingDisabled = "no";
 
 QString methodToString(QHttpServerRequest::Method method) {
     switch (method) {
@@ -65,6 +72,17 @@ bool isJsonContentType(const QHttpServerRequest& request) {
                                          .trimmed()
                                          .toLower();
     return mediaType == QByteArrayLiteral("application/json");
+}
+
+QByteArray formatSseEvent(const QJsonObject& payload) {
+    const QByteArray body = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+    QByteArray event;
+    event.reserve(body.size() + 32);
+    event.append("event: status\n");
+    event.append("data: ");
+    event.append(body);
+    event.append("\n\n");
+    return event;
 }
 } // namespace
 
@@ -538,6 +556,8 @@ void RestServer::registerRoutes() {
                     {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
             {QStringLiteral("/api/v1/status"),
                     {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
+            {QStringLiteral("/api/v1/stream/status"),
+                    {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
             {QStringLiteral("/api/v1/decks"),
                     {QStringList{scopes::kDecksRead}, QStringList{scopes::kDecksRead}}},
             {QStringLiteral("/api/v1/autodj"),
@@ -635,6 +655,30 @@ void RestServer::registerRoutes() {
         });
     };
     m_httpServer->route("/api/v1/status", statusRoute);
+
+    const auto statusStreamRoute = [this](
+                                           const QHttpServerRequest& request,
+                                           QHttpServerResponder&& responder) {
+        if (!m_settings.streamEnabled) {
+            responder.write(serviceUnavailableResponse(&request));
+            return;
+        }
+        const AuthorizationResult auth = authorizeRequest(request);
+        if (!auth.authorized) {
+            if (auth.forbidden) {
+                responder.write(forbiddenResponse(request, forbiddenMessage(auth.missingScopes)));
+                return;
+            }
+            responder.write(unauthorizedResponse(request));
+            return;
+        }
+        if (request.method() != QHttpServerRequest::Method::Get) {
+            responder.write(methodNotAllowedResponse(request));
+            return;
+        }
+        addStatusStreamClient(request, std::move(responder));
+    };
+    m_httpServer->route("/api/v1/stream/status", statusStreamRoute);
 
     const auto decksRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
@@ -858,6 +902,112 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/playlists", playlistsRoute);
 }
 
+void RestServer::addStatusStreamClient(
+        const QHttpServerRequest& request,
+        QHttpServerResponder&& responder) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
+
+    if (m_settings.streamMaxClients > 0 &&
+            static_cast<int>(m_streamClients.size()) >= m_settings.streamMaxClients) {
+        const QString message = QStringLiteral("Too many stream clients");
+        const QString requestId = requestIdFor(request);
+        logRouteError(
+                request,
+                QHttpServerResponse::StatusCode::TooManyRequests,
+                message,
+                requestId);
+        responder.write(jsonResponse(request, QJsonObject{{"error", message}},
+                QHttpServerResponse::StatusCode::TooManyRequests,
+                requestId));
+        return;
+    }
+
+    QHttpServerResponse response(QHttpServerResponse::StatusCode::Ok);
+    response.setHeader(QByteArrayLiteral(kContentTypeHeader),
+            QByteArrayLiteral(kEventStreamContentType));
+    response.setHeader(QByteArrayLiteral(kCacheControlHeader),
+            QByteArrayLiteral(kNoCacheValue));
+    response.setHeader(QByteArrayLiteral(kConnectionHeader),
+            QByteArrayLiteral(kKeepAliveValue));
+    response.setHeader(QByteArrayLiteral(kAccelBufferingHeader),
+            QByteArrayLiteral(kAccelBufferingDisabled));
+    const QString allowedOrigin = allowedCorsOrigin(request);
+    if (!allowedOrigin.isEmpty()) {
+        response.setHeader(QByteArrayLiteral(kCorsAllowOriginHeader), allowedOrigin.toUtf8());
+    }
+    responder.write(response);
+
+    const quint64 clientId = ++m_streamClientCounter;
+    QJsonObject payload = fetchStatusPayload();
+    const QJsonObject delta = statusDelta(QJsonObject{}, payload);
+    StreamClient client{clientId, std::move(responder), payload};
+    auto result = m_streamClients.emplace(clientId, std::move(client));
+    if (!result.second) {
+        return;
+    }
+    sendStatusStreamEvent(delta, &result.first->second.responder);
+
+}
+
+void RestServer::sendStatusStreamEvent(
+        const QJsonObject& payload,
+        QHttpServerResponder* responder) const {
+    if (!responder) {
+        return;
+    }
+    responder->write(formatSseEvent(payload));
+}
+
+QJsonObject RestServer::fetchStatusPayload() const {
+    if (m_gateway.isNull()) {
+        return QJsonObject{};
+    }
+    QJsonObject payload;
+    QSemaphore semaphore;
+    QMetaObject::invokeMethod(
+            m_gateway,
+            [&]() {
+                payload = m_gateway->statusPayload();
+                semaphore.release();
+            },
+            Qt::QueuedConnection);
+    semaphore.acquire();
+    return payload;
+}
+
+QJsonObject RestServer::statusDelta(
+        const QJsonObject& previous,
+        const QJsonObject& current) const {
+    QJsonObject delta;
+    for (auto it = current.begin(); it != current.end(); ++it) {
+        if (!previous.contains(it.key()) || previous.value(it.key()) != it.value()) {
+            delta.insert(it.key(), it.value());
+        }
+    }
+    for (auto it = previous.begin(); it != previous.end(); ++it) {
+        if (!current.contains(it.key())) {
+            delta.insert(it.key(), QJsonValue::Null);
+        }
+    }
+    return delta;
+}
+
+void RestServer::pushStatusStreamUpdate() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
+
+    if (!m_settings.streamEnabled || m_streamClients.empty()) {
+        return;
+    }
+
+    const QJsonObject payload = fetchStatusPayload();
+    for (auto& entry : m_streamClients) {
+        StreamClient& client = entry.second;
+        const QJsonObject delta = statusDelta(client.lastPayload, payload);
+        sendStatusStreamEvent(delta, &client.responder);
+        client.lastPayload = payload;
+    }
+}
+
 void RestServer::addCorsHeaders(
         QHttpServerResponse* response,
         const QHttpServerRequest& request,
@@ -934,11 +1084,27 @@ bool RestServer::startOnThread() {
     m_listeningPort = port;
     kLogger.info()
             << "REST API listening on" << m_settings.address.toString() << m_listeningPort;
+
+    if (m_settings.streamEnabled) {
+        m_streamTimer.stop();
+        m_streamTimer.setInterval(m_settings.streamIntervalMs);
+        m_streamTimer.setSingleShot(false);
+        if (m_streamTimer.thread() != m_threadObject->thread()) {
+            m_streamTimer.moveToThread(m_threadObject->thread());
+        }
+        QObject::disconnect(&m_streamTimer, nullptr, nullptr, nullptr);
+        connect(&m_streamTimer, &QTimer::timeout, m_threadObject.get(), [this]() {
+            pushStatusStreamUpdate();
+        });
+        m_streamTimer.start();
+    }
     return true;
 }
 
 void RestServer::stopOnThread() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_threadObject.get());
+    m_streamTimer.stop();
+    m_streamClients.clear();
     if (m_httpServer) {
         m_httpServer->close();
         m_httpServer.reset();

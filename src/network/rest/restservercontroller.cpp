@@ -92,6 +92,9 @@ RestServerController::ListenerConfiguration RestServerController::loadSettings()
             restToken.expiresUtc = token.expiresUtc;
             settings.tokens.append(restToken);
         }
+        settings.streamEnabled = values.streamEnabled;
+        settings.streamIntervalMs = values.streamIntervalMs;
+        settings.streamMaxClients = values.streamMaxClients;
         return settings;
     };
 
