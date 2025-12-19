@@ -231,7 +231,7 @@ TEST(RestServerRoutesTest, EnforcesAuthorization) {
     ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
 
     QNetworkAccessManager manager;
-    const QUrl url(QStringLiteral("http://127.0.0.1:%1/health").arg(port));
+    const QUrl url(QStringLiteral("http://127.0.0.1:%1/api/v1/health").arg(port));
 
     const auto unauthorized = sendRequest(&manager, url, "GET");
     EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Unauthorized), unauthorized.status);
@@ -243,6 +243,79 @@ TEST(RestServerRoutesTest, EnforcesAuthorization) {
             QByteArray(),
             {{"Authorization", "Bearer secret-token"}});
     EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), authorized.status);
+
+    server.stop();
+}
+
+TEST(RestServerRoutesTest, VersionedPathsServeRequests) {
+    StubRestApiGateway gateway;
+    RestServer server(&gateway);
+    const int port = findFreePort();
+
+    RestServer::Settings settings = baseSettings(port);
+
+    QString error;
+    ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
+
+    QNetworkAccessManager manager;
+
+    const auto expectOk = [&](const QString& path,
+                              const QByteArray& method,
+                              const QByteArray& body = QByteArray(),
+                              const QList<QPair<QByteArray, QByteArray>>& headers = {}) {
+        const QUrl url(QStringLiteral("http://127.0.0.1:%1%2").arg(port).arg(path));
+        const auto response = sendRequest(&manager, url, method, body, headers);
+        EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), response.status)
+                << path.toStdString();
+    };
+
+    expectOk("/api/v1/health", "GET");
+    expectOk("/api/v1/ready", "GET");
+    expectOk("/api/v1/status", "GET");
+    expectOk("/api/v1/decks", "GET");
+    expectOk("/api/v1/decks/1", "GET");
+    expectOk("/api/v1/autodj", "GET");
+    expectOk("/api/v1/playlists", "GET");
+
+    const QByteArray controlBody = QJsonDocument(QJsonObject{{"group", "[Master]"}, {"key", "volume"}})
+                                           .toJson(QJsonDocument::Compact);
+    expectOk("/api/v1/control",
+            "POST",
+            controlBody,
+            {{"Content-Type", "application/json"}});
+
+    const QByteArray autoDjBody = QJsonDocument(QJsonObject{{"enabled", true}})
+                                          .toJson(QJsonDocument::Compact);
+    expectOk("/api/v1/autodj",
+            "POST",
+            autoDjBody,
+            {{"Content-Type", "application/json"}});
+
+    const QByteArray playlistBody = QJsonDocument(QJsonObject{{"action", "create"}, {"name", "Test"}})
+                                            .toJson(QJsonDocument::Compact);
+    expectOk("/api/v1/playlists",
+            "POST",
+            playlistBody,
+            {{"Content-Type", "application/json"}});
+
+    server.stop();
+}
+
+TEST(RestServerRoutesTest, RejectsUnversionedPaths) {
+    StubRestApiGateway gateway;
+    RestServer server(&gateway);
+    const int port = findFreePort();
+
+    RestServer::Settings settings = baseSettings(port);
+
+    QString error;
+    ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
+
+    QNetworkAccessManager manager;
+    const QUrl url(QStringLiteral("http://127.0.0.1:%1/health").arg(port));
+    const auto response = sendRequest(&manager, url, "GET");
+
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::NotFound), response.status);
 
     server.stop();
 }
@@ -263,8 +336,8 @@ TEST(RestServerRoutesTest, ReadOnlyTokenAllowsStatusButBlocksControl) {
     ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
 
     QNetworkAccessManager manager;
-    const QUrl statusUrl(QStringLiteral("http://127.0.0.1:%1/status").arg(port));
-    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+    const QUrl statusUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/status").arg(port));
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/control").arg(port));
 
     const auto statusResponse = sendRequest(
             &manager,
@@ -299,7 +372,7 @@ TEST(RestServerRoutesTest, RequiresTlsForControlRoutesWhenRequested) {
     ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
 
     QNetworkAccessManager manager;
-    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/control").arg(port));
     const QByteArray body = QJsonDocument(QJsonObject{{"group", "[Master]"}, {"key", "volume"}})
                                     .toJson(QJsonDocument::Compact);
     const auto controlResponse = sendRequest(
@@ -311,7 +384,7 @@ TEST(RestServerRoutesTest, RequiresTlsForControlRoutesWhenRequested) {
 
     EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), controlResponse.status);
 
-    const QUrl autoDjUrl(QStringLiteral("http://127.0.0.1:%1/autodj").arg(port));
+    const QUrl autoDjUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/autodj").arg(port));
     const auto autoDjResponse = sendRequest(
             &manager,
             autoDjUrl,
@@ -320,7 +393,7 @@ TEST(RestServerRoutesTest, RequiresTlsForControlRoutesWhenRequested) {
             {{"Content-Type", "application/json"}});
     EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), autoDjResponse.status);
 
-    const QUrl playlistsUrl(QStringLiteral("http://127.0.0.1:%1/playlists").arg(port));
+    const QUrl playlistsUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/playlists").arg(port));
     const auto playlistsResponse = sendRequest(
             &manager,
             playlistsUrl,
@@ -343,7 +416,7 @@ TEST(RestServerRoutesTest, RejectsInvalidContentTypes) {
     ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
 
     QNetworkAccessManager manager;
-    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/control").arg(port));
     const QByteArray body = QJsonDocument(QJsonObject{{"group", "[Master]"}, {"key", "volume"}})
                                     .toJson(QJsonDocument::Compact);
 
@@ -374,7 +447,7 @@ TEST(RestServerRoutesTest, ReportsJsonParseErrors) {
     ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
 
     QNetworkAccessManager manager;
-    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/control").arg(port));
     const QByteArray invalidJson("{");
 
     QJsonParseError parseError;

@@ -34,7 +34,7 @@ This document summarizes defaults, security, and available routes.
 
 ## Endpoints
 
-All routes are available with and without the `/api` prefix (for example, `/health` and `/api/health`).
+All routes are served under the versioned base path `/api/v1` (for example, `/api/v1/health`).
 
 ## REST API architecture and control flow
 
