@@ -105,6 +105,9 @@ available on all Mixxx-supported platforms.
 - `POST /control` — control Mixxx via JSON body. Supported styles include:
   - Commands: `{ "command": "play", "group": "[Channel1]" }`, `{ "command": "seek", "position": 0.5 }`.
   - Direct control values: `{ "group": "[Master]", "key": "gain", "value": 1.2 }`.
+  - Multiple commands: `{ "commands": [ { "command": "play", "group": "[Channel1]" }, { "group": "[Master]", "key": "gain", "value": 1.2 } ] }`.
+    Responses include a `results` array of per-command payloads with a `status` field. Mixed success/error
+    responses return HTTP 207 (Multi-Status); all errors return the first error status.
 
 ### AutoDJ
 

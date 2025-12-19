@@ -217,139 +217,233 @@ QHttpServerResponse RestApiGateway::decks() const {
 QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    const QString command = body.value("command").toString();
-    QString group = body.value("group").toString();
-    if (group.isEmpty()) {
-        bool ok = false;
-        const int deckIndex = body.value("deck").toInt(&ok);
-        if (ok && deckIndex > 0) {
-            group = PlayerManager::groupForDeck(deckIndex - 1);
-        }
-    }
-    if (group.isEmpty()) {
-        return errorResponse(
-                QHttpServerResponse::StatusCode::BadRequest,
-                tr("Missing control group"));
-    }
+    struct ControlResult {
+        QHttpServerResponse::StatusCode status;
+        QJsonObject payload;
+    };
 
-    auto createControl = [&](const QString& controlKey) -> std::optional<ControlProxy> {
-        ControlProxy control(group, controlKey, nullptr);
-        if (!control.valid()) {
+    auto errorResult = [&](QHttpServerResponse::StatusCode code, const QString& message) {
+        return ControlResult{code, QJsonObject{{"error", message}}};
+    };
+
+    auto successResult = [&](const QJsonObject& payload,
+                             QHttpServerResponse::StatusCode statusCode =
+                                     QHttpServerResponse::StatusCode::Ok) {
+        return ControlResult{statusCode, payload};
+    };
+
+    auto applyControl = [&](const QJsonObject& commandBody) {
+        const QString command = commandBody.value("command").toString();
+        QString group = commandBody.value("group").toString();
+        if (group.isEmpty()) {
+            bool ok = false;
+            const int deckIndex = commandBody.value("deck").toInt(&ok);
+            if (ok && deckIndex > 0) {
+                group = PlayerManager::groupForDeck(deckIndex - 1);
+            }
+        }
+        if (group.isEmpty()) {
+            return errorResult(
+                    QHttpServerResponse::StatusCode::BadRequest,
+                    tr("Missing control group"));
+        }
+
+        auto createControl = [&](const QString& controlKey) -> std::optional<ControlProxy> {
+            ControlProxy control(group, controlKey, nullptr);
+            if (!control.valid()) {
+                return std::nullopt;
+            }
+            return control;
+        };
+
+        const QString key = commandBody.value("key").toString();
+        if (command.isEmpty() && key.isEmpty()) {
+            return errorResult(
+                    QHttpServerResponse::StatusCode::BadRequest,
+                    tr("Missing command or key"));
+        }
+
+        auto applyValue = [&](ControlProxy& control, std::optional<double> value = std::nullopt) {
+            control.set(value.value_or(1.0));
+            return control.get();
+        };
+
+        auto toggleControl = [&](ControlProxy& control) {
+            const double nextValue = control.toBool() ? 0.0 : 1.0;
+            control.set(nextValue);
+            return nextValue;
+        };
+
+        auto ensureControl = [&](const QString& controlKey) -> std::optional<ControlProxy> {
+            if (auto controlProxy = createControl(controlKey)) {
+                return controlProxy;
+            }
             return std::nullopt;
-        }
-        return control;
-    };
+        };
 
-    const QString key = body.value("key").toString();
-    if (command.isEmpty() && key.isEmpty()) {
-        return errorResponse(
-                QHttpServerResponse::StatusCode::BadRequest,
-                tr("Missing command or key"));
-    }
+        auto finalizeResponse = [&](const QString& responseKey,
+                                    const QString& responseGroup,
+                                    double responseValue) {
+            return successResult(QJsonObject{
+                    {"group", responseGroup},
+                    {"key", responseKey},
+                    {"value", responseValue},
+            });
+        };
 
-    auto applyValue = [&](ControlProxy& control, std::optional<double> value = std::nullopt) {
-        control.set(value.value_or(1.0));
-        return control.get();
-    };
-
-    auto toggleControl = [&](ControlProxy& control) {
-        const double nextValue = control.toBool() ? 0.0 : 1.0;
-        control.set(nextValue);
-        return nextValue;
-    };
-
-    auto ensureControl = [&](const QString& controlKey) -> std::optional<ControlProxy> {
-        if (auto controlProxy = createControl(controlKey)) {
-            return controlProxy;
-        }
-        return std::nullopt;
-    };
-
-    auto finalizeResponse = [&](const QString& responseKey,
-                                const QString& responseGroup,
-                                double responseValue) {
-        return successResponse(QJsonObject{
-                {"group", responseGroup},
-                {"key", responseKey},
-                {"value", responseValue},
-        });
-    };
-
-    if (!command.isEmpty()) {
-        if (command == QStringLiteral("play") || command == QStringLiteral("pause") ||
-                command == QStringLiteral("toggle")) {
-            auto control = ensureControl(QStringLiteral("play"));
-            if (!control.has_value()) {
-                return errorResponse(
-                        QHttpServerResponse::StatusCode::BadRequest,
-                        tr("Unknown control %1 play").arg(group));
+        if (!command.isEmpty()) {
+            if (command == QStringLiteral("play") || command == QStringLiteral("pause") ||
+                    command == QStringLiteral("toggle")) {
+                auto control = ensureControl(QStringLiteral("play"));
+                if (!control.has_value()) {
+                    return errorResult(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Unknown control %1 play").arg(group));
+                }
+                if (command == QStringLiteral("toggle")) {
+                    return finalizeResponse("play", group, toggleControl(control.value()));
+                }
+                const double value = command == QStringLiteral("play") ? 1.0 : 0.0;
+                return finalizeResponse("play", group, applyValue(control.value(), value));
             }
-            if (command == QStringLiteral("toggle")) {
-                return finalizeResponse("play", group, toggleControl(control.value()));
+            if (command == QStringLiteral("seek")) {
+                bool ok = false;
+                const double position = commandBody.value("position").toDouble(&ok);
+                if (!ok) {
+                    return errorResult(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Seek position must be numeric"));
+                }
+                auto control = ensureControl(QStringLiteral("playposition"));
+                if (!control.has_value()) {
+                    return errorResult(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Unknown control %1 playposition").arg(group));
+                }
+                return finalizeResponse(
+                        "playposition",
+                        group,
+                        applyValue(control.value(), position));
             }
-            const double value = command == QStringLiteral("play") ? 1.0 : 0.0;
-            return finalizeResponse("play", group, applyValue(control.value(), value));
+            if (command == QStringLiteral("gain")) {
+                bool ok = false;
+                const double gain = commandBody.value("value").toDouble(&ok);
+                if (!ok) {
+                    return errorResult(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Gain must be numeric"));
+                }
+                auto control = ensureControl(QStringLiteral("gain"));
+                if (!control.has_value()) {
+                    return errorResult(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("Unknown control %1 gain").arg(group));
+                }
+                return finalizeResponse("gain", group, applyValue(control.value(), gain));
+            }
+
+            return errorResult(
+                    QHttpServerResponse::StatusCode::BadRequest,
+                    tr("Unsupported control command: %1").arg(command));
         }
-        if (command == QStringLiteral("seek")) {
+
+        ControlProxy control(group, key, nullptr);
+        if (!control.valid()) {
+            return errorResult(
+                    QHttpServerResponse::StatusCode::BadRequest,
+                    tr("Unknown control %1 %2").arg(group, key));
+        }
+
+        const auto valueVariant = commandBody.value("value");
+        std::optional<double> controlValue;
+        if (!valueVariant.isUndefined()) {
             bool ok = false;
-            const double position = body.value("position").toDouble(&ok);
+            const double numericValue = valueVariant.toDouble(&ok);
             if (!ok) {
-                return errorResponse(
+                return errorResult(
                         QHttpServerResponse::StatusCode::BadRequest,
-                        tr("Seek position must be numeric"));
+                        tr("Control value must be numeric"));
             }
-            auto control = ensureControl(QStringLiteral("playposition"));
-            if (!control.has_value()) {
-                return errorResponse(
-                        QHttpServerResponse::StatusCode::BadRequest,
-                        tr("Unknown control %1 playposition").arg(group));
-            }
-            return finalizeResponse("playposition", group, applyValue(control.value(), position));
-        }
-        if (command == QStringLiteral("gain")) {
-            bool ok = false;
-            const double gain = body.value("value").toDouble(&ok);
-            if (!ok) {
-                return errorResponse(
-                        QHttpServerResponse::StatusCode::BadRequest,
-                        tr("Gain must be numeric"));
-            }
-            auto control = ensureControl(QStringLiteral("gain"));
-            if (!control.has_value()) {
-                return errorResponse(
-                        QHttpServerResponse::StatusCode::BadRequest,
-                        tr("Unknown control %1 gain").arg(group));
-            }
-            return finalizeResponse("gain", group, applyValue(control.value(), gain));
+            controlValue = numericValue;
         }
 
-        return errorResponse(
-                QHttpServerResponse::StatusCode::BadRequest,
-                tr("Unsupported control command: %1").arg(command));
-    }
+        const double resultValue = applyValue(control, controlValue);
+        return finalizeResponse(key, group, resultValue);
+    };
 
-    ControlProxy control(group, key, nullptr);
-    if (!control.valid()) {
-        return errorResponse(
-                QHttpServerResponse::StatusCode::BadRequest,
-                tr("Unknown control %1 %2").arg(group, key));
-    }
-
-    const auto valueVariant = body.value("value");
-    std::optional<double> controlValue;
-    if (!valueVariant.isUndefined()) {
-        bool ok = false;
-        const double numericValue = valueVariant.toDouble(&ok);
-        if (!ok) {
+    if (body.contains("commands")) {
+        const auto commandsValue = body.value("commands");
+        if (!commandsValue.isArray()) {
             return errorResponse(
                     QHttpServerResponse::StatusCode::BadRequest,
-                    tr("Control value must be numeric"));
+                    tr("Commands must be an array"));
         }
-        controlValue = numericValue;
+
+        const QJsonArray commands = commandsValue.toArray();
+        if (commands.isEmpty()) {
+            return errorResponse(
+                    QHttpServerResponse::StatusCode::BadRequest,
+                    tr("No commands provided"));
+        }
+
+        QJsonArray results;
+        results.reserve(commands.size());
+        bool sawSuccess = false;
+        bool sawError = false;
+        QHttpServerResponse::StatusCode firstErrorStatus = QHttpServerResponse::StatusCode::Ok;
+
+        for (const QJsonValue& commandValue : commands) {
+            if (!commandValue.isObject()) {
+                auto invalidResult = errorResult(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("Command entry must be an object"));
+                QJsonObject entry = invalidResult.payload;
+                entry.insert("status", static_cast<int>(invalidResult.status));
+                results.append(entry);
+                sawError = true;
+                if (firstErrorStatus == QHttpServerResponse::StatusCode::Ok) {
+                    firstErrorStatus = invalidResult.status;
+                } else if (firstErrorStatus != invalidResult.status) {
+                    firstErrorStatus = QHttpServerResponse::StatusCode::MultiStatus;
+                }
+                continue;
+            }
+
+            const auto result = applyControl(commandValue.toObject());
+            QJsonObject entry = result.payload;
+            entry.insert("status", static_cast<int>(result.status));
+            results.append(entry);
+
+            if (result.status == QHttpServerResponse::StatusCode::Ok) {
+                sawSuccess = true;
+            } else {
+                sawError = true;
+                if (firstErrorStatus == QHttpServerResponse::StatusCode::Ok) {
+                    firstErrorStatus = result.status;
+                } else if (firstErrorStatus != result.status) {
+                    firstErrorStatus = QHttpServerResponse::StatusCode::MultiStatus;
+                }
+            }
+        }
+
+        QHttpServerResponse::StatusCode aggregateStatus = QHttpServerResponse::StatusCode::Ok;
+        if (sawSuccess && sawError) {
+            aggregateStatus = QHttpServerResponse::StatusCode::MultiStatus;
+        } else if (sawError) {
+            aggregateStatus = firstErrorStatus;
+            if (aggregateStatus == QHttpServerResponse::StatusCode::Ok) {
+                aggregateStatus = QHttpServerResponse::StatusCode::MultiStatus;
+            }
+        }
+
+        return successResponse(QJsonObject{{"results", results}}, aggregateStatus);
     }
 
-    const double resultValue = applyValue(control, controlValue);
-    return finalizeResponse(key, group, resultValue);
+    const auto singleResult = applyControl(body);
+    if (singleResult.status == QHttpServerResponse::StatusCode::Ok) {
+        return successResponse(singleResult.payload);
+    }
+    return errorResponse(singleResult.status, singleResult.payload.value("error").toString());
 }
 
 QHttpServerResponse RestApiGateway::autoDj(const QJsonObject& body) const {
