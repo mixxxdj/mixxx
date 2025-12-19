@@ -7,6 +7,7 @@
 #include <QEventLoop>
 #include <QFile>
 #include <QHash>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -17,6 +18,7 @@
 #include <QTcpServer>
 #include <QTemporaryDir>
 #include <QUrl>
+#include <algorithm>
 #include <limits>
 
 #include "network/rest/certificategenerator.h"
@@ -302,6 +304,7 @@ TEST(RestServerRoutesTest, VersionedPathsServeRequests) {
     };
 
     expectOk("/api/v1/health", "GET");
+    expectOk("/api/v1/schema", "GET");
     expectOk("/api/v1/ready", "GET");
     expectOk("/api/v1/status", "GET");
     expectOk("/api/v1/decks", "GET");
@@ -329,6 +332,85 @@ TEST(RestServerRoutesTest, VersionedPathsServeRequests) {
             "POST",
             playlistBody,
             {{"Content-Type", "application/json"}});
+
+    server.stop();
+}
+
+TEST(RestServerRoutesTest, SchemaEndpointDescribesRoutesAndActions) {
+    StubRestApiGateway gateway;
+    RestServer server(&gateway);
+    const int port = findFreePort();
+
+    RestServer::Settings settings = baseSettings(port);
+
+    QString error;
+    ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
+
+    QNetworkAccessManager manager;
+    const QUrl schemaUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/schema").arg(port));
+    const auto response = sendRequest(&manager, schemaUrl, "GET");
+
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), response.status);
+
+    QJsonParseError parseError;
+    const auto doc = QJsonDocument::fromJson(response.body, &parseError);
+    ASSERT_EQ(QJsonParseError::NoError, parseError.error);
+    ASSERT_TRUE(doc.isObject());
+
+    const auto root = doc.object();
+    const auto links = root.value("links").toObject();
+    EXPECT_EQ(QStringLiteral("/api/v1/health"), links.value("health").toString());
+    EXPECT_EQ(QStringLiteral("/api/v1/status"), links.value("status").toString());
+    EXPECT_EQ(QStringLiteral("/api/v1/control"), links.value("control").toString());
+    EXPECT_EQ(QStringLiteral("/api/v1/autodj"), links.value("autodj").toString());
+    EXPECT_EQ(QStringLiteral("/api/v1/playlists"), links.value("playlists").toString());
+
+    const auto actions = root.value("actions").toObject();
+    const auto autodjActions = actions.value("autodj").toArray();
+    const auto playlistsActions = actions.value("playlists").toArray();
+    const auto containsString = [](const QJsonArray& array, const QString& value) {
+        return std::any_of(array.begin(), array.end(), [&value](const QJsonValue& entry) {
+            return entry.toString() == value;
+        });
+    };
+    EXPECT_TRUE(containsString(autodjActions, QStringLiteral("enable")));
+    EXPECT_TRUE(containsString(autodjActions, QStringLiteral("add")));
+    EXPECT_TRUE(containsString(playlistsActions, QStringLiteral("create")));
+    EXPECT_TRUE(containsString(playlistsActions, QStringLiteral("send_to_autodj")));
+
+    const auto endpoints = root.value("endpoints").toArray();
+    const auto findEndpoint = [](const QJsonArray& array, const QString& path) {
+        for (const auto& entry : array) {
+            const auto obj = entry.toObject();
+            if (obj.value("path").toString() == path) {
+                return obj;
+            }
+        }
+        return QJsonObject{};
+    };
+    const auto endpointScopes = [](const QJsonObject& endpoint, const QString& key) {
+        return endpoint.value("scopes").toObject().value(key).toArray();
+    };
+
+    const auto healthEndpoint = findEndpoint(endpoints, QStringLiteral("/api/v1/health"));
+    EXPECT_TRUE(containsString(endpointScopes(healthEndpoint, QStringLiteral("read")),
+            QStringLiteral("status:read")));
+
+    const auto controlEndpoint = findEndpoint(endpoints, QStringLiteral("/api/v1/control"));
+    EXPECT_TRUE(containsString(endpointScopes(controlEndpoint, QStringLiteral("write")),
+            QStringLiteral("control:write")));
+
+    const auto autodjEndpoint = findEndpoint(endpoints, QStringLiteral("/api/v1/autodj"));
+    EXPECT_TRUE(containsString(endpointScopes(autodjEndpoint, QStringLiteral("read")),
+            QStringLiteral("autodj:read")));
+    EXPECT_TRUE(containsString(endpointScopes(autodjEndpoint, QStringLiteral("write")),
+            QStringLiteral("autodj:write")));
+
+    const auto playlistsEndpoint = findEndpoint(endpoints, QStringLiteral("/api/v1/playlists"));
+    EXPECT_TRUE(containsString(endpointScopes(playlistsEndpoint, QStringLiteral("read")),
+            QStringLiteral("playlists:read")));
+    EXPECT_TRUE(containsString(endpointScopes(playlistsEndpoint, QStringLiteral("write")),
+            QStringLiteral("playlists:write")));
 
     server.stop();
 }

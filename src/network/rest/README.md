@@ -48,6 +48,11 @@ Available scopes:
 
 All routes are served under the versioned base path `/api/v1` (for example, `/api/v1/health`).
 
+### Schema
+
+- `GET /schema` — static JSON description of the available endpoints, required scopes, and supported
+  actions for AutoDJ and playlist commands. Includes links for the core routes.
+
 ## REST API architecture and control flow
 
 The REST API is a thin HTTP façade that routes requests into Mixxx's existing

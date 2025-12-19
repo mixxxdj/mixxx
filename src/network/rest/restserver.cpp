@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QHash>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -550,6 +551,8 @@ void RestServer::registerRoutes() {
     };
 
     const QHash<QString, RouteScopes> routeScopes{
+            {QStringLiteral("/api/v1/schema"),
+                    {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
             {QStringLiteral("/api/v1/health"),
                     {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
             {QStringLiteral("/api/v1/ready"),
@@ -566,6 +569,97 @@ void RestServer::registerRoutes() {
                     {QStringList{scopes::kControlWrite}, QStringList{scopes::kControlWrite}}},
             {QStringLiteral("/api/v1/playlists"),
                     {QStringList{scopes::kPlaylistsRead}, QStringList{scopes::kPlaylistsWrite}}},
+    };
+
+    const auto toJsonArray = [](const QStringList& values) {
+        QJsonArray array;
+        array.reserve(values.size());
+        for (const auto& value : values) {
+            array.append(value);
+        }
+        return array;
+    };
+    const auto makeEndpoint = [&toJsonArray](const QString& path,
+                                             const QStringList& methods,
+                                             const QStringList& readScopes,
+                                             const QStringList& writeScopes = {}) {
+        QJsonObject scopes;
+        if (!readScopes.isEmpty()) {
+            scopes.insert(QStringLiteral("read"), toJsonArray(readScopes));
+        }
+        if (!writeScopes.isEmpty()) {
+            scopes.insert(QStringLiteral("write"), toJsonArray(writeScopes));
+        }
+        return QJsonObject{
+                {QStringLiteral("path"), path},
+                {QStringLiteral("methods"), toJsonArray(methods)},
+                {QStringLiteral("scopes"), scopes},
+        };
+    };
+    const QJsonArray schemaEndpoints{
+            makeEndpoint(QStringLiteral("/api/v1/health"),
+                    QStringList{QStringLiteral("GET")},
+                    QStringList{scopes::kStatusRead}),
+            makeEndpoint(QStringLiteral("/api/v1/status"),
+                    QStringList{QStringLiteral("GET")},
+                    QStringList{scopes::kStatusRead}),
+            makeEndpoint(QStringLiteral("/api/v1/control"),
+                    QStringList{QStringLiteral("POST")},
+                    QStringList{},
+                    QStringList{scopes::kControlWrite}),
+            makeEndpoint(QStringLiteral("/api/v1/autodj"),
+                    QStringList{QStringLiteral("GET"), QStringLiteral("POST")},
+                    QStringList{scopes::kAutoDjRead},
+                    QStringList{scopes::kAutoDjWrite}),
+            makeEndpoint(QStringLiteral("/api/v1/playlists"),
+                    QStringList{QStringLiteral("GET"), QStringLiteral("POST")},
+                    QStringList{scopes::kPlaylistsRead},
+                    QStringList{scopes::kPlaylistsWrite}),
+    };
+    const QJsonObject schemaPayload{
+            {QStringLiteral("version"), QStringLiteral("v1")},
+            {QStringLiteral("base_path"), QStringLiteral("/api/v1")},
+            {QStringLiteral("links"),
+                    QJsonObject{
+                            {QStringLiteral("health"), QStringLiteral("/api/v1/health")},
+                            {QStringLiteral("status"), QStringLiteral("/api/v1/status")},
+                            {QStringLiteral("control"), QStringLiteral("/api/v1/control")},
+                            {QStringLiteral("autodj"), QStringLiteral("/api/v1/autodj")},
+                            {QStringLiteral("playlists"), QStringLiteral("/api/v1/playlists")},
+                    }},
+            {QStringLiteral("endpoints"), schemaEndpoints},
+            {QStringLiteral("actions"),
+                    QJsonObject{
+                            {QStringLiteral("autodj"),
+                                    QJsonArray{
+                                            QStringLiteral("enable"),
+                                            QStringLiteral("disable"),
+                                            QStringLiteral("skip"),
+                                            QStringLiteral("fade"),
+                                            QStringLiteral("shuffle"),
+                                            QStringLiteral("add_random"),
+                                            QStringLiteral("clear"),
+                                            QStringLiteral("add"),
+                                            QStringLiteral("move"),
+                                    }},
+                            {QStringLiteral("playlists"),
+                                    QJsonArray{
+                                            QStringLiteral("create"),
+                                            QStringLiteral("delete"),
+                                            QStringLiteral("rename"),
+                                            QStringLiteral("set_active"),
+                                            QStringLiteral("add"),
+                                            QStringLiteral("remove"),
+                                            QStringLiteral("reorder"),
+                                            QStringLiteral("send_to_autodj"),
+                                    }},
+                    }},
+            {QStringLiteral("control_payloads"),
+                    QJsonArray{
+                            QStringLiteral("command"),
+                            QStringLiteral("commands"),
+                            QStringLiteral("direct_control"),
+                    }},
     };
 
     const QString deckDetailPrefix = QStringLiteral("/api/v1/decks/");
@@ -596,6 +690,25 @@ void RestServer::registerRoutes() {
         return response;
     };
     m_httpServer->route("/*", QHttpServerRequest::Method::Options, optionsRoute);
+
+    const auto schemaRoute = [this, schemaPayload](const QHttpServerRequest& request) {
+        const AuthorizationResult auth = authorizeRequest(request);
+        if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+            }
+            return unauthorizedResponse(request);
+        }
+        if (request.method() != QHttpServerRequest::Method::Get) {
+            return methodNotAllowedResponse(request);
+        }
+        return jsonResponse(
+                request,
+                schemaPayload,
+                QHttpServerResponse::StatusCode::Ok,
+                requestIdFor(request));
+    };
+    m_httpServer->route("/api/v1/schema", schemaRoute);
 
     const auto requestTooLarge = [this](const QHttpServerRequest& request) {
         return m_settings.maxRequestBytes > 0 &&
