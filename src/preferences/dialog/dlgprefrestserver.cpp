@@ -24,6 +24,8 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     spinBoxHttpPort->setMaximum(std::numeric_limits<quint16>::max());
     spinBoxHttpsPort->setMinimum(1);
     spinBoxHttpsPort->setMaximum(std::numeric_limits<quint16>::max());
+    spinBoxMaxRequestSize->setMinimum(1);
+    spinBoxMaxRequestSize->setMaximum(std::numeric_limits<int>::max() / 1024);
 
     labelAuthWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
@@ -158,6 +160,7 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     lineEditHost->setText(values.host);
     spinBoxHttpPort->setValue(values.httpPort);
     spinBoxHttpsPort->setValue(values.httpsPort);
+    spinBoxMaxRequestSize->setValue(qMax(1, (values.maxRequestBytes + 1023) / 1024));
     m_tokens = values.tokens;
     refreshTokenTable();
     updateSelection(m_tokens.isEmpty() ? -1 : 0);
@@ -179,6 +182,7 @@ RestServerSettings::Values DlgPrefRestServer::gatherValues() const {
     values.host = lineEditHost->text();
     values.httpPort = spinBoxHttpPort->value();
     values.httpsPort = spinBoxHttpsPort->value();
+    values.maxRequestBytes = spinBoxMaxRequestSize->value() * 1024;
     values.tokens = m_tokens;
     values.useHttps = checkBoxUseHttps->isChecked();
     values.autoGenerateCert = values.useHttps && checkBoxAutoGenerateCertificate->isChecked();

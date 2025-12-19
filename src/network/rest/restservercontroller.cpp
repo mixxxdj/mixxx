@@ -73,6 +73,7 @@ RestServerController::ListenerConfiguration RestServerController::loadSettings()
         settings.requireTls = values.requireTls;
         settings.certificatePath = values.certificatePath;
         settings.privateKeyPath = values.privateKeyPath;
+        settings.maxRequestBytes = values.maxRequestBytes;
         settings.tokens.clear();
         for (const auto& token : values.tokens) {
             RestServer::Token restToken;

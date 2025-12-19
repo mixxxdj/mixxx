@@ -39,6 +39,7 @@ class RestServerSettings {
         QString privateKeyPath;
         QList<RestServerToken> tokens;
         bool requireTls{false};
+        int maxRequestBytes{0};
     };
 
     struct Status {
@@ -53,6 +54,7 @@ class RestServerSettings {
 
     static constexpr int kDefaultPort = 8989;
     static constexpr int kDefaultHttpsPort = 8990;
+    static constexpr int kDefaultMaxRequestBytes = 64 * 1024;
 
     explicit RestServerSettings(UserSettingsPointer pConfig);
 

@@ -71,6 +71,7 @@ class RestServer : public QObject {
         QString certificatePath;
         QString privateKeyPath;
         QList<Token> tokens;
+        int maxRequestBytes{64 * 1024};
 
         friend bool operator==(const Settings& lhs, const Settings& rhs) {
             return lhs.enabled == rhs.enabled &&
@@ -84,7 +85,8 @@ class RestServer : public QObject {
                     lhs.requireTls == rhs.requireTls &&
                     lhs.certificatePath == rhs.certificatePath &&
                     lhs.privateKeyPath == rhs.privateKeyPath &&
-                    lhs.tokens == rhs.tokens;
+                    lhs.tokens == rhs.tokens &&
+                    lhs.maxRequestBytes == rhs.maxRequestBytes;
         }
 
         friend bool operator!=(const Settings& lhs, const Settings& rhs) {
@@ -136,6 +138,7 @@ class RestServer : public QObject {
             const QString& message) const;
     QHttpServerResponse badRequestResponse(
             const QHttpServerRequest& request, const QString& message) const;
+    QHttpServerResponse payloadTooLargeResponse(const QHttpServerRequest& request) const;
     QHttpServerResponse methodNotAllowedResponse(const QHttpServerRequest& request) const;
     QHttpServerResponse serviceUnavailableResponse(const QHttpServerRequest* request) const;
     QHttpServerResponse jsonResponse(
