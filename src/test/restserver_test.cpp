@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QEventLoop>
 #include <QFile>
+#include <QHash>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -63,7 +64,7 @@ class StubRestApiGateway : public RestApiProvider {
     }
 
     QHttpServerResponse control(const QJsonObject&) const override {
-        return jsonResponse("control");
+        return jsonResponseWithCounter("control");
     }
 
     QHttpServerResponse autoDjStatus() const override {
@@ -71,7 +72,7 @@ class StubRestApiGateway : public RestApiProvider {
     }
 
     QHttpServerResponse autoDj(const QJsonObject&) const override {
-        return jsonResponse("autodj");
+        return jsonResponseWithCounter("autodj");
     }
 
     QHttpServerResponse playlists(const std::optional<int>&) const override {
@@ -79,7 +80,26 @@ class StubRestApiGateway : public RestApiProvider {
     }
 
     QHttpServerResponse playlistCommand(const QJsonObject&) const override {
-        return jsonResponse("playlistcommand");
+        return jsonResponseWithCounter("playlistcommand");
+    }
+
+    QHttpServerResponse withIdempotencyCache(
+            const QString& token,
+            const QString& idempotencyKey,
+            const QString& endpoint,
+            const std::function<QHttpServerResponse()>& handler) const override {
+        if (idempotencyKey.isEmpty()) {
+            return handler();
+        }
+        const QString cacheKey =
+                QStringLiteral("%1\n%2\n%3").arg(token, idempotencyKey, endpoint);
+        const auto cached = m_idempotencyCache.constFind(cacheKey);
+        if (cached != m_idempotencyCache.constEnd()) {
+            return cached.value();
+        }
+        QHttpServerResponse response = handler();
+        m_idempotencyCache.insert(cacheKey, response);
+        return response;
     }
 
   private:
@@ -90,6 +110,13 @@ class StubRestApiGateway : public RestApiProvider {
                         QJsonDocument::Compact),
                 "application/json");
     }
+
+    QHttpServerResponse jsonResponseWithCounter(const QString& prefix) const {
+        return jsonResponse(QStringLiteral("%1-%2").arg(prefix).arg(++m_responseCounter));
+    }
+
+    mutable int m_responseCounter{0};
+    mutable QHash<QString, QHttpServerResponse> m_idempotencyCache;
 };
 
 struct HttpResult {
@@ -469,6 +496,77 @@ TEST(RestServerRoutesTest, ReportsJsonParseErrors) {
     const QString errorMessage = responseDoc.object().value("error").toString();
     EXPECT_THAT(errorMessage.toStdString(),
             ::testing::HasSubstr(parseError.errorString().toStdString()));
+
+    server.stop();
+}
+
+TEST(RestServerRoutesTest, IdempotencyKeyReusesPostResponse) {
+    StubRestApiGateway gateway;
+    RestServer server(&gateway);
+    const int port = findFreePort();
+
+    RestServer::Settings settings = baseSettings(port);
+    RestServer::Token tokenA;
+    tokenA.value = QStringLiteral("token-a");
+    tokenA.permission = QStringLiteral("full");
+    tokenA.createdUtc = QDateTime::currentDateTimeUtc();
+    settings.tokens.append(tokenA);
+    RestServer::Token tokenB;
+    tokenB.value = QStringLiteral("token-b");
+    tokenB.permission = QStringLiteral("full");
+    tokenB.createdUtc = QDateTime::currentDateTimeUtc();
+    settings.tokens.append(tokenB);
+
+    QString error;
+    ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
+
+    QNetworkAccessManager manager;
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/api/v1/control").arg(port));
+    const QByteArray body = QJsonDocument(QJsonObject{{"group", "[Master]"}, {"key", "volume"}})
+                                    .toJson(QJsonDocument::Compact);
+
+    const auto first = sendRequest(
+            &manager,
+            controlUrl,
+            "POST",
+            body,
+            {{"Authorization", "Bearer token-a"},
+                    {"Content-Type", "application/json"},
+                    {"Idempotency-Key", "repeat-me"}});
+    ASSERT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), first.status);
+
+    const auto duplicate = sendRequest(
+            &manager,
+            controlUrl,
+            "POST",
+            body,
+            {{"Authorization", "Bearer token-a"},
+                    {"Content-Type", "application/json"},
+                    {"Idempotency-Key", "repeat-me"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), duplicate.status);
+    EXPECT_EQ(first.body, duplicate.body);
+
+    const auto otherToken = sendRequest(
+            &manager,
+            controlUrl,
+            "POST",
+            body,
+            {{"Authorization", "Bearer token-b"},
+                    {"Content-Type", "application/json"},
+                    {"Idempotency-Key", "repeat-me"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), otherToken.status);
+    EXPECT_NE(first.body, otherToken.body);
+
+    const auto otherKey = sendRequest(
+            &manager,
+            controlUrl,
+            "POST",
+            body,
+            {{"Authorization", "Bearer token-a"},
+                    {"Content-Type", "application/json"},
+                    {"Idempotency-Key", "other-key"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), otherKey.status);
+    EXPECT_NE(first.body, otherKey.body);
 
     server.stop();
 }

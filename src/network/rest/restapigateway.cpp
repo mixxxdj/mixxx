@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonValue>
+#include <QMutexLocker>
 #include <QThread>
 #ifdef Q_OS_LINUX
 #include <unistd.h>
@@ -34,6 +35,7 @@ namespace mixxx::network::rest {
 
 namespace {
 [[maybe_unused]] const Logger kLogger("mixxx::network::rest::RestApiGateway");
+constexpr qint64 kIdempotencyCacheTtlMs = 10 * 1000;
 } // namespace
 
 RestApiGateway::RestApiGateway(
@@ -85,6 +87,45 @@ QHttpServerResponse RestApiGateway::health() const {
 
 QHttpServerResponse RestApiGateway::ready() const {
     return successResponse(readinessPayload());
+}
+
+QHttpServerResponse RestApiGateway::withIdempotencyCache(
+        const QString& token,
+        const QString& idempotencyKey,
+        const QString& endpoint,
+        const std::function<QHttpServerResponse()>& handler) const {
+    if (idempotencyKey.isEmpty()) {
+        return handler();
+    }
+
+    const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
+    const QString cacheKey = QStringLiteral("%1\n%2\n%3")
+                                     .arg(token, idempotencyKey, endpoint);
+    {
+        QMutexLocker locker(&m_idempotencyMutex);
+        for (auto it = m_idempotencyCache.begin(); it != m_idempotencyCache.end();) {
+            if (it->createdUtc.msecsTo(nowUtc) > kIdempotencyCacheTtlMs) {
+                it = m_idempotencyCache.erase(it);
+            } else {
+                ++it;
+            }
+        }
+        const auto cached = m_idempotencyCache.constFind(cacheKey);
+        if (cached != m_idempotencyCache.constEnd()) {
+            return cached->response;
+        }
+    }
+
+    QHttpServerResponse response = handler();
+    {
+        QMutexLocker locker(&m_idempotencyMutex);
+        const auto cached = m_idempotencyCache.constFind(cacheKey);
+        if (cached != m_idempotencyCache.constEnd()) {
+            return cached->response;
+        }
+        m_idempotencyCache.insert(cacheKey, IdempotencyEntry{nowUtc, response});
+    }
+    return response;
 }
 
 QJsonObject RestApiGateway::deckSummary(int deckIndex) const {

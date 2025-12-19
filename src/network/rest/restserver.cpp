@@ -25,6 +25,7 @@ namespace mixxx::network::rest {
 namespace {
 constexpr auto kAuthHeader = "Authorization";
 constexpr auto kContentTypeHeader = "Content-Type";
+constexpr auto kIdempotencyKeyHeader = "Idempotency-Key";
 constexpr auto kCorsOriginHeader = "Origin";
 constexpr auto kCorsAllowOriginHeader = "Access-Control-Allow-Origin";
 constexpr auto kCorsAllowMethodsHeader = "Access-Control-Allow-Methods";
@@ -359,10 +360,12 @@ RestServer::AuthorizationResult RestServer::authorize(
         if (requiredPermission == QStringLiteral("read") && (hasRead || hasFull)) {
             result.authorized = true;
             result.usedReadOnlyToken = !hasFull;
+            result.tokenValue = token.value;
             return result;
         }
         if (requiredPermission == QStringLiteral("full") && hasFull) {
             result.authorized = true;
+            result.tokenValue = token.value;
             return result;
         }
         result.forbidden = true;
@@ -420,6 +423,9 @@ void RestServer::registerRoutes() {
     const auto requestTooLarge = [this](const QHttpServerRequest& request) {
         return m_settings.maxRequestBytes > 0 &&
                 request.body().size() > m_settings.maxRequestBytes;
+    };
+    const auto idempotencyKeyFor = [](const QHttpServerRequest& request) {
+        return QString::fromUtf8(request.value(kIdempotencyKeyHeader).trimmed());
     };
 
     const auto healthRoute = [this](const QHttpServerRequest& request) {
@@ -528,8 +534,15 @@ void RestServer::registerRoutes() {
             return badRequestResponse(request, QStringLiteral("Expected JSON request body"));
         }
         const auto body = document.object();
-        return invokeGateway(request, [this, body]() {
-            return m_gateway->control(body);
+        const QString idempotencyKey = idempotencyKeyFor(request);
+        const QString endpoint = request.url().path();
+        const QString token = auth.tokenValue;
+        return invokeGateway(request, [this, body, token, idempotencyKey, endpoint]() {
+            return m_gateway->withIdempotencyCache(
+                    token,
+                    idempotencyKey,
+                    endpoint,
+                    [this, body]() { return m_gateway->control(body); });
         });
     };
     m_httpServer->route("/api/v1/control", controlRoute);
@@ -578,8 +591,15 @@ void RestServer::registerRoutes() {
             return badRequestResponse(request, QStringLiteral("Expected JSON request body"));
         }
         const auto body = document.object();
-        return invokeGateway(request, [this, body]() {
-            return m_gateway->autoDj(body);
+        const QString idempotencyKey = idempotencyKeyFor(request);
+        const QString endpoint = request.url().path();
+        const QString token = auth.tokenValue;
+        return invokeGateway(request, [this, body, token, idempotencyKey, endpoint]() {
+            return m_gateway->withIdempotencyCache(
+                    token,
+                    idempotencyKey,
+                    endpoint,
+                    [this, body]() { return m_gateway->autoDj(body); });
         });
     };
     m_httpServer->route("/api/v1/autodj", autoDjRoute);
@@ -640,8 +660,15 @@ void RestServer::registerRoutes() {
             return badRequestResponse(request, QStringLiteral("Expected JSON request body"));
         }
         const auto body = document.object();
-        return invokeGateway(request, [this, body]() {
-            return m_gateway->playlistCommand(body);
+        const QString idempotencyKey = idempotencyKeyFor(request);
+        const QString endpoint = request.url().path();
+        const QString token = auth.tokenValue;
+        return invokeGateway(request, [this, body, token, idempotencyKey, endpoint]() {
+            return m_gateway->withIdempotencyCache(
+                    token,
+                    idempotencyKey,
+                    endpoint,
+                    [this, body]() { return m_gateway->playlistCommand(body); });
         });
     };
     m_httpServer->route("/api/v1/playlists", playlistsRoute);
@@ -662,7 +689,7 @@ void RestServer::addCorsHeaders(
         const QByteArray requestedHeaders =
                 request.headers().value(QByteArrayLiteral(kCorsRequestHeadersHeader)).trimmed();
         const QByteArray allowHeaders = requestedHeaders.isEmpty()
-                ? QByteArrayLiteral("Authorization, Content-Type")
+                ? QByteArrayLiteral("Authorization, Content-Type, Idempotency-Key")
                 : requestedHeaders;
         response->setHeader(QByteArrayLiteral(kCorsAllowHeadersHeader), allowHeaders);
     }

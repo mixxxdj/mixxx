@@ -3,10 +3,13 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <QHttpServerResponse>
+#include <QHash>
+#include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QObject>
 #include <QElapsedTimer>
+#include <QMutex>
 #include <optional>
 #include <functional>
 
@@ -35,6 +38,13 @@ class RestApiProvider : public QObject {
     virtual QHttpServerResponse autoDj(const QJsonObject& body) const = 0;
     virtual QHttpServerResponse playlists(const std::optional<int>& playlistId) const = 0;
     virtual QHttpServerResponse playlistCommand(const QJsonObject& body) const = 0;
+    virtual QHttpServerResponse withIdempotencyCache(
+            const QString& token,
+            const QString& idempotencyKey,
+            const QString& endpoint,
+            const std::function<QHttpServerResponse()>& handler) const {
+        return handler();
+    }
 };
 
 class RestApiGateway : public RestApiProvider {
@@ -61,8 +71,18 @@ class RestApiGateway : public RestApiProvider {
     QHttpServerResponse autoDj(const QJsonObject& body) const;
     QHttpServerResponse playlists(const std::optional<int>& playlistId) const;
     QHttpServerResponse playlistCommand(const QJsonObject& body) const;
+    QHttpServerResponse withIdempotencyCache(
+            const QString& token,
+            const QString& idempotencyKey,
+            const QString& endpoint,
+            const std::function<QHttpServerResponse()>& handler) const override;
 
   private:
+    struct IdempotencyEntry {
+        QDateTime createdUtc;
+        QHttpServerResponse response;
+    };
+
     QHttpServerResponse errorResponse(
             QHttpServerResponse::StatusCode code,
             const QString& message) const;
@@ -92,6 +112,8 @@ class RestApiGateway : public RestApiProvider {
     [[maybe_unused]] const UserSettingsPointer m_settings;
     int m_activePlaylistId{-1};
     QElapsedTimer m_uptime;
+    mutable QHash<QString, IdempotencyEntry> m_idempotencyCache;
+    mutable QMutex m_idempotencyMutex;
 };
 
 } // namespace mixxx::network::rest

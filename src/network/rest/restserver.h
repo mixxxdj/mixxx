@@ -57,6 +57,7 @@ class RestServer : public QObject {
         bool authorized{false};
         bool forbidden{false};
         bool usedReadOnlyToken{false};
+        QString tokenValue;
     };
 
     struct Settings {
