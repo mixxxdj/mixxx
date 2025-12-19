@@ -7,48 +7,21 @@
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8863</forums>
     </info>
     <controller id="MixTrack">
+        <settings>
+            <group label="Perfomance Pads">
+                <option variable="manualLoopMode" type="enum" label="Manual Loop Buttons">
+                    <value label="Loop In/Out (default)">normal</value>
+                    <value label="Additional Hotcues">cue</value>
+                    <value label="Stem Control">stem</value>
+                </option>
+            </group>
+        </settings>
         <scriptfiles>
             <file functionprefix="" filename="lodash.mixxx.js"/>
             <file functionprefix="" filename="midi-components-0.0.js"/>
             <file functionprefix="MixtrackPlatinum" filename="Numark-Mixtrack-Platinum-scripts.js"/>
         </scriptfiles>
         <controls>
-            <!-- <control>
-                <group>[Channel1]</group>
-                <key>MixtrackPlatinum.stem_mute_toggle</key>
-                <status>0x94</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>MixtrackPlatinum.stem_mute_toggle</key>
-                <status>0x95</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>MixtrackPlatinum.stem_mute_toggle</key>
-                <status>0x96</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>MixtrackPlatinum.stem_mute_toggle</key>
-                <status>0x97</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control> -->
             <control>
                 <group>[Channel1]</group>
                 <key>MixtrackPlatinum.decks[1].play_button.input</key>

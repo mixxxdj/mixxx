@@ -16,7 +16,7 @@
 var EnableWheel = true;
 
 // How should the manual loop pads behave by default?
-var UseManualLoopAs = 'stem'; // Options: 'stem', 'cue', 'normal' (or any other string for normal)
+var manualLoopMode = engine.getSetting('manualLoopMode');
 
 // should we use the auto loop buttons as hotcue buttons 5-8?
 var UseAutoLoopAsCue = false;
@@ -29,10 +29,6 @@ var ShiftLoadEjects = false;
 
 // should we show effect parameters when an effect is focused?
 var ShowFocusedEffectParameters = false;
-
-// use debugging mode?
-var Debug = true;
-
 
 
 var MixtrackPlatinum = {};
@@ -1715,8 +1711,8 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
 };
 
 // simple debugging function
-MixtrackPlatinum.dbg = function () {
-    if (Debug) {
-        console.log.apply(null, arguments);
+MixtrackPlatinum.dbg = function (...args) {
+    if (MixtrackPlatinum.debug) {
+        console.log(...args);
     }
 };
