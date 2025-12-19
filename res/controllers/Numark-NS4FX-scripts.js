@@ -12,20 +12,11 @@
  * CONFIG OPTIONS *
  ******************/
 
-// should wheel be enabled on startup?
-var EnableWheel = true;
-
-// should shift+load eject or load and play?
-var ShiftLoadEjects = true;
-
-// should we show effect parameters when an effect is focused?
-var ShowFocusedEffectParameters = false;
-
-//use effect on deck 1+3 and 2+4 or just on active deck?
-var OnlyActiveDeckEffect = false;
-
-//show vu meters for both deck 1+3 and 2+4 or from current deck
-var displayVUFromBothDecks = false;
+var EnableWheel = engine.getSetting("EnableWheel");
+var ShiftLoadEjects = engine.getSetting("ShiftLoadEjects");
+var ShowFocusedEffectParameters = engine.getSetting("ShowFocusedEffectParameters");
+var OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
+var displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 
 var NS4FX = {};
 

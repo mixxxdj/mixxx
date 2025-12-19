@@ -2,10 +2,19 @@
 <MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
         <name>Numark NS4FX3</name>
-        <author>Erik Puschendorf, Matthew Nicholson</author>
+        <author>Erik Puschendorf, Matthew Nicholson, Tomáš Bažant</author>
         <description>Numark NS4FX mapping with support for LCD screens and 4 deck playback.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8863</forums>
     </info>
+    <settings>
+        <group label="Global Settings">
+            <option type="boolean" variable="EnableWheel" label="Enable Wheel on startup" default="true"/>
+            <option type="boolean" variable="ShiftLoadEjects" label="Shift+Load ejects track" default="true"/>
+            <option type="boolean" variable="ShowFocusedEffectParameters" label="Show focused effect parameters" default="false"/>
+            <option type="boolean" variable="OnlyActiveDeckEffect" label="Use effect only on active deck" default="false"/>
+            <option type="boolean" variable="displayVUFromBothDecks" label="Display VU from both decks" default="false"/>
+        </group>
+    </settings>
     <controller id="NS4FX">
         <scriptfiles>
             <file functionprefix="" filename="lodash.mixxx.js"/>
