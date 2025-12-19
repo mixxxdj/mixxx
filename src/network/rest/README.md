@@ -36,6 +36,58 @@ This document summarizes defaults, security, and available routes.
 
 All routes are available with and without the `/api` prefix (for example, `/health` and `/api/health`).
 
+## REST API architecture and control flow
+
+The REST API is a thin HTTP façade that routes requests into Mixxx's existing
+control and library subsystems. It is split into a server component that handles
+HTTP transport and authentication, plus a gateway component that translates
+requests into ControlProxy and library actions.
+
+```
+HTTP client
+    |
+    v
+RestServer (QHttpServer, auth, TLS, routing)
+    |
+    | invokeGateway() via queued connection
+    v
+RestApiGateway (JSON parsing + response shaping)
+    |
+    +--> ControlProxy -> ControlObject system -> Engine/PlayerManager
+    |
+    +--> TrackCollectionManager/DAO -> Library database
+```
+
+Control flow for a control request (for example, `POST /control`) looks like:
+
+```
+POST /control
+  -> RestServer::route()
+  -> authorize() / parse JSON
+  -> invokeGateway()
+  -> RestApiGateway::control()
+  -> ControlProxy(group, key).set(value)
+  -> ControlObject system updates engine state
+  -> JSON response to client
+```
+
+### Why ControlProxy (and not D-Bus)
+
+Mixxx already exposes its internal state and actions through the ControlObject
+system. Using ControlProxy keeps the REST API aligned with that existing model:
+
+- **Reuse of stable control names:** REST commands map directly to the same
+  `group`/`key` pairs used throughout the app, avoiding a parallel API surface.
+- **Thread-safe integration:** RestServer hands work to RestApiGateway through a
+  queued Qt connection, and ControlProxy is the standard way to read/write
+  ControlObjects from the UI thread.
+- **Cross-platform reach:** HTTP works consistently on Linux, Windows, and
+  macOS. A D-Bus-based API would be Linux-specific and require a separate IPC
+  service definition and client bindings.
+
+This keeps the REST API lightweight, consistent with existing control logic, and
+available on all Mixxx-supported platforms.
+
 ### Health and status
 
 - `GET /health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes).
