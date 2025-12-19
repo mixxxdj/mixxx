@@ -434,8 +434,7 @@ void RestServer::registerRoutes() {
             return m_gateway->health();
         });
     };
-    m_httpServer->route("/health", healthRoute);
-    m_httpServer->route("/api/health", healthRoute);
+    m_httpServer->route("/api/v1/health", healthRoute);
 
     const auto readyRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
@@ -449,8 +448,7 @@ void RestServer::registerRoutes() {
             return m_gateway->ready();
         });
     };
-    m_httpServer->route("/ready", readyRoute);
-    m_httpServer->route("/api/ready", readyRoute);
+    m_httpServer->route("/api/v1/ready", readyRoute);
 
     const auto statusRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
@@ -464,8 +462,7 @@ void RestServer::registerRoutes() {
             return m_gateway->status();
         });
     };
-    m_httpServer->route("/status", statusRoute);
-    m_httpServer->route("/api/status", statusRoute);
+    m_httpServer->route("/api/v1/status", statusRoute);
 
     const auto decksRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
@@ -479,8 +476,7 @@ void RestServer::registerRoutes() {
             return m_gateway->decks();
         });
     };
-    m_httpServer->route("/decks", decksRoute);
-    m_httpServer->route("/api/decks", decksRoute);
+    m_httpServer->route("/api/v1/decks", decksRoute);
 
     const auto deckRoute = [this](const QHttpServerRequest& request, int deckNumber) {
         const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
@@ -494,8 +490,7 @@ void RestServer::registerRoutes() {
             return m_gateway->deck(deckNumber);
         });
     };
-    m_httpServer->route("/decks/<int>", deckRoute);
-    m_httpServer->route("/api/decks/<int>", deckRoute);
+    m_httpServer->route("/api/v1/decks/<int>", deckRoute);
 
     const auto controlRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorize(request, AccessPolicy::Control);
@@ -537,8 +532,7 @@ void RestServer::registerRoutes() {
             return m_gateway->control(body);
         });
     };
-    m_httpServer->route("/control", controlRoute);
-    m_httpServer->route("/api/control", controlRoute);
+    m_httpServer->route("/api/v1/control", controlRoute);
 
     const auto autoDjRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorize(
@@ -588,8 +582,7 @@ void RestServer::registerRoutes() {
             return m_gateway->autoDj(body);
         });
     };
-    m_httpServer->route("/autodj", autoDjRoute);
-    m_httpServer->route("/api/autodj", autoDjRoute);
+    m_httpServer->route("/api/v1/autodj", autoDjRoute);
 
     const auto playlistsRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorize(
@@ -651,8 +644,7 @@ void RestServer::registerRoutes() {
             return m_gateway->playlistCommand(body);
         });
     };
-    m_httpServer->route("/playlists", playlistsRoute);
-    m_httpServer->route("/api/playlists", playlistsRoute);
+    m_httpServer->route("/api/v1/playlists", playlistsRoute);
 }
 
 void RestServer::addCorsHeaders(
