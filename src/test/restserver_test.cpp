@@ -298,17 +298,35 @@ TEST(RestServerRoutesTest, RequiresTlsForControlRoutesWhenRequested) {
     ASSERT_TRUE(server.start(settings, std::nullopt, &error)) << error.toStdString();
 
     QNetworkAccessManager manager;
-    const QUrl url(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
+    const QUrl controlUrl(QStringLiteral("http://127.0.0.1:%1/control").arg(port));
     const QByteArray body = QJsonDocument(QJsonObject{{"group", "[Master]"}, {"key", "volume"}})
                                     .toJson(QJsonDocument::Compact);
-    const auto response = sendRequest(
+    const auto controlResponse = sendRequest(
             &manager,
-            url,
+            controlUrl,
             "POST",
             body,
             {{"Content-Type", "application/json"}});
 
-    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), response.status);
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), controlResponse.status);
+
+    const QUrl autoDjUrl(QStringLiteral("http://127.0.0.1:%1/autodj").arg(port));
+    const auto autoDjResponse = sendRequest(
+            &manager,
+            autoDjUrl,
+            "POST",
+            QJsonDocument(QJsonObject{{"enabled", true}}).toJson(QJsonDocument::Compact),
+            {{"Content-Type", "application/json"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), autoDjResponse.status);
+
+    const QUrl playlistsUrl(QStringLiteral("http://127.0.0.1:%1/playlists").arg(port));
+    const auto playlistsResponse = sendRequest(
+            &manager,
+            playlistsUrl,
+            "POST",
+            QJsonDocument(QJsonObject{{"command", "enable"}}).toJson(QJsonDocument::Compact),
+            {{"Content-Type", "application/json"}});
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Forbidden), playlistsResponse.status);
 
     server.stop();
 }
