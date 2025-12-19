@@ -7,12 +7,14 @@
 #include <QFileDialog>
 #include <QHeaderView>
 #include <QIcon>
+#include <QSignalBlocker>
 #include <QTableWidgetItem>
 #include <limits>
 #include <QUuid>
 #include <QtGlobal>
 
 #include "moc_dlgprefrestserver.cpp"
+#include "network/rest/restscopes.h"
 
 DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServerSettings> settings)
         : DlgPreferencePage(parent),
@@ -81,10 +83,34 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QLineEdit::textChanged,
             this,
             &DlgPrefRestServer::slotTokenDescriptionChanged);
-    connect(comboTokenPermission,
-            qOverload<int>(&QComboBox::currentIndexChanged),
+    connect(checkScopeStatusRead,
+            &QCheckBox::toggled,
             this,
-            &DlgPrefRestServer::slotTokenPermissionChanged);
+            &DlgPrefRestServer::slotTokenScopesChanged);
+    connect(checkScopeDecksRead,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefRestServer::slotTokenScopesChanged);
+    connect(checkScopeAutoDjRead,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefRestServer::slotTokenScopesChanged);
+    connect(checkScopeAutoDjWrite,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefRestServer::slotTokenScopesChanged);
+    connect(checkScopePlaylistsRead,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefRestServer::slotTokenScopesChanged);
+    connect(checkScopePlaylistsWrite,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefRestServer::slotTokenScopesChanged);
+    connect(checkScopeControlWrite,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefRestServer::slotTokenScopesChanged);
     connect(dateTimeEditTokenExpires,
             &QDateTimeEdit::dateTimeChanged,
             this,
@@ -247,7 +273,7 @@ void DlgPrefRestServer::slotAddToken() {
 
     RestServerToken token;
     token.value = makeToken();
-    token.permission = QStringLiteral("read");
+    token.scopes = mixxx::network::rest::scopes::defaultReadScopes();
     token.createdUtc = QDateTime::currentDateTimeUtc();
     m_tokens.append(token);
     refreshTokenTable();
@@ -295,12 +321,12 @@ void DlgPrefRestServer::slotTokenDescriptionChanged(const QString& text) {
     refreshTokenTable();
 }
 
-void DlgPrefRestServer::slotTokenPermissionChanged(int index) {
+void DlgPrefRestServer::slotTokenScopesChanged() {
     RestServerToken* token = selectedToken();
     if (!token) {
         return;
     }
-    token->permission = comboTokenPermission->itemText(index);
+    token->scopes = selectedScopes();
     refreshTokenTable();
 }
 
@@ -329,10 +355,13 @@ void DlgPrefRestServer::refreshTokenTable() {
         const QString expires = token.expiresUtc.has_value()
                 ? token.expiresUtc->toString(Qt::ISODate)
                 : tr("Never");
+        const QString scopes = token.scopes.isEmpty()
+                ? tr("None")
+                : token.scopes.join(QStringLiteral(", "));
 
         tableTokens->setItem(row, 0, new QTableWidgetItem(shortToken));
         tableTokens->setItem(row, 1, new QTableWidgetItem(token.description));
-        tableTokens->setItem(row, 2, new QTableWidgetItem(token.permission));
+        tableTokens->setItem(row, 2, new QTableWidgetItem(scopes));
         tableTokens->setItem(row, 3, new QTableWidgetItem(expires));
         ++row;
     }
@@ -357,7 +386,7 @@ void DlgPrefRestServer::syncEditorsFromSelection() {
     const bool hasToken = token != nullptr;
     lineEditTokenValue->setEnabled(hasToken);
     lineEditTokenDescription->setEnabled(hasToken);
-    comboTokenPermission->setEnabled(hasToken);
+    widgetTokenScopes->setEnabled(hasToken);
     dateTimeEditTokenExpires->setEnabled(hasToken);
     pushButtonRemoveToken->setEnabled(hasToken);
     pushButtonRegenerateToken->setEnabled(hasToken);
@@ -365,20 +394,70 @@ void DlgPrefRestServer::syncEditorsFromSelection() {
     if (!hasToken) {
         lineEditTokenValue->clear();
         lineEditTokenDescription->clear();
-        comboTokenPermission->setCurrentIndex(0);
+        updateScopeEditors({});
         dateTimeEditTokenExpires->setDateTime(dateTimeEditTokenExpires->minimumDateTime());
         return;
     }
 
     lineEditTokenValue->setText(token->value);
     lineEditTokenDescription->setText(token->description);
-    const int permissionIndex = comboTokenPermission->findText(token->permission);
-    comboTokenPermission->setCurrentIndex(permissionIndex < 0 ? 0 : permissionIndex);
+    updateScopeEditors(token->scopes);
     if (token->expiresUtc.has_value()) {
         dateTimeEditTokenExpires->setDateTime(token->expiresUtc.value());
     } else {
         dateTimeEditTokenExpires->setDateTime(dateTimeEditTokenExpires->minimumDateTime());
     }
+}
+
+QStringList DlgPrefRestServer::selectedScopes() const {
+    QStringList scopes;
+    if (checkScopeStatusRead->isChecked()) {
+        scopes.append(mixxx::network::rest::scopes::kStatusRead);
+    }
+    if (checkScopeDecksRead->isChecked()) {
+        scopes.append(mixxx::network::rest::scopes::kDecksRead);
+    }
+    if (checkScopeAutoDjRead->isChecked()) {
+        scopes.append(mixxx::network::rest::scopes::kAutoDjRead);
+    }
+    if (checkScopeAutoDjWrite->isChecked()) {
+        scopes.append(mixxx::network::rest::scopes::kAutoDjWrite);
+    }
+    if (checkScopePlaylistsRead->isChecked()) {
+        scopes.append(mixxx::network::rest::scopes::kPlaylistsRead);
+    }
+    if (checkScopePlaylistsWrite->isChecked()) {
+        scopes.append(mixxx::network::rest::scopes::kPlaylistsWrite);
+    }
+    if (checkScopeControlWrite->isChecked()) {
+        scopes.append(mixxx::network::rest::scopes::kControlWrite);
+    }
+    return scopes;
+}
+
+void DlgPrefRestServer::updateScopeEditors(const QStringList& scopes) {
+    const QSignalBlocker statusBlocker(checkScopeStatusRead);
+    const QSignalBlocker decksBlocker(checkScopeDecksRead);
+    const QSignalBlocker autoDjReadBlocker(checkScopeAutoDjRead);
+    const QSignalBlocker autoDjWriteBlocker(checkScopeAutoDjWrite);
+    const QSignalBlocker playlistsReadBlocker(checkScopePlaylistsRead);
+    const QSignalBlocker playlistsWriteBlocker(checkScopePlaylistsWrite);
+    const QSignalBlocker controlWriteBlocker(checkScopeControlWrite);
+
+    checkScopeStatusRead->setChecked(
+            scopes.contains(mixxx::network::rest::scopes::kStatusRead, Qt::CaseInsensitive));
+    checkScopeDecksRead->setChecked(
+            scopes.contains(mixxx::network::rest::scopes::kDecksRead, Qt::CaseInsensitive));
+    checkScopeAutoDjRead->setChecked(
+            scopes.contains(mixxx::network::rest::scopes::kAutoDjRead, Qt::CaseInsensitive));
+    checkScopeAutoDjWrite->setChecked(
+            scopes.contains(mixxx::network::rest::scopes::kAutoDjWrite, Qt::CaseInsensitive));
+    checkScopePlaylistsRead->setChecked(
+            scopes.contains(mixxx::network::rest::scopes::kPlaylistsRead, Qt::CaseInsensitive));
+    checkScopePlaylistsWrite->setChecked(
+            scopes.contains(mixxx::network::rest::scopes::kPlaylistsWrite, Qt::CaseInsensitive));
+    checkScopeControlWrite->setChecked(
+            scopes.contains(mixxx::network::rest::scopes::kControlWrite, Qt::CaseInsensitive));
 }
 
 RestServerToken* DlgPrefRestServer::selectedToken() {

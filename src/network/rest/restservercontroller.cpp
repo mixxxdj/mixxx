@@ -87,7 +87,7 @@ RestServerController::ListenerConfiguration RestServerController::loadSettings()
             RestServer::Token restToken;
             restToken.value = token.value;
             restToken.description = token.description;
-            restToken.permission = token.permission;
+            restToken.scopes = token.scopes;
             restToken.createdUtc = token.createdUtc;
             restToken.expiresUtc = token.expiresUtc;
             settings.tokens.append(restToken);

@@ -11,6 +11,8 @@
 #include <QStringList>
 #include <limits>
 
+#include "network/rest/restscopes.h"
+
 namespace {
 const QString kConfigGroup = QStringLiteral("[Rest]");
 const QString kConfigEnabled = QStringLiteral("enabled");
@@ -32,6 +34,32 @@ const QString kConfigStatusCertificateGenerated = QStringLiteral("status_certifi
 const QString kConfigStatusLastError = QStringLiteral("status_last_error");
 const QString kConfigStatusTlsError = QStringLiteral("status_tls_error");
 
+QStringList normalizeScopes(const QStringList& scopes) {
+    QStringList normalized;
+    normalized.reserve(scopes.size());
+    for (const auto& scope : scopes) {
+        const QString trimmed = scope.trimmed().toLower();
+        if (trimmed.isEmpty()) {
+            continue;
+        }
+        if (!normalized.contains(trimmed)) {
+            normalized.append(trimmed);
+        }
+    }
+    return normalized;
+}
+
+QStringList legacyScopesForPermission(const QString& permission) {
+    const QString normalized = permission.trimmed().toLower();
+    if (normalized == QStringLiteral("full")) {
+        return mixxx::network::rest::scopes::allScopes();
+    }
+    if (normalized == QStringLiteral("read")) {
+        return mixxx::network::rest::scopes::defaultReadScopes();
+    }
+    return {};
+}
+
 RestServerSettings::Values applyDefaults(const RestServerSettings::Values& values) {
     RestServerSettings::Values sanitized = values;
     auto ensurePort = [](int port, int fallback) {
@@ -47,6 +75,9 @@ RestServerSettings::Values applyDefaults(const RestServerSettings::Values& value
     }
     if (sanitized.tokens.size() > RestServerSettings::kMaxTokens) {
         sanitized.tokens = sanitized.tokens.mid(0, RestServerSettings::kMaxTokens);
+    }
+    for (auto& token : sanitized.tokens) {
+        token.scopes = normalizeScopes(token.scopes);
     }
     if (sanitized.maxRequestBytes <= 0) {
         sanitized.maxRequestBytes = RestServerSettings::kDefaultMaxRequestBytes;
@@ -98,7 +129,19 @@ RestServerSettings::Values RestServerSettings::get() const {
         RestServerToken token;
         token.value = obj.value(QStringLiteral("token")).toString();
         token.description = obj.value(QStringLiteral("description")).toString();
-        token.permission = obj.value(QStringLiteral("permission")).toString();
+        const QJsonArray scopesArray = obj.value(QStringLiteral("scopes")).toArray();
+        QStringList scopes;
+        scopes.reserve(scopesArray.size());
+        for (const auto& scopeValue : scopesArray) {
+            if (scopeValue.isString()) {
+                scopes.append(scopeValue.toString());
+            }
+        }
+        if (scopes.isEmpty()) {
+            scopes = legacyScopesForPermission(
+                    obj.value(QStringLiteral("permission")).toString());
+        }
+        token.scopes = normalizeScopes(scopes);
         token.createdUtc = QDateTime::fromString(
                 obj.value(QStringLiteral("created_utc")).toString(),
                 Qt::ISODate);
@@ -147,7 +190,13 @@ void RestServerSettings::set(const Values& values) {
         QJsonObject object;
         object.insert(QStringLiteral("token"), token.value);
         object.insert(QStringLiteral("description"), token.description);
-        object.insert(QStringLiteral("permission"), token.permission);
+        QJsonArray scopesArray;
+        const QStringList normalizedScopes = normalizeScopes(token.scopes);
+        scopesArray.reserve(normalizedScopes.size());
+        for (const auto& scope : normalizedScopes) {
+            scopesArray.append(scope);
+        }
+        object.insert(QStringLiteral("scopes"), scopesArray);
         object.insert(QStringLiteral("created_utc"), token.createdUtc.toString(Qt::ISODate));
         if (token.expiresUtc.has_value()) {
             object.insert(QStringLiteral("expires_utc"), token.expiresUtc->toString(Qt::ISODate));

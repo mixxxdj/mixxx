@@ -20,6 +20,7 @@
 #include <limits>
 
 #include "network/rest/certificategenerator.h"
+#include "network/rest/restscopes.h"
 #include "network/rest/restserver.h"
 #include "network/rest/restservervalidator.h"
 #include "preferences/restserversettings.h"
@@ -250,7 +251,7 @@ TEST(RestServerRoutesTest, EnforcesAuthorization) {
     RestServer::Settings settings = baseSettings(port);
     RestServer::Token token;
     token.value = QStringLiteral("secret-token");
-    token.permission = QStringLiteral("full");
+    token.scopes = scopes::allScopes();
     token.createdUtc = QDateTime::currentDateTimeUtc();
     settings.tokens.append(token);
 
@@ -355,7 +356,7 @@ TEST(RestServerRoutesTest, ReadOnlyTokenAllowsStatusButBlocksControl) {
     RestServer::Settings settings = baseSettings(port);
     RestServer::Token token;
     token.value = QStringLiteral("ro-token");
-    token.permission = QStringLiteral("read");
+    token.scopes = scopes::defaultReadScopes();
     token.createdUtc = QDateTime::currentDateTimeUtc();
     settings.tokens.append(token);
 
@@ -508,12 +509,12 @@ TEST(RestServerRoutesTest, IdempotencyKeyReusesPostResponse) {
     RestServer::Settings settings = baseSettings(port);
     RestServer::Token tokenA;
     tokenA.value = QStringLiteral("token-a");
-    tokenA.permission = QStringLiteral("full");
+    tokenA.scopes = scopes::allScopes();
     tokenA.createdUtc = QDateTime::currentDateTimeUtc();
     settings.tokens.append(tokenA);
     RestServer::Token tokenB;
     tokenB.value = QStringLiteral("token-b");
-    tokenB.permission = QStringLiteral("full");
+    tokenB.scopes = scopes::allScopes();
     tokenB.createdUtc = QDateTime::currentDateTimeUtc();
     settings.tokens.append(tokenB);
 

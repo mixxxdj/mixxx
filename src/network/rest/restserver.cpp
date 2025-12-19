@@ -4,6 +4,7 @@
 
 #include <QCoreApplication>
 #include <QFile>
+#include <QHash>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -18,6 +19,7 @@
 #include "moc_restserver.cpp"
 #include "network/rest/restapigateway.h"
 #include "network/rest/certificategenerator.h"
+#include "network/rest/restscopes.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 
@@ -351,7 +353,8 @@ bool RestServer::applyTlsConfiguration() {
 }
 
 RestServer::AuthorizationResult RestServer::authorize(
-        const QHttpServerRequest& request, AccessPolicy policy) const {
+        const QHttpServerRequest& request,
+        const QStringList& requiredScopes) const {
     AuthorizationResult result;
 
     const bool authDisabled = m_settings.tokens.isEmpty();
@@ -368,9 +371,7 @@ RestServer::AuthorizationResult RestServer::authorize(
         m_authFailureLogger.log(key, [&](int suppressed) {
             auto stream = kAuditLogger.warning();
             stream << "REST auth failure" << requestDescription(request)
-                   << "policy"
-                   << (policy == AccessPolicy::Status ? QStringLiteral("status")
-                                                      : QStringLiteral("control"))
+                   << "scopes" << requiredScopes.join(QStringLiteral(","))
                    << "reason"
                    << QStringLiteral("missing authorization header")
                    << "requestId" << requestId;
@@ -390,9 +391,7 @@ RestServer::AuthorizationResult RestServer::authorize(
         m_authFailureLogger.log(key, [&](int suppressed) {
             auto stream = kAuditLogger.warning();
             stream << "REST auth failure" << requestDescription(request)
-                   << "policy"
-                   << (policy == AccessPolicy::Status ? QStringLiteral("status")
-                                                      : QStringLiteral("control"))
+                   << "scopes" << requiredScopes.join(QStringLiteral(","))
                    << "reason" << QStringLiteral("empty token")
                    << "requestId" << requestId;
             if (suppressed > 0) {
@@ -402,8 +401,6 @@ RestServer::AuthorizationResult RestServer::authorize(
         return result;
     }
 
-    const QString requiredPermission =
-            policy == AccessPolicy::Status ? QStringLiteral("read") : QStringLiteral("full");
     const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
 
     for (const auto& token : m_settings.tokens) {
@@ -421,9 +418,7 @@ RestServer::AuthorizationResult RestServer::authorize(
             m_authFailureLogger.log(key, [&](int suppressed) {
                 auto stream = kAuditLogger.warning();
                 stream << "REST auth failure" << requestDescription(request)
-                       << "policy"
-                       << (policy == AccessPolicy::Status ? QStringLiteral("status")
-                                                          : QStringLiteral("control"))
+                       << "scopes" << requiredScopes.join(QStringLiteral(","))
                        << "reason" << QStringLiteral("token expired")
                        << "token" << tokenDescription
                        << "requestId" << requestId;
@@ -434,32 +429,32 @@ RestServer::AuthorizationResult RestServer::authorize(
             return result;
         }
 
-        const bool hasFull = token.permission.compare(QStringLiteral("full"), Qt::CaseInsensitive) == 0;
-        const bool hasRead = token.permission.compare(QStringLiteral("read"), Qt::CaseInsensitive) == 0;
-
-        if (requiredPermission == QStringLiteral("read") && (hasRead || hasFull)) {
-            result.authorized = true;
-            result.usedReadOnlyToken = !hasFull;
-            result.tokenValue = token.value;
-            result.tokenDescription = tokenDescription;
-            return result;
+        const QStringList tokenScopes = token.scopes;
+        bool hasAllScopes = true;
+        QStringList missingScopes;
+        for (const auto& required : requiredScopes) {
+            if (!tokenScopes.contains(required, Qt::CaseInsensitive)) {
+                hasAllScopes = false;
+                missingScopes.append(required);
+            }
         }
-        if (requiredPermission == QStringLiteral("full") && hasFull) {
+
+        if (hasAllScopes) {
             result.authorized = true;
             result.tokenValue = token.value;
             result.tokenDescription = tokenDescription;
             return result;
         }
         result.forbidden = true;
+        result.missingScopes = missingScopes;
         const QString key =
                 QStringLiteral("%1 insufficient-permissions").arg(requestDescription(request));
         m_authFailureLogger.log(key, [&](int suppressed) {
             auto stream = kAuditLogger.warning();
             stream << "REST auth failure" << requestDescription(request)
-                   << "policy"
-                   << (policy == AccessPolicy::Status ? QStringLiteral("status")
-                                                      : QStringLiteral("control"))
-                   << "reason" << QStringLiteral("insufficient permissions")
+                   << "scopes" << requiredScopes.join(QStringLiteral(","))
+                   << "reason" << QStringLiteral("insufficient scopes")
+                   << "missing" << missingScopes.join(QStringLiteral(","))
                    << "token" << tokenDescription
                    << "requestId" << requestId;
             if (suppressed > 0) {
@@ -472,9 +467,7 @@ RestServer::AuthorizationResult RestServer::authorize(
     m_authFailureLogger.log(key, [&](int suppressed) {
         auto stream = kAuditLogger.warning();
         stream << "REST auth failure" << requestDescription(request)
-               << "policy"
-               << (policy == AccessPolicy::Status ? QStringLiteral("status")
-                                                  : QStringLiteral("control"))
+               << "scopes" << requiredScopes.join(QStringLiteral(","))
                << "reason" << QStringLiteral("unknown token")
                << "requestId" << requestId;
         if (suppressed > 0) {
@@ -533,6 +526,50 @@ void RestServer::logRouteError(
 void RestServer::registerRoutes() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
 
+    struct RouteScopes {
+        QStringList read;
+        QStringList write;
+    };
+
+    const QHash<QString, RouteScopes> routeScopes{
+            {QStringLiteral("/api/v1/health"),
+                    {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
+            {QStringLiteral("/api/v1/ready"),
+                    {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
+            {QStringLiteral("/api/v1/status"),
+                    {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
+            {QStringLiteral("/api/v1/decks"),
+                    {QStringList{scopes::kDecksRead}, QStringList{scopes::kDecksRead}}},
+            {QStringLiteral("/api/v1/autodj"),
+                    {QStringList{scopes::kAutoDjRead}, QStringList{scopes::kAutoDjWrite}}},
+            {QStringLiteral("/api/v1/control"),
+                    {QStringList{scopes::kControlWrite}, QStringList{scopes::kControlWrite}}},
+            {QStringLiteral("/api/v1/playlists"),
+                    {QStringList{scopes::kPlaylistsRead}, QStringList{scopes::kPlaylistsWrite}}},
+    };
+
+    const QString deckDetailPrefix = QStringLiteral("/api/v1/decks/");
+    const auto requiredScopesFor = [&routeScopes, &deckDetailPrefix](
+                                           const QHttpServerRequest& request) {
+        const QString path = request.url().path();
+        const QString key = path.startsWith(deckDetailPrefix)
+                ? QStringLiteral("/api/v1/decks")
+                : path;
+        const RouteScopes scopes = routeScopes.value(key);
+        if (request.method() == QHttpServerRequest::Method::Get) {
+            return scopes.read;
+        }
+        return scopes.write.isEmpty() ? scopes.read : scopes.write;
+    };
+    const auto forbiddenMessage = [](const QStringList& missingScopes) {
+        return QObject::tr("Token missing required scopes: %1")
+                .arg(missingScopes.join(QStringLiteral(", ")));
+    };
+    const auto authorizeRequest = [this, &requiredScopesFor](
+                                          const QHttpServerRequest& request) {
+        return authorize(request, requiredScopesFor(request));
+    };
+
     const auto optionsRoute = [this](const QHttpServerRequest& request) {
         QHttpServerResponse response(QHttpServerResponse::StatusCode::NoContent);
         addCorsHeaders(&response, request, true);
@@ -549,8 +586,11 @@ void RestServer::registerRoutes() {
     };
 
     const auto healthRoute = [this](const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -563,8 +603,11 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/health", healthRoute);
 
     const auto readyRoute = [this](const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -577,8 +620,11 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/ready", readyRoute);
 
     const auto statusRoute = [this](const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -591,8 +637,11 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/status", statusRoute);
 
     const auto decksRoute = [this](const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -605,8 +654,11 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/decks", decksRoute);
 
     const auto deckRoute = [this](const QHttpServerRequest& request, int deckNumber) {
-        const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
+            if (auth.forbidden) {
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+            }
             return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -619,10 +671,10 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/decks/<int>", deckRoute);
 
     const auto controlRoute = [this](const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorize(request, AccessPolicy::Control);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
-                return forbiddenResponse(request, tr("Full access token required for this endpoint"));
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
             }
             return unauthorizedResponse(request);
         }
@@ -674,13 +726,10 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/control", controlRoute);
 
     const auto autoDjRoute = [this](const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorize(
-                request,
-                request.method() == QHttpServerRequest::Method::Get ? AccessPolicy::Status
-                                                                    : AccessPolicy::Control);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
-                return forbiddenResponse(request, tr("Full access token required for this endpoint"));
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
             }
             return unauthorizedResponse(request);
         }
@@ -737,13 +786,10 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/autodj", autoDjRoute);
 
     const auto playlistsRoute = [this](const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorize(
-                request,
-                request.method() == QHttpServerRequest::Method::Get ? AccessPolicy::Status
-                                                                    : AccessPolicy::Control);
+        const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
-                return forbiddenResponse(request, tr("Full access token required for this endpoint"));
+                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
             }
             return unauthorizedResponse(request);
         }

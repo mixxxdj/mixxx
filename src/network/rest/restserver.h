@@ -32,22 +32,17 @@ class RestServer : public QObject {
     Q_OBJECT
 
   public:
-    enum class AccessPolicy {
-        Status,
-        Control,
-    };
-
     struct Token {
         QString value;
         QString description;
-        QString permission; // e.g. "read", "full"
+        QStringList scopes;
         QDateTime createdUtc;
         std::optional<QDateTime> expiresUtc;
 
         friend bool operator==(const Token& lhs, const Token& rhs) {
             return lhs.value == rhs.value &&
                     lhs.description == rhs.description &&
-                    lhs.permission == rhs.permission &&
+                    lhs.scopes == rhs.scopes &&
                     lhs.createdUtc == rhs.createdUtc &&
                     lhs.expiresUtc == rhs.expiresUtc;
         }
@@ -59,6 +54,7 @@ class RestServer : public QObject {
         bool usedReadOnlyToken{false};
         QString tokenValue;
         QString tokenDescription;
+        QStringList missingScopes;
     };
 
     struct Settings {
@@ -159,7 +155,7 @@ class RestServer : public QObject {
     bool applyTlsConfiguration();
     AuthorizationResult authorize(
             const QHttpServerRequest& request,
-            AccessPolicy policy) const;
+            const QStringList& requiredScopes) const;
     bool controlRouteRequiresTls(const QHttpServerRequest& request) const;
     void registerRoutes();
     void logRouteError(
