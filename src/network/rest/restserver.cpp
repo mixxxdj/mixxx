@@ -214,6 +214,14 @@ QHttpServerResponse RestServer::badRequestResponse(
     return jsonResponse(QJsonObject{{"error", message}}, QHttpServerResponse::StatusCode::BadRequest);
 }
 
+QHttpServerResponse RestServer::payloadTooLargeResponse(const QHttpServerRequest& request) const {
+    const QString message =
+            tr("Request payload exceeds the maximum size of %1 bytes").arg(m_settings.maxRequestBytes);
+    logRouteError(request, QHttpServerResponse::StatusCode::PayloadTooLarge, message);
+    return jsonResponse(QJsonObject{{"error", message}},
+            QHttpServerResponse::StatusCode::PayloadTooLarge);
+}
+
 QHttpServerResponse RestServer::methodNotAllowedResponse(const QHttpServerRequest& request) const {
     const QString message = QStringLiteral("Method not allowed");
     logRouteError(request, QHttpServerResponse::StatusCode::MethodNotAllowed, message);
@@ -358,6 +366,11 @@ void RestServer::logRouteError(
 void RestServer::registerRoutes() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
 
+    const auto requestTooLarge = [this](const QHttpServerRequest& request) {
+        return m_settings.maxRequestBytes > 0 &&
+                request.body().size() > m_settings.maxRequestBytes;
+    };
+
     const auto healthRoute = [this](const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorize(request, AccessPolicy::Status);
         if (!auth.authorized) {
@@ -448,6 +461,10 @@ void RestServer::registerRoutes() {
             return tlsRequiredResponse(request);
         }
 
+        if (requestTooLarge(request)) {
+            return payloadTooLargeResponse(request);
+        }
+
         const auto document = QJsonDocument::fromJson(request.body());
         if (!document.isObject()) {
             return badRequestResponse(request, QStringLiteral("Expected JSON request body"));
@@ -481,6 +498,10 @@ void RestServer::registerRoutes() {
         }
         if (controlRouteRequiresTls(request)) {
             return tlsRequiredResponse(request);
+        }
+
+        if (requestTooLarge(request)) {
+            return payloadTooLargeResponse(request);
         }
 
         const auto document = QJsonDocument::fromJson(request.body());
@@ -528,6 +549,10 @@ void RestServer::registerRoutes() {
 
         if (controlRouteRequiresTls(request)) {
             return tlsRequiredResponse(request);
+        }
+
+        if (requestTooLarge(request)) {
+            return payloadTooLargeResponse(request);
         }
 
         const auto document = QJsonDocument::fromJson(request.body());

@@ -23,6 +23,7 @@ const QString kConfigCertificatePath = QStringLiteral("tls_certificate_path");
 const QString kConfigPrivateKeyPath = QStringLiteral("tls_private_key_path");
 const QString kConfigTokens = QStringLiteral("tokens");
 const QString kConfigRequireTls = QStringLiteral("require_tls");
+const QString kConfigMaxRequestBytes = QStringLiteral("max_request_bytes");
 const QString kConfigStatusRunning = QStringLiteral("status_running");
 const QString kConfigStatusTlsActive = QStringLiteral("status_tls_active");
 const QString kConfigStatusCertificateGenerated = QStringLiteral("status_certificate_generated");
@@ -44,6 +45,9 @@ RestServerSettings::Values applyDefaults(const RestServerSettings::Values& value
     }
     if (sanitized.tokens.size() > RestServerSettings::kMaxTokens) {
         sanitized.tokens = sanitized.tokens.mid(0, RestServerSettings::kMaxTokens);
+    }
+    if (sanitized.maxRequestBytes <= 0) {
+        sanitized.maxRequestBytes = RestServerSettings::kDefaultMaxRequestBytes;
     }
     return sanitized;
 }
@@ -93,6 +97,9 @@ RestServerSettings::Values RestServerSettings::get() const {
         }
     }
     values.requireTls = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigRequireTls), false);
+    values.maxRequestBytes = m_pConfig->getValue<int>(
+            ConfigKey(kConfigGroup, kConfigMaxRequestBytes),
+            kDefaultMaxRequestBytes);
     return applyDefaults(values);
 }
 
@@ -131,6 +138,7 @@ void RestServerSettings::set(const Values& values) {
     const QJsonDocument tokensDoc(tokenArray);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigTokens), QString::fromUtf8(tokensDoc.toJson(QJsonDocument::Compact)));
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigRequireTls), sanitized.requireTls);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigMaxRequestBytes), sanitized.maxRequestBytes);
 }
 
 RestServerSettings::Values RestServerSettings::defaults() const {
@@ -146,6 +154,7 @@ RestServerSettings::Values RestServerSettings::defaults() const {
     values.privateKeyPath = QString();
     values.tokens.clear();
     values.requireTls = false;
+    values.maxRequestBytes = kDefaultMaxRequestBytes;
     return values;
 }
 
