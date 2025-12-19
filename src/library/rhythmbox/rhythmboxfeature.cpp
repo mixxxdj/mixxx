@@ -98,6 +98,9 @@ RhythmboxFeature::~RhythmboxFeature() {
 
 std::unique_ptr<BaseSqlTableModel>
 RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
+    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QString>()) {
+        return {};
+    }
     auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
             m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.rhythmbox_playlist",

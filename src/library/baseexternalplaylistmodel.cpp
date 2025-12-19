@@ -94,6 +94,7 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
     VERIFY_OR_DEBUG_ASSERT(!playlist_path.isEmpty()) {
         return;
     }
+
     QSqlQuery finder_query(m_database);
     finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
     finder_query.bindValue(":name", playlist_path);

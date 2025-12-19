@@ -173,8 +173,8 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
 
     DEBUG_ASSERT(pPlaylist);
     *pPlaylist = pTreeItem->getLabel();
-    const std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
-            createPlaylistModelForPlaylist(pTreeItem->getData()));
+    const std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd =
+            createPlaylistModelForPlaylist(pTreeItem->getData());
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
         qDebug() << "BaseExternalLibraryFeature::"
@@ -220,7 +220,6 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
 
 std::unique_ptr<BaseSqlTableModel>
 BaseExternalLibraryFeature::createPlaylistModelForPlaylist(
-        const QVariant& data) {
-    Q_UNUSED(data);
+        const QVariant&) {
     return {};
 }
