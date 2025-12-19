@@ -150,7 +150,8 @@ class RestServer : public QObject {
     QHttpServerResponse jsonResponse(
             const QHttpServerRequest& request,
             const QJsonObject& body,
-            QHttpServerResponse::StatusCode status) const;
+            QHttpServerResponse::StatusCode status,
+            const QString& requestId) const;
 
     QHttpServerResponse tlsRequiredResponse(const QHttpServerRequest& request) const;
     bool applyTlsConfiguration();
@@ -162,8 +163,10 @@ class RestServer : public QObject {
     void logRouteError(
             const QHttpServerRequest& request,
             QHttpServerResponse::StatusCode status,
-            const QString& message) const;
+            const QString& message,
+            const QString& requestId) const;
     QString requestDescription(const QHttpServerRequest& request) const;
+    QString requestIdFor(const QHttpServerRequest& request) const;
     void addCorsHeaders(
             QHttpServerResponse* response,
             const QHttpServerRequest& request,
