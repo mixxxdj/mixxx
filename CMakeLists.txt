@@ -97,13 +97,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
   )
   
   # Add SQLite3 hints for external projects (e.g., libdjinterop)
-  # SQLite3 libraries are in API 21 directory regardless of target API level
+  # SQLite3 libraries location in Android NDK
   set(SQLite3_INCLUDE_DIR 
     "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/include"
     CACHE PATH "SQLite3 include directory for Android"
   )
   set(SQLite3_LIBRARY 
-    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/aarch64-linux-android/21/libsqlite3.so"
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/aarch64-linux-android/${CMAKE_SYSTEM_VERSION}/libsqlite3.so"
     CACHE FILEPATH "SQLite3 library for Android"
   )
 endif()
