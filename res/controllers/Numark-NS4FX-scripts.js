@@ -1399,31 +1399,29 @@ NS4FX.searching = [false, false, false, false, false];
 NS4FX.wheelTouch = function (channel, control, value, status, group) {
     var deck = channel + 1;
 
-    // ignore touch events if not in vinyl mode
-    if (!NS4FX.shift
-        && !NS4FX.searching[deck]
-        && !NS4FX.wheel[channel]
-        && value != 0) {
-        return;
-    }
+    NS4FX.touching[deck] = (value === 0x7F);
 
-    NS4FX.touching[deck] = 0x7F == value;
-
-
-    // don't start scratching if shift is pressed
-    if (value === 0x7F
-        && !NS4FX.shift
-        && !NS4FX.searching[deck]) {
-        NS4FX.scratchEnable(deck);
-    }
-    else if (value === 0x7F
-        && (NS4FX.shift
-            || NS4FX.searching[deck])) {
-        NS4FX.scratchDisable(deck);
-        NS4FX.searching[deck] = true;
-        NS4FX.stopScratchTimer(deck);
-    }
-    else {    // If button up
+    if (value === 0x7F) {
+        // Touch pressed
+        if (NS4FX.shift) {
+            // Shift pressed -> Search (Seek)
+            NS4FX.scratchDisable(deck);
+            NS4FX.searching[deck] = true;
+            NS4FX.stopScratchTimer(deck);
+        } else if (NS4FX.wheel[channel] && !NS4FX.searching[deck]) {
+            // Vinyl Mode ON -> Scratch
+            NS4FX.scratchEnable(deck);
+        } else {
+            // Vinyl Mode OFF -> Pitch Bend (Nudge)
+            NS4FX.scratchDisable(deck);
+            NS4FX.searching[deck] = false;
+            NS4FX.stopScratchTimer(deck);
+        }
+    } else {
+        // Touch released
+        if (NS4FX.searching[deck]) {
+            NS4FX.searching[deck] = false;
+        }
         NS4FX.startScratchTimer(deck);
     }
 };
@@ -1508,7 +1506,7 @@ NS4FX.wheelTurn = function (channel, control, value, status, group) {
 NS4FX.wheel = []; // initialized in the NS4FX.init() function
 NS4FX.wheelToggle = function (channel, control, value, status, group) {
     if (value != 0x7F) return;
-    if (this.shift) {
+    if (NS4FX.shift) {
         NS4FX.elapsedToggle();
     } else {
         NS4FX.wheel[channel] = !NS4FX.wheel[channel];
