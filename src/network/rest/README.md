@@ -36,22 +36,44 @@ This document summarizes defaults, security, and available routes.
 
 All routes are available with and without the `/api` prefix (for example, `/health` and `/api/health`).
 
+### Health and status
+
 - `GET /health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes).
 - `GET /ready` — readiness summary with dependency issues.
-- `GET /status` — rich summary including application info, decks, mixer state, broadcast/recording status,
-  AutoDJ overview, uptime, timestamp, and system metrics.
-- `GET /decks/<n>` — status for a single deck (1-based index).
+- `GET /status` — application info, decks, mixer state, broadcast/recording status, AutoDJ overview, uptime, timestamp,
+  and system metrics.
+
+### Deck status
+
 - `GET /decks` — status for all decks (same payload as the deck list in `/status`).
-- `POST /control` — control Mixxx via JSON body. Supports commands like `{ "command": "play", "group": "[Channel1]" }`,
-  `{ "command": "seek", "position": 0.5 }`, or direct control key/value pairs such as
-  `{ "group": "[Master]", "key": "gain", "value": 1.2 }`.
+- `GET /decks/<n>` — status for a single deck (1-based index).
+
+### Control
+
+- `POST /control` — control Mixxx via JSON body. Supported styles include:
+  - Commands: `{ "command": "play", "group": "[Channel1]" }`, `{ "command": "seek", "position": 0.5 }`.
+  - Direct control values: `{ "group": "[Master]", "key": "gain", "value": 1.2 }`.
+
+### AutoDJ
+
 - `GET /autodj` — fetch AutoDJ status and a sample of queued tracks.
-- `POST /autodj` — manage AutoDJ with an `action` field (enable, disable, skip, fade, shuffle, add_random, clear,
-  add with `track_ids` + optional `position`, or move with `from`/`to`).
+- `POST /autodj` — manage AutoDJ with an `action` field:
+  - `enable`, `disable`, `skip`, `fade`, `shuffle`, `add_random`, `clear`
+  - `add` with `track_ids` and optional `position`
+  - `move` with `from`/`to`
+
+### Playlists
+
 - `GET /playlists` — list playlists with metadata and the active playlist id.
 - `GET /playlists?id=<id>` — fetch tracks for a specific playlist.
-- `POST /playlists` — manage playlists with an `action` field (create with `name`, delete, rename, set_active,
-  add with `track_ids` + optional `position`, remove with `positions`, reorder with `from`/`to`, or `send_to_autodj`
-  to push an entire playlist into the AutoDJ queue at `top`, `bottom`, or `replace`).
+- `POST /playlists` — manage playlists with an `action` field:
+  - `create` with `name`
+  - `delete`
+  - `rename`
+  - `set_active`
+  - `add` with `track_ids` and optional `position`
+  - `remove` with `positions`
+  - `reorder` with `from`/`to`
+  - `send_to_autodj` with `top`, `bottom`, or `replace` (pushes an entire playlist into the AutoDJ queue)
 
 TLS is strongly recommended whenever authentication or control endpoints are used, especially outside localhost.
