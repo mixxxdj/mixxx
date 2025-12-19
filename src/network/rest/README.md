@@ -115,6 +115,11 @@ available on all Mixxx-supported platforms.
   Each event uses `event: status` and a JSON payload in `data:` containing only changed top-level fields since the last
   update (removed fields are sent as `null`). The first event includes the full status payload.
 
+### Schema
+
+- `GET /schema` — static JSON description of the REST API, including `base_path`, links to core endpoints, required scopes,
+  and supported actions for AutoDJ/playlists plus the control payload styles. Requires `status:read`.
+
 ### Deck status
 
 - `GET /decks` — status for all decks (same payload as the deck list in `/status`). Requires `decks:read`.
