@@ -106,6 +106,9 @@ available on all Mixxx-supported platforms.
 - `GET /ready` — readiness summary with dependency issues. Requires `status:read`.
 - `GET /status` — application info, decks, mixer state, broadcast/recording status, AutoDJ overview, uptime, timestamp,
   and system metrics. Requires `status:read`.
+- `GET /stream/status` — server-sent events stream that emits status deltas at the configured interval. Requires `status:read`.
+  Each event uses `event: status` and a JSON payload in `data:` containing only changed top-level fields since the last
+  update (removed fields are sent as `null`). The first event includes the full status payload.
 
 ### Deck status
 

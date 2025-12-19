@@ -56,6 +56,10 @@ class StubRestApiGateway : public RestApiProvider {
         return jsonResponse("status");
     }
 
+    QJsonObject statusPayload() const override {
+        return QJsonObject{{"message", QStringLiteral("status")}};
+    }
+
     QHttpServerResponse deck(int /*deckNumber*/) const override {
         return jsonResponse("deck");
     }

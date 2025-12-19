@@ -42,6 +42,9 @@ class RestServerSettings {
         bool requireTls{false};
         int maxRequestBytes{0};
         QString corsAllowlist;
+        bool streamEnabled{false};
+        int streamIntervalMs{0};
+        int streamMaxClients{0};
     };
 
     struct Status {
@@ -57,6 +60,8 @@ class RestServerSettings {
     static constexpr int kDefaultPort = 8989;
     static constexpr int kDefaultHttpsPort = 8990;
     static constexpr int kDefaultMaxRequestBytes = 64 * 1024;
+    static constexpr int kDefaultStreamIntervalMs = 1000;
+    static constexpr int kDefaultStreamMaxClients = 5;
     static constexpr const char* kDefaultCorsAllowlist = "*";
 
     explicit RestServerSettings(UserSettingsPointer pConfig);

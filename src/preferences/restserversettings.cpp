@@ -28,6 +28,9 @@ const QString kConfigTokens = QStringLiteral("tokens");
 const QString kConfigRequireTls = QStringLiteral("require_tls");
 const QString kConfigMaxRequestBytes = QStringLiteral("max_request_bytes");
 const QString kConfigCorsAllowlist = QStringLiteral("cors_allowlist");
+const QString kConfigStreamEnabled = QStringLiteral("stream_enabled");
+const QString kConfigStreamIntervalMs = QStringLiteral("stream_interval_ms");
+const QString kConfigStreamMaxClients = QStringLiteral("stream_max_clients");
 const QString kConfigStatusRunning = QStringLiteral("status_running");
 const QString kConfigStatusTlsActive = QStringLiteral("status_tls_active");
 const QString kConfigStatusCertificateGenerated = QStringLiteral("status_certificate_generated");
@@ -81,6 +84,12 @@ RestServerSettings::Values applyDefaults(const RestServerSettings::Values& value
     }
     if (sanitized.maxRequestBytes <= 0) {
         sanitized.maxRequestBytes = RestServerSettings::kDefaultMaxRequestBytes;
+    }
+    if (sanitized.streamIntervalMs <= 0) {
+        sanitized.streamIntervalMs = RestServerSettings::kDefaultStreamIntervalMs;
+    }
+    if (sanitized.streamMaxClients <= 0) {
+        sanitized.streamMaxClients = RestServerSettings::kDefaultStreamMaxClients;
     }
     const QStringList allowlistEntries =
             sanitized.corsAllowlist.split(',', Qt::SkipEmptyParts);
@@ -163,6 +172,15 @@ RestServerSettings::Values RestServerSettings::get() const {
     values.corsAllowlist = m_pConfig->getValue<QString>(
             ConfigKey(kConfigGroup, kConfigCorsAllowlist),
             QString::fromLatin1(kDefaultCorsAllowlist));
+    values.streamEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(kConfigGroup, kConfigStreamEnabled),
+            false);
+    values.streamIntervalMs = m_pConfig->getValue<int>(
+            ConfigKey(kConfigGroup, kConfigStreamIntervalMs),
+            kDefaultStreamIntervalMs);
+    values.streamMaxClients = m_pConfig->getValue<int>(
+            ConfigKey(kConfigGroup, kConfigStreamMaxClients),
+            kDefaultStreamMaxClients);
     return applyDefaults(values);
 }
 
@@ -209,6 +227,11 @@ void RestServerSettings::set(const Values& values) {
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigRequireTls), sanitized.requireTls);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigMaxRequestBytes), sanitized.maxRequestBytes);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigCorsAllowlist), sanitized.corsAllowlist);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStreamEnabled), sanitized.streamEnabled);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStreamIntervalMs),
+            sanitized.streamIntervalMs);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStreamMaxClients),
+            sanitized.streamMaxClients);
 }
 
 RestServerSettings::Values RestServerSettings::defaults() const {
@@ -226,6 +249,9 @@ RestServerSettings::Values RestServerSettings::defaults() const {
     values.requireTls = false;
     values.maxRequestBytes = kDefaultMaxRequestBytes;
     values.corsAllowlist = QString::fromLatin1(kDefaultCorsAllowlist);
+    values.streamEnabled = false;
+    values.streamIntervalMs = kDefaultStreamIntervalMs;
+    values.streamMaxClients = kDefaultStreamMaxClients;
     return values;
 }
 

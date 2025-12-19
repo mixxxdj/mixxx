@@ -173,8 +173,13 @@ QJsonArray RestApiGateway::deckStatuses() const {
 }
 
 QHttpServerResponse RestApiGateway::status() const {
+    return successResponse(statusPayload());
+}
+
+QJsonObject RestApiGateway::statusPayload() const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     const QJsonObject readiness = readinessPayload();
-    const QJsonObject payload{
+    return QJsonObject{
             {"app", appInfo()},
             {"ready", readiness},
             {"system", systemHealth()},
@@ -186,7 +191,6 @@ QHttpServerResponse RestApiGateway::status() const {
             {"uptime_ms", static_cast<qint64>(m_uptime.elapsed())},
             {"timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)},
     };
-    return successResponse(payload);
 }
 
 QHttpServerResponse RestApiGateway::deck(int deckNumber) const {

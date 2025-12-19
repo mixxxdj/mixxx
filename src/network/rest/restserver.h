@@ -7,16 +7,19 @@
 #include <QHttpServer>
 #include <QHttpServerRequest>
 #include <QHttpServerResponse>
+#include <QHttpServerResponder>
 #include <QJsonObject>
 #include <QList>
 #include <QPointer>
 #include <QSslConfiguration>
 #include <QThread>
+#include <QTimer>
 #include <QString>
 #include <QStringList>
 #include <functional>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 #include "util/logger.h"
 #include "util/ratelimitedlogger.h"
@@ -72,6 +75,9 @@ class RestServer : public QObject {
         QList<Token> tokens;
         int maxRequestBytes{64 * 1024};
         QStringList corsAllowlist;
+        bool streamEnabled{false};
+        int streamIntervalMs{1000};
+        int streamMaxClients{5};
 
         friend bool operator==(const Settings& lhs, const Settings& rhs) {
             return lhs.enabled == rhs.enabled &&
@@ -87,7 +93,10 @@ class RestServer : public QObject {
                     lhs.privateKeyPath == rhs.privateKeyPath &&
                     lhs.tokens == rhs.tokens &&
                     lhs.maxRequestBytes == rhs.maxRequestBytes &&
-                    lhs.corsAllowlist == rhs.corsAllowlist;
+                    lhs.corsAllowlist == rhs.corsAllowlist &&
+                    lhs.streamEnabled == rhs.streamEnabled &&
+                    lhs.streamIntervalMs == rhs.streamIntervalMs &&
+                    lhs.streamMaxClients == rhs.streamMaxClients;
         }
 
         friend bool operator!=(const Settings& lhs, const Settings& rhs) {
@@ -158,6 +167,13 @@ class RestServer : public QObject {
             const QStringList& requiredScopes) const;
     bool controlRouteRequiresTls(const QHttpServerRequest& request) const;
     void registerRoutes();
+    void addStatusStreamClient(
+            const QHttpServerRequest& request,
+            QHttpServerResponder&& responder);
+    void pushStatusStreamUpdate();
+    void sendStatusStreamEvent(const QJsonObject& payload, QHttpServerResponder* responder) const;
+    QJsonObject fetchStatusPayload() const;
+    QJsonObject statusDelta(const QJsonObject& previous, const QJsonObject& current) const;
     void logRouteError(
             const QHttpServerRequest& request,
             QHttpServerResponse::StatusCode status,
@@ -173,6 +189,12 @@ class RestServer : public QObject {
     bool startOnThread();
     void stopOnThread();
 
+    struct StreamClient {
+        quint64 id;
+        QHttpServerResponder responder;
+        QJsonObject lastPayload;
+    };
+
     std::unique_ptr<QObject> m_threadObject;
     std::unique_ptr<QHttpServer> m_httpServer;
     std::optional<TlsResult> m_tlsConfiguration;
@@ -183,6 +205,9 @@ class RestServer : public QObject {
     bool m_tlsActive{false};
     quint16 m_listeningPort;
     QString m_lastError;
+    quint64 m_streamClientCounter{0};
+    std::unordered_map<quint64, StreamClient> m_streamClients;
+    QTimer m_streamTimer;
     mutable RateLimitedLogger m_routeErrorLogger;
     mutable RateLimitedLogger m_authFailureLogger;
 
