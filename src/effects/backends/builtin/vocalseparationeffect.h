@@ -31,6 +31,7 @@ struct VocalSeparationGroupState : public EffectState {
     double m_oldCenterFreq;
     
     // Previous intensity for ramping
+
     CSAMPLE m_previousIntensity;
 };
 
