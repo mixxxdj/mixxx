@@ -48,11 +48,6 @@ Available scopes:
 
 All routes are served under the versioned base path `/api/v1` (for example, `/api/v1/health`).
 
-### Schema
-
-- `GET /schema` — static JSON description of the available endpoints, required scopes, and supported
-  actions for AutoDJ and playlist commands. Includes links for the core routes.
-
 ## REST API architecture and control flow
 
 The REST API is a thin HTTP façade that routes requests into Mixxx's existing
@@ -105,6 +100,11 @@ system. Using ControlProxy keeps the REST API aligned with that existing model:
 This keeps the REST API lightweight, consistent with existing control logic, and
 available on all Mixxx-supported platforms.
 
+### Schema
+
+- `GET /schema` — static JSON description of the REST API, including `base_path`, links to core endpoints, required scopes,
+  and supported actions for AutoDJ/playlists plus the control payload styles. Requires `status:read`.
+
 ### Health and status
 
 - `GET /health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes). Requires `status:read`.
@@ -114,11 +114,6 @@ available on all Mixxx-supported platforms.
 - `GET /stream/status` — server-sent events stream that emits status deltas at the configured interval. Requires `status:read`.
   Each event uses `event: status` and a JSON payload in `data:` containing only changed top-level fields since the last
   update (removed fields are sent as `null`). The first event includes the full status payload.
-
-### Schema
-
-- `GET /schema` — static JSON description of the REST API, including `base_path`, links to core endpoints, required scopes,
-  and supported actions for AutoDJ/playlists plus the control payload styles. Requires `status:read`.
 
 ### Deck status
 
