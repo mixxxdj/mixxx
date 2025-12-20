@@ -206,7 +206,7 @@ void RestServerSettings::set(const Values& values) {
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigCertificatePath), sanitized.certificatePath);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigPrivateKeyPath), sanitized.privateKeyPath);
     QJsonArray tokenArray;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
     tokenArray.reserve(sanitized.tokens.size());
 #endif
     int count = 0;
@@ -222,7 +222,7 @@ void RestServerSettings::set(const Values& values) {
         object.insert(QStringLiteral("description"), token.description);
         QJsonArray scopesArray;
         const QStringList normalizedScopes = normalizeScopes(token.scopes);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
         scopesArray.reserve(normalizedScopes.size());
 #endif
         for (const auto& scope : normalizedScopes) {

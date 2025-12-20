@@ -491,7 +491,7 @@ QString DlgPrefRestServer::makeHttpsUrl() const {
 
 QString DlgPrefRestServer::makeLoopbackCorsAllowlist(bool includeHttp, bool includeHttps) const {
     QStringList allowlist;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
     allowlist.reserve(6);
 #endif
     if (includeHttp) {
