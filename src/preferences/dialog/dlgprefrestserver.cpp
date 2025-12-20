@@ -593,7 +593,9 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
 }
 
 QString DlgPrefRestServer::browseForFile(const QString& title, const QString& startDirectory) const {
-    return QFileDialog::getOpenFileName(this, title, startDirectory);
+    return QFileDialog::getOpenFileName(const_cast<QWidget*>(static_cast<const QWidget*>(this)),
+            title,
+            startDirectory);
 }
 
 void DlgPrefRestServer::slotAddToken() {
