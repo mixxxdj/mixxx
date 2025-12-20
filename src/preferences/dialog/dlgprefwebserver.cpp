@@ -198,6 +198,6 @@ void DlgPrefWebServer::updateAuthWarning() {
     labelAuthWarning->setVisible(showWarning);
 }
 
-QString DlgPrefWebServer::browseForFile(const QString& title, const QString& startDirectory) const {
+QString DlgPrefWebServer::browseForFile(const QString& title, const QString& startDirectory) {
     return QFileDialog::getOpenFileName(this, title, startDirectory);
 }
