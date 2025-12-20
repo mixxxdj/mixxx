@@ -28,6 +28,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void slotAutoGenerateCertificateChanged(bool checked);
     void slotEnableRestServerChanged(bool checked);
     void slotEnableHttpChanged(bool checked);
+    void slotPresetChanged(int index);
     void slotCorsAllowlistChanged(const QString& text);
     void slotBrowseCertificate();
     void slotBrowseKey();
@@ -48,11 +49,13 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void updateAuthWarning();
     void updateUnauthWarning();
     void updateNetworkWarning();
+    void updatePresetWarning();
     void updateUrlLabels();
     void updateStatusLabels(const RestServerSettings::Status& status);
     void updateTlsCertificateStatus();
     QString makeHttpUrl() const;
     QString makeHttpsUrl() const;
+    QString makeLoopbackCorsAllowlist(bool includeHttp, bool includeHttps) const;
     QString browseForFile(const QString& title, const QString& startDirectory) const;
     QString makeToken() const;
     void refreshTokenTable();

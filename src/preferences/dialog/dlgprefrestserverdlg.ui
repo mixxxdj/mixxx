@@ -17,13 +17,36 @@
     </property>
     <layout class="QFormLayout" name="formLayoutNetwork">
       <item row="0" column="0">
+       <widget class="QLabel" name="labelPreset">
+        <property name="text">
+         <string>Preset:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBoxPreset"/>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="labelPresetWarning">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Network preset exposes the API on all interfaces. Populate allowed origins so browsers can connect, and use only on trusted networks.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
        <widget class="QLabel" name="labelEnableHttp">
         <property name="text">
          <string>HTTP:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="2" column="1">
        <widget class="QCheckBox" name="checkBoxEnableHttp">
         <property name="text">
          <string>Enable</string>
@@ -33,34 +56,34 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="labelHost">
         <property name="text">
          <string>Host:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="3" column="1">
        <widget class="QLineEdit" name="lineEditHost"/>
       </item>
-      <item row="2" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="labelPort">
         <property name="text">
          <string>HTTP port:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="4" column="1">
        <widget class="QSpinBox" name="spinBoxHttpPort"/>
       </item>
-      <item row="3" column="0">
+      <item row="5" column="0">
        <widget class="QLabel" name="labelHttpUrl">
         <property name="text">
          <string>HTTP URL:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="5" column="1">
        <layout class="QHBoxLayout" name="horizontalLayoutHttpUrl">
         <item>
          <widget class="QLabel" name="labelHttpUrlValue">
@@ -78,7 +101,7 @@
         </item>
        </layout>
       </item>
-      <item row="4" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="labelCorsAllowlist">
         <property name="toolTip">
          <string>Enter origins (scheme + host + optional port). Leave blank to disable CORS allowlisting.</string>
@@ -88,7 +111,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="6" column="1">
        <widget class="QLineEdit" name="lineEditCorsAllowlist">
         <property name="placeholderText">
          <string>https://example.com, http://localhost:3000</string>
@@ -98,7 +121,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0" colspan="2">
+      <item row="7" column="0" colspan="2">
        <widget class="QLabel" name="labelCorsAllowlistWarning">
         <property name="visible">
          <bool>false</bool>
@@ -111,21 +134,21 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="labelMaxRequestSize">
         <property name="text">
          <string>Max request size:</string>
         </property>
       </widget>
      </item>
-      <item row="6" column="1">
+      <item row="8" column="1">
        <widget class="QSpinBox" name="spinBoxMaxRequestSize">
         <property name="suffix">
          <string> KiB</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0" colspan="2">
+      <item row="9" column="0" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayoutNetworkWarning">
         <item>
          <widget class="QLabel" name="labelNetworkWarningIcon">
