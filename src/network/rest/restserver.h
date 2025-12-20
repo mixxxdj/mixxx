@@ -173,7 +173,9 @@ class RestServer : public QObject {
             const QHttpServerRequest& request,
             QHttpServerResponder&& responder);
     void pushStatusStreamUpdate();
-    void sendStatusStreamEvent(const QJsonObject& payload, QHttpServerResponder* responder) const;
+    bool sendStatusStreamEvent(
+            const QJsonObject& payload,
+            QHttpServerResponder* responder) const;
     QJsonObject fetchStatusPayload() const;
     QJsonObject statusDelta(const QJsonObject& previous, const QJsonObject& current) const;
     void logRouteError(
