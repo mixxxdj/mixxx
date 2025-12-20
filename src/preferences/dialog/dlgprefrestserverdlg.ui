@@ -271,49 +271,70 @@
          <widget class="QWidget" name="widgetTokenScopes" native="true">
           <layout class="QGridLayout" name="gridLayoutTokenScopes">
            <item row="0" column="0">
-            <widget class="QCheckBox" name="checkScopeStatusRead">
+           <widget class="QCheckBox" name="checkScopeStatusRead">
+            <property name="toolTip">
+             <string>Allows access to health, ready, and status endpoints.</string>
+            </property>
              <property name="text">
               <string>status:read</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QCheckBox" name="checkScopeDecksRead">
+           <widget class="QCheckBox" name="checkScopeDecksRead">
+            <property name="toolTip">
+             <string>Allows access to deck status endpoints.</string>
+            </property>
              <property name="text">
               <string>decks:read</string>
              </property>
             </widget>
            </item>
            <item row="0" column="2">
-            <widget class="QCheckBox" name="checkScopeAutoDjRead">
+           <widget class="QCheckBox" name="checkScopeAutoDjRead">
+            <property name="toolTip">
+             <string>Allows access to AutoDJ status endpoints.</string>
+            </property>
              <property name="text">
               <string>autodj:read</string>
              </property>
             </widget>
            </item>
            <item row="1" column="0">
-            <widget class="QCheckBox" name="checkScopeAutoDjWrite">
+           <widget class="QCheckBox" name="checkScopeAutoDjWrite">
+            <property name="toolTip">
+             <string>Allows control of AutoDJ endpoints.</string>
+            </property>
              <property name="text">
               <string>autodj:write</string>
              </property>
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QCheckBox" name="checkScopePlaylistsRead">
+           <widget class="QCheckBox" name="checkScopePlaylistsRead">
+            <property name="toolTip">
+             <string>Allows access to playlist listing endpoints.</string>
+            </property>
              <property name="text">
               <string>playlists:read</string>
              </property>
             </widget>
            </item>
            <item row="1" column="2">
-            <widget class="QCheckBox" name="checkScopePlaylistsWrite">
+           <widget class="QCheckBox" name="checkScopePlaylistsWrite">
+            <property name="toolTip">
+             <string>Allows access to playlist mutation endpoints.</string>
+            </property>
              <property name="text">
               <string>playlists:write</string>
              </property>
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QCheckBox" name="checkScopeControlWrite">
+           <widget class="QCheckBox" name="checkScopeControlWrite">
+            <property name="toolTip">
+             <string>Allows access to the control endpoint (POST /api/v1/control).</string>
+            </property>
              <property name="text">
               <string>control:write</string>
              </property>
