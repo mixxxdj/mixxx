@@ -157,6 +157,13 @@ RestServerSettings::Values RestServerSettings::get() const {
         if (!token.createdUtc.isValid()) {
             token.createdUtc = QDateTime::currentDateTimeUtc();
         }
+        const QString lastUsed = obj.value(QStringLiteral("last_used_utc")).toString();
+        if (!lastUsed.isEmpty()) {
+            const QDateTime lastUsedUtc = QDateTime::fromString(lastUsed, Qt::ISODate);
+            if (lastUsedUtc.isValid()) {
+                token.lastUsedUtc = lastUsedUtc;
+            }
+        }
         const QString expires = obj.value(QStringLiteral("expires_utc")).toString();
         if (!expires.isEmpty()) {
             token.expiresUtc = QDateTime::fromString(expires, Qt::ISODate);
@@ -216,6 +223,9 @@ void RestServerSettings::set(const Values& values) {
         }
         object.insert(QStringLiteral("scopes"), scopesArray);
         object.insert(QStringLiteral("created_utc"), token.createdUtc.toString(Qt::ISODate));
+        if (token.lastUsedUtc.has_value()) {
+            object.insert(QStringLiteral("last_used_utc"), token.lastUsedUtc->toString(Qt::ISODate));
+        }
         if (token.expiresUtc.has_value()) {
             object.insert(QStringLiteral("expires_utc"), token.expiresUtc->toString(Qt::ISODate));
         }

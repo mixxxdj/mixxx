@@ -128,7 +128,7 @@
         <item>
          <widget class="QTableWidget" name="tableTokens">
           <property name="columnCount">
-           <number>4</number>
+           <number>6</number>
           </property>
           <column>
            <property name="text">
@@ -148,6 +148,16 @@
           <column>
            <property name="text">
             <string>Expires</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Created</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Last used</string>
            </property>
           </column>
          </widget>
