@@ -14,6 +14,7 @@
 #include <QSignalBlocker>
 #include <QSslCertificate>
 #include <QTableWidgetItem>
+#include <QUrl>
 #include <limits>
 #include <QUuid>
 #include <QtGlobal>
@@ -68,6 +69,10 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QCheckBox::toggled,
             this,
             &DlgPrefRestServer::slotEnableRestServerChanged);
+    connect(lineEditCorsAllowlist,
+            &QLineEdit::textChanged,
+            this,
+            &DlgPrefRestServer::slotCorsAllowlistChanged);
     connect(lineEditCertPath,
             &QLineEdit::textChanged,
             this,
@@ -143,6 +148,8 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             this,
             &DlgPrefRestServer::slotTokenExpiresChanged);
 
+    m_corsAllowlistToolTip = lineEditCorsAllowlist->toolTip();
+
     setScrollSafeGuardForAllInputWidgets(this);
 
     slotUpdate();
@@ -190,6 +197,49 @@ void DlgPrefRestServer::slotEnableRestServerChanged(bool checked) {
     groupBoxTls->setEnabled(checked);
     updateAuthWarning();
     updateNetworkWarning();
+}
+
+void DlgPrefRestServer::slotCorsAllowlistChanged(const QString& text) {
+    const QString trimmedText = text.trimmed();
+    QStringList invalidEntries;
+
+    if (!trimmedText.isEmpty()) {
+        const QStringList entries = text.split(',', Qt::KeepEmptyParts);
+        for (const QString& entry : entries) {
+            const QString trimmedEntry = entry.trimmed();
+            if (trimmedEntry.isEmpty()) {
+                invalidEntries << tr("<empty>");
+                continue;
+            }
+
+            const QUrl url(trimmedEntry);
+            const QString path = url.path();
+            const int port = url.port();
+            const bool invalid = !url.isValid() ||
+                    url.scheme().isEmpty() ||
+                    url.host().isEmpty() ||
+                    !url.userInfo().isEmpty() ||
+                    !url.query().isEmpty() ||
+                    !url.fragment().isEmpty() ||
+                    (!path.isEmpty() && path != QStringLiteral("/")) ||
+                    (port != -1 && (port <= 0 || port > 65535));
+            if (invalid) {
+                invalidEntries << trimmedEntry;
+            }
+        }
+    }
+
+    if (invalidEntries.isEmpty()) {
+        labelCorsAllowlistWarning->setVisible(false);
+        lineEditCorsAllowlist->setToolTip(m_corsAllowlistToolTip);
+    } else {
+        const QString invalidList = invalidEntries.join(QStringLiteral(", "));
+        labelCorsAllowlistWarning->setText(
+                tr("Invalid origins: %1").arg(invalidList));
+        labelCorsAllowlistWarning->setVisible(true);
+        lineEditCorsAllowlist->setToolTip(
+                tr("Invalid origins: %1").arg(invalidList));
+    }
 }
 
 void DlgPrefRestServer::slotBrowseCertificate() {
