@@ -738,6 +738,17 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     }
 }
 
+void WaveformWidgetFactory::setDownbeatLength(int downbeatLength) {
+    m_downbeatLength = downbeatLength;
+    if (m_waveformWidgetHolders.size() == 0) {
+        return;
+    }
+
+    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
+        holder.m_waveformWidget->setDownbeatLength(m_downbeatLength);
+    }
+}
+
 void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
     m_visualGain[index] = gain;
     if (m_config) {

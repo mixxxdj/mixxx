@@ -687,6 +687,50 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
+     <item row="16" column="0">
+      <widget class="QLabel" name="downBeatLabel">
+       <property name="text">
+        <string>Downbeat (experimental)</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="1" colspan="3">
+      <widget class="QCheckBox" name="enableDownBeatCheckBox">
+       <property name="text">
+        <string>Display downbeat</string>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="3">
+      <widget class="QLabel" name="downBeatLengthLabel">
+       <property name="text">
+        <string>Phase size</string>
+       </property>
+      </widget>
+     </item>
+     <item row="16" column="4">
+      <widget class="QSpinBox" name="downBeatLengthSpinBox">
+        <property name="toolTip">
+        <string/>
+        </property>
+        <property name="suffix">
+        <string> beats</string>
+        </property>
+        <property name="minimum">
+        <number>2</number>
+        </property>
+        <property name="maximum">
+        <number>32</number>
+        </property>
+        <property name="value">
+        <number>4</number>
+        </property>
+      </widget>
+     </item>
+
     </layout>
    </widget>
   </item><!-- waveform groupbox -->
