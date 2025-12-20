@@ -131,21 +131,8 @@ class WaveformWidgetRenderer {
     double getZoom() const {
         return m_zoomFactor;
     }
-    double getGain(bool applyCompensation) const {
-        // m_gain was always multiplied by 2.0, according to a comment:
-        //
-        //   "This gain adjustment compensates for an arbitrary /2 gain chop in
-        //   EnginePregain. See the comment there."
-        //
-        // However, no comment there seems to explain this, and it resulted
-        // in renderers that use the filtered.all data for the amplitude, to
-        // be twice the expected value.
-        // But without this compensation, renderers that use the combined
-        // lo, mid, hi values became much lower than expected. By making this
-        // optional we move the decision to each renderer whether to apply the
-        // compensation or not, in order to have a more similar amplitude across
-        // waveform renderers
-        return applyCompensation ? m_gain * 2.f : m_gain;
+    double getGain() const {
+        return m_gain;
     }
     double getTrackSamples() const {
         return m_trackSamples;

@@ -77,8 +77,8 @@ bool WaveformRendererHSV::preprocessInner() {
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
 
-    float allGain(1.0);
-    getGains(&allGain, false, nullptr, nullptr, nullptr);
+    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h = m_signalColor_h;
@@ -136,9 +136,15 @@ bool WaveformRendererHSV::preprocessInner() {
             for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                 const WaveformData& waveformData = data[i];
 
-                u8maxLow = math_max(u8maxLow, waveformData.filtered.low);
-                u8maxMid = math_max(u8maxMid, waveformData.filtered.mid);
-                u8maxHigh = math_max(u8maxHigh, waveformData.filtered.high);
+                u8maxLow = math_max(u8maxLow,
+                        static_cast<uchar>(
+                                waveformData.filtered.low * lowGain));
+                u8maxMid = math_max(u8maxMid,
+                        static_cast<uchar>(
+                                waveformData.filtered.mid * midGain));
+                u8maxHigh = math_max(u8maxHigh,
+                        static_cast<uchar>(
+                                waveformData.filtered.high * highGain));
                 u8maxAll = math_max(u8maxAll, waveformData.filtered.all);
             }
 
