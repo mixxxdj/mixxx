@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.7.0" type="development" date="2025-11-30" timestamp="1764501526">
+    <release version="2.7.0" type="development" date="2025-12-19" timestamp="1766105838">
       <description>
 </description>
     </release>
-    <release version="2.6.0" type="development" date="2025-11-30" timestamp="1764501526">
+    <release version="2.6.0" type="development" date="2025-12-19" timestamp="1766105838">
       <description>
  <p>
   STEM file support
@@ -1082,7 +1082,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.4" type="development" date="2025-11-30" timestamp="1764501526">
+    <release version="2.5.4" type="stable" date="2025-12-14" timestamp="1765670400">
       <description>
  <p>
   Controller Mappings
@@ -1107,6 +1107,10 @@
    Reloop Beatmix 2/4: fix overriding persisted fx routing
    #15574
    #14917
+  </li>
+  <li>
+   Traktor S4Mk3: don't stop scratch mode if platter is being held
+   #15570
   </li>
   <li>
    Components JogwheelBasic: Disable scratching when leaving
@@ -1208,10 +1212,20 @@
    Analyze view: avoid listing tracks that don't match the 'New' filter
    #15597
    #14873
+   #15693
   </li>
   <li>
-   Traktor feature: fixes to Traktor collection importer
+   Traktor feature: fixes to Traktor and Rekordbox collection importer
    #15645
+   #15671
+  </li>
+  <li>
+   Fix possible crash and other issues with Rekordbox USB
+   #15745
+   #13624
+   #13309
+   #10672
+   #11373
   </li>
  </ul>
  <p>
@@ -1346,6 +1360,16 @@
   <li>
    Update Keyboard SVG
    #15635
+  </li>
+  <li>
+   SoundSourceFFmpeg: Fix opening files with non ASCII characters
+   #15700
+   #15681
+  </li>
+  <li>
+   Fix possible crash due to division by zereo in waveform code
+   #15738
+   #15737
   </li>
  </ul>
 </description>

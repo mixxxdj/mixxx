@@ -167,13 +167,12 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
 }
 
 void WaveformRendererSignalBase::getGains(float* pAllGain,
-        bool applyCompensation,
         float* pLowGain,
         float* pMidGain,
         float* pHighGain) {
     if (pAllGain) {
         *pAllGain = static_cast<CSAMPLE_GAIN>(
-                            m_waveformRenderer->getGain(applyCompensation)) *
+                            m_waveformRenderer->getGain()) *
                 m_allChannelVisualGain;
         ;
     }

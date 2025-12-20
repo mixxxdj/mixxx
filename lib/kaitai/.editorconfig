@@ -1,0 +1,35 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# We usually want to indent using spaces
+indent_style = space
+
+# Files in the .build/ directory without a file extension are shell scripts
+[.build/*]
+indent_size = 4
+indent_style = tab
+
+[.build/*.*]
+indent_size = unset
+indent_style = space
+
+[*.ps1]
+indent_size = 4
+
+[*.yml]
+indent_size = 2
+
+[*.{cpp,h}]
+indent_size = 4
+
+[{CMakeLists.txt,*.cmake}]
+indent_size = 4
+
+[{Makefile,*.mk}]
+indent_size = 4
+indent_style = tab

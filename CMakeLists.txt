@@ -268,6 +268,24 @@ if(UNIX AND NOT APPLE)
     )
   endif()
 endif()
+if(WIN32)
+  # Check if we are running from "Visual Studio 20XX Developer Command Prompt"
+  if(NOT DEFINED ENV{INCLUDE})
+    message(
+      FATAL_ERROR
+      "The INCLUDE environment variable is not defined. Please ensure you are using the correct shell like 'x64 Native Tools Command Prompt for VS 20XX'"
+    )
+  endif()
+endif()
+if(WIN32)
+  # Check if we are running from "Visual Studio 20XX Developer Command Prompt"
+  if(NOT DEFINED ENV{INCLUDE})
+    message(
+      FATAL_ERROR
+      "The INCLUDE environment variable is not defined. Please ensure you are using the correct shell like 'x64 Native Tools Command Prompt for VS 20XX'"
+    )
+  endif()
+endif()
 
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
@@ -378,7 +396,12 @@ cmake_dependent_option(
   "QT6"
   OFF
 )
-option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+
+if(QT6)
+  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+else()
+  option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+endif()
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
@@ -1677,6 +1700,7 @@ add_library(
   src/waveform/renderers/waveformrendererpreroll.cpp
   src/waveform/renderers/waveformrendererrgb.cpp
   src/waveform/renderers/waveformrenderersignalbase.cpp
+  src/waveform/renderers/waveformrenderersimplesignal.cpp
   src/waveform/renderers/waveformrendermark.cpp
   src/waveform/renderers/waveformrendermarkbase.cpp
   src/waveform/renderers/waveformrendermarkrange.cpp
@@ -1693,6 +1717,7 @@ add_library(
   src/waveform/widgets/emptywaveformwidget.cpp
   src/waveform/widgets/hsvwaveformwidget.cpp
   src/waveform/widgets/rgbwaveformwidget.cpp
+  src/waveform/widgets/simplesignalwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
   src/waveform/widgets/glwaveformwidgetabstract.cpp
