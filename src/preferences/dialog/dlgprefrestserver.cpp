@@ -244,7 +244,12 @@ void DlgPrefRestServer::updateTlsState() {
     spinBoxHttpsPort->setEnabled(useHttps);
 
     checkBoxAutoGenerateCertificate->setEnabled(useHttps);
-    checkBoxRequireTls->setEnabled(useHttps || checkBoxRequireTls->isChecked());
+    checkBoxRequireTls->setEnabled(useHttps);
+    if (useHttps) {
+        checkBoxRequireTls->setToolTip(QString());
+    } else {
+        checkBoxRequireTls->setToolTip(tr("Enable HTTPS to require TLS for control routes."));
+    }
     lineEditCertPath->setEnabled(useHttps && !autoGenerate);
     pushButtonBrowseCert->setEnabled(useHttps && !autoGenerate);
     lineEditKeyPath->setEnabled(useHttps && !autoGenerate);
