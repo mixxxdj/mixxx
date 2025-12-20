@@ -21,6 +21,7 @@ const ConfigKey kWaveformOptionsKey(kWaveformGroup,
         QStringLiteral("waveform_options"));
 const ConfigKey kHardwareAccelerationKey(kWaveformGroup,
         QStringLiteral("use_hardware_acceleration"));
+const int kDownbeatLengthDefault = 4;
 } // namespace
 
 // for OverviewType
@@ -252,6 +253,14 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QDoubleSpinBox::valueChanged,
             this,
             &DlgPrefWaveform::slotStemOutlineOpacity);
+    connect(enableDownBeatCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetDownbeatEnabled);
+    connect(downBeatLengthSpinBox,
+            &QSpinBox::valueChanged,
+            this,
+            &DlgPrefWaveform::slotSetDownbeatLength);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -386,6 +395,13 @@ void DlgPrefWaveform::slotUpdate() {
     enableWaveformGenerationWithAnalysis->setChecked(
         waveformSettings.waveformGenerationWithAnalysisEnabled());
     calculateCachedWaveformDiskUsage();
+
+    enableDownBeatCheckBox->setChecked(factory->getDownbeatLength() != 0);
+    downBeatLengthLabel->setEnabled(enableDownBeatCheckBox->isChecked());
+    downBeatLengthSpinBox->setEnabled(enableDownBeatCheckBox->isChecked());
+    downBeatLengthSpinBox->setValue(factory->getDownbeatLength() != 0
+                    ? factory->getDownbeatLength()
+                    : kDownbeatLengthDefault);
 }
 
 void DlgPrefWaveform::slotApply() {
@@ -750,6 +766,13 @@ void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
     WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
 }
 
+void DlgPrefWaveform::slotSetDownbeatLength(int downbeatLength) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup,
+                                QStringLiteral("experimental_downbeat_length")),
+            downbeatLength);
+    WaveformWidgetFactory::instance()->setDownbeatLength(downbeatLength);
+}
+
 void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // QSlider works with integer values, so divide the percentage given by the
     // slider value by 100 to get a fraction of the waveform width.
@@ -786,6 +809,11 @@ void DlgPrefWaveform::slotStemOpacity(float value) {
 
 void DlgPrefWaveform::slotStemReorderOnChange(bool value) {
     WaveformWidgetFactory::instance()->setStemReorderOnChange(value);
+}
+
+void DlgPrefWaveform::slotSetDownbeatEnabled(bool value) {
+    slotSetDownbeatLength(value ? downBeatLengthSpinBox->value() : 0);
+    slotUpdate();
 }
 
 void DlgPrefWaveform::slotStemOutlineOpacity(float value) {

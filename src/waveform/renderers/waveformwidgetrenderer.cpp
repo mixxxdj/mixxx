@@ -39,6 +39,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_visualSamplePerPixel(1.0),
           m_audioSamplePerPixel(1.0),
           m_alphaBeatGrid(90),
+          m_downbeatLength(0),
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
           m_totalVSamples(0),
@@ -440,6 +441,10 @@ void WaveformWidgetRenderer::setZoom(double zoom) {
 
 void WaveformWidgetRenderer::setDisplayBeatGridAlpha(int alpha) {
     m_alphaBeatGrid = alpha;
+}
+
+void WaveformWidgetRenderer::setDownbeatLength(int downbeatLength) {
+    m_downbeatLength = downbeatLength;
 }
 
 #ifdef __STEM__

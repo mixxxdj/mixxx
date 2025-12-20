@@ -224,6 +224,11 @@ class WaveformWidgetFactory : public QObject,
     void setDisplayBeatGridAlpha(int alpha);
     int getBeatGridAlpha() const { return m_beatGridAlpha; }
 
+    void setDownbeatLength(int downbeatLength);
+    int getDownbeatLength() const {
+        return m_downbeatLength;
+    }
+
     void setVisualGain(BandIndex index, double gain);
     double getVisualGain(BandIndex index) const;
     static double getVisualGainDefault(BandIndex index);
@@ -343,6 +348,7 @@ class WaveformWidgetFactory : public QObject,
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
+    int m_downbeatLength;
 
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
