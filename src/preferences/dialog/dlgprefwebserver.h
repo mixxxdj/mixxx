@@ -38,7 +38,7 @@ class DlgPrefWebServer : public DlgPreferencePage, public Ui::DlgPrefWebServerDl
     void updateTlsState();
     void updateAuthenticationState();
     void updateAuthWarning();
-    QString browseForFile(const QString& title, const QString& startDirectory) const;
+    QString browseForFile(const QString& title, const QString& startDirectory);
 
     std::shared_ptr<WebServerSettings> m_pSettings;
 };
