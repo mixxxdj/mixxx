@@ -55,13 +55,23 @@
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="labelCorsAllowlist">
+        <property name="toolTip">
+         <string>Enter origins (scheme + host + optional port). Leave blank to disable CORS allowlisting.</string>
+        </property>
         <property name="text">
          <string>Allowed origins (comma-separated):</string>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="lineEditCorsAllowlist"/>
+       <widget class="QLineEdit" name="lineEditCorsAllowlist">
+        <property name="placeholderText">
+         <string>https://example.com, http://localhost:3000</string>
+        </property>
+        <property name="toolTip">
+         <string>Enter origins (scheme + host + optional port). Leave blank to disable CORS allowlisting.</string>
+        </property>
+       </widget>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="labelMaxRequestSize">
