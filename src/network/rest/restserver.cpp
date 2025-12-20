@@ -10,6 +10,7 @@
 #include <QJsonObject>
 #include <QJsonParseError>
 #include <QMetaObject>
+#include <QRegularExpression>
 #include <QSemaphore>
 #include <QSslCipher>
 #include <QSslSocket>
@@ -47,6 +48,11 @@ constexpr auto kAccelBufferingHeader = "X-Accel-Buffering";
 constexpr auto kAccelBufferingDisabled = "no";
 constexpr auto kStrictTransportSecurityHeader = "Strict-Transport-Security";
 constexpr auto kStrictTransportSecurityValue = "max-age=15552000; includeSubDomains";
+constexpr int kMaxRequestIdLength = 128;
+const QRegularExpression kUuidRequestIdRegex(
+        QStringLiteral("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+                       "[0-9a-fA-F]{12}$"));
+const QRegularExpression kAllowedRequestIdRegex(QStringLiteral("^[A-Za-z0-9._-]+$"));
 
 bool requestIsSecure(const QHttpServerRequest& request) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
@@ -568,8 +574,12 @@ QString RestServer::requestDescription(const QHttpServerRequest& request) const 
 QString RestServer::requestIdFor(const QHttpServerRequest& request) const {
     const QByteArray headerValue =
             request.headers().value(QByteArrayLiteral(kRequestIdHeader)).trimmed();
-    if (!headerValue.isEmpty()) {
-        return QString::fromUtf8(headerValue);
+    if (!headerValue.isEmpty() && headerValue.size() <= kMaxRequestIdLength) {
+        const QString requestId = QString::fromUtf8(headerValue);
+        if (kUuidRequestIdRegex.match(requestId).hasMatch() ||
+                kAllowedRequestIdRegex.match(requestId).hasMatch()) {
+            return requestId;
+        }
     }
     return QUuid::createUuid().toString(QUuid::WithoutBraces);
 }
