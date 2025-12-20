@@ -95,6 +95,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
     CMAKE_LIBRARY_PATH
     "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/aarch64-linux-android/${CMAKE_SYSTEM_VERSION}/;${CMAKE_LIBRARY_PATH}"
   )
+  
+  # Add SQLite3 hints for external projects (e.g., libdjinterop)
+  # SQLite3 libraries location in Android NDK
+  set(SQLite3_INCLUDE_DIR 
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/include"
+    CACHE PATH "SQLite3 include directory for Android"
+  )
+  set(SQLite3_LIBRARY 
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/aarch64-linux-android/${CMAKE_SYSTEM_VERSION}/libsqlite3.so"
+    CACHE FILEPATH "SQLite3 library for Android"
+  )
 endif()
 
 if(
@@ -1274,6 +1285,8 @@ add_library(
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
+  src/effects/backends/builtin/vocalseparationeffect.cpp
+  src/effects/backends/builtin/instrumentalseparationeffect.cpp
   src/effects/backends/effectmanifest.cpp
   src/effects/backends/effectmanifestparameter.cpp
   src/effects/backends/effectsbackend.cpp
