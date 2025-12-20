@@ -15,6 +15,7 @@ struct RestServerToken {
     QString description;
     QStringList scopes;
     QDateTime createdUtc;
+    std::optional<QDateTime> lastUsedUtc;
     std::optional<QDateTime> expiresUtc;
 
     friend bool operator==(const RestServerToken& lhs, const RestServerToken& rhs) {
@@ -22,6 +23,7 @@ struct RestServerToken {
                 lhs.description == rhs.description &&
                 lhs.scopes == rhs.scopes &&
                 lhs.createdUtc == rhs.createdUtc &&
+                lhs.lastUsedUtc == rhs.lastUsedUtc &&
                 lhs.expiresUtc == rhs.expiresUtc;
     }
 };

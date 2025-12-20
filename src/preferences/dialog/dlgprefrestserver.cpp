@@ -402,6 +402,10 @@ void DlgPrefRestServer::refreshTokenTable() {
         const QString expires = token.expiresUtc.has_value()
                 ? token.expiresUtc->toString(Qt::ISODate)
                 : tr("Never");
+        const QString created = token.createdUtc.toString(Qt::ISODate);
+        const QString lastUsed = token.lastUsedUtc.has_value()
+                ? token.lastUsedUtc->toString(Qt::ISODate)
+                : tr("Never");
         const QString scopes = token.scopes.isEmpty()
                 ? tr("None")
                 : token.scopes.join(QStringLiteral(", "));
@@ -410,6 +414,8 @@ void DlgPrefRestServer::refreshTokenTable() {
         tableTokens->setItem(row, 1, new QTableWidgetItem(token.description));
         tableTokens->setItem(row, 2, new QTableWidgetItem(scopes));
         tableTokens->setItem(row, 3, new QTableWidgetItem(expires));
+        tableTokens->setItem(row, 4, new QTableWidgetItem(created));
+        tableTokens->setItem(row, 5, new QTableWidgetItem(lastUsed));
         ++row;
     }
     tableTokens->resizeColumnsToContents();
