@@ -28,6 +28,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void slotAutoGenerateCertificateChanged(bool checked);
     void slotEnableRestServerChanged(bool checked);
     void slotEnableHttpChanged(bool checked);
+    void slotCorsAllowlistChanged(const QString& text);
     void slotBrowseCertificate();
     void slotBrowseKey();
     void slotAddToken();
@@ -62,6 +63,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     std::shared_ptr<RestServerSettings> m_settings;
     QList<RestServerToken> m_tokens;
     QString m_fullToken;
+    QString m_corsAllowlistToolTip;
     bool m_isTokenVisible{false};
     int m_selectedToken{-1};
 };
