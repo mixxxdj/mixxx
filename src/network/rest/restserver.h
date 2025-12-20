@@ -70,6 +70,7 @@ class RestServer : public QObject {
         bool useHttps{false};
         bool autoGenerateCertificate{false};
         bool requireTls{false};
+        bool allowUnauthenticated{false};
         QString certificatePath;
         QString privateKeyPath;
         QList<Token> tokens;
@@ -89,6 +90,7 @@ class RestServer : public QObject {
                     lhs.useHttps == rhs.useHttps &&
                     lhs.autoGenerateCertificate == rhs.autoGenerateCertificate &&
                     lhs.requireTls == rhs.requireTls &&
+                    lhs.allowUnauthenticated == rhs.allowUnauthenticated &&
                     lhs.certificatePath == rhs.certificatePath &&
                     lhs.privateKeyPath == rhs.privateKeyPath &&
                     lhs.tokens == rhs.tokens &&

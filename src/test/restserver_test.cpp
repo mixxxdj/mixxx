@@ -39,6 +39,7 @@ RestServer::Settings baseSettings(int port) {
     settings.address = QHostAddress::LocalHost;
     settings.port = port;
     settings.portValid = port > 0 && port <= std::numeric_limits<quint16>::max();
+    settings.allowUnauthenticated = true;
     return settings;
 }
 
@@ -168,6 +169,7 @@ TEST_F(RestServerSettingsTest, DefaultsStayWithinRange) {
     const auto defaults = settings.defaults();
     EXPECT_TRUE(defaults.enableHttp);
     EXPECT_FALSE(defaults.useHttps);
+    EXPECT_FALSE(defaults.allowUnauthenticated);
     EXPECT_EQ(RestServerSettings::kDefaultPort, defaults.httpPort);
     EXPECT_EQ(RestServerSettings::kDefaultHttpsPort, defaults.httpsPort);
 }

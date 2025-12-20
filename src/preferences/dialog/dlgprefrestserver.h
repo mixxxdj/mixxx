@@ -46,6 +46,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     RestServerSettings::Values gatherValues() const;
     void updateTlsState();
     void updateAuthWarning();
+    void updateUnauthWarning();
     void updateNetworkWarning();
     void updateUrlLabels();
     void updateStatusLabels(const RestServerSettings::Status& status);
