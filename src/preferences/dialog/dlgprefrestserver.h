@@ -47,6 +47,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void updateTlsState();
     void updateAuthWarning();
     void updateNetworkWarning();
+    void updateUrlLabels();
     void updateStatusLabels(const RestServerSettings::Status& status);
     void updateTlsCertificateStatus();
     QString browseForFile(const QString& title, const QString& startDirectory) const;
