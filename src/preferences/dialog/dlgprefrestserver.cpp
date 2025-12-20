@@ -12,6 +12,7 @@
 #include <QSignalBlocker>
 #include <QSslCertificate>
 #include <QTableWidgetItem>
+#include <QTimeZone>
 #include <QUrl>
 #include <limits>
 #include <QUuid>
@@ -57,8 +58,9 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     tableTokens->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableTokens->setSelectionMode(QAbstractItemView::SingleSelection);
     tableTokens->horizontalHeader()->setStretchLastSection(true);
-    dateTimeEditTokenExpires->setMinimumDateTime(QDateTime(QDate(1970, 1, 1), QTime(0, 0), Qt::UTC));
-    dateTimeEditTokenExpires->setTimeSpec(Qt::UTC);
+    dateTimeEditTokenExpires->setMinimumDateTime(
+            QDateTime(QDate(1970, 1, 1), QTime(0, 0), QTimeZone::utc()));
+    dateTimeEditTokenExpires->setTimeZone(QTimeZone::utc());
     lineEditTokenValue->setEchoMode(QLineEdit::Password);
     pushButtonToggleToken->setText(tr("Show"));
 
