@@ -6,10 +6,13 @@
 #include <QClipboard>
 #include <QDateTime>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QHeaderView>
 #include <QIcon>
+#include <QLocale>
 #include <QSignalBlocker>
+#include <QSslCertificate>
 #include <QTableWidgetItem>
 #include <limits>
 #include <QUuid>
@@ -17,6 +20,10 @@
 
 #include "moc_dlgprefrestserver.cpp"
 #include "network/rest/restscopes.h"
+
+namespace {
+constexpr int kCertificateExpiryWarningDays = 30;
+} // namespace
 
 DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServerSettings> settings)
         : DlgPreferencePage(parent),
@@ -35,6 +42,7 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     labelNetworkWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelTlsStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
+    labelTlsCertificateIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
 
     tableTokens->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableTokens->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -60,6 +68,12 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QCheckBox::toggled,
             this,
             &DlgPrefRestServer::slotEnableRestServerChanged);
+    connect(lineEditCertPath,
+            &QLineEdit::textChanged,
+            this,
+            [this] {
+                updateTlsCertificateStatus();
+            });
     connect(pushButtonBrowseCert,
             &QPushButton::clicked,
             this,
@@ -256,6 +270,9 @@ void DlgPrefRestServer::updateTlsState() {
     pushButtonBrowseKey->setEnabled(useHttps && !autoGenerate);
     labelTlsStatus->setEnabled(useHttps);
     labelTlsStatusIcon->setEnabled(useHttps);
+    labelTlsCertificateStatus->setEnabled(useHttps);
+    labelTlsCertificateIcon->setEnabled(useHttps);
+    updateTlsCertificateStatus();
 }
 
 void DlgPrefRestServer::updateAuthWarning() {
@@ -290,8 +307,72 @@ void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& sta
     } else {
         labelTlsStatus->setText(status.tlsError);
     }
+    updateTlsCertificateStatus();
 
     updateNetworkWarning();
+}
+
+void DlgPrefRestServer::updateTlsCertificateStatus() {
+    const bool useHttps = checkBoxUseHttps->isChecked();
+    if (!useHttps) {
+        labelTlsCertificateStatus->setVisible(false);
+        labelTlsCertificateIcon->setVisible(false);
+        return;
+    }
+
+#if QT_CONFIG(ssl)
+    QString certificatePath = lineEditCertPath->text().trimmed();
+    if (certificatePath.isEmpty() && m_settings) {
+        certificatePath = m_settings->defaultCertificatePath();
+    }
+    if (certificatePath.isEmpty() || !QFileInfo::exists(certificatePath)) {
+        labelTlsCertificateStatus->setVisible(false);
+        labelTlsCertificateIcon->setVisible(false);
+        return;
+    }
+
+    const QList<QSslCertificate> certificates =
+            QSslCertificate::fromPath(certificatePath, QSsl::Pem);
+    if (certificates.isEmpty()) {
+        labelTlsCertificateStatus->setVisible(false);
+        labelTlsCertificateIcon->setVisible(false);
+        return;
+    }
+
+    const QSslCertificate certificate = certificates.first();
+    if (certificate.isNull()) {
+        labelTlsCertificateStatus->setVisible(false);
+        labelTlsCertificateIcon->setVisible(false);
+        return;
+    }
+
+    QString issuer = certificate.issuerInfo(QSslCertificate::CommonName).join(QStringLiteral(", "));
+    if (issuer.isEmpty()) {
+        issuer = certificate.issuerInfo(QSslCertificate::Organization).join(QStringLiteral(", "));
+    }
+    if (issuer.isEmpty()) {
+        issuer = tr("Unknown issuer");
+    }
+
+    const QDateTime expiryUtc = certificate.expiryDate();
+    const QString expiryText = expiryUtc.isValid()
+            ? QLocale().toString(expiryUtc.toLocalTime(), QLocale::ShortFormat)
+            : tr("Unknown");
+
+    labelTlsCertificateStatus->setText(
+            tr("Issuer: %1\nExpires: %2").arg(issuer, expiryText));
+    labelTlsCertificateStatus->setVisible(true);
+
+    bool showWarning = false;
+    if (expiryUtc.isValid()) {
+        const QDateTime now = QDateTime::currentDateTimeUtc();
+        showWarning = expiryUtc <= now || expiryUtc <= now.addDays(kCertificateExpiryWarningDays);
+    }
+    labelTlsCertificateIcon->setVisible(showWarning);
+#else
+    labelTlsCertificateStatus->setVisible(false);
+    labelTlsCertificateIcon->setVisible(false);
+#endif
 }
 
 QString DlgPrefRestServer::browseForFile(const QString& title, const QString& startDirectory) const {

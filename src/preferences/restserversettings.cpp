@@ -5,6 +5,7 @@
 #include <QHostAddress>
 #include <QtGlobal>
 #include <QDateTime>
+#include <QDir>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -287,6 +288,11 @@ void RestServerSettings::setStatus(const Status& status) {
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStatusCertificateGenerated), status.certificateGenerated);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStatusLastError), status.lastError);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStatusTlsError), status.tlsError);
+}
+
+QString RestServerSettings::defaultCertificatePath() const {
+    return QDir(m_pConfig->getSettingsPath())
+            .filePath(QStringLiteral("rest/rest_certificate.pem"));
 }
 
 #endif // MIXXX_HAS_HTTP_SERVER
