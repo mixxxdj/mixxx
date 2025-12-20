@@ -55,6 +55,7 @@ CmdlineArgs::CmdlineArgs()
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
+          m_startAutoRecord(false),
 #ifdef MIXXX_USE_QML
           m_qml(false),
 #endif
@@ -186,6 +187,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                             : QString(),
             QStringLiteral("locale"));
     parser.addOption(locale);
+
+    const QCommandLineOption startAutoRecord(QStringLiteral("start-autorecord"),
+            forUserFeedback ? QCoreApplication::translate("CmdLineArgs",
+                                      "Starts auto recording when Mixxx is launched.")
+                            : QString());
+    parser.addOption(startAutoRecord);
 
     const QCommandLineOption startAutoDJ(QStringLiteral("start-autodj"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -436,6 +443,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
 
     if (parser.isSet(locale)) {
         m_locale = parser.value(locale);
+    }
+
+    if (parser.isSet(startAutoRecord)) {
+        m_startAutoRecord = true;
     }
 
     if (parser.isSet(startAutoDJ)) {
