@@ -16,6 +16,7 @@
 #include <QUuid>
 #include <QUrl>
 #include <QUrlQuery>
+#include <type_traits>
 #include <utility>
 
 #include "moc_restserver.cpp"
@@ -95,6 +96,19 @@ QByteArray formatSseEvent(const QJsonObject& payload) {
     event.append(body);
     event.append("\n\n");
     return event;
+}
+
+template<typename Responder, typename Payload>
+bool writeResponder(Responder* responder, const Payload& payload) {
+    if (!responder) {
+        return false;
+    }
+    if constexpr (std::is_same_v<decltype(responder->write(payload)), bool>) {
+        return responder->write(payload);
+    } else {
+        responder->write(payload);
+        return true;
+    }
 }
 } // namespace
 
@@ -1088,7 +1102,9 @@ void RestServer::addStatusStreamClient(
     if (!allowedOrigin.isEmpty()) {
         response.setHeader(QByteArrayLiteral(kCorsAllowOriginHeader), allowedOrigin.toUtf8());
     }
-    responder.write(response);
+    if (!writeResponder(&responder, response)) {
+        return;
+    }
 
     const quint64 clientId = ++m_streamClientCounter;
     QJsonObject payload = fetchStatusPayload();
@@ -1098,17 +1114,17 @@ void RestServer::addStatusStreamClient(
     if (!result.second) {
         return;
     }
-    sendStatusStreamEvent(delta, &result.first->second.responder);
+    if (!sendStatusStreamEvent(delta, &result.first->second.responder)) {
+        m_streamClients.erase(clientId);
+    }
 
 }
 
-void RestServer::sendStatusStreamEvent(
+bool RestServer::sendStatusStreamEvent(
         const QJsonObject& payload,
         QHttpServerResponder* responder) const {
-    if (!responder) {
-        return;
-    }
-    responder->write(formatSseEvent(payload));
+    const QByteArray event = formatSseEvent(payload);
+    return writeResponder(responder, event);
 }
 
 QJsonObject RestServer::fetchStatusPayload() const {
@@ -1153,11 +1169,15 @@ void RestServer::pushStatusStreamUpdate() {
     }
 
     const QJsonObject payload = fetchStatusPayload();
-    for (auto& entry : m_streamClients) {
-        StreamClient& client = entry.second;
+    for (auto it = m_streamClients.begin(); it != m_streamClients.end();) {
+        StreamClient& client = it->second;
         const QJsonObject delta = statusDelta(client.lastPayload, payload);
-        sendStatusStreamEvent(delta, &client.responder);
+        if (!sendStatusStreamEvent(delta, &client.responder)) {
+            it = m_streamClients.erase(it);
+            continue;
+        }
         client.lastPayload = payload;
+        ++it;
     }
 }
 
