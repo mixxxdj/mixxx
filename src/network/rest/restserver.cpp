@@ -376,9 +376,8 @@ RestServer::AuthorizationResult RestServer::authorize(
         const QStringList& requiredScopes) const {
     AuthorizationResult result;
 
-    const bool authDisabled = m_settings.tokens.isEmpty();
-    if (authDisabled) {
-        result.authorized = true;
+    if (m_settings.tokens.isEmpty()) {
+        result.authorized = m_settings.allowUnauthenticated;
         return result;
     }
 

@@ -71,6 +71,7 @@ RestServerController::ListenerConfiguration RestServerController::loadSettings()
         settings.useHttps = useHttps;
         settings.autoGenerateCertificate = useHttps && values.autoGenerateCert;
         settings.requireTls = values.requireTls;
+        settings.allowUnauthenticated = values.allowUnauthenticated;
         settings.certificatePath = values.certificatePath;
         settings.privateKeyPath = values.privateKeyPath;
         settings.maxRequestBytes = values.maxRequestBytes;

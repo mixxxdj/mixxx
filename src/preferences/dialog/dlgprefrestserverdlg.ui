@@ -162,6 +162,43 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayoutAuth">
      <item>
+      <widget class="QCheckBox" name="checkBoxAllowUnauthenticated">
+       <property name="toolTip">
+        <string>Allow unauthenticated requests when no access tokens are configured.</string>
+       </property>
+       <property name="text">
+        <string>Allow unauthenticated requests when no access tokens are configured</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutUnauthWarning">
+       <item>
+        <widget class="QLabel" name="labelUnauthWarningIcon">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelUnauthWarning">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Unauthenticated access lets anyone on the network control Mixxx. Enable only if you understand the risks.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
        <layout class="QHBoxLayout" name="horizontalLayoutTokens">
         <item>
          <widget class="QTableWidget" name="tableTokens">

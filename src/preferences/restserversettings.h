@@ -41,6 +41,7 @@ class RestServerSettings {
         QString certificatePath;
         QString privateKeyPath;
         QList<RestServerToken> tokens;
+        bool allowUnauthenticated{false};
         bool requireTls{false};
         int maxRequestBytes{0};
         QString corsAllowlist;

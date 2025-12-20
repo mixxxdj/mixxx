@@ -26,6 +26,7 @@ const QString kConfigAutoGenerate = QStringLiteral("auto_generate_certificate");
 const QString kConfigCertificatePath = QStringLiteral("tls_certificate_path");
 const QString kConfigPrivateKeyPath = QStringLiteral("tls_private_key_path");
 const QString kConfigTokens = QStringLiteral("tokens");
+const QString kConfigAllowUnauthenticated = QStringLiteral("allow_unauthenticated");
 const QString kConfigRequireTls = QStringLiteral("require_tls");
 const QString kConfigMaxRequestBytes = QStringLiteral("max_request_bytes");
 const QString kConfigCorsAllowlist = QStringLiteral("cors_allowlist");
@@ -174,6 +175,9 @@ RestServerSettings::Values RestServerSettings::get() const {
         }
     }
     values.requireTls = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigRequireTls), false);
+    values.allowUnauthenticated = m_pConfig->getValue<bool>(
+            ConfigKey(kConfigGroup, kConfigAllowUnauthenticated),
+            false);
     values.maxRequestBytes = m_pConfig->getValue<int>(
             ConfigKey(kConfigGroup, kConfigMaxRequestBytes),
             kDefaultMaxRequestBytes);
@@ -235,6 +239,7 @@ void RestServerSettings::set(const Values& values) {
     }
     const QJsonDocument tokensDoc(tokenArray);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigTokens), QString::fromUtf8(tokensDoc.toJson(QJsonDocument::Compact)));
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigAllowUnauthenticated), sanitized.allowUnauthenticated);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigRequireTls), sanitized.requireTls);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigMaxRequestBytes), sanitized.maxRequestBytes);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigCorsAllowlist), sanitized.corsAllowlist);
@@ -257,6 +262,7 @@ RestServerSettings::Values RestServerSettings::defaults() const {
     values.certificatePath = QString();
     values.privateKeyPath = QString();
     values.tokens.clear();
+    values.allowUnauthenticated = false;
     values.requireTls = false;
     values.maxRequestBytes = kDefaultMaxRequestBytes;
     values.corsAllowlist = QString::fromLatin1(kDefaultCorsAllowlist);

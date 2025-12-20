@@ -40,6 +40,7 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     spinBoxMaxRequestSize->setMaximum(std::numeric_limits<int>::max() / 1024);
 
     labelAuthWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
+    labelUnauthWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelNetworkWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelTlsStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
@@ -69,6 +70,12 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QCheckBox::toggled,
             this,
             &DlgPrefRestServer::slotEnableRestServerChanged);
+    connect(checkBoxAllowUnauthenticated,
+            &QCheckBox::toggled,
+            this,
+            [this] {
+                updateUnauthWarning();
+            });
     connect(lineEditCorsAllowlist,
             &QLineEdit::textChanged,
             this,
@@ -228,6 +235,7 @@ void DlgPrefRestServer::slotEnableRestServerChanged(bool checked) {
     groupBoxAuthentication->setEnabled(checked);
     groupBoxTls->setEnabled(checked);
     updateAuthWarning();
+    updateUnauthWarning();
     updateNetworkWarning();
     updateUrlLabels();
 }
@@ -309,10 +317,12 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     lineEditCertPath->setText(values.certificatePath);
     lineEditKeyPath->setText(values.privateKeyPath);
     checkBoxRequireTls->setChecked(values.requireTls);
+    checkBoxAllowUnauthenticated->setChecked(values.allowUnauthenticated);
 
     slotEnableHttpChanged(values.enableHttp);
     updateTlsState();
     updateAuthWarning();
+    updateUnauthWarning();
     updateNetworkWarning();
     updateUrlLabels();
 }
@@ -332,6 +342,7 @@ RestServerSettings::Values DlgPrefRestServer::gatherValues() const {
     values.certificatePath = lineEditCertPath->text();
     values.privateKeyPath = lineEditKeyPath->text();
     values.requireTls = checkBoxRequireTls->isChecked();
+    values.allowUnauthenticated = checkBoxAllowUnauthenticated->isChecked();
     return values;
 }
 
@@ -367,6 +378,14 @@ void DlgPrefRestServer::updateAuthWarning() {
             !checkBoxUseHttps->isChecked();
     labelAuthWarningIcon->setVisible(showWarning);
     labelAuthWarning->setVisible(showWarning);
+}
+
+void DlgPrefRestServer::updateUnauthWarning() {
+    const bool showWarning = checkBoxEnableRestServer->isChecked() &&
+            checkBoxAllowUnauthenticated->isChecked() &&
+            m_tokens.isEmpty();
+    labelUnauthWarningIcon->setVisible(showWarning);
+    labelUnauthWarning->setVisible(showWarning);
 }
 
 void DlgPrefRestServer::updateNetworkWarning() {
@@ -514,6 +533,7 @@ void DlgPrefRestServer::slotAddToken() {
     refreshTokenTable();
     updateSelection(m_tokens.size() - 1);
     updateAuthWarning();
+    updateUnauthWarning();
 }
 
 void DlgPrefRestServer::slotRemoveToken() {
@@ -524,6 +544,7 @@ void DlgPrefRestServer::slotRemoveToken() {
     refreshTokenTable();
     updateSelection(qMin(m_selectedToken, m_tokens.size() - 1));
     updateAuthWarning();
+    updateUnauthWarning();
 }
 
 void DlgPrefRestServer::slotRegenerateToken() {
