@@ -1412,9 +1412,16 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 
 std::unique_ptr<BaseSqlTableModel>
 RekordboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
+    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QVariantList>()) {
+        return {};
+    }
+    QVariantList playlists = data.toList();
+    VERIFY_OR_DEBUG_ASSERT(playlists.size() > 0) {
+        return {};
+    }
     auto pModel = std::make_unique<RekordboxPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    pModel->setPlaylist(data.toList()[0].toString());
+    pModel->setPlaylist(playlists.at(0).toString());
     return pModel;
 }
 

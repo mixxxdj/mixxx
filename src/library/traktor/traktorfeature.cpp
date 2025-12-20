@@ -138,6 +138,9 @@ TraktorFeature::~TraktorFeature() {
 
 std::unique_ptr<BaseSqlTableModel>
 TraktorFeature::createPlaylistModelForPlaylist(const QVariant& data) {
+    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QString>()) {
+        return {};
+    }
     auto pModel = std::make_unique<TraktorPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
     pModel->setPlaylist(data.toString());
