@@ -50,6 +50,8 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void updateUrlLabels();
     void updateStatusLabels(const RestServerSettings::Status& status);
     void updateTlsCertificateStatus();
+    QString makeHttpUrl() const;
+    QString makeHttpsUrl() const;
     QString browseForFile(const QString& title, const QString& startDirectory) const;
     QString makeToken() const;
     void refreshTokenTable();
