@@ -36,6 +36,8 @@ namespace mixxx::network::rest {
 namespace {
 [[maybe_unused]] const Logger kLogger("mixxx::network::rest::RestApiGateway");
 constexpr qint64 kIdempotencyCacheTtlMs = 10 * 1000;
+constexpr int kMaxIdempotencyCacheEntries = 512;
+constexpr int kMaxIdempotencyKeyLength = 128;
 } // namespace
 
 RestApiGateway::RestApiGateway(
@@ -97,6 +99,12 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
     if (idempotencyKey.isEmpty()) {
         return handler();
     }
+    if (idempotencyKey.size() > kMaxIdempotencyKeyLength) {
+        return errorResponse(
+                QHttpServerResponse::StatusCode::BadRequest,
+                tr("Idempotency-Key exceeds maximum length of %1 characters")
+                        .arg(kMaxIdempotencyKeyLength));
+    }
 
     const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
     const QString cacheKey = QStringLiteral("%1\n%2\n%3")
@@ -106,6 +114,13 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
         for (auto it = m_idempotencyCache.begin(); it != m_idempotencyCache.end();) {
             if (it->createdUtc.msecsTo(nowUtc) > kIdempotencyCacheTtlMs) {
                 it = m_idempotencyCache.erase(it);
+            } else {
+                ++it;
+            }
+        }
+        for (auto it = m_idempotencyOrder.begin(); it != m_idempotencyOrder.end();) {
+            if (!m_idempotencyCache.contains(*it)) {
+                it = m_idempotencyOrder.erase(it);
             } else {
                 ++it;
             }
@@ -124,6 +139,12 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
             return cached->response;
         }
         m_idempotencyCache.insert(cacheKey, IdempotencyEntry{nowUtc, response});
+        m_idempotencyOrder.append(cacheKey);
+        while (m_idempotencyCache.size() > kMaxIdempotencyCacheEntries &&
+                !m_idempotencyOrder.isEmpty()) {
+            const QString oldestKey = m_idempotencyOrder.takeFirst();
+            m_idempotencyCache.remove(oldestKey);
+        }
     }
     return response;
 }
