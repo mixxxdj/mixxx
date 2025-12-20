@@ -44,6 +44,16 @@ constexpr auto kNoCacheValue = "no-cache";
 constexpr auto kKeepAliveValue = "keep-alive";
 constexpr auto kAccelBufferingHeader = "X-Accel-Buffering";
 constexpr auto kAccelBufferingDisabled = "no";
+constexpr auto kStrictTransportSecurityHeader = "Strict-Transport-Security";
+constexpr auto kStrictTransportSecurityValue = "max-age=15552000; includeSubDomains";
+
+bool requestIsSecure(const QHttpServerRequest& request) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    return request.isSecure();
+#else
+    return request.url().scheme().compare(QStringLiteral("https"), Qt::CaseInsensitive) == 0;
+#endif
+}
 
 QString methodToString(QHttpServerRequest::Method method) {
     switch (method) {
@@ -187,6 +197,10 @@ QHttpServerResponse RestServer::jsonResponse(
             "application/json");
     if (!requestId.isEmpty()) {
         response.setHeader(QByteArrayLiteral(kRequestIdHeader), requestId.toUtf8());
+    }
+    if (m_tlsActive && requestIsSecure(request)) {
+        response.setHeader(QByteArrayLiteral(kStrictTransportSecurityHeader),
+                QByteArrayLiteral(kStrictTransportSecurityValue));
     }
     addCorsHeaders(&response, request, false);
     return response;
@@ -529,13 +543,7 @@ bool RestServer::controlRouteRequiresTls(const QHttpServerRequest& request) cons
         return false;
     }
 
-    bool isSecure = false;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-    isSecure = request.isSecure();
-#else
-    isSecure = request.url().scheme().compare(QStringLiteral("https"), Qt::CaseInsensitive) == 0;
-#endif
-    return !isSecure;
+    return !requestIsSecure(request);
 }
 
 QString RestServer::requestDescription(const QHttpServerRequest& request) const {
@@ -1072,6 +1080,10 @@ void RestServer::addStatusStreamClient(
             QByteArrayLiteral(kKeepAliveValue));
     response.setHeader(QByteArrayLiteral(kAccelBufferingHeader),
             QByteArrayLiteral(kAccelBufferingDisabled));
+    if (m_tlsActive && requestIsSecure(request)) {
+        response.setHeader(QByteArrayLiteral(kStrictTransportSecurityHeader),
+                QByteArrayLiteral(kStrictTransportSecurityValue));
+    }
     const QString allowedOrigin = allowedCorsOrigin(request);
     if (!allowedOrigin.isEmpty()) {
         response.setHeader(QByteArrayLiteral(kCorsAllowOriginHeader), allowedOrigin.toUtf8());
