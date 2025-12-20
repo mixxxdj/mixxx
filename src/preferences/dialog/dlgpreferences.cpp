@@ -208,7 +208,7 @@ DlgPreferences::DlgPreferences(
                                   std::make_shared<RestServerSettings>(m_pConfig)),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("REST API"),
-            "ic_custom.svg");
+            "ic_preferences_rest_api.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefWebServer(
