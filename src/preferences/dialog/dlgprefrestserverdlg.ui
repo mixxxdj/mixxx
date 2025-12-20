@@ -61,11 +61,22 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLabel" name="labelHttpUrlValue">
-        <property name="text">
-         <string>Disabled</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayoutHttpUrl">
+        <item>
+         <widget class="QLabel" name="labelHttpUrlValue">
+          <property name="text">
+           <string>Disabled</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonCopyHttpUrl">
+          <property name="text">
+           <string>Copy</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="labelCorsAllowlist">
@@ -459,11 +470,22 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLabel" name="labelHttpsUrlValue">
-          <property name="text">
-           <string>Disabled</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayoutHttpsUrl">
+          <item>
+           <widget class="QLabel" name="labelHttpsUrlValue">
+            <property name="text">
+             <string>Disabled</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonCopyHttpsUrl">
+            <property name="text">
+             <string>Copy</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="labelCertPath">

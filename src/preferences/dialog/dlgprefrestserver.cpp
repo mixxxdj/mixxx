@@ -125,6 +125,18 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QPushButton::clicked,
             this,
             &DlgPrefRestServer::slotToggleTokenVisibility);
+    connect(pushButtonCopyHttpUrl,
+            &QPushButton::clicked,
+            this,
+            [this] {
+                QGuiApplication::clipboard()->setText(makeHttpUrl());
+            });
+    connect(pushButtonCopyHttpsUrl,
+            &QPushButton::clicked,
+            this,
+            [this] {
+                QGuiApplication::clipboard()->setText(makeHttpsUrl());
+            });
     connect(tableTokens->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -369,22 +381,38 @@ void DlgPrefRestServer::updateUrlLabels() {
     const bool restEnabled = checkBoxEnableRestServer->isChecked();
     const bool httpEnabled = restEnabled && checkBoxEnableHttp->isChecked();
     const bool httpsEnabled = restEnabled && checkBoxUseHttps->isChecked();
-    const QString host = lineEditHost->text().trimmed();
-    const QString hostDisplay = host.isEmpty() ? QStringLiteral("localhost") : host;
 
     if (httpEnabled) {
-        labelHttpUrlValue->setText(
-                tr("http://%1:%2").arg(hostDisplay).arg(spinBoxHttpPort->value()));
+        labelHttpUrlValue->setText(makeHttpUrl());
+        pushButtonCopyHttpUrl->setEnabled(true);
+        pushButtonCopyHttpUrl->setToolTip(QString());
     } else {
         labelHttpUrlValue->setText(tr("Disabled"));
+        pushButtonCopyHttpUrl->setEnabled(false);
+        pushButtonCopyHttpUrl->setToolTip(tr("HTTP listener is disabled, so there is no URL to copy."));
     }
 
     if (httpsEnabled) {
-        labelHttpsUrlValue->setText(
-                tr("https://%1:%2").arg(hostDisplay).arg(spinBoxHttpsPort->value()));
+        labelHttpsUrlValue->setText(makeHttpsUrl());
+        pushButtonCopyHttpsUrl->setEnabled(true);
+        pushButtonCopyHttpsUrl->setToolTip(QString());
     } else {
         labelHttpsUrlValue->setText(tr("Disabled"));
+        pushButtonCopyHttpsUrl->setEnabled(false);
+        pushButtonCopyHttpsUrl->setToolTip(tr("HTTPS listener is disabled, so there is no URL to copy."));
     }
+}
+
+QString DlgPrefRestServer::makeHttpUrl() const {
+    const QString host = lineEditHost->text().trimmed();
+    const QString hostDisplay = host.isEmpty() ? QStringLiteral("localhost") : host;
+    return tr("http://%1:%2").arg(hostDisplay).arg(spinBoxHttpPort->value());
+}
+
+QString DlgPrefRestServer::makeHttpsUrl() const {
+    const QString host = lineEditHost->text().trimmed();
+    const QString hostDisplay = host.isEmpty() ? QStringLiteral("localhost") : host;
+    return tr("https://%1:%2").arg(hostDisplay).arg(spinBoxHttpsPort->value());
 }
 
 void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& status) {
