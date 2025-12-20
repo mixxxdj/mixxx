@@ -35,9 +35,13 @@ class allshader::WaveformRenderBeat final
     void setColor(const QColor& color) {
         m_color = color;
     }
+    void setDownbeatColor(const QColor& color) {
+        m_downbeatColor = color;
+    }
 
   private:
     QColor m_color;
+    QColor m_downbeatColor;
     bool m_isSlipRenderer;
 
     bool preprocessInner();
