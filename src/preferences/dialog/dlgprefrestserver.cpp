@@ -73,6 +73,24 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QLineEdit::textChanged,
             this,
             &DlgPrefRestServer::slotCorsAllowlistChanged);
+    connect(lineEditHost,
+            &QLineEdit::textChanged,
+            this,
+            [this] {
+                updateUrlLabels();
+            });
+    connect(spinBoxHttpPort,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            [this] {
+                updateUrlLabels();
+            });
+    connect(spinBoxHttpsPort,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            [this] {
+                updateUrlLabels();
+            });
     connect(lineEditCertPath,
             &QLineEdit::textChanged,
             this,
@@ -179,12 +197,14 @@ void DlgPrefRestServer::slotUseHttpsChanged(bool /*checked*/) {
     updateTlsState();
     updateAuthWarning();
     updateNetworkWarning();
+    updateUrlLabels();
 }
 
 void DlgPrefRestServer::slotEnableHttpChanged(bool checked) {
     spinBoxHttpPort->setEnabled(checked);
     updateAuthWarning();
     updateNetworkWarning();
+    updateUrlLabels();
 }
 
 void DlgPrefRestServer::slotAutoGenerateCertificateChanged(bool /*checked*/) {
@@ -197,6 +217,7 @@ void DlgPrefRestServer::slotEnableRestServerChanged(bool checked) {
     groupBoxTls->setEnabled(checked);
     updateAuthWarning();
     updateNetworkWarning();
+    updateUrlLabels();
 }
 
 void DlgPrefRestServer::slotCorsAllowlistChanged(const QString& text) {
@@ -281,6 +302,7 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     updateTlsState();
     updateAuthWarning();
     updateNetworkWarning();
+    updateUrlLabels();
 }
 
 RestServerSettings::Values DlgPrefRestServer::gatherValues() const {
@@ -341,6 +363,28 @@ void DlgPrefRestServer::updateNetworkWarning() {
             !checkBoxUseHttps->isChecked();
     labelNetworkWarningIcon->setVisible(showWarning);
     labelNetworkWarning->setVisible(showWarning);
+}
+
+void DlgPrefRestServer::updateUrlLabels() {
+    const bool restEnabled = checkBoxEnableRestServer->isChecked();
+    const bool httpEnabled = restEnabled && checkBoxEnableHttp->isChecked();
+    const bool httpsEnabled = restEnabled && checkBoxUseHttps->isChecked();
+    const QString host = lineEditHost->text().trimmed();
+    const QString hostDisplay = host.isEmpty() ? QStringLiteral("localhost") : host;
+
+    if (httpEnabled) {
+        labelHttpUrlValue->setText(
+                tr("http://%1:%2").arg(hostDisplay).arg(spinBoxHttpPort->value()));
+    } else {
+        labelHttpUrlValue->setText(tr("Disabled"));
+    }
+
+    if (httpsEnabled) {
+        labelHttpsUrlValue->setText(
+                tr("https://%1:%2").arg(hostDisplay).arg(spinBoxHttpsPort->value()));
+    } else {
+        labelHttpsUrlValue->setText(tr("Disabled"));
+    }
 }
 
 void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& status) {
