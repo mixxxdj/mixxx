@@ -115,6 +115,7 @@ class RestApiGateway : public RestApiProvider {
     int m_activePlaylistId{-1};
     QElapsedTimer m_uptime;
     mutable QHash<QString, IdempotencyEntry> m_idempotencyCache;
+    mutable QList<QString> m_idempotencyOrder;
     mutable QMutex m_idempotencyMutex;
 };
 
