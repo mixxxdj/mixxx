@@ -4,9 +4,22 @@
  <widget class="QWidget" name="DlgPrefRestServerDlg">
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QCheckBox" name="checkBoxEnableRestServer">
+   <widget class="QCheckBox" name="checkBoxEnableRestServer">
      <property name="text">
       <string>Enable REST API</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelRestApiUnavailable">
+     <property name="visible">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>REST API support is unavailable in this build. Install Qt 6.4+ with the Qt HttpServer module to enable it.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

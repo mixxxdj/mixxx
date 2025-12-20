@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef MIXXX_HAS_HTTP_SERVER
-
 #include <memory>
 #include <QDateTime>
 #include <QList>
@@ -74,5 +72,3 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     bool m_isTokenVisible{false};
     int m_selectedToken{-1};
 };
-
-#endif // MIXXX_HAS_HTTP_SERVER

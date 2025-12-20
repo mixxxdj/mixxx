@@ -1495,6 +1495,7 @@ add_library(
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
+  src/preferences/restserversettings.cpp
   src/preferences/webserversettings.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
@@ -1519,6 +1520,8 @@ add_library(
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
+  src/preferences/dialog/dlgprefrestserver.cpp
+  src/preferences/dialog/dlgprefrestserverdlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
   src/preferences/dialog/dlgprefreplaygaindlg.ui
   src/preferences/dialog/dlgprefsound.cpp
@@ -3731,9 +3734,6 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
         src/network/rest/restserver.cpp
         src/network/rest/restservercontroller.cpp
         src/network/rest/restservervalidator.cpp
-        src/preferences/restserversettings.cpp
-        src/preferences/dialog/dlgprefrestserver.cpp
-        src/preferences/dialog/dlgprefrestserverdlg.ui
     )
   else()
     message(STATUS "Qt HttpServer module not found; REST API server disabled")

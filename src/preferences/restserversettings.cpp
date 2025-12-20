@@ -1,7 +1,5 @@
 #include "preferences/restserversettings.h"
 
-#ifdef MIXXX_HAS_HTTP_SERVER
-
 #include <QHostAddress>
 #include <QtGlobal>
 #include <QDateTime>
@@ -300,5 +298,3 @@ QString RestServerSettings::defaultCertificatePath() const {
     return QDir(m_pConfig->getSettingsPath())
             .filePath(QStringLiteral("rest/rest_certificate.pem"));
 }
-
-#endif // MIXXX_HAS_HTTP_SERVER
