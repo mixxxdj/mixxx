@@ -331,7 +331,7 @@
 * Fix: import proper QtQml.Models module instead of qmllabs [#14675](https://github.com/mixxxdj/mixxx/pull/14675)
 * qmlwaveform: Fix moc in Qt 6.9.0 [#14649](https://github.com/mixxxdj/mixxx/pull/14649)
 
-## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (unreleased)
+## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (2025-12-14)
 
 ### Controller Mappings
 
@@ -387,8 +387,15 @@
   [#15597](https://github.com/mixxxdj/mixxx/pull/15597)
   [#14873](https://github.com/mixxxdj/mixxx/issues/14873)
   [#15693](https://github.com/mixxxdj/mixxx/pull/15693)
-* Traktor feature: fixes to Traktor collection importer
+* Traktor feature: fixes to Traktor and Rekordbox collection importer
   [#15645](https://github.com/mixxxdj/mixxx/pull/15645)
+  [#15671](https://github.com/mixxxdj/mixxx/pull/15671)
+* Fix possible crash and other issues with Rekordbox USB
+  [#15745](https://github.com/mixxxdj/mixxx/pull/15745)
+  [#13624](https://github.com/mixxxdj/mixxx/issues/13624)
+  [#13309](https://github.com/mixxxdj/mixxx/issues/13309)
+  [#10672](https://github.com/mixxxdj/mixxx/issues/10672)
+  [#11373](https://github.com/mixxxdj/mixxx/issues/11373)
 
 ### Preferences
 
