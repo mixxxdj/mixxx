@@ -3,8 +3,10 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <QAbstractItemView>
+#include <QClipboard>
 #include <QDateTime>
 #include <QFileDialog>
+#include <QGuiApplication>
 #include <QHeaderView>
 #include <QIcon>
 #include <QSignalBlocker>
@@ -38,6 +40,8 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     tableTokens->horizontalHeader()->setStretchLastSection(true);
     dateTimeEditTokenExpires->setMinimumDateTime(QDateTime(QDate(1970, 1, 1), QTime(0, 0), Qt::UTC));
     dateTimeEditTokenExpires->setTimeSpec(Qt::UTC);
+    lineEditTokenValue->setEchoMode(QLineEdit::Password);
+    pushButtonToggleToken->setText(tr("Show"));
 
     connect(checkBoxEnableHttp,
             &QCheckBox::toggled,
@@ -75,6 +79,14 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QPushButton::clicked,
             this,
             &DlgPrefRestServer::slotRegenerateToken);
+    connect(pushButtonCopyToken,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefRestServer::slotCopyToken);
+    connect(pushButtonToggleToken,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefRestServer::slotToggleTokenVisibility);
     connect(tableTokens->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -343,6 +355,21 @@ void DlgPrefRestServer::slotTokenExpiresChanged(const QDateTime& dateTime) {
     refreshTokenTable();
 }
 
+void DlgPrefRestServer::slotCopyToken() {
+    if (m_fullToken.isEmpty()) {
+        return;
+    }
+    QGuiApplication::clipboard()->setText(m_fullToken);
+}
+
+void DlgPrefRestServer::slotToggleTokenVisibility() {
+    if (m_fullToken.isEmpty()) {
+        return;
+    }
+    m_isTokenVisible = !m_isTokenVisible;
+    updateTokenVisibility();
+}
+
 QString DlgPrefRestServer::makeToken() const {
     return QUuid::createUuid().toString(QUuid::WithoutBraces).remove('-');
 }
@@ -390,16 +417,23 @@ void DlgPrefRestServer::syncEditorsFromSelection() {
     dateTimeEditTokenExpires->setEnabled(hasToken);
     pushButtonRemoveToken->setEnabled(hasToken);
     pushButtonRegenerateToken->setEnabled(hasToken);
+    pushButtonCopyToken->setEnabled(hasToken);
+    pushButtonToggleToken->setEnabled(hasToken);
 
     if (!hasToken) {
+        m_fullToken.clear();
+        m_isTokenVisible = false;
         lineEditTokenValue->clear();
         lineEditTokenDescription->clear();
         updateScopeEditors({});
         dateTimeEditTokenExpires->setDateTime(dateTimeEditTokenExpires->minimumDateTime());
+        updateTokenVisibility();
         return;
     }
 
-    lineEditTokenValue->setText(token->value);
+    m_fullToken = token->value;
+    m_isTokenVisible = false;
+    lineEditTokenValue->setText(m_fullToken);
     lineEditTokenDescription->setText(token->description);
     updateScopeEditors(token->scopes);
     if (token->expiresUtc.has_value()) {
@@ -407,6 +441,12 @@ void DlgPrefRestServer::syncEditorsFromSelection() {
     } else {
         dateTimeEditTokenExpires->setDateTime(dateTimeEditTokenExpires->minimumDateTime());
     }
+    updateTokenVisibility();
+}
+
+void DlgPrefRestServer::updateTokenVisibility() {
+    lineEditTokenValue->setEchoMode(m_isTokenVisible ? QLineEdit::Normal : QLineEdit::Password);
+    pushButtonToggleToken->setText(m_isTokenVisible ? tr("Hide") : tr("Show"));
 }
 
 QStringList DlgPrefRestServer::selectedScopes() const {
