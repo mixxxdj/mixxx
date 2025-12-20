@@ -491,7 +491,9 @@ QString DlgPrefRestServer::makeHttpsUrl() const {
 
 QString DlgPrefRestServer::makeLoopbackCorsAllowlist(bool includeHttp, bool includeHttps) const {
     QStringList allowlist;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     allowlist.reserve(6);
+#endif
     if (includeHttp) {
         const int port = spinBoxHttpPort->value();
         allowlist << QStringLiteral("http://localhost:%1").arg(port)
