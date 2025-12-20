@@ -32,6 +32,7 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     spinBoxMaxRequestSize->setMaximum(std::numeric_limits<int>::max() / 1024);
 
     labelAuthWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
+    labelNetworkWarningIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
     labelTlsStatusIcon->setPixmap(QIcon(kWarningIconPath).pixmap(20, 20));
 
@@ -156,11 +157,13 @@ void DlgPrefRestServer::slotResetToDefaults() {
 void DlgPrefRestServer::slotUseHttpsChanged(bool /*checked*/) {
     updateTlsState();
     updateAuthWarning();
+    updateNetworkWarning();
 }
 
 void DlgPrefRestServer::slotEnableHttpChanged(bool checked) {
     spinBoxHttpPort->setEnabled(checked);
     updateAuthWarning();
+    updateNetworkWarning();
 }
 
 void DlgPrefRestServer::slotAutoGenerateCertificateChanged(bool /*checked*/) {
@@ -172,6 +175,7 @@ void DlgPrefRestServer::slotEnableRestServerChanged(bool checked) {
     groupBoxAuthentication->setEnabled(checked);
     groupBoxTls->setEnabled(checked);
     updateAuthWarning();
+    updateNetworkWarning();
 }
 
 void DlgPrefRestServer::slotBrowseCertificate() {
@@ -212,6 +216,7 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     slotEnableHttpChanged(values.enableHttp);
     updateTlsState();
     updateAuthWarning();
+    updateNetworkWarning();
 }
 
 RestServerSettings::Values DlgPrefRestServer::gatherValues() const {
@@ -258,6 +263,14 @@ void DlgPrefRestServer::updateAuthWarning() {
     labelAuthWarning->setVisible(showWarning);
 }
 
+void DlgPrefRestServer::updateNetworkWarning() {
+    const bool showWarning = checkBoxEnableRestServer->isChecked() &&
+            !checkBoxEnableHttp->isChecked() &&
+            !checkBoxUseHttps->isChecked();
+    labelNetworkWarningIcon->setVisible(showWarning);
+    labelNetworkWarning->setVisible(showWarning);
+}
+
 void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& status) {
     const bool showStatus = !status.lastError.isEmpty();
     labelStatusIcon->setVisible(showStatus);
@@ -272,6 +285,8 @@ void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& sta
     } else {
         labelTlsStatus->setText(status.tlsError);
     }
+
+    updateNetworkWarning();
 }
 
 QString DlgPrefRestServer::browseForFile(const QString& title, const QString& startDirectory) const {

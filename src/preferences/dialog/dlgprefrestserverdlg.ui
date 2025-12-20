@@ -87,6 +87,33 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="0" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayoutNetworkWarning">
+        <item>
+         <widget class="QLabel" name="labelNetworkWarningIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelNetworkWarning">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>REST API is enabled, but no listener is active. Enable HTTP or HTTPS.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
     </layout>
    </widget>
   </item>
