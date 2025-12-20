@@ -528,9 +528,23 @@ QHttpServerResponse RestApiGateway::autoDj(const QJsonObject& body) const {
             }
 
             if (action == QStringLiteral("add")) {
-                const auto tracksValue = body.value("track_ids").toArray();
+                const auto tracksValue = body.value("track_ids");
+                if (!tracksValue.isArray()) {
+                    return errorResponse(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("track_ids must be an array"));
+                }
+                const auto tracksArray = tracksValue.toArray();
+                for (int index = 0; index < tracksArray.size(); ++index) {
+                    const auto& value = tracksArray.at(index);
+                    if (!value.isDouble() && !value.isString()) {
+                        return errorResponse(
+                                QHttpServerResponse::StatusCode::BadRequest,
+                                tr("track_ids must contain numbers or strings"));
+                    }
+                }
                 QStringList parseErrors;
-                const QList<TrackId> trackIds = parseTrackIds(tracksValue, &parseErrors);
+                const QList<TrackId> trackIds = parseTrackIds(tracksArray, &parseErrors);
                 if (!parseErrors.isEmpty()) {
                     return errorResponse(
                             QHttpServerResponse::StatusCode::BadRequest,
@@ -746,9 +760,23 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
         }
 
         if (action == QStringLiteral("add")) {
-            const auto tracksValue = body.value("track_ids").toArray();
+            const auto tracksValue = body.value("track_ids");
+            if (!tracksValue.isArray()) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("track_ids must be an array"));
+            }
+            const auto tracksArray = tracksValue.toArray();
+            for (int index = 0; index < tracksArray.size(); ++index) {
+                const auto& value = tracksArray.at(index);
+                if (!value.isDouble() && !value.isString()) {
+                    return errorResponse(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("track_ids must contain numbers or strings"));
+                }
+            }
             QStringList parseErrors;
-            const QList<TrackId> trackIds = parseTrackIds(tracksValue, &parseErrors);
+            const QList<TrackId> trackIds = parseTrackIds(tracksArray, &parseErrors);
             if (!parseErrors.isEmpty()) {
                 return errorResponse(
                         QHttpServerResponse::StatusCode::BadRequest,
@@ -787,9 +815,22 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
 
         if (action == QStringLiteral("remove")) {
             QList<int> positions;
-            const auto positionsValue = body.value("positions").toArray();
-            positions.reserve(positionsValue.size());
-            for (const auto& value : positionsValue) {
+            const auto positionsValue = body.value("positions");
+            if (!positionsValue.isArray()) {
+                return errorResponse(
+                        QHttpServerResponse::StatusCode::BadRequest,
+                        tr("positions must be an array"));
+            }
+            const auto positionsArray = positionsValue.toArray();
+            for (int index = 0; index < positionsArray.size(); ++index) {
+                if (!positionsArray.at(index).isDouble()) {
+                    return errorResponse(
+                            QHttpServerResponse::StatusCode::BadRequest,
+                            tr("positions must contain numbers"));
+                }
+            }
+            positions.reserve(positionsArray.size());
+            for (const auto& value : positionsArray) {
                 bool ok = false;
                 const int position = value.toInt(&ok);
                 if (!ok) {
@@ -807,7 +848,7 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
             playlistDao.removeTracksFromPlaylist(playlistId, positions);
             return successResponse(QJsonObject{
                     {"playlist_id", playlistId},
-                    {"removed", positionsValue},
+                    {"removed", positionsArray},
             });
         }
 
