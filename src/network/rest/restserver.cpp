@@ -11,6 +11,7 @@
 #include <QJsonParseError>
 #include <QMetaObject>
 #include <QSemaphore>
+#include <QSslCipher>
 #include <QSslSocket>
 #include <QUuid>
 #include <QUrl>
@@ -220,6 +221,34 @@ RestServer::TlsResult RestServer::prepareTlsConfiguration(
     sslConfig.setLocalCertificate(certificateResult.certificate);
     sslConfig.setPrivateKey(certificateResult.privateKey);
     sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+    sslConfig.setProtocol(QSsl::TlsV1_3OrLater);
+#else
+    sslConfig.setProtocol(QSsl::TlsV1_2OrLater);
+#endif
+    sslConfig.setSslOption(QSsl::SslOptionDisableCompression, true);
+    const QStringList modernCipherNames = {
+            QStringLiteral("TLS_AES_256_GCM_SHA384"),
+            QStringLiteral("TLS_AES_128_GCM_SHA256"),
+            QStringLiteral("TLS_CHACHA20_POLY1305_SHA256"),
+            QStringLiteral("ECDHE-ECDSA-AES256-GCM-SHA384"),
+            QStringLiteral("ECDHE-RSA-AES256-GCM-SHA384"),
+            QStringLiteral("ECDHE-ECDSA-AES128-GCM-SHA256"),
+            QStringLiteral("ECDHE-RSA-AES128-GCM-SHA256"),
+            QStringLiteral("ECDHE-ECDSA-CHACHA20-POLY1305"),
+            QStringLiteral("ECDHE-RSA-CHACHA20-POLY1305"),
+    };
+    QList<QSslCipher> modernCiphers;
+    modernCiphers.reserve(modernCipherNames.size());
+    for (const QString& cipherName : modernCipherNames) {
+        const QSslCipher cipher = QSslCipher::fromString(cipherName);
+        if (!cipher.isNull()) {
+            modernCiphers.push_back(cipher);
+        }
+    }
+    if (!modernCiphers.isEmpty()) {
+        sslConfig.setCiphers(modernCiphers);
+    }
 
     result.configuration = sslConfig;
     result.generated = certificateResult.generated;
