@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef MIXXX_HAS_HTTP_SERVER
-
 #include <QString>
 #include <QList>
 #include <optional>
@@ -81,5 +79,3 @@ class RestServerSettings {
   private:
     UserSettingsPointer m_pConfig;
 };
-
-#endif // MIXXX_HAS_HTTP_SERVER

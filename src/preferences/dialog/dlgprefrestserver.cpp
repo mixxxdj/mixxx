@@ -1,7 +1,5 @@
 #include "preferences/dialog/dlgprefrestserver.h"
 
-#ifdef MIXXX_HAS_HTTP_SERVER
-
 #include <QAbstractItemView>
 #include <QClipboard>
 #include <QDateTime>
@@ -34,6 +32,13 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
           m_settings(std::move(settings)) {
     setupUi(this);
     createLinkColor();
+#ifndef MIXXX_HAS_HTTP_SERVER
+    labelRestApiUnavailable->setVisible(true);
+    checkBoxEnableRestServer->setEnabled(false);
+    groupBoxNetwork->setEnabled(false);
+    groupBoxAuthentication->setEnabled(false);
+    groupBoxTls->setEnabled(false);
+#endif
 
     spinBoxHttpPort->setMinimum(1);
     spinBoxHttpPort->setMaximum(std::numeric_limits<quint16>::max());
@@ -825,5 +830,3 @@ RestServerToken* DlgPrefRestServer::selectedToken() {
     }
     return &m_tokens[m_selectedToken];
 }
-
-#endif // MIXXX_HAS_HTTP_SERVER

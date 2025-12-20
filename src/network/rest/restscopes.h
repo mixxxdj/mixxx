@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef MIXXX_HAS_HTTP_SERVER
-
 #include <QString>
 #include <QStringList>
 
@@ -37,5 +35,3 @@ inline QStringList allScopes() {
 }
 
 } // namespace mixxx::network::rest::scopes
-
-#endif // MIXXX_HAS_HTTP_SERVER
