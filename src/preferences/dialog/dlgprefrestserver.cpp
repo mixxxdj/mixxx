@@ -24,6 +24,9 @@
 
 namespace {
 constexpr int kCertificateExpiryWarningDays = 30;
+constexpr int kPresetLocal = 0;
+constexpr int kPresetLocalHttps = 1;
+constexpr int kPresetNetwork = 2;
 } // namespace
 
 DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServerSettings> settings)
@@ -54,6 +57,14 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     lineEditTokenValue->setEchoMode(QLineEdit::Password);
     pushButtonToggleToken->setText(tr("Show"));
 
+    comboBoxPreset->addItem(tr("Local (recommended)"));
+    comboBoxPreset->addItem(tr("Local + HTTPS"));
+    comboBoxPreset->addItem(tr("Network (advanced)"));
+
+    connect(comboBoxPreset,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefRestServer::slotPresetChanged);
     connect(checkBoxEnableHttp,
             &QCheckBox::toggled,
             this,
@@ -237,6 +248,40 @@ void DlgPrefRestServer::slotEnableRestServerChanged(bool checked) {
     updateAuthWarning();
     updateUnauthWarning();
     updateNetworkWarning();
+    updatePresetWarning();
+    updateUrlLabels();
+}
+
+void DlgPrefRestServer::slotPresetChanged(int index) {
+    const QSignalBlocker hostBlocker(lineEditHost);
+
+    if (index == kPresetLocal) {
+        lineEditHost->setText(QStringLiteral("127.0.0.1"));
+        checkBoxEnableHttp->setChecked(true);
+        checkBoxUseHttps->setChecked(false);
+        checkBoxAutoGenerateCertificate->setChecked(false);
+        checkBoxRequireTls->setChecked(false);
+        lineEditCorsAllowlist->setText(makeLoopbackCorsAllowlist(true, false));
+    } else if (index == kPresetLocalHttps) {
+        lineEditHost->setText(QStringLiteral("127.0.0.1"));
+        checkBoxEnableHttp->setChecked(true);
+        checkBoxUseHttps->setChecked(true);
+        checkBoxAutoGenerateCertificate->setChecked(true);
+        checkBoxRequireTls->setChecked(true);
+        lineEditCorsAllowlist->setText(makeLoopbackCorsAllowlist(true, true));
+    } else if (index == kPresetNetwork) {
+        lineEditHost->setText(QStringLiteral("0.0.0.0"));
+        checkBoxEnableHttp->setChecked(true);
+        checkBoxUseHttps->setChecked(false);
+        checkBoxAutoGenerateCertificate->setChecked(false);
+        checkBoxRequireTls->setChecked(false);
+        lineEditCorsAllowlist->clear();
+    }
+
+    updateTlsState();
+    updateAuthWarning();
+    updateNetworkWarning();
+    updatePresetWarning();
     updateUrlLabels();
 }
 
@@ -324,6 +369,7 @@ void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     updateAuthWarning();
     updateUnauthWarning();
     updateNetworkWarning();
+    updatePresetWarning();
     updateUrlLabels();
 }
 
@@ -396,6 +442,10 @@ void DlgPrefRestServer::updateNetworkWarning() {
     labelNetworkWarning->setVisible(showWarning);
 }
 
+void DlgPrefRestServer::updatePresetWarning() {
+    labelPresetWarning->setVisible(comboBoxPreset->currentIndex() == kPresetNetwork);
+}
+
 void DlgPrefRestServer::updateUrlLabels() {
     const bool restEnabled = checkBoxEnableRestServer->isChecked();
     const bool httpEnabled = restEnabled && checkBoxEnableHttp->isChecked();
@@ -434,6 +484,24 @@ QString DlgPrefRestServer::makeHttpsUrl() const {
     return tr("https://%1:%2").arg(hostDisplay).arg(spinBoxHttpsPort->value());
 }
 
+QString DlgPrefRestServer::makeLoopbackCorsAllowlist(bool includeHttp, bool includeHttps) const {
+    QStringList allowlist;
+    allowlist.reserve(6);
+    if (includeHttp) {
+        const int port = spinBoxHttpPort->value();
+        allowlist << QStringLiteral("http://localhost:%1").arg(port)
+                  << QStringLiteral("http://127.0.0.1:%1").arg(port)
+                  << QStringLiteral("http://[::1]:%1").arg(port);
+    }
+    if (includeHttps) {
+        const int port = spinBoxHttpsPort->value();
+        allowlist << QStringLiteral("https://localhost:%1").arg(port)
+                  << QStringLiteral("https://127.0.0.1:%1").arg(port)
+                  << QStringLiteral("https://[::1]:%1").arg(port);
+    }
+    return allowlist.join(QStringLiteral(", "));
+}
+
 void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& status) {
     const bool showStatus = !status.lastError.isEmpty();
     labelStatusIcon->setVisible(showStatus);
@@ -451,6 +519,7 @@ void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& sta
     updateTlsCertificateStatus();
 
     updateNetworkWarning();
+    updatePresetWarning();
 }
 
 void DlgPrefRestServer::updateTlsCertificateStatus() {
