@@ -14,6 +14,8 @@
 #include <functional>
 
 #include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 
 class PlayerManager;
 class TrackCollectionManager;
