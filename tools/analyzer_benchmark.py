@@ -519,8 +519,6 @@ if __name__ == "__main__":
             json.dump(
                 dict(results=results, stats=stats),
                 f,
-                sort_keys=True,
-                indent=4,
                 default=serialize,
             )
 

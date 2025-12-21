@@ -143,25 +143,6 @@ mixxx::AudioSourcePointer AnalyzerBenchmark::run(TrackPointer pTrack) {
                     readableSampleFrames.readableData(),
                     readableSampleFrames.readableLength());
         }
-
-        // Don't check again for paused/stopped again and simply finish
-        // the current iteration by emitting progress.
-
-        // 3rd step: Update & emit progress
-        if (audioSource->frameLength() > 0) {
-            const double frameProgress =
-                    static_cast<double>(audioSource->frameLength() - remainingFrameRange.length()) /
-                    audioSource->frameLength();
-            // math_min is required to compensate rounding errors
-            const AnalyzerProgress progress =
-                    math_min(kAnalyzerProgressFinalizing,
-                            frameProgress *
-                                    (kAnalyzerProgressFinalizing - kAnalyzerProgressNone));
-            DEBUG_ASSERT(progress > kAnalyzerProgressNone);
-        } else {
-            // Unreadable audio source
-            DEBUG_ASSERT(remainingFrameRange.empty());
-        }
     }
 
     m_analyzer->finish(track);

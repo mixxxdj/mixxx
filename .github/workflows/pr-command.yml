@@ -50,3 +50,98 @@ jobs:
     uses: ./.github/workflows/benchmark.yml
     with:
       branch: ${{ github.head_ref || github.ref_name }}
+
+  fetch_beat_analyzer_report:
+    name: Fetch previous beat analyzer report
+    if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/beat-analyzer')
+    runs-on: ubuntu-latest
+    outputs:
+      previous_snapshot: ${{ steps.report.outputs.previous_snapshot }}
+    steps:
+      - name: Fetch latest report
+        uses: actions/github-script@v6
+        id: resolve
+        with:
+          script: |
+            // Check if the issue is associated with a PR
+            if (!context.payload.issue.pull_request) {
+              console.log("This issue is not associated with a pull request.");
+              return false;
+            }
+
+            // Fetch PR details to get the branch
+            const prResponse = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.issue.number,
+            });
+            const branch = prResponse.data.head.ref;
+            console.log(`Resolved branch: ${branch}`);
+
+            const { data: workflow_runs } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'release.yml',
+              branch: branch,
+              per_page: 1,
+            });
+
+            if (workflow_runs.workflow_runs.length === 0) {
+              core.setFailed('No workflow runs found.');
+              return false;
+            }
+
+            const latest_run_id = workflow_runs.workflow_runs[0].id;
+
+            const { data: artifacts } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: latest_run_id,
+            });
+
+            if (artifacts.artifacts.length === 0) {
+              console.log('No artifacts found.');
+              return false;
+            }
+
+            // Filter artifacts by name
+            const targetArtifact = artifacts.artifacts.find(
+              artifact => artifact.name === "Beat analyzer report"
+            );
+
+            if (!targetArtifact) {
+              console.log(`Artifact with name "${targetArtifactName}" not found.`);
+              return false;
+            }
+
+            console.log(`Found target artifact: ${targetArtifact.name}, ID: ${targetArtifact.id}`);
+            console.log(`Download URL: ${targetArtifact.archive_download_url}`);
+
+            // Optionally, download the artifact
+            const artifact_download_url = latest_artifact.archive_download_url;
+            const artifact_response = await fetch(artifact_download_url, {
+              headers: {
+                'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.v3+json',
+              },
+            });
+            const artifact_data = await artifact_response.buffer();
+
+            const fs = require('fs');
+            fs.writeFileSync('report.zip', artifact_data);
+            console.log('Artifact downloaded as report.zip');
+            return true;
+      - name: Extra report
+        if: steps.resolve.outputs.result == 'true'
+        id: report
+        run: |
+          unzip report.zip
+          ls -l
+          echo "previous_snapshot=$(base64 -w0 report/snapshot.json)" >> $GITHUB_OUTPUT
+
+  analyzer_report:
+    needs: [fetch_beat_analyzer_report]
+    if: needs.fetch_beat_analyzer_report.outcome == 'success'
+    uses: ./.github/workflows/beat_analyzer.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}

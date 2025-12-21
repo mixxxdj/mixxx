@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow
 
-name: Build
+name: Benchmark
 
 on:
   workflow_call:
