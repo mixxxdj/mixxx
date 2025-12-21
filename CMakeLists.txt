@@ -48,6 +48,7 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+option(BUILDENV_FROM_GH "Fetch build environment from Github release" OFF)
 if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
   if(NOT DEFINED BUILDENV_BASEPATH)
     if(DEFINED ENV{BUILDENV_BASEPATH})
@@ -60,56 +61,86 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
   if(NOT DEFINED BUILDENV_URL)
     if(DEFINED ENV{BUILDENV_URL})
       set(BUILDENV_URL "$ENV{BUILDENV_URL}")
-    elseif(NOT DEFINED BUILDENV_URL)
+    elseif(NOT DEFINED BUILDENV_URL AND NOT BUILDENV_FROM_GH)
       message(FATAL_ERROR "BUILDENV_URL not specified")
     endif()
   endif()
 
-  # Extract the filename from the URL
-  get_filename_component(FILENAME_WITH_EXTENSION "${BUILDENV_URL}" NAME)
-
-  # Remove the extension from the filename (note that our buildenv names contain two dots)
-  string(
-    REGEX REPLACE
-    "\\.[^.]*$"
-    ""
-    BUILDENV_NAME
-    "${FILENAME_WITH_EXTENSION}"
-  )
-
-  message(STATUS "BUILDENV_NAME is: ${BUILDENV_NAME}")
-
   if(
-    NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
-    OR NOT IS_DIRECTORY "${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
+    NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+    OR NOT IS_DIRECTORY "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
   )
-    if(NOT DEFINED BUILDENV_SHA256)
-      if(DEFINED ENV{BUILDENV_SHA256})
-        set(BUILDENV_SHA256 "$ENV{BUILDENV_SHA256}")
-      elseif(NOT DEFINED BUILDENV_SHA256)
-        message(STATUS "BUILDENV_SHA256 not specified")
-      endif()
-    endif()
-
-    if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
-      message(
-        STATUS
-        "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
-      )
+    if(BUILDENV_FROM_GH)
       file(
-        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
-        SHOW_PROGRESS
+        DOWNLOAD
+          "https://api.github.com/repos/acolombier/vcpkg/releases/tags/2.6-e1e59c6"
+          "manifest.json"
         TLS_VERIFY ON
+        HTTPHEADER "X-GitHub-Api-Version: 2022-11-28"
+        HTTPHEADER "Accept: application/vnd.github+json"
       )
-    else()
-      # Reference to suppress intentionally unused variable warnings
-      set(_dummy "${BUILDENV_URL}")
-    endif()
+      file(READ "${CMAKE_CURRENT_BINARY_DIR}/manifest.json" GH_RELEASE_MANIFEST)
+      string(JSON GH_ASSETS_COUNT LENGTH "${GH_RELEASE_MANIFEST}" "assets")
+      math(EXPR GH_ASSETS_COUNT "${GH_ASSETS_COUNT}-1")
 
-    if(NOT ${BUILDENV_SHA256} STREQUAL "")
-      message(
-        STATUS
-        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+      set(BUILDENV_PARTS "")
+
+      foreach(idx RANGE "${GH_ASSETS_COUNT}")
+        string(
+          JSON
+          GH_ASSET_NAME
+          GET "${GH_RELEASE_MANIFEST}"
+          "assets"
+          "${idx}"
+          "name"
+        )
+        string(
+          JSON
+          GH_ASSET_URL
+          GET "${GH_RELEASE_MANIFEST}"
+          "assets"
+          "${idx}"
+          "browser_download_url"
+        )
+
+        if(NOT "${GH_ASSET_NAME}" MATCHES "${BUILDENV_NAME}.zip")
+          continue()
+        elseif("${GH_ASSET_NAME}" MATCHES ".zip.sha256sum$")
+          file(
+            DOWNLOAD "${GH_ASSET_URL}" "${BUILDENV_BASEPATH}/checksum"
+            TLS_VERIFY ON
+          )
+          file(READ "${BUILDENV_BASEPATH}/checksum" GH_CHECKSUM)
+          string(REPLACE " " ";" GH_CHECKSUM ${GH_CHECKSUM})
+          list(GET GH_CHECKSUM 0 BUILDENV_SHA256)
+        else()
+          message(STATUS "Would download: ${GH_ASSET_URL}")
+          list(APPEND BUILDENV_PARTS "${GH_ASSET_URL}")
+        endif()
+      endforeach()
+
+      list(LENGTH ${BUILDENV_PARTS} BUILDENV_PARTS_COUNT)
+
+      if(${BUILDENV_PARTS_COUNT} GREATER "1")
+        message(FATAL_ERROR "Multipart download is not yet supported!")
+      endif()
+
+      get_filename_component(BUILDENV_PART_NAME "${BUILDENV_PARTS}" NAME)
+      if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_PART_NAME}")
+        message(STATUS "Downloading ${BUILDENV_PARTS}...")
+        file(
+          DOWNLOAD
+            "${BUILDENV_PARTS}"
+            "${BUILDENV_BASEPATH}/${BUILDENV_PART_NAME}"
+          SHOW_PROGRESS
+          TLS_VERIFY ON
+        )
+      endif()
+
+      file(
+        COPY_FILE
+        "${BUILDENV_BASEPATH}/${BUILDENV_PART_NAME}"
+        "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
       )
       file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
 
@@ -121,6 +152,59 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
       else()
         message(STATUS "SHA256 ${BUILDENV_SHA256} is correct!")
       endif()
+    else()
+      # Extract the filename from the URL
+      get_filename_component(FILENAME_WITH_EXTENSION "${BUILDENV_URL}" NAME)
+
+      # Remove the extension from the filename (note that our buildenv names contain two dots)
+      string(
+        REGEX REPLACE
+        "\\.[^.]*$"
+        ""
+        BUILDENV_NAME
+        "${FILENAME_WITH_EXTENSION}"
+      )
+
+      message(STATUS "BUILDENV_NAME is: ${BUILDENV_NAME}.zip")
+      if(NOT DEFINED BUILDENV_SHA256)
+        if(DEFINED ENV{BUILDENV_SHA256})
+          set(BUILDENV_SHA256 "$ENV{BUILDENV_SHA256}")
+        elseif(NOT DEFINED BUILDENV_SHA256)
+          message(STATUS "BUILDENV_SHA256 not specified")
+        endif()
+      endif()
+
+      if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+        message(
+          STATUS
+          "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
+        )
+        file(
+          DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+          SHOW_PROGRESS
+          TLS_VERIFY ON
+        )
+      else()
+        # Reference to suppress intentionally unused variable warnings
+        set(_dummy "${BUILDENV_URL}")
+      endif()
+
+      if(NOT ${BUILDENV_SHA256} STREQUAL "")
+        message(
+          STATUS
+          "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+        )
+        file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
+
+        if(NOT actual_sha256 STREQUAL ${BUILDENV_SHA256})
+          message(
+            FATAL_ERROR
+            "SHA256 checksum mismatch:\nexpected: ${BUILDENV_SHA256}\n     got: ${actual_sha256}"
+          )
+        else()
+          message(STATUS "SHA256 ${BUILDENV_SHA256} is correct!")
+        endif()
+      endif()
     endif()
 
     message(
@@ -131,9 +215,6 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
       COMMAND ${CMAKE_COMMAND} -E tar xzf "${BUILDENV_NAME}.zip"
       WORKING_DIRECTORY ${BUILDENV_BASEPATH}
     )
-  else()
-    # Reference to suppress intentionally unused variable warnings
-    set(_dummy "${BUILDENV_SHA256}")
   endif()
 else()
   # Reference to suppress intentionally unused variable warnings

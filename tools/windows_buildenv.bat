@@ -34,25 +34,17 @@ IF NOT DEFINED INSTALL_ROOT (
 
 IF /I "%PLATFORM%"=="arm64" (
     IF DEFINED BUILDENV_RELEASE (
-        SET BUILDENV_BRANCH=2.6-rel
-        SET VCPKG_TARGET_TRIPLET=arm64-windows-release
         SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-rel-da4c207
         SET BUILDENV_SHA256=1225f0a71a1dd624b14f6b2148cc01305496f11ba2bcbff8638ecf2e1e995702
     ) ELSE (
-        SET BUILDENV_BRANCH=2.6
-        SET VCPKG_TARGET_TRIPLET=arm64-windows
         SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-c2def9b
         SET BUILDENV_SHA256=9918615b607045f5907e051d84f40180ec7392b84e46bed571dc6bf97438303d
     )
 ) ELSE IF /I "%PLATFORM%"=="x64" (
     IF DEFINED BUILDENV_RELEASE (
-        SET BUILDENV_BRANCH=2.6-rel
-        SET VCPKG_TARGET_TRIPLET=x64-windows-release
         SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-rel-da4c207
         SET BUILDENV_SHA256=62d4d7249a7e49ef96d4b96b380e23426dd714eaa9ae415e7a66a587a71e9a27
     ) ELSE (
-        SET BUILDENV_BRANCH=2.6
-        SET VCPKG_TARGET_TRIPLET=x64-windows
         SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-c2def9b
         SET BUILDENV_SHA256=01df9fdc8154f96184281a934e73eb4202e4f29452ecc888053c747f7a745d4f
     )
@@ -63,6 +55,45 @@ IF /I "%PLATFORM%"=="arm64" (
     PAUSE
     EXIT /B 1
 )
+
+FOR /F "TOKENS=* DELIMS=-" %%A IN ("%BUILDENV_NAME%") DO (
+    SET NAME=%%A
+    SET VCPKG_COMMIT_SHA=!NAME:~-7!
+)
+
+FOR /F "TOKENS=3 DELIMS=-" %%A IN ("%BUILDENV_NAME%") DO (
+    SET BUILDENV_BRANCH=%%A
+)
+
+FOR /F "TOKENS=4-6 DELIMS=-" %%A IN ("%BUILDENV_NAME%") DO (
+    SET PART1=%%A
+    SET PART2=%%B
+    SET PART3=%%C
+)
+
+IF NOT "%PART3%" == "" (
+    FOR /F "TOKENS=7 DELIMS=-" %%A IN ("%BUILDENV_NAME%") DO (
+        IF NOT "%%A" == "%VCPKG_COMMIT_SHA%" (
+            SET PART4=%%A
+        )
+    )
+)
+
+IF NOT "%PART4%" == "" (
+    SET VCPKG_TARGET_TRIPLET=%PART1%-%PART2%-%PART3%-%PART4%
+) ELSE (
+    IF NOT "%PART3%" == "%VCPKG_COMMIT_SHA%" (
+        SET VCPKG_TARGET_TRIPLET=%PART1%-%PART2%-%PART3%
+    ) ELSE (
+        SET VCPKG_TARGET_TRIPLET=%PART1%-%PART2%
+    )
+)
+
+IF "!VCPKG_TARGET_TRIPLET:~-4!" == "-rel" (
+    SET BUILDENV_BRANCH_SUFFIX=-rel
+    SET VCPKG_TARGET_TRIPLET=%VCPKG_TARGET_TRIPLET%ease
+)
+
 SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/!BUILDENV_BRANCH!/Windows/!BUILDENV_NAME!.zip
 
 IF "%~1"=="" (
