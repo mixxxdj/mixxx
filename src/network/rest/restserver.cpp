@@ -56,7 +56,9 @@ const QRegularExpression kUuidRequestIdRegex(
 const QRegularExpression kAllowedRequestIdRegex(QStringLiteral("^[A-Za-z0-9._-]+$"));
 
 bool requestIsSecure(const QHttpServerRequest& request) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    return request.url().scheme().compare(QStringLiteral("https"), Qt::CaseInsensitive) == 0;
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     return request.isSecure();
 #else
     return request.url().scheme().compare(QStringLiteral("https"), Qt::CaseInsensitive) == 0;
@@ -429,7 +431,11 @@ bool RestServer::applyTlsConfiguration() {
         kLogger.warning() << "TLS is enabled but no TLS configuration was provided";
         return false;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    m_httpServer->setSslConfiguration(m_tlsConfiguration->configuration);
+#else
     m_httpServer->sslSetup(m_tlsConfiguration->configuration);
+#endif
     m_tlsActive = true;
     return true;
 #else
@@ -1264,6 +1270,17 @@ bool RestServer::startOnThread() {
     }
 
     DEBUG_ASSERT(m_settings.portValid);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    const auto listenResult = m_httpServer->listen(
+            m_settings.address, static_cast<quint16>(m_settings.port));
+    if (!listenResult) {
+        kLogger.warning()
+                << "Failed to start REST API listener on" << m_settings.address << m_settings.port;
+        m_lastError = tr("Failed to bind REST API listener");
+        return false;
+    }
+    m_listeningPort = listenResult.port;
+#else
     const auto port = m_httpServer->listen(
             m_settings.address, static_cast<quint16>(m_settings.port));
     if (port == 0) {
@@ -1274,6 +1291,7 @@ bool RestServer::startOnThread() {
     }
 
     m_listeningPort = port;
+#endif
     kLogger.info()
             << "REST API listening on" << m_settings.address.toString() << m_listeningPort;
 
@@ -1298,7 +1316,11 @@ void RestServer::stopOnThread() {
     m_streamTimer.stop();
     m_streamClients.clear();
     if (m_httpServer) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        m_httpServer->stop();
+#else
         m_httpServer->close();
+#endif
         m_httpServer.reset();
     }
     kLogger.info() << "REST API server stopped";
