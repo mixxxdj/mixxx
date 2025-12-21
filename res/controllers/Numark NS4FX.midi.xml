@@ -696,11 +696,11 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>crossfader</key>
+                <key>NS4FX.crossfader.input</key>
                 <status>0xBF</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
