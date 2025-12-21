@@ -7,12 +7,11 @@ import sqlite3
 import multiprocessing
 import subprocess
 import json
-import math
 import dataclasses
 
 from typing import Optional
 
-"""Generated protocol buffer code for beats.proto."""
+"""Generated protocol buffer code for beats.proto. Using # noqa"""
 from google.protobuf.internal import builder as _builder
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
@@ -23,25 +22,25 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x0b\x62\x65\x61ts.proto\x12\x0emixxx.track.io"g\n\x04\x42\x65\x61t\x12\x16\n\x0e\x66rame_position\x18\x01 \x01(\x05\x12\x15\n\x07\x65nabled\x18\x02 \x01(\x08:\x04true\x12\x30\n\x06source\x18\x03 \x01(\x0e\x32\x16.mixxx.track.io.Source:\x08\x41NALYZER"D\n\x03\x42pm\x12\x0b\n\x03\x62pm\x18\x01 \x01(\x01\x12\x30\n\x06source\x18\x02 \x01(\x0e\x32\x16.mixxx.track.io.Source:\x08\x41NALYZER"-\n\x07\x42\x65\x61tMap\x12"\n\x04\x62\x65\x61t\x18\x01 \x03(\x0b\x32\x14.mixxx.track.io.Beat"V\n\x08\x42\x65\x61tGrid\x12 \n\x03\x62pm\x18\x01 \x01(\x0b\x32\x13.mixxx.track.io.Bpm\x12(\n\nfirst_beat\x18\x02 \x01(\x0b\x32\x14.mixxx.track.io.Beat*3\n\x06Source\x12\x0c\n\x08\x41NALYZER\x10\x00\x12\x11\n\rFILE_METADATA\x10\x01\x12\x08\n\x04USER\x10\x02\x42\x02H\x03'
+    b'\n\x0b\x62\x65\x61ts.proto\x12\x0emixxx.track.io"g\n\x04\x42\x65\x61t\x12\x16\n\x0e\x66rame_position\x18\x01 \x01(\x05\x12\x15\n\x07\x65nabled\x18\x02 \x01(\x08:\x04true\x12\x30\n\x06source\x18\x03 \x01(\x0e\x32\x16.mixxx.track.io.Source:\x08\x41NALYZER"D\n\x03\x42pm\x12\x0b\n\x03\x62pm\x18\x01 \x01(\x01\x12\x30\n\x06source\x18\x02 \x01(\x0e\x32\x16.mixxx.track.io.Source:\x08\x41NALYZER"-\n\x07\x42\x65\x61tMap\x12"\n\x04\x62\x65\x61t\x18\x01 \x03(\x0b\x32\x14.mixxx.track.io.Beat"V\n\x08\x42\x65\x61tGrid\x12 \n\x03\x62pm\x18\x01 \x01(\x0b\x32\x13.mixxx.track.io.Bpm\x12(\n\nfirst_beat\x18\x02 \x01(\x0b\x32\x14.mixxx.track.io.Beat*3\n\x06Source\x12\x0c\n\x08\x41NALYZER\x10\x00\x12\x11\n\rFILE_METADATA\x10\x01\x12\x08\n\x04USER\x10\x02\x42\x02H\x03'  # noqa: E501
 )
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "beats_pb2", globals())
-if _descriptor._USE_C_DESCRIPTORS == False:
+if _descriptor._USE_C_DESCRIPTORS == False:  # noqa: E712
 
     DESCRIPTOR._options = None
     DESCRIPTOR._serialized_options = b"H\003"
-    _SOURCE._serialized_start = 341
-    _SOURCE._serialized_end = 392
-    _BEAT._serialized_start = 31
-    _BEAT._serialized_end = 134
-    _BPM._serialized_start = 136
-    _BPM._serialized_end = 204
-    _BEATMAP._serialized_start = 206
-    _BEATMAP._serialized_end = 251
-    _BEATGRID._serialized_start = 253
-    _BEATGRID._serialized_end = 339
+    _SOURCE._serialized_start = 341  # noqa: F821
+    _SOURCE._serialized_end = 392  # noqa: F821
+    _BEAT._serialized_start = 31  # noqa: F821
+    _BEAT._serialized_end = 134  # noqa: F821
+    _BPM._serialized_start = 136  # noqa: F821
+    _BPM._serialized_end = 204  # noqa: F821
+    _BEATMAP._serialized_start = 206  # noqa: F821
+    _BEATMAP._serialized_end = 251  # noqa: F821
+    _BEATGRID._serialized_start = 253  # noqa: F821
+    _BEATGRID._serialized_end = 339  # noqa: F821
 # @@protoc_insertion_point(module_scope)
 """End generated protocol buffer code."""
 
@@ -158,7 +157,24 @@ class Result:
 
     @property
     def runtime_column(self):
-        return f"{(self.runtime/1000):>6.2f} sec/min"
+        return f"{(self.runtime / 1000):>6.2f} sec/min"
+
+
+class StatsWrapper:
+    def __init__(self, key, func, current, previous):
+        self.__key = key
+        self.__func = func
+        self.__current = current
+        self.__previous = previous
+
+    def __str__(self):
+        current = self.__func(self.__current[self.__key])
+        if self.__key not in self.__previous.keys():
+            return str(current)
+        previous = self.__func(self.__previous[self.__key])
+        if current != previous:
+            return f"{current} **(was {previous})**"
+        return str(current)
 
 
 class Wrapper(object):
@@ -204,8 +220,14 @@ def fetch(record):
         filename = url_parsed.path
     else:
         headers = {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "User-Agent": (
+                "Mozilla/5.0 (X11; Linux x86_64; rv:146.0) "
+                "Gecko/20100101 Firefox/146.0"
+            ),
+            "Accept": (
+                "text/html,application/xhtml+xml,"
+                "application/xml;q=0.9,*/*;q=0.8"
+            ),
         }
         filename = f"{record['title']} - {record['artist']}.mp3".replace(
             "/", "_"
@@ -225,13 +247,17 @@ def fetch(record):
     ):
         cur = con.cursor()
         res = cur.execute(
-            "SELECT l.location, a.bpm, a.artist, a.title, a.color, a.samplerate, a.beats FROM track_locations l, library a WHERE l.location LIKE ? AND l.id = a.location",
+            (
+                "SELECT l.location, a.bpm, a.artist, a.title, a.color, "
+                "a.samplerate, a.beats FROM track_locations l, library a "
+                "WHERE l.location LIKE ? AND l.id = a.location"
+            ),
             (filename,),
         )
         data = res.fetchone()
         if data is not None:
             location, bpm, artist, title, color, samplerate, beats = data
-            beatgrid = BeatGrid()
+            beatgrid = BeatGrid()  # noqa: F821
             beatgrid.ParseFromString(beats)
             record.update(
                 dict(
@@ -281,7 +307,11 @@ def process(args):
 if __name__ == "__main__":
     if len(sys.argv) < 2 or len(sys.argv) > 5:
         print(
-            f"Usage: {sys.argv[0]} <PathToCSVDataset> [<PathToOutputReport>] [PathToManifest] [PathTPreviousManifest]",
+            (
+                f"Usage: {sys.argv[0]} <PathToCSVDataset> "
+                "[<PathToOutputReport>] [PathToManifest] "
+                "[PathTPreviousManifest]"
+            ),
             file=sys.stderr,
         )
         sys.exit(1)
@@ -314,6 +344,7 @@ if __name__ == "__main__":
             previous_results = {
                 d["source"]: Result(**d) for d in data.get("results", [])
             }
+            previous_stats = data["stats"]
 
     header = list(datasets[0].keys())
     output = []
@@ -405,25 +436,39 @@ if __name__ == "__main__":
     stats["bpm_offset_avg"] /= len(result_table)
     stats["runtime_avg"] /= len(result_table)
 
+    stats_items = {
+        "Accurate BPM results": (
+            "bpm_accuracy",
+            lambda value: (
+                f"{value}/{len(result_table)} "
+                "({(100 * value/len(result_table)):.2f}%)"
+            ),
+        ),
+        "Accurate grid results": (
+            "grid_accuracy",
+            lambda value: (
+                f"{value}/{len(result_table)} "
+                "({(100 * value/len(result_table)):.2f}%)"
+            ),
+        ),
+        "Grid accuracy average": (
+            "grid_accuracy_avg",
+            lambda value: f"{(100 * value):.2f}%",
+        ),
+        "BPM offset average": ("bpm_offset_avg", lambda value: f"{value:.2f}"),
+        "BPM maximum offset": ("bpm_offset_max", lambda value: f"{value:.2f}"),
+        "Runtime average": (
+            "runtime_avg",
+            lambda value: f"{(value / 1000):.2f} sec/min",
+        ),
+    }
+
     print("# BPM and grid analyzer report\n", file=f)
-    print(
-        f'**Accurate BPM results**: {stats["bpm_accuracy"]}/{len(result_table)} ({(100 * stats["bpm_accuracy"]/len(result_table)):.2f}%)',
-        file=f,
-    )
-    print(
-        f'**Accurate grid results**: {stats["grid_accuracy"]}/{len(result_table)} ({(100 * stats["grid_accuracy"]/len(result_table)):.2f}%)',
-        file=f,
-    )
-    print(
-        f'**Grid accuracy average**: {(100 * stats["grid_accuracy_avg"]):.2f}%',
-        file=f,
-    )
-    print(f'**BPM offset average**: {stats["bpm_offset_avg"]:.2f}', file=f)
-    print(f'**BPM maximum offset**: {stats["bpm_offset_max"]:.2f}', file=f)
-    print(
-        f'**Runtime average**: {(stats["runtime_avg"]/1000):.2f} sec/min',
-        file=f,
-    )
+    for label, defs in stats_items.items():
+        print(
+            f"**{label}**: {StatsWrapper(*defs, stats, previous_stats)}",
+            file=f,
+        )
     print("\n", file=f)
     print("## Result table\n", file=f)
 
@@ -448,7 +493,12 @@ if __name__ == "__main__":
 
     if incomplete_table:
         print(
-            "## Incomplete data\n\nThe following files do not have an expected BPM and/or a grid. Load it in Mixxx and set the right metadata before re-running this script to fill the gap in the dataset.\n",
+            (
+                "## Incomplete data\n\nThe following files do not have an "
+                "expected BPM and/or a grid. Load it in Mixxx and set the "
+                "right metadata before re-running this script to fill the "
+                "gap in the dataset.\n"
+            ),
             file=f,
         )
 
