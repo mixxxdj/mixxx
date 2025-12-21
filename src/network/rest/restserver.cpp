@@ -84,7 +84,7 @@ QString methodToString(QHttpServerRequest::Method method) {
 
 bool isJsonContentType(const QHttpServerRequest& request) {
     const QByteArray headerValue =
-            request.headers().value(QByteArrayLiteral(kContentTypeHeader)).trimmed();
+            QByteArray(request.headers().value(QByteArrayLiteral(kContentTypeHeader))).trimmed();
     if (headerValue.isEmpty()) {
         return false;
     }
@@ -584,7 +584,7 @@ QString RestServer::requestDescription(const QHttpServerRequest& request) const 
 
 QString RestServer::requestIdFor(const QHttpServerRequest& request) const {
     const QByteArray headerValue =
-            request.headers().value(QByteArrayLiteral(kRequestIdHeader)).trimmed();
+            QByteArray(request.headers().value(QByteArrayLiteral(kRequestIdHeader))).trimmed();
     if (!headerValue.isEmpty() && headerValue.size() <= kMaxRequestIdLength) {
         const QString requestId = QString::fromUtf8(headerValue);
         if (kUuidRequestIdRegex.match(requestId).hasMatch() ||
@@ -1219,7 +1219,7 @@ void RestServer::addCorsHeaders(
         headers->append(QByteArrayLiteral(kCorsAllowMethodsHeader),
                 QByteArrayLiteral("GET, POST, PUT, PATCH, DELETE, OPTIONS"));
         const QByteArray requestedHeaders =
-                request.headers().value(QByteArrayLiteral(kCorsRequestHeadersHeader)).trimmed();
+                QByteArray(request.headers().value(QByteArrayLiteral(kCorsRequestHeadersHeader))).trimmed();
         const QByteArray allowHeaders = requestedHeaders.isEmpty()
                 ? QByteArrayLiteral("Authorization, Content-Type, Idempotency-Key, X-Request-Id")
                 : requestedHeaders;
@@ -1229,7 +1229,7 @@ void RestServer::addCorsHeaders(
 
 QString RestServer::allowedCorsOrigin(const QHttpServerRequest& request) const {
     const QByteArray originHeader =
-            request.headers().value(QByteArrayLiteral(kCorsOriginHeader)).trimmed();
+            QByteArray(request.headers().value(QByteArrayLiteral(kCorsOriginHeader))).trimmed();
     if (originHeader.isEmpty()) {
         return QString();
     }
