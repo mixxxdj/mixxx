@@ -14,6 +14,9 @@
             <option type="boolean" variable="OnlyActiveDeckEffect" label="Use effect only on active deck" default="false"/>
             <option type="boolean" variable="displayVUFromBothDecks" label="Display VU from both decks" default="false"/>
         </group>
+        <group label="Parformance Pads">
+            <option type="boolean" variable="useFadercutsAsStems" label="Controls stems with Fader Cuts pads" default="false"/>
+        </group>
     </settings>
     <controller id="NS4FX">
         <scriptfiles>

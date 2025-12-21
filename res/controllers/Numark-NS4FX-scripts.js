@@ -17,6 +17,7 @@ var ShiftLoadEjects = engine.getSetting("ShiftLoadEjects");
 var ShowFocusedEffectParameters = engine.getSetting("ShowFocusedEffectParameters");
 var OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
 var displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
+var useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
 
 var NS4FX = {};
 
