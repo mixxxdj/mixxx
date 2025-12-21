@@ -28,8 +28,8 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
         m_marks.clear();
     }
 
-    void setDefaultMark(const QString& group, const WaveformMarkSet::DefaultMarkerStyle& model) {
-        m_marks.setDefault(group, model);
+    QString setDefaultMark(const QString& group, const WaveformMarkSet::DefaultMarkerStyle& model) {
+        return m_marks.setDefault(group, model);
     }
 
     void addMark(WaveformMarkPointer pMark) {
