@@ -9,6 +9,9 @@ import "Theme"
 ApplicationWindow {
     id: root
 
+    readonly property int numDecks: 4
+    readonly property int numSamplers: 16
+
     property alias maximizeLibrary: maximizeLibraryButton.checked
     property alias show4decks: show4DecksButton.checked
     property alias showEffects: showEffectsButton.checked
@@ -18,6 +21,22 @@ ApplicationWindow {
     height: 1080
     visible: true
     width: 1920
+
+    Mixxx.ControlProxy {
+        group: "[App]"
+        key: "num_decks"
+        onInitializedChanged: {
+            value = root.numDecks
+        }
+    }
+
+    Mixxx.ControlProxy {
+        group: "[App]"
+        key: "num_samplers"
+        onInitializedChanged: {
+            value = root.numSamplers
+        }
+    }
 
     Column {
         id: content

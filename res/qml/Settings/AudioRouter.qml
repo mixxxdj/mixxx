@@ -439,7 +439,7 @@ Rectangle {
                               "legacy"
                     ]
                     onOptionsChanged: {
-                        if (modeChoice.selected.startsWith("advanced")) {
+                        if (modeChoice.selected?.startsWith("advanced")) {
                             modeChoice.selected = options[1]
                         }
                     }
