@@ -26,7 +26,7 @@ QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 QDir MixxxTest::s_TestDir;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
-    CmdlineArgs args;
+    CmdlineArgs& args = CmdlineArgs::Instance();
     const bool argsParsed = args.parse(argc, argv);
     Q_UNUSED(argsParsed);
     DEBUG_ASSERT(argsParsed);
