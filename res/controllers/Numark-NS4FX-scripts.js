@@ -1,11 +1,11 @@
-////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////
 // JSHint configuration                                               //
-////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////
 /* global engine                                                      */
 /* global script                                                      */
 /* global print                                                       */
 /* global midi                                                        */
-////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////
 
 
 /******************
@@ -19,6 +19,16 @@ var OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
 var displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 var useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
 
+/**
+ * Creates a configuration object for a performance pad to be used for stem control.
+ * This function handles:
+ * - Tapping a pad to toggle the mute state of a stem.
+ * - Holding a pad to allow volume adjustment of the stem with the BEATS knob.
+ * - Shift-tapping a pad to toggle the QuickEffect on the stem.
+ * - LED feedback for the stem's mute state.
+ * @param {object} deckInstance - The deck object this pad belongs to.
+ * @param {string} padStateProperty - The name of the property on the deck object that holds the state for this pad.
+ */
 function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDetails) {
     var fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
 
@@ -29,9 +39,9 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         group: `[Channel${deckInstance.number}_Stem${stemNumber}]`,
         on: 0x7F,
         off: 0x01,
+        // This function is now primarily for setting the LED from the script,
+        // not just toggling. The connect function handles state-based LED updates.
         output: function (value) {
-            // This function is now primarily for setting the LED from the script,
-            // not just toggling. The connect function handles state-based LED updates.
             if (deckInstance[padStateProperty].isHeldForVolume) {
                 return; // Don't change LED if pad is held for volume control
             }
@@ -41,6 +51,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
             components.Button.prototype.connect.call(this);
             var stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
             var buttonInstance = this;
+            // This connection ensures the pad LED reflects the stem's mute state in Mixxx.
             this.mute_connection = engine.makeConnection(stemGroup, "mute", function (value) {
                 var isMuted = (value === 1);
                 var ledValue = isMuted ? buttonInstance.off : buttonInstance.on;
@@ -58,29 +69,44 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         input: function (channel, control, value, status) {
             var padState = deckInstance[padStateProperty];
 
+            // If shift is held, a pad tap will toggle the QuickEffect for that stem.
+            // The hold-for-volume logic is bypassed.
+            if (NS4FX.shift) {
+                if (value === 0x7F) { // Button pressed
+                    var quickEffectGroup = `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`;
+                    NS4FX.dbg("Toggling " + quickEffectGroup);
+                    var currentEffectState = engine.getValue(quickEffectGroup, "enabled");
+                    engine.setValue(quickEffectGroup, "enabled", !currentEffectState);
+                }
+                return;
+            }
+
+            // This section implements the tap-to-mute and hold-for-volume logic.
             if (value === 0x7F) { // Button pressed
                 padState.isHeldForVolume = false; // Reset on each press
                 if (padState.timerId) {
                     engine.stopTimer(padState.timerId);
                 }
-                var localTimerId = engine.beginTimer(250, function() { // 250ms hold threshold
+                // Start a timer to detect if the pad is being held.
+                var localTimerId = engine.beginTimer(250, function () { // 250ms hold threshold
                     if (padState.timerId === localTimerId) {
                         padState.isHeldForVolume = true;
                         NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " HELD.");
                         padState.timerId = null;
                     }
-                }, true);
+                }, true); // one-shot timer
                 padState.timerId = localTimerId;
             } else { // Button released
+                // If the pad is released before the hold timer fires, it's a "tap".
                 if (padState.timerId) {
                     engine.stopTimer(padState.timerId);
                     padState.timerId = null;
                 }
                 if (!padState.isHeldForVolume) {
                     NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " TAPPED.");
-                var stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
-                var currentMuteState = engine.getValue(stemGroup, "mute");
-                engine.setValue(stemGroup, "mute", currentMuteState === 0 ? 1 : 0);
+                    var stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
+                    var currentMuteState = engine.getValue(stemGroup, "mute");
+                    engine.setValue(stemGroup, "mute", currentMuteState === 0 ? 1 : 0);
                 }
                 padState.isHeldForVolume = false;
             }
@@ -103,8 +129,11 @@ NS4FX.init = function (id, debug) {
 
     NS4FX.dbg("useFadercutsAsStems is " + useFadercutsAsStems);
 
+    // This component handles the BEATS knob.
+    // When a stem pad is held, this knob adjusts the stem's volume (or effect amount if SHIFT is also held).
+    // It iterates through all decks and stem pads to find which one is currently in a "held" state.
     NS4FX.beatsKnob = new components.Encoder({
-        input: function(channel, control, value, status, group) {
+        input: function (channel, control, value, status, group) {
             var heldStemInfo = null;
             for (var i = 1; i <= 4; i++) {
                 var deck = NS4FX.decks[i];
@@ -122,25 +151,40 @@ NS4FX.init = function (id, debug) {
             }
 
             if (heldStemInfo) {
-                var stemGroup = `[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]`;
-                var currentVolume = engine.getValue(stemGroup, "volume");
-                var volumeStep = 0.05;
-                var newVolume;
+                var group, control, currentValue, step;
+
+                if (NS4FX.shift) {
+                    // Shift is held: control the QuickEffect's super1 parameter for the stem.
+                    group = `[QuickEffectRack1_[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]]`;
+                    control = 'super1';
+                    currentValue = engine.getValue(group, control);
+                    step = 0.05;
+                } else {
+                    // No shift, control the stem's volume
+                    group = `[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]`;
+                    control = 'volume';
+                    currentValue = engine.getValue(group, control);
+                    step = 0.05;
+                }
+                var newValue;
 
                 if (value === 0x01) { // Turned right
-                    newVolume = Math.min(1.0, currentVolume + volumeStep);
+                    newValue = Math.min(1.0, currentValue + step);
                 } else { // Turned left (0x7F)
-                    newVolume = Math.max(0.0, currentVolume - volumeStep);
+                    newValue = Math.max(0.0, currentValue - step);
                 }
-                engine.setValue(stemGroup, "volume", newVolume);
+                engine.setValue(group, control, newValue);
             }
         }
     });
+    // This component handles the crossfader.
+    // It's necessary because the NS4FX sends hardware-level fader cut MIDI messages
+    // when the Fader Cuts pad mode is active. We need to intercept and ignore these
+    // messages when we are using that mode for stem control.
     NS4FX.crossfader = new components.Pot({
         group: '[Master]',
         inKey: 'crossfader',
-        input: function(channel, control, value, status, group) {
-            // Check the pad mode of both decks. If either is in "stems" mode, ignore the crossfader input.
+        input: function (channel, control, value, status, group) {
             if (useFadercutsAsStems) {
                 if (NS4FX.decks[1].padmode_str === 'stems' || NS4FX.decks[2].padmode_str === 'stems' || NS4FX.decks[3].padmode_str === 'stems' || NS4FX.decks[4].padmode_str === 'stems') {
                     return; // In stems mode, so do nothing.
@@ -151,9 +195,9 @@ NS4FX.init = function (id, debug) {
         }
     });
 
-    //deck switching sends the command 2 times, from current and next
+    // Deck switching sends the command 2 times, from current and next. This flag helps ignore the duplicate.
     NS4FX.ignore_deck_switch = true;
-    //effects
+    // effects
     NS4FX.effectUnit = new NS4FX.EffectUnit();
     var effects = [
         { unit: 1, slot: 1, id: 9, meta: 0.9 },
@@ -471,7 +515,7 @@ NS4FX.EffectUnit = function () {
             var active = this.switch_active_left ? 0x01 : 0x00;
             this.leftSwitch(0, 0, active, 0, 0)
         } else {
-            //var func = this.rightSwitch;
+            // var func = this.rightSwitch;
             var active = this.switch_active_right ? 0x01 : 0x00;
             this.rightSwitch(0, 0, active, 0, 0);
         }
@@ -486,6 +530,8 @@ NS4FX.Deck = function (number, midi_chan) {
     this.number = number;
     this.active = (number == 1 || number == 2);
 
+    // If using stems, create state objects for each pad to track hold timers and states.
+    // This is necessary for the hold-for-volume/effect functionality.
     if (useFadercutsAsStems) {
         this.stemPad1 = { timerId: null, isHeldForVolume: false };
         this.stemPad2 = { timerId: null, isHeldForVolume: false };
@@ -537,8 +583,7 @@ NS4FX.Deck = function (number, midi_chan) {
             NS4FX.sendScreenTimeMidi(number, time);
 
             // update the spinner (range 64-115, 52 values)
-            //
-            // the visual spinner in the mixxx interface takes 1.8 seconds to loop
+            // // the visual spinner in the mixxx interface takes 1.8 seconds to loop
             // (60 seconds/min divided by 33 1/3 revolutions per min)
             var period = 60 / (33 + 1 / 3);
             var midiResolution = 52; // the controller expects a value range of 64-115
@@ -640,7 +685,7 @@ NS4FX.Deck = function (number, midi_chan) {
         },
     });
 
-    //HOTCUES
+    // HOTCUES
     this.hotcue_buttons = new components.ComponentContainer();
     this.hotcue_buttons_secondary = new components.ComponentContainer();
     this.roll_buttons = new components.ComponentContainer();
@@ -690,7 +735,7 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         });
 
-        //cue buttons 5 - 8
+        // cue buttons 5 - 8
         this.hotcue_buttons_secondary[5 - i] = new components.HotcueButton({
             midi: [0x94 + midi_chan, 0x18 - i],
             number: 9 - i,
@@ -699,7 +744,7 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         });
 
-        //sampler buttons
+        // sampler buttons
         if (deck.number % 2 == 0) {
             sampler_offset = 4;
         } else {
@@ -713,36 +758,41 @@ NS4FX.Deck = function (number, midi_chan) {
         });
 
         this.autoloop_buttons[5 - i] = new components.Button({
-            midi: [0x94 + midi_chan, 0x18 - i], // Beispiel-MIDI-Adressen
+            midi: [0x94 + midi_chan, 0x18 - i], // Example MIDI addresses
             input: function (channel, control, value, status) {
+                // Guard to ensure this logic only runs when autoloop mode is active.
                 if (deck.padmode_str !== 'autoloop') {
                     return;
                 }
 
-                var deckGroup = `[Channel${deck.number}]`; // Deck-Gruppe basierend auf Deck-Nummer
+                // When fadercuts are used as stems, this pad mode is not active, so we should do nothing.
+                if (useFadercutsAsStems) {
+                    return;
+                }
+                var deckGroup = `[Channel${deck.number}]`; // Deck group based on deck number
 
-                if (value === 0x7F) { // Button gedrückt
-                    // Länge des Loops basierend auf Button-Nummer steuern
-                    var loopLength = Math.pow(2, 5 - this.number); // Button 1 = 1 Beat, Button 2 = 2 Beats usw.
+                if (value === 0x7F) { // Button pressed
+                    // Control loop length based on button number
+                    var loopLength = Math.pow(2, 5 - this.number); // Button 1 = 1 beat, Button 2 = 2 beats, etc.
 
-                    // Prüfe den aktuellen Zustand des Loops
+                    // Check the current state of the loop
                     var currentLoopLength = engine.getValue(deckGroup, 'beatloop_size');
-                    var isLoopActive = engine.getValue(this.group, "loop_enabled");// Prüfe ob ein Loop aktiv ist
+                    var isLoopActive = engine.getValue(this.group, "loop_enabled");// Check if a loop is active
 
                     if (!isLoopActive || currentLoopLength !== loopLength) {
-                        // Wenn kein Loop aktiv ist oder die Länge sich ändert, setze die neue Länge und aktiviere den Loop
+                        // If no loop is active or the length changes, set the new length and activate the loop
                         engine.setValue(deckGroup, 'beatloop_size', loopLength);
                         if (!isLoopActive) {
-                            print("nicht aktiv");
+                            print("not active");
                             deck.loopControls.loop_toggle.input(0, 0, 0x7F, 0);
                         } else {
-                            engine.setValue(deckGroup, 'loop_enabled', 1); // Aktiviere den Loop
+                            engine.setValue(deckGroup, 'loop_enabled', 1); // Activate the loop
                         }
                     } else {
                         engine.setValue(deckGroup, 'loop_enabled', 0);
                     }
 
-                    // LEDs aktualisieren
+                    // Update LEDs
                     deck.autoloop_buttons.updateLEDs(deckGroup);
                 }
             },
@@ -754,30 +804,30 @@ NS4FX.Deck = function (number, midi_chan) {
 
         if (!useFadercutsAsStems) {
             this.fadercuts_buttons[5 - i] = new components.Button({
-                midi: [0x94 + midi_chan, 0x18 - i], // Beispiel-MIDI-Adressen
+                midi: [0x94 + midi_chan, 0x18 - i], // Example MIDI addresses
                 input: function (channel, control, value, status) {
                     if (deck.padmode_str !== 'fadercuts') {
                         return;
                     }
-    
+
                     const deckGroup = `[Channel${deck.number}]`; // Deck-Gruppe basierend auf Deck-Nummer
-    
+
                     if (value === 0x7F) { // Button gedrückt
                         const bpm = engine.getValue(deckGroup, 'bpm'); // Hole die BPM des Tracks
                         const baseInterval = (60 / bpm) * 1000 / 4; // Berechne die Dauer eines Beats in Millisekunden
-    
+
                         // Geschwindigkeit basierend auf Button-Nummer (z.B. schneller bei höheren Nummern)
                         const speedMultiplier = this.number; // Button 1 = langsam, Button 4 = schnell
                         const interval = baseInterval / speedMultiplier; // Geschwindigkeit anpassen
-    
+
                         print(`BPM=${bpm}, Base Interval=${baseInterval}ms, Speed Multiplier=${speedMultiplier}, Final Interval=${interval}ms`);
-    
+
                         this.startFaderCuts(deckGroup, interval); // Cuts mit berechneter Geschwindigkeit starten
-    
+
                         this.output(1); // LED aktivieren
                     } else {
                         this.stopFaderCuts(deckGroup); // Stoppe Fadercuts
-    
+
                         this.output(0); // LED deaktivieren
                     }
                 },
@@ -786,17 +836,17 @@ NS4FX.Deck = function (number, midi_chan) {
                 },
                 startFaderCuts: function (deckGroup, interval) {
                     let toggle = false;
-    
+
                     this.faderCutInterval = engine.beginTimer(interval, () => {
                         toggle = !toggle;
-    
-                        const newVolume = toggle ? 1 : 0; // Wechsel zwischen voller Lautstärke und Stille
-    
+
+                        const newVolume = toggle ? 1 : 0; // Wechsel zwischen voller Volume und Stille
+
                         print(`Toggle=${toggle}, New Volume=${newVolume}`);
-    
+
                         engine.setValue(deckGroup, 'volume', newVolume);
                     });
-    
+
                     print(`Timer started with interval ${interval}ms`);
                 },
                 stopFaderCuts: function (deckGroup) {
@@ -804,7 +854,7 @@ NS4FX.Deck = function (number, midi_chan) {
                         engine.stopTimer(this.faderCutInterval);
                         this.faderCutInterval = null;
                     }
-    
+
                     engine.setValue(deckGroup, 'volume', 1);
                     print(`Resetting volume for ${deckGroup} to 1`);
                 },
@@ -825,6 +875,8 @@ NS4FX.Deck = function (number, midi_chan) {
 
     this.change_padmode = function (padmode) {
         this.padmode_str = padmode;
+        // This is the main pad mode switching logic.
+        // It disconnects the old set of pads and connects the new one.
         if (padmode == "hotcue") {
             buttons = this.hotcue_buttons;
         } else if (padmode == "sampler") {
@@ -837,7 +889,8 @@ NS4FX.Deck = function (number, midi_chan) {
             deck.fadercuts_buttons.updateLEDs(`[Channel${this.number}]`);
             buttons = this.fadercuts_buttons;
         } else if (padmode == "stems") {
-            // No LED update function needed for stems as it's handled by connections
+            // When switching to stems mode, set the active pads to the stems_buttons container.
+            // LED updates are handled by the connections within each stem button.
             buttons = this.stems_buttons;
         } else if (padmode == "pitchplay") {
             print("not implemented yet");
@@ -867,16 +920,16 @@ NS4FX.Deck = function (number, midi_chan) {
 
     var pitch_or_keylock = function (channel, control, value, status, group) {
         if (value === 0) {
-            // Taste losgelassen → Vererbung an Standard-Button
+            // Button released -> inherit to standard button
             components.Button.prototype.input.call(this, channel, control, value, status, group);
             return;
         }
 
         if (this.other.inGetValue() > 0.0 && this.isPress(channel, control, value, status)) {
-            // Beide Pitch-Tasten gedrückt → Keylock umschalten
+            // Both pitch buttons pressed -> toggle keylock
             script.toggleControl(this.group, "keylock");
         } else {
-            // Normales Pitch-Bending
+            // Normal pitch bending
             components.Button.prototype.input.call(this, channel, control, value, status, group);
         }
     };
@@ -918,7 +971,7 @@ NS4FX.Deck = function (number, midi_chan) {
     });
     this.key_up.other = this.key_down;
     this.key_down.other = this.key_up;
-    
+
     this.stems_buttons = new components.ComponentContainer();
     if (useFadercutsAsStems) {
         for (var i = 1; i <= 4; ++i) {
@@ -930,15 +983,15 @@ NS4FX.Deck = function (number, midi_chan) {
     }
 
 
-    //PAD MODE
+    // PAD MODE
     this.padMode = new components.ComponentContainer({
         pad_hotcue: new components.Button({
-            midi: [0x94 + midi_chan, 0x00], // MIDI-Adresse für Hotcue-Modus
+            midi: [0x94 + midi_chan, 0x00], // MIDI address for Hotcue mode
             input: function (channel, control, value, status) {
-                if (value === 0x7F) { // Button gedrückt
-                    this.groupContainer.turnOffOtherButtons(this); // Deaktiviert andere LEDs
-                    this.output(1); // Aktiviert LED für diesen Modus
-                    // Logik für Hotcue-Modus aktivieren
+                if (value === 0x7F) { // Button pressed
+                    this.groupContainer.turnOffOtherButtons(this); // Deactivates other LEDs
+                    this.output(1); // Activates LED for this mode
+                    // Activate logic for Hotcue mode
                     deck.change_padmode("hotcue");
                 }
             },
@@ -947,9 +1000,9 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         pad_autoloop: new components.Button({
-            midi: [0x94 + midi_chan, 0x0D], // MIDI-Adresse für Autoloop-Modus
+            midi: [0x94 + midi_chan, 0x0D], // MIDI address for Autoloop mode
             input: function (channel, control, value, status) {
-                if (value === 0x7F) { // Button gedrückt
+                if (value === 0x7F) { // Button pressed
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
                     deck.change_padmode("autoloop");
@@ -960,12 +1013,15 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         pad_fadercuts: new components.Button({
-            midi: [0x94 + midi_chan, 0x07], // MIDI-Adresse für Fadercuts-Modus
+            midi: [0x94 + midi_chan, 0x07], // MIDI address for Fadercuts mode
             input: function (channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
-                    if (useFadercutsAsStems) {;
+                    // If useFadercutsAsStems is true, this button activates "stems" mode.
+                    // Otherwise, it activates the normal "fadercuts" mode.
+                    if (useFadercutsAsStems) {
+                        ;
                         NS4FX.dbg("Switching to stems mode on deck " + deck.number);
                         deck.change_padmode("stems");
                     } else {
@@ -978,7 +1034,7 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         pad_sample: new components.Button({
-            midi: [0x94 + midi_chan, 0x0B], // MIDI-Adresse für Sample-Modus
+            midi: [0x94 + midi_chan, 0x0B], // MIDI address for Sample mode
             input: function (channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
@@ -991,7 +1047,7 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         pad_pitchplay: new components.Button({
-            midi: [0x94 + midi_chan, 0x02], // MIDI-Adresse für Sample-Modus
+            midi: [0x94 + midi_chan, 0x02], // MIDI address for Pitch Play mode
             input: function (channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
@@ -1004,7 +1060,7 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         pad_roll: new components.Button({
-            midi: [0x94 + midi_chan, 0x06], // MIDI-Adresse für Sample-Modus
+            midi: [0x94 + midi_chan, 0x06], // MIDI address for Roll mode
             input: function (channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
@@ -1017,7 +1073,7 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         pad_slicer: new components.Button({
-            midi: [0x94 + midi_chan, 0x0E], // MIDI-Adresse für Sample-Modus
+            midi: [0x94 + midi_chan, 0x0E], // MIDI address for Slicer mode
             input: function (channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
@@ -1030,7 +1086,7 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         pad_scratchbanks: new components.Button({
-            midi: [0x94 + midi_chan, 0x0F], // MIDI-Adresse für Sample-Modus
+            midi: [0x94 + midi_chan, 0x0F], // MIDI address for Scratch Banks mode
             input: function (channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
@@ -1043,24 +1099,23 @@ NS4FX.Deck = function (number, midi_chan) {
             }
         }),
         turnOffOtherButtons: function (activeButton) {
-            for (var button in this) {
+            for (var button in this) { // NOSONAR
                 if (this[button] instanceof components.Button && this[button] !== activeButton) {
-                    this[button].output(0); // Schaltet LEDs anderer Buttons aus
+                    this[button].output(0); // Turns off LEDs of other buttons
                 }
             }
         }
     });
     this.padMode.pad_fadercuts.output(0);
 
-    // Sicherstellen, dass die Buttons Zugriff auf den Container haben
+    // Ensure the buttons have access to the container.
     for (var button in this.padMode) {
         if (this.padMode[button] instanceof components.Button) {
-            this.padMode[button].groupContainer = this.padMode; // Container-Referenz setzen
-
+            this.padMode[button].groupContainer = this.padMode; // Set container reference
         }
         this.padMode.pad_hotcue.output(1);
 
-        //LOOP
+        // LOOP controls
         this.loopControls = new components.ComponentContainer({
             loop_halve: new components.Button({
                 midi: [0x94 + midi_chan, 0x34],
@@ -1135,10 +1190,10 @@ NS4FX.Deck = function (number, midi_chan) {
                     if (value === 0x7F) { // Button pressed
                         var loopEnabled = engine.getValue(this.group, "loop_enabled");
                         if (loopEnabled) {
-                            // Wenn der Loop aktiv ist, deaktivieren wir ihn
+                            // If der Loop aktiv ist, deaktivieren wir ihn
                             engine.setValue(this.group, "loop_enabled", 0);
                         } else {
-                            // Wenn kein Loop aktiv ist, aktivieren wir den letzten Loop
+                            // If kein Loop aktiv ist, aktivieren wir den letzten Loop
                             engine.setValue(this.group, "reloop_toggle", 1);
                         }
                         this.output(1);
@@ -1172,11 +1227,11 @@ NS4FX.Deck = function (number, midi_chan) {
                         var currentSamplePosition = currentPosition * trackSamples;
 
                         if (loopEnabled) {
-                            // Wenn ein Loop aktiv ist, deaktivieren wir ihn
+                            // If ein Loop aktiv ist, deaktivieren wir ihn
                             engine.setValue(this.group, "loop_enabled", 0);
                         } else if (loopStartPosition >= 0 && loopEndPosition > loopStartPosition &&
                             currentSamplePosition >= loopStartPosition && currentSamplePosition <= loopEndPosition) {
-                            // Wenn wir uns innerhalb eines definierten Loops befinden, aktivieren wir ihn
+                            // If wir uns innerhalb eines definierten Loops befinden, aktivieren wir ihn
                             engine.setValue(this.group, "loop_enabled", 1);
                         } else {
                             // Ansonsten setzen wir einen neuen Loop
@@ -1204,7 +1259,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 }
             })
         });
-
+        // EQ and Filter knobs
         this.EqEffectKnob = function (group, in_key, fx_key, filter_knob) {
             this.unshift_group = group;
             this.unshift_key = in_key;
@@ -1225,8 +1280,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 // ignore the next values for that control so that when we
                 // eventually switch back to it, soft takeover will manage it
                 // properly.
-                //
-                // We call IgnoreNextValue() here instead of in shift()/unshift()
+                // // We call IgnoreNextValue() here instead of in shift()/unshift()
                 // (via connect()/disconnect()) because if we did that, pressing
                 // the shift key would cause the next value on the control to be
                 // ignored even if the control wasn't moved, which would trigger
@@ -1391,7 +1445,7 @@ NS4FX.BrowseKnob = function () {
 
     this.button = new components.Button({
         group: '[Library]',
-        inKey: 'GoToItem',
+        inKey: 'GoToItem', // Default action is to go to the selected item.
         input: function (channel, control, value, status, group) {
             if (value > 0) { // Button gedrückt
                 engine.setParameter(this.group, this.inKey, 1);
@@ -1400,7 +1454,7 @@ NS4FX.BrowseKnob = function () {
         unshift: function () {
             this.inKey = 'GoToItem';
         },
-        shift: function () {
+        shift: function () { // When shifted, move focus instead of selecting.
             this.inKey = 'MoveFocusBackward';
         },
     });
