@@ -25,8 +25,10 @@ class QmlSidebarModelProxy : public SidebarModel {
     QML_ANONYMOUS
   public:
     enum Roles {
-        LabelRole = Qt::UserRole,
+        LabelRole = SidebarModel::DataRole + 1,
         IconRole,
+        ItemNameRole,
+        CapabilitiesRole,
     };
     Q_ENUM(Roles);
     Q_DISABLE_COPY_MOVE(QmlSidebarModelProxy)
@@ -37,6 +39,8 @@ class QmlSidebarModelProxy : public SidebarModel {
         return m_tracklist.get();
     }
 
+    QVariant data(const QModelIndex& index,
+            int role = Qt::DisplayRole) const override;
     void update(const QList<QmlLibrarySource*>& sources);
     QHash<int, QByteArray> roleNames() const override;
     Q_INVOKABLE QVariant get(int row) const;
@@ -49,6 +53,7 @@ class QmlSidebarModelProxy : public SidebarModel {
 
   private:
     std::shared_ptr<QmlLibraryTrackListModel> m_tracklist;
+    QList<QmlLibrarySource*> m_pQmlFeatures;
 };
 
 } // namespace qml
