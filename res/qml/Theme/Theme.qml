@@ -4,17 +4,25 @@ pragma Singleton
 QtObject {
     property color accent: "#2D4EA1"
     property color accentColor: "#3a60be"
-    property color backgroundColor: "#2E2E2E"
+    property color backgroundColor: "#1e1e1e"
     property color blue: "#01dcfc"
-    property color bpmSliderBarColor: green
+    property color bpmSliderBarColor: blue
     property color buttonNormalColor: midGray
-    property color crossfaderBarColor: red
+    property color buttonActiveColor: white
+    property color buttonDisableColor: lightGray
+    property color crossfaderBarColor: blue
     property color crossfaderOrientationColor: lightGray
     property color darkGray: "#0f0f0f"
     property color darkGray2: "#242424"
-    property color darkGray3: "#202020"
-    property color deckActiveColor: green
-    property color deckBackgroundColor: darkGray
+    property color darkGray3: "#3F3F3F"
+    property color deckActiveColor: white
+    property color deckBackgroundColor: "#1e1e1e"
+    property color deckInfoBarBackgroundColor: '#0e0e0e'
+    property color deckBeatjumpBackgroundColor: midGray3
+    property color deckBeatjumpLabelColor: darkGray3
+    property color deckLoopBackgroundColor: midGray3
+    property color deckLoopLabelColor: darkGray3
+    property color deckEmptyCoverArt: darkGray3
     property color deckLineColor: darkGray2
     property color deckTextColor: white
     property color effectColor: yellow
@@ -29,7 +37,13 @@ QtObject {
     property color knobBackgroundColor: "#262626"
     property color lightGray2: "#b0b0b0"
     property color lightGray: "#747474"
+    property color lightGray3: "#939393"
+    property color libraryPanelSplitterBackground: "#1e1e1e"
+    property color libraryPanelSplitterHandleActive: "#7a7a7a"
+    property color libraryPanelSplitterHandle: "#5f5f5f"
     property color midGray: "#696969"
+    property color midGray2: "#676767"
+    property color midGray3: "#626262"
     property color panelSplitterBackground: backgroundColor
     property color panelSplitterHandleActive: lightGray2
     property color panelSplitterHandle: midGray

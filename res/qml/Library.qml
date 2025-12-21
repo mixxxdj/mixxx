@@ -55,9 +55,9 @@ Item {
 
         SplitView {
             id: sideBarSplitView
-            SplitView.minimumWidth: 100
-            SplitView.preferredWidth: 415
-            SplitView.maximumWidth: 600
+            SplitView.minimumWidth: 150
+            SplitView.preferredWidth: root.width * 0.15
+            SplitView.maximumWidth: 550
 
             orientation: Qt.Vertical
 
