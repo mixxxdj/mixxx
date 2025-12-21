@@ -30,6 +30,11 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         on: 0x7F,
         off: 0x01,
         output: function (value) {
+            // This function is now primarily for setting the LED from the script,
+            // not just toggling. The connect function handles state-based LED updates.
+            if (deckInstance[padStateProperty].isHeldForVolume) {
+                return; // Don't change LED if pad is held for volume control
+            }
             midi.sendShortMsg(this.midi[0], this.midi[1], value ? this.on : this.off);
         },
         connect: function () {
@@ -51,11 +56,33 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
             }
         },
         input: function (channel, control, value, status) {
+            var padState = deckInstance[padStateProperty];
+
             if (value === 0x7F) { // Button pressed
-                NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " pressed.");
+                padState.isHeldForVolume = false; // Reset on each press
+                if (padState.timerId) {
+                    engine.stopTimer(padState.timerId);
+                }
+                var localTimerId = engine.beginTimer(250, function() { // 250ms hold threshold
+                    if (padState.timerId === localTimerId) {
+                        padState.isHeldForVolume = true;
+                        NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " HELD.");
+                        padState.timerId = null;
+                    }
+                }, true);
+                padState.timerId = localTimerId;
+            } else { // Button released
+                if (padState.timerId) {
+                    engine.stopTimer(padState.timerId);
+                    padState.timerId = null;
+                }
+                if (!padState.isHeldForVolume) {
+                    NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " TAPPED.");
                 var stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
                 var currentMuteState = engine.getValue(stemGroup, "mute");
                 engine.setValue(stemGroup, "mute", currentMuteState === 0 ? 1 : 0);
+                }
+                padState.isHeldForVolume = false;
             }
         }
     };
@@ -76,6 +103,39 @@ NS4FX.init = function (id, debug) {
 
     NS4FX.dbg("useFadercutsAsStems is " + useFadercutsAsStems);
 
+    NS4FX.beatsKnob = new components.Encoder({
+        input: function(channel, control, value, status, group) {
+            var heldStemInfo = null;
+            for (var i = 1; i <= 4; i++) {
+                var deck = NS4FX.decks[i];
+                for (var j = 1; j <= 4; j++) {
+                    var padState = deck['stemPad' + j];
+                    if (padState && padState.isHeldForVolume) {
+                        heldStemInfo = {
+                            deckNumber: i,
+                            stemNumber: j
+                        };
+                        break;
+                    }
+                }
+                if (heldStemInfo) break;
+            }
+
+            if (heldStemInfo) {
+                var stemGroup = `[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]`;
+                var currentVolume = engine.getValue(stemGroup, "volume");
+                var volumeStep = 0.05;
+                var newVolume;
+
+                if (value === 0x01) { // Turned right
+                    newVolume = Math.min(1.0, currentVolume + volumeStep);
+                } else { // Turned left (0x7F)
+                    newVolume = Math.max(0.0, currentVolume - volumeStep);
+                }
+                engine.setValue(stemGroup, "volume", newVolume);
+            }
+        }
+    });
     NS4FX.crossfader = new components.Pot({
         group: '[Master]',
         inKey: 'crossfader',
@@ -425,6 +485,13 @@ NS4FX.Deck = function (number, midi_chan) {
     var deck = this;
     this.number = number;
     this.active = (number == 1 || number == 2);
+
+    if (useFadercutsAsStems) {
+        this.stemPad1 = { timerId: null, isHeldForVolume: false };
+        this.stemPad2 = { timerId: null, isHeldForVolume: false };
+        this.stemPad3 = { timerId: null, isHeldForVolume: false };
+        this.stemPad4 = { timerId: null, isHeldForVolume: false };
+    }
 
     hotcuePressed = false;
     playPressedDuringHotcue = false;

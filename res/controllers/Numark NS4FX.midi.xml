@@ -1008,6 +1008,24 @@
             </control>
             <control>
                 <group>[Master]</group>
+                <key>NS4FX.beatsKnob.input</key>
+                <status>0xB8</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>NS4FX.beatsKnob.input</key>
+                <status>0xB9</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
                 <key>headMix</key>
                 <status>0xBF</status>
                 <midino>0x0D</midino>
