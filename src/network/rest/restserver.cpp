@@ -1453,6 +1453,7 @@ bool RestServer::startOnThread() {
             return false;
         }
         m_listeningPort = m_tcpServer->serverPort();
+        m_tcpServer.release();
         kLogger.info()
                 << "REST API listening on"
                 << m_settings.address.toString()
