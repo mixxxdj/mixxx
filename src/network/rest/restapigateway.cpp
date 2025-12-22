@@ -8,6 +8,7 @@
 #include <QJsonValue>
 #include <QMutexLocker>
 #include <QThread>
+#include <cmath>
 #ifdef Q_OS_LINUX
 #include <unistd.h>
 #endif
@@ -1058,7 +1059,8 @@ QJsonObject RestApiGateway::systemHealth() const {
     system.insert("logical_cores", QThread::idealThreadCount());
 
     if (const auto cpu = cpuUsagePercent()) {
-        system.insert("cpu_usage_percent", *cpu);
+        system.insert("cpu_usage_percent",
+                QString::number(static_cast<int>(std::lround(*cpu))));
     } else {
         system.insert("cpu_usage_percent", QJsonValue());
     }
