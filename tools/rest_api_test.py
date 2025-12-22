@@ -219,6 +219,15 @@ def assert_optional_number(payload: Any, description: str) -> None:
         raise ApiTestError(f"Expected {description} to be numeric")
 
 
+def assert_optional_int_string(payload: Any, description: str) -> None:
+    if payload is None:
+        return
+    if not isinstance(payload, str):
+        raise ApiTestError(f"Expected {description} to be an integer string")
+    if not payload.isdigit():
+        raise ApiTestError(f"Expected {description} to be numeric digits only")
+
+
 def format_response(response: Any) -> str:
     return json.dumps(response, indent=2, sort_keys=True)
 
@@ -244,10 +253,17 @@ def validate_schema(payload: Any, path: str) -> None:
     assert_type(payload["links"], dict, "schema.links")
 
 
+def validate_system(payload: Any, path: str) -> None:
+    assert_keys(payload, ["logical_cores", "cpu_usage_percent", "rss_bytes"], path)
+    assert_type(payload["logical_cores"], int, f"{path}.logical_cores")
+    assert_optional_int_string(payload["cpu_usage_percent"], f"{path}.cpu_usage_percent")
+    assert_optional_number(payload["rss_bytes"], f"{path}.rss_bytes")
+
+
 def validate_health(payload: Any, path: str) -> None:
     assert_keys(
         payload,
-        ["status", "uptime", "uptime_unix", "timestamp", "timestamp_unix"],
+        ["status", "uptime", "uptime_unix", "timestamp", "timestamp_unix", "system"],
         path,
     )
     assert_type(payload["status"], str, "health.status")
@@ -255,6 +271,7 @@ def validate_health(payload: Any, path: str) -> None:
     assert_optional_number(payload["uptime_unix"], "health.uptime_unix")
     assert_type(payload["timestamp"], str, "health.timestamp")
     assert_optional_number(payload["timestamp_unix"], "health.timestamp_unix")
+    validate_system(payload["system"], "health.system")
 
 
 def validate_ready(payload: Any, path: str) -> None:
@@ -266,7 +283,16 @@ def validate_ready(payload: Any, path: str) -> None:
 def validate_status(payload: Any, path: str) -> None:
     assert_keys(
         payload,
-        ["app", "decks", "mixer", "uptime", "uptime_unix", "timestamp", "timestamp_unix"],
+        [
+            "app",
+            "decks",
+            "mixer",
+            "uptime",
+            "uptime_unix",
+            "timestamp",
+            "timestamp_unix",
+            "system",
+        ],
         path,
     )
     assert_type(payload["app"], dict, "status.app")
@@ -276,6 +302,7 @@ def validate_status(payload: Any, path: str) -> None:
     assert_optional_number(payload["uptime_unix"], "status.uptime_unix")
     assert_type(payload["timestamp"], str, "status.timestamp")
     assert_optional_number(payload["timestamp_unix"], "status.timestamp_unix")
+    validate_system(payload["system"], "status.system")
 
 
 def validate_decks(payload: Any, path: str) -> None:
