@@ -1027,7 +1027,7 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/decks", decksRoute);
 
     const auto deckRoute = [this, authorizeRequest, forbiddenMessage](
-                                   int deckNumber,
+                                   const QString& deckNumberArg,
                                    const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
@@ -1039,11 +1039,16 @@ void RestServer::registerRoutes() {
         if (request.method() != QHttpServerRequest::Method::Get) {
             return methodNotAllowedResponse(request);
         }
+        bool ok = false;
+        const int deckNumber = deckNumberArg.toInt(&ok);
+        if (!ok) {
+            return badRequestResponse(request, QStringLiteral("Deck number must be numeric"));
+        }
         return invokeGateway(request, [this, deckNumber]() {
             return m_gateway->deck(deckNumber);
         });
     };
-    m_httpServer->route("/api/v1/decks/<int>", deckRoute);
+    m_httpServer->route("/api/v1/decks/<arg>", deckRoute);
 
     const auto controlRoute =
             [this, authorizeRequest, forbiddenMessage, requestTooLarge, idempotencyKeyFor](
