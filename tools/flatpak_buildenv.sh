@@ -8,6 +8,9 @@ SCRIPT=$(basename "$0")
 # Required runtime and SDK
 REQUIRED_PACKAGES=("org.kde.Platform//6.10" "org.kde.Sdk//6.10")
 
+# Optional SDK debug extension
+DEBUG_EXTENSION="org.kde.Sdk.Debug//6.10"
+
 # Empty selected subcommand
 COMMAND=""
 
@@ -19,7 +22,7 @@ print_usage() {
     echo ""
     echo "Usage:"
     echo "  $SCRIPT  name"
-    echo "  $SCRIPT  setup (--system | --user) [--builder]"
+    echo "  $SCRIPT  setup (--system | --user) [--builder] [--debug]"
     echo "  $SCRIPT  -h | --help"
     echo ""
     echo "Commands:"
@@ -29,6 +32,7 @@ print_usage() {
     echo "Options:"
     echo "  -h | --help  Display this help message."
     echo "  --builder    Install optional org.flatpak.Builder package."
+    echo "  --debug      Install optional org.kde.Sdk.Debug extension."
     echo "  --system     Install packages system-wide."
     echo "  --user       Install packages for the current user."
 }
@@ -63,6 +67,17 @@ while [[ $# -gt 0 ]]; do
         --builder)
             if [[ $COMMAND == "setup" ]]; then
                 REQUIRED_PACKAGES+=("org.flatpak.Builder")
+                shift
+            else
+                echo "Error: Option '$1' can only be used with the 'setup' command." >&2
+                print_usage >&2
+                exit 1
+            fi
+            ;;
+
+        --debug)
+            if [[ $COMMAND == "setup" ]]; then
+                REQUIRED_PACKAGES+=("$DEBUG_EXTENSION")
                 shift
             else
                 echo "Error: Option '$1' can only be used with the 'setup' command." >&2
