@@ -112,7 +112,12 @@ bool writeResponder(Responder* responder, const Payload& payload) {
     if (!responder) {
         return false;
     }
-    if constexpr (std::is_same_v<decltype(responder->write(payload)), bool>) {
+    if constexpr (std::is_same_v<std::decay_t<Payload>, QHttpServerResponse>) {
+        return responder->write(
+                payload.body(),
+                payload.mimeType(),
+                payload.statusCode());
+    } else if constexpr (std::is_same_v<decltype(responder->write(payload)), bool>) {
         return responder->write(payload);
     } else {
         responder->write(payload);
@@ -851,23 +856,24 @@ void RestServer::registerRoutes() {
 
     const auto statusStreamRoute =
             [this, authorizeRequest, forbiddenMessage](
-                    const QHttpServerRequest& request,
-                    QHttpServerResponder&& responder) {
+        const QHttpServerRequest& request,
+        QHttpServerResponder&& responder) {
         if (!m_settings.streamEnabled) {
-            responder.write(serviceUnavailableResponse(&request));
+            writeResponder(&responder, serviceUnavailableResponse(&request));
             return;
         }
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
-                responder.write(forbiddenResponse(request, forbiddenMessage(auth.missingScopes)));
+                writeResponder(&responder,
+                        forbiddenResponse(request, forbiddenMessage(auth.missingScopes)));
                 return;
             }
-            responder.write(unauthorizedResponse(request));
+            writeResponder(&responder, unauthorizedResponse(request));
             return;
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
-            responder.write(methodNotAllowedResponse(request));
+            writeResponder(&responder, methodNotAllowedResponse(request));
             return;
         }
         addStatusStreamClient(request, std::move(responder));
@@ -1119,9 +1125,10 @@ void RestServer::addStatusStreamClient(
                 QHttpServerResponse::StatusCode::TooManyRequests,
                 message,
                 requestId);
-        responder.write(jsonResponse(request, QJsonObject{{"error", message}},
-                QHttpServerResponse::StatusCode::TooManyRequests,
-                requestId));
+        writeResponder(&responder,
+                jsonResponse(request, QJsonObject{{"error", message}},
+                        QHttpServerResponse::StatusCode::TooManyRequests,
+                        requestId));
         return;
     }
 
