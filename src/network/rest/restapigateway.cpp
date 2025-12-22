@@ -38,6 +38,8 @@ namespace {
 constexpr qint64 kIdempotencyCacheTtlMs = 10 * 1000;
 constexpr int kMaxIdempotencyCacheEntries = 512;
 constexpr int kMaxIdempotencyKeyLength = 128;
+const ControlFlags kStatusControlFlags = ControlFlag::AllowMissingOrInvalid |
+        ControlFlag::NoAssertIfMissing | ControlFlag::NoWarnIfMissing;
 } // namespace
 
 RestApiGateway::RestApiGateway(
@@ -167,15 +169,27 @@ QJsonObject RestApiGateway::deckSummary(int deckIndex) const {
     QJsonObject deck;
     const QString group = PlayerManager::groupForDeck(deckIndex);
     deck.insert("group", group);
-    ControlProxy playControl(group, QStringLiteral("play"), nullptr);
-    ControlProxy trackLoaded(group, QStringLiteral("track_loaded"), nullptr);
-    ControlProxy playPosition(group, QStringLiteral("playposition"), nullptr);
-    ControlProxy rate(group, QStringLiteral("rate"), nullptr);
-    ControlProxy gain(group, QStringLiteral("gain"), nullptr);
-    ControlProxy volume(group, QStringLiteral("volume"), nullptr);
-    ControlProxy syncEnabled(group, QStringLiteral("sync_enabled"), nullptr);
-    ControlProxy keylock(group, QStringLiteral("keylock"), nullptr);
-    ControlProxy loopEnabled(group, QStringLiteral("loop_enabled"), nullptr);
+    ControlProxy playControl(group, QStringLiteral("play"), nullptr, kStatusControlFlags);
+    ControlProxy trackLoaded(group,
+            QStringLiteral("track_loaded"),
+            nullptr,
+            kStatusControlFlags);
+    ControlProxy playPosition(group,
+            QStringLiteral("playposition"),
+            nullptr,
+            kStatusControlFlags);
+    ControlProxy rate(group, QStringLiteral("rate"), nullptr, kStatusControlFlags);
+    ControlProxy gain(group, QStringLiteral("gain"), nullptr, kStatusControlFlags);
+    ControlProxy volume(group, QStringLiteral("volume"), nullptr, kStatusControlFlags);
+    ControlProxy syncEnabled(group,
+            QStringLiteral("sync_enabled"),
+            nullptr,
+            kStatusControlFlags);
+    ControlProxy keylock(group, QStringLiteral("keylock"), nullptr, kStatusControlFlags);
+    ControlProxy loopEnabled(group,
+            QStringLiteral("loop_enabled"),
+            nullptr,
+            kStatusControlFlags);
     deck.insert("playing", playControl.toBool());
     deck.insert("track_loaded", trackLoaded.toBool());
     deck.insert("position", playPosition.get());
@@ -920,7 +934,8 @@ QHttpServerResponse RestApiGateway::autoDjStatus() const {
                 {"enabled",
                         ControlProxy(QStringLiteral("[AutoDJ]"),
                                 QStringLiteral("enabled"),
-                                nullptr)
+                                nullptr,
+                                kStatusControlFlags)
                                 .toBool()},
                 {"playlist_id", autoDjPlaylistId},
                 {"queue_size", trackCount},
@@ -961,9 +976,18 @@ QJsonObject RestApiGateway::appInfo() const {
 
 QJsonObject RestApiGateway::mixerState() const {
     QJsonObject mixer;
-    ControlProxy crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader"), nullptr);
-    ControlProxy gain(QStringLiteral("[Master]"), QStringLiteral("gain"), nullptr);
-    ControlProxy balance(QStringLiteral("[Master]"), QStringLiteral("balance"), nullptr);
+    ControlProxy crossfader(QStringLiteral("[Master]"),
+            QStringLiteral("crossfader"),
+            nullptr,
+            kStatusControlFlags);
+    ControlProxy gain(QStringLiteral("[Master]"),
+            QStringLiteral("gain"),
+            nullptr,
+            kStatusControlFlags);
+    ControlProxy balance(QStringLiteral("[Master]"),
+            QStringLiteral("balance"),
+            nullptr,
+            kStatusControlFlags);
     mixer.insert("crossfader", crossfader.get());
     mixer.insert("gain", gain.get());
     mixer.insert("balance", balance.get());
@@ -972,8 +996,14 @@ QJsonObject RestApiGateway::mixerState() const {
 
 QJsonObject RestApiGateway::broadcastState() const {
     QJsonObject broadcast;
-    ControlProxy status(QStringLiteral(BROADCAST_PREF_KEY), QStringLiteral("status"), nullptr);
-    ControlProxy enabled(QStringLiteral(BROADCAST_PREF_KEY), QStringLiteral("enabled"), nullptr);
+    ControlProxy status(QStringLiteral(BROADCAST_PREF_KEY),
+            QStringLiteral("status"),
+            nullptr,
+            kStatusControlFlags);
+    ControlProxy enabled(QStringLiteral(BROADCAST_PREF_KEY),
+            QStringLiteral("enabled"),
+            nullptr,
+            kStatusControlFlags);
     broadcast.insert("enabled", enabled.toBool());
     broadcast.insert("status", status.get());
     return broadcast;
@@ -981,15 +1011,24 @@ QJsonObject RestApiGateway::broadcastState() const {
 
 QJsonObject RestApiGateway::recordingState() const {
     QJsonObject recording;
-    ControlProxy status(QStringLiteral("[Recording]"), QStringLiteral("status"), nullptr);
-    ControlProxy toggle(QStringLiteral("[Recording]"), QStringLiteral("toggle_recording"), nullptr);
+    ControlProxy status(QStringLiteral("[Recording]"),
+            QStringLiteral("status"),
+            nullptr,
+            kStatusControlFlags);
+    ControlProxy toggle(QStringLiteral("[Recording]"),
+            QStringLiteral("toggle_recording"),
+            nullptr,
+            kStatusControlFlags);
     recording.insert("status", status.get());
     recording.insert("toggle", toggle.toBool());
     return recording;
 }
 
 QJsonObject RestApiGateway::autoDjOverview() const {
-    ControlProxy enabled(QStringLiteral("[AutoDJ]"), QStringLiteral("enabled"), nullptr);
+    ControlProxy enabled(QStringLiteral("[AutoDJ]"),
+            QStringLiteral("enabled"),
+            nullptr,
+            kStatusControlFlags);
     QJsonObject autodj;
     autodj.insert("enabled", enabled.toBool());
     auto* const collection = m_trackCollectionManager->internalCollection();
