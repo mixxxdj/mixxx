@@ -22,6 +22,7 @@
 #include <limits>
 
 #include "network/rest/certificategenerator.h"
+#include "network/rest/restapigateway.h"
 #include "network/rest/restscopes.h"
 #include "network/rest/restserver.h"
 #include "network/rest/restservervalidator.h"
@@ -103,28 +104,43 @@ class StubRestApiGateway : public RestApiProvider {
                 QStringLiteral("%1\n%2\n%3").arg(token, idempotencyKey, endpoint);
         const auto cached = m_idempotencyCache.constFind(cacheKey);
         if (cached != m_idempotencyCache.constEnd()) {
-            return cached.value();
+            return buildResponse(cached.value());
         }
         QHttpServerResponse response = handler();
-        m_idempotencyCache.insert(cacheKey, response);
+        if (m_lastResponse.has_value()) {
+            m_idempotencyCache.insert(cacheKey, m_lastResponse.value());
+        }
         return response;
     }
 
   private:
     QHttpServerResponse jsonResponse(const QString& message) const {
-        return QHttpServerResponse(
-                QHttpServerResponse::StatusCode::Ok,
-                QJsonDocument(QJsonObject{{"message", message}}).toJson(
-                        QJsonDocument::Compact),
-                "application/json");
+        CachedResponse payload;
+        payload.status = QHttpServerResponse::StatusCode::Ok;
+        payload.body = QJsonDocument(QJsonObject{{"message", message}}).toJson(
+                QJsonDocument::Compact);
+        payload.mimeType = QByteArrayLiteral("application/json");
+        m_lastResponse = payload;
+        return buildResponse(payload);
+    }
+
+    QHttpServerResponse buildResponse(const CachedResponse& payload) const {
+        return QHttpServerResponse(payload.mimeType, payload.body, payload.status);
     }
 
     QHttpServerResponse jsonResponseWithCounter(const QString& prefix) const {
         return jsonResponse(QStringLiteral("%1-%2").arg(prefix).arg(++m_responseCounter));
     }
 
+    struct CachedResponse {
+        QHttpServerResponse::StatusCode status{QHttpServerResponse::StatusCode::Ok};
+        QByteArray body;
+        QByteArray mimeType;
+    };
+
     mutable int m_responseCounter{0};
-    mutable QHash<QString, QHttpServerResponse> m_idempotencyCache;
+    mutable std::optional<CachedResponse> m_lastResponse;
+    mutable QHash<QString, CachedResponse> m_idempotencyCache;
 };
 
 struct HttpResult {
