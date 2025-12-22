@@ -666,6 +666,14 @@ NS4FX.Deck = function (number, midi_chan) {
         shiftOffset: 4,
     });
 
+    this.stutter_button = new components.Button({
+        inKey: 'cue_gotoandplay',
+        input: function (channel, control, value, status, group) {
+            if (value === 0x7F) { // Only trigger on press
+                engine.setValue(group, this.inKey, 1);
+            }
+        }
+    });
     this.sync_button = new components.SyncButton({
         midi: [0x90 + midi_chan, 0x02],
         off: 0x01,
