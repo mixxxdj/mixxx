@@ -374,6 +374,11 @@
         <translation>Farbe</translation>
     </message>
     <message>
+        <location filename="../../src/library/columncache.cpp" line="132"/>
+        <source>Pitch</source>
+        <translation>Stimmung</translation>
+    </message>
+    <message>
         <location filename="../../src/library/columncache.cpp" line="74"/>
         <source>Comment</source>
         <translation>Kommentar</translation>

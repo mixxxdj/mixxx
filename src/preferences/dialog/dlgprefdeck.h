@@ -94,6 +94,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
+    void slot432HzPitchLockChanged(bool);
 
   private:
     // Because the CueDefault list is out of order, we have to set the combo
@@ -119,6 +120,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     QList<ControlProxy*> m_rateRangeControls;
     QList<ControlProxy*> m_keylockModeControls;
     QList<ControlProxy*> m_keyunlockModeControls;
+    QList<ControlProxy*> m_432HzPitchLockControls;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
@@ -146,4 +148,5 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     double m_dRateTempFine;
     double m_dRatePermCoarse;
     double m_dRatePermFine;
+    bool m_b432HzPitchLock;
 };

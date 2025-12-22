@@ -32,11 +32,18 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     void analyzerEnabled(Qt::CheckState state);
     void fastAnalysisEnabled(Qt::CheckState state);
     void reanalyzeEnabled(Qt::CheckState state);
+    void detect432HzEnabled(Qt::CheckState state);
+    void detectTuningEnabled(Qt::CheckState state);
 #else
     void analyzerEnabled(int i);
     void fastAnalysisEnabled(int i);
     void reanalyzeEnabled(int i);
+    void detect432HzEnabled(int i);
+    void detectTuningEnabled(int i);
 #endif
+    void tuningMinChanged(int value);
+    void tuningMaxChanged(int value);
+    void tuningStepChanged(int value);
 
     void setNotation(KeyUtils::KeyNotation notation);
     void setNotationOpenKey(bool);
@@ -58,5 +65,10 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
+    bool m_bDetect432HzEnabled;
+    bool m_bDetectTuningEnabled;
+    int m_tuningMinFreq;
+    int m_tuningMaxFreq;
+    int m_tuningStepFreq;
     KeyDetectionSettings::StemStrategy m_stemStrategy;
 };

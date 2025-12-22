@@ -37,6 +37,14 @@ QString Keys::getGlobalKeyText() const {
     return QString::fromStdString(m_keyMap.global_key_text());
 }
 
+bool Keys::is432Hz() const {
+    return m_keyMap.is_432hz();
+}
+
+int Keys::getTuningFrequencyHz() const {
+    return m_keyMap.tuning_frequency_hz();
+}
+
 bool Keys::readByteArray(const QByteArray& byteArray) {
     if (!m_keyMap.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse Keys from QByteArray of size"

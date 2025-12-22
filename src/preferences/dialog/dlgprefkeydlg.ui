@@ -80,6 +80,133 @@ and allows you to pitch adjust them for harmonic mixing.</string>
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="bdetect432HzEnabled">
+        <property name="toolTip">
+         <string>Detect tracks tuned to 432Hz concert pitch instead of the standard 440Hz.
+When enabled, tracks will be analyzed at both 440Hz and 432Hz tuning,
+and the more consistent result will be used. 432Hz tracks will be marked
+with a special indicator in the library.</string>
+        </property>
+        <property name="text">
+         <string>Detect 432Hz tuning (legacy mode)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="bdetectTuningEnabled">
+        <property name="toolTip">
+         <string>Detect the tuning frequency of tracks by scanning multiple reference pitches.
+When enabled, tracks will be analyzed at frequencies from the minimum to maximum range,
+and the frequency with the most consistent key detection will be stored.
+This enables automatic pitch correction for 432Hz playback.
+
+Symbols in the key column:
+✧ (sparkle) = 432Hz tuning detected
+↓ (arrow down) = tuning below 440Hz
+↑ (arrow up) = tuning above 440Hz</string>
+        </property>
+        <property name="text">
+         <string>Detect tuning frequency (recommended)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="tuningRangeLayout">
+        <item>
+         <widget class="QLabel" name="labelTuningRange">
+          <property name="text">
+           <string>Tuning detection range:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinTuningMin">
+          <property name="toolTip">
+           <string>Minimum tuning frequency to scan (Hz)</string>
+          </property>
+          <property name="minimum">
+           <number>400</number>
+          </property>
+          <property name="maximum">
+           <number>460</number>
+          </property>
+          <property name="value">
+           <number>427</number>
+          </property>
+          <property name="suffix">
+           <string> Hz</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTuningTo">
+          <property name="text">
+           <string>to</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinTuningMax">
+          <property name="toolTip">
+           <string>Maximum tuning frequency to scan (Hz)</string>
+          </property>
+          <property name="minimum">
+           <number>400</number>
+          </property>
+          <property name="maximum">
+           <number>460</number>
+          </property>
+          <property name="value">
+           <number>447</number>
+          </property>
+          <property name="suffix">
+           <string> Hz</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTuningStep">
+          <property name="text">
+           <string>Step:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinTuningStep">
+          <property name="toolTip">
+           <string>Step size for scanning tuning frequencies (Hz).
+Smaller values are more accurate but slower.</string>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>5</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+          <property name="suffix">
+           <string> Hz</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="tuningRangeSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="labelStemStrategy">
