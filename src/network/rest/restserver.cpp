@@ -766,7 +766,9 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/*", QHttpServerRequest::Method::Options, optionsRoute);
 
-    const auto schemaRoute = [this, schemaPayload](const QHttpServerRequest& request) {
+    const auto schemaRoute =
+            [this, schemaPayload, authorizeRequest, forbiddenMessage](
+                    const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -793,7 +795,8 @@ void RestServer::registerRoutes() {
         return QString::fromUtf8(request.value(kIdempotencyKeyHeader).trimmed());
     };
 
-    const auto healthRoute = [this](const QHttpServerRequest& request) {
+    const auto healthRoute = [this, authorizeRequest, forbiddenMessage](
+                                     const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -810,7 +813,8 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/health", healthRoute);
 
-    const auto readyRoute = [this](const QHttpServerRequest& request) {
+    const auto readyRoute = [this, authorizeRequest, forbiddenMessage](
+                                    const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -827,7 +831,8 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/ready", readyRoute);
 
-    const auto statusRoute = [this](const QHttpServerRequest& request) {
+    const auto statusRoute = [this, authorizeRequest, forbiddenMessage](
+                                     const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -844,9 +849,10 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/status", statusRoute);
 
-    const auto statusStreamRoute = [this](
-                                           const QHttpServerRequest& request,
-                                           QHttpServerResponder&& responder) {
+    const auto statusStreamRoute =
+            [this, authorizeRequest, forbiddenMessage](
+                    const QHttpServerRequest& request,
+                    QHttpServerResponder&& responder) {
         if (!m_settings.streamEnabled) {
             responder.write(serviceUnavailableResponse(&request));
             return;
@@ -868,7 +874,8 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/stream/status", statusStreamRoute);
 
-    const auto decksRoute = [this](const QHttpServerRequest& request) {
+    const auto decksRoute = [this, authorizeRequest, forbiddenMessage](
+                                    const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -885,7 +892,9 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/decks", decksRoute);
 
-    const auto deckRoute = [this](const QHttpServerRequest& request, int deckNumber) {
+    const auto deckRoute = [this, authorizeRequest, forbiddenMessage](
+                                   const QHttpServerRequest& request,
+                                   int deckNumber) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -902,7 +911,9 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/decks/<int>", deckRoute);
 
-    const auto controlRoute = [this](const QHttpServerRequest& request) {
+    const auto controlRoute =
+            [this, authorizeRequest, forbiddenMessage, requestTooLarge, idempotencyKeyFor](
+                    const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -957,7 +968,9 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/control", controlRoute);
 
-    const auto autoDjRoute = [this](const QHttpServerRequest& request) {
+    const auto autoDjRoute =
+            [this, authorizeRequest, forbiddenMessage, requestTooLarge, idempotencyKeyFor](
+                    const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -1017,7 +1030,9 @@ void RestServer::registerRoutes() {
     };
     m_httpServer->route("/api/v1/autodj", autoDjRoute);
 
-    const auto playlistsRoute = [this](const QHttpServerRequest& request) {
+    const auto playlistsRoute =
+            [this, authorizeRequest, forbiddenMessage, requestTooLarge, idempotencyKeyFor](
+                    const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
