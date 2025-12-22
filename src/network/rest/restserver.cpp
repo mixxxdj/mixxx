@@ -516,9 +516,9 @@ bool RestServer::applyTlsConfiguration() {
         kLogger.warning() << "TLS is enabled but no TLS configuration was provided";
         return false;
     }
-    if (kHttpServerHasSslConfiguration) {
+    if constexpr (kHttpServerHasSslConfiguration) {
         m_httpServer->setSslConfiguration(m_tlsConfiguration->configuration);
-    } else if (kHttpServerHasSslSetup) {
+    } else if constexpr (kHttpServerHasSslSetup) {
         m_httpServer->sslSetup(m_tlsConfiguration->configuration);
     } else {
         kLogger.warning() << "TLS is enabled but the Qt HTTP server lacks SSL configuration APIs";
@@ -1377,7 +1377,7 @@ bool RestServer::startOnThread() {
     }
 
     DEBUG_ASSERT(m_settings.portValid);
-    if (kHttpServerHasListen) {
+    if constexpr (kHttpServerHasListen) {
         const auto listenResult = m_httpServer->listen(
                 m_settings.address, static_cast<quint16>(m_settings.port));
         if (!listenResult) {
@@ -1435,9 +1435,9 @@ void RestServer::stopOnThread() {
     m_streamTimer.stop();
     m_streamClients.clear();
     if (m_httpServer) {
-        if (kHttpServerHasStop) {
+        if constexpr (kHttpServerHasStop) {
             m_httpServer->stop();
-        } else if (kHttpServerHasClose) {
+        } else if constexpr (kHttpServerHasClose) {
             m_httpServer->close();
         }
         m_httpServer.reset();
