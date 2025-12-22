@@ -644,7 +644,9 @@ void RestServer::registerRoutes() {
 
     const auto toJsonArray = [](const QStringList& values) {
         QJsonArray array;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
         array.reserve(values.size());
+#endif
         for (const auto& value : values) {
             array.append(value);
         }
