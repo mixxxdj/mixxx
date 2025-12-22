@@ -1,30 +1,40 @@
 // Mixxx control types
-// Generated file, don't change anything by hand
+// Generated file, don't change by hand, will be overwritten with every controls manual change
 
 declare namespace MixxxControls {
+	export interface Config {
+		strict?: false; // default = loose
+	}
+
+	type IsStrict = Config["strict"] extends true ? true : false;
+
 	/*
 	 * Public
 	 */
-	export type MixxxGroup = keyof Controls | (string & {});
+	export type MixxxGroup = keyof Controls | (IsStrict extends true ? never : string & {});
 
 	// All controls
 	export type MixxxControl<TGroup> =
-		| (string & {})
+		| (IsStrict extends true ? never : string & {})
 		| (0 extends 1 & TGroup // is any check
 				? string
 				: TGroup extends keyof Controls | keyof ReadOnly.ReadOnlyControls
 				?
 						| (TGroup extends keyof Controls ? Controls[TGroup] : never)
 						| (TGroup extends keyof ReadOnly.ReadOnlyControls ? ReadOnly.ReadOnlyControls[TGroup] : never)
+				: IsStrict extends true
+				? never
 				: string);
 
 	// Controls that are read & write at the same time
 	export type MixxxControlReadAndWrite<TGroup> =
-		| (string & {})
+		| (IsStrict extends true ? never : string & {})
 		| (0 extends 1 & TGroup // is any check
 				? string
 				: TGroup extends keyof Controls
 				? Controls[TGroup]
+				: IsStrict extends true
+				? never
 				: string);
 
 	/*
@@ -127,7 +137,7 @@ declare namespace MixxxControls {
 		 * @groups [App]
 		 * @range integer
 		 * @feedback None
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],num_auxiliaries control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],num_auxiliaries control.
 		 */
 		| "num_auxiliaries"
 
@@ -137,7 +147,7 @@ declare namespace MixxxControls {
 		 * @groups [App]
 		 * @range integer
 		 * @feedback None
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],num_decks control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],num_decks control.
 		 */
 		| "num_decks"
 
@@ -147,7 +157,7 @@ declare namespace MixxxControls {
 		 * @groups [App]
 		 * @range integer
 		 * @feedback None
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],num_microphones control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],num_microphones control.
 		 */
 		| "num_microphones"
 
@@ -157,7 +167,7 @@ declare namespace MixxxControls {
 		 * @groups [App]
 		 * @range integer
 		 * @feedback None
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],num_preview_decks control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],num_preview_decks control.
 		 */
 		| "num_preview_decks"
 
@@ -167,7 +177,7 @@ declare namespace MixxxControls {
 		 * @groups [App]
 		 * @range integer
 		 * @feedback None
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],num_samplers control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],num_samplers control.
 		 */
 		| "num_samplers"
 
@@ -177,7 +187,7 @@ declare namespace MixxxControls {
 		 * @groups [App]
 		 * @range absolute value (in Hz)
 		 * @feedback None
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],samplerate control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],samplerate control.
 		 */
 		| "samplerate";
 
@@ -188,7 +198,7 @@ declare namespace MixxxControls {
 		 * @groups [AutoDJ]
 		 * @range binary
 		 * @feedback Track is added to AutoDJ queue.
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "add_random_track"
 
@@ -198,7 +208,7 @@ declare namespace MixxxControls {
 		 * @groups [AutoDJ]
 		 * @range binary
 		 * @feedback AutoDJ button
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "enabled"
 
@@ -208,7 +218,7 @@ declare namespace MixxxControls {
 		 * @groups [AutoDJ]
 		 * @range binary
 		 * @feedback Crossfader slider moves to the other side.
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "fade_now"
 
@@ -218,7 +228,7 @@ declare namespace MixxxControls {
 		 * @groups [AutoDJ]
 		 * @range binary
 		 * @feedback Order of tracks in the AutoDJ playlist changes.
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "shuffle_playlist"
 
@@ -228,7 +238,7 @@ declare namespace MixxxControls {
 		 * @groups [AutoDJ]
 		 * @range binary
 		 * @feedback Skipped track is removed from the AutoDJ playlist.
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "skip_next";
 
@@ -244,7 +254,7 @@ declare namespace MixxxControls {
 		 * |1  |Center (not affected by crossfader)|
 		 * |2  |Right side of crossfader|
 		 * @feedback None
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		"orientation" | AuxiliaryNChannelNPreviewDeckNSamplerNControl | AuxiliaryNMicrophoneNControl;
 
@@ -288,7 +298,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range binary
 		 * @feedback Mute button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "mute"
 
@@ -298,7 +308,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range binary
 		 * @feedback Microphone Clip light
-		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicator and [AuxiliaryN],PeakIndicator controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicator and [AuxiliaryN],PeakIndicator controls.
 		 */
 		| "peak_indicator"
 
@@ -308,7 +318,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range binary
 		 * @feedback Clip light (left)
-		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicatorL and [AuxiliaryN],PeakIndicatorL controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicatorL and [AuxiliaryN],PeakIndicatorL controls.
 		 */
 		| "peak_indicator_l"
 
@@ -318,7 +328,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range binary
 		 * @feedback Clip light (right)
-		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicatorR and [AuxiliaryN],PeakIndicatorR controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [MicrophoneN],PeakIndicatorR and [AuxiliaryN],PeakIndicatorR controls.
 		 */
 		| "peak_indicator_r"
 
@@ -350,7 +360,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range binary
 		 * @feedback Microphone: Talk buttonAuxiliary: N/A
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "talkover"
 
@@ -361,7 +371,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range default
 		 * @feedback Microphone volume fader changes
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 * @kind pot meter control
 		 */
 		| `volume${PotMeterSuffix}`
@@ -372,7 +382,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range default
 		 * @feedback Microphone VU meter changes
-		 * @since New in version 1.10..
+		 * @since Added in version 1.10..
 		 */
 		| "vu_meter"
 
@@ -382,7 +392,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range default
 		 * @feedback Microphone/auxiliary VU meter L
-		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],VuMeterL and [AuxiliaryN],VuMeterL controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [MicrophoneN],VuMeterL and [AuxiliaryN],VuMeterL controls.
 		 */
 		| "vu_meter_l"
 
@@ -392,7 +402,7 @@ declare namespace MixxxControls {
 		 * @groups [AuxiliaryN], [MicrophoneN]
 		 * @range default
 		 * @feedback Microphone/auxiliary VU meter R
-		 * @since New in version 2.4.0: Replaces the deprecated [MicrophoneN],VuMeterR and [AuxiliaryN],VuMeterR controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [MicrophoneN],VuMeterR and [AuxiliaryN],VuMeterR controls.
 		 */
 		| "vu_meter_r";
 
@@ -406,7 +416,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN]
 		 * @range Binary
 		 * @feedback The deck’s track context menu is shown or hidden.
-		 * @since New in version 2.5.0.
+		 * @since Added in version 2.5.0.
 		 */
 		"show_track_menu" | ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
 
@@ -417,7 +427,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range integer between 1 and [Master],num_decks (inclusive)
 		 * @feedback The channel will start playing at the rate and position of the source deck.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "CloneFromDeck"
 
@@ -427,7 +437,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range integer between 1 and [App],num_samplers (inclusive)
 		 * @feedback The channel will start playing at the rate and position of the source deck.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "CloneFromSampler"
 
@@ -447,7 +457,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Track name & waveform change & Play/pause button
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "LoadSelectedTrackAndPlay"
 
@@ -457,7 +467,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range integer between 1 and [App],num_decks (inclusive)
 		 * @feedback Track name & waveform change
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "LoadTrackFromDeck"
 
@@ -467,7 +477,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range integer between 1 and [App],num_samplers (inclusive)
 		 * @feedback Track name & waveform change
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "LoadTrackFromSampler"
 
@@ -505,7 +515,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range any real number within the range, see [ChannelN],beatloop_X_activate
 		 * @feedback Player jumps forward or backward by X beats.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "beatjump"
 
@@ -518,7 +528,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player jumps backward by X beats.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| `beatjump_${number}_backward`
 
@@ -531,7 +541,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player jumps forward by X beats.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| `beatjump_${number}_forward`
 
@@ -543,7 +553,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player jumps backward by beatjump_size.
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "beatjump_backward"
 
@@ -555,7 +565,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player jumps forward by beatjump_size.
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "beatjump_forward"
 
@@ -567,7 +577,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive real number
 		 * @feedback Beatjump size spinbox
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "beatjump_size"
 
@@ -577,7 +587,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatjump size spinbox
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "beatjump_size_double"
 
@@ -587,7 +597,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatjump size spinbox
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "beatjump_size_halve"
 
@@ -601,7 +611,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback A loop is shown over X beats.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| `beatloop_${number}_activate`
 
@@ -611,7 +621,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatloop X button in skin is lit.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| `beatloop_${number}_enabled`
 
@@ -625,7 +635,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback A loop is shown over X beats.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| `beatloop_${number}_toggle`
 
@@ -638,7 +648,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback A loop is shown over beatloop_size beats
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "beatloop_activate"
 
@@ -650,7 +660,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatloop X button in skin is lit. A loop overlay is shown over X beats on waveform.The slip mode toggle is activated.
-		 * @since New in version 2.5.0.
+		 * @since Added in version 2.5.0.
 		 */
 		| `beatloop_r${number}_activate`
 
@@ -665,7 +675,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive real number
 		 * @feedback Beatloop size spinbox and possibly loop section on waveform
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "beatloop_size"
 
@@ -680,7 +690,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatloop X button in skin is lit. A loop overlay is shown over X beats on waveform.The slip mode toggle is activated.
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| `beatlooproll_${number}_activate`
 
@@ -694,7 +704,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback A loop overlay is shown over beatloop_size beats on waveform.The slip mode toggle is activated.
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "beatlooproll_activate"
 
@@ -708,7 +718,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatloop X button in skin is lit. A loop overlay is shown over X beats on waveform.The slip mode toggle is activated.
-		 * @since New in version 2.5.0.
+		 * @since Added in version 2.5.0.
 		 */
 		| `beatlooproll_r${number}_activate`
 
@@ -718,7 +728,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The beatgrid lines move closer to each other.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "beats_adjust_faster"
 
@@ -728,7 +738,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The beatgrid lines move further apart from each other.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "beats_adjust_slower"
 
@@ -738,7 +748,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The beatgrid moves to align with current playposition.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "beats_translate_curpos"
 
@@ -748,7 +758,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The beatgrid moves left by a small amount.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "beats_translate_earlier"
 
@@ -758,7 +768,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The beatgrid moves right by a small amount.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "beats_translate_later"
 
@@ -768,7 +778,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Instead of syncing the beatgrid to the current playposition, sync the beatgrid so the nearest beat lines up with the other track’s nearest beat.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "beats_translate_match_alignment"
 
@@ -780,7 +790,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The beatgrid is restored.
-		 * @since New in version 2.5.0.
+		 * @since Added in version 2.5.0.
 		 */
 		| "beats_undo_adjustment"
 
@@ -797,7 +807,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The Sync button flashes and the tempo slider snap to the appropriate value.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "beatsync_phase"
 
@@ -807,7 +817,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The Sync button flashes and the tempo slider snaps to the appropriate value.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "beatsync_tempo"
 
@@ -828,7 +838,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback BPM value display (playback speed doesn’t change)
-		 * @since New in version 1.9.2.
+		 * @since Added in version 1.9.2.
 		 */
 		| "bpm_tap"
 
@@ -838,7 +848,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback The lock icon of the track is activated/deactivated.
-		 * @since New in version 2.5.0.
+		 * @since Added in version 2.5.0.
 		 */
 		| "bpmlock"
 
@@ -848,7 +858,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback None
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "cue_cdj"
 
@@ -885,7 +895,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position and start playing.
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "cue_gotoandplay"
 
@@ -895,7 +905,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position.
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "cue_gotoandstop"
 
@@ -905,7 +915,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Cue button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "cue_indicator"
 
@@ -932,7 +942,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback None
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "cue_play"
 
@@ -989,7 +999,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Eject button is lit. Be sure to set back to 0 with scripts so the button does not stay lit.
-		 * @since New in version 1.9.0.
+		 * @since Added in version 1.9.0.
 		 */
 		| "eject"
 
@@ -1025,7 +1035,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position. Hotcue X marker may change on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| `hotcue_${number}_activate`
 
@@ -1034,7 +1044,7 @@ declare namespace MixxxControls {
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| `hotcue_${number}_activatecue`
 
@@ -1045,7 +1055,7 @@ declare namespace MixxxControls {
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| `hotcue_${number}_activateloop`
 
@@ -1055,7 +1065,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Hotcue X marker changes on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| `hotcue_${number}_clear`
 
@@ -1065,7 +1075,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range 3-Byte RGB color code (or -1)
 		 * @feedback Color of Hotcue X button and waveform marker changes.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| `hotcue_${number}_color`
 
@@ -1077,7 +1087,7 @@ declare namespace MixxxControls {
 		 * This control can be used to map the primary action of the “Cue Loop” performance pad mode on Serato-style controllers.
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| `hotcue_${number}_cueloop`
 
@@ -1087,7 +1097,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| `hotcue_${number}_goto`
 
@@ -1100,7 +1110,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position and looping is enabled.
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| `hotcue_${number}_gotoandloop`
 
@@ -1110,7 +1120,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position.
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| `hotcue_${number}_gotoandplay`
 
@@ -1120,7 +1130,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| `hotcue_${number}_gotoandstop`
 
@@ -1130,7 +1140,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer
 		 * @feedback Hotcue X marker changes on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| `hotcue_${number}_position`
 
@@ -1141,7 +1151,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Hotcue X marker changes on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| `hotcue_${number}_set`
 
@@ -1150,7 +1160,7 @@ declare namespace MixxxControls {
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| `hotcue_${number}_setcue`
 
@@ -1161,7 +1171,7 @@ declare namespace MixxxControls {
 		 * This control can be used for controllers that have dedicated hotcue/saved loop pad modes.
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| `hotcue_${number}_setloop`
 
@@ -1169,7 +1179,7 @@ declare namespace MixxxControls {
 		 * Indicates if hotcue slot X is set, active or empty.
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],hotcue_X_enabled.
+		 * @since Added in version 2.4.0: Replaces the deprecated [ChannelN],hotcue_X_enabled.
 		 */
 		| `hotcue_${number}_status`
 
@@ -1177,7 +1187,7 @@ declare namespace MixxxControls {
 		 * Indicates the type of the hotcue in hotcue slot X.
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| `hotcue_${number}_type`
 
@@ -1187,7 +1197,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer (or -1)
 		 * @feedback None
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "hotcue_focus"
 
@@ -1197,7 +1207,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Color of focused hotcue button and waveform marker changes.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "hotcue_focus_color_next"
 
@@ -1207,7 +1217,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Color of focused hotcue button and waveform marker changes.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "hotcue_focus_color_prev"
 
@@ -1217,7 +1227,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position. Intro end marker may change on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_end_activate"
 
@@ -1227,7 +1237,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Intro end marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_end_clear"
 
@@ -1237,7 +1247,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer
 		 * @feedback Intro end marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_end_position"
 
@@ -1247,7 +1257,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Intro end marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_end_set"
 
@@ -1257,7 +1267,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position. Intro start marker may change on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_start_activate"
 
@@ -1267,7 +1277,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Intro start marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_start_clear"
 
@@ -1277,7 +1287,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer
 		 * @feedback Intro start marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_start_position"
 
@@ -1287,7 +1297,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Intro start marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "intro_start_set"
 
@@ -1322,7 +1332,7 @@ declare namespace MixxxControls {
 		 * |22 |1m |8a |Am |
 		 * |23 |8m |3a |B♭m|
 		 * |24 |3m |10a|Bm |
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "key"
 
@@ -1332,7 +1342,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback key-lock button activates
-		 * @since New in version 1.9.0.
+		 * @since Added in version 1.9.0.
 		 */
 		| "keylock"
 
@@ -1357,7 +1367,7 @@ declare namespace MixxxControls {
 		 * |0  |forward|
 		 * |1  |backward|
 		 * @feedback Loop anchor button
-		 * @since New in version 2.5.0.
+		 * @since Added in version 2.5.0.
 		 */
 		| "loop_anchor"
 
@@ -1368,7 +1378,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatloop size spinbox changes
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "loop_double"
 
@@ -1378,7 +1388,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Loop in waveform is active.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| "loop_enabled"
 
@@ -1388,7 +1398,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer
 		 * @feedback Loop-out marker shows on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| "loop_end_position"
 
@@ -1399,7 +1409,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Beatloop size spinbox changes
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "loop_halve"
 
@@ -1409,7 +1419,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Loop-in marker changes on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| "loop_in"
 
@@ -1419,7 +1429,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Waveform position jumps
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "loop_in_goto"
 
@@ -1431,7 +1441,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range real number
 		 * @feedback Loop moves forward or backward by X beats.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "loop_move"
 
@@ -1444,7 +1454,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Loop moves backward by X beats.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| `loop_move_${number}_backward`
 
@@ -1457,7 +1467,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Loop moves forward by X beats.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| `loop_move_${number}_forward`
 
@@ -1467,7 +1477,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Loop-out marker changes on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| "loop_out"
 
@@ -1477,7 +1487,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Waveform position jumps
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "loop_out_goto"
 
@@ -1489,7 +1499,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Last active loop is disabled and removed from waveform and overview.
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "loop_remove"
 
@@ -1501,7 +1511,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range 0.0 - infinity
 		 * @feedback Loop length is scaled by given amount on waveform.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "loop_scale"
 
@@ -1511,7 +1521,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer
 		 * @feedback Loop-in marker changes on waveform.
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| "loop_start_position"
 
@@ -1521,7 +1531,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Mute button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "mute"
 
@@ -1536,7 +1546,7 @@ declare namespace MixxxControls {
 		 * |1  |Center (not affected by crossfader)|
 		 * |2  |Right side of crossfader|
 		 * @feedback None
-		 * @since New in version 1.9.0.
+		 * @since Added in version 1.9.0.
 		 */
 		| "orientation"
 
@@ -1546,7 +1556,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position. Outro end marker may change on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_end_activate"
 
@@ -1556,7 +1566,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Outro end marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_end_clear"
 
@@ -1566,7 +1576,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer
 		 * @feedback Outro end marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_end_position"
 
@@ -1576,7 +1586,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Outro end marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_end_set"
 
@@ -1586,7 +1596,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Player may change position. Outro start marker may change on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_start_activate"
 
@@ -1596,7 +1606,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Outro start marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_start_clear"
 
@@ -1606,7 +1616,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range positive integer
 		 * @feedback Outro start marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_start_position"
 
@@ -1616,7 +1626,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Outro start marker changes on waveform.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "outro_start_set"
 
@@ -1626,7 +1636,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Passthrough label in the waveform overview and passthrough button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "passthrough"
 
@@ -1636,7 +1646,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Clip light
-		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicator, [PreviewDeckN],PeakIndicator and [SamplerN],PeakIndicator controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicator, [PreviewDeckN],PeakIndicator and [SamplerN],PeakIndicator controls.
 		 */
 		| "peak_indicator"
 
@@ -1646,7 +1656,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Clip light (left)
-		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicatorL, [PreviewDeckN],PeakIndicatorL and [SamplerN],PeakIndicatorL controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicatorL, [PreviewDeckN],PeakIndicatorL and [SamplerN],PeakIndicatorL controls.
 		 */
 		| "peak_indicator_l"
 
@@ -1656,7 +1666,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Clip light (right)
-		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicatorR, [PreviewDeckN],PeakIndicatorR and [SamplerN],PeakIndicatorR controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [ChannelN],PeakIndicatorR, [PreviewDeckN],PeakIndicatorR and [SamplerN],PeakIndicatorR controls.
 		 */
 		| "peak_indicator_r"
 
@@ -1676,7 +1686,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range -6.0..6.0 semitones
 		 * @feedback Key display
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 * @kind pot meter control
 		 */
 		| `pitch${PotMeterSuffix}`
@@ -1688,7 +1698,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range -3.0..3.0 semitones
 		 * @feedback Key display
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 * @kind pot meter control
 		 */
 		| `pitch_adjust${PotMeterSuffix}`
@@ -1699,7 +1709,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Key display
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "pitch_down"
 
@@ -1709,7 +1719,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Key display
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "pitch_up"
 
@@ -1729,7 +1739,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Play/Stutter button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "play_stutter"
 
@@ -1761,7 +1771,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Hot-cues or Loop In/Out markers
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "quantize"
 
@@ -1891,7 +1901,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Loop range in waveform activates or deactivates and play position moves to loop in point.
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "reloop_andstop"
 
@@ -1901,7 +1911,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Loop range in waveform activates or deactivates.
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "reloop_toggle"
 
@@ -1911,7 +1921,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback when track finishes, song loops to beginning
-		 * @since New in version 1.9.0.
+		 * @since Added in version 1.9.0.
 		 */
 		| "repeat"
 
@@ -1920,7 +1930,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "reset_key"
 
@@ -1939,7 +1949,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback REV button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "reverseroll"
 
@@ -1949,7 +1959,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range -3.0..3.0
 		 * @feedback Waveform
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| "scratch2"
 
@@ -1959,7 +1969,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Waveform
-		 * @since New in version 1.8.0.
+		 * @since Added in version 1.8.0.
 		 */
 		| "scratch2_enable"
 
@@ -1969,7 +1979,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback All cue markers move left by 10ms.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "shift_cues_earlier"
 
@@ -1979,7 +1989,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback All cue markers move left by 1ms.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "shift_cues_earlier_small"
 
@@ -1989,7 +1999,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback All cue markers move right by 10ms.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "shift_cues_later"
 
@@ -1999,7 +2009,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback All cue markers move right by 1ms.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "shift_cues_later_small"
 
@@ -2009,7 +2019,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Slip mode button
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "slip_enabled"
 
@@ -2019,7 +2029,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Star count is decreased in the deck’s star widget and in the library table.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "stars_down"
 
@@ -2029,7 +2039,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Star count is increased in the deck’s star widget and in the library table.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "stars_up"
 
@@ -2048,7 +2058,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Deck plays from beginning
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "start_play"
 
@@ -2058,7 +2068,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Deck stops at the beginning.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "start_stop"
 
@@ -2068,7 +2078,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Pause Button. Deck pauses at the current position.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "stop"
 
@@ -2078,7 +2088,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback If enabled, the Sync button stays lit and tempo slider snap to the appropriate value. Slider adjustments are linked on all decks that have sync lock enabled.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "sync_enabled"
 
@@ -2087,7 +2097,7 @@ declare namespace MixxxControls {
 		 *
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @feedback Key value widget
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "sync_key"
 
@@ -2097,7 +2107,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback If enabled, the Sync button stays lit and tempo slider snap to the appropriate value. Slider adjustments are linked on all decks that have sync lock enabled.
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "sync_leader"
 
@@ -2107,7 +2117,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback If enabled, the Sync button stays lit and tempo slider snap to the appropriate value. Slider adjustments are linked on all decks that have sync lock enabled.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "sync_master"
 
@@ -2121,7 +2131,7 @@ declare namespace MixxxControls {
 		 * |0  |Sync lock disabled for that deck|
 		 * |1  |Deck is sync follower|
 		 * |2  |Deck is sync leader|
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "sync_mode"
 
@@ -2131,7 +2141,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback Speed slider
-		 * @since New in version 2.5.0.
+		 * @since Added in version 2.5.0.
 		 */
 		| "tempo_tap"
 
@@ -2141,7 +2151,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range 3-Byte RGB color code (or -1)
 		 * @feedback Track color changes in the library view.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "track_color"
 
@@ -2168,7 +2178,7 @@ declare namespace MixxxControls {
 		 * |0  |Cue points ignored|
 		 * |1  |One Cue - If needle is dropped after the cue point, track will seek to that cue point|
 		 * |2  |Hot Cue - Track will seek to nearest previous hotcue|
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "vinylcontrol_cueing"
 
@@ -2178,7 +2188,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range binary
 		 * @feedback When enabled, a vinyl indication should appear onscreen indicating green for enabled.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "vinylcontrol_enabled"
 
@@ -2194,7 +2204,7 @@ declare namespace MixxxControls {
 		 * |2  |Constant Mode (track tempo equals last known-steady tempo regardless of needle input|
 		 * See Control Mode for details.
 		 * @feedback 3-way button indicates status
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "vinylcontrol_mode"
 
@@ -2204,7 +2214,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range ?
 		 * @feedback BPM value widget
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "visual_bpm"
 
@@ -2214,7 +2224,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range ?
 		 * @feedback Key value widget
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "visual_key"
 
@@ -2225,7 +2235,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range -0.5..0.5
 		 * @feedback Key value widget
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 * @kind pot meter control
 		 */
 		| `visual_key_distance${PotMeterSuffix}`
@@ -2247,7 +2257,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range default
 		 * @feedback Deck VU meter
-		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeter, [PreviewDeckN],VuMeter and [SamplerN],VuMeter controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [ChannelN],VuMeter, [PreviewDeckN],VuMeter and [SamplerN],VuMeter controls.
 		 */
 		| "vu_meter"
 
@@ -2257,7 +2267,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range default
 		 * @feedback Deck VU meter L
-		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterL, [PreviewDeckN],VuMeterL and [SamplerN],VuMeterL controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterL, [PreviewDeckN],VuMeterL and [SamplerN],VuMeterL controls.
 		 */
 		| "vu_meter_l"
 
@@ -2267,7 +2277,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range default
 		 * @feedback Deck VU meter R
-		 * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterR, [PreviewDeckN],VuMeterR and [SamplerN],VuMeterR controls.
+		 * @since Added in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterR, [PreviewDeckN],VuMeterR and [SamplerN],VuMeterR controls.
 		 */
 		| "vu_meter_r"
 
@@ -2277,7 +2287,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range 1.0 - 10.0
 		 * @feedback Waveform zoom buttons
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "waveform_zoom"
 
@@ -2287,7 +2297,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range ?
 		 * @feedback Waveform zoom buttons
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "waveform_zoom_down"
 
@@ -2297,7 +2307,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range ?
 		 * @feedback Waveform zoom buttons
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "waveform_zoom_set_default"
 
@@ -2307,7 +2317,7 @@ declare namespace MixxxControls {
 		 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 		 * @range ?
 		 * @feedback Waveform zoom buttons
-		 * @since New in version 1.11.0.
+		 * @since Added in version 1.11.0.
 		 */
 		| "waveform_zoom_up"
 
@@ -2327,7 +2337,7 @@ declare namespace MixxxControls {
 		 * @groups [Controls]
 		 * @range binary
 		 * @feedback None
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "AutoHotcueColors"
 
@@ -2351,7 +2361,7 @@ declare namespace MixxxControls {
 		 * @groups [Controls]
 		 * @range binary
 		 * @feedback All Widgets
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "touch_shift";
 
@@ -2595,7 +2605,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Context dependent
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "GoToItem"
 
@@ -2605,7 +2615,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveDown"
 
@@ -2615,7 +2625,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Relative (positive values move forward, negative values move backward)
 		 * @feedback Currently focused pane changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveFocus"
 
@@ -2625,7 +2635,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently focused pane changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveFocusBackward"
 
@@ -2635,7 +2645,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently focused pane changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveFocusForward"
 
@@ -2645,7 +2655,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Relative (positive values move right, negative values move left)
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveHorizontal"
 
@@ -2655,7 +2665,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveLeft"
 
@@ -2665,7 +2675,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveRight"
 
@@ -2675,7 +2685,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveUp"
 
@@ -2685,7 +2695,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Relative (positive values move down, negative values move up)
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "MoveVertical"
 
@@ -2695,7 +2705,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "ScrollDown"
 
@@ -2705,7 +2715,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "ScrollUp"
 
@@ -2715,7 +2725,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Relative (positive values move down, negative values move up)
 		 * @feedback Currently selected item changes
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "ScrollVertical"
 
@@ -2725,7 +2735,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Searchbox query is cleared
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "clear_search"
 
@@ -2748,7 +2758,7 @@ declare namespace MixxxControls {
 		 * |5  |   |Dialog (any confirmation or error popup, preferences, track properties or cover art window)|
 		 * |6  |   |Unknown (widgets that don’t fit into any of the above categories)|
 		 * @feedback Currently focused widget changes
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "focused_widget"
 
@@ -2758,7 +2768,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Library view
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "font_size_decrement"
 
@@ -2768,7 +2778,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Library view
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "font_size_increment"
 
@@ -2778,7 +2788,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Relative
 		 * @feedback Library view
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "font_size_knob"
 
@@ -2788,7 +2798,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Searchbox query changes
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "search_history_next"
 
@@ -2798,7 +2808,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Searchbox query changes
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "search_history_prev"
 
@@ -2808,7 +2818,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range -N / +N
 		 * @feedback Searchbox query changes
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "search_history_selector"
 
@@ -2823,7 +2833,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Tracks table context menu is shown or hidden.
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "show_track_menu"
 
@@ -2866,7 +2876,7 @@ declare namespace MixxxControls {
 		 * |30 |Track Color|X  |X  |X  |   |
 		 * |31 |Last Played|X  |X  |X  |   |
 		 * @feedback Sorting indicator in the column headers of the track table
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "sort_column"
 
@@ -2876,7 +2886,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Same as for [Library],sort_column or value 0 for sorting according the current column with the cursor on it
 		 * @feedback Sorting indicator in the column headers of the track table
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "sort_column_toggle"
 
@@ -2888,7 +2898,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Sorting indicator in the column headers of the track table
-		 * @since New in version 2.4.0.
+		 * @since Added in version 2.4.0.
 		 */
 		| "sort_focused_column"
 
@@ -2898,7 +2908,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary (0 for ascending, 1 for descending)
 		 * @feedback Sorting indicator in the column headers of the track table
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "sort_order"
 
@@ -2908,7 +2918,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Track color changes in the library view.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "track_color_next"
 
@@ -2918,7 +2928,7 @@ declare namespace MixxxControls {
 		 * @groups [Library]
 		 * @range Binary
 		 * @feedback Track color changes in the library view.
-		 * @since New in version 2.3.0.
+		 * @since Added in version 2.3.0.
 		 */
 		| "track_color_prev"
 		| LibraryPlaylistControl;
@@ -2930,7 +2940,7 @@ declare namespace MixxxControls {
 		 * @groups [Library], [Playlist]
 		 * @range Binary
 		 * @feedback Append track(s) to Auto DJ playlist
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "AutoDjAddBottom"
 
@@ -2940,7 +2950,7 @@ declare namespace MixxxControls {
 		 * @groups [Library], [Playlist]
 		 * @range Binary
 		 * @feedback Prepend track(s) to Auto DJ playlist
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "AutoDjAddTop";
 
@@ -2951,7 +2961,7 @@ declare namespace MixxxControls {
 		 * @groups [Main]
 		 * @range binary
 		 * @feedback Clip light (mono)
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],PeakIndicator control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],PeakIndicator control.
 		 */
 		| "peak_indicator"
 
@@ -2961,7 +2971,7 @@ declare namespace MixxxControls {
 		 * @groups [Main]
 		 * @range binary
 		 * @feedback Clip light (left)
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],PeakIndicatorL control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],PeakIndicatorL control.
 		 */
 		| "peak_indicator_l"
 
@@ -2971,7 +2981,7 @@ declare namespace MixxxControls {
 		 * @groups [Main]
 		 * @range binary
 		 * @feedback Clip light (right)
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],PeakIndicatorR control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],PeakIndicatorR control.
 		 */
 		| "peak_indicator_r"
 
@@ -2981,7 +2991,7 @@ declare namespace MixxxControls {
 		 * @groups [Main]
 		 * @range default
 		 * @feedback Main meter (mono)
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],VuMeter control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],VuMeter control.
 		 */
 		| "vu_meter"
 
@@ -2991,7 +3001,7 @@ declare namespace MixxxControls {
 		 * @groups [Main]
 		 * @range default
 		 * @feedback Main meter L
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],VuMeterL control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],VuMeterL control.
 		 */
 		| "vu_meter_l"
 
@@ -3001,7 +3011,7 @@ declare namespace MixxxControls {
 		 * @groups [Main]
 		 * @range default
 		 * @feedback Main meter R
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],VuMeterR control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],VuMeterR control.
 		 */
 		| "vu_meter_r";
 
@@ -3012,7 +3022,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback Overload indicator
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "audio_latency_overload"
 
@@ -3022,7 +3032,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range 0 .. n
 		 * @feedback Counter in hardware preferences
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "audio_latency_overload_count"
 
@@ -3032,7 +3042,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range 0 .. 25 %
 		 * @feedback latency meter
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "audio_latency_usage"
 
@@ -3053,7 +3063,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback Booth gain knob shown or hidden
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 */
 		| "booth_enabled"
 
@@ -3064,7 +3074,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range 0.0…1.0…5.0
 		 * @feedback Booth gain knob
-		 * @since New in version 2.1.0.
+		 * @since Added in version 2.1.0.
 		 * @kind pot meter control
 		 */
 		| `booth_gain${PotMeterSuffix}`
@@ -3095,7 +3105,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback Crossfader slider
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "crossfader_down_small"
 
@@ -3114,7 +3124,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback Crossfader slider
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "crossfader_up_small"
 
@@ -3125,7 +3135,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range 0.0..1.0
 		 * @feedback Strength knob
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 * @kind pot meter control
 		 */
 		| `duckStrength${PotMeterSuffix}`
@@ -3136,7 +3146,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback None
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "enabled"
 
@@ -3147,7 +3157,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range 0.0..1.0..5.0
 		 * @feedback Main volume knob
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 * @kind pot meter control
 		 */
 		| `gain${PotMeterSuffix}`
@@ -3158,7 +3168,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback None
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "headEnabled"
 
@@ -3169,7 +3179,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range 0.0..1.0..5.0
 		 * @feedback Headphone volume knob
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 * @kind pot meter control
 		 */
 		| `headGain${PotMeterSuffix}`
@@ -3191,7 +3201,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range binary
 		 * @feedback Split Cue button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "headSplit"
 
@@ -3210,7 +3220,7 @@ declare namespace MixxxControls {
 		 * @groups [Master]
 		 * @range FIXME
 		 * @feedback Ducking mode button
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "talkoverDucking";
 
@@ -3265,7 +3275,7 @@ declare namespace MixxxControls {
 		 * @groups [Sampler]
 		 * @range binary
 		 * @feedback Opens file dialog. Select configuration file.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "LoadSamplerBank"
 
@@ -3275,7 +3285,7 @@ declare namespace MixxxControls {
 		 * @groups [Sampler]
 		 * @range binary
 		 * @feedback Opens file dialog. Configuration file can be named and saved.
-		 * @since New in version 2.0.0.
+		 * @since Added in version 2.0.0.
 		 */
 		| "SaveSamplerBank";
 
@@ -3305,7 +3315,7 @@ declare namespace MixxxControls {
 		 * @groups [Skin]
 		 * @range binary
 		 * @feedback Effect rack is shown/hidden.
-		 * @since New in version 2.4.0: Replaces the deprecated [EffectRack1],show control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [EffectRack1],show control.
 		 */
 		| "show_effectrack"
 
@@ -3315,7 +3325,7 @@ declare namespace MixxxControls {
 		 * @groups [Skin]
 		 * @range binary
 		 * @feedback Cover art in the library is shown/hidden.
-		 * @since New in version 2.4.0: Replaces the deprecated [Library],show_coverart control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Library],show_coverart control.
 		 */
 		| "show_library_coverart"
 
@@ -3325,7 +3335,7 @@ declare namespace MixxxControls {
 		 * @groups [Skin]
 		 * @range binary
 		 * @feedback The library section of the user interface is enlarged/shrunk.
-		 * @since New in version 2.4.0: Replaces the deprecated [Master],maximize_library control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Master],maximize_library control.
 		 */
 		| "show_maximized_library"
 
@@ -3335,7 +3345,7 @@ declare namespace MixxxControls {
 		 * @groups [Skin]
 		 * @range binary
 		 * @feedback Sampler banks are shown/hidden.
-		 * @since New in version 2.4.0: Replaces the deprecated [Samplers],show_samplers control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [Samplers],show_samplers control.
 		 */
 		| "show_samplers"
 
@@ -3345,7 +3355,7 @@ declare namespace MixxxControls {
 		 * @groups [Skin]
 		 * @range binary
 		 * @feedback Vinyl controls are shown/hidden.
-		 * @since New in version 2.4.0: Replaces the deprecated [VinylControl],show_vinylcontrol control.
+		 * @since Added in version 2.4.0: Replaces the deprecated [VinylControl],show_vinylcontrol control.
 		 */
 		| "show_vinylcontrol";
 
@@ -3356,7 +3366,7 @@ declare namespace MixxxControls {
 		 * @groups [VinylControl]
 		 * @range binary
 		 * @feedback If VC isn’t enabled on any decks, enable it on the first one we’re receiving samples for. If VC is enabled on a single (exclusive) deck, and another deck is setup to receive samples, disable it on the former deck and enable it on the next eligible deck (ordered by deck number). If VC is enabled on multiple decks, don’t do anything.
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "Toggle"
 
@@ -3367,28 +3377,28 @@ declare namespace MixxxControls {
 		 * @groups [VinylControl]
 		 * @range binary
 		 * @feedback position of Boost slider in Options ‣ Preferences ‣ Vinyl Control (is not updated while viewing this Preferences page)
-		 * @since New in version 1.10.0.
+		 * @since Added in version 1.10.0.
 		 */
 		| "gain";
-
-	type EqualizerRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
-	type EffectRack1EffectUnitNEffectMControl =
-		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
-
-	type SamplerNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
-
-	type QuickEffectRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
-	type QuickEffectRack1ChannelIEffect1Control =
-		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
 	type EqualizerRack1ChannelIEffect1Control =
 		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
-	type PreviewDeckNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
+	type QuickEffectRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
 	type MicrophoneNControl = AuxiliaryNMicrophoneNControl;
+
+	type PreviewDeckNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
+
+	type EffectRack1EffectUnitNEffectMControl =
+		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
+
+	type QuickEffectRack1ChannelIEffect1Control =
+		EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
+
+	type SamplerNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
+
+	type EqualizerRack1ChannelIControl = EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
 	namespace ReadOnly {
 		// Read-only controls
@@ -3424,7 +3434,7 @@ declare namespace MixxxControls {
 			 * @groups [App]
 			 * @range 0.0 .. n
 			 * @feedback None
-			 * @since New in version 2.4.0.
+			 * @since Added in version 2.4.0.
 			 * @readonly
 			 */
 			| "gui_tick_50ms_period_s"
@@ -3437,7 +3447,7 @@ declare namespace MixxxControls {
 			 * @groups [App]
 			 * @range 0.0 .. n
 			 * @feedback None
-			 * @since New in version 2.4.0.
+			 * @since Added in version 2.4.0.
 			 * @readonly
 			 */
 			| "gui_tick_full_period_s"
@@ -3453,7 +3463,7 @@ declare namespace MixxxControls {
 			 * @groups [App]
 			 * @range binary
 			 * @feedback None
-			 * @since New in version 2.4.0.
+			 * @since Added in version 2.4.0.
 			 * @readonly
 			 */
 			| "indicator_250ms"
@@ -3469,7 +3479,7 @@ declare namespace MixxxControls {
 			 * @groups [App]
 			 * @range binary
 			 * @feedback None
-			 * @since New in version 2.4.0.
+			 * @since Added in version 2.4.0.
 			 * @readonly
 			 */
 			| "indicator_500ms";
@@ -3500,7 +3510,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range real number
 			 * @feedback None
-			 * @since New in version 1.10.0: (Reverse indication added in 2.4.0)
+			 * @since Added in version 1.10.0: (Reverse indication added in 2.4.0)
 			 * @readonly
 			 */
 			| "beat_active"
@@ -3531,7 +3541,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range ?
 			 * @feedback None
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @readonly
 			 */
 			| "file_key"
@@ -3542,7 +3552,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Intro end button lights up.
-			 * @since New in version 2.3.0.
+			 * @since Added in version 2.3.0.
 			 * @readonly
 			 */
 			| "intro_end_enabled"
@@ -3553,7 +3563,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Intro start button lights up.
-			 * @since New in version 2.3.0.
+			 * @since Added in version 2.3.0.
 			 * @readonly
 			 */
 			| "intro_start_enabled"
@@ -3564,7 +3574,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Outro end button lights up.
-			 * @since New in version 2.3.0.
+			 * @since Added in version 2.3.0.
 			 * @readonly
 			 */
 			| "outro_end_enabled"
@@ -3575,7 +3585,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Outro start button lights up.
-			 * @since New in version 2.3.0.
+			 * @since Added in version 2.3.0.
 			 * @readonly
 			 */
 			| "outro_start_enabled"
@@ -3586,7 +3596,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Play/pause button
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @readonly
 			 */
 			| "play_indicator"
@@ -3597,7 +3607,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Play/pause button
-			 * @since New in version 2.3.0.
+			 * @since Added in version 2.3.0.
 			 * @readonly
 			 */
 			| "play_latched"
@@ -3608,7 +3618,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Waveform and track metadata shown in deck
-			 * @since New in version 2.1.0.
+			 * @since Added in version 2.1.0.
 			 * @readonly
 			 */
 			| "track_loaded"
@@ -3619,7 +3629,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range absolute value
 			 * @feedback None
-			 * @since New in version 1.9.0.
+			 * @since Added in version 1.9.0.
 			 * @readonly
 			 */
 			| "track_samplerate"
@@ -3640,7 +3650,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range 0.0-3.0
 			 * @feedback Off for control disabled, green for control enabled, blinking yellow for when the needle reaches the end of the record, and red for needle skip detected
-			 * @since New in version 1.10.0.
+			 * @since Added in version 1.10.0.
 			 * @readonly
 			 */
 			| "vinylcontrol_status";
@@ -3773,19 +3783,25 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range integer
 			 * @feedback None
-			 * @since New in version 2.1.0.
+			 * @since Added in version 2.1.0.
 			 * @readonly
 			 */
 			"num_effectsavailable";
 
+		type ReadOnlyQuickEffectRack1ChannelIControl =
+			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
+		type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
+
+		type ReadOnlyEffectRack1EffectUnitNEffectMControl =
+			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
+
+		type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
+
 		type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
 			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
-		type ReadOnlyEqualizerRack1ChannelIControl =
-			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
-		type ReadOnlyEqualizerRack1ChannelIEffect1Control =
-			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
+		type ReadOnlyEqualizerRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
 
 		type ReadOnlyEffectRack1EffectUnitNControl =
 			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
@@ -3794,19 +3810,13 @@ declare namespace MixxxControls {
 
 		type ReadOnlySamplerNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
 
-		type ReadOnlyAuxiliaryNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+		type ReadOnlyEqualizerRack1ChannelIEffect1Control =
+			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
 
-		type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
-
-		type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
-
-		type ReadOnlyEqualizerRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
-
-		type ReadOnlyQuickEffectRack1ChannelIControl =
+		type ReadOnlyEqualizerRack1ChannelIControl =
 			ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
-		type ReadOnlyEffectRack1EffectUnitNEffectMControl =
-			ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1Control;
+		type ReadOnlyAuxiliaryNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
 
 		type ReadOnlyMicrophoneNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
 
@@ -3823,7 +3833,7 @@ declare namespace MixxxControls {
 			 * @groups [AuxiliaryN], [MicrophoneN]
 			 * @range binary
 			 * @feedback Microphone Clip light
-			 * @since New in version ?.?.?.
+			 * @since Added in version ?.?.?.
 			 * @deprecated since  version 2.4.0: Use [MicrophoneN],peak_indicator and [AuxiliaryN],peak_indicator instead.
 			 */
 			| "PeakIndicator"
@@ -3834,7 +3844,7 @@ declare namespace MixxxControls {
 			 * @groups [AuxiliaryN], [MicrophoneN]
 			 * @range binary
 			 * @feedback Clip light (left)
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.4.0: Use [MicrophoneN],peak_indicator_l and [AuxiliaryN],peak_indicator_l instead.
 			 */
 			| `PeakIndicator${number}`
@@ -3845,7 +3855,7 @@ declare namespace MixxxControls {
 			 * @groups [AuxiliaryN], [MicrophoneN]
 			 * @range binary
 			 * @feedback Clip light (right)
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.4.0: Use [MicrophoneN],peak_indicator_r and [AuxiliaryN],peak_indicator_r instead.
 			 */
 			| `PeakIndicator${number}`
@@ -3856,7 +3866,7 @@ declare namespace MixxxControls {
 			 * @groups [AuxiliaryN], [MicrophoneN]
 			 * @range default
 			 * @feedback Microphone/auxiliary VU meter changes
-			 * @since New in version 1.10..
+			 * @since Added in version 1.10..
 			 * @deprecated since  version 2.4.0: Use [MicrophoneN],vu_meter and [AuxiliaryN],vu_meter instead.
 			 */
 			| "VuMeter"
@@ -3867,7 +3877,7 @@ declare namespace MixxxControls {
 			 * @groups [AuxiliaryN], [MicrophoneN]
 			 * @range default
 			 * @feedback Microphone/auxiliary VU meter changes
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.4.0: Use [MicrophoneN],vu_meter_l and [AuxiliaryN],vu_meter_l instead.
 			 */
 			| `VuMeter${number}`
@@ -3878,7 +3888,7 @@ declare namespace MixxxControls {
 			 * @groups [AuxiliaryN], [MicrophoneN]
 			 * @range default
 			 * @feedback Microphone/auxiliary VU meter changes
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.4.0: Use [MicrophoneN],vu_meter_r and [AuxiliaryN],vu_meter_r instead.
 			 */
 			| `VuMeter${number}`
@@ -3889,7 +3899,7 @@ declare namespace MixxxControls {
 			 * @groups [AuxiliaryN], [MicrophoneN]
 			 * @range binary
 			 * @feedback Microphone is enabled.
-			 * @since New in version 1.10.0.
+			 * @since Added in version 1.10.0.
 			 * @deprecated since  version 2.0.0: Use [MicrophoneN],input_configured instead.
 			 */
 			| "enabled"
@@ -3923,7 +3933,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Clip light (left)
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_l, [PreviewDeckN],peak_indicator_l and [SamplerN],peak_indicator_l instead.
 			 */
 			| `PeakIndicator${number}`
@@ -3934,7 +3944,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Clip light (right)
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_r, [PreviewDeckN],peak_indicator_r and [SamplerN],peak_indicator_r instead.
 			 */
 			| `PeakIndicator${number}`
@@ -3945,7 +3955,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range default
 			 * @feedback Deck VU meter
-			 * @since New in version ?.?.?.
+			 * @since Added in version ?.?.?.
 			 * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter, Use [PreviewDeckN],vu_meter and [SamplerN],vu_meter instead.
 			 */
 			| "VuMeter"
@@ -3956,7 +3966,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range default
 			 * @feedback Deck VU meter L
-			 * @since New in version ?.?.?.
+			 * @since Added in version ?.?.?.
 			 * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_l, Use [PreviewDeckN],vu_meter_l and [SamplerN],vu_meter_l instead.
 			 */
 			| `VuMeter${number}`
@@ -3967,7 +3977,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range default
 			 * @feedback Deck VU meter R
-			 * @since New in version ?.?.?.
+			 * @since Added in version ?.?.?.
 			 * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_r, Use [PreviewDeckN],vu_meter_r and [SamplerN],vu_meter_r instead.
 			 */
 			| `VuMeter${number}`
@@ -3990,7 +4000,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range toggle
 			 * @feedback A loop is shown over X beats.
-			 * @since New in version 1.10.0.
+			 * @since Added in version 1.10.0.
 			 * @deprecated since  version 2.0.0: Use [ChannelN],beatloop_X_activate instead.
 			 */
 			| `beatloop_${number}`
@@ -4001,7 +4011,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range binary
 			 * @feedback Filter button
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.0.0: Use [QuickEffectRack1_[ChannelN]_Effect1],enabled instead.
 			 */
 			| "filter"
@@ -4012,7 +4022,7 @@ declare namespace MixxxControls {
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
 			 * @range default
 			 * @feedback Filter depth knob
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.0.0: Use [QuickEffectRack1_[ChannelN]],super1 instead.
 			 */
 			| "filterDepth"
@@ -4081,7 +4091,7 @@ declare namespace MixxxControls {
 			 * Indicates if hotcue slot X is set, active or empty.
 			 *
 			 * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-			 * @since New in version 1.8.0.
+			 * @since Added in version 1.8.0.
 			 * @deprecated since  version 2.4.0: Use [ChannelN],hotcue_X_status instead.
 			 */
 			| `hotcue_${number}_enabled`
@@ -4228,7 +4238,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range 0.0 .. n
 			 * @feedback None
-			 * @since New in version 2.4.0.
+			 * @since Added in version 2.4.0.
 			 * @readonly
 			 * @deprecated since  version 2.5.0: Use [App],gui_tick_50ms_period_s instead.
 			 */
@@ -4240,7 +4250,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range 0.0 .. n
 			 * @feedback None
-			 * @since New in version 2.4.0.
+			 * @since Added in version 2.4.0.
 			 * @readonly
 			 * @deprecated since  version 2.5.0: Use [App],gui_tick_full_period_s instead.
 			 */
@@ -4262,7 +4272,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range binary
 			 * @feedback Toggle maximized view of library
-			 * @since New in version 2.0.0.
+			 * @since Added in version 2.0.0.
 			 * @deprecated since  version 2.4.0: Use [Skin],show_maximized_library instead.
 			 */
 			| "maximize_library"
@@ -4273,7 +4283,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range integer
 			 * @feedback None
-			 * @since New in version 2.2.4.
+			 * @since Added in version 2.2.4.
 			 * @deprecated since  version 2.4.0: Use [App],num_auxiliaries instead.
 			 */
 			| "num_auxiliaries"
@@ -4284,7 +4294,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range integer
 			 * @feedback None
-			 * @since New in version 1.9.0.
+			 * @since Added in version 1.9.0.
 			 * @deprecated since  version 2.4.0: Use [App],num_decks instead.
 			 */
 			| "num_decks"
@@ -4295,7 +4305,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range integer
 			 * @feedback None
-			 * @since New in version 2.2.4.
+			 * @since Added in version 2.2.4.
 			 * @deprecated since  version 2.4.0: Use [App],num_microphones instead.
 			 */
 			| "num_microphones"
@@ -4306,7 +4316,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range integer
 			 * @feedback None
-			 * @since New in version 1.9.0.
+			 * @since Added in version 1.9.0.
 			 * @deprecated since  version 2.4.0: Use [App],num_preview_decks instead.
 			 */
 			| "num_preview_decks"
@@ -4317,7 +4327,7 @@ declare namespace MixxxControls {
 			 * @groups [Master]
 			 * @range integer
 			 * @feedback None
-			 * @since New in version 1.9.0.
+			 * @since Added in version 1.9.0.
 			 * @deprecated since  version 2.4.0: Use [App],num_samplers instead.
 			 */
 			| "num_samplers"
@@ -4347,7 +4357,7 @@ declare namespace MixxxControls {
 			 * (No description)
 			 *
 			 * @groups [MicrophoneN]
-			 * @since New in version 1.10.0.
+			 * @since Added in version 1.10.0.
 			 * @deprecated since  version 1.10.0: The control is not processed in the Mixer, which is also why there are no orientation controls for Microphones in the GUI.
 			 */
 			"orientation" | DeprecatedAuxiliaryNMicrophoneNControl;
@@ -4398,7 +4408,7 @@ declare namespace MixxxControls {
 			 * Toggles (expands/collapses) the currently selected sidebar item.
 			 *
 			 * @groups [Playlist]
-			 * @since New in version 1.11.0.
+			 * @since Added in version 1.11.0.
 			 * @deprecated since  version 2.1.0: Use [Library],GoToItem instead.
 			 */
 			| "ToggleSelectedSidebarItem";
@@ -4421,25 +4431,25 @@ declare namespace MixxxControls {
 			 * @groups [VinylControl]
 			 * @range binary
 			 * @feedback Vinyl controls are shown
-			 * @since New in version 1.10.0.
+			 * @since Added in version 1.10.0.
 			 * @deprecated since  version 2.4.0: Use [Skin],show_vinylcontrol instead.
 			 */
 			"show_vinylcontrol";
 
-		type DeprecatedEqualizerRack1ChannelIControl =
+		type DeprecatedQuickEffectRack1ChannelIControl =
+			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
+		type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
+
+		type DeprecatedEffectRack1EffectUnitNControl =
 			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
 		type DeprecatedSamplerNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
 
+		type DeprecatedEqualizerRack1ChannelIControl =
+			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
 		type DeprecatedAuxiliaryNControl = DeprecatedAuxiliaryNMicrophoneNControl;
-
-		type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
-
-		type DeprecatedQuickEffectRack1ChannelIControl =
-			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
-		type DeprecatedEffectRack1EffectUnitNControl =
-			DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
 		type DeprecatedChannelNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
 	}

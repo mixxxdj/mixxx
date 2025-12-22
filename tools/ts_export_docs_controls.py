@@ -427,35 +427,43 @@ def export_ts_types(
     # Write file
     with open(output, "w") as f:
         f.write(f"""// Mixxx control types
-// Generated file, don't change anything by hand
+// Generated file, don't change by hand, will be overwritten with every controls manual change
 
-declare namespace MixxxControls {{ 
-    /*
-     * Public
-     */
-    export type MixxxGroup = keyof Controls | (string & {{}});
+declare namespace MixxxControls {{
+	export interface Config {{
+		strict?: false; // default = loose
+	}}
 
-    // All controls
-    export type MixxxControl<TGroup> =
-        | (string & {{}})
-        | (0 extends 1 & TGroup // is any check
-              ? string
-              : TGroup extends keyof Controls | keyof ReadOnly.ReadOnlyControls
-              ?
-                    | (TGroup extends keyof Controls ? Controls[TGroup] : never)
-                    | (TGroup extends keyof ReadOnly.ReadOnlyControls
-                          ? ReadOnly.ReadOnlyControls[TGroup]
-                          : never)
-              : string);
+	type IsStrict = Config["strict"] extends true ? true : false;
 
-    // Controls that are read & write at the same time
-    export type MixxxControlReadAndWrite<TGroup> =
-        | (string & {{}})
-        | (0 extends 1 & TGroup // is any check
-              ? string
-              : TGroup extends keyof Controls
-              ? Controls[TGroup]
-              : string);
+	/*
+	 * Public
+	 */
+	export type MixxxGroup = keyof Controls | (IsStrict extends true ? never : string & {{}});
+
+	// All controls
+	export type MixxxControl<TGroup> =
+		| (IsStrict extends true ? never : string & {{}})
+		| (0 extends 1 & TGroup // is any check
+				? string
+				: TGroup extends keyof Controls | keyof ReadOnly.ReadOnlyControls
+				?
+						| (TGroup extends keyof Controls ? Controls[TGroup] : never)
+						| (TGroup extends keyof ReadOnly.ReadOnlyControls ? ReadOnly.ReadOnlyControls[TGroup] : never)
+				: IsStrict extends true
+				? never
+				: string);
+
+	// Controls that are read & write at the same time
+	export type MixxxControlReadAndWrite<TGroup> =
+		| (IsStrict extends true ? never : string & {{}})
+		| (0 extends 1 & TGroup // is any check
+				? string
+				: TGroup extends keyof Controls
+				? Controls[TGroup]
+				: IsStrict extends true
+				? never
+				: string);
 
     /*
      * Group <-> control linking
