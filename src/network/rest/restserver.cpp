@@ -106,14 +106,54 @@ struct HasHttpServerResponderWrite<T,
         std::void_t<decltype(std::declval<T&>().write(
                 std::declval<const QByteArray&>()))>> : std::true_type { };
 
-constexpr bool kHttpServerHasListen = HasHttpServerListen<QHttpServer>::value;
-constexpr bool kHttpServerHasStop = HasHttpServerStop<QHttpServer>::value;
-constexpr bool kHttpServerHasClose = HasHttpServerClose<QHttpServer>::value;
-constexpr bool kHttpServerHasSslConfiguration =
-        HasHttpServerSslConfiguration<QHttpServer>::value;
-constexpr bool kHttpServerHasSslSetup = HasHttpServerSslSetup<QHttpServer>::value;
+enum class HttpServerListenStatus {
+    NotSupported,
+    Failed,
+    Ok,
+};
+
 constexpr bool kHttpServerHasResponderWrite =
         HasHttpServerResponderWrite<QHttpServerResponder>::value;
+
+template<typename Server>
+bool configureHttpServerTls(Server* server, const QSslConfiguration& configuration) {
+    if constexpr (HasHttpServerSslConfiguration<Server>::value) {
+        server->setSslConfiguration(configuration);
+        return true;
+    } else if constexpr (HasHttpServerSslSetup<Server>::value) {
+        server->sslSetup(configuration);
+        return true;
+    }
+    return false;
+}
+
+template<typename Server>
+HttpServerListenStatus listenHttpServer(
+        Server* server,
+        const QHostAddress& address,
+        quint16 port,
+        quint16* boundPort) {
+    if constexpr (HasHttpServerListen<Server>::value) {
+        const auto listenResult = server->listen(address, port);
+        if (!listenResult) {
+            return HttpServerListenStatus::Failed;
+        }
+        if (boundPort) {
+            *boundPort = listenResult.port;
+        }
+        return HttpServerListenStatus::Ok;
+    }
+    return HttpServerListenStatus::NotSupported;
+}
+
+template<typename Server>
+void stopHttpServer(Server* server) {
+    if constexpr (HasHttpServerStop<Server>::value) {
+        server->stop();
+    } else if constexpr (HasHttpServerClose<Server>::value) {
+        server->close();
+    }
+}
 
 QByteArray responseBody(const QHttpServerResponse& response) {
 #if defined(MIXXX_HAS_QT_HTTPSERVER_VERSION)
@@ -516,11 +556,9 @@ bool RestServer::applyTlsConfiguration() {
         kLogger.warning() << "TLS is enabled but no TLS configuration was provided";
         return false;
     }
-    if constexpr (kHttpServerHasSslConfiguration) {
-        m_httpServer->setSslConfiguration(m_tlsConfiguration->configuration);
-    } else if constexpr (kHttpServerHasSslSetup) {
-        m_httpServer->sslSetup(m_tlsConfiguration->configuration);
-    } else {
+    if (!configureHttpServerTls(
+                m_httpServer.get(),
+                m_tlsConfiguration->configuration)) {
         kLogger.warning() << "TLS is enabled but the Qt HTTP server lacks SSL configuration APIs";
         return false;
     }
@@ -1377,16 +1415,21 @@ bool RestServer::startOnThread() {
     }
 
     DEBUG_ASSERT(m_settings.portValid);
-    if constexpr (kHttpServerHasListen) {
-        const auto listenResult = m_httpServer->listen(
-                m_settings.address, static_cast<quint16>(m_settings.port));
-        if (!listenResult) {
+    const auto listenStatus = listenHttpServer(
+            m_httpServer.get(),
+            m_settings.address,
+            static_cast<quint16>(m_settings.port),
+            &m_listeningPort);
+    if (listenStatus == HttpServerListenStatus::Ok) {
+        kLogger.info()
+                << "REST API listening on"
+                << m_settings.address.toString()
+                << m_listeningPort;
+    } else if (listenStatus == HttpServerListenStatus::Failed) {
             kLogger.warning() << "Failed to start REST API listener on"
                               << m_settings.address << m_settings.port;
             m_lastError = tr("Failed to bind REST API listener");
             return false;
-        }
-        m_listeningPort = listenResult.port;
     } else {
         m_tcpServer = std::make_unique<QTcpServer>();
         if (!m_tcpServer->listen(
@@ -1410,9 +1453,11 @@ bool RestServer::startOnThread() {
             return false;
         }
         m_listeningPort = m_tcpServer->serverPort();
+        kLogger.info()
+                << "REST API listening on"
+                << m_settings.address.toString()
+                << m_listeningPort;
     }
-    kLogger.info()
-            << "REST API listening on" << m_settings.address.toString() << m_listeningPort;
 
     if (m_settings.streamEnabled) {
         m_streamTimer.stop();
@@ -1435,11 +1480,7 @@ void RestServer::stopOnThread() {
     m_streamTimer.stop();
     m_streamClients.clear();
     if (m_httpServer) {
-        if constexpr (kHttpServerHasStop) {
-            m_httpServer->stop();
-        } else if constexpr (kHttpServerHasClose) {
-            m_httpServer->close();
-        }
+        stopHttpServer(m_httpServer.get());
         m_httpServer.reset();
     }
     if (m_tcpServer) {
