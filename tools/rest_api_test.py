@@ -245,10 +245,16 @@ def validate_schema(payload: Any, path: str) -> None:
 
 
 def validate_health(payload: Any, path: str) -> None:
-    assert_keys(payload, ["status", "uptime_ms", "timestamp"], path)
+    assert_keys(
+        payload,
+        ["status", "uptime", "uptime_unix", "timestamp", "timestamp_unix"],
+        path,
+    )
     assert_type(payload["status"], str, "health.status")
-    assert_optional_number(payload["uptime_ms"], "health.uptime_ms")
-    assert_optional_number(payload["timestamp"], "health.timestamp")
+    assert_type(payload["uptime"], str, "health.uptime")
+    assert_optional_number(payload["uptime_unix"], "health.uptime_unix")
+    assert_type(payload["timestamp"], str, "health.timestamp")
+    assert_optional_number(payload["timestamp_unix"], "health.timestamp_unix")
 
 
 def validate_ready(payload: Any, path: str) -> None:
@@ -258,10 +264,18 @@ def validate_ready(payload: Any, path: str) -> None:
 
 
 def validate_status(payload: Any, path: str) -> None:
-    assert_keys(payload, ["app", "decks", "mixer"], path)
+    assert_keys(
+        payload,
+        ["app", "decks", "mixer", "uptime", "uptime_unix", "timestamp", "timestamp_unix"],
+        path,
+    )
     assert_type(payload["app"], dict, "status.app")
     assert_type(payload["decks"], list, "status.decks")
     assert_type(payload["mixer"], dict, "status.mixer")
+    assert_type(payload["uptime"], str, "status.uptime")
+    assert_optional_number(payload["uptime_unix"], "status.uptime_unix")
+    assert_type(payload["timestamp"], str, "status.timestamp")
+    assert_optional_number(payload["timestamp_unix"], "status.timestamp_unix")
 
 
 def validate_decks(payload: Any, path: str) -> None:

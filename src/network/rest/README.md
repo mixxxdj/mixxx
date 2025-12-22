@@ -108,9 +108,9 @@ All routes are served under the versioned base path `/api/v1` (for example, `/ap
 
 ### Health and status
 
-- `GET /api/v1/health` — liveness, uptime, timestamp, readiness issues, and system metrics (CPU usage when available, RSS bytes). Requires `status:read`.
+- `GET /api/v1/health` — liveness, uptime (ISO-8601 UTC), uptime_unix (seconds since Unix epoch), timestamp (ISO-8601 UTC), timestamp_unix (seconds since Unix epoch), readiness issues, and system metrics (CPU usage when available, RSS bytes). Requires `status:read`.
 - `GET /api/v1/ready` — readiness summary with dependency issues. Requires `status:read`.
-- `GET /api/v1/status` — application info, decks, mixer state, broadcast/recording status, AutoDJ overview, uptime, timestamp,
+- `GET /api/v1/status` — application info, decks, mixer state, broadcast/recording status, AutoDJ overview, uptime (ISO-8601 UTC), uptime_unix (seconds since Unix epoch), timestamp (ISO-8601 UTC), timestamp_unix (seconds since Unix epoch),
   and system metrics. Requires `status:read`.
 - `GET /api/v1/stream/status` — server-sent events stream that emits status deltas at the configured interval. Requires `status:read`.
   Each event uses `event: status` and a JSON payload in `data:` containing only changed top-level fields since the last
