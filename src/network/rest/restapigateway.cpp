@@ -79,13 +79,16 @@ QHttpServerResponse RestApiGateway::successResponse(
 
 QHttpServerResponse RestApiGateway::health() const {
     const QJsonObject readiness = readinessPayload();
+    const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
     return successResponse(QJsonObject{
             {"status", "ok"},
             {"ready", readiness.value("ready")},
             {"issues", readiness.value("issues")},
             {"system", systemHealth()},
-            {"uptime_ms", static_cast<qint64>(m_uptime.elapsed())},
-            {"timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)},
+            {"uptime", nowUtc.toString(Qt::ISODate)},
+            {"uptime_unix", static_cast<qint64>(nowUtc.toSecsSinceEpoch())},
+            {"timestamp", nowUtc.toString(Qt::ISODate)},
+            {"timestamp_unix", static_cast<qint64>(nowUtc.toSecsSinceEpoch())},
     });
 }
 
@@ -227,6 +230,7 @@ QHttpServerResponse RestApiGateway::status() const {
 QJsonObject RestApiGateway::statusPayload() const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     const QJsonObject readiness = readinessPayload();
+    const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
     return QJsonObject{
             {"app", appInfo()},
             {"ready", readiness},
@@ -236,8 +240,10 @@ QJsonObject RestApiGateway::statusPayload() const {
             {"broadcast", broadcastState()},
             {"recording", recordingState()},
             {"autodj", autoDjOverview()},
-            {"uptime_ms", static_cast<qint64>(m_uptime.elapsed())},
-            {"timestamp", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)},
+            {"uptime", nowUtc.toString(Qt::ISODate)},
+            {"uptime_unix", static_cast<qint64>(nowUtc.toSecsSinceEpoch())},
+            {"timestamp", nowUtc.toString(Qt::ISODate)},
+            {"timestamp_unix", static_cast<qint64>(nowUtc.toSecsSinceEpoch())},
     };
 }
 
