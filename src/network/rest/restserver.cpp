@@ -59,21 +59,61 @@ const QRegularExpression kAllowedRequestIdRegex(QStringLiteral("^[A-Za-z0-9._-]+
 #define MIXXX_HAS_QT_HTTPSERVER_VERSION
 #endif
 
-#if defined(MIXXX_HAS_QT_HTTPSERVER_VERSION)
+template<typename T, typename = void>
+struct HasHttpServerListen : std::false_type { };
+
+template<typename T>
+struct HasHttpServerListen<T,
+        std::void_t<decltype(std::declval<T&>().listen(
+                std::declval<const QHostAddress&>(),
+                std::declval<quint16>()))>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasHttpServerStop : std::false_type { };
+
+template<typename T>
+struct HasHttpServerStop<T,
+        std::void_t<decltype(std::declval<T&>().stop())>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasHttpServerClose : std::false_type { };
+
+template<typename T>
+struct HasHttpServerClose<T,
+        std::void_t<decltype(std::declval<T&>().close())>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasHttpServerSslConfiguration : std::false_type { };
+
+template<typename T>
+struct HasHttpServerSslConfiguration<T,
+        std::void_t<decltype(std::declval<T&>().setSslConfiguration(
+                std::declval<const QSslConfiguration&>()))>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasHttpServerSslSetup : std::false_type { };
+
+template<typename T>
+struct HasHttpServerSslSetup<T,
+        std::void_t<decltype(std::declval<T&>().sslSetup(
+                std::declval<const QSslConfiguration&>()))>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasHttpServerResponderWrite : std::false_type { };
+
+template<typename T>
+struct HasHttpServerResponderWrite<T,
+        std::void_t<decltype(std::declval<T&>().write(
+                std::declval<const QByteArray&>()))>> : std::true_type { };
+
+constexpr bool kHttpServerHasListen = HasHttpServerListen<QHttpServer>::value;
+constexpr bool kHttpServerHasStop = HasHttpServerStop<QHttpServer>::value;
+constexpr bool kHttpServerHasClose = HasHttpServerClose<QHttpServer>::value;
 constexpr bool kHttpServerHasSslConfiguration =
-        QT_HTTPSERVER_VERSION >= QT_VERSION_CHECK(6, 8, 0);
-constexpr bool kHttpServerHasListen =
-        QT_HTTPSERVER_VERSION >= QT_VERSION_CHECK(6, 5, 0);
+        HasHttpServerSslConfiguration<QHttpServer>::value;
+constexpr bool kHttpServerHasSslSetup = HasHttpServerSslSetup<QHttpServer>::value;
 constexpr bool kHttpServerHasResponderWrite =
-        QT_HTTPSERVER_VERSION >= QT_VERSION_CHECK(6, 8, 0);
-#else
-constexpr bool kHttpServerHasSslConfiguration =
-        QT_VERSION >= QT_VERSION_CHECK(6, 8, 0);
-constexpr bool kHttpServerHasListen =
-        QT_VERSION >= QT_VERSION_CHECK(6, 5, 0);
-constexpr bool kHttpServerHasResponderWrite =
-        QT_VERSION >= QT_VERSION_CHECK(6, 8, 0);
-#endif
+        HasHttpServerResponderWrite<QHttpServerResponder>::value;
 
 QByteArray responseBody(const QHttpServerResponse& response) {
 #if defined(MIXXX_HAS_QT_HTTPSERVER_VERSION)
@@ -478,8 +518,11 @@ bool RestServer::applyTlsConfiguration() {
     }
     if (kHttpServerHasSslConfiguration) {
         m_httpServer->setSslConfiguration(m_tlsConfiguration->configuration);
-    } else {
+    } else if (kHttpServerHasSslSetup) {
         m_httpServer->sslSetup(m_tlsConfiguration->configuration);
+    } else {
+        kLogger.warning() << "TLS is enabled but the Qt HTTP server lacks SSL configuration APIs";
+        return false;
     }
     m_tlsActive = true;
     return true;
@@ -1392,9 +1435,9 @@ void RestServer::stopOnThread() {
     m_streamTimer.stop();
     m_streamClients.clear();
     if (m_httpServer) {
-        if (kHttpServerHasListen) {
+        if (kHttpServerHasStop) {
             m_httpServer->stop();
-        } else {
+        } else if (kHttpServerHasClose) {
             m_httpServer->close();
         }
         m_httpServer.reset();
