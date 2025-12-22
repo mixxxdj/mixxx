@@ -285,7 +285,7 @@ RestServer::TlsResult RestServer::prepareTlsConfiguration(
     QList<QSslCipher> modernCiphers;
     modernCiphers.reserve(modernCipherNames.size());
     for (const QString& cipherName : modernCipherNames) {
-        const QSslCipher cipher = QSslCipher::fromString(cipherName);
+        const QSslCipher cipher(cipherName);
         if (!cipher.isNull()) {
             modernCiphers.push_back(cipher);
         }
