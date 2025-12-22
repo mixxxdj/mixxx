@@ -91,7 +91,12 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
     auto linkFileInfoBefore = QFileInfo(linkFileName);
     EXPECT_TRUE(linkFileInfoBefore.exists());
     EXPECT_TRUE(linkFileInfoBefore.isSymLink());
+#ifndef __APPLE__
+    // We skip this test on MacOS, because the default
+    // temporary directory (QDir::tempPath()) will use `/var/folder/...`, but
+    // `/var/folder` is a simlink to `/private/var/folder`.
     EXPECT_EQ(linkFileInfoBefore.canonicalFilePath().toStdString(), tmpFileName.toStdString());
+#endif
 
     // Verify that the file has no tags
     {
@@ -127,7 +132,12 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
     auto linkFileInfoAfter = QFileInfo(linkFileName);
 
     EXPECT_TRUE(linkFileInfoAfter.exists());
+#ifndef __APPLE__
+    // We skip this test on MacOS, because the default
+    // temporary directory (QDir::tempPath()) will use `/var/folder/...`, but
+    // `/var/folder` is a simlink to `/private/var/folder`.
     EXPECT_EQ(linkFileInfoAfter.canonicalFilePath().toStdString(), tmpFileName.toStdString());
+#endif
     EXPECT_TRUE(linkFileInfoAfter.isSymLink());
 }
 #endif
