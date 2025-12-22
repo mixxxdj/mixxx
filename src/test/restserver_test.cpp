@@ -114,6 +114,12 @@ class StubRestApiGateway : public RestApiProvider {
     }
 
   private:
+    struct CachedResponse {
+        QHttpServerResponse::StatusCode status{QHttpServerResponse::StatusCode::Ok};
+        QByteArray body;
+        QByteArray mimeType;
+    };
+
     QHttpServerResponse jsonResponse(const QString& message) const {
         CachedResponse payload;
         payload.status = QHttpServerResponse::StatusCode::Ok;
@@ -131,12 +137,6 @@ class StubRestApiGateway : public RestApiProvider {
     QHttpServerResponse jsonResponseWithCounter(const QString& prefix) const {
         return jsonResponse(QStringLiteral("%1-%2").arg(prefix).arg(++m_responseCounter));
     }
-
-    struct CachedResponse {
-        QHttpServerResponse::StatusCode status{QHttpServerResponse::StatusCode::Ok};
-        QByteArray body;
-        QByteArray mimeType;
-    };
 
     mutable int m_responseCounter{0};
     mutable std::optional<CachedResponse> m_lastResponse;
