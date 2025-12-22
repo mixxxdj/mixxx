@@ -192,8 +192,15 @@ QString methodToString(QHttpServerRequest::Method method) {
 }
 
 bool isJsonContentType(const QHttpServerRequest& request) {
-    const QByteArray headerValue =
-            QByteArray(request.headers().value(QByteArrayLiteral(kContentTypeHeader))).trimmed();
+    QByteArray headerValue;
+    const QHttpHeaders headers = request.headers();
+    for (auto it = headers.cbegin(), end = headers.cend(); it != end; ++it) {
+        if (it.name().compare(QByteArrayLiteral(kContentTypeHeader), Qt::CaseInsensitive) == 0) {
+            headerValue = it.value();
+            break;
+        }
+    }
+    headerValue = headerValue.trimmed();
     if (headerValue.isEmpty()) {
         return false;
     }
