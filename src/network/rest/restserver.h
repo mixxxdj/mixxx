@@ -13,6 +13,7 @@
 #include <QList>
 #include <QPointer>
 #include <QSslConfiguration>
+#include <QTcpServer>
 #include <QThread>
 #include <QTimer>
 #include <QString>
@@ -172,7 +173,7 @@ class RestServer : public QObject {
     void registerRoutes();
     void addStatusStreamClient(
             const QHttpServerRequest& request,
-            QHttpServerResponder&& responder);
+            QHttpServerResponder& responder);
     void pushStatusStreamUpdate();
     bool sendStatusStreamEvent(
             const QJsonObject& payload,
@@ -202,6 +203,7 @@ class RestServer : public QObject {
 
     std::unique_ptr<QObject> m_threadObject;
     std::unique_ptr<QHttpServer> m_httpServer;
+    std::unique_ptr<QTcpServer> m_tcpServer;
     std::optional<TlsResult> m_tlsConfiguration;
     Settings m_settings;
     QPointer<RestApiProvider> m_gateway;

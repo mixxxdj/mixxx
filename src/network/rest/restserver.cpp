@@ -55,6 +55,35 @@ const QRegularExpression kUuidRequestIdRegex(
                        "[0-9a-fA-F]{12}$"));
 const QRegularExpression kAllowedRequestIdRegex(QStringLiteral("^[A-Za-z0-9._-]+$"));
 
+#if defined(QT_HTTPSERVER_VERSION)
+#define MIXXX_HAS_QT_HTTPSERVER_VERSION
+#endif
+
+#if defined(MIXXX_HAS_QT_HTTPSERVER_VERSION)
+constexpr bool kHttpServerHasSslConfiguration =
+        QT_HTTPSERVER_VERSION >= QT_VERSION_CHECK(6, 8, 0);
+constexpr bool kHttpServerHasListen =
+        QT_HTTPSERVER_VERSION >= QT_VERSION_CHECK(6, 5, 0);
+constexpr bool kHttpServerHasResponderWrite =
+        QT_HTTPSERVER_VERSION >= QT_VERSION_CHECK(6, 8, 0);
+#else
+constexpr bool kHttpServerHasSslConfiguration =
+        QT_VERSION >= QT_VERSION_CHECK(6, 8, 0);
+constexpr bool kHttpServerHasListen =
+        QT_VERSION >= QT_VERSION_CHECK(6, 5, 0);
+constexpr bool kHttpServerHasResponderWrite =
+        QT_VERSION >= QT_VERSION_CHECK(6, 8, 0);
+#endif
+
+QByteArray responseBody(const QHttpServerResponse& response) {
+#if defined(MIXXX_HAS_QT_HTTPSERVER_VERSION)
+    if constexpr (QT_HTTPSERVER_VERSION >= QT_VERSION_CHECK(6, 8, 0)) {
+        return response.body();
+    }
+#endif
+    return response.data();
+}
+
 bool requestIsSecure(const QHttpServerRequest& request) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     return request.url().scheme().compare(QStringLiteral("https"), Qt::CaseInsensitive) == 0;
@@ -113,12 +142,23 @@ bool writeResponder(Responder* responder, const Payload& payload) {
         return false;
     }
     if constexpr (std::is_same_v<std::decay_t<Payload>, QHttpServerResponse>) {
-        return responder->write(
-                payload.body(),
-                payload.mimeType(),
-                payload.statusCode());
-    } else if constexpr (std::is_same_v<decltype(responder->write(payload)), bool>) {
-        return responder->write(payload);
+        QHttpHeaders headers = payload.headers();
+        const QByteArray mimeType = payload.mimeType();
+        if (!mimeType.isEmpty()) {
+            headers.append(QByteArrayLiteral("Content-Type"), mimeType);
+        }
+        responder->write(
+                responseBody(payload),
+                headers,
+                static_cast<QHttpServerResponder::StatusCode>(payload.statusCode()));
+        return true;
+    } else if constexpr (std::is_same_v<std::decay_t<Payload>, QByteArray>) {
+        if constexpr (kHttpServerHasResponderWrite) {
+            responder->write(payload);
+        } else {
+            responder->write(payload, QHttpHeaders{}, QHttpServerResponder::StatusCode::Ok);
+        }
+        return true;
     } else {
         responder->write(payload);
         return true;
@@ -436,11 +476,11 @@ bool RestServer::applyTlsConfiguration() {
         kLogger.warning() << "TLS is enabled but no TLS configuration was provided";
         return false;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-    m_httpServer->setSslConfiguration(m_tlsConfiguration->configuration);
-#else
-    m_httpServer->sslSetup(m_tlsConfiguration->configuration);
-#endif
+    if (kHttpServerHasSslConfiguration) {
+        m_httpServer->setSslConfiguration(m_tlsConfiguration->configuration);
+    } else {
+        m_httpServer->sslSetup(m_tlsConfiguration->configuration);
+    }
     m_tlsActive = true;
     return true;
 #else
@@ -857,7 +897,7 @@ void RestServer::registerRoutes() {
     const auto statusStreamRoute =
             [this, authorizeRequest, forbiddenMessage](
         const QHttpServerRequest& request,
-        QHttpServerResponder&& responder) {
+        QHttpServerResponder& responder) {
         if (!m_settings.streamEnabled) {
             writeResponder(&responder, serviceUnavailableResponse(&request));
             return;
@@ -876,7 +916,7 @@ void RestServer::registerRoutes() {
             writeResponder(&responder, methodNotAllowedResponse(request));
             return;
         }
-        addStatusStreamClient(request, std::move(responder));
+        addStatusStreamClient(request, responder);
     };
     m_httpServer->route("/api/v1/stream/status", statusStreamRoute);
 
@@ -899,8 +939,8 @@ void RestServer::registerRoutes() {
     m_httpServer->route("/api/v1/decks", decksRoute);
 
     const auto deckRoute = [this, authorizeRequest, forbiddenMessage](
-                                   const QHttpServerRequest& request,
-                                   int deckNumber) {
+                                   int deckNumber,
+                                   const QHttpServerRequest& request) {
         const AuthorizationResult auth = authorizeRequest(request);
         if (!auth.authorized) {
             if (auth.forbidden) {
@@ -1113,7 +1153,7 @@ void RestServer::registerRoutes() {
 
 void RestServer::addStatusStreamClient(
         const QHttpServerRequest& request,
-        QHttpServerResponder&& responder) {
+        QHttpServerResponder& responder) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_httpServer.get());
 
     if (m_settings.streamMaxClients > 0 &&
@@ -1294,28 +1334,40 @@ bool RestServer::startOnThread() {
     }
 
     DEBUG_ASSERT(m_settings.portValid);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-    const auto listenResult = m_httpServer->listen(
-            m_settings.address, static_cast<quint16>(m_settings.port));
-    if (!listenResult) {
-        kLogger.warning()
-                << "Failed to start REST API listener on" << m_settings.address << m_settings.port;
-        m_lastError = tr("Failed to bind REST API listener");
-        return false;
+    if (kHttpServerHasListen) {
+        const auto listenResult = m_httpServer->listen(
+                m_settings.address, static_cast<quint16>(m_settings.port));
+        if (!listenResult) {
+            kLogger.warning() << "Failed to start REST API listener on"
+                              << m_settings.address << m_settings.port;
+            m_lastError = tr("Failed to bind REST API listener");
+            return false;
+        }
+        m_listeningPort = listenResult.port;
+    } else {
+        m_tcpServer = std::make_unique<QTcpServer>();
+        if (!m_tcpServer->listen(
+                    m_settings.address,
+                    static_cast<quint16>(m_settings.port))) {
+            kLogger.warning() << "Failed to start REST API listener on"
+                              << m_settings.address << m_settings.port;
+            m_lastError = tr("Failed to bind REST API listener");
+            return false;
+        }
+        const auto bindServer = [this]() {
+            if constexpr (std::is_same_v<decltype(m_httpServer->bind(m_tcpServer.get())), bool>) {
+                return m_httpServer->bind(m_tcpServer.get());
+            } else {
+                m_httpServer->bind(m_tcpServer.get());
+                return true;
+            }
+        };
+        if (!bindServer()) {
+            m_lastError = tr("Failed to bind REST API listener");
+            return false;
+        }
+        m_listeningPort = m_tcpServer->serverPort();
     }
-    m_listeningPort = listenResult.port;
-#else
-    const auto port = m_httpServer->listen(
-            m_settings.address, static_cast<quint16>(m_settings.port));
-    if (port == 0) {
-        kLogger.warning()
-                << "Failed to start REST API listener on" << m_settings.address << m_settings.port;
-        m_lastError = tr("Failed to bind REST API listener");
-        return false;
-    }
-
-    m_listeningPort = port;
-#endif
     kLogger.info()
             << "REST API listening on" << m_settings.address.toString() << m_listeningPort;
 
@@ -1340,12 +1392,16 @@ void RestServer::stopOnThread() {
     m_streamTimer.stop();
     m_streamClients.clear();
     if (m_httpServer) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
-        m_httpServer->stop();
-#else
-        m_httpServer->close();
-#endif
+        if (kHttpServerHasListen) {
+            m_httpServer->stop();
+        } else {
+            m_httpServer->close();
+        }
         m_httpServer.reset();
+    }
+    if (m_tcpServer) {
+        m_tcpServer->close();
+        m_tcpServer.reset();
     }
     kLogger.info() << "REST API server stopped";
 }
