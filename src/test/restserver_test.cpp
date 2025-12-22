@@ -257,7 +257,7 @@ TEST(RestServerValidatorTest, CapturesTlsConfigurationErrors) {
     CertificateGenerator generator(tempDir.path());
     RestServerValidator validator(RestServer::Settings{}, false, &generator);
 
-    RestServer::Settings settings = baseSettings(RestServerSettings::kDefaultPort);
+    RestServer::Settings settings = baseSettings(findFreePort());
     settings.useHttps = true;
     settings.certificatePath = certificatePath;
     settings.privateKeyPath = keyPath;
