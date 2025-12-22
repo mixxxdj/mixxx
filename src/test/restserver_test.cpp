@@ -217,7 +217,8 @@ TEST_F(RestServerSettingsTest, DuplicatePortsAreAdjusted) {
 TEST(RestServerValidatorTest, RejectsInvalidHost) {
     RestServerValidator validator(RestServer::Settings{}, false, nullptr);
 
-    RestServer::Settings settings = baseSettings(RestServerSettings::kDefaultPort);
+    const int port = findFreePort();
+    RestServer::Settings settings = baseSettings(port);
     settings.hostValid = false;
 
     const auto result = validator.validate(settings);
