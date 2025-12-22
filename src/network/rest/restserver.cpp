@@ -192,24 +192,22 @@ QString methodToString(QHttpServerRequest::Method method) {
 }
 
 bool isJsonContentType(const QHttpServerRequest& request) {
-    QByteArray headerValue;
-    const QHttpHeaders headers = request.headers();
-    for (auto it = headers.cbegin(), end = headers.cend(); it != end; ++it) {
-        if (it.name().compare(QByteArrayLiteral(kContentTypeHeader), Qt::CaseInsensitive) == 0) {
-            headerValue = it.value();
-            break;
+    const auto values = request.headers().values(QByteArrayLiteral("Content-Type"));
+    for (const auto& headerValue : values) {
+        const QByteArray trimmedValue = headerValue.trimmed();
+        if (trimmedValue.isEmpty()) {
+            continue;
+        }
+        const int separatorIndex = trimmedValue.indexOf(';');
+        const QByteArray mediaType = (separatorIndex >= 0 ? trimmedValue.left(separatorIndex)
+                                                          : trimmedValue)
+                                             .trimmed()
+                                             .toLower();
+        if (mediaType == QByteArrayLiteral("application/json")) {
+            return true;
         }
     }
-    headerValue = headerValue.trimmed();
-    if (headerValue.isEmpty()) {
-        return false;
-    }
-    const int separatorIndex = headerValue.indexOf(';');
-    const QByteArray mediaType = (separatorIndex >= 0 ? headerValue.left(separatorIndex)
-                                                      : headerValue)
-                                         .trimmed()
-                                         .toLower();
-    return mediaType == QByteArrayLiteral("application/json");
+    return false;
 }
 
 QByteArray formatSseEvent(const QJsonObject& payload) {
