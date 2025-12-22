@@ -862,7 +862,7 @@ void RestServer::registerRoutes() {
     };
 
     const QString deckDetailPrefix = QStringLiteral("/api/v1/decks/");
-    const auto requiredScopesFor = [&routeScopes, &deckDetailPrefix](
+    const auto requiredScopesFor = [routeScopes, deckDetailPrefix](
                                            const QHttpServerRequest& request) {
         const QString path = request.url().path();
         const QString key = path.startsWith(deckDetailPrefix)
@@ -878,7 +878,7 @@ void RestServer::registerRoutes() {
         return QObject::tr("Token missing required scopes: %1")
                 .arg(missingScopes.join(QStringLiteral(", ")));
     };
-    const auto authorizeRequest = [this, &requiredScopesFor](
+    const auto authorizeRequest = [this, requiredScopesFor](
                                           const QHttpServerRequest& request) {
         return authorize(request, requiredScopesFor(request));
     };
