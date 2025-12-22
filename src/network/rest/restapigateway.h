@@ -4,6 +4,7 @@
 
 #include <QHttpServerResponse>
 #include <QHash>
+#include <QHttpHeaders>
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -46,6 +47,9 @@ class RestApiProvider : public QObject {
             const QString& idempotencyKey,
             const QString& endpoint,
             const std::function<QHttpServerResponse()>& handler) const {
+        Q_UNUSED(token);
+        Q_UNUSED(idempotencyKey);
+        Q_UNUSED(endpoint);
         return handler();
     }
 };
@@ -84,7 +88,10 @@ class RestApiGateway : public RestApiProvider {
   private:
     struct IdempotencyEntry {
         QDateTime createdUtc;
-        QHttpServerResponse response;
+        QHttpServerResponse::StatusCode statusCode;
+        QByteArray body;
+        QByteArray mimeType;
+        QHttpHeaders headers;
     };
 
     QHttpServerResponse errorResponse(
@@ -114,7 +121,7 @@ class RestApiGateway : public RestApiProvider {
     PlayerManager* const m_playerManager;
     TrackCollectionManager* const m_trackCollectionManager;
     [[maybe_unused]] const UserSettingsPointer m_settings;
-    int m_activePlaylistId{-1};
+    mutable int m_activePlaylistId{-1};
     QElapsedTimer m_uptime;
     mutable QHash<QString, IdempotencyEntry> m_idempotencyCache;
     mutable QList<QString> m_idempotencyOrder;

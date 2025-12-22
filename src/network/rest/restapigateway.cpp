@@ -45,7 +45,7 @@ RestApiGateway::RestApiGateway(
         TrackCollectionManager* trackCollectionManager,
         const UserSettingsPointer& settings,
         QObject* parent)
-        : QObject(parent),
+        : RestApiProvider(parent),
           m_playerManager(playerManager),
           m_trackCollectionManager(trackCollectionManager),
           m_settings(settings) {
@@ -58,21 +58,21 @@ QHttpServerResponse RestApiGateway::errorResponse(
         QHttpServerResponse::StatusCode code,
         const QString& message) const {
     return QHttpServerResponse(
-            code,
+            kApplicationJsonMimeType,
             QJsonDocument(QJsonObject{
                     {"error", message},
             })
                     .toJson(QJsonDocument::Compact),
-            kApplicationJsonMimeType);
+            code);
 }
 
 QHttpServerResponse RestApiGateway::successResponse(
         const QJsonObject& payload,
         QHttpServerResponse::StatusCode statusCode) const {
     return QHttpServerResponse(
-            statusCode,
+            kApplicationJsonMimeType,
             QJsonDocument(payload).toJson(QJsonDocument::Compact),
-            kApplicationJsonMimeType);
+            statusCode);
 }
 
 QHttpServerResponse RestApiGateway::health() const {
@@ -109,6 +109,13 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
     const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
     const QString cacheKey = QStringLiteral("%1\n%2\n%3")
                                      .arg(token, idempotencyKey, endpoint);
+    const auto responseFromCache = [&](const IdempotencyEntry& entry) {
+        QHttpServerResponse response(entry.mimeType, entry.body, entry.statusCode);
+        if (!entry.headers.isEmpty()) {
+            response.setHeaders(entry.headers);
+        }
+        return response;
+    };
     {
         QMutexLocker locker(&m_idempotencyMutex);
         for (auto it = m_idempotencyCache.begin(); it != m_idempotencyCache.end();) {
@@ -127,18 +134,25 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
         }
         const auto cached = m_idempotencyCache.constFind(cacheKey);
         if (cached != m_idempotencyCache.constEnd()) {
-            return cached->response;
+            return responseFromCache(*cached);
         }
     }
 
     QHttpServerResponse response = handler();
+    const IdempotencyEntry entry{
+            nowUtc,
+            response.statusCode(),
+            response.data(),
+            response.mimeType(),
+            response.headers(),
+    };
     {
         QMutexLocker locker(&m_idempotencyMutex);
         const auto cached = m_idempotencyCache.constFind(cacheKey);
         if (cached != m_idempotencyCache.constEnd()) {
-            return cached->response;
+            return responseFromCache(*cached);
         }
-        m_idempotencyCache.insert(cacheKey, IdempotencyEntry{nowUtc, response});
+        m_idempotencyCache.insert(cacheKey, entry);
         m_idempotencyOrder.append(cacheKey);
         while (m_idempotencyCache.size() > kMaxIdempotencyCacheEntries &&
                 !m_idempotencyOrder.isEmpty()) {
@@ -172,7 +186,7 @@ QJsonObject RestApiGateway::deckSummary(int deckIndex) const {
     deck.insert("keylock", keylock.toBool());
     deck.insert("loop_enabled", loopEnabled.toBool());
 
-    BaseTrackPlayer* const player = m_playerManager->getDeck(deckIndex + 1);
+    BaseTrackPlayer* const player = m_playerManager->getPlayer(group);
     if (player != nullptr) {
         if (const TrackPointer track = player->getLoadedTrack()) {
             deck.insert("track", trackPayload(track));
@@ -186,7 +200,6 @@ QJsonObject RestApiGateway::deckSummary(int deckIndex) const {
 QJsonArray RestApiGateway::deckStatuses() const {
     QJsonArray decks;
     const auto totalDecks = m_playerManager->numberOfDecks();
-    decks.reserve(static_cast<int>(totalDecks));
     for (unsigned int i = 0; i < totalDecks; ++i) {
         decks.append(deckSummary(static_cast<int>(i)));
     }
@@ -261,10 +274,12 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
         const QString command = commandBody.value("command").toString();
         QString group = commandBody.value("group").toString();
         if (group.isEmpty()) {
-            bool ok = false;
-            const int deckIndex = commandBody.value("deck").toInt(&ok);
-            if (ok && deckIndex > 0) {
-                group = PlayerManager::groupForDeck(deckIndex - 1);
+            const auto deckValue = commandBody.value("deck");
+            if (deckValue.isDouble()) {
+                const int deckIndex = deckValue.toInt();
+                if (deckIndex > 0) {
+                    group = PlayerManager::groupForDeck(deckIndex - 1);
+                }
             }
         }
         if (group.isEmpty()) {
@@ -272,14 +287,6 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
                     QHttpServerResponse::StatusCode::BadRequest,
                     tr("Missing control group"));
         }
-
-        auto createControl = [&](const QString& controlKey) -> std::optional<ControlProxy> {
-            ControlProxy control(group, controlKey, nullptr);
-            if (!control.valid()) {
-                return std::nullopt;
-            }
-            return control;
-        };
 
         const QString key = commandBody.value("key").toString();
         if (command.isEmpty() && key.isEmpty()) {
@@ -299,13 +306,6 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
             return nextValue;
         };
 
-        auto ensureControl = [&](const QString& controlKey) -> std::optional<ControlProxy> {
-            if (auto controlProxy = createControl(controlKey)) {
-                return controlProxy;
-            }
-            return std::nullopt;
-        };
-
         auto finalizeResponse = [&](const QString& responseKey,
                                     const QString& responseGroup,
                                     double responseValue) {
@@ -319,28 +319,27 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
         if (!command.isEmpty()) {
             if (command == QStringLiteral("play") || command == QStringLiteral("pause") ||
                     command == QStringLiteral("toggle")) {
-                auto control = ensureControl(QStringLiteral("play"));
-                if (!control.has_value()) {
+                ControlProxy control(group, QStringLiteral("play"), nullptr);
+                if (!control.valid()) {
                     return errorResult(
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Unknown control %1 play").arg(group));
                 }
                 if (command == QStringLiteral("toggle")) {
-                    return finalizeResponse("play", group, toggleControl(control.value()));
+                    return finalizeResponse("play", group, toggleControl(control));
                 }
                 const double value = command == QStringLiteral("play") ? 1.0 : 0.0;
-                return finalizeResponse("play", group, applyValue(control.value(), value));
+                return finalizeResponse("play", group, applyValue(control, value));
             }
             if (command == QStringLiteral("seek")) {
-                bool ok = false;
-                const double position = commandBody.value("position").toDouble(&ok);
-                if (!ok) {
+                const auto positionValue = commandBody.value("position");
+                if (!positionValue.isDouble()) {
                     return errorResult(
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Seek position must be numeric"));
                 }
-                auto control = ensureControl(QStringLiteral("playposition"));
-                if (!control.has_value()) {
+                ControlProxy control(group, QStringLiteral("playposition"), nullptr);
+                if (!control.valid()) {
                     return errorResult(
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Unknown control %1 playposition").arg(group));
@@ -348,23 +347,22 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
                 return finalizeResponse(
                         "playposition",
                         group,
-                        applyValue(control.value(), position));
+                        applyValue(control, positionValue.toDouble()));
             }
             if (command == QStringLiteral("gain")) {
-                bool ok = false;
-                const double gain = commandBody.value("value").toDouble(&ok);
-                if (!ok) {
+                const auto gainValue = commandBody.value("value");
+                if (!gainValue.isDouble()) {
                     return errorResult(
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Gain must be numeric"));
                 }
-                auto control = ensureControl(QStringLiteral("gain"));
-                if (!control.has_value()) {
+                ControlProxy control(group, QStringLiteral("gain"), nullptr);
+                if (!control.valid()) {
                     return errorResult(
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Unknown control %1 gain").arg(group));
                 }
-                return finalizeResponse("gain", group, applyValue(control.value(), gain));
+                return finalizeResponse("gain", group, applyValue(control, gainValue.toDouble()));
             }
 
             return errorResult(
@@ -382,14 +380,12 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
         const auto valueVariant = commandBody.value("value");
         std::optional<double> controlValue;
         if (!valueVariant.isUndefined()) {
-            bool ok = false;
-            const double numericValue = valueVariant.toDouble(&ok);
-            if (!ok) {
+            if (!valueVariant.isDouble()) {
                 return errorResult(
                         QHttpServerResponse::StatusCode::BadRequest,
                         tr("Control value must be numeric"));
             }
-            controlValue = numericValue;
+            controlValue = valueVariant.toDouble();
         }
 
         const double resultValue = applyValue(control, controlValue);
@@ -412,7 +408,6 @@ QHttpServerResponse RestApiGateway::control(const QJsonObject& body) const {
         }
 
         QJsonArray results;
-        results.reserve(commands.size());
         bool sawSuccess = false;
         bool sawError = false;
         QHttpServerResponse::StatusCode firstErrorStatus = QHttpServerResponse::StatusCode::Ok;
@@ -569,20 +564,20 @@ QHttpServerResponse RestApiGateway::autoDj(const QJsonObject& body) const {
                 return resultWithEnabled(action);
             }
 
-            bool ok = false;
-            const int from = body.value("from").toInt(&ok);
-            if (!ok) {
+            const auto fromValue = body.value("from");
+            if (!fromValue.isDouble()) {
                 return errorResponse(
                         QHttpServerResponse::StatusCode::BadRequest,
                         tr("Move command is missing from position"));
             }
-            ok = false;
-            const int to = body.value("to").toInt(&ok);
-            if (!ok) {
+            const auto toValue = body.value("to");
+            if (!toValue.isDouble()) {
                 return errorResponse(
                         QHttpServerResponse::StatusCode::BadRequest,
                         tr("Move command is missing destination position"));
             }
+            const int from = fromValue.toInt();
+            const int to = toValue.toInt();
 
             const int queueSize = playlistDao.getAutoDJTrackIds().size();
             if (queueSize == 0) {
@@ -632,7 +627,6 @@ QHttpServerResponse RestApiGateway::playlists(const std::optional<int>& playlist
             QJsonArray tracks;
             const QList<TrackId> trackIds =
                     playlistDao.getTrackIdsInPlaylistOrder(playlistId.value());
-            tracks.reserve(trackIds.size());
             for (const TrackId& trackId : trackIds) {
                 QJsonObject entry;
                 entry.insert("id", trackId.toString());
@@ -651,7 +645,6 @@ QHttpServerResponse RestApiGateway::playlists(const std::optional<int>& playlist
 
         const auto playlists = playlistDao.getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
         QJsonArray payload;
-        payload.reserve(playlists.size());
         for (const auto& playlist : playlists) {
             QJsonObject entry;
             entry.insert("id", playlist.first);
@@ -793,13 +786,12 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
             if (positionValue.isUndefined()) {
                 playlistDao.appendTracksToPlaylist(trackIds, playlistId);
             } else {
-                bool ok = false;
-                const int position = positionValue.toInt(&ok);
-                if (!ok) {
+                if (!positionValue.isDouble()) {
                     return errorResponse(
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Playlist position must be numeric"));
                 }
+                const int position = positionValue.toInt();
                 const int trackCount = playlistDao.tracksInPlaylist(playlistId);
                 if (position < 0 || position > trackCount) {
                     return errorResponse(
@@ -831,13 +823,12 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
             }
             positions.reserve(positionsArray.size());
             for (const auto& value : positionsArray) {
-                bool ok = false;
-                const int position = value.toInt(&ok);
-                if (!ok) {
+                if (!value.isDouble()) {
                     return errorResponse(
                             QHttpServerResponse::StatusCode::BadRequest,
                             tr("Playlist positions must be numeric"));
                 }
+                const int position = value.toInt();
                 positions.append(position);
             }
             if (positions.isEmpty()) {
@@ -853,20 +844,20 @@ QHttpServerResponse RestApiGateway::playlistCommand(const QJsonObject& body) con
         }
 
         if (action == QStringLiteral("reorder")) {
-            bool ok = false;
-            const int from = body.value("from").toInt(&ok);
-            if (!ok) {
+            const auto fromValue = body.value("from");
+            if (!fromValue.isDouble()) {
                 return errorResponse(
                         QHttpServerResponse::StatusCode::BadRequest,
                         tr("Reorder requires a from position"));
             }
-            ok = false;
-            const int to = body.value("to").toInt(&ok);
-            if (!ok) {
+            const auto toValue = body.value("to");
+            if (!toValue.isDouble()) {
                 return errorResponse(
                         QHttpServerResponse::StatusCode::BadRequest,
                         tr("Reorder requires a destination position"));
             }
+            const int from = fromValue.toInt();
+            const int to = toValue.toInt();
             const int trackCount = playlistDao.tracksInPlaylist(playlistId);
             if (trackCount == 0) {
                 return errorResponse(
