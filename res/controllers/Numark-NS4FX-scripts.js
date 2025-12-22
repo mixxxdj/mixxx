@@ -18,6 +18,7 @@ var ShowFocusedEffectParameters = engine.getSetting("ShowFocusedEffectParameters
 var OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
 var displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 var useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
+var useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.

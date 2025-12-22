@@ -16,6 +16,7 @@
         </group>
         <group label="Parformance Pads">
             <option type="boolean" variable="useFadercutsAsStems" label="Controls stems with Fader Cuts pads" default="false"/>
+            <option type="boolean" variable="useAdditionalHotcues" label="Add hotcues 5-8 to the second row of pads" default="false"/>
         </group>
     </settings>
     <controller id="NS4FX">
