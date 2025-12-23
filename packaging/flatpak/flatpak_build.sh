@@ -21,6 +21,9 @@ COMMAND=""
 # Native builder is the default
 BUILDER="flatpak-builder"
 
+# Default Flatpak filesystem permissions
+FS_PERMISSIONS=("--filesystem=$(pwd)")
+
 # Default build options
 BUILD_OPTIONS=("--force-clean")
 
@@ -149,6 +152,7 @@ while [[ $# -gt 0 ]]; do
             shift
             if [ -n "$1" ]; then
                 MANIFEST="$1"
+                FS_PERMISSIONS+=("--filesystem=$(dirname "$(realpath "$MANIFEST")")")
                 shift
             else
                 echo "Error: Manifest file argument missing." >&2
@@ -205,7 +209,7 @@ fi
 
 # Run the build and exit if it fails
 if [[ $BUILDER == "org.flatpak.Builder" ]]; then
-    if ! flatpak run --filesystem="$(pwd)" org.flatpak.Builder \
+    if ! flatpak run "${FS_PERMISSIONS[@]}" org.flatpak.Builder \
     "${BUILD_OPTIONS[@]}" "$BUILD_DIR" "$MANIFEST"; then
         exit 1
     fi
