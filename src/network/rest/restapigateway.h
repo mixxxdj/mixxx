@@ -123,6 +123,9 @@ class RestApiGateway : public RestApiProvider {
     [[maybe_unused]] const UserSettingsPointer m_settings;
     mutable int m_activePlaylistId{-1};
     QElapsedTimer m_uptime;
+    mutable QMutex m_cpuUsageMutex;
+    mutable std::optional<quint64> m_prevProcessTimeTicks;
+    mutable std::optional<qint64> m_prevCpuWallTimeMs;
     mutable QHash<QString, IdempotencyEntry> m_idempotencyCache;
     mutable QList<QString> m_idempotencyOrder;
     mutable QMutex m_idempotencyMutex;

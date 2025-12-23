@@ -1124,27 +1124,6 @@ int RestApiGateway::ensureAutoDjPlaylistId(PlaylistDAO& playlistDao) const {
 
 std::optional<double> RestApiGateway::cpuUsagePercent() const {
 #ifdef Q_OS_LINUX
-    auto readCpuTotals = []() -> std::optional<quint64> {
-        QFile file(QStringLiteral("/proc/stat"));
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            return std::nullopt;
-        }
-        const QByteArray line = file.readLine();
-        const QList<QByteArray> parts = line.split(' ');
-        quint64 total = 0;
-        for (const auto& part : parts.mid(1)) {
-            if (part.isEmpty()) {
-                continue;
-            }
-            bool ok = false;
-            const quint64 value = part.toULongLong(&ok);
-            if (ok) {
-                total += value;
-            }
-        }
-        return total;
-    };
-
     auto readProcessTime = []() -> std::optional<quint64> {
         QFile file(QStringLiteral("/proc/self/stat"));
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -1165,29 +1144,37 @@ std::optional<double> RestApiGateway::cpuUsagePercent() const {
         return utime + stime;
     };
 
-    static quint64 s_prevProcess = 0;
-    static quint64 s_prevTotal = 0;
     const auto process = readProcessTime();
-    const auto total = readCpuTotals();
-    if (!process.has_value() || !total.has_value()) {
-        return std::nullopt;
-    }
-    if (s_prevProcess == 0 || s_prevTotal == 0) {
-        s_prevProcess = *process;
-        s_prevTotal = *total;
+    if (!process.has_value()) {
         return std::nullopt;
     }
 
-    const quint64 deltaProc = *process - s_prevProcess;
-    const quint64 deltaTotal = *total - s_prevTotal;
-    s_prevProcess = *process;
-    s_prevTotal = *total;
-    if (deltaTotal == 0) {
+    const long ticksPerSecond = sysconf(_SC_CLK_TCK);
+    if (ticksPerSecond <= 0) {
         return std::nullopt;
     }
 
-    const int cores = QThread::idealThreadCount();
-    const double usage = (static_cast<double>(deltaProc) / static_cast<double>(deltaTotal)) * cores * 100.0;
+    const qint64 wallTimeMs = m_uptime.elapsed();
+    QMutexLocker locker(&m_cpuUsageMutex);
+    const auto prevProcess = m_prevProcessTimeTicks;
+    const auto prevWallTimeMs = m_prevCpuWallTimeMs;
+    m_prevProcessTimeTicks = *process;
+    m_prevCpuWallTimeMs = wallTimeMs;
+
+    quint64 processDeltaTicks = *process;
+    qint64 wallDeltaMs = wallTimeMs;
+    if (prevProcess.has_value() && prevWallTimeMs.has_value()) {
+        processDeltaTicks = *process - *prevProcess;
+        wallDeltaMs = wallTimeMs - *prevWallTimeMs;
+    }
+    if (wallDeltaMs <= 0) {
+        wallDeltaMs = 1;
+    }
+
+    const double processSeconds =
+            static_cast<double>(processDeltaTicks) / static_cast<double>(ticksPerSecond);
+    const double wallSeconds = static_cast<double>(wallDeltaMs) / 1000.0;
+    const double usage = (processSeconds / wallSeconds) * 100.0;
     return usage;
 #else
     return std::nullopt;
