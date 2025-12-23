@@ -731,7 +731,7 @@ Leave blank to disable CORS allowlisting.</string>
           <string>Generate a new self-signed certificate and key.</string>
          </property>
          <property name="text">
-          <string>Regenerate certificate and key</string>
+          <string>Regenerate self-signed certificate</string>
          </property>
         </widget>
        </item>
