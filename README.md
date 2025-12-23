@@ -40,12 +40,13 @@ source code and navigate to it:
 Download the required dependencies and set up the build environment by running the
 corresponding command for your operating system:
 
-| OS | Command | Requirements |
+| Platform | Command | Requirements |
 | -- | ------- | ------------ |
 | Windows | `tools\windows_buildenv.bat` | ~2.5 GB download, ~9 GB disk space |
 | macOS | `source tools/macos_buildenv.sh setup` | ~1.5 GB download, ~3 GB disk space |
 | Debian/Ubuntu | `tools/debian_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
 | Fedora | `tools/rpm_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
+| Flatpak | `tools/flatpak_buildenv.sh setup` | ~2.6 GB download, ~5 GB disk space |
 | Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) | |
 
 To build Mixxx, run
@@ -57,6 +58,8 @@ To build Mixxx, run
 
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
+
+For building and installing Mixxx as a Flatpak, check the documentation in [packaging/flatpak/README.md](packaging/flatpak/README.md).
 
 Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
 
