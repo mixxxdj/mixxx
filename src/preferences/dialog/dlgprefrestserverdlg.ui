@@ -5,6 +5,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
    <widget class="QCheckBox" name="checkBoxEnableRestServer">
+     <property name="toolTip">
+      <string>Enable the built-in REST API server.</string>
+     </property>
      <property name="text">
       <string>Enable REST API</string>
      </property>
@@ -313,13 +316,20 @@
     <layout class="QFormLayout" name="formLayoutPreset">
      <item row="0" column="0">
       <widget class="QLabel" name="labelPreset">
+       <property name="toolTip">
+        <string>Choose a preset configuration for REST API network settings.</string>
+       </property>
        <property name="text">
         <string>Preset:</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="comboBoxPreset"/>
+     <widget class="QComboBox" name="comboBoxPreset">
+      <property name="toolTip">
+       <string>Choose a preset configuration for REST API network settings.</string>
+      </property>
+     </widget>
      </item>
      <item row="1" column="0" colspan="2">
       <widget class="QLabel" name="labelPresetWarning">
@@ -345,6 +355,9 @@
     <layout class="QFormLayout" name="formLayoutNetwork">
       <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBoxEnableHttp">
+        <property name="toolTip">
+         <string>Allow REST API connections over HTTP.</string>
+        </property>
         <property name="text">
          <string>Enable HTTP</string>
         </property>
@@ -355,26 +368,43 @@
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="labelHost">
+        <property name="toolTip">
+         <string>Host/interface to bind the REST API listener.</string>
+        </property>
         <property name="text">
          <string>Host:</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEditHost"/>
+       <widget class="QLineEdit" name="lineEditHost">
+        <property name="toolTip">
+         <string>Host/interface to bind the REST API listener.</string>
+        </property>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="labelPort">
+        <property name="toolTip">
+         <string>Port for the HTTP listener.</string>
+        </property>
         <property name="text">
          <string>HTTP port:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QSpinBox" name="spinBoxHttpPort"/>
+       <widget class="QSpinBox" name="spinBoxHttpPort">
+        <property name="toolTip">
+         <string>Port for the HTTP listener.</string>
+        </property>
+       </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="labelHttpUrl">
+        <property name="toolTip">
+         <string>Current HTTP base URL.</string>
+        </property>
         <property name="text">
          <string>HTTP URL:</string>
         </property>
@@ -384,6 +414,9 @@
        <layout class="QHBoxLayout" name="horizontalLayoutHttpUrl">
         <item>
          <widget class="QLabel" name="labelHttpUrlValue">
+          <property name="toolTip">
+           <string>Current HTTP base URL.</string>
+          </property>
           <property name="text">
            <string>Disabled</string>
           </property>
@@ -396,6 +429,9 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Copy the HTTP URL to the clipboard.</string>
           </property>
           <property name="text">
            <string>Copy</string>
@@ -445,6 +481,9 @@ Leave blank to disable CORS allowlisting.</string>
       </item>
       <item row="6" column="0">
        <widget class="QLabel" name="labelMaxRequestSize">
+        <property name="toolTip">
+         <string>Maximum request body size for REST API requests.</string>
+        </property>
         <property name="text">
          <string>Max request size:</string>
         </property>
@@ -452,6 +491,9 @@ Leave blank to disable CORS allowlisting.</string>
      </item>
       <item row="6" column="1">
        <widget class="QSpinBox" name="spinBoxMaxRequestSize">
+        <property name="toolTip">
+         <string>Maximum request body size for REST API requests.</string>
+        </property>
         <property name="suffix">
          <string> KiB</string>
         </property>
@@ -468,6 +510,9 @@ Leave blank to disable CORS allowlisting.</string>
     <layout class="QVBoxLayout" name="verticalLayoutTls">
      <item>
       <widget class="QCheckBox" name="checkBoxUseHttps">
+       <property name="toolTip">
+        <string>Allow REST API connections over HTTPS.</string>
+       </property>
        <property name="text">
         <string>Enable HTTPS</string>
        </property>
@@ -475,6 +520,9 @@ Leave blank to disable CORS allowlisting.</string>
      </item>
      <item>
      <widget class="QCheckBox" name="checkBoxAutoGenerateCertificate">
+      <property name="toolTip">
+       <string>Generate a self-signed certificate for HTTPS.</string>
+      </property>
       <property name="text">
        <string>Automatically generate self-signed certificate</string>
       </property>
@@ -487,16 +535,26 @@ Leave blank to disable CORS allowlisting.</string>
       <layout class="QFormLayout" name="formLayoutTls">
        <item row="0" column="0">
         <widget class="QLabel" name="labelHttpsPort">
+         <property name="toolTip">
+          <string>Port for the HTTPS listener.</string>
+         </property>
          <property name="text">
           <string>HTTPS port:</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QSpinBox" name="spinBoxHttpsPort"/>
+        <widget class="QSpinBox" name="spinBoxHttpsPort">
+         <property name="toolTip">
+          <string>Port for the HTTPS listener.</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="labelHttpsUrl">
+         <property name="toolTip">
+          <string>Current HTTPS base URL.</string>
+         </property>
          <property name="text">
           <string>HTTPS URL:</string>
          </property>
@@ -506,6 +564,9 @@ Leave blank to disable CORS allowlisting.</string>
         <layout class="QHBoxLayout" name="horizontalLayoutHttpsUrl">
          <item>
           <widget class="QLabel" name="labelHttpsUrlValue">
+           <property name="toolTip">
+            <string>Current HTTPS base URL.</string>
+           </property>
            <property name="text">
             <string>Disabled</string>
            </property>
@@ -519,6 +580,9 @@ Leave blank to disable CORS allowlisting.</string>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="toolTip">
+           <string>Copy the HTTPS URL to the clipboard.</string>
+          </property>
           <property name="text">
            <string>Copy</string>
           </property>
@@ -528,6 +592,9 @@ Leave blank to disable CORS allowlisting.</string>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="labelCertPath">
+         <property name="toolTip">
+          <string>Path to the TLS certificate file.</string>
+         </property>
          <property name="text">
           <string>Certificate path:</string>
          </property>
@@ -536,10 +603,17 @@ Leave blank to disable CORS allowlisting.</string>
        <item row="2" column="1">
         <layout class="QHBoxLayout" name="horizontalLayoutCert">
          <item>
-          <widget class="QLineEdit" name="lineEditCertPath"/>
+          <widget class="QLineEdit" name="lineEditCertPath">
+           <property name="toolTip">
+            <string>Path to the TLS certificate file.</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButtonBrowseCert">
+           <property name="toolTip">
+            <string>Choose a certificate file.</string>
+           </property>
            <property name="text">
             <string>Browse...</string>
            </property>
@@ -549,6 +623,9 @@ Leave blank to disable CORS allowlisting.</string>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="labelKeyPath">
+         <property name="toolTip">
+          <string>Path to the TLS private key file.</string>
+         </property>
          <property name="text">
           <string>Private key path:</string>
          </property>
@@ -557,10 +634,17 @@ Leave blank to disable CORS allowlisting.</string>
        <item row="3" column="1">
         <layout class="QHBoxLayout" name="horizontalLayoutKey">
          <item>
-          <widget class="QLineEdit" name="lineEditKeyPath"/>
+          <widget class="QLineEdit" name="lineEditKeyPath">
+           <property name="toolTip">
+            <string>Path to the TLS private key file.</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButtonBrowseKey">
+           <property name="toolTip">
+            <string>Choose a private key file.</string>
+           </property>
            <property name="text">
             <string>Browse...</string>
            </property>
@@ -572,6 +656,9 @@ Leave blank to disable CORS allowlisting.</string>
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxRequireTls">
+       <property name="toolTip">
+        <string>Require HTTPS for control routes.</string>
+       </property>
        <property name="text">
         <string>Require TLS for control routes</string>
        </property>
@@ -600,6 +687,9 @@ Leave blank to disable CORS allowlisting.</string>
        <layout class="QHBoxLayout" name="horizontalLayoutTokens">
         <item>
          <widget class="QTableWidget" name="tableTokens">
+          <property name="toolTip">
+           <string>Access tokens for authenticated requests.</string>
+          </property>
           <property name="columnCount">
            <number>6</number>
           </property>
@@ -638,25 +728,34 @@ Leave blank to disable CORS allowlisting.</string>
         <item>
          <layout class="QVBoxLayout" name="verticalLayoutTokenButtons">
           <item>
-           <widget class="QPushButton" name="pushButtonAddToken">
-            <property name="text">
-             <string>Add</string>
-            </property>
-           </widget>
+          <widget class="QPushButton" name="pushButtonAddToken">
+           <property name="toolTip">
+            <string>Create a new access token.</string>
+           </property>
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonRemoveToken">
-            <property name="text">
-             <string>Remove</string>
-            </property>
-           </widget>
+          <widget class="QPushButton" name="pushButtonRemoveToken">
+           <property name="toolTip">
+            <string>Remove the selected access token.</string>
+           </property>
+           <property name="text">
+            <string>Remove</string>
+           </property>
+          </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButtonRegenerateToken">
-            <property name="text">
-             <string>Regenerate</string>
-            </property>
-           </widget>
+          <widget class="QPushButton" name="pushButtonRegenerateToken">
+           <property name="toolTip">
+            <string>Regenerate the selected access token.</string>
+           </property>
+           <property name="text">
+            <string>Regenerate</string>
+           </property>
+          </widget>
           </item>
           <item>
            <spacer name="verticalSpacerTokens">
@@ -679,6 +778,9 @@ Leave blank to disable CORS allowlisting.</string>
        <layout class="QFormLayout" name="formLayoutTokenDetails">
         <item row="0" column="0">
          <widget class="QLabel" name="labelTokenValue">
+          <property name="toolTip">
+           <string>Selected token value.</string>
+          </property>
           <property name="text">
            <string>Token:</string>
           </property>
@@ -701,6 +803,9 @@ Leave blank to disable CORS allowlisting.</string>
            </property>
            <item>
             <widget class="QLineEdit" name="lineEditTokenValue">
+             <property name="toolTip">
+              <string>Selected token value (read-only).</string>
+             </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -708,6 +813,9 @@ Leave blank to disable CORS allowlisting.</string>
            </item>
            <item>
             <widget class="QPushButton" name="pushButtonCopyToken">
+             <property name="toolTip">
+              <string>Copy the token to the clipboard.</string>
+             </property>
              <property name="text">
               <string>Copy token</string>
              </property>
@@ -715,6 +823,9 @@ Leave blank to disable CORS allowlisting.</string>
            </item>
            <item>
             <widget class="QPushButton" name="pushButtonToggleToken">
+             <property name="toolTip">
+              <string>Show or hide the token value.</string>
+             </property>
              <property name="text">
               <string>Show</string>
              </property>
@@ -725,23 +836,36 @@ Leave blank to disable CORS allowlisting.</string>
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="labelTokenDescription">
+          <property name="toolTip">
+           <string>Optional description for the selected token.</string>
+          </property>
           <property name="text">
            <string>Description:</string>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEditTokenDescription"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="labelTokenScopes">
-          <property name="text">
-           <string>Scopes:</string>
+        </widget>
+       </item>
+       <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEditTokenDescription">
+          <property name="toolTip">
+           <string>Optional description for the selected token.</string>
           </property>
          </widget>
         </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelTokenScopes">
+          <property name="toolTip">
+           <string>Select scopes to grant with this token.</string>
+          </property>
+          <property name="text">
+           <string>Scopes:</string>
+          </property>
+        </widget>
+        </item>
         <item row="2" column="1">
          <widget class="QWidget" name="widgetTokenScopes" native="true">
+          <property name="toolTip">
+           <string>Select scopes to grant with this token.</string>
+          </property>
           <layout class="QGridLayout" name="gridLayoutTokenScopes">
            <item row="0" column="0">
            <widget class="QCheckBox" name="checkScopeStatusRead">
@@ -818,32 +942,48 @@ Leave blank to disable CORS allowlisting.</string>
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="labelTokenExpiresCurrent">
+          <property name="toolTip">
+           <string>Current expiration for the selected token.</string>
+          </property>
           <property name="text">
            <string>Current expiration:</string>
           </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLabel" name="labelTokenExpiresValue">
-          <property name="text">
-           <string>Never</string>
-          </property>
-         </widget>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="labelTokenExpiresValue">
+         <property name="toolTip">
+          <string>Current expiration for the selected token.</string>
+         </property>
+         <property name="text">
+          <string>Never</string>
+         </property>
+        </widget>
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="labelTokenExpiresSet">
+          <property name="toolTip">
+           <string>Choose or set a new expiration for the selected token.</string>
+          </property>
           <property name="text">
            <string>Set expiration:</string>
           </property>
-         </widget>
+        </widget>
         </item>
         <item row="4" column="1">
          <layout class="QHBoxLayout" name="horizontalLayoutTokenExpiration">
-          <item>
-           <widget class="QComboBox" name="comboBoxTokenExpiresPreset"/>
+         <item>
+           <widget class="QComboBox" name="comboBoxTokenExpiresPreset">
+            <property name="toolTip">
+             <string>Quick expiration presets for the selected token.</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QDateTimeEdit" name="dateTimeEditTokenExpires">
+            <property name="toolTip">
+             <string>Custom expiration date and time for the selected token.</string>
+            </property>
             <property name="calendarPopup">
              <bool>true</bool>
             </property>
