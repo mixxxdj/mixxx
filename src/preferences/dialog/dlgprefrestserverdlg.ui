@@ -11,6 +11,47 @@
     </widget>
    </item>
    <item>
+   <widget class="QFrame" name="frameNetworkWarning">
+     <property name="visible">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayoutNetworkWarning">
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <item>
+       <widget class="QLabel" name="labelNetworkWarningIcon">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelNetworkWarning">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;REST API is enabled, but no listener is active. Enable HTTP or HTTPS.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="labelRestApiUnavailable">
      <property name="visible">
       <bool>false</bool>
@@ -21,82 +62,84 @@
      <property name="wordWrap">
       <bool>true</bool>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBoxNetwork">
+   </widget>
+  </item>
+  <item>
+   <widget class="QGroupBox" name="groupBoxPreset">
+    <property name="title">
+     <string>Preset</string>
+    </property>
+    <layout class="QFormLayout" name="formLayoutPreset">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelPreset">
+       <property name="text">
+        <string>Preset:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="comboBoxPreset"/>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="labelPresetWarning">
+       <property name="visible">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Network preset exposes the API on all interfaces. Populate allowed origins so browsers can connect, and use only on trusted networks.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </item>
+  <item>
+   <widget class="QGroupBox" name="groupBoxNetwork">
      <property name="title">
      <string>Network</string>
     </property>
     <layout class="QFormLayout" name="formLayoutNetwork">
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelPreset">
-        <property name="text">
-         <string>Preset:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="comboBoxPreset"/>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QLabel" name="labelPresetWarning">
-        <property name="visible">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Network preset exposes the API on all interfaces. Populate allowed origins so browsers can connect, and use only on trusted networks.</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelEnableHttp">
-        <property name="text">
-         <string>HTTP:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
+      <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBoxEnableHttp">
         <property name="text">
-         <string>Enable</string>
+         <string>Enable HTTP</string>
         </property>
         <property name="checked">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="labelHost">
         <property name="text">
          <string>Host:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="1" column="1">
        <widget class="QLineEdit" name="lineEditHost"/>
       </item>
-      <item row="4" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="labelPort">
         <property name="text">
          <string>HTTP port:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="2" column="1">
        <widget class="QSpinBox" name="spinBoxHttpPort"/>
       </item>
-      <item row="5" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="labelHttpUrl">
         <property name="text">
          <string>HTTP URL:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="3" column="1">
        <layout class="QHBoxLayout" name="horizontalLayoutHttpUrl">
         <item>
          <widget class="QLabel" name="labelHttpUrlValue">
@@ -120,7 +163,7 @@
         </item>
        </layout>
       </item>
-      <item row="6" column="0">
+      <item row="4" column="0">
        <widget class="QLabel" name="labelCorsAllowlist">
         <property name="toolTip">
          <string>CORS allowed origins control which browser origins can access the REST API.
@@ -129,11 +172,11 @@ Examples: https://example.com, http://localhost:3000, * (allow any origin).
 Leave blank to disable CORS allowlisting.</string>
         </property>
         <property name="text">
-         <string>CORS Allowed Origins (comma-separated):</string>
+         <string>CORS Allowed Origins:</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="4" column="1">
        <widget class="QLineEdit" name="lineEditCorsAllowlist">
         <property name="placeholderText">
          <string>https://example.com, http://localhost:3000</string>
@@ -146,7 +189,7 @@ Leave blank to disable CORS allowlisting.</string>
         </property>
        </widget>
       </item>
-      <item row="7" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QLabel" name="labelCorsAllowlistWarning">
         <property name="visible">
          <bool>false</bool>
@@ -159,46 +202,19 @@ Leave blank to disable CORS allowlisting.</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="labelMaxRequestSize">
         <property name="text">
          <string>Max request size:</string>
         </property>
       </widget>
      </item>
-      <item row="8" column="1">
+      <item row="6" column="1">
        <widget class="QSpinBox" name="spinBoxMaxRequestSize">
         <property name="suffix">
          <string> KiB</string>
         </property>
        </widget>
-      </item>
-      <item row="9" column="0" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayoutNetworkWarning">
-        <item>
-         <widget class="QLabel" name="labelNetworkWarningIcon">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelNetworkWarning">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>REST API is enabled, but no listener is active. Enable HTTP or HTTPS.</string>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
     </layout>
    </widget>
@@ -217,11 +233,14 @@ Leave blank to disable CORS allowlisting.</string>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBoxAutoGenerateCertificate">
-       <property name="text">
-        <string>Automatically generate self-signed certificate</string>
-       </property>
-      </widget>
+     <widget class="QCheckBox" name="checkBoxAutoGenerateCertificate">
+      <property name="text">
+       <string>Automatically generate self-signed certificate</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
      </item>
      <item>
       <layout class="QFormLayout" name="formLayoutTls">
@@ -690,17 +709,20 @@ Leave blank to disable CORS allowlisting.</string>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="labelAuthWarning">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-         <property name="text">
-           <string>Access tokens sent without HTTPS can be intercepted. Enable HTTPS to protect the REST API.</string>
+        <widget class="QLabel" name="labelAuthWarning">
+         <property name="visible">
+          <bool>false</bool>
          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Access tokens sent without HTTPS can be intercepted. Enable HTTPS to protect the REST API.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
         </item>
        </layout>
       </item>

@@ -35,7 +35,7 @@ class RestServerSettings {
         int httpPort{0};
         int httpsPort{0};
         bool useHttps{false};
-        bool autoGenerateCert{false};
+        bool autoGenerateCert{true};
         QString certificatePath;
         QString privateKeyPath;
         QList<RestServerToken> tokens;
