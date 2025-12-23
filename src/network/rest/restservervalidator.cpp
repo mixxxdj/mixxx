@@ -29,14 +29,21 @@ struct HasHttpServerSslSetup<T,
         std::void_t<decltype(std::declval<T&>().sslSetup(
                 std::declval<const QSslConfiguration&>()))>> : std::true_type { };
 
+#if defined(MIXXX_HAS_HTTP_SERVER_TLS_API)
+constexpr bool kHttpServerHasTlsSupport = true;
+#else
 constexpr bool kHttpServerHasTlsSupport =
         HasHttpServerSslConfiguration<QHttpServer>::value ||
         HasHttpServerSslSetup<QHttpServer>::value;
+#endif
 
 QString tlsSupportDetails() {
     QStringList details;
     details << QStringLiteral("Qt build: %1").arg(QString::fromLatin1(QT_VERSION_STR))
             << QStringLiteral("Qt runtime: %1").arg(QString::fromLatin1(qVersion()));
+    details << QStringLiteral("HttpServer TLS API: %1")
+                       .arg(kHttpServerHasTlsSupport ? QStringLiteral("available")
+                                                     : QStringLiteral("missing"));
 #if QT_CONFIG(ssl)
     details << QStringLiteral("SSL build: %1").arg(QSslSocket::sslLibraryBuildVersionString())
             << QStringLiteral("SSL runtime: %1").arg(QSslSocket::sslLibraryVersionString())
@@ -88,7 +95,8 @@ RestServerValidationResult RestServerValidator::validate(
 
     if (settings.useHttps) {
         if (!kHttpServerHasTlsSupport) {
-            const QString baseError = QObject::tr("HTTPS is not supported by this Qt build");
+            const QString baseError = QObject::tr(
+                    "HTTPS is not supported because the Qt HttpServer module lacks TLS APIs");
             result.error = baseError;
             result.tlsError = baseError;
             result.tlsErrorDetails = tlsSupportDetails();
