@@ -42,6 +42,8 @@ CertificateGenerator::Result CertificateGenerator::loadOrGenerate(
                     .generated = false,
                     .certificatePath = resolvedCertificatePath,
                     .privateKeyPath = resolvedPrivateKeyPath,
+                    .certificate = QSslCertificate(),
+                    .privateKey = QSslKey(),
                     .error = QObject::tr("REST TLS certificate is expired"),
             };
         }
@@ -165,6 +167,10 @@ CertificateGenerator::Result CertificateGenerator::generateCertificatePair(
     return Result{
             .success = false,
             .generated = false,
+            .certificatePath = QString(),
+            .privateKeyPath = QString(),
+            .certificate = QSslCertificate(),
+            .privateKey = QSslKey(),
             .error = QObject::tr("Qt was built without SSL support"),
     };
 #endif
@@ -206,6 +212,8 @@ CertificateGenerator::Result CertificateGenerator::fail(
             .generated = false,
             .certificatePath = certificatePath,
             .privateKeyPath = privateKeyPath,
+            .certificate = QSslCertificate(),
+            .privateKey = QSslKey(),
             .error = std::move(message),
     };
 }
@@ -223,6 +231,7 @@ CertificateGenerator::Result CertificateGenerator::finalizeResult(
             .privateKeyPath = privateKeyPath,
             .certificate = std::move(certificate),
             .privateKey = std::move(privateKey),
+            .error = QString(),
     };
 }
 
