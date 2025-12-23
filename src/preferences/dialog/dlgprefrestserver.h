@@ -48,6 +48,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void updateAuthWarning();
     void updateUnauthWarning();
     void updateNetworkWarning();
+    void updateWarningsPaneVisibility();
     void updatePresetWarning();
     void updateUrlLabels();
     void updateStatusLabels(const RestServerSettings::Status& status);
