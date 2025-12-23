@@ -37,6 +37,15 @@ QString Keys::getGlobalKeyText() const {
     return QString::fromStdString(m_keyMap.global_key_text());
 }
 
+double Keys::getTuningFrequencyHz() const {
+    return m_keyMap.tuning_frequency_hz();
+}
+
+void Keys::setTuningFrequencyHz(double tuningFrequencyHz) {
+    const double clamped = tuningFrequencyHz > 0.0 ? tuningFrequencyHz : 440.0;
+    m_keyMap.set_tuning_frequency_hz(clamped);
+}
+
 bool Keys::readByteArray(const QByteArray& byteArray) {
     if (!m_keyMap.ParseFromArray(byteArray.constData(), byteArray.size())) {
         qDebug() << "ERROR: Could not parse Keys from QByteArray of size"
