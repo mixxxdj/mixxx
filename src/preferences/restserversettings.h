@@ -76,6 +76,7 @@ class RestServerSettings {
     Status getStatus() const;
     void setStatus(const Status& status);
     QString defaultCertificatePath() const;
+    QString defaultPrivateKeyPath() const;
 
   private:
     UserSettingsPointer m_pConfig;
