@@ -2,19 +2,26 @@
 
 #include <QAbstractItemView>
 #include <QClipboard>
+#include <QCryptographicHash>
 #include <QDateTime>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QHeaderView>
 #include <QIcon>
 #include <QLocale>
+#include <QPlainTextEdit>
 #include <QSignalBlocker>
 #include <QSslCertificate>
 #include <QTableWidgetItem>
 #include <QTimeZone>
 #include <QUrl>
+#include <QVBoxLayout>
 #include <limits>
+#include <QMessageBox>
 #include <QUuid>
 #include <QtGlobal>
 
@@ -143,6 +150,14 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QPushButton::clicked,
             this,
             &DlgPrefRestServer::slotBrowseKey);
+    connect(pushButtonCertificateDetails,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefRestServer::slotShowCertificateDetails);
+    connect(pushButtonRegenerateCertificate,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefRestServer::slotRegenerateCertificate);
     connect(pushButtonAddToken,
             &QPushButton::clicked,
             this,
@@ -370,6 +385,130 @@ void DlgPrefRestServer::slotBrowseKey() {
     }
 }
 
+void DlgPrefRestServer::slotShowCertificateDetails() {
+    QString certificatePath = lineEditCertPath->text().trimmed();
+    if (certificatePath.isEmpty() && m_settings) {
+        certificatePath = m_settings->defaultCertificatePath();
+    }
+
+    if (certificatePath.isEmpty() || !QFileInfo::exists(certificatePath)) {
+        QMessageBox::information(
+                this,
+                tr("Certificate Details"),
+                tr("No certificate is available to show details."));
+        return;
+    }
+
+    const QList<QSslCertificate> certificates =
+            QSslCertificate::fromPath(certificatePath, QSsl::Pem);
+    if (certificates.isEmpty() || certificates.first().isNull()) {
+        QMessageBox::information(
+                this,
+                tr("Certificate Details"),
+                tr("The certificate file could not be read."));
+        return;
+    }
+
+    const QSslCertificate certificate = certificates.first();
+    const QString subjectCn =
+            certificate.subjectInfo(QSslCertificate::CommonName).join(QStringLiteral(", "));
+    const QString subjectOrg =
+            certificate.subjectInfo(QSslCertificate::Organization).join(QStringLiteral(", "));
+    const QString subjectOu =
+            certificate.subjectInfo(QSslCertificate::OrganizationalUnitName)
+                    .join(QStringLiteral(", "));
+    const QString issuerCn =
+            certificate.issuerInfo(QSslCertificate::CommonName).join(QStringLiteral(", "));
+    const QString issuerOrg =
+            certificate.issuerInfo(QSslCertificate::Organization).join(QStringLiteral(", "));
+    const QString issuerOu =
+            certificate.issuerInfo(QSslCertificate::OrganizationalUnitName)
+                    .join(QStringLiteral(", "));
+    const QDateTime issuedUtc = certificate.effectiveDate();
+    const QDateTime expiryUtc = certificate.expiryDate();
+    const QString issuedText = issuedUtc.isValid()
+            ? QLocale().toString(issuedUtc.toLocalTime(), QLocale::ShortFormat)
+            : tr("Unknown");
+    const QString expiryText = expiryUtc.isValid()
+            ? QLocale().toString(expiryUtc.toLocalTime(), QLocale::ShortFormat)
+            : tr("Unknown");
+
+    QStringList details;
+    details << tr("Certificate path: %1").arg(certificatePath);
+    if (!subjectCn.isEmpty()) {
+        details << tr("Subject CN: %1").arg(subjectCn);
+    }
+    if (!subjectOrg.isEmpty()) {
+        details << tr("Subject O: %1").arg(subjectOrg);
+    }
+    if (!subjectOu.isEmpty()) {
+        details << tr("Subject OU: %1").arg(subjectOu);
+    }
+    if (!issuerCn.isEmpty()) {
+        details << tr("Issuer CN: %1").arg(issuerCn);
+    }
+    if (!issuerOrg.isEmpty()) {
+        details << tr("Issuer O: %1").arg(issuerOrg);
+    }
+    if (!issuerOu.isEmpty()) {
+        details << tr("Issuer OU: %1").arg(issuerOu);
+    }
+    details << tr("Issued: %1").arg(issuedText);
+    details << tr("Expires: %1").arg(expiryText);
+
+    const QString serialNumber = certificate.serialNumber();
+    if (!serialNumber.isEmpty()) {
+        details << tr("Serial: %1").arg(serialNumber);
+    }
+
+    const QByteArray sha1Digest = certificate.digest(QCryptographicHash::Sha1);
+    if (!sha1Digest.isEmpty()) {
+        details << tr("SHA1: %1").arg(QString::fromLatin1(sha1Digest.toHex()));
+    }
+
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Certificate Details"));
+    dialog.setModal(true);
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    QPlainTextEdit* textEdit = new QPlainTextEdit(&dialog);
+    textEdit->setReadOnly(true);
+    textEdit->setPlainText(details.join(QStringLiteral("\n")));
+    layout->addWidget(textEdit);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Close, &dialog);
+    connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    layout->addWidget(buttonBox);
+    dialog.resize(520, 360);
+    dialog.exec();
+}
+
+void DlgPrefRestServer::slotRegenerateCertificate() {
+    if (!checkBoxUseHttps->isChecked()) {
+        return;
+    }
+
+    if (!checkBoxAutoGenerateCertificate->isChecked()) {
+        checkBoxAutoGenerateCertificate->setChecked(true);
+    }
+
+    QString certificatePath = lineEditCertPath->text().trimmed();
+    QString privateKeyPath = lineEditKeyPath->text().trimmed();
+    if (certificatePath.isEmpty() && m_settings) {
+        certificatePath = m_settings->defaultCertificatePath();
+    }
+    if (privateKeyPath.isEmpty() && m_settings) {
+        privateKeyPath = m_settings->defaultPrivateKeyPath();
+    }
+
+    if (!certificatePath.isEmpty()) {
+        QFile::remove(certificatePath);
+    }
+    if (!privateKeyPath.isEmpty()) {
+        QFile::remove(privateKeyPath);
+    }
+
+    updateTlsCertificateStatus();
+}
+
 void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     checkBoxEnableRestServer->setChecked(values.enabled);
     checkBoxEnableHttp->setChecked(values.enableHttp);
@@ -442,6 +581,10 @@ void DlgPrefRestServer::updateTlsState() {
     labelTlsStatusIcon->setEnabled(useHttps);
     labelTlsCertificateStatus->setEnabled(useHttps);
     labelTlsCertificateIcon->setEnabled(useHttps);
+    pushButtonCertificateDetails->setEnabled(useHttps);
+    const bool showRegenerate = useHttps && autoGenerate;
+    pushButtonRegenerateCertificate->setVisible(showRegenerate);
+    pushButtonRegenerateCertificate->setEnabled(showRegenerate);
     updateTlsCertificateStatus();
 }
 
@@ -591,6 +734,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (!useHttps) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        pushButtonCertificateDetails->setEnabled(false);
         updateWarningsPaneVisibility();
         return;
     }
@@ -603,6 +747,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (certificatePath.isEmpty() || !QFileInfo::exists(certificatePath)) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        pushButtonCertificateDetails->setEnabled(false);
         updateWarningsPaneVisibility();
         return;
     }
@@ -612,6 +757,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (certificates.isEmpty()) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        pushButtonCertificateDetails->setEnabled(false);
         updateWarningsPaneVisibility();
         return;
     }
@@ -620,6 +766,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (certificate.isNull()) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        pushButtonCertificateDetails->setEnabled(false);
         updateWarningsPaneVisibility();
         return;
     }
@@ -632,14 +779,24 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
         issuer = tr("Unknown issuer");
     }
 
+    const QDateTime issuedUtc = certificate.effectiveDate();
     const QDateTime expiryUtc = certificate.expiryDate();
+    const QString issuedText = issuedUtc.isValid()
+            ? QLocale().toString(issuedUtc.toLocalTime(), QLocale::ShortFormat)
+            : tr("Unknown");
     const QString expiryText = expiryUtc.isValid()
             ? QLocale().toString(expiryUtc.toLocalTime(), QLocale::ShortFormat)
             : tr("Unknown");
 
-    labelTlsCertificateStatus->setText(
-            tr("Certificate Info\nIssuer: %1\nExpires: %2").arg(issuer, expiryText));
+    labelTlsCertificateStatus->setText(tr("<div align=\"center\">"
+                                          "<b>Certificate Info</b><br/>"
+                                          "Issued: %1<br/>"
+                                          "Issuer: %2<br/>"
+                                          "Expires: %3"
+                                          "</div>")
+                                               .arg(issuedText, issuer, expiryText));
     labelTlsCertificateStatus->setVisible(true);
+    pushButtonCertificateDetails->setEnabled(true);
 
     bool showWarning = false;
     if (expiryUtc.isValid()) {
@@ -651,6 +808,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
 #else
     labelTlsCertificateStatus->setVisible(false);
     labelTlsCertificateIcon->setVisible(false);
+    pushButtonCertificateDetails->setEnabled(false);
     updateWarningsPaneVisibility();
 #endif
 }

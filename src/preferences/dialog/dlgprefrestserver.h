@@ -30,6 +30,8 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void slotCorsAllowlistChanged(const QString& text);
     void slotBrowseCertificate();
     void slotBrowseKey();
+    void slotShowCertificateDetails();
+    void slotRegenerateCertificate();
     void slotAddToken();
     void slotRemoveToken();
     void slotRegenerateToken();

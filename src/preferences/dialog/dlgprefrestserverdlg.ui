@@ -657,12 +657,15 @@ Leave blank to disable CORS allowlisting.</string>
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
-       <property name="alignment">
-        <set>Qt::AlignHCenter</set>
-       </property>
-       <item>
-        <widget class="QLabel" name="labelTlsCertificateIcon">
+     <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
+      <property name="alignment">
+       <set>Qt::AlignHCenter</set>
+      </property>
+      <property name="topMargin">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="labelTlsCertificateIcon">
          <property name="visible">
           <bool>false</bool>
          </property>
@@ -691,10 +694,44 @@ Leave blank to disable CORS allowlisting.</string>
           <string/>
          </property>
          <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateDetails">
+       <property name="alignment">
+        <set>Qt::AlignHCenter</set>
+       </property>
+       <item>
+        <widget class="QPushButton" name="pushButtonCertificateDetails">
+         <property name="toolTip">
+          <string>Show full certificate details.</string>
+         </property>
+         <property name="text">
+          <string>Certificate details...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutTlsRegenerate">
+       <property name="alignment">
+        <set>Qt::AlignHCenter</set>
+       </property>
+       <item>
+        <widget class="QPushButton" name="pushButtonRegenerateCertificate">
+         <property name="toolTip">
+          <string>Generate a new self-signed certificate and key.</string>
+         </property>
+         <property name="text">
+          <string>Regenerate certificate and key</string>
          </property>
         </widget>
        </item>

@@ -308,3 +308,8 @@ QString RestServerSettings::defaultCertificatePath() const {
     return QDir(m_pConfig->getSettingsPath())
             .filePath(QStringLiteral("rest/rest_certificate.pem"));
 }
+
+QString RestServerSettings::defaultPrivateKeyPath() const {
+    return QDir(m_pConfig->getSettingsPath())
+            .filePath(QStringLiteral("rest/rest_private_key.pem"));
+}
