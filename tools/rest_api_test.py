@@ -9,6 +9,13 @@ Example usage:
   python3 tools/rest_api_test.py --check control --control command=play,group=[Channel1]
   python3 tools/rest_api_test.py --check control --control command=seek,deck=1,position=0.5
   python3 tools/rest_api_test.py --check control --control key=volume,group=[Master],value=0.75
+  python3 tools/rest_api_test.py --check playlists_read
+  python3 tools/rest_api_test.py --check playlists_read --playlist-read-id 12
+  python3 tools/rest_api_test.py --check playlists \\
+    --playlist-action send_to_autodj --playlist-id 12 --playlist-autodj-position top
+  python3 tools/rest_api_test.py --check control --play-deck 1
+  python3 tools/rest_api_test.py --check control --pause-deck 2
+  python3 tools/rest_api_test.py --check autodj_write --autodj-enable
   python3 tools/rest_api_test.py --check control --check autodj_write \\
     --payload control=control.json --payload autodj_write='{"action": "enable"}'
 """
@@ -206,6 +213,125 @@ def parse_control_payload(control_args: Optional[Sequence[str]]) -> Optional[Any
     if len(entries) == 1:
         return entries[0]
     return {"commands": entries}
+
+
+def control_entry_for_command(command: str, deck: int) -> Mapping[str, Any]:
+    if deck <= 0:
+        raise ApiTestError(f"Deck must be a positive integer for {command}")
+    return {"command": command, "group": f"[Channel{deck}]"}
+
+
+def parse_control_shortcuts(args: argparse.Namespace) -> Optional[Any]:
+    entries: List[Mapping[str, Any]] = []
+    if args.play_deck is not None:
+        entries.append(control_entry_for_command("play", args.play_deck))
+    if args.pause_deck is not None:
+        entries.append(control_entry_for_command("pause", args.pause_deck))
+    if not entries:
+        return None
+    if len(entries) == 1:
+        return entries[0]
+    return {"commands": entries}
+
+
+def parse_csv_list(raw_values: Optional[Sequence[str]], description: str) -> List[str]:
+    if not raw_values:
+        return []
+    values: List[str] = []
+    for raw in raw_values:
+        for part in raw.split(","):
+            part = part.strip()
+            if not part:
+                raise ApiTestError(f"Invalid {description} value: {raw}")
+            values.append(part)
+    return values
+
+
+def parse_int_list(raw_values: Optional[Sequence[str]], description: str) -> List[int]:
+    values: List[int] = []
+    for raw in parse_csv_list(raw_values, description):
+        try:
+            values.append(int(raw))
+        except ValueError as exc:
+            raise ApiTestError(f"Invalid {description} value: {raw}") from exc
+    return values
+
+
+def parse_playlist_payload(args: argparse.Namespace) -> Optional[Mapping[str, Any]]:
+    if not args.playlist_action:
+        return None
+    action = args.playlist_action
+    payload: dict[str, Any] = {"action": action}
+
+    if action == "create":
+        if not args.playlist_name:
+            raise ApiTestError("Playlist create requires --playlist-name")
+        payload["name"] = args.playlist_name
+        return payload
+
+    if action in {"delete", "set_active"}:
+        if args.playlist_id is None:
+            raise ApiTestError(f"Playlist {action} requires --playlist-id")
+        payload["id"] = args.playlist_id
+        return payload
+
+    if action == "rename":
+        if args.playlist_id is None or not args.playlist_name:
+            raise ApiTestError("Playlist rename requires --playlist-id and --playlist-name")
+        payload["id"] = args.playlist_id
+        payload["name"] = args.playlist_name
+        return payload
+
+    if action == "add":
+        if args.playlist_id is None:
+            raise ApiTestError("Playlist add requires --playlist-id")
+        track_ids = parse_csv_list(args.playlist_track_ids, "playlist track id")
+        if not track_ids:
+            raise ApiTestError("Playlist add requires --playlist-track-id(s)")
+        payload["id"] = args.playlist_id
+        payload["track_ids"] = track_ids
+        if args.playlist_position is not None:
+            payload["position"] = args.playlist_position
+        return payload
+
+    if action == "remove":
+        if args.playlist_id is None:
+            raise ApiTestError("Playlist remove requires --playlist-id")
+        positions = parse_int_list(args.playlist_positions, "playlist position")
+        if not positions:
+            raise ApiTestError("Playlist remove requires --playlist-positions")
+        payload["id"] = args.playlist_id
+        payload["positions"] = positions
+        return payload
+
+    if action == "reorder":
+        if args.playlist_id is None:
+            raise ApiTestError("Playlist reorder requires --playlist-id")
+        if args.playlist_from is None or args.playlist_to is None:
+            raise ApiTestError("Playlist reorder requires --playlist-from and --playlist-to")
+        payload["id"] = args.playlist_id
+        payload["from"] = args.playlist_from
+        payload["to"] = args.playlist_to
+        return payload
+
+    if action == "send_to_autodj":
+        if args.playlist_id is None:
+            raise ApiTestError("Playlist send_to_autodj requires --playlist-id")
+        if not args.playlist_autodj_position:
+            raise ApiTestError(
+                "Playlist send_to_autodj requires --playlist-autodj-position"
+            )
+        payload["id"] = args.playlist_id
+        payload["position"] = args.playlist_autodj_position
+        return payload
+
+    raise ApiTestError(f"Unsupported playlist action: {action}")
+
+
+def parse_playlist_query(args: argparse.Namespace) -> Mapping[str, str]:
+    if args.playlist_read_id is None:
+        return {}
+    return {"id": str(args.playlist_read_id)}
 
 
 def request_json(
@@ -432,6 +558,37 @@ def validate_autodj(payload: Any, path: str) -> None:
     assert_type(payload["queue"], list, "autodj.queue")
 
 
+def validate_playlists_read(payload: Any, path: str) -> None:
+    assert_type(payload, dict, path)
+    if "playlist_id" in payload:
+        assert_keys(payload, ["playlist_id", "tracks"], path)
+        assert_type(payload["playlist_id"], int, f"{path}.playlist_id")
+        assert_type(payload["tracks"], list, f"{path}.tracks")
+        for index, entry in enumerate(payload["tracks"]):
+            assert_type(entry, dict, f"{path}.tracks[{index}]")
+            if "id" in entry:
+                assert_type(entry["id"], str, f"{path}.tracks[{index}].id")
+            if "track" in entry:
+                validate_track_summary(entry["track"], f"{path}.tracks[{index}].track")
+            if "duration" in entry:
+                assert_optional_number(entry["duration"], f"{path}.tracks[{index}].duration")
+        return
+
+    assert_keys(payload, ["active_playlist_id", "playlists"], path)
+    assert_type(payload["active_playlist_id"], int, f"{path}.active_playlist_id")
+    assert_type(payload["playlists"], list, f"{path}.playlists")
+    for index, entry in enumerate(payload["playlists"]):
+        assert_type(entry, dict, f"{path}.playlists[{index}]")
+        if "id" in entry:
+            assert_type(entry["id"], int, f"{path}.playlists[{index}].id")
+        if "name" in entry:
+            assert_type(entry["name"], str, f"{path}.playlists[{index}].name")
+        if "locked" in entry:
+            assert_type(entry["locked"], bool, f"{path}.playlists[{index}].locked")
+        if "track_count" in entry:
+            assert_type(entry["track_count"], int, f"{path}.playlists[{index}].track_count")
+
+
 def validate_json_object(payload: Any, path: str) -> None:
     assert_type(payload, dict, path)
 
@@ -501,6 +658,14 @@ CHECKS = {
         required_scopes=["autodj:write"],
         validator=validate_json_object,
     ),
+    "playlists_read": CheckDefinition(
+        name="playlists_read",
+        method="GET",
+        path="/api/v1/playlists",
+        description="List playlists or fetch playlist tracks.",
+        required_scopes=["playlists:read"],
+        validator=validate_playlists_read,
+    ),
     "playlists": CheckDefinition(
         name="playlists",
         method="POST",
@@ -530,6 +695,7 @@ def run_checks(
     payload_overrides: Mapping[str, Any],
     headers: Mapping[str, str],
     query: Mapping[str, str],
+    query_overrides: Mapping[str, Mapping[str, str]],
     show_timing: bool,
 ) -> List[str]:
     messages: List[str] = []
@@ -539,13 +705,16 @@ def run_checks(
         payload_data = payload_overrides.get(name, data) if check.method == "POST" else None
         if check.method == "POST" and payload_data is None:
             raise ApiTestError(f"Check '{name}' requires --data or --data-file")
+        effective_query = dict(query)
+        if name in query_overrides:
+            effective_query.update(query_overrides[name])
         response = request_json(
             config,
             check.method,
             check.path,
             payload_data,
             headers,
-            query,
+            effective_query,
         )
         report_response(check.path, response.payload, show_responses)
         write_response(output_dir, check.name, response.payload)
@@ -635,6 +804,80 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--play-deck",
+        type=int,
+        help="Send a play command to /api/v1/control for the given deck number",
+    )
+    parser.add_argument(
+        "--pause-deck",
+        type=int,
+        help="Send a pause command to /api/v1/control for the given deck number",
+    )
+    parser.add_argument(
+        "--autodj-enable",
+        action="store_true",
+        help="Send an AutoDJ enable action to /api/v1/autodj",
+    )
+    parser.add_argument(
+        "--playlist-read-id",
+        type=int,
+        help="Playlist id to fetch tracks for with playlists_read",
+    )
+    parser.add_argument(
+        "--playlist-action",
+        choices=[
+            "create",
+            "delete",
+            "rename",
+            "set_active",
+            "add",
+            "remove",
+            "reorder",
+            "send_to_autodj",
+        ],
+        help="Playlist action for /api/v1/playlists",
+    )
+    parser.add_argument(
+        "--playlist-id",
+        type=int,
+        help="Playlist id for playlist actions",
+    )
+    parser.add_argument(
+        "--playlist-name",
+        help="Playlist name for create/rename actions",
+    )
+    parser.add_argument(
+        "--playlist-track-id",
+        dest="playlist_track_ids",
+        action="append",
+        help="Track id to add to playlist (repeatable or comma-separated)",
+    )
+    parser.add_argument(
+        "--playlist-position",
+        type=int,
+        help="Position for playlist add action",
+    )
+    parser.add_argument(
+        "--playlist-positions",
+        action="append",
+        help="Comma-separated playlist positions for remove action",
+    )
+    parser.add_argument(
+        "--playlist-from",
+        type=int,
+        help="Source position for playlist reorder action",
+    )
+    parser.add_argument(
+        "--playlist-to",
+        type=int,
+        help="Destination position for playlist reorder action",
+    )
+    parser.add_argument(
+        "--playlist-autodj-position",
+        choices=["top", "bottom", "replace"],
+        help="AutoDJ queue position for send_to_autodj action",
+    )
+    parser.add_argument(
         "--header",
         action="append",
         help="Additional HTTP header in the form Key:Value (repeatable)",
@@ -690,11 +933,36 @@ def main() -> int:
     data = parse_json_payload(args.data, args.data_file)
     payload_overrides = parse_payload_overrides(args.payload)
     control_payload = parse_control_payload(args.control)
+    shortcut_control_payload = parse_control_shortcuts(args)
+    playlist_payload = parse_playlist_payload(args)
+    playlist_query = parse_playlist_query(args)
+    query_overrides: dict[str, Mapping[str, str]] = {}
+    if playlist_query:
+        if "id" in query:
+            raise ApiTestError("Use either --playlist-read-id or --query id=...")
+        query_overrides["playlists_read"] = playlist_query
     if control_payload is not None:
         if "control" in payload_overrides:
             raise ApiTestError("Use either --control or --payload control=..., not both")
         payload_overrides = dict(payload_overrides)
         payload_overrides["control"] = control_payload
+    if shortcut_control_payload is not None:
+        if "control" in payload_overrides:
+            raise ApiTestError(
+                "Use either --play-deck/--pause-deck or other control payload options"
+            )
+        payload_overrides = dict(payload_overrides)
+        payload_overrides["control"] = shortcut_control_payload
+    if args.autodj_enable:
+        if "autodj_write" in payload_overrides:
+            raise ApiTestError("Use either --autodj-enable or --payload autodj_write=...")
+        payload_overrides = dict(payload_overrides)
+        payload_overrides["autodj_write"] = {"action": "enable"}
+    if playlist_payload is not None:
+        if "playlists" in payload_overrides:
+            raise ApiTestError("Use either --playlist-* options or --payload playlists=...")
+        payload_overrides = dict(payload_overrides)
+        payload_overrides["playlists"] = playlist_payload
 
     try:
         results = run_checks(
@@ -706,6 +974,7 @@ def main() -> int:
             payload_overrides,
             headers,
             query,
+            query_overrides,
             args.timing,
         )
     except ApiTestError as exc:
