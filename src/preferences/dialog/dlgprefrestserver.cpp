@@ -76,9 +76,9 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     comboBoxPreset->addItem(tr("Local + HTTPS"));
     comboBoxPreset->addItem(tr("Network (advanced)"));
     comboBoxTokenExpiresPreset->addItem(tr("Never"));
-    comboBoxTokenExpiresPreset->addItem(tr("+1 month"));
-    comboBoxTokenExpiresPreset->addItem(tr("+3 months"));
-    comboBoxTokenExpiresPreset->addItem(tr("+1 year"));
+    comboBoxTokenExpiresPreset->addItem(tr("1 Month"));
+    comboBoxTokenExpiresPreset->addItem(tr("3 Months"));
+    comboBoxTokenExpiresPreset->addItem(tr("1 Year"));
     comboBoxTokenExpiresPreset->addItem(tr("Custom"));
 
     connect(comboBoxPreset,
