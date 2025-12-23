@@ -57,6 +57,10 @@ QString tlsSupportDetails() {
 }
 } // namespace
 
+bool httpServerHasTlsSupport() {
+    return kHttpServerHasTlsSupport;
+}
+
 RestServerValidator::RestServerValidator(
         RestServer::Settings activeSettings,
         bool serverRunning,

@@ -27,6 +27,7 @@
 
 #include "moc_dlgprefrestserver.cpp"
 #include "network/rest/restscopes.h"
+#include "network/rest/restservervalidator.h"
 
 namespace {
 constexpr int kCertificateExpiryWarningDays = 30;
@@ -563,6 +564,11 @@ RestServerSettings::Values DlgPrefRestServer::gatherValues() const {
 void DlgPrefRestServer::updateTlsState() {
     const bool useHttps = checkBoxUseHttps->isChecked();
     const bool autoGenerate = checkBoxAutoGenerateCertificate->isChecked();
+#ifdef MIXXX_HAS_HTTP_SERVER
+    const bool httpsSupported = mixxx::network::rest::httpServerHasTlsSupport();
+#else
+    const bool httpsSupported = false;
+#endif
 
     spinBoxHttpsPort->setEnabled(useHttps);
 
@@ -584,7 +590,13 @@ void DlgPrefRestServer::updateTlsState() {
     pushButtonCertificateDetails->setEnabled(useHttps);
     const bool showRegenerate = useHttps && autoGenerate;
     pushButtonRegenerateCertificate->setVisible(showRegenerate);
-    pushButtonRegenerateCertificate->setEnabled(showRegenerate);
+    pushButtonRegenerateCertificate->setEnabled(showRegenerate && httpsSupported);
+    if (showRegenerate && !httpsSupported) {
+        pushButtonRegenerateCertificate->setToolTip(
+                tr("HTTPS is not supported because the Qt HttpServer module lacks TLS APIs."));
+    } else {
+        pushButtonRegenerateCertificate->setToolTip(QString());
+    }
     updateTlsCertificateStatus();
 }
 

@@ -22,6 +22,8 @@ struct RestServerValidationResult {
     QString tlsErrorDetails;
 };
 
+bool httpServerHasTlsSupport();
+
 class RestServerValidator {
   public:
     RestServerValidator(
