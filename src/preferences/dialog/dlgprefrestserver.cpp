@@ -569,25 +569,32 @@ void DlgPrefRestServer::updateTlsState() {
 #else
     const bool httpsSupported = false;
 #endif
+    const bool tlsControlsEnabled = useHttps && httpsSupported;
 
-    spinBoxHttpsPort->setEnabled(useHttps);
+    labelHttpsPort->setEnabled(tlsControlsEnabled);
+    spinBoxHttpsPort->setEnabled(tlsControlsEnabled);
+    labelHttpsUrl->setEnabled(tlsControlsEnabled);
+    labelHttpsUrlValue->setEnabled(tlsControlsEnabled);
+    pushButtonCopyHttpsUrl->setEnabled(tlsControlsEnabled && useHttps);
+    labelCertPath->setEnabled(tlsControlsEnabled);
+    labelKeyPath->setEnabled(tlsControlsEnabled);
 
-    checkBoxAutoGenerateCertificate->setEnabled(useHttps);
-    checkBoxRequireTls->setEnabled(useHttps);
+    checkBoxAutoGenerateCertificate->setEnabled(tlsControlsEnabled);
+    checkBoxRequireTls->setEnabled(tlsControlsEnabled);
     if (useHttps) {
         checkBoxRequireTls->setToolTip(QString());
     } else {
         checkBoxRequireTls->setToolTip(tr("Enable HTTPS to require TLS for write tokens."));
     }
-    lineEditCertPath->setEnabled(useHttps && !autoGenerate);
-    pushButtonBrowseCert->setEnabled(useHttps && !autoGenerate);
-    lineEditKeyPath->setEnabled(useHttps && !autoGenerate);
-    pushButtonBrowseKey->setEnabled(useHttps && !autoGenerate);
-    labelTlsStatus->setEnabled(useHttps);
-    labelTlsStatusIcon->setEnabled(useHttps);
-    labelTlsCertificateStatus->setEnabled(useHttps);
-    labelTlsCertificateIcon->setEnabled(useHttps);
-    pushButtonCertificateDetails->setEnabled(useHttps);
+    lineEditCertPath->setEnabled(tlsControlsEnabled && !autoGenerate);
+    pushButtonBrowseCert->setEnabled(tlsControlsEnabled && !autoGenerate);
+    lineEditKeyPath->setEnabled(tlsControlsEnabled && !autoGenerate);
+    pushButtonBrowseKey->setEnabled(tlsControlsEnabled && !autoGenerate);
+    labelTlsStatus->setEnabled(tlsControlsEnabled);
+    labelTlsStatusIcon->setEnabled(tlsControlsEnabled);
+    labelTlsCertificateStatus->setEnabled(tlsControlsEnabled);
+    labelTlsCertificateIcon->setEnabled(tlsControlsEnabled);
+    pushButtonCertificateDetails->setEnabled(tlsControlsEnabled);
     const bool showRegenerate = useHttps && autoGenerate;
     pushButtonRegenerateCertificate->setVisible(showRegenerate);
     pushButtonRegenerateCertificate->setEnabled(showRegenerate && httpsSupported);
@@ -657,7 +664,12 @@ void DlgPrefRestServer::updatePresetWarning() {
 void DlgPrefRestServer::updateUrlLabels() {
     const bool restEnabled = checkBoxEnableRestServer->isChecked();
     const bool httpEnabled = restEnabled && checkBoxEnableHttp->isChecked();
-    const bool httpsEnabled = restEnabled && checkBoxUseHttps->isChecked();
+#ifdef MIXXX_HAS_HTTP_SERVER
+    const bool httpsSupported = mixxx::network::rest::httpServerHasTlsSupport();
+#else
+    const bool httpsSupported = false;
+#endif
+    const bool httpsEnabled = restEnabled && checkBoxUseHttps->isChecked() && httpsSupported;
 
     if (httpEnabled) {
         labelHttpUrlValue->setText(makeHttpUrl());
