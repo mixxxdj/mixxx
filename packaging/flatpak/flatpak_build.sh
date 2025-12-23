@@ -38,15 +38,15 @@ print_usage() {
     echo "  $SCRIPT  -h | --help"
     echo ""
     echo "Commands:"
-    echo "  bundle             Standard single-file bundle build."
-    echo "  debug              Debug single-file bundle build."
-    echo "  install            Build and install for the current user."
-    echo "  repo               Local repository build."
+    echo "  bundle             Flatpak user bundle build."
+    echo "  debug              Flatpak user bundle build with debug extension."
+    echo "  install            Build and install as Flatpak for the current user."
+    echo "  repo               Local Flatpak repository build."
     echo ""
     echo "Options:"
     echo "  -h | --help        Display this help message."
     echo "  --builder          Build using org.flatpak.Builder."
-    echo "  --manifest <file>  Use a custom manifest file."
+    echo "  --manifest <file>  Use a custom build manifest file."
 }
 
 # Checks that the manifest is readable
