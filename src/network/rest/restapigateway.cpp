@@ -924,7 +924,7 @@ QHttpServerResponse RestApiGateway::autoDjStatus() const {
                 ? QList<TrackId>{}
                 : playlistDao.getAutoDJTrackIds();
 
-        QJsonArray tracks;
+        QJsonArray queue;
         const int trackCount = trackIds.size();
         const int sampleLimit = qMin(trackCount, 10);
         for (int index = 0; index < sampleLimit; ++index) {
@@ -935,7 +935,7 @@ QHttpServerResponse RestApiGateway::autoDjStatus() const {
                 entry.insert("track", trackPayload(track));
                 entry.insert("duration", track->getDuration());
             }
-            tracks.append(entry);
+            queue.append(entry);
         }
 
         return successResponse(QJsonObject{
@@ -947,7 +947,7 @@ QHttpServerResponse RestApiGateway::autoDjStatus() const {
                                 .toBool()},
                 {"playlist_id", autoDjPlaylistId},
                 {"queue_size", trackCount},
-                {"tracks", tracks},
+                {"queue", queue},
         });
     });
 }
