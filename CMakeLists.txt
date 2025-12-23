@@ -4353,7 +4353,7 @@ target_link_libraries(mixxx-lib PRIVATE Reverb)
 option(RUBBERBAND "Enable the rubberband engine for pitch-bending" ON)
 if(RUBBERBAND)
   find_package(rubberband REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE rubberband::rubberband)
+  target_link_libraries(mixxx-lib PUBLIC rubberband::rubberband)
   target_compile_definitions(mixxx-lib PUBLIC __RUBBERBAND__)
   target_sources(
     mixxx-lib
