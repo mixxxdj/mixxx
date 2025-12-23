@@ -563,11 +563,14 @@ void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& sta
     labelStatus->setVisible(showStatus);
     labelStatus->setText(status.lastError);
 
-    const bool showTlsStatus = !status.tlsError.isEmpty() || status.certificateGenerated;
+    const bool showTlsStatus = !status.tlsError.isEmpty() || status.certificateGenerated ||
+            (checkBoxUseHttps->isChecked() && !status.lastError.isEmpty());
     labelTlsStatusIcon->setVisible(showTlsStatus);
     labelTlsStatus->setVisible(showTlsStatus);
     if (status.certificateGenerated && status.tlsError.isEmpty()) {
         labelTlsStatus->setText(tr("A self-signed certificate was generated automatically."));
+    } else if (status.tlsError.isEmpty() && checkBoxUseHttps->isChecked()) {
+        labelTlsStatus->setText(status.lastError);
     } else {
         labelTlsStatus->setText(status.tlsError);
     }

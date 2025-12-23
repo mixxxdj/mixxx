@@ -4,9 +4,32 @@
 
 #include <QTcpServer>
 #include <limits>
+#include <type_traits>
 #include <utility>
 
 namespace mixxx::network::rest {
+
+namespace {
+template<typename T, typename = void>
+struct HasHttpServerSslConfiguration : std::false_type { };
+
+template<typename T>
+struct HasHttpServerSslConfiguration<T,
+        std::void_t<decltype(std::declval<T&>().setSslConfiguration(
+                std::declval<const QSslConfiguration&>()))>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasHttpServerSslSetup : std::false_type { };
+
+template<typename T>
+struct HasHttpServerSslSetup<T,
+        std::void_t<decltype(std::declval<T&>().sslSetup(
+                std::declval<const QSslConfiguration&>()))>> : std::true_type { };
+
+constexpr bool kHttpServerHasTlsSupport =
+        HasHttpServerSslConfiguration<QHttpServer>::value ||
+        HasHttpServerSslSetup<QHttpServer>::value;
+} // namespace
 
 RestServerValidator::RestServerValidator(
         RestServer::Settings activeSettings,
@@ -45,6 +68,12 @@ RestServerValidationResult RestServerValidator::validate(
     }
 
     if (settings.useHttps) {
+        if (!kHttpServerHasTlsSupport) {
+            const QString error = QObject::tr("HTTPS is not supported by this Qt build");
+            result.error = error;
+            result.tlsError = error;
+            return result;
+        }
         const RestServer::TlsResult tlsResult = RestServer::prepareTlsConfiguration(
                 settings, m_certificateGenerator);
         if (!tlsResult.success) {
