@@ -205,50 +205,6 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
-        <property name="alignment">
-         <set>Qt::AlignHCenter</set>
-        </property>
-        <item>
-         <widget class="QLabel" name="labelTlsCertificateIcon">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelTlsCertificateStatus">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>360</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
        <layout class="QHBoxLayout" name="horizontalLayoutStatus">
         <property name="alignment">
          <set>Qt::AlignHCenter</set>
@@ -655,7 +611,7 @@ Leave blank to disable CORS allowlisting.</string>
       </layout>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBoxRequireTls">
+     <widget class="QCheckBox" name="checkBoxRequireTls">
        <property name="toolTip">
         <string>Require HTTPS for control routes.</string>
        </property>
@@ -663,6 +619,50 @@ Leave blank to disable CORS allowlisting.</string>
         <string>Require TLS for control routes</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
+       <property name="alignment">
+        <set>Qt::AlignHCenter</set>
+       </property>
+       <item>
+        <widget class="QLabel" name="labelTlsCertificateIcon">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelTlsCertificateStatus">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>360</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>
