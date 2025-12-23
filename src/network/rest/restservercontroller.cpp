@@ -124,14 +124,18 @@ void RestServerController::applySettings(const ListenerConfiguration& settings) 
                 status.tlsActive == m_status.tlsActive &&
                 status.certificateGenerated == m_status.certificateGenerated &&
                 status.lastError == m_status.lastError &&
-                status.tlsError == m_status.tlsError) {
+                status.tlsError == m_status.tlsError &&
+                status.tlsErrorDetails == m_status.tlsErrorDetails) {
             return;
         }
         m_status = status;
         m_settingsStore.setStatus(status);
     };
 
-    auto publishStartFailure = [&](const QString& message, const QString& tlsMessage, bool running) {
+    auto publishStartFailure = [&](const QString& message,
+                                   const QString& tlsMessage,
+                                   const QString& tlsDetails,
+                                   bool running) {
         RestServerSettings::Status status;
         status.running = running;
         status.tlsActive = running && m_activeHttpsSettings.useHttps;
@@ -139,6 +143,7 @@ void RestServerController::applySettings(const ListenerConfiguration& settings) 
                 m_lastHttpsTlsConfiguration->generated && status.tlsActive;
         status.lastError = message;
         status.tlsError = tlsMessage;
+        status.tlsErrorDetails = tlsDetails;
         publishStatus(status);
     };
 
@@ -171,7 +176,10 @@ void RestServerController::applySettings(const ListenerConfiguration& settings) 
 
     if (!m_httpServer || !m_httpsServer) {
         kLogger.warning() << "REST API server missing; cannot start";
-        publishStartFailure(tr("REST API server is unavailable"), QString(), httpWasRunning || httpsWasRunning);
+        publishStartFailure(tr("REST API server is unavailable"),
+                QString(),
+                QString(),
+                httpWasRunning || httpsWasRunning);
         return;
     }
 
@@ -182,7 +190,7 @@ void RestServerController::applySettings(const ListenerConfiguration& settings) 
             kLogger.warning() << error;
             m_loggedStartFailure = true;
         }
-        publishStartFailure(error, QString(), httpWasRunning || httpsWasRunning);
+        publishStartFailure(error, QString(), QString(), httpWasRunning || httpsWasRunning);
         return;
     }
 
@@ -196,10 +204,13 @@ void RestServerController::applySettings(const ListenerConfiguration& settings) 
         if (!result.success) {
             if (!m_loggedStartFailure) {
                 kLogger.warning() << "Rejecting REST API configuration:" << result.error
-                                  << result.tlsError;
+                                  << result.tlsError << result.tlsErrorDetails;
                 m_loggedStartFailure = true;
             }
-            publishStartFailure(result.error, result.tlsError, serverRunning || httpWasRunning || httpsWasRunning);
+            publishStartFailure(result.error,
+                    result.tlsError,
+                    result.tlsErrorDetails,
+                    serverRunning || httpWasRunning || httpsWasRunning);
             return std::nullopt;
         }
         return result;
