@@ -11,6 +11,7 @@ Example usage:
   python3 tools/rest_api_test.py --check control --control key=volume,group=[Master],value=0.75
   python3 tools/rest_api_test.py --check playlists_read
   python3 tools/rest_api_test.py --check playlists_read --playlist-read-id 12
+  python3 tools/rest_api_test.py --list-playlists
   python3 tools/rest_api_test.py --check playlists \\
     --playlist-action send_to_autodj --playlist-id 12 --playlist-autodj-position top
   python3 tools/rest_api_test.py --check control --play-deck 1
@@ -686,6 +687,39 @@ def list_checks() -> None:
         print(f"  {check.description}\n")
 
 
+def list_playlists(
+    config: ApiConfig,
+    headers: Mapping[str, str],
+    query: Mapping[str, str],
+    show_responses: bool,
+    output_dir: Optional[Path],
+    show_timing: bool,
+) -> int:
+    check = CHECKS["playlists_read"]
+    response = request_json(
+        config,
+        check.method,
+        check.path,
+        None,
+        headers,
+        query,
+    )
+    report_response(check.path, response.payload, show_responses)
+    write_response(output_dir, check.name, response.payload)
+    validate_playlists_read(response.payload, check.path)
+
+    playlists = response.payload.get("playlists", [])
+    print("Playlists:")
+    for entry in playlists:
+        playlist_id = entry.get("id")
+        name = entry.get("name", "")
+        print(f"- {playlist_id}: {name}")
+
+    timing = f" ({response.duration_ms:.1f}ms)" if show_timing else ""
+    print(f"playlists_read OK{timing}")
+    return 0
+
+
 def run_checks(
     config: ApiConfig,
     checks: Iterable[str],
@@ -769,6 +803,11 @@ def parse_args() -> argparse.Namespace:
         "--list-checks",
         action="store_true",
         help="List available checks and exit",
+    )
+    parser.add_argument(
+        "--list-playlists",
+        action="store_true",
+        help="List available playlists and exit",
     )
     parser.add_argument(
         "--show-response",
@@ -963,6 +1002,20 @@ def main() -> int:
             raise ApiTestError("Use either --playlist-* options or --payload playlists=...")
         payload_overrides = dict(payload_overrides)
         payload_overrides["playlists"] = playlist_payload
+
+    if args.list_playlists:
+        try:
+            return list_playlists(
+                config,
+                headers,
+                query,
+                args.show_response,
+                output_dir,
+                args.timing,
+            )
+        except ApiTestError as exc:
+            print(f"FAIL: {exc}")
+            return 1
 
     try:
         results = run_checks(
