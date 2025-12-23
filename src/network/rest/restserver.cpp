@@ -379,6 +379,11 @@ RestServer::TlsResult RestServer::prepareTlsConfiguration(
     }
 
 #if QT_CONFIG(ssl)
+    if (!QSslSocket::supportsSsl()) {
+        kLogger.warning() << "REST API TLS preparation failed: OpenSSL is not available";
+        result.error = QObject::tr("OpenSSL is not available for TLS support");
+        return result;
+    }
     if (certificateGenerator == nullptr) {
         result.error = QObject::tr("Certificate generator is unavailable");
         return result;
