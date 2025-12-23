@@ -6,7 +6,9 @@ Example usage:
   python3 tools/rest_api_test.py --list-checks
   python3 tools/rest_api_test.py --scheme http --host localhost --check health --check status --show-response
   python3 tools/rest_api_test.py --scheme https --host localhost --token <token> --insecure --check schema --show-response
-  python3 tools/rest_api_test.py --check control --data '{"command": "play", "group": "[Channel1]"}'
+  python3 tools/rest_api_test.py --check control --control command=play,group=[Channel1]
+  python3 tools/rest_api_test.py --check control --control command=seek,deck=1,position=0.5
+  python3 tools/rest_api_test.py --check control --control key=volume,group=[Master],value=0.75
   python3 tools/rest_api_test.py --check control --check autodj_write \\
     --payload control=control.json --payload autodj_write='{"action": "enable"}'
 """
@@ -149,6 +151,61 @@ def parse_payload_overrides(payload_args: Optional[Sequence[str]]) -> Mapping[st
         else:
             overrides[check_name] = parse_json_payload(value, None)
     return overrides
+
+
+def parse_control_value(key: str, value: str) -> Any:
+    if key == "deck":
+        try:
+            return int(value)
+        except ValueError as exc:
+            raise ApiTestError(f"Invalid deck value: {value}") from exc
+    if key in {"position", "value"}:
+        try:
+            return float(value)
+        except ValueError as exc:
+            raise ApiTestError(f"Invalid numeric value for {key}: {value}") from exc
+    return value
+
+
+def parse_control_entry(raw: str) -> Mapping[str, Any]:
+    entry: dict[str, Any] = {}
+    for part in raw.split(","):
+        if "=" not in part:
+            raise ApiTestError(
+                f"Invalid control entry '{raw}'. Expected comma-separated key=value pairs."
+            )
+        key, value = part.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if not key or value == "":
+            raise ApiTestError(
+                f"Invalid control entry '{raw}'. Expected comma-separated key=value pairs."
+            )
+        entry[key] = parse_control_value(key, value)
+    return entry
+
+
+def validate_control_entry(entry: Mapping[str, Any]) -> None:
+    if not entry.get("group") and "deck" not in entry:
+        raise ApiTestError("Control entry requires 'group' or 'deck'")
+    if not entry.get("command") and not entry.get("key"):
+        raise ApiTestError("Control entry requires 'command' or 'key'")
+    command = entry.get("command")
+    if command == "seek" and "position" not in entry:
+        raise ApiTestError("Seek command requires 'position'")
+    if command == "gain" and "value" not in entry:
+        raise ApiTestError("Gain command requires 'value'")
+
+
+def parse_control_payload(control_args: Optional[Sequence[str]]) -> Optional[Any]:
+    if not control_args:
+        return None
+    entries = [parse_control_entry(raw) for raw in control_args]
+    for entry in entries:
+        validate_control_entry(entry)
+    if len(entries) == 1:
+        return entries[0]
+    return {"commands": entries}
 
 
 def request_json(
@@ -570,6 +627,14 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--control",
+        action="append",
+        help=(
+            "Control command entry for /api/v1/control as comma-separated key=value "
+            "pairs (repeatable). Example: --control command=play,group=[Channel1]"
+        ),
+    )
+    parser.add_argument(
         "--header",
         action="append",
         help="Additional HTTP header in the form Key:Value (repeatable)",
@@ -624,6 +689,12 @@ def main() -> int:
     query = parse_query(args.query)
     data = parse_json_payload(args.data, args.data_file)
     payload_overrides = parse_payload_overrides(args.payload)
+    control_payload = parse_control_payload(args.control)
+    if control_payload is not None:
+        if "control" in payload_overrides:
+            raise ApiTestError("Use either --control or --payload control=..., not both")
+        payload_overrides = dict(payload_overrides)
+        payload_overrides["control"] = control_payload
 
     try:
         results = run_checks(
