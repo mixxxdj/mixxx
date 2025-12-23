@@ -590,8 +590,8 @@ void DlgPrefRestServer::updateTlsState() {
     pushButtonBrowseCert->setEnabled(tlsControlsEnabled && !autoGenerate);
     lineEditKeyPath->setEnabled(tlsControlsEnabled && !autoGenerate);
     pushButtonBrowseKey->setEnabled(tlsControlsEnabled && !autoGenerate);
-    labelTlsStatus->setEnabled(tlsControlsEnabled);
-    labelTlsStatusIcon->setEnabled(tlsControlsEnabled);
+    labelTlsStatus->setEnabled(true);
+    labelTlsStatusIcon->setEnabled(true);
     labelTlsCertificateStatus->setEnabled(tlsControlsEnabled);
     labelTlsCertificateIcon->setEnabled(tlsControlsEnabled);
     pushButtonCertificateDetails->setEnabled(tlsControlsEnabled);
