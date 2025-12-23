@@ -319,6 +319,9 @@ void DlgPrefRestServer::slotCorsAllowlistChanged(const QString& text) {
                 invalidEntries << tr("<empty>");
                 continue;
             }
+            if (trimmedEntry == QStringLiteral("*")) {
+                continue;
+            }
 
             const QUrl url(trimmedEntry);
             const QString path = url.path();
