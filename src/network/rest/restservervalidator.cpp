@@ -3,6 +3,8 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <QTcpServer>
+#include <QSslSocket>
+#include <QStringList>
 #include <QtGlobal>
 #include <limits>
 #include <type_traits>
@@ -30,6 +32,22 @@ struct HasHttpServerSslSetup<T,
 constexpr bool kHttpServerHasTlsSupport =
         HasHttpServerSslConfiguration<QHttpServer>::value ||
         HasHttpServerSslSetup<QHttpServer>::value;
+
+QString tlsSupportDetails() {
+    QStringList details;
+    details << QStringLiteral("Qt build: %1").arg(QString::fromLatin1(QT_VERSION_STR))
+            << QStringLiteral("Qt runtime: %1").arg(QString::fromLatin1(qVersion()));
+#if QT_CONFIG(ssl)
+    details << QStringLiteral("SSL build: %1").arg(QSslSocket::sslLibraryBuildVersionString())
+            << QStringLiteral("SSL runtime: %1").arg(QSslSocket::sslLibraryVersionString())
+            << QStringLiteral("supports SSL: %1")
+                       .arg(QSslSocket::supportsSsl() ? QStringLiteral("yes")
+                                                      : QStringLiteral("no"));
+#else
+    details << QStringLiteral("SSL support: disabled");
+#endif
+    return details.join(QStringLiteral(", "));
+}
 } // namespace
 
 RestServerValidator::RestServerValidator(
@@ -71,11 +89,9 @@ RestServerValidationResult RestServerValidator::validate(
     if (settings.useHttps) {
         if (!kHttpServerHasTlsSupport) {
             const QString baseError = QObject::tr("HTTPS is not supported by this Qt build");
-            const QString error = QStringLiteral("%1 (build: %2, runtime: %3)")
-                                          .arg(baseError,
-                                                  QString::fromLatin1(QT_VERSION_STR),
-                                                  QString::fromLatin1(qVersion()));
-            result.error = error;
+            const QString error = QStringLiteral("%1 (%2)")
+                                          .arg(baseError, tlsSupportDetails());
+            result.error = baseError;
             result.tlsError = error;
             return result;
         }

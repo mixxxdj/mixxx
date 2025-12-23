@@ -77,8 +77,20 @@ CertificateGenerator::Result CertificateGenerator::loadCertificatePair(
 
     const QSslCertificate certificate(certificateFile.readAll(), QSsl::Pem);
     const QSslKey privateKey(privateKeyFile.readAll(), QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey);
-    if (certificate.isNull() || privateKey.isNull()) {
-        return fail(QObject::tr("Certificate or key is invalid"),
+    const bool certificateValid = !certificate.isNull();
+    const bool privateKeyValid = !privateKey.isNull();
+    if (!certificateValid || !privateKeyValid) {
+        if (!certificateValid && !privateKeyValid) {
+            return fail(QObject::tr("Certificate and private key are invalid"),
+                    certificatePath,
+                    privateKeyPath);
+        }
+        if (!certificateValid) {
+            return fail(QObject::tr("Certificate is invalid"),
+                    certificatePath,
+                    privateKeyPath);
+        }
+        return fail(QObject::tr("Private key is invalid"),
                 certificatePath,
                 privateKeyPath);
     }

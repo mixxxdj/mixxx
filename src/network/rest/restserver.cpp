@@ -115,6 +115,20 @@ struct HasHttpServerResponderWrite<T,
         std::void_t<decltype(std::declval<T&>().write(
                 std::declval<const QByteArray&>()))>> : std::true_type { };
 
+template<typename T, typename = void>
+struct HasListenResultErrorStringMethod : std::false_type { };
+
+template<typename T>
+struct HasListenResultErrorStringMethod<T,
+        std::void_t<decltype(std::declval<const T&>().errorString())>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasListenResultErrorStringMember : std::false_type { };
+
+template<typename T>
+struct HasListenResultErrorStringMember<T,
+        std::void_t<decltype(std::declval<const T&>().errorString)>> : std::true_type { };
+
 enum class HttpServerListenStatus {
     NotSupported,
     Failed,
@@ -141,10 +155,18 @@ HttpServerListenStatus listenHttpServer(
         Server* server,
         const QHostAddress& address,
         quint16 port,
-        quint16* boundPort) {
+        quint16* boundPort,
+        QString* errorOut) {
     if constexpr (HasHttpServerListen<Server>::value) {
         const auto listenResult = server->listen(address, port);
         if (!listenResult) {
+            if (errorOut) {
+                if constexpr (HasListenResultErrorStringMethod<decltype(listenResult)>::value) {
+                    *errorOut = listenResult.errorString();
+                } else if constexpr (HasListenResultErrorStringMember<decltype(listenResult)>::value) {
+                    *errorOut = listenResult.errorString;
+                }
+            }
             return HttpServerListenStatus::Failed;
         }
         if (boundPort) {
@@ -381,7 +403,12 @@ RestServer::TlsResult RestServer::prepareTlsConfiguration(
 #if QT_CONFIG(ssl)
     if (!QSslSocket::supportsSsl()) {
         kLogger.warning() << "REST API TLS preparation failed: OpenSSL is not available";
-        result.error = QObject::tr("OpenSSL is not available for TLS support");
+        const QString supportDetails = QStringLiteral("Qt build: %1, runtime: %2, SSL build: %3, SSL runtime: %4")
+                                               .arg(QString::fromLatin1(QT_VERSION_STR),
+                                                       QString::fromLatin1(qVersion()),
+                                                       QSslSocket::sslLibraryBuildVersionString(),
+                                                       QSslSocket::sslLibraryVersionString());
+        result.error = QObject::tr("OpenSSL is not available for TLS support (%1)").arg(supportDetails);
         return result;
     }
     if (certificateGenerator == nullptr) {
@@ -396,7 +423,15 @@ RestServer::TlsResult RestServer::prepareTlsConfiguration(
     result.privateKeyPath = certificateResult.privateKeyPath;
     if (!certificateResult.success) {
         kLogger.warning() << "REST API TLS preparation failed:" << certificateResult.error;
-        result.error = certificateResult.error;
+        if (!certificateResult.certificatePath.isEmpty() ||
+                !certificateResult.privateKeyPath.isEmpty()) {
+            result.error = QObject::tr("%1 (certificate: %2, key: %3)")
+                                   .arg(certificateResult.error,
+                                           certificateResult.certificatePath,
+                                           certificateResult.privateKeyPath);
+        } else {
+            result.error = certificateResult.error;
+        }
         return result;
     }
 
@@ -573,12 +608,14 @@ bool RestServer::applyTlsConfiguration() {
 #if QT_CONFIG(ssl)
     if (!m_tlsConfiguration.has_value()) {
         kLogger.warning() << "TLS is enabled but no TLS configuration was provided";
+        m_lastError = tr("TLS is enabled but no TLS configuration was provided");
         return false;
     }
     if (!configureHttpServerTls(
                 m_httpServer.get(),
                 m_tlsConfiguration->configuration)) {
         kLogger.warning() << "TLS is enabled but the Qt HTTP server lacks SSL configuration APIs";
+        m_lastError = tr("TLS is enabled but the Qt HTTP server lacks SSL configuration APIs");
         return false;
     }
     m_tlsActive = true;
@@ -586,6 +623,7 @@ bool RestServer::applyTlsConfiguration() {
 #else
     Q_UNUSED(m_settings);
     kLogger.warning() << "TLS requested for REST API but Qt is built without SSL support";
+    m_lastError = tr("TLS requested for REST API but Qt is built without SSL support");
     return false;
 #endif
 }
@@ -1463,16 +1501,20 @@ bool RestServer::startOnThread() {
     }
 
     if (m_settings.useHttps && !applyTlsConfiguration()) {
-        m_lastError = tr("Failed to configure TLS for REST API");
+        if (m_lastError.isEmpty()) {
+            m_lastError = tr("Failed to configure TLS for REST API");
+        }
         return false;
     }
 
     DEBUG_ASSERT(m_settings.portValid);
+    QString listenError;
     const auto listenStatus = listenHttpServer(
             m_httpServer.get(),
             m_settings.address,
             static_cast<quint16>(m_settings.port),
-            &m_listeningPort);
+            &m_listeningPort,
+            &listenError);
     if (listenStatus == HttpServerListenStatus::Ok) {
         kLogger.info()
                 << "REST API listening on"
@@ -1480,8 +1522,13 @@ bool RestServer::startOnThread() {
                 << m_listeningPort;
     } else if (listenStatus == HttpServerListenStatus::Failed) {
             kLogger.warning() << "Failed to start REST API listener on"
-                              << m_settings.address << m_settings.port;
-            m_lastError = tr("Failed to bind REST API listener");
+                              << m_settings.address << m_settings.port << listenError;
+            m_lastError = tr("Failed to bind REST API listener on %1:%2")
+                                  .arg(m_settings.address.toString())
+                                  .arg(m_settings.port);
+            if (!listenError.isEmpty()) {
+                m_lastError = tr("%1 (%2)").arg(m_lastError, listenError);
+            }
             return false;
     } else {
         m_tcpServer = std::make_unique<QTcpServer>();
@@ -1489,8 +1536,15 @@ bool RestServer::startOnThread() {
                     m_settings.address,
                     static_cast<quint16>(m_settings.port))) {
             kLogger.warning() << "Failed to start REST API listener on"
-                              << m_settings.address << m_settings.port;
-            m_lastError = tr("Failed to bind REST API listener");
+                              << m_settings.address << m_settings.port
+                              << m_tcpServer->errorString();
+            m_lastError = tr("Failed to bind REST API listener on %1:%2")
+                                  .arg(m_settings.address.toString())
+                                  .arg(m_settings.port);
+            const QString serverError = m_tcpServer->errorString();
+            if (!serverError.isEmpty()) {
+                m_lastError = tr("%1 (%2)").arg(m_lastError, serverError);
+            }
             return false;
         }
         const auto bindServer = [this]() {
@@ -1502,7 +1556,13 @@ bool RestServer::startOnThread() {
             }
         };
         if (!bindServer()) {
-            m_lastError = tr("Failed to bind REST API listener");
+            const QString serverError = m_tcpServer->errorString();
+            m_lastError = tr("Failed to bind REST API listener on %1:%2")
+                                  .arg(m_settings.address.toString())
+                                  .arg(m_settings.port);
+            if (!serverError.isEmpty()) {
+                m_lastError = tr("%1 (%2)").arg(m_lastError, serverError);
+            }
             return false;
         }
         m_listeningPort = m_tcpServer->serverPort();
