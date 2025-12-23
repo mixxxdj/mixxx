@@ -26,6 +26,11 @@ constexpr int kCertificateExpiryWarningDays = 30;
 constexpr int kPresetLocal = 0;
 constexpr int kPresetLocalHttps = 1;
 constexpr int kPresetNetwork = 2;
+constexpr int kExpirationPresetNever = 0;
+constexpr int kExpirationPresetOneMonth = 1;
+constexpr int kExpirationPresetThreeMonths = 2;
+constexpr int kExpirationPresetOneYear = 3;
+constexpr int kExpirationPresetCustom = 4;
 } // namespace
 
 DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServerSettings> settings)
@@ -61,12 +66,18 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     dateTimeEditTokenExpires->setMinimumDateTime(
             QDateTime(QDate(1970, 1, 1), QTime(0, 0), QTimeZone::utc()));
     dateTimeEditTokenExpires->setTimeZone(QTimeZone::utc());
+    dateTimeEditTokenExpires->setEnabled(false);
     lineEditTokenValue->setEchoMode(QLineEdit::Password);
     pushButtonToggleToken->setText(tr("Show"));
 
     comboBoxPreset->addItem(tr("Local (recommended)"));
     comboBoxPreset->addItem(tr("Local + HTTPS"));
     comboBoxPreset->addItem(tr("Network (advanced)"));
+    comboBoxTokenExpiresPreset->addItem(tr("Never"));
+    comboBoxTokenExpiresPreset->addItem(tr("+1 month"));
+    comboBoxTokenExpiresPreset->addItem(tr("+3 months"));
+    comboBoxTokenExpiresPreset->addItem(tr("+1 year"));
+    comboBoxTokenExpiresPreset->addItem(tr("Custom"));
 
     connect(comboBoxPreset,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -198,6 +209,10 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
             &QCheckBox::toggled,
             this,
             &DlgPrefRestServer::slotTokenScopesChanged);
+    connect(comboBoxTokenExpiresPreset,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefRestServer::slotTokenExpirationPresetChanged);
     connect(dateTimeEditTokenExpires,
             &QDateTimeEdit::dateTimeChanged,
             this,
@@ -666,6 +681,43 @@ void DlgPrefRestServer::slotTokenScopesChanged() {
     refreshTokenTable();
 }
 
+void DlgPrefRestServer::slotTokenExpirationPresetChanged(int index) {
+    RestServerToken* token = selectedToken();
+    if (!token) {
+        return;
+    }
+
+    QDateTime selectedDateTime;
+    bool isCustom = false;
+    switch (index) {
+    case kExpirationPresetNever:
+        selectedDateTime = dateTimeEditTokenExpires->minimumDateTime();
+        break;
+    case kExpirationPresetOneMonth:
+        selectedDateTime = QDateTime::currentDateTimeUtc().addMonths(1);
+        break;
+    case kExpirationPresetThreeMonths:
+        selectedDateTime = QDateTime::currentDateTimeUtc().addMonths(3);
+        break;
+    case kExpirationPresetOneYear:
+        selectedDateTime = QDateTime::currentDateTimeUtc().addYears(1);
+        break;
+    case kExpirationPresetCustom:
+        isCustom = true;
+        selectedDateTime = QDateTime(
+                QDate::currentDate(),
+                QTime(0, 0),
+                QTimeZone::utc());
+        break;
+    default:
+        selectedDateTime = dateTimeEditTokenExpires->minimumDateTime();
+        break;
+    }
+
+    dateTimeEditTokenExpires->setEnabled(isCustom);
+    dateTimeEditTokenExpires->setDateTime(selectedDateTime);
+}
+
 void DlgPrefRestServer::slotTokenExpiresChanged(const QDateTime& dateTime) {
     RestServerToken* token = selectedToken();
     if (!token) {
@@ -676,6 +728,9 @@ void DlgPrefRestServer::slotTokenExpiresChanged(const QDateTime& dateTime) {
     } else {
         token->expiresUtc = dateTime.toUTC();
     }
+    labelTokenExpiresValue->setText(token->expiresUtc.has_value()
+                    ? token->expiresUtc->toString(Qt::ISODate)
+                    : tr("Never"));
     refreshTokenTable();
 }
 
@@ -745,6 +800,7 @@ void DlgPrefRestServer::syncEditorsFromSelection() {
     lineEditTokenDescription->setEnabled(hasToken);
     widgetTokenScopes->setEnabled(hasToken);
     dateTimeEditTokenExpires->setEnabled(hasToken);
+    comboBoxTokenExpiresPreset->setEnabled(hasToken);
     pushButtonRemoveToken->setEnabled(hasToken);
     pushButtonRegenerateToken->setEnabled(hasToken);
     pushButtonCopyToken->setEnabled(hasToken);
@@ -756,7 +812,16 @@ void DlgPrefRestServer::syncEditorsFromSelection() {
         lineEditTokenValue->clear();
         lineEditTokenDescription->clear();
         updateScopeEditors({});
-        dateTimeEditTokenExpires->setDateTime(dateTimeEditTokenExpires->minimumDateTime());
+        labelTokenExpiresValue->setText(tr("Never"));
+        {
+            const QSignalBlocker presetBlocker(comboBoxTokenExpiresPreset);
+            comboBoxTokenExpiresPreset->setCurrentIndex(kExpirationPresetNever);
+        }
+        {
+            const QSignalBlocker expiresBlocker(dateTimeEditTokenExpires);
+            dateTimeEditTokenExpires->setDateTime(dateTimeEditTokenExpires->minimumDateTime());
+        }
+        dateTimeEditTokenExpires->setEnabled(false);
         updateTokenVisibility();
         return;
     }
@@ -766,11 +831,18 @@ void DlgPrefRestServer::syncEditorsFromSelection() {
     lineEditTokenValue->setText(m_fullToken);
     lineEditTokenDescription->setText(token->description);
     updateScopeEditors(token->scopes);
-    if (token->expiresUtc.has_value()) {
-        dateTimeEditTokenExpires->setDateTime(token->expiresUtc.value());
-    } else {
+    labelTokenExpiresValue->setText(token->expiresUtc.has_value()
+                    ? token->expiresUtc->toString(Qt::ISODate)
+                    : tr("Never"));
+    {
+        const QSignalBlocker presetBlocker(comboBoxTokenExpiresPreset);
+        comboBoxTokenExpiresPreset->setCurrentIndex(kExpirationPresetNever);
+    }
+    {
+        const QSignalBlocker expiresBlocker(dateTimeEditTokenExpires);
         dateTimeEditTokenExpires->setDateTime(dateTimeEditTokenExpires->minimumDateTime());
     }
+    dateTimeEditTokenExpires->setEnabled(false);
     updateTokenVisibility();
 }
 

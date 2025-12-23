@@ -36,6 +36,7 @@ class DlgPrefRestServer : public DlgPreferencePage, public Ui::DlgPrefRestServer
     void slotTokenSelectionChanged();
     void slotTokenDescriptionChanged(const QString& text);
     void slotTokenScopesChanged();
+    void slotTokenExpirationPresetChanged(int index);
     void slotTokenExpiresChanged(const QDateTime& dateTime);
     void slotCopyToken();
     void slotToggleTokenVisibility();
