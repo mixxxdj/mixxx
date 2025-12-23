@@ -3,6 +3,7 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <QTcpServer>
+#include <QtGlobal>
 #include <limits>
 #include <type_traits>
 #include <utility>
@@ -69,7 +70,11 @@ RestServerValidationResult RestServerValidator::validate(
 
     if (settings.useHttps) {
         if (!kHttpServerHasTlsSupport) {
-            const QString error = QObject::tr("HTTPS is not supported by this Qt build");
+            const QString baseError = QObject::tr("HTTPS is not supported by this Qt build");
+            const QString error = QStringLiteral("%1 (build: %2, runtime: %3)")
+                                          .arg(baseError,
+                                                  QString::fromLatin1(QT_VERSION_STR),
+                                                  QString::fromLatin1(qVersion()));
             result.error = error;
             result.tlsError = error;
             return result;
