@@ -192,6 +192,171 @@
    </widget>
   </item>
   <item>
+   <widget class="QGroupBox" name="groupBoxTls">
+    <property name="title">
+     <string>TLS</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayoutTls">
+     <item>
+      <widget class="QCheckBox" name="checkBoxUseHttps">
+       <property name="text">
+        <string>Enable HTTPS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxAutoGenerateCertificate">
+       <property name="text">
+        <string>Automatically generate self-signed certificate</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QFormLayout" name="formLayoutTls">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelHttpsPort">
+         <property name="text">
+          <string>HTTPS port:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="spinBoxHttpsPort"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelHttpsUrl">
+         <property name="text">
+          <string>HTTPS URL:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayoutHttpsUrl">
+         <item>
+          <widget class="QLabel" name="labelHttpsUrlValue">
+           <property name="text">
+            <string>Disabled</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonCopyHttpsUrl">
+           <property name="text">
+            <string>Copy</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelCertPath">
+         <property name="text">
+          <string>Certificate path:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayoutCert">
+         <item>
+          <widget class="QLineEdit" name="lineEditCertPath"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonBrowseCert">
+           <property name="text">
+            <string>Browse...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelKeyPath">
+         <property name="text">
+          <string>Private key path:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayoutKey">
+         <item>
+          <widget class="QLineEdit" name="lineEditKeyPath"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonBrowseKey">
+           <property name="text">
+            <string>Browse...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxRequireTls">
+       <property name="text">
+        <string>Require TLS for control routes</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutTlsStatus">
+       <item>
+        <widget class="QLabel" name="labelTlsStatusIcon">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelTlsStatus">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
+       <item>
+        <widget class="QLabel" name="labelTlsCertificateIcon">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelTlsCertificateStatus">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </item>
+  <item>
    <widget class="QGroupBox" name="groupBoxAuthentication">
     <property name="title">
      <string>Authentication</string>
@@ -493,171 +658,6 @@
          <property name="text">
            <string>Access tokens sent without HTTPS can be intercepted. Enable HTTPS to protect the REST API.</string>
          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBoxTls">
-     <property name="title">
-      <string>TLS</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayoutTls">
-      <item>
-       <widget class="QCheckBox" name="checkBoxUseHttps">
-        <property name="text">
-         <string>Enable HTTPS</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBoxAutoGenerateCertificate">
-        <property name="text">
-         <string>Automatically generate self-signed certificate</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QFormLayout" name="formLayoutTls">
-        <item row="0" column="0">
-         <widget class="QLabel" name="labelHttpsPort">
-          <property name="text">
-           <string>HTTPS port:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QSpinBox" name="spinBoxHttpsPort"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="labelHttpsUrl">
-          <property name="text">
-           <string>HTTPS URL:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayoutHttpsUrl">
-          <item>
-           <widget class="QLabel" name="labelHttpsUrlValue">
-            <property name="text">
-             <string>Disabled</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonCopyHttpsUrl">
-            <property name="text">
-             <string>Copy</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="labelCertPath">
-          <property name="text">
-           <string>Certificate path:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayoutCert">
-          <item>
-           <widget class="QLineEdit" name="lineEditCertPath"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonBrowseCert">
-            <property name="text">
-             <string>Browse...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="labelKeyPath">
-          <property name="text">
-           <string>Private key path:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayoutKey">
-          <item>
-           <widget class="QLineEdit" name="lineEditKeyPath"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonBrowseKey">
-            <property name="text">
-             <string>Browse...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBoxRequireTls">
-        <property name="text">
-         <string>Require TLS for control routes</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutTlsStatus">
-        <item>
-         <widget class="QLabel" name="labelTlsStatusIcon">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelTlsStatus">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="wordWrap">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
-        <item>
-         <widget class="QLabel" name="labelTlsCertificateIcon">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="labelTlsCertificateStatus">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
           <property name="wordWrap">
            <bool>true</bool>
           </property>
