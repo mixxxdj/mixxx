@@ -607,7 +607,7 @@ void DlgPrefRestServer::slotAddToken() {
 
     RestServerToken token;
     token.value = makeToken();
-    token.scopes = mixxx::network::rest::scopes::defaultReadScopes();
+    token.scopes = mixxx::network::rest::scopes::allScopes();
     token.createdUtc = QDateTime::currentDateTimeUtc();
     m_tokens.append(token);
     refreshTokenTable();
