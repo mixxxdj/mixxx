@@ -564,7 +564,6 @@ void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& sta
     labelStatus->setVisible(showStatus);
     labelStatus->setText(status.lastError);
 
-    const bool useHttps = checkBoxUseHttps->isChecked();
     const bool showTlsStatus = hasTlsError || status.certificateGenerated;
     labelTlsStatusIcon->setVisible(showTlsStatus);
     labelTlsStatus->setVisible(showTlsStatus);
