@@ -753,8 +753,7 @@ void RestServer::registerRoutes() {
     };
 
     const QHash<QString, RouteScopes> routeScopes{
-            {QStringLiteral("/api/v1/schema"),
-                    {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
+            {QStringLiteral("/api/v1/schema"), {QStringList{}, QStringList{}}},
             {QStringLiteral("/api/v1/health"),
                     {QStringList{scopes::kStatusRead}, QStringList{scopes::kStatusRead}}},
             {QStringLiteral("/api/v1/ready"),
@@ -900,12 +899,15 @@ void RestServer::registerRoutes() {
     const auto schemaRoute =
             [this, schemaPayload, authorizeRequest, forbiddenMessage](
                     const QHttpServerRequest& request) {
-        const AuthorizationResult auth = authorizeRequest(request);
-        if (!auth.authorized) {
-            if (auth.forbidden) {
-                return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+        if (!(m_settings.allowUnauthenticated &&
+                    request.value(kAuthHeader).trimmed().isEmpty())) {
+            const AuthorizationResult auth = authorizeRequest(request);
+            if (!auth.authorized) {
+                if (auth.forbidden) {
+                    return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+                }
+                return unauthorizedResponse(request);
             }
-            return unauthorizedResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
             return methodNotAllowedResponse(request);
@@ -917,6 +919,7 @@ void RestServer::registerRoutes() {
                 requestIdFor(request));
     };
     m_httpServer->route("/api/v1/schema", schemaRoute);
+    m_httpServer->route("/schema", schemaRoute);
 
     const auto requestTooLarge = [this](const QHttpServerRequest& request) {
         return m_settings.maxRequestBytes > 0 &&
