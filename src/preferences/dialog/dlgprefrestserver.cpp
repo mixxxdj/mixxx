@@ -558,22 +558,20 @@ QString DlgPrefRestServer::makeLoopbackCorsAllowlist(bool includeHttp, bool incl
 }
 
 void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& status) {
-    const bool showStatus = !status.lastError.isEmpty();
+    const bool hasTlsError = !status.tlsError.isEmpty();
+    const bool showStatus = !status.lastError.isEmpty() && !hasTlsError;
     labelStatusIcon->setVisible(showStatus);
     labelStatus->setVisible(showStatus);
     labelStatus->setText(status.lastError);
 
     const bool useHttps = checkBoxUseHttps->isChecked();
-    const bool showTlsStatus = !status.tlsError.isEmpty() || status.certificateGenerated ||
-            (useHttps && status.tlsError.isEmpty() && !status.lastError.isEmpty());
+    const bool showTlsStatus = hasTlsError || status.certificateGenerated;
     labelTlsStatusIcon->setVisible(showTlsStatus);
     labelTlsStatus->setVisible(showTlsStatus);
-    if (!status.tlsError.isEmpty()) {
+    if (hasTlsError) {
         labelTlsStatus->setText(status.tlsError);
     } else if (status.certificateGenerated) {
         labelTlsStatus->setText(tr("A self-signed certificate was generated automatically."));
-    } else if (useHttps) {
-        labelTlsStatus->setText(status.lastError);
     }
     updateTlsCertificateStatus();
 
