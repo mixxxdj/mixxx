@@ -306,7 +306,67 @@ def validate_status(payload: Any, path: str) -> None:
 
 
 def validate_decks(payload: Any, path: str) -> None:
-    assert_type(payload, list, "decks")
+    assert_keys(payload, ["decks"], path)
+    assert_type(payload["decks"], list, "decks.decks")
+    for index, deck in enumerate(payload["decks"]):
+        validate_deck_summary(deck, f"{path}.decks[{index}]")
+
+
+def validate_track_summary(payload: Any, path: str) -> None:
+    assert_type(payload, dict, path)
+    if "id" in payload:
+        assert_type(payload["id"], str, f"{path}.id")
+    if "title" in payload:
+        assert_type(payload["title"], str, f"{path}.title")
+    if "artist" in payload:
+        assert_type(payload["artist"], str, f"{path}.artist")
+    if "album" in payload:
+        assert_type(payload["album"], str, f"{path}.album")
+    if "duration" in payload:
+        assert_optional_number(payload["duration"], f"{path}.duration")
+    if "bpm" in payload:
+        assert_optional_number(payload["bpm"], f"{path}.bpm")
+
+
+def validate_deck_summary(payload: Any, path: str) -> None:
+    assert_keys(
+        payload,
+        [
+            "deck",
+            "group",
+            "playing",
+            "track_loaded",
+            "position",
+            "rate",
+            "gain",
+            "volume",
+            "sync",
+            "keylock",
+            "loop_enabled",
+        ],
+        path,
+    )
+    assert_type(payload["deck"], int, f"{path}.deck")
+    assert_type(payload["group"], str, f"{path}.group")
+    assert_type(payload["playing"], bool, f"{path}.playing")
+    assert_type(payload["track_loaded"], bool, f"{path}.track_loaded")
+    assert_optional_number(payload["position"], f"{path}.position")
+    assert_optional_number(payload["rate"], f"{path}.rate")
+    assert_optional_number(payload["gain"], f"{path}.gain")
+    assert_optional_number(payload["volume"], f"{path}.volume")
+    assert_type(payload["sync"], bool, f"{path}.sync")
+    assert_type(payload["keylock"], bool, f"{path}.keylock")
+    assert_type(payload["loop_enabled"], bool, f"{path}.loop_enabled")
+
+    has_track = "track" in payload
+    has_duration = "duration" in payload
+    if payload["track_loaded"]:
+        if not has_track or not has_duration:
+            raise ApiTestError(f"Expected {path} to include track details when loaded")
+    if has_track:
+        validate_track_summary(payload["track"], f"{path}.track")
+    if has_duration:
+        assert_optional_number(payload["duration"], f"{path}.duration")
 
 
 def validate_autodj(payload: Any, path: str) -> None:
