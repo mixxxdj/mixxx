@@ -453,6 +453,7 @@ void DlgPrefRestServer::updateAuthWarning() {
             !checkBoxUseHttps->isChecked();
     labelAuthWarningIcon->setVisible(showWarning);
     labelAuthWarning->setVisible(showWarning);
+    updateWarningsPaneVisibility();
 }
 
 void DlgPrefRestServer::updateUnauthWarning() {
@@ -461,6 +462,7 @@ void DlgPrefRestServer::updateUnauthWarning() {
             m_tokens.isEmpty();
     labelUnauthWarningIcon->setVisible(showWarning);
     labelUnauthWarning->setVisible(showWarning);
+    updateWarningsPaneVisibility();
 }
 
 void DlgPrefRestServer::updateNetworkWarning() {
@@ -470,6 +472,18 @@ void DlgPrefRestServer::updateNetworkWarning() {
     frameNetworkWarning->setVisible(showWarning);
     labelNetworkWarningIcon->setVisible(showWarning);
     labelNetworkWarning->setVisible(showWarning);
+    updateWarningsPaneVisibility();
+}
+
+void DlgPrefRestServer::updateWarningsPaneVisibility() {
+    const bool showWarnings =
+            !labelNetworkWarning->isHidden() ||
+            !labelUnauthWarning->isHidden() ||
+            !labelAuthWarning->isHidden() ||
+            !labelTlsStatus->isHidden() ||
+            !labelTlsCertificateStatus->isHidden() ||
+            !labelStatus->isHidden();
+    frameWarningsPane->setVisible(showWarnings);
 }
 
 void DlgPrefRestServer::updatePresetWarning() {
@@ -552,6 +566,7 @@ void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& sta
 
     updateNetworkWarning();
     updatePresetWarning();
+    updateWarningsPaneVisibility();
 }
 
 void DlgPrefRestServer::updateTlsCertificateStatus() {
@@ -559,6 +574,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (!useHttps) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        updateWarningsPaneVisibility();
         return;
     }
 
@@ -570,6 +586,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (certificatePath.isEmpty() || !QFileInfo::exists(certificatePath)) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        updateWarningsPaneVisibility();
         return;
     }
 
@@ -578,6 +595,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (certificates.isEmpty()) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        updateWarningsPaneVisibility();
         return;
     }
 
@@ -585,6 +603,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
     if (certificate.isNull()) {
         labelTlsCertificateStatus->setVisible(false);
         labelTlsCertificateIcon->setVisible(false);
+        updateWarningsPaneVisibility();
         return;
     }
 
@@ -611,9 +630,11 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
         showWarning = expiryUtc <= now || expiryUtc <= now.addDays(kCertificateExpiryWarningDays);
     }
     labelTlsCertificateIcon->setVisible(showWarning);
+    updateWarningsPaneVisibility();
 #else
     labelTlsCertificateStatus->setVisible(false);
     labelTlsCertificateIcon->setVisible(false);
+    updateWarningsPaneVisibility();
 #endif
 }
 

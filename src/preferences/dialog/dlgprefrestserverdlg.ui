@@ -11,7 +11,7 @@
     </widget>
    </item>
    <item>
-   <widget class="QFrame" name="frameNetworkWarning">
+    <widget class="QFrame" name="frameWarningsPane">
      <property name="visible">
       <bool>false</bool>
      </property>
@@ -21,32 +21,273 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayoutNetworkWarning">
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
+     <layout class="QVBoxLayout" name="verticalLayoutWarnings">
       <item>
-       <widget class="QLabel" name="labelNetworkWarningIcon">
+       <widget class="QFrame" name="frameNetworkWarning">
         <property name="visible">
          <bool>false</bool>
         </property>
-        <property name="text">
-         <string/>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
         </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayoutNetworkWarning">
+         <property name="alignment">
+          <set>Qt::AlignHCenter</set>
+         </property>
+         <item>
+          <widget class="QLabel" name="labelNetworkWarningIcon">
+           <property name="visible">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelNetworkWarning">
+           <property name="visible">
+            <bool>false</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>360</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;REST API is enabled, but no listener is active. Enable HTTP or HTTPS.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="labelNetworkWarning">
-        <property name="visible">
-         <bool>false</bool>
+       <layout class="QHBoxLayout" name="horizontalLayoutUnauthWarning">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
         </property>
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;REST API is enabled, but no listener is active. Enable HTTP or HTTPS.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <item>
+         <widget class="QLabel" name="labelUnauthWarningIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelUnauthWarning">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Unauthenticated access lets anyone on the network control Mixxx. Enable only if you understand the risks.</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutAuthWarning">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
         </property>
-        <property name="wordWrap">
-         <bool>true</bool>
+        <item>
+         <widget class="QLabel" name="labelAuthWarningIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelAuthWarning">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Access tokens sent without HTTPS can be intercepted. Enable HTTPS to protect the REST API.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutTlsStatus">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
         </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="labelTlsStatusIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTlsStatus">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelTlsCertificateIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTlsCertificateStatus">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutStatus">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelStatusIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelStatus">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -336,60 +577,6 @@ Leave blank to disable CORS allowlisting.</string>
        </property>
       </widget>
      </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayoutTlsStatus">
-       <item>
-        <widget class="QLabel" name="labelTlsStatusIcon">
-         <property name="visible">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelTlsStatus">
-         <property name="visible">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
-       <item>
-        <widget class="QLabel" name="labelTlsCertificateIcon">
-         <property name="visible">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelTlsCertificateStatus">
-         <property name="visible">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
     </layout>
    </widget>
   </item>
@@ -408,33 +595,6 @@ Leave blank to disable CORS allowlisting.</string>
         <string>Allow unauthenticated requests when no access tokens are configured</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayoutUnauthWarning">
-       <item>
-        <widget class="QLabel" name="labelUnauthWarningIcon">
-         <property name="visible">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelUnauthWarning">
-         <property name="visible">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Unauthenticated access lets anyone on the network control Mixxx. Enable only if you understand the risks.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
      </item>
      <item>
        <layout class="QHBoxLayout" name="horizontalLayoutTokens">
@@ -696,66 +856,9 @@ Leave blank to disable CORS allowlisting.</string>
         </item>
        </layout>
       </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayoutAuthWarning">
-        <item>
-         <widget class="QLabel" name="labelAuthWarningIcon">
-          <property name="visible">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-        <widget class="QLabel" name="labelAuthWarning">
-         <property name="visible">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Access tokens sent without HTTPS can be intercepted. Enable HTTPS to protect the REST API.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-        </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayoutStatus">
-     <item>
-      <widget class="QLabel" name="labelStatusIcon">
-       <property name="visible">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelStatus">
-       <property name="visible">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
     </layout>
-   </item>
+   </widget>
+  </item>
    <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
