@@ -774,10 +774,6 @@ NS4FX.Deck = function (number, midi_chan) {
                     return;
                 }
 
-                // When fadercuts are used as stems, this pad mode is not active, so we should do nothing.
-                if (useFadercutsAsStems) {
-                    return;
-                }
                 var deckGroup = `[Channel${deck.number}]`; // Deck group based on deck number
 
                 if (value === 0x7F) { // Button pressed
