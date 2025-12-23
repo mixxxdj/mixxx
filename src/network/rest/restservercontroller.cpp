@@ -48,6 +48,16 @@ RestServerController::RestServerController(
     m_reloadTimer.setInterval(kRefreshIntervalMs);
     m_reloadTimer.setSingleShot(false);
     connect(&m_reloadTimer, &QTimer::timeout, this, &RestServerController::refreshFromSettings);
+    connect(m_httpServer.get(),
+            &RestServer::tokenUsed,
+            this,
+            &RestServerController::updateTokenLastUsed,
+            Qt::QueuedConnection);
+    connect(m_httpsServer.get(),
+            &RestServer::tokenUsed,
+            this,
+            &RestServerController::updateTokenLastUsed,
+            Qt::QueuedConnection);
 }
 
 RestServerController::~RestServerController() {
@@ -331,6 +341,30 @@ void RestServerController::applySettings(const ListenerConfiguration& settings) 
     const bool generatedCertificate = m_lastHttpsTlsConfiguration.has_value() &&
             m_lastHttpsTlsConfiguration->generated;
     updateStatus(httpRunning, httpsRunning, generatedCertificate);
+}
+
+void RestServerController::updateTokenLastUsed(
+        const QString& tokenValue,
+        const QDateTime& usedUtc) {
+    if (tokenValue.isEmpty() || !usedUtc.isValid()) {
+        return;
+    }
+
+    RestServerSettings::Values values = m_settingsStore.get();
+    bool updated = false;
+    for (auto& token : values.tokens) {
+        if (token.value != tokenValue) {
+            continue;
+        }
+        if (!token.lastUsedUtc.has_value() || token.lastUsedUtc.value() < usedUtc) {
+            token.lastUsedUtc = usedUtc;
+            updated = true;
+        }
+        break;
+    }
+    if (updated) {
+        m_settingsStore.set(values);
+    }
 }
 
 void RestServerController::start() {
