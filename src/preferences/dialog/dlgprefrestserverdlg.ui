@@ -117,10 +117,13 @@
       <item row="6" column="0">
        <widget class="QLabel" name="labelCorsAllowlist">
         <property name="toolTip">
-         <string>Enter origins (scheme + host + optional port). Leave blank to disable CORS allowlisting.</string>
+         <string>CORS allowed origins control which browser origins can access the REST API.
+Enter a comma-separated list of origins (scheme + host + optional port).
+Examples: https://example.com, http://localhost:3000, * (allow any origin).
+Leave blank to disable CORS allowlisting.</string>
         </property>
         <property name="text">
-         <string>Allowed origins (comma-separated):</string>
+         <string>CORS Allowed Origins (comma-separated):</string>
         </property>
        </widget>
       </item>
@@ -130,7 +133,10 @@
          <string>https://example.com, http://localhost:3000</string>
         </property>
         <property name="toolTip">
-         <string>Enter origins (scheme + host + optional port). Leave blank to disable CORS allowlisting.</string>
+         <string>CORS allowed origins control which browser origins can access the REST API.
+Enter a comma-separated list of origins (scheme + host + optional port).
+Examples: https://example.com, http://localhost:3000, * (allow any origin).
+Leave blank to disable CORS allowlisting.</string>
         </property>
        </widget>
       </item>
