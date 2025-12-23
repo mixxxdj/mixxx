@@ -456,7 +456,17 @@ void DlgPrefRestServer::updateAuthWarning() {
     updateWarningsPaneVisibility();
 }
 
+void DlgPrefRestServer::updateAllowUnauthenticatedState() {
+    const bool hasTokens = !m_tokens.isEmpty();
+    if (hasTokens) {
+        const QSignalBlocker blocker(checkBoxAllowUnauthenticated);
+        checkBoxAllowUnauthenticated->setChecked(false);
+    }
+    checkBoxAllowUnauthenticated->setEnabled(!hasTokens);
+}
+
 void DlgPrefRestServer::updateUnauthWarning() {
+    updateAllowUnauthenticatedState();
     const bool showWarning = checkBoxEnableRestServer->isChecked() &&
             checkBoxAllowUnauthenticated->isChecked() &&
             m_tokens.isEmpty();
