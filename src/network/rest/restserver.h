@@ -56,7 +56,7 @@ class RestServer : public QObject {
     struct AuthorizationResult {
         bool authorized{false};
         bool forbidden{false};
-        bool usedReadOnlyToken{false};
+        bool usedWriteToken{false};
         QString tokenValue;
         QString tokenDescription;
         QStringList missingScopes;
@@ -170,7 +170,9 @@ class RestServer : public QObject {
     AuthorizationResult authorize(
             const QHttpServerRequest& request,
             const QStringList& requiredScopes);
-    bool controlRouteRequiresTls(const QHttpServerRequest& request) const;
+    bool writeTokenRequiresTls(
+            const AuthorizationResult& auth,
+            const QHttpServerRequest& request) const;
     void registerRoutes();
     void addStatusStreamClient(
             const QHttpServerRequest& request,

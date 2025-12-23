@@ -611,12 +611,12 @@ Leave blank to disable CORS allowlisting.</string>
       </layout>
      </item>
      <item>
-     <widget class="QCheckBox" name="checkBoxRequireTls">
+      <widget class="QCheckBox" name="checkBoxRequireTls">
        <property name="toolTip">
-        <string>Require HTTPS for control routes.</string>
+        <string>Require HTTPS for write tokens.</string>
        </property>
        <property name="text">
-        <string>Require TLS for control routes</string>
+        <string>Require TLS for write tokens</string>
        </property>
       </widget>
      </item>
