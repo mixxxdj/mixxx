@@ -1,0 +1,18 @@
+<svg width="25" height="25" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<linearGradient id="b" x1="1.4220984" x2="24.143082" y1="19.699568" y2="19.699568" gradientTransform="translate(-.99996996 -25.00003)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#393939" offset="0"/>
+			<stop stop-color="#393939" offset=".30102351"/>
+			<stop stop-color="#141414" offset="1"/>
+		</linearGradient>
+		<linearGradient id="a" x1="2" x2="24" y1="12" y2="12" gradientTransform="translate(-1,-23)" gradientUnits="userSpaceOnUse">
+			<stop stop-opacity=".0047619" offset="0"/>
+			<stop stop-opacity="0" offset=".5"/>
+			<stop stop-opacity=".47451" offset="1"/>
+		</linearGradient>
+	</defs>
+	<rect x=".5" y=".5" width="24" height="24" fill="none" stroke="#141414" stroke-linecap="square" style="paint-order:fill markers stroke"/>
+	<rect transform="rotate(90)" x=".50003004" y="-23.5" width="23" height="23" rx="1.5" ry="1.5" color="#000000" fill="url(#a)"/>
+	<path d="m23.31367 1.17583c.11592.25262.18555.52951.18555.82422v20c0 1.0994-.9006 1.965573-2 1.965572l-19.49922-2e-5c-.6598637-1e-6-1.135675-.352003-1.325-.511743.2090942.790888.7641575 1.546141 1.8242 1.546141h20c1.108 0 2-.892 2-2v-20c0-.81658-.48717-1.5129-1.1855-1.8242z" fill="#020201"/>
+	<rect transform="rotate(90)" x=".50003004" y="-23.5" width="23" height="23" rx=".30000001" ry=".30000001" fill="none" stroke="url(#b)" stroke-linecap="round" stroke-linejoin="round" style="paint-order:fill markers stroke"/>
+</svg>

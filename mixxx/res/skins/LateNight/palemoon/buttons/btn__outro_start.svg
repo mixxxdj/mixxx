@@ -1,0 +1,10 @@
+<svg width="36" height="48" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 24">
+  <g transform="translate(-3)" fill="none" stroke="#000001" stroke-linecap="square" stroke-linejoin="round" stroke-width="1.6">
+    <rect x="6" y="7" width="2" height="10" style="paint-order:markers fill stroke"/>
+    <path d="m19 17-9-10v10z"/>
+  </g>
+  <g transform="translate(-3)" fill="#918273">
+    <rect x="6" y="7" width="2" height="10" style="paint-order:markers fill stroke"/>
+    <path d="m19 17-9-10v10z"/>
+  </g>
+</svg>

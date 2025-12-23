@@ -1,0 +1,31 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Effect selector buttons.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Style> WEffect, WPushButton {
+      font-size: 12px;
+      line-height: 10px;
+      font-weight: bold;
+      background-color: transparent;
+      color: #191F24;
+    }
+    </Style>
+    <Pos>1,1</Pos>
+    <Children>
+      <EffectSelector>
+        <EffectRack>1</EffectRack>
+        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
+        <Effect><Variable name="effectnum"/></Effect>
+        <Size>92f,20f</Size>
+      </EffectSelector>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,1070 @@
+/* LateNight 2.3 // common layout settings */
+
+/************** font settings *************************************************/
+
+#Mixxx,
+WWidget,
+WLabel,
+WNumber, WNumberPos,
+WPushButton,
+WKey,
+WTime,
+WTrackProperty,
+WRecordingDuration,
+QSpinBox,
+WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
+WCueMenuPopup,
+WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
+WOverview, /* Hotcue labels in the overview */
+WEffectName,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton,
+WTrackTableViewHeader,
+WTrackTableViewHeader::section {
+  /* On Linux all weight variants of Open Sans are identified
+  as "Open Sans" and we need to set the `font-weight`.
+  On Windows however, the semi-bold variant is identified as
+  "Open Sans Semibold", so look for that first. */
+  font-family: "Open Sans Semibold", "Open Sans";
+  font-weight: 500; /* semi-bold */
+  font-style: normal;
+  text-transform: none;
+}
+
+/* Bold */
+/* QLabel / WLabel / WPushButton required to override styles set above */
+WLabel#KnobLabel,
+WLabel#FxUnitLabel,
+WLabel#MicAuxLabel, WLabel#MicAuxLabelUnconfigured,
+#VinylControls WPushButton,
+#FxAssignButtons WPushButton,
+WPushButton#GuiToggleButton,
+WLabel#RecFeedback, WLabel#RecDuration,
+WPushButton#BroadcastButton,
+WPushButton#SkinSettingsToggle,
+#LibraryFeatureControls QPushButton,
+/* Passthrough label on overview waveform */
+WPushButton#EQKillButton,
+WLabel#LatencyLabel,
+WLabel#SamplerTitleMini,
+/* SKin settings & Library */
+WPushButton#SkinSettingsNumToggle[value="1"],
+QLabel#labelRecFilename {
+  font-family: "Open Sans";
+  font-weight: bold;
+}
+
+/* All capitals */
+#KnobLabel,
+#FxUnitLabel,
+#MicAuxLabel, #MicAuxLabelUnconfigured,
+#VinylControls WPushButton,
+#FxAssignButtons WPushButton,
+#GuiToggleButton,
+#RecFeedback, #RecDuration,
+#BroadcastButton,
+#SkinSettingsToggle,
+#LibraryFeatureControls QPushButton {
+  text-transform: uppercase;
+}
+/* regular font weight */
+#SkinSettingsButton,
+#SkinSettingsNumToggle,
+#SkinSettingsMixerToggle,
+#SkinSettingsText,
+QToolTip,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser,
+WLibraryTextBrowser QMenu,
+WTrackMenu,
+WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
+WTrackPropertyEditor,
+QLineEdit QMenu,
+WCoverArtMenu,
+QLabel#labelRecPrefix,
+QLabel#labelRecStatistics {
+  font-family: "Open Sans";
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* It is difficult to achieve identical styles WMainMenuBar #MainMenu
+  on Windows AND Linux because item and checkbox properties are rendered
+  slightly different.
+  For details see
+    * default-menu-styles-linux.qss
+    * default-menu-styles-windows.qss
+  Common styles are set here.
+  Luckily we don't need to care about macOS here -Woohoo!- because
+  there the menu bar is always styled natively. */
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+
+#MainMenu QMenu::right-arrow,
+WTrackMenu::right-arrow,
+WTrackMenu QMenu::right-arrow {
+  width: 0.7em;
+  height: 0.7em;
+}
+
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea {
+  min-width: 160px;
+}
+#fadeModeCombobox QAbstractScrollArea {
+  min-width: 185px;
+  }
+  WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    margin: 2px;
+  }
+  WEffectSelector::down-arrow,
+  WEffectChainPresetSelector::down-arrow,
+  WSearchLineEdit::down-arrow,
+  #fadeModeCombobox::down-arrow,
+  WTrackTableView::indicator {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+WEffectSelector::checked, /* selected item */
+WEffectSelector::indicator, /* checkbox, tick mark */
+WEffectSelector::indicator:unchecked,
+WEffectSelector::drop-down,
+WEffectChainPresetSelector::checked,
+WEffectChainPresetSelector::indicator,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::drop-down,
+WSearchLineEdit::checked,
+WSearchLineEdit::indicator,
+WSearchLineEdit::indicator:unchecked,
+WSearchLineEdit::drop-down,
+#fadeModeCombobox::checked,
+#fadeModeCombobox::indicator,
+#fadeModeCombobox::indicator:unchecked,
+#fadeModeCombobox::drop-down {
+  padding: 0px;
+  margin: 0px;
+  image: none;
+  outline: none;
+  border: 0px solid transparent;
+}
+/* Remove 3D border from unchecked effects checkmark space */
+WEffectSelector::item:selected,
+WEffectChainPresetSelector:item:selected,
+WSearchLineEdit::item:selected,
+#fadeModeCombobox::item:selected {
+  border: 0px;
+}
+
+  WLibrarySidebar QMenu::indicator,
+  WTrackMenu QMenu QCheckBox::indicator,
+  WEffectChainPresetButton QMenu QCheckBox::indicator {
+    /* Note that the border is added to the base size of 0.7em x 0.7em
+       set in default.qss */
+    border: 1px solid #333;
+    border-radius: 1px;
+    background-color: #000;
+    /* remove OS focus indicator */
+    outline: none;
+  }
+  WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    width: 13px;
+    height: 13px;
+  }
+  /* disabled menu item and checkbox */
+  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    background-color: #222;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+    border: 0px;
+    background-color: transparent;
+    image: url(skins:LateNight/palemoon/buttons/btn__search.svg);
+    margin-left: 2px;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    background-color: transparent;
+  }
+
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    image: url(skins:LateNight/palemoon/buttons/btn__search_disabled.svg);
+  }
+
+/************** font sizes / alignment ****************************************/
+
+#KnobLabel,
+#FxKnobLabel,
+#FxButtonLabel,
+#RateRangeText,
+#LatencyLabel {
+  font-size: 10px;
+  text-align: center;
+  qproperty-alignment: AlignCenter;
+}
+
+WPushButton,
+#LibraryFeatureControls QPushButton,
+#RecDuration[highlight="0"],
+#RecDuration[highlight="1"] {
+  font-size: 11px;
+}
+
+#RateRangePrefix,
+#RecDuration[highlight="2"],
+#SamplerTitleMini,
+#EQKillButton,
+#SamplerBpmMini,
+#PreviewBPM,
+#LibraryFeatureControls QRadioButton {
+	font-size: 12px;
+}
+
+WKey,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea,
+#LibraryFeatureControls QLabel,
+#SkinSettingsButton,
+#SkinSettingsNumToggle,
+#SkinSettingsMixerToggle,
+#SkinSettingsText {
+  font-size: 13px;
+}
+
+#PlayPositionTextSmall,
+#DurationText,
+#RateText,
+#SamplerTitleMini, #SamplerBpm,
+#MicAuxLabel, #MicAuxLabelUnconfigured,
+#PreviewTitle,
+#PreviewLabel,
+WBeatSpinBox,
+#spinBoxTransition {
+  font-size: 14px;
+}
+
+#TitleTextSmall,
+#ArtistTextSmall,
+#PlayPositionText,
+#BpmText,
+#BpmTextSmall,
+#FxUnitLabel,
+#SamplerTitle,
+WTrackPropertyEditor,
+WTime,
+WRecordingDuration {
+  font-size: 16px;
+}
+
+#SkinSettingsLabelButton,
+#CategoryLabel,
+#SkinSettingsNumToggleHeader  {
+  font-size: 17px;
+}
+
+#ArtistText,
+#TitleText {
+  font-size: 18px;
+}
+
+#PlayPositionTextSmall,
+#SamplerTitle,
+#SamplerTitleMini,
+#MicAuxLabel,
+#MicAuxLabelUnconfigured,
+#PreviewTitle,
+#PreviewLabel {
+  text-align: left;
+}
+
+#RateText,
+#MicAuxLabel,
+#PreviewBPM {
+  text-align: center;
+  }
+  WBeatSpinBox,
+  #spinBoxTransition {
+    qproperty-alignment: 'AlignHCenter';
+  }
+
+#SamplerBpm,
+#SamplerBpmMini {
+  text-align: right;
+}
+
+WTrackTableViewHeader::item {
+  border-bottom: 1px solid #000;
+  }
+/* This is now set in c++ WTrackTableViewHeader::paintSection()
+   which also works around a Qt bug with the sort indicator */
+/*WTrackTableViewHeader::section {
+    height: 1.1em;
+    border: 0;
+    padding: 0.1em;
+  }*/
+  /*WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
+    width: 0.8em;
+    padding: 0 0.3em;
+  }*/
+  /*WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
+    padding: 0 1px;
+  }*/
+
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  border: 0px;
+}
+
+#HotcueButton {
+  /* ronso0
+  TEST pixel fonts instead of icons
+  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
+
+  font-size: tried a lot of integers as well as .5 values
+  didn't find the magic number.. it's some unintuitive floating point value
+  that aligns font pixels to screen pixels so the fonts look sharp.
+
+  font-family: "Acknowledge TT (BRK)";
+  font-family: "Bulky Pixels";
+  font-family: "Irresistor";
+  font-family: "Visitor TT1 BRK";
+  font-family: "Boxy Bold";
+  font-family: "Pixel Intv";
+  font-size: 13px;
+  color: #eee;
+  */
+}
+
+/* This does NOT style the cue labels in the overview
+WOverview {
+  font-size: 20px;
+}
+  To style the overview cue labels use this
+  <LabelFontSize>
+  <LabelTextColor>
+  <LabelBackgroundColor>
+  in deck_overview.xml instead.
+  See https://github.com/mixxxdj/mixxx/pull/2238/files#diff-63372b146329ec67669d336bc0decfdaR100  */
+/* Those styles affect the labels in the overview cue menu and its child dialogs.
+WOverview QLabel {
+  font-weight: bold;
+  font-size: 12px;
+  background-color: blue;
+} */
+/************** font sizes / alignment ****************************************/
+/************** font settings *************************************************/
+
+
+
+
+
+
+/*********** layout margins & paddings of individual sections ******************
+*******************************************************************************/
+
+/************** ToolBar *******************************************************/
+#ToolBar {
+  }
+  #ToolBar, #ToolBarSection {
+    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  }
+  #RecBox {
+    qproperty-layoutAlignment: 'AlignCenter';
+    }
+  #ClockWidget {
+    qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+    }
+  #LatencyLabel {
+  }
+/************** ToolBar *******************************************************/
+
+
+
+/************** Waveforms *****************************************************/
+
+#StemChannel_ControlContainer {
+  margin: 0px 3px 0px 2px;
+}
+
+
+/************** Decks *********************************************************/
+
+#DeckRows12345 {
+  }
+
+#DeckRow_1_KeyVinylFx {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #VinylControls {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #VinylStatus {
+    border-radius: 5px;
+  }
+  #KeyText, #KeyTextSmall {
+    qproperty-alignment: 'AlignCenter';
+  }
+
+#DeckRow_2_3_ArtistTitleTime {
+  }
+  #TitleRow {
+    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  }
+ #TrackColorFullCompact {
+    padding: 0px 3px 0px 5px;
+  }
+  #TrackColorMini {
+    padding: 0px 0px 0px 5px;
+  }
+
+#DeckSettings {
+  qproperty-layoutAlignment: 'AlignCenter';
+  }
+  #Stars {
+    qproperty-layoutAlignment: 'AlignCenter';
+  }
+
+#DeckRow_5_LoopCuesTransport {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  }
+  #DeckRow_5_LoopCuesTransportCompact {
+    qproperty-layoutAlignment: 'AlignLeft';
+  }
+
+  #LoopControls,
+  #JumpControls {
+    qproperty-layoutAlignment: 'AlignCenter';
+  }
+
+WSpinny { /*
+  This produces artifacts in spinny bg
+  background-color: rgba(1, 1, 1, 10);
+  This makes no difference, the spinny loads some default grey bg
+  background: none;*/
+}
+
+#BpmText,
+#RateText,
+#RateRangePrefix,
+#RateRangeText {
+  qproperty-alignment: 'AlignCenter';
+}
+
+#RateContainer,
+#RateContainerCompact,
+#BpmTapContainer,
+#RateButtons
+#SyncBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#RateControls {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  margin-left: 5px;
+}
+
+WTrackProperty,
+WTrackProperty[selected="false"] {
+  background-color: transparent;
+  border: 0px solid transparent;
+  border-radius: 1px;
+}
+
+#BpmClickOverlay,
+#BpmTapButton,
+#BpmTapButton:focus {
+  background-color: transparent;
+}
+WBpmEditor,
+#BpmClickOverlay {
+  border: none;
+}
+
+
+/************** Decks  ********************************************************/
+
+
+
+/************** Mixer  ********************************************************/
+#MixerContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#MixerDecks {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #MixerChannel_2Decks {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  }
+
+  #MixerChannel_4Decks {
+    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  }
+
+  #MixerChannel_2Decks_Left {
+    qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  }
+
+  #MixerChannel_2Decks_Right {
+    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  }
+
+  #VolumeGain2Decks {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  }
+  #VuAndSlider_4Decks {
+    qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  }
+
+  #KnobCentered {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  }
+
+#VuMeterBox,
+#VuMeterBoxMainSingle {
+  /* gap in between clipping and Vu level */
+  qproperty-layoutSpacing: 2;
+}
+#VuMeterBox,
+#VuMeterBoxMain {
+  /* (black) groove around Vu widgets */
+  padding: 1px;
+}
+#VuMeterBoxMain {
+  /* gap in between Main lft/right Vu
+  qproperty-layoutSpacing: 1; */
+  }
+  #VuMeterBoxFull {
+    /* push all VU meters to the right to visullay center it
+      below Pfl buttons */
+    margin-left: 1px;
+  }
+  #VuMeterChannel_2Decks,
+  #VuMeterChannel_4Decks,
+  #VuMeterMain_2Decks,
+  #VuMeterMain_4Decks {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+    }
+
+#CrossfaderAndSwitches2Decks {
+  qproperty-layoutAlignment: 'AlignHCenter';
+}
+#CrossfaderSwitch_4Decks {
+  qproperty-layoutAlignment: 'AlignRight';
+  }
+  #CrossfaderContainer {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+    }
+    #Crossfader {
+      qproperty-layoutAlignment: 'AlignCenter';
+    }
+
+#MixerMainHeadphone {
+  }
+  #MainControls,
+  #HeadphoneControls {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+    }
+    #BoothLabelBox {
+      qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    }
+  #MainHeadphoneSeparator {
+  }
+
+/************** Mixer  ********************************************************/
+
+
+
+/************** Effects ******************************************************/
+#FxRack {
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+}
+
+#FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4 {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
+
+#FxUnitHeaderCollapsed,
+#FxUnitHeaderExpanded,
+#FxUnitHeader {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
+#FxUnitControlsExpanded,
+#FxUnitControlsCollapsed,
+#FxSlotContainer,
+#FxSlotControls,
+#FxFocusButtonBox,
+#FxMetaKnob,
+#FxParameterKnob,
+#LibExpandBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+
+#FxSlot1,
+#FxSlot2,
+#FxSlot3 {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#FxParameterKnobBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#FxParameterKnob {
+  margin-left: 1px;
+}
+
+#FxParameterButtonBox {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+WEffectSelector {
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  min-height: 13px;
+  margin: 1px 0px 0px 0px;
+  /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+      names start getting cut off. Adding explicit padding improves this. */
+  padding: 4px 0px 4px 4px;
+  /* The 3D frame on the combo box becomes flat when you give it a border
+  border-radius: 3px; */
+  }
+WEffectChainPresetSelector {
+  border:  0px;
+}
+#fadeModeCombobox {
+  height: 18px;
+  margin: 0px 0px 3px 1px;
+  padding: 1px 0px 1px 4px;
+  }
+
+  /* QuickEffect selector of left-hand decks and in 4-decks mixer
+    has it's down arrow on the left side, below the QuickEffect toggle */
+  WEffectChainPresetSelector#QuickEffectSelectorLeft {
+    padding: 0px -5px 0px -1px;
+    margin: 0px;
+    text-align: left;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorLeft::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: left center;
+    }
+  WEffectChainPresetSelector#QuickEffectSelectorRight {
+    padding: 0px -1px 0px -5px;
+    margin: 0px;
+    text-align: right;
+  }
+  WEffectChainPresetSelector#StemQuickEffectSelector {
+    padding: 0px -5px 0px 2px;
+    margin: 0px;
+    text-align: left;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down,
+    WEffectChainPresetSelector#StemQuickEffectSelector::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: right center;
+    }
+
+  WEffectSelector QAbstractScrollArea,
+  WEffectChainPresetSelector QAbstractScrollArea,
+  WSearchLineEdit QAbstractScrollArea,
+  #fadeModeCombobox QAbstractScrollArea {
+    border: 1px solid #444;
+    border-radius: 2px;
+    padding: 0px;
+    margin: 0px;
+  }
+  /* checked item */
+  WEffectSelector:checked,
+  WEffectChainPresetSelector:checked,
+  #fadeModeCombobox:checked {
+    /* not applied
+    padding-left: 5px;	*/
+    padding: 0px;
+    margin: 0px;
+    color: #eee;
+  }
+  /* hovered items */
+  WEffectSelector::item:selected,
+  WEffectChainPresetSelector::item:selected,
+  WSearchLineEdit::item:selected,
+  #fadeModeCombobox::item:selected {
+  /* Already one of those properties destroys font config and
+     puts tick mark behind text:
+    margin: 0px;
+    padding: 0px; */
+  }
+  WEffectSelector::indicator,
+  #fadeModeCombobox::indicator {
+  /* This is sufficient to completely hide the tick mark, but
+    this alone would show an empty, shadowed box instead of tick mark
+    background-color: transparent;*/
+  /* This should decrease the tick mark's left & right margin but is not respected
+    margin: 0px;
+    padding: 0px;*/
+  }
+
+WEffectChainPresetButton,
+WEffectChainPresetButton::menu-indicator {
+  background-color: transparent;
+  border:  0px;
+  margin:  0px;
+  padding: 0px;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-origin: margin;
+  subcontrol-position:  center center;
+}
+/************** Effects *******************************************************/
+
+
+
+/************** Samplers ******************************************************/
+#SamplerRow {
+  qproperty-layoutAlignment: 'AlignTop';
+}
+#SamplerExpandBox {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+  }
+  #SamplerExpand {
+  }
+    #SamplerTitleBox {
+      qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+      }
+
+    #SamplerSettings {
+      qproperty-layoutAlignment: 'AlignVCenter';
+    }
+    #SamplerBPMSettingsMini,
+    #SamplerSettingsMini {
+      qproperty-layoutAlignment: 'AlignRight';
+    }
+
+    #SamplerHotcues,
+    #SamplerPfl {
+      qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+    }
+
+    #SamplerPfl {
+      qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+    }
+
+    #SamplerVU {
+      qproperty-layoutAlignment: 'AlignCenter';
+    }
+
+    #SamplerPitchSlider {
+      qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+    }
+
+/************** Samplers *****************************************************/
+
+
+
+/************** Mic Aux *******************************************************/
+
+#MicDuckingContainer {
+  qproperty-layoutAlignment: 'AlignCenter | AlignTop';
+  }
+  #MicDuckingStrengthBox {
+    qproperty-layoutAlignment: 'AlignHCenter';
+  }
+
+#MicAuxUnit {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  }
+    #MicAuxLabel {
+      qproperty-alignment: 'AlignCenter | AlignTop';
+    }
+    #AuxPlayBox {
+      qproperty-layoutAlignment: 'AlignCenter | AlignBottom';
+    }
+    #MicTalkBox {
+      qproperty-layoutAlignment: 'AlignCenter | AlignBottom';
+    }
+    #MicAuxVUMeter {
+      qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+    }
+    #MicAuxAddBox {
+      qproperty-layoutAlignment: 'AlignCenter | AlignBottom';
+    }
+
+  #MicAuxSubControls {
+    qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+    }
+    #MicAuxGainPFlContainer {
+      }
+      #MicAuxGainKnob {
+        qproperty-layoutAlignment: 'AlignCenter';
+      }
+    #MicAuxFxButtons {
+      qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+    }
+
+/************** Mic Aux *******************************************************/
+
+
+
+/************** Skin settings *************************************************/
+
+#SkinSettings {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #SkinSettingsCategory {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #DeckSizeToggleContainer {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+
+
+
+
+
+/************** PreviewDeck ***************************************************/
+#PreviewDeck {
+  qproperty-layoutAlignment: 'AlignTop';
+}
+
+#PreviewTitleEjectRow {
+  }
+  #PreviewDeckTextBox {
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    }
+    #PreviewLabel { /* Placeholder */
+      qproperty-alignment: 'AlignVCenter | AlignLeft';
+    }
+/************** PreviewDeck ***************************************************/
+/*********** layout margins & paddings of individual sections ******************
+*******************************************************************************/
+
+
+
+/************** Library *******************************************************/
+
+#LibrarySingleton {
+  /* This doesn't work as expected:
+  it appears LibrarySingleton is displayed twice (nested in itself),
+  so padding/margin would double.
+  padding-top: 5px;*/
+}
+
+
+#SearchLineBox {
+  padding: 2px 0px 2px 2px;
+  border-right: 0px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  }
+  #LibExpandBox {
+    qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+  }
+
+/************ Library feature controls / tree view / table view *************/
+/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
+
+/* Library feature pushbuttons
+  Don't use 'WLibrary QPushButton' here, as this would apply padding
+  to the Preview & BPM lock buttons as well.
+  Define the buttons fore every Library feature instead. */
+#LibraryFeatureControls QPushButton {
+  margin: 0px 2px 3px 0px;
+  padding: 0px 5px;
+  /* Note: border-width is added, so the effective minimal size
+    is 24 x 36 px */
+  height: 20px;
+  min-width: 32px;
+  }
+  #DlgAutoDJ #LibraryFeatureControls QPushButton {
+    padding: 0px;
+    }
+    QPushButton#pushButtonAutoDJ {
+      min-width: 40px;
+    }
+
+/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
+   Linux with Gnome */
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
+  background: transparent;
+}
+#LibraryFeatureControls QRadioButton::indicator {
+  width: 18px;
+  height: 18px;
+  }
+  /* Push 'New' radio button away from corner */
+  QRadioButton#radioButtonRecentlyAdded {
+    margin-left: 5px;
+  }
+  /* Space in between 'All' radio button and 'Select All' button */
+  QRadioButton#radioButtonAllSongs {
+    margin-right: 10px;
+  }
+
+/* Additional space for QLabels */
+QLabel#labelTransitionAppendix {
+  margin-left: 3px;
+}
+QLabel#labelProgress, /* Analysis progress */
+QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
+  margin: 2px 5px 5px 1px;
+}
+QLabel#labelRecPrefix,
+QLabel#labelRecFilename,
+QLabel#labelRecStatistics {
+  text-transform: none;
+  margin: 3px 0px 3px 0px;
+}
+
+WLibrarySidebar {
+  show-decoration-selected: 0;
+}
+/************** Library *******************************************************/
+
+
+
+/************** little helpers ************************************************/
+#AlignLeft {
+  qproperty-layoutAlignment: 'AlignLeft';
+}
+
+#AlignLeftTop {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#AlignLeftBottom {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
+
+#AlignRight {
+  qproperty-layoutAlignment: 'AlignRight';
+}
+
+#AlignRightTop {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
+
+#AlignRightBottom {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+}
+
+#AlignRightCenter {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+
+#AlignCenterTop {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#AlignTop {
+  qproperty-layoutAlignment: 'AlignTop';
+}
+
+#AlignBottom {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+}
+
+#TEST {
+  background-color: #456113;
+}
+
+#TEST1 {
+  background-color: #456113;
+}
+
+#TEST2 {
+  background-color: #561134;
+}
+
+#TEST3 {
+  background-color: #451361;
+}
+
+#TEST4 {
+  background-color: #134561;
+}
+
+#TEST33 {
+  background-color: #333;
+}
+
+#TEST66 {
+  background-color: #666;
+}
+
+#TEST99 {
+  background-color: #999;
+}
+
+#SET_FULL_MIXER {
+  background-color: #ff0000;
+  }
+
+#SET_FULL {
+  background-color: #cc0000;
+  }
+  #IS_FULL {
+    background-color: #990000;
+  }
+
+#SET_COMPACT {
+  background-color: #00cc00;
+  }
+  #IS_COMPACT {
+    background-color: #009900;
+  }
+
+#SET_MINI {
+  background-color: #0000cc;
+  }
+  #IS_MINI {
+    background-color: #000099;
+  }
+
+#Spacer00 {
+  background-color: #000;
+}
+
+#Spacer0f {
+  background-color: #0f0f0f;
+}
+
+#Spacer1e {
+  background-color: #1e1e1e;
+}
+
+#Spacer58 {
+  background-color: #585858;
+}
+
+#Border58 {
+  border: 1px solid #585858;
+}

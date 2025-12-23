@@ -1,0 +1,86 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect parameter knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+    EffectParameter: the parameter
+-->
+<Template>
+  <SetVariable name="EffectUnitGroup">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <MinimumSize>34,</MinimumSize>
+    <MaximumSize>58,42</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectParameterSmallKnob</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>me,20f</Size>
+        <Children>
+          <EffectParameterKnobComposed>
+            <Size>20f,20f</Size>
+            <Knob>knob_small.svg</Knob>
+            <MinAngle>-230</MinAngle>
+            <MaxAngle>50</MaxAngle>
+            <EffectUnitGroup><Variable name="EffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="Effect"/></Effect>
+            <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/></ConfigKey>
+            </Connection>
+          </EffectParameterKnobComposed>
+        </Children>
+      </WidgetGroup>
+
+      <EffectParameterName>
+        <MinimumSize>34,12</MinimumSize>
+        <MaximumSize>58,12</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <ObjectName>EffectKnobLabel</ObjectName>
+        <EffectRack><Variable name="EffectRack"/></EffectRack>
+        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+        <Effect><Variable name="Effect"/></Effect>
+        <EffectParameter><Variable name="EffectParameter"/></EffectParameter>
+        <Alignment>center</Alignment>
+        <Elide>right</Elide>
+      </EffectParameterName>
+
+      <WidgetGroup>
+        <ObjectName>EffectSlotParameterLinkButtonsContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>-1,8f</Size>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <!-- Button has no text/images, qss only -->
+            <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
+            <SetVariable name="ObjectName">EffectSlotParameterLinkInversionButton</SetVariable>
+            <SetVariable name="MinimumSize">6,6</SetVariable>
+            <SetVariable name="MaximumSize">10,6</SetVariable>
+            <SetVariable name="SizePolicy">me,f</SetVariable>
+            <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_inverse</SetVariable>
+          </Template>
+
+          <Template src="skin:left_5state_button.xml">
+            <!-- Button has no text/images, qss only -->
+            <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+            <SetVariable name="ObjectName">EffectSlotParameterLinkTypeButton</SetVariable>
+            <SetVariable name="MinimumSize">30,6</SetVariable>
+            <SetVariable name="MaximumSize">46,6</SetVariable>
+            <SetVariable name="SizePolicy">me,f</SetVariable>
+            <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

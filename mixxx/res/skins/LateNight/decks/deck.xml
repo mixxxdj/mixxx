@@ -1,0 +1,64 @@
+<Template>
+
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <MaximumSize>,230</MaximumSize>
+    <Children>
+
+      <Template src="skins:LateNight/decks/deck_singletons.xml">
+        <SetVariable name="Type">deck</SetVariable>
+        <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+      </Template>
+
+      <WidgetStack currentpage="[Skin],show_mixer" persist="true">
+        <Children>
+
+          <!-- no mixer -->
+          <WidgetStack currentpage="[LateNight],deck_size_without_mixer" persist="true">
+            <Children>
+              <!-- minimal deck selected -->
+              <WidgetGroup trigger="[LateNight],show_mini_deck">
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+              <!-- Compact deck selected -->
+              <WidgetGroup trigger="[LateNight],show_compact_deck">
+                <Layout>horizontal</Layout>
+                <Children>
+                <SingletonContainer>
+                  <ObjectName>Deck<Variable name="ChanNum"/>_Compact</ObjectName>
+                </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+              <!-- Full deck selected -->
+              <WidgetGroup trigger="[LateNight],show_full_deck">
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetStack>
+
+          <!-- mixer shown = full deck -->
+          <WidgetGroup trigger="[Skin],show_mixer" on_hide_select="0">
+            <Layout>horizontal</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+</Template>

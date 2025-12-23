@@ -1,0 +1,65 @@
+<!--
+Description:
+  Knob for chosen QuickEffect with an enable button next to it.
+  A 'button' underneath the knob turns grey when QuickEffect is disabled.
+Variables:
+  PotiMinAngle: -135°, see skin.xml
+  PotiMaxAngle: 135°, see skin.xml
+  group       : affected group
+-->
+<Template>
+  <SetVariable name="QuickFxGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EQKnobContainerLeft</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <!-- QuickEffect enable button -->
+      <WidgetGroup>
+        <ObjectName>QuickFXSide</ObjectName>
+        <Size>12f,23f</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
+            <SetVariable name="ObjectName">QuickFXButton</SetVariable>
+            <SetVariable name="Size">12f,23f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- QuickEffect knob + Enable indicator underneath -->
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>stacked</Layout>
+        <Children>
+          <KnobComposed>
+            <TooltipId>QuickEffectRack_super1</TooltipId>
+            <Size>30f,26f</Size>
+            <Knob>skins:Tango/knobs_sliders/knob_blue.svg</Knob>
+            <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <KnobCenterYOffset>2.000</KnobCenterYOffset>
+            <Connection>
+              <ConfigKey><Variable name="QuickFxGroup"/>,super1</ConfigKey>
+            </Connection>
+          </KnobComposed>
+
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="ObjectName">QuickFxDisabledUnderlay</SetVariable>
+            <SetVariable name="Size">30f,26f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

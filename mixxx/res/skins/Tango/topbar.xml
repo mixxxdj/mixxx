@@ -1,0 +1,361 @@
+<!--
+Description:
+  Top bar containing
+  * Logo
+  * Mixer for Main, Booth & Headphone
+  * Crossfader (if enabled)
+  * GUI toggle buttons (FX, Sampler, Lib, Wave ...)
+  * recording button with duration display
+  * Broadcast button
+  * Clock
+  * Skin Menu toggle
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Topbar</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+  <!-- Put Mixerbar & Logo in a container to achieve top alignment
+      when Crossfader is enabled. 'qproperty-layoutAlignment' for Topbar
+      wouldn't work... -->
+      <WidgetGroup>
+        <ObjectName>AlignTop</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <WidgetGroup><!-- Logo + Main, Headphone & Booth Mixer -->
+            <ObjectName>MixerBar</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>-1me,28f</Size>
+            <Children>
+
+              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+              <PushButton>
+                <Size>102f,24f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed scalemode="STRETCH_ASPECT">skins:Tango/graphics/logo_102x24_grey.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/graphics/logo_102x24_grey.svg</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed scalemode="STRETCH_ASPECT">skins:Tango/graphics/logo_102x24.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/graphics/logo_102x24.svg</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey>[Tango],colorLogo</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
+                <SetVariable name="ObjectName">MainHeadMixerToggle</SetVariable>
+                <!-- Size needs to be changed in size_detector_stars.xml, too -->
+                <SetVariable name="Size">15f,28f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],main_mixer</SetVariable>
+              </Template>
+
+              <Label>
+                <Size>22f,28f</Size>
+                <ObjectName>MainHeadMixerLabel</ObjectName>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],main_mixer</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Label>
+
+              <!-- Main & Headphone mixer -->
+              <Template src="skins:Tango/mixer/mixer_main.xml"/>
+
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <MaximumSize>30,1</MaximumSize>
+              </WidgetGroup>
+
+              <Template src="skins:Tango/mixer/mixer_headphone.xml"/>
+
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Logo + Main, Headphone & Booth Mixer -->
+
+      <WidgetGroup><!-- Crossfader -->
+        <ObjectName>CrossfaderContainer</ObjectName>
+        <SizePolicy>min,f</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <SliderComposed>
+            <TooltipId>crossfader</TooltipId>
+            <Size>108f,28f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
+            <Connection>
+              <ConfigKey>[Master],crossfader</ConfigKey>
+            </Connection>
+          </SliderComposed>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Crossfader -->
+
+      <WidgetGroup><!-- Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
+        <Layout>horizontal</Layout>
+        <ObjectName>SkinControlsBar</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <StatusLight>
+            <TooltipId>autodj_status</TooltipId>
+            <ObjectName>AutoDjStatus</ObjectName>
+            <Size>14f,22f</Size>
+            <NumberPos>3</NumberPos>
+            <PathStatusLight1>skins:Tango/graphics/autodj_status.svg</PathStatusLight1>
+            <PathStatusLight2>skins:Tango/graphics/autodj_status.svg</PathStatusLight2>
+            <PathStatusLight3>skins:Tango/graphics/autodj_status.svg</PathStatusLight3>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+            </Connection>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </StatusLight>
+
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Skin toggles, hidden with maximized library -->
+            <Layout>horizontal</Layout>
+            <ObjectName>SkinControlsBar</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- Waveforms -->
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_icon">wave_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">wave_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_waveforms</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- FX -->
+                <SetVariable name="TooltipId">show_effects</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_text">FX</SetVariable>
+                <SetVariable name="state_1_text">FX</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_effectrack</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- Samplers -->
+                <SetVariable name="TooltipId">show_samplers</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_samplers</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
+                <SetVariable name="TooltipId">show_microphone</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- Mixer -->
+                <SetVariable name="TooltipId">show_mixer</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_mixer</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- Loop/Beatjump -->
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_loop_beatjump_controls</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- 4 Decks -->
+                <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                <SetVariable name="state_0_icon">2decks.svg</SetVariable>
+                <SetVariable name="state_1_icon">4decks.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_maximized_library</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Recording button & recording duration label -->
+            <ObjectName>RecBox</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>70f,20f</Size>
+            <Children>
+              <!-- invisible Rec button -->
+              <Template src="skins:Tango/controls/button_3state_display.xml">
+                <SetVariable name="ObjectName">RecButton</SetVariable>
+                <SetVariable name="TooltipId">toggle_recording</SetVariable>
+                <SetVariable name="Size">70f,20f</SetVariable>
+                <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
+                <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- Rec dot + RecDuration -->
+                <Layout>horizontal</Layout>
+                <Size>70f,20f</Size>
+                <Children>
+                  <Template src="skins:Tango/controls/button_3state_display.xml">
+                    <SetVariable name="ObjectName">RecDot</SetVariable>
+                    <SetVariable name="TooltipId">toggle_recording</SetVariable>
+                    <SetVariable name="Size">15f,16f</SetVariable>
+                    <SetVariable name="state_0_text">&#9679;</SetVariable>
+                    <SetVariable name="state_1_text">&#9679;</SetVariable>
+                    <SetVariable name="state_2_text">&#9679;</SetVariable>
+                    <SetVariable name="Align">right</SetVariable>
+                    <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
+                  </Template>
+                  <RecordingDuration>
+                    <ObjectName>RecDuration</ObjectName>
+                    <Size>55f,20f</Size>
+                    <InactiveText>REC</InactiveText>
+                    <Alignment>center</Alignment>
+                  </RecordingDuration>
+                </Children>
+              </WidgetGroup><!-- /Rec dot + RecDuration -->
+            </Children>
+          </WidgetGroup><!-- /Recording button & recording duration label -->
+
+          <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+
+          <Template src="skins:Tango/controls/button_5state_display.xml">
+            <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
+            <SetVariable name="ObjectName">BroadcastButton</SetVariable>
+            <SetVariable name="Size">20f,28f</SetVariable>
+            <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
+            <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
+          </Template>
+
+          <Battery>
+            <ObjectName>Battery</ObjectName>
+            <Size>24,24</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <PixmapCharged scalemode="STRETCH_ASPECT">skins:Tango/graphics/batt/ic_battery_charged.svg</PixmapCharged>
+            <NumberStates>8</NumberStates>
+            <PixmapsCharging scalemode="STRETCH_ASPECT">skins:Tango/graphics/batt/ic_battery_charging_%1.svg</PixmapsCharging>
+            <PixmapsDischarging scalemode="STRETCH_ASPECT">skins:Tango/graphics/batt/ic_battery_discharging_%1.svg</PixmapsDischarging>
+          </Battery>
+
+          <WidgetGroup><!-- Clock + latency display -->
+            <ObjectName>ClockBox</ObjectName>
+            <MinimumSize>52,28</MinimumSize>
+            <MaximumSize>64,28</MaximumSize>
+            <SizePolicy>max</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Time>
+                    <TooltipId>time</TooltipId>
+                    <ObjectName>Clock</ObjectName>
+                    <Align>center</Align>
+                  </Time>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>AlignHCenter</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <VuMeter><!-- latency usage -->
+                    <Size>31f,3f</Size>
+                    <TooltipId>audio_latency_usage</TooltipId>
+                    <PathVu>skins:Tango/graphics/latency_usage_over.svg</PathVu>
+                    <PathBack>skins:Tango/graphics/latency_usage.svg</PathBack>
+                    <Horizontal>true</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>1000</PeakHoldTime>
+                    <PeakFallTime>100</PeakFallTime>
+                    <PeakFallStep>1</PeakFallStep>
+                    <Connection>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
+                    </Connection>
+                  </VuMeter><!-- /latency usage -->
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Clock + latency display -->
+
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SkinSettingsToggler</ObjectName>
+                <Size>24f,24f</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[Skin],show_settings</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- /Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

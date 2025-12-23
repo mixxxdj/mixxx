@@ -1,0 +1,120 @@
+<!--
+Description:
+    Row 1: Looping controls
+    Row 2: Fixed-size beatloop buttons
+Variables:
+    group : The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1min,3f</Size></WidgetGroup>
+
+      <WidgetGroup><!-- Beatloop controls -->
+        <ObjectName>LoopBeatJumpContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+          <Template src="skins:Tango/controls/button_2state_right_display.xml">
+            <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+            <SetVariable name="ObjectName">LoopActivateButton</SetVariable>
+            <SetVariable name="Size">30f,22f</SetVariable>
+            <SetVariable name="state_0_icon">loop.svg</SetVariable>
+            <SetVariable name="state_1_icon">loop_on.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>AlignLeft</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>68f,22f</Size>
+            <Children>
+              <BeatSpinBox>
+                <TooltipId>beatloop_size</TooltipId>
+                <Value><Variable name="group"/>,beatloop_size</Value>
+              </BeatSpinBox>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>RoundSpacer0f</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>f,min</SizePolicy>
+            <Children>
+              <Template src="skins:Tango/controls/button_2state_right.xml">
+                <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+                <SetVariable name="ObjectName">ReloopButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_icon">reloop_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">reloop_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_in</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_in_active.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">loop_in.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_in</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_in_goto</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_1state_right.xml">
+                <SetVariable name="TooltipId">loop_out</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_pressed">loop_out_active.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">loop_out.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state.xml">
+                <SetVariable name="TooltipId">loop_anchor</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_icon">loop_anchor_start.svg</SetVariable>
+                <SetVariable name="state_1_icon">loop_anchor_end.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_anchor</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+          <Template src="skins:Tango/controls/button_2state_persist.xml">
+            <SetVariable name="ObjectName">FixedLoopSizesMiniMaxi</SetVariable>
+            <SetVariable name="Size">14f,22me</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],decks/loop_sizes</SetVariable>
+          </Template>
+
+          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Beatloop controls -->
+
+      <!-- Fixed-size beatloop buttons -->
+      <Template src="skins:Tango/decks/loop_sizes.xml"/>
+
+    </Children>
+  </WidgetGroup>
+</Template>

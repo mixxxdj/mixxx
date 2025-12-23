@@ -1,0 +1,91 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A VU meter.
+  Variables:
+    group: The group for the controls.
+    side: The stereo channel to monitor: left or right
+    tooltip_meter: The tooltip id for the vu-meter.
+    tooltip_clip: The tooltip id for the clip indicator.
+-->
+<Template>
+  <WidgetGroup>
+      <ObjectName>vumeter_v</ObjectName>
+      <Layout>vertical</Layout>
+      <Size>8f,-1</Size>
+      <Children>
+          <StatusLight>
+            <ObjectName>PeakIndicator</ObjectName>
+            <TooltipId><Variable name="tooltip_clip"/></TooltipId>
+            <Size>8f,8f</Size>
+            <PathStatusLight scalemode="STRETCH">vumeter_clip.png</PathStatusLight>
+            <Connection>
+                <ConfigKey><Variable name="group"/>,peak_indicator<Variable name="side"/></ConfigKey>
+            </Connection>
+          </StatusLight>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId><Variable name="tooltip_meter"/></TooltipId>
+                    <Size>3me,me</Size>
+                    <MinimumSize>8,40</MinimumSize>
+                    <MaximumSize>8,-1</MaximumSize>
+                    <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
+                    <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>300</PeakHoldTime>
+                    <PeakFallTime>20</PeakFallTime>
+                    <PeakFallStep>1</PeakFallStep>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,vu_meter<Variable name="side"/></ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <VuMeter>
+                    <TooltipId><Variable name="tooltip_meter"/></TooltipId>
+                    <Size>3me,me</Size>
+                    <MinimumSize>8,60</MinimumSize>
+                    <MaximumSize>8,-1</MaximumSize>
+                    <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
+                    <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>5</PeakHoldSize>
+                    <PeakHoldTime>300</PeakHoldTime>
+                    <PeakFallTime>20</PeakFallTime>
+                    <PeakFallStep>1</PeakFallStep>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,vu_meter<Variable name="side"/></ConfigKey>
+                    </Connection>
+                  </VuMeter>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

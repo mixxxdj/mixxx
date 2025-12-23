@@ -1,0 +1,18 @@
+<svg width="80" height="40" version="1.1" viewBox="0 0 10.583 5.2917" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="a" x1="2.8712" x2="2.8712" y1="19.048" y2="1.0256" gradientTransform="matrix(.26458 0 0 .26458 -2.7083e-8 -2e-5)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#80766b" offset="0"/>
+      <stop stop-color="#a89a8c" offset="1"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#a)" stroke-width=".26458">
+    <path d="m6.8792 0.79373c-0.14658 0-0.26458 0.118-0.26458 0.26458v0.79375h2.1167v-0.79375c0-0.14658-0.118-0.26458-0.26458-0.26458zm0.33073 0.39687c0.10959 0 0.19844 0.0888 0.19844 0.19844 0 0.1096-0.088844 0.19844-0.19844 0.19844-0.10959 0-0.19844-0.0888-0.19844-0.19844 0-0.10959 0.088845-0.19844 0.19844-0.19844zm0.92604 0c0.10959 0 0.19844 0.0888 0.19844 0.19844 0 0.1096-0.088845 0.19844-0.19844 0.19844-0.10959 0-0.19844-0.0888-0.19844-0.19844 0-0.10959 0.088844-0.19844 0.19844-0.19844z" color="#000001"/>
+    <rect x="6.8792" y="3.7041" width=".52917" height=".79375" rx=".26458" ry=".26458"/>
+    <rect x="7.9375" y="3.7041" width=".52917" height=".79375" rx=".26458" ry=".26458"/>
+    <rect x="5.8208" y="2.1167" width=".52917" height="1.3229" rx=".26458" ry=".26458" color="#000001"/>
+    <path d="m6.6146 2.1166v1.6991c0 0.0855 0.059002 0.15297 0.13229 0.15297h1.8521c0.07329 0 0.13229-0.0675 0.13229-0.15297v-1.6991h-1.9844z" color="#000001"/>
+    <rect x="8.9958" y="2.1167" width=".52917" height="1.3229" rx=".26458" ry=".26458" color="#000001"/>
+    <path d="m1.7043 1.4629a0.19846 0.19846 0 0 0-0.12144 0.0481c-0.53208 0.44646-0.72848 1.1798-0.49093 1.8324 0.23756 0.65267 0.85934 1.0883 1.5539 1.0883 0.69458 1e-5 1.3164-0.43564 1.5539-1.0883 0.23756-0.65267 0.041153-1.386-0.49093-1.8324a0.19846 0.19846 0 1 0-0.25476 0.30385c0.40532 0.34009 0.55406 0.89601 0.37312 1.3932-0.18096 0.49718-0.65222 0.82682-1.1813 0.82682-0.52909 0-0.99983-0.32964-1.1808-0.82682-0.18096-0.49718-0.032208-1.0531 0.37312-1.3932a0.19846 0.19846 0 0 0-0.13384-0.35193z" color="#000001" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000001" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;paint-order:fill markers stroke;shape-padding:0;text-decoration-color:#000001;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <path d="m2.6427 0.72449a0.19846 0.19846 0 0 0-0.19534 0.20154v1.3229a0.19846 0.19846 0 1 0 0.39688 0v-1.3229a0.19846 0.19846 0 0 0-0.20154-0.20154z" color="#000001" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000001" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000001;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+  </g>
+</svg>

@@ -1,0 +1,177 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck rate slider column.
+  Variables:
+    group: The deck group.
+-->
+<Template>
+  <WidgetGroup>
+    <!-- TODO Adjust padding / alignment when we add official support for
+         rate ranges >= 100% so range label don't overlap the slider. -->
+    <ObjectName>DeckRateSliderColumn</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>TempoControlButtons</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <ObjectName>RateTempButtons</ObjectName>
+            <Children>
+              <Template src="skin:left_right_2state_button.xml">
+                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                <SetVariable name="ObjectName">DeckSync</SetVariable>
+                <SetVariable name="MinimumSize">35,18</SetVariable>
+                <SetVariable name="MaximumSize">35,18</SetVariable>
+                <!-- <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable> -->
+                <SetVariable name="state_0_text">Sync</SetVariable>
+                <SetVariable name="state_1_text">Sync</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
+              </Template>
+              <Template src="skin:left_3state_button.xml">
+                <SetVariable name="TooltipId">sync_leader</SetVariable>
+                <SetVariable name="ObjectName">SyncLeader</SetVariable>
+                <SetVariable name="MinimumSize">15,18</SetVariable>
+                <SetVariable name="MaximumSize">15,18</SetVariable>
+                <SetVariable name="SizePolicy">f,f</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,sync_leader</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>RateTempButtons</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_right_1state_button.xml">
+                <SetVariable name="ObjectName">TempRateDown</SetVariable>
+                <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                <SetVariable name="MinimumSize">20,20</SetVariable>
+                <SetVariable name="MaximumSize">20,20</SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_down</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_down_small</SetVariable>
+              </Template>
+
+              <Template src="skin:left_right_1state_button.xml">
+                <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+                <SetVariable name="ObjectName">TempRateUp</SetVariable>
+                <SetVariable name="MinimumSize">20,20</SetVariable>
+                <SetVariable name="MaximumSize">20,20</SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_up</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_up_small</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>RateDisplay<Variable name="i"/></ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <NumberRate>
+            <TooltipId>rate_display</TooltipId>
+            <Channel>
+                <Variable name="i"/>
+            </Channel>
+            <NumberOfDigits>2</NumberOfDigits>
+          </NumberRate>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Rate slider + range displays -->
+        <Layout>stacked</Layout>
+        <SizePolicy>max,me</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SliderComposed>
+                <TooltipId>rate</TooltipId>
+                <Size>50f,-1me</Size>
+                <MaximumSize>40,200</MaximumSize>
+                <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                </Connection>
+              </SliderComposed>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Pitch range indicators: prefix / spacer / range number -->
+          <WidgetGroup>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Size>50me,-1me</Size>
+            <Children>
+              <WidgetGroup>
+                <SizePolicy>me,max</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <!-- Top range limit + prefix -->
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopPrefix</ObjectName>
+                    <Channel><Variable name="i"/></Channel>
+                    <Position>Top</Position>
+                    <Display>prefix</Display>
+                  </RateRange>
+                  <Template src="skin:spacer_h.xml"/>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopRate</ObjectName>
+                    <Channel><Variable name="i"/></Channel>
+                    <Position>Top</Position>
+                    <Display>range</Display>
+                  </RateRange>
+                </Children>
+              </WidgetGroup><!-- Pitch range indicators -->
+
+              <Template src="skin:spacer_v.xml"/>
+
+              <WidgetGroup>
+                <SizePolicy>me,max</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <!-- Bottom range limit + prefix -->
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomPrefix</ObjectName>
+                    <Channel><Variable name="i" /></Channel>
+                    <Position>Bottom</Position>
+                    <Align>Bottom</Align>
+                    <Display>prefix</Display>
+                  </RateRange>
+                  <Template src="skin:spacer_h.xml"/>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomRate</ObjectName>
+                    <Channel><Variable name="i" /></Channel>
+                    <Align>Bottom</Align>
+                    <Display>range</Display>
+                  </RateRange>
+                </Children>
+              </WidgetGroup><!-- Pitch range indicators -->
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

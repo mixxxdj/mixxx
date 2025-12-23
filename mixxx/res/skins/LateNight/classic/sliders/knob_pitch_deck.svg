@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="40"
+   height="17"
+   version="1.1"
+   id="svg24">
+  <metadata
+     id="metadata30">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs28" />
+  <path
+     id="path2-3"
+     d="m 3.7942,15.14832 c 0.60561,0.57244 1.4882,0.85239 2.062,0.85238 L 35.5134,16 c 1.4154,3.5e-4 2.7757,-1.0248 2.9852,-2.6991 C 38.50965,15.438 38.07311,17 36.168,17 H 6.3568 C 5.2686,17 4.0076,16.37026 3.7943,15.1483 Z"
+     style="color:#000000;opacity:0.15" />
+  <path
+     id="path4-6"
+     d="m 3.2942,14.18332 c 0.69268,0.64195 1.4882,0.81723 2.062,0.81722 l 29.5552,-7e-4 c 2.1018,-5e-5 3.1018,-1.6525 3.1018,-2.9996 v -5 c 0,-0.57381 -0.1985,-1.2921 -0.58032,-1.7777 0.86256,0.52578 1.0808,1.6891 1.0808,2.7773 v 5 c 0,1.662 -1.338,3 -3,3 H 5.85648 c -1.0882,0 -2.5339,-0.85452 -2.5625,-1.8165 z"
+     style="color:#000000;opacity:0.5" />
+  <path
+     id="path6-7"
+     d="m 2.3562,7.00102 v 5 c 0,1.662 1.338,3 3,3 h 29.6572 c 1.662,0 3,-1.338 3,-3 v -5 c 0,-1.662 -1.338,-3 -3,-3 H 5.3562 c -1.662,0 -3,1.338 -3,3 z"
+     style="color:#000000;opacity:0.8" />
+  <path
+     id="path8-5"
+     d="m 2,6.00072 c 0,-1.662 1.338,-3 3,-3 l 30.0002,-7.5e-5 c 0.831,-2.1e-6 1.5828,0.33275 2.125,0.875 l -1.125,1.125 -32.0002,7.0001 -1.125,1.125 C 2.33275,12.583495 2,11.831745 2,11.000745 Z"
+     style="color:#000000;fill:#444444" />
+  <path
+     id="path10-3"
+     d="m 2.875,13.12532 1.125,-1.125 32.0002,-7.0001 1.125,-1.125 c 0.54225,0.54225 0.875,1.294 0.875,2.125 v 5 c 0,1.662 -1.338,3 -3,3 L 5,14.000295 c -0.831,2e-6 -1.5828,-0.33275 -2.125,-0.875 z"
+     style="color:#000000;fill:#1a1a1a" />
+  <path
+     id="path12-5"
+     d="m 3,6.00072 v 5 c 0,1.108 0.892,2 2,2 l 30.0002,-7.5e-5 c 1.108,-3e-6 2,-0.892 2,-2 v -5 c 0,-1.108 -0.892,-2 -2,-2 L 5,4.00072 c -1.108,2.8e-6 -2,0.892 -2,2 z"
+     style="color:#000000;fill:#262626;fill-opacity:1" />
+  <path
+     id="path14-6"
+     d="m 3,8.000075 v 1 L 37.0002,9 V 8 Z"
+     style="color:#000000;fill:#b40000;fill-opacity:1" />
+  <path
+     id="path18-9"
+     d="m 3,9.000075 v 1 L 37.0002,10 V 9 Z"
+     style="color:#000000;fill:#ea0000" />
+  <path
+     id="path20"
+     d="m 3,6.999555 v 1 l 34.0002,-7.5e-5 v -1 z"
+     style="color:#000000;fill:#191919;fill-opacity:1" />
+</svg>

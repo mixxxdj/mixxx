@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset mixxxVersion="2.0.0+" schemaVersion="1">
+    <info>
+        <name>MIDI for light</name>
+        <author>Michael Stahl / DG3NEC</author>
+        <description>MIDI-output for light control</description>
+        <forums>https://mixxx.discourse.group/t/midi-for-light/15513</forums>
+        <wiki>http://mixxx.org/wiki/doku.php/midi_for_light</wiki>
+    </info>
+    <settings>
+        <group label="General">
+            <row orientation="vertical">
+                <option
+                    variable="midi_channel"
+                    type="integer"
+                    min="1"
+                    max="16"
+                    default="1"
+                    label="Midi Channel">
+                </option>
+            </row>
+        </group>
+        <group label="BPM and Timecode">
+            <row orientation="vertical">
+                <option
+                    variable="enable_bpm"
+                    type="boolean"
+                    default="true"
+                    label="Enable BPM">
+                    <description>
+                        Output the velocity of (BPM - 50) on the note E (52 / 0x34)
+                    </description>
+                </option>
+                <option
+                    variable="enable_beat"
+                    type="boolean"
+                    default="true"
+                    label="Enable Beat">
+                    <description>
+                        Output the Beat of the Current Deck to D (50 / 0x32)
+                    </description>
+                </option>
+                <option
+                    variable="enable_mtc_timecode"
+                    type="boolean"
+                    default="true"
+                    label="Enable MTC Timecode">
+                    <description>
+                        Output MTC Timecode of the current Deck as Fullframe messages in 25 frame format
+                    </description>
+                </option>
+                <option
+                    variable="deck_ending_time"
+                    type="integer"
+                    min="0"
+                    max="60"
+                    default="15"
+                    label="Deck Ending Time">
+                    <description>
+                        Set a Time (in Seconds) in which the playing Track is considered to be ending
+                    </description>
+                </option>
+                <option
+                    variable="deck_ending_priority_factor"
+                    type="real"
+                    precision="2"
+                    min="0.0"
+                    max="1.0"
+                    step="0.01"
+                    default="0.9"
+                    label="Priority Factor for ending Decks">
+                    <description>
+                        Decrease the Priority of the ending Track by this Factor
+                    </description>
+                </option>
+            </row>
+        </group>
+        <group label="VU Meter">
+            <row orientation="vertical">
+                <group label="Mono">
+                    <option
+                        variable="enable_vu_mono_current"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU mono current">
+                        <description>
+                            Output VU mono current to E (64 / 0x40)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_mono_average_min"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU mono average">
+                        <description>
+                            Output VU mono average min to F (65 / 0x41)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_mono_average_mid"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU mono average mid">
+                        <description>
+                            Output VU mono average mid to F# (66 / 0x42)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_mono_average_max"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU mono average max">
+                        <description>
+                            Output VU mono average max to G (67 / 0x43)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_mono_average_fit"
+                        type="boolean"
+                        default="true"
+                        label="Enable VU mono average">
+                        <description>
+                            Output VU mono average fit to G# (68 / 0x44)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_mono_current_meter"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU mono current meter">
+                        <description>
+                            Output VU mono current meter to A (69 / 0x45) until C (72 / 0x48)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_mono_average_meter"
+                        type="boolean"
+                        default="true"
+                        label="Enable VU mono average meter">
+                        <description>
+                            Output VU mono average meter to A (73 / 0x49) until C (76 / 0x4c)
+                        </description>
+                    </option>
+                </group>
+                <group label="Left">
+                    <option
+                        variable="enable_vu_left_current"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU left current">
+                        <description>
+                            Output VU left current to G# (80 / 0x50)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_left_average_min"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU left average min">
+                        <description>
+                            Output VU left average min to A (81 / 0x51)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_left_average_mid"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU left average mid">
+                        <description>
+                            Output VU left average mid to A# (82 / 0x52)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_left_average_max"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU left average max">
+                        <description>
+                            Output VU left average max to B (83 / 0x53)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_left_average_fit"
+                        type="boolean"
+                        default="true"
+                        label="Enable VU left average fit">
+                        <description>
+                            Output VU left average fit to C (84 / 0x54)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_left_current_meter"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU left current meter">
+                        <description>
+                            Output VU left current meter to C# (85 / 0x55) until E (88 / 0x58)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_left_average_meter"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU left average meter">
+                        <description>
+                            Output VU left average meter to F (89 / 0x59) until G# (92 / 0x5c)
+                        </description>
+                    </option>
+                </group>
+                <group label="Right">
+                    <option
+                        variable="enable_vu_right_current"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU right current">
+                        <description>
+                            Output VU right current to C (96 / 0x60)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_right_average_min"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU right average min">
+                        <description>
+                            Output VU right average min to C# (97 / 0x61)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_right_average_mid"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU right average mid">
+                        <description>
+                            Output VU right average mid to D (98 / 0x62)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_right_average_max"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU right average max">
+                        <description>
+                            Output VU right average max to D# (99 / 0x63)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_right_average_fit"
+                        type="boolean"
+                        default="true"
+                        label="Enable VU right average fit">
+                        <description>
+                            Output VU right average fit to E (100 / 0x64)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_right_current_meter"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU right current meter">
+                        <description>
+                            Output VU right current meter to F (101 / 0x65) until G# (104 / 0x68)
+                        </description>
+                    </option>
+                    <option
+                        variable="enable_vu_right_average_meter"
+                        type="boolean"
+                        default="false"
+                        label="Enable VU right average meter">
+                        <description>
+                            Output VU right average meter to A (105 / 0x69) until C (108 / 0x6c)
+                        </description>
+                    </option>
+                </group>
+            </row>
+        </group>
+    </settings>
+    <controller id="midi_for_light Control">
+        <scriptfiles>
+            <file filename="Midi_for_light-scripts.js" functionprefix="midi_for_light"/>
+        </scriptfiles>
+
+        <controls>
+        </controls>
+
+        <outputs>
+        </outputs>
+    </controller>
+</MixxxMIDIPreset>

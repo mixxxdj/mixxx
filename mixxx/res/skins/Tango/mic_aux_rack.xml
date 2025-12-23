@@ -1,0 +1,167 @@
+<!--
+Description:
+	Container for Microphone 1-4 and Auxiliary 1-4.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MicAuxContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Microphone Mixer -->
+            <ObjectName>MicSection</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>RoundFiller25</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit.xml">
+                <SetVariable name="micLabel">1</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
+                <SetVariable name="micLabel">1</SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit.xml">
+                <SetVariable name="micLabel">2</SetVariable>
+                <SetVariable name="micNum">2</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
+                <SetVariable name="micLabel">2</SetVariable>
+                <SetVariable name="micNum">2</SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit.xml">
+                <SetVariable name="micLabel">3</SetVariable>
+                <SetVariable name="micNum">3</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
+                <SetVariable name="micLabel">3</SetVariable>
+                <SetVariable name="micNum">3</SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit.xml">
+                <SetVariable name="micLabel">4</SetVariable>
+                <SetVariable name="micNum">4</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
+                <SetVariable name="micLabel">4</SetVariable>
+                <SetVariable name="micNum">4</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- MIC Duck controls -->
+                <ObjectName>MicUnit</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <Label>
+                    <ObjectName>MicSectionIcon</ObjectName>
+                    <Size>22f,33f</Size>
+                  </Label>
+
+                  <Template src="skins:Tango/controls/button_3state_persist.xml">
+                    <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
+                    <SetVariable name="Size">42f,24f</SetVariable>
+                    <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
+                    <SetVariable name="state_0_text">DUCK</SetVariable>
+                    <SetVariable name="state_1_text">AUTO</SetVariable>
+                    <SetVariable name="state_2_text">MAN</SetVariable>
+                    <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+
+                  <Template src="skins:Tango/controls/knob_textless.xml">
+                    <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+                    <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
+                    <SetVariable name="Size">30f,30f</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="ConfigKey">duckStrength</SetVariable>
+                    <SetVariable name="Color">blue</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                </Children>
+              </WidgetGroup><!-- /MIC Duck controls -->
+
+            </Children>
+          </WidgetGroup><!-- /Microphone Mixer -->
+
+          <WidgetGroup>
+            <ObjectName>RoundFiller25</ObjectName>
+            <MaximumSize>124,-1</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Auxiliary Mixer -->
+            <ObjectName>AuxSection</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <!-- Here, we need to set vertical SizePolicy to 'me'
+                  otherwise parent container wouldn't expand with no
+                  Aux inputs configured.
+                  Don't know why this is, it seems to work everywhere else... -->
+                <Size>5f,0me</Size>
+              </WidgetGroup>
+
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit.xml">
+                <SetVariable name="auxNum">1</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
+                <SetVariable name="auxNum">1</SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit.xml">
+                <SetVariable name="auxNum">2</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
+                <SetVariable name="auxNum">2</SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit.xml">
+                <SetVariable name="auxNum">3</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
+                <SetVariable name="auxNum">3</SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit.xml">
+                <SetVariable name="auxNum">4</SetVariable>
+              </Template>
+              <Template src="skins:Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
+                <SetVariable name="auxNum">4</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>RoundFiller25</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Auxiliary Mixer -->
+
+        </Children>
+      </WidgetGroup><!-- /MicAuxContainer -->
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_microphones</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

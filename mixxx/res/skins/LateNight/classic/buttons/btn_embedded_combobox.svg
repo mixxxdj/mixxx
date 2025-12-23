@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg75"
+   version="1.1"
+   height="25"
+   width="25">
+  <metadata
+     id="metadata79">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs11">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(3e-5,-24)"
+       y2="12"
+       y1="12"
+       x2="23.5"
+       x1="0.5"
+       id="a">
+      <stop
+         id="stop2"
+         offset="0"
+         stop-opacity=".17647" />
+      <stop
+         id="stop4"
+         offset=".12672"
+         stop-opacity=".0047619" />
+      <stop
+         id="stop6"
+         offset=".54348"
+         stop-opacity="0" />
+      <stop
+         id="stop8"
+         offset="1"
+         stop-opacity=".47451" />
+    </linearGradient>
+  </defs>
+  <path
+     d="m 23.31367,1.17583 c 0.11592,0.25262 0.18555,0.52951 0.18555,0.82422 v 20 c 0,1.0994 -0.9006,1.875001 -2,1.875 L 2,23.87503 c -0.2947,0 -0.8340987,-0.07706 -1.325,-0.505481 C 0.89414067,24.465835 1.6826,25 2.4992,25 h 20 c 1.108,0 2,-0.892 2,-2 V 3 c 0,-0.81658 -0.48717,-1.5129 -1.1855,-1.8242 z"
+     id="path15"
+     style="opacity:0.8;fill:#020201" />
+  <rect
+     style="color:#000001;fill:url(#a)"
+     id="rect17"
+     ry="1.5"
+     rx="1.5"
+     height="23"
+     width="23"
+     y="-23.5"
+     x="0.50002998"
+     transform="rotate(90)" />
+  <g
+     transform="translate(0,-1)"
+     style="display:none"
+     id="g27"
+     display="none">
+    <g
+       style="display:inline"
+       id="g25"
+       display="inline">
+      <path
+         style="fill:#333334"
+         id="path21"
+         d="m 10,10 h 7 v 4 h -5 v 1 h 5 v 1 h -7 v -3 h 5 v -2 h -5 v -1" />
+      <path
+         style="fill:#dcdcdc"
+         id="path23"
+         d="m 9,9 h 7 v 4 h -5 v 1 h 5 v 1 H 9 v -3 h 5 V 10 H 9 V 9" />
+    </g>
+  </g>
+  <g
+     transform="translate(0,-1)"
+     style="display:none"
+     id="g35"
+     display="none">
+    <g
+       style="display:inline"
+       id="g33"
+       display="inline">
+      <path
+         style="fill:#333334"
+         id="path29"
+         d="m 10,10 h 7 v 6 h -7 v -1 h 5 v -1 h -2 v -1 h 2 v -2 h -5 v -1" />
+      <path
+         style="fill:#dcdcdc"
+         id="path31"
+         d="m 9,9 h 7 v 6 H 9 v -1 h 5 v -1 h -2 v -1 h 2 V 10 H 9 V 9" />
+    </g>
+  </g>
+  <g
+     transform="translate(0,-1)"
+     style="display:none"
+     id="g43"
+     display="none">
+    <g
+       style="display:inline"
+       id="g41"
+       display="inline">
+      <path
+         style="fill:#333334"
+         id="path37"
+         d="m 10,11 v 3 h 5 v 2 h 2 v -6 h -2 v 3 h -3 v -2 h -2" />
+      <path
+         style="fill:#dcdcdc"
+         id="path39"
+         d="m 9,10 v 3 h 5 v 2 h 2 V 9 h -2 v 3 H 11 V 10 H 9" />
+    </g>
+  </g>
+  <g
+     transform="translate(0,-1)"
+     style="display:none"
+     id="g51"
+     display="none">
+    <g
+       style="display:inline"
+       id="g49"
+       display="inline">
+      <path
+         style="fill:#333334"
+         id="path45"
+         d="m 17,10 h -6 v 3 h 4 v 2 h -5 v 1 h 7 v -4 h -5 v -1 h 5 v -1" />
+      <path
+         style="fill:#dcdcdc"
+         id="path47"
+         d="m 16,9 h -6 v 3 h 4 v 2 H 9 v 1 h 7 v -4 h -5 v -1 h 5 V 9" />
+    </g>
+  </g>
+  <g
+     transform="translate(0,-1)"
+     style="display:none"
+     id="g59"
+     display="none">
+    <g
+       style="display:inline"
+       id="g57"
+       display="inline">
+      <path
+         style="fill:#333334"
+         id="path53"
+         d="m 10,10 v 6 h 7 v -4 h -5 v -1 h 4 v -1 z m 2,3 h 4 v 2 h -4 z" />
+      <path
+         style="fill:#dcdcdc"
+         id="path55"
+         d="m 9,9 v 6 h 7 v -4 h -5 v -1 h 4 V 9 Z m 2,3 h 4 v 2 h -4 z" />
+    </g>
+  </g>
+  <g
+     transform="translate(0,-1)"
+     style="display:none"
+     id="g67"
+     display="none">
+    <g
+       style="display:inline"
+       id="g65"
+       display="inline">
+      <path
+         style="fill:#333334"
+         id="path61"
+         d="m 10,10 h 6 v 3 h 1 v 1 h -1 v 2 h -2 v -2 h -2 v -1 h 2 v -2 h -4 v -1" />
+      <path
+         style="fill:#dcdcdc"
+         id="path63"
+         d="m 9,9 h 6 v 3 h 1 v 1 h -1 v 2 h -2 v -2 h -2 v -1 h 2 V 10 H 9 V 9" />
+    </g>
+  </g>
+  <g
+     transform="translate(0,-1)"
+     style="display:none"
+     id="g73"
+     display="none">
+    <path
+       style="fill:#333334"
+       id="path69"
+       d="m 11,10 v 2 h -1 v 4 h 7 v -4 h -1 v -2 z m 2,1 h 2 v 1 h -2 z m -1,2 h 4 v 2 h -4 z" />
+    <path
+       style="fill:#dcdcdc"
+       id="path71"
+       d="m 10,9 v 2 H 9 v 4 h 7 V 11 H 15 V 9 Z m 2,1 h 2 v 1 h -2 z m -1,2 h 4 v 2 h -4 z" />
+  </g>
+  <path
+     d="m 2,3e-5 c -1.0994,0 -2,0.90065 -2,2 v 20 c 0,1.0994 0.90065,2 2,2 h 20 c 1.0994,0 2,-0.90065 2,-2 v -20 c 0,-1.0994 -0.90065,-2 -2,-2 z m 0.3,1 h 19.4 c 0.56265,0 1.3,0.73735 1.3,1.3 v 19.4 c 0,0.56265 -0.73735,1.3 -1.3,1.3 H 2.3 c -0.56265,0 -1.3,-0.73735 -1.3,-1.3 v -19.4 c 0,-0.56265 0.73735,-1.3 1.3,-1.3 z"
+     style="color:#000001;text-indent:0;text-transform:none;fill:#444444;fill-opacity:1"
+     id="path19" />
+</svg>

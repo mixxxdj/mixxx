@@ -1,0 +1,52 @@
+syntax = "proto2";
+
+package mixxx.track.io.key;
+
+option optimize_for = LITE_RUNTIME;
+
+enum Source {
+  ANALYZER = 0;
+  FILE_METADATA = 1;
+  USER = 2;
+}
+
+enum ChromaticKey {
+  INVALID = 0;
+  C_MAJOR = 1;
+  D_FLAT_MAJOR = 2;
+  D_MAJOR = 3;
+  E_FLAT_MAJOR = 4;
+  E_MAJOR = 5;
+  F_MAJOR = 6;
+  F_SHARP_MAJOR = 7; // Same as G_FLAT_MAJOR
+  G_MAJOR = 8;
+  A_FLAT_MAJOR = 9;
+  A_MAJOR = 10;
+  B_FLAT_MAJOR = 11;
+  B_MAJOR = 12;
+  C_MINOR = 13;
+  C_SHARP_MINOR = 14;
+  D_MINOR = 15;
+  E_FLAT_MINOR = 16; // Same as D_SHARP_MINOR
+  E_MINOR = 17;
+  F_MINOR = 18;
+  F_SHARP_MINOR = 19;
+  G_MINOR = 20;
+  G_SHARP_MINOR = 21;
+  A_MINOR = 22;
+  B_FLAT_MINOR = 23;
+  B_MINOR = 24;
+};
+
+message KeyMap {
+  optional ChromaticKey global_key = 1 [ default = INVALID ];
+  optional string global_key_text = 2;
+
+  message KeyChange {
+    optional int32 frame_position = 1;
+    optional ChromaticKey key = 2;
+  }
+  repeated KeyChange key_change = 3;
+
+  optional Source source = 4 [ default = ANALYZER ];
+}

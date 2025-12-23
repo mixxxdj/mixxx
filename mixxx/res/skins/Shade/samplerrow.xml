@@ -1,0 +1,271 @@
+<Template>
+	<WidgetGroup>
+	  <SizePolicy>me,f</SizePolicy>
+	  <Layout>horizontal</Layout>
+	  <!-- I don't now why this works but a WidgetGroup wrapper around a
+		 WidgetStack with a 'fixed' size policy makes the group track the
+		 minimum size of the current stack widget. -->
+	  <Children>
+		<WidgetGroup>
+		  <Layout>horizontal</Layout>
+		  <Children>
+		<WidgetGroup>
+		  <Layout>horizontal</Layout>
+		  <Children>
+			<WidgetGroup>
+				<ObjectName>SamplerLeftBorder</ObjectName>
+				<Size>3f,0e</Size>
+			</WidgetGroup>
+			<WidgetGroup>
+				<Size>26f,43f</Size>
+				<Layout>horizontal</Layout>
+				<Children>
+					<WidgetGroup>
+						<ObjectName>EffectLeftBorder</ObjectName>
+						<Size>5f,40f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+					<WidgetGroup>
+						<Size>0e,40f</Size>
+						<BackPath>style/style_bg_looping.png</BackPath>
+						<Layout>horizontal</Layout>
+						<Children>
+							<PushButton>
+								<TooltipId>expand_samplers</TooltipId>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>skin:/btn/btn_big_plus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_plus.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>skin:/btn/btn_big_minus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_minus.png</Unpressed>
+								</State>
+								<Pos>0,0</Pos>
+								<Connection>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>5f,40f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>3f,40f</Size>
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
+		    <Template src="skin:samplersmall.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum1"/></SetVariable>
+		    </Template>
+		    <Template src="skin:samplersmall.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum2"/></SetVariable>
+		    </Template>
+		    <Template src="skin:samplersmall.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum3"/></SetVariable>
+		    </Template>
+		    <Template src="skin:samplersmall.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum4"/></SetVariable>
+		    </Template>
+			<WidgetGroup>
+				<Size>26f,43f</Size>
+				<Layout>horizontal</Layout>
+				<Children>
+					<WidgetGroup>
+						<ObjectName>EffectLeftBorder</ObjectName>
+						<Size>5f,40f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+					<WidgetGroup>
+						<Size>0e,40f</Size>
+						<BackPath>style/style_bg_looping.png</BackPath>
+						<Children>
+							<PushButton>
+								<TooltipId>LoadSamplerBank</TooltipId>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>skin:/btn/btn_load.png</Pressed>
+									<Unpressed>skin:/btn/btn_load.png</Unpressed>
+								</State>
+								<Pos>0,6</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>SaveSamplerBank</TooltipId>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>skin:/btn/btn_save.png</Pressed>
+									<Unpressed>skin:/btn/btn_save.png</Unpressed>
+								</State>
+								<Pos>0,20</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>5f,40f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>3f,40f</Size>
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
+		  </Children>
+		  <Connection>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
+		    <BindProperty>visible</BindProperty>
+			 <Transform>
+			   <Not/>
+			 </Transform>
+		  </Connection>
+		</WidgetGroup>
+
+		<WidgetGroup>
+		  <Layout>horizontal</Layout>
+		  <Children>
+			<WidgetGroup>
+				<ObjectName>SamplerLeftBorder</ObjectName>
+				<Size>3f,0e</Size>
+			</WidgetGroup>
+			<WidgetGroup>
+				<Size>26f,95f</Size>
+				<Layout>horizontal</Layout>
+				<Children>
+
+					<WidgetGroup>
+						<ObjectName>SamplerLeftBorder</ObjectName>
+						<Size>5f,92f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+
+					<WidgetGroup>
+						<Size>0e,92f</Size>
+						<BackPath>style/style_bg_sampler_right.png</BackPath>
+						<Children>
+							<PushButton>
+								<TooltipId>expand_samplers</TooltipId>
+								<NumberStates>2</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>skin:/btn/btn_big_plus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_plus.png</Unpressed>
+								</State>
+								<State>
+									<Number>1</Number>
+									<Pressed>skin:/btn/btn_big_minus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_minus.png</Unpressed>
+								</State>
+								<Pos>0,6</Pos>
+								<Connection>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>5f,92f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>3f,40f</Size>
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
+		    <Template src="skin:sampler.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum1"/></SetVariable>
+		    </Template>
+		    <Template src="skin:sampler.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum2"/></SetVariable>
+		    </Template>
+		    <Template src="skin:sampler.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum3"/></SetVariable>
+		    </Template>
+		    <Template src="skin:sampler.xml">
+		      <SetVariable name="samplernum"><Variable name="samplernum4"/></SetVariable>
+		    </Template>
+			<WidgetGroup>
+				<Size>26f,95f</Size>
+				<Layout>horizontal</Layout>
+				<Children>
+
+					<WidgetGroup>
+						<ObjectName>SamplerLeftBorder</ObjectName>
+						<Size>5f,92f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+
+					<WidgetGroup>
+						<Size>0e,92f</Size>
+						<BackPath>style/style_bg_sampler_right.png</BackPath>
+						<Children>
+							<PushButton>
+								<TooltipId>LoadSamplerBank</TooltipId>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>skin:/btn/btn_load.png</Pressed>
+									<Unpressed>skin:/btn/btn_load.png</Unpressed>
+								</State>
+								<Pos>0,6</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+							<PushButton>
+								<TooltipId>SaveSamplerBank</TooltipId>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>skin:/btn/btn_save.png</Pressed>
+									<Unpressed>skin:/btn/btn_save.png</Unpressed>
+								</State>
+								<Pos>0,20</Pos>
+								<Connection>
+									<ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+								</Connection>
+							</PushButton>
+						</Children>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>5f,92f</Size>
+						<BackPath>style/style_bg_deck_border.png</BackPath>
+					</WidgetGroup>
+					<WidgetGroup>
+						<ObjectName>EffectRightBorder</ObjectName>
+						<Size>3f,40f</Size>
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
+		  </Children>
+		  <Connection>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
+		    <BindProperty>visible</BindProperty>
+		  </Connection>
+		</WidgetGroup>
+		  </Children>
+		  <Connection>
+		    <ConfigKey>[Skin],show_samplers</ConfigKey>
+		    <BindProperty>visible</BindProperty>
+		  </Connection>
+		</WidgetGroup>
+	  </Children>
+	</WidgetGroup>
+</Template>

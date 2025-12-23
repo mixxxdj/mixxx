@@ -1,0 +1,88 @@
+<Template>
+  <SetVariable name="BtnType"></SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>max,f</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>f,f</SizePolicy>
+        <Children>
+          <!-- increase margin -->
+          <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>VinylControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,f</SizePolicy>
+            <Children>
+              <!-- Transparent 2-state toggle + 4-state status background -->
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>40f,20f</Size>
+                <Children>
+                  <Template src="skins:LateNight/controls/button_2state.xml">
+                    <SetVariable name="TooltipId">vinylcontrol_enabled_status</SetVariable>
+                    <SetVariable name="ObjectName">Blank</SetVariable>
+                    <SetVariable name="Size">40f,20f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_enabled</SetVariable>
+                  </Template>
+                  <!-- &#8202; is a hack to push text labels to the left or right
+                       because the kerning of some letters/numbers destroys the desired
+                       effect of center 'Align' and 'text-alignment' -->
+                  <Template src="skins:LateNight/controls/button_4state_display.xml">
+                    <SetVariable name="ObjectName">VinylStatus</SetVariable>
+                    <SetVariable name="Size">40f,20f</SetVariable>
+                    <SetVariable name="state_0_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="state_1_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="state_2_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="state_3_text">&#8202;VINYL&#8202;</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,vinylcontrol_status</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+
+              <Template src="skins:LateNight/controls/button_3state_persist.xml">
+                <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
+                <SetVariable name="ObjectName">VinylModeButton</SetVariable>
+                <SetVariable name="Size">46f,20f</SetVariable>
+                <SetVariable name="state_0_text">ABS</SetVariable>
+                <SetVariable name="state_1_text">REL</SetVariable>
+                <SetVariable name="state_2_text">&#8202;CONST&#8202;</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_mode</SetVariable>
+              </Template>
+
+              <Template src="skins:LateNight/controls/button_3state_persist.xml">
+                <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
+                <SetVariable name="ObjectName">VinylCueButton</SetVariable>
+                <SetVariable name="Size">32f,20f</SetVariable>
+                <SetVariable name="state_0_text">&#8202;CUE</SetVariable>
+                <SetVariable name="state_1_text">&#8202;CUE</SetVariable>
+                <SetVariable name="state_2_text">&#8202;HOT</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,vinylcontrol_cueing</SetVariable>
+              </Template>
+
+              <Template src="skins:LateNight/controls/button_2state.xml">
+                <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
+                <SetVariable name="ObjectName">PassthroughButton</SetVariable>
+                <SetVariable name="Size">35f,20f</SetVariable>
+                <SetVariable name="state_0_text">&#8202;PASS&#8202;</SetVariable>
+                <SetVariable name="state_1_text">&#8202;PASS&#8202;</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,passthrough</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_vinylcontrol</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

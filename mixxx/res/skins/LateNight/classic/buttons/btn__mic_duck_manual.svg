@@ -1,0 +1,7 @@
+<svg width="80" height="44" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 22">
+		<g transform="translate(-2)" fill="#0e0e0e">
+				<path d="m20 7v7h2v-3h3v3h2v-7zm2 1h3v2h-3z"/>
+				<path d="m9 7v7h2v-6h3v6h2v-6h2v6h1v-7h-5z"/>
+				<path d="m29 7v7h2v-6h2v6h2v-7z"/>
+		</g>
+</svg>

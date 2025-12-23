@@ -1,0 +1,62 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    If no Mic sound device is set up show just the label and 'Add' button.
+  Variables:
+    i: The Auxiliary input number (1-indexed)
+-->
+
+<Template>
+  <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
+  <!-- If no Mic sound device is set up show just the label
+      and 'Add' button -->
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <MaximumSize>50,</MaximumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MicAuxContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MicAuxLabelContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>MicAuxLabel</ObjectName>
+                <Text>Aux <Variable name="i"/></Text>
+              </Label>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:left_1state_button.xml">
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,main_mix</SetVariable>
+                <SetVariable name="TooltipId">configure_input</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- MicAuxContainer -->
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

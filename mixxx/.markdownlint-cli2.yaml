@@ -1,0 +1,38 @@
+#
+# An example .markdownlint-cli2.yaml file
+#
+
+# Disable some built-in rules
+config:
+  default: true
+
+  # The same headline in different nested sections is okay (and necessary for
+  # CHANGELOG.md).
+  no-duplicate-heading:
+    siblings_only: true
+
+  # We use ordered lists to make stuff easier to read in a text editor.
+  ol-prefix:
+    style: ordered
+
+  # Not wrapping long lines makes diffs easier to read, especially for prose.
+  # Instead, we should follow the "one sentence per line" pattern.
+  line-length: false
+
+  # Dollar signs are useful to indicate shell commands/type and help
+  # distinguishing wrapped lines from new commands.
+  commands-show-output: false
+
+  # Indented code blocks are easier to read in a text editor, but don't allow
+  # specifying a language for syntax highlighting. Therefore both indented and
+  # fenced code block should be allowed depending on the use case.
+  code-block-style: false
+
+# Fix any fixable errors
+fix: true
+
+# Disable inline config comments
+noInlineConfig: true
+
+# Disable progress on stdout (only valid at root)
+noProgress: true

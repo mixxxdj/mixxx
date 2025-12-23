@@ -1,0 +1,79 @@
+From 6e70bbe2678a2272000c7784e5dffa8b040db5c2 Mon Sep 17 00:00:00 2001
+From: Owen Williams <owilliams@mixxx.org>
+Date: Sun, 2 Jan 2022 02:06:28 +0100
+Subject: [PATCH 3/5] Use my the "safe" values I found work better
+
+---
+ timecoder.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/timecoder.c b/timecoder.c
+index f41e378..57c4dbb 100755
+--- a/timecoder.c
++++ b/timecoder.c
+@@ -61,7 +61,7 @@ static struct timecode_def timecodes[] = {
+         .seed = 0x59017,
+         .taps = 0x361e4,
+         .length = 712000,
+-        .safe = 707000,
++        .safe = 625000,
+     },
+     {
+         .name = "serato_2b",
+@@ -71,7 +71,7 @@ static struct timecode_def timecodes[] = {
+         .seed = 0x8f3c6,
+         .taps = 0x4f0d8, /* reverse of side A */
+         .length = 922000,
+-        .safe = 917000,
++        .safe = 908000,
+     },
+     {
+         .name = "serato_cd",
+@@ -81,7 +81,7 @@ static struct timecode_def timecodes[] = {
+         .seed = 0xd8b40,
+         .taps = 0x34d54,
+         .length = 950000,
+-        .safe = 940000,
++        .safe = 890000,
+     },
+     {
+         .name = "traktor_a",
+@@ -92,7 +92,7 @@ static struct timecode_def timecodes[] = {
+         .seed = 0x134503,
+         .taps = 0x041040,
+         .length = 1500000,
+-        .safe = 1480000,
++        .safe = 605000,
+     },
+     {
+         .name = "traktor_b",
+@@ -103,7 +103,7 @@ static struct timecode_def timecodes[] = {
+         .seed = 0x32066c,
+         .taps = 0x041040, /* same as side A */
+         .length = 2110000,
+-        .safe = 2090000,
++        .safe = 907000,
+     },
+     {
+         .name = "mixvibes_v2",
+@@ -114,7 +114,7 @@ static struct timecode_def timecodes[] = {
+         .seed = 0x22c90,
+         .taps = 0x00008,
+         .length = 950000,
+-        .safe = 923000,
++        .safe = 655000,
+     },
+     {
+         .name = "mixvibes_7inch",
+@@ -125,7 +125,7 @@ static struct timecode_def timecodes[] = {
+         .seed = 0x22c90,
+         .taps = 0x00008,
+         .length = 312000,
+-        .safe = 310000,
++        .safe = 238000,
+     },
+     {
+         .name = "pioneer_a",
+-- 
+2.25.1
+

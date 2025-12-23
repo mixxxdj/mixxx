@@ -1,0 +1,47 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob with an additional pushbutton
+    (e.g. for adding kill buttons next to a knob).
+  Variables:
+    control: The control to connect the knob to.
+    button_control: The control to connect the pushbutton to.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <Template src="skin:knob.xml"/>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <PushButton>
+            <TooltipId><Variable name="button_TooltipId"/></TooltipId>
+            <ObjectName>SmallCircleButton</ObjectName>
+            <Size>10f,10f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,<Variable name="button_control"/></ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <Label>
+            <Size>30f,11f</Size>
+            <ObjectName>KnobLabel</ObjectName>
+            <Text><Variable name="label"/></Text>
+          </Label>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

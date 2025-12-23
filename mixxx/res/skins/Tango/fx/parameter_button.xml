@@ -1,0 +1,46 @@
+<!--
+Description:
+  An effect parameter button.
+  Stacked layout of invisible button, parameter name
+  and button display underneath.
+Variables:
+  FxRack     : rack number
+  FxUnit     : unit number
+  FxRack_FxUnit_FxNum : EffectRack1_EffectUnitX_EffectY
+  FxNum         : effect number
+  parameter     : the parameter
+-->
+<Template>
+  <SetVariable name="FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <ObjectName>FxParameterButton</ObjectName>
+  <!-- working around disrespected AlignVCenter when Connection is applied. -->
+    <Size>52f,32f</Size>
+    <Children>
+      <!-- Actual button, invisible except hover border -->
+      <Template src="skins:Tango/fx/button.xml">
+        <SetVariable name="FxUnit">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
+        <SetVariable name="ObjectName">FxParameterPushButton</SetVariable>
+        <SetVariable name="Size">51f,18f</SetVariable>
+      </Template>
+
+      <EffectButtonParameterName>
+        <SizePolicy>min,me</SizePolicy>
+        <ObjectName>FxParameterButtonName</ObjectName>
+        <EffectRack><Variable name="FxRack"/></EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
+        <Alignment>center</Alignment>
+        <Elide>right</Elide>
+      </EffectButtonParameterName>
+    </Children>
+    <!-- show only if button parameter is loaded -->
+    <Connection>
+      <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,30 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An individual beatloop button.
+  Variables:
+    group: The group for the controls.
+    control_length: The length as used in control names.
+    state_X_pressed: The (optional) image file used for this state.
+    state_X_unpressed: The (optional) image file used for this state.
+    text_length: The length in text form.
+    SmallSquareButtonSize: The button size
+-->
+<Template>
+  <Template src="skin:left_right_display_2state_button.xml">
+    <SetVariable name="TooltipId">beatloop</SetVariable>
+    <SetVariable name="ObjectName">BeatLoopButton</SetVariable>
+    <SetVariable name="MinimumSize">40,46</SetVariable>
+    <SetVariable name="MaximumSize">40,46</SetVariable>
+    <SetVariable name="SizePolicy">f,f</SetVariable>
+    <SetVariable name="state_0_pressed"><Variable name="state_0_pressed"/></SetVariable>
+    <SetVariable name="state_0_unpressed"><Variable name="state_0_unpressed"/></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="text_length"/></SetVariable>
+    <SetVariable name="state_1_pressed"><Variable name="state_1_pressed"/></SetVariable>
+    <SetVariable name="state_1_unpressed"><Variable name="state_1_unpressed"/></SetVariable>
+    <SetVariable name="state_1_text"><Variable name="text_length"/></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,beatloop_<Variable name="control_length"/>_toggle</SetVariable>
+    <SetVariable name="right_connection_control"><Variable name="group"/>,beatlooproll_<Variable name="control_length"/>_activate</SetVariable>
+    <SetVariable name="display_connection_control"><Variable name="group"/>,beatloop_<Variable name="control_length"/>_enabled</SetVariable>
+  </Template>
+</Template>

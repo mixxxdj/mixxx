@@ -1,0 +1,181 @@
+<Template>
+  <SetVariable name="Group">[PreviewDeck1]</SetVariable>
+  <SetVariable name="Type">preview</SetVariable>
+
+  <!-- This wrapper makes the PreviewDeck borders work correctly -->
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>PreviewDeck</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>100,</MinimumSize>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>PreviewDeckLeftPart</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>PreviewTitleEjectRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+
+                  <WidgetGroup>
+                    <ObjectName>PreviewDeckTextBoxBox</ObjectName>
+                    <Layout>stacked</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><!-- Title + BPM -->
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <TrackProperty>
+                            <ObjectName>PreviewTitle</ObjectName>
+                            <TooltipId>text</TooltipId>
+                            <Size>0me,20f</Size>
+                            <Elide>right</Elide>
+                            <Group><Variable name="Group"/></Group>
+                            <Property>info</Property>
+                          </TrackProperty>
+                          <Number>
+                            <ObjectName>PreviewBPM</ObjectName>
+                            <TooltipId>visual_bpm</TooltipId>
+                            <Size>45f,20f</Size>
+                            <Group><Variable name="Group"/></Group>
+                            <!--CSS alignments not respected, bug #5459 -->
+                            <Alignment>right</Alignment>
+                            <Connection>
+                              <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </Number>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- "Preview" label when preview deck is empty.
+                        It's underneath so the empty title is still drag'n'drop target -->
+                      <Label>
+                        <ObjectName>PreviewLabel</ObjectName>
+                        <Size>0me,20f</Size>
+                        <Text>Preview</Text>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </Label>
+                    </Children>
+                  </WidgetGroup><!-- PreviewDeckTextBox -->
+
+                  <WidgetGroup>
+                    <ObjectName>PreviewEjectBox</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skins:LateNight/controls/button_1state.xml">
+                        <SetVariable name="TooltipId">eject</SetVariable>
+                        <SetVariable name="ObjectName">EjectButton12</SetVariable>
+                        <SetVariable name="BtnType"></SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
+                        <SetVariable name="Size">21f,18f</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- PreviewEjectBox -->
+                </Children>
+              </WidgetGroup><!-- PreviewTitleEjectRow -->
+
+              <WidgetGroup>
+                <ObjectName>PreviewPlayOverview</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>PreviewPlayBox</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skins:LateNight/controls/button_2state_right_display.xml">
+                        <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                        <SetVariable name="ObjectName">PlayPreview</SetVariable>
+                        <SetVariable name="Size">34f,34f</SetVariable>
+                        <SetVariable name="BtnType">embedded</SetVariable>
+                        <SetVariable name="BtnSize">square_big</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,play</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,start</SetVariable>
+                        <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_indicator</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- PreviewPlayBox -->
+
+                  <WidgetGroup>
+                    <ObjectName>OverviewBox</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>0me,34f</Size>
+                    <Children>
+                      <Template src="skins:LateNight/decks/overview.xml">
+                        <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizePreview"/></SetVariable>
+                        <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- OverviewBox -->
+                </Children>
+              </WidgetGroup><!-- PreviewPlayOverview -->
+            </Children>
+          </WidgetGroup><!-- PreviewDeckLeftPart -->
+
+          <WidgetGroup>
+            <ObjectName>PreviewVuMeter</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/mixer/vumeter_single.xml">
+                <SetVariable name="ChannelType">preview</SetVariable>
+                <SetVariable name="VuSize">preview</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <SliderComposed>
+            <TooltipId>pregain</TooltipId>
+            <Size>10f,54f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_previewdeck.svg</Handle>
+            <Slider>skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_previewdeck.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,pregain</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+        </Children>
+      </WidgetGroup><!-- PreviewDeck -->
+
+      <WidgetGroup>
+        <ObjectName>PreviewDeckRightSpacer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children/>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_preview_decks</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

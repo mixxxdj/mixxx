@@ -1,0 +1,132 @@
+<Template>
+  <SetVariable name="Group">[Sampler<Variable name="SamplerNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>SamplerMini</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>SamplerPlayBoxMini</ObjectName>
+        <Layout>stacked</Layout>
+        <SizePolicy>max,max</SizePolicy>
+        <Children>
+          <Template src="skins:LateNight/controls/button_2state_right_display.xml">
+            <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+            <SetVariable name="ObjectName">PlaySampler</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+            <SetVariable name="BtnSize">square_big</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="Group"/>,cue_gotoandplay</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_latched</SetVariable>
+          </Template>
+          <PushButton>
+            <ObjectName>PreviewIndicator</ObjectName>
+            <Size>34f,34f</Size>
+            <NumberStates>2</NumberStates>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Size>0me,36f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>SamplerTitleBoxMini</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <MinimumSize>,18</MinimumSize>
+            <Children>
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <ObjectName>SamplerTitleMini</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Property>titleInfo</Property>
+                <Group><Variable name="Group"/></Group>
+                <Elide>right</Elide>
+              </TrackProperty>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>SamplerBPMSettingsMini</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>,18f</Size>
+            <Children>
+              <Number>
+                <TooltipId>visual_bpm</TooltipId>
+                <ObjectName>SamplerBpmMini</ObjectName>
+                <Size>45f,18f</Size>
+                <Group><Variable name="Group"/></Group>
+                <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
+                <Alignment>left</Alignment>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Number>
+
+              <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>SamplerSettingsMini</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>43f,18f</Size>
+                <Children>
+                  <Template src="skins:LateNight/controls/button_1state.xml">
+                    <SetVariable name="TooltipId">eject</SetVariable>
+                    <SetVariable name="ObjectName">EjectButton12</SetVariable>
+                    <SetVariable name="BtnType"></SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
+                    <SetVariable name="Size">21f,18f</SetVariable>
+                  </Template>
+                  <PushButton>
+                    <TooltipId>orientation</TooltipId>
+                    <Size>21f,18f</Size>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- SamplerControlsMini -->
+
+            </Children>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- SamplerBPMSettingsMini -->
+
+        </Children>
+      </WidgetGroup><!-- SamplerMiniControls -->
+
+    </Children>
+  </WidgetGroup><!-- SamplerMini -->
+</Template>

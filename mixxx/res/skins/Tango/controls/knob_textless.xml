@@ -1,0 +1,35 @@
+<!--
+Description:
+  A simple knob, packed into a box to allow margin without to
+  distort knob graphics.
+Variables:
+  ObjectName  : name of parent container, css for individual margin
+  ToolTip     :
+  Size        : actual knob size
+  PotiMinAngle: -130°, see skin.xml
+  PotiMaxAngle: 130°, see skin.xml
+  Color       : knob's notch colour
+  group       : affected group
+  ConfigKey   : control to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Layout>vertical</Layout>
+    <Size><Variable name="Size"/></Size>
+    <Children>
+      <KnobComposed>
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
+        <Size>30f,26f</Size>
+        <Knob>skins:Tango/knobs_sliders/knob_<Variable name="Color"/>.svg</Knob>
+        <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
+        <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+        <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <KnobCenterYOffset>2.000</KnobCenterYOffset>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,<Variable name="ConfigKey"/></ConfigKey>
+        </Connection>
+      </KnobComposed>
+    </Children>
+  </WidgetGroup>
+</Template>

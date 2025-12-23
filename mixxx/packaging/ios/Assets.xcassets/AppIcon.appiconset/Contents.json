@@ -1,0 +1,12 @@
+{
+  "images": [
+    {
+      "size": "1024x1024",
+      "expected-size": "1024",
+      "filename": "1024x1024.png",
+      "idiom": "universal",
+      "platform": "ios",
+      "scale": "1x"
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The auxiliary input controls.
+  Variables:
+    i: The Auxiliary input number (1-indexed)
+-->
+
+<Template>
+  <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <MaximumSize>120,</MaximumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MicAuxContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MicAuxControls</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>MicAuxLabelContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>MicAuxLabel</ObjectName>
+                    <Text>Aux <Variable name="i"/></Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>AlignCenter</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:knob.xml">
+                        <SetVariable name="TooltipId">microphone_pregain</SetVariable>
+                        <SetVariable name="control">pregain</SetVariable>
+                        <SetVariable name="color">green</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <ObjectName>AlignCenter</ObjectName>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <Template src="skin:left_3state_button.xml">
+                            <SetVariable name="TooltipId">orientation</SetVariable>
+                            <SetVariable name="ObjectName">OrientationButtonAux</SetVariable>
+                            <SetVariable name="MinimumSize">30,14</SetVariable>
+                            <SetVariable name="MaximumSize">30,14</SetVariable>
+                            <SetVariable name="SizePolicy">f,f</SetVariable>
+                            <SetVariable name="state_0_pressed">icon/ic_orientation_aux_left.svg</SetVariable>
+                            <SetVariable name="state_0_unpressed">icon/ic_orientation_aux_left.svg</SetVariable>
+                            <SetVariable name="state_1_pressed">icon/ic_orientation_aux.svg</SetVariable>
+                            <SetVariable name="state_1_unpressed">icon/ic_orientation_aux.svg</SetVariable>
+                            <SetVariable name="state_2_pressed">icon/ic_orientation_aux_right.svg</SetVariable>
+                            <SetVariable name="state_2_unpressed">icon/ic_orientation_aux_right.svg</SetVariable>
+                            <SetVariable name="left_connection_control"><Variable name="group"/>,orientation</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <Template src="skin:vumeter.xml">
+                    <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
+                    <SetVariable name="Size">5f,42f</SetVariable>
+                    <SetVariable name="control">vu_meter</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>MicAuxButtons</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>ButtonGrid</ObjectName>
+                <SizePolicy>me,f</SizePolicy>
+                <MaximumSize>65,</MaximumSize>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">main_enable</SetVariable>
+                    <SetVariable name="ObjectName">AuxPlayButton</SetVariable>
+                    <SetVariable name="MinimumSize">32,22</SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy">me,f</SetVariable>
+                    <SetVariable name="state_0_text">Play</SetVariable>
+                    <SetVariable name="state_1_text">Play</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,main_mix</SetVariable>
+                  </Template>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="ObjectName">AuxPFLButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_1_text"></SetVariable>
+                    <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>ButtonGrid</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                    <SetVariable name="EffectUnit">1</SetVariable>
+                    <SetVariable name="SourceType">auxiliary</SetVariable>
+                  </Template>
+
+                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                    <SetVariable name="EffectUnit">2</SetVariable>
+                    <SetVariable name="SourceType">auxiliary</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                    <SetVariable name="EffectUnit">3</SetVariable>
+                    <SetVariable name="SourceType">auxiliary</SetVariable>
+                  </Template>
+
+                  <!-- Workaround for layout spacing -->
+                  <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                    <SetVariable name="EffectUnit">4</SetVariable>
+                    <SetVariable name="SourceType">auxiliary</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- MicAuxButtons -->
+
+        </Children>
+      </WidgetGroup><!-- MicAuxContainer -->
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

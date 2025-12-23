@@ -1,0 +1,55 @@
+<!--
+Description:
+  A button that displays focus state of an effect slot.
+  Left-click sets focus, right-click removes focus from all effects.
+  If focused, left-click also removes focus.
+Variables:
+  FxRack_FxUnit : [EffectRack1_EffectUnitN]
+  FxNum   : effect number
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <!-- wrapper to apply padding -->
+      <WidgetGroup>
+        <ObjectName>FxFocusButtonBox</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <TooltipId>EffectSlot_focus</TooltipId>
+            <ObjectName>FxFocusButton</ObjectName>
+            <Size>16f,16f</Size>
+            <NumberStates>2</NumberStates>
+            <RightClickIsPushButton>true</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+            </State>
+            <State>
+              <Number>1</Number>
+            </State>
+            <!-- left click = focus -->
+            <Connection>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+            </Connection>
+            <!-- right click = unfocus -->
+            <Connection>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+              <EmitOnDownPress>true</EmitOnDownPress>
+              <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,254 @@
+<!--
+Description:
+  A minimal deck container, visible when the library is maximized
+  | overview          | track title                    | Cover/ | Play/ |   loop   |
+  |                   | elapsed/remaining | key | BPM  | Spinny | Pause | indicator|
+Variables:
+  chanNum : [ChannelN]
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMini<Variable name="chanNum"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>504me,45f</Size>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckContainerMini</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>i,40f</Size>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>30f,40f</Size>
+            <Children>
+
+              <CueButton>
+                <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+                <ObjectName>CueButton</ObjectName>
+                <Size>30f,19f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>true</RightClickIsPushButton>
+                <Group><Variable name="group"/></Group>
+                <State>
+                  <Number>0</Number>
+                  <Text>Q</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>Q</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_indicator</ConfigKey>
+                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                </Connection>
+              </CueButton>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>stacked</Layout>
+                <Size>30f,40f</Size>
+                <Children>
+                  <!-- Play -->
+                  <Template src="skins:Tango/controls/button_play_2state_right_display.xml">
+                    <SetVariable name="ObjectName">PlayCue</SetVariable>
+                    <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                    <SetVariable name="Size">30f,20f</SetVariable>
+                    <SetVariable name="state_0_icon">play_deck_mini.svg</SetVariable>
+                    <SetVariable name="state_1_icon">pause_deck_mini.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_set</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
+                  </Template>
+                  <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
+                  <Template src="skins:Tango/controls/button_2state.xml">
+                    <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+                    <SetVariable name="Size">30f,20f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                  </Template>
+                  <!-- Play indicator, blinks depending on Cue mode -->
+                  <Template src="skins:Tango/controls/button_2state.xml">
+                    <SetVariable name="ObjectName">PlayIndicator</SetVariable>
+                    <SetVariable name="Size">30f,20f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Size>1f,1min</Size>
+            <Connection>
+              <ConfigKey>[Tango],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <Template src="skins:Tango/decks/loop_indicator.xml"/>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>40,40</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>DeckMini_TitlePlayPosKeyBPM</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>200,40</MinimumSize>
+            <MaximumSize>280,40</MaximumSize>
+            <Children>
+
+              <WidgetGroup><!-- Time / Title -->
+                <Layout>horizontal</Layout>
+                <Size>-1me,20f</Size>
+                <Children>
+                  <NumberPos>
+                    <TooltipId>track_time</TooltipId>
+                    <ObjectName>PlayPositionMini</ObjectName>
+                    <Size>60min,20f</Size>
+                    <Alignment>left</Alignment>
+                    <Channel><Variable name="chanNum"/></Channel>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </NumberPos>
+
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <ObjectName>TrackTitleMini</ObjectName>
+                    <Size>100me,20f</Size>
+                    <Property>titleInfo</Property>
+                    <Alignment>right</Alignment>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="chanNum"/></Channel>
+                  </TrackProperty>
+                </Children>
+              </WidgetGroup><!-- Time / Title -->
+
+              <TrackWidgetGroup>
+                <Size>0me,2f</Size>
+                <Group><Variable name="group"/></Group>
+                <TrackColorAlpha>255</TrackColorAlpha>
+              </TrackWidgetGroup>
+
+              <WidgetGroup><!-- BPM / Key / by / Artist -->
+                <Layout>horizontal</Layout>
+                <Size>200min,20f</Size>
+                <Children>
+
+                  <WidgetGroup><!-- BPM display & invisible sync button -->
+                    <ObjectName>BpmMini</ObjectName>
+                    <Layout>stacked</Layout>
+                    <MinimumSize>50,20</MinimumSize>
+                    <MaximumSize>65,20</MaximumSize>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Children>
+                      <Template src="skins:Tango/controls/button_2state_right.xml">
+                        <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                        <SetVariable name="ObjectName">SyncButtonOverlayMini</SetVariable>
+                        <SetVariable name="Size">50me,20f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+                      </Template><!--    -->
+                      <Number>
+                        <ObjectName>BpmLabelMini</ObjectName>
+                        <MinimumSize>50,19</MinimumSize>
+                        <MaximumSize>65,19</MaximumSize>
+                        <SizePolicy>me,me</SizePolicy>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <NumberOfDigits>1</NumberOfDigits>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </Number>
+                    </Children>
+                  </WidgetGroup><!-- /BPM display & invisible sync button -->
+
+                  <WidgetGroup><!-- Key Display/Match -->
+                    <ObjectName>KeyDisplayMatch</ObjectName>
+                    <Layout>stacked</Layout>
+                    <SizePolicy>e,f</SizePolicy>
+                    <MinimumSize>30,20</MinimumSize>
+                    <MaximumSize>55,20</MaximumSize>
+                    <Alignment>center</Alignment>
+                    <Children>
+                      <!-- KeyMatch, transparent -->
+                      <Template src="skins:Tango/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+                        <SetVariable name="ObjectName">KeyMatchMini</SetVariable>
+                        <SetVariable name="Size">30me,20f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
+                      </Template>
+
+                      <Key><!-- Actual Key display -->
+                        <TooltipId>visual_key</TooltipId>
+                        <ObjectName>KeyDisplay</ObjectName>
+                        <Channel><Variable name="chanNum"/></Channel>
+                        <SizePolicy>e,f</SizePolicy>
+                        <MinimumSize>30,19</MinimumSize>
+                        <MaximumSize>55,19</MaximumSize>
+                        <Alignment>center</Alignment>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                        </Connection>
+                      </Key>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],key_display_match</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /Key Display/Match -->
+
+                  <Label>
+                    <ObjectName>TrackBy</ObjectName>
+                    <Size>22f,20f</Size>
+                    <Text>by</Text>
+                    <Alignment>center</Alignment>
+                  </Label>
+
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <ObjectName>TrackTitleMini</ObjectName>
+                    <Size>100min,20f</Size>
+                    <Property>artist</Property>
+                    <Alignment>left</Alignment>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="chanNum"/></Channel>
+                  </TrackProperty>
+
+                </Children>
+              </WidgetGroup><!-- BPM / Key / by / Artist -->
+
+            </Children>
+          </WidgetGroup>
+
+          <SingletonContainer>
+            <ObjectName>DeckOverviewSingleton<Variable name="chanNum"/></ObjectName>
+          </SingletonContainer>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

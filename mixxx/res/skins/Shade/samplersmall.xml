@@ -1,0 +1,178 @@
+<Template>
+  <WidgetGroup>
+    <Size>i,43f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
+        <Size>5f,40f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>0e,40f</Size>
+        <BackPath>style/style_bg_looping.png</BackPath>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>4f,28f</Size>
+          </WidgetGroup>
+          <PushButton>
+            <TooltipId>cue_gotoandplay_cue_default</TooltipId>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_default</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Sampler<Variable name="samplernum"/>],play</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <WidgetGroup>
+            <Size>0e,40f</Size>
+            <SizePolicy>me,max</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>0e,40f</Size>
+                <Pos>0,2</Pos>
+                <Layout>vertical</Layout>
+                <Children>
+                <TrackProperty>
+                  <Size>0e,40f</Size>
+                  <TooltipId>text</TooltipId>
+                  <Style>QLabel {
+                      font-size: 13px;
+                      font-weight: bold;
+                      background-color: transparent;
+                      color: #191F24;
+                      text-align: left;
+                      padding-left: 0px;
+                      padding-top: 2px;}
+                  </Style>
+                  <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                  <Property>titleInfo</Property>
+                  <Elide>right</Elide>
+                </TrackProperty>
+                <!-- Alternative "TITLE ONLY" display
+                <TrackProperty>
+                  <TooltipId>track_title</TooltipId>
+                  <Style>QLabel {
+                      font-size: 14px;
+                      line-height: 16px;
+                      font-weight: bold;
+                      background-color: transparent;
+                      color: #191F24;
+                      text-align: left;
+                      padding-left: 1px; }
+                  </Style>
+                  <Property>titleInfo</Property>
+                  <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                  <SizePolicy>me,max</SizePolicy>
+                  <Elide>right</Elide>
+                </TrackProperty>
+                -->
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Size>35f,40f</Size>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Number>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <Style>QLabel {
+                        font-size: 9px;
+                        font-weight: bold;
+                        background-color: transparent;
+                        color: #191F24;
+                        padding-right: 0;
+                        padding-top: 5px;}
+                    </Style>
+                    <Size>35f,40f</Size>
+                    <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                    <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
+                    <Alignment>right</Alignment>
+                    <Connection>
+                      <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
+                    </Connection>
+                  </Number>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>SamplerButtonGrid</ObjectName>
+                <Size>20f,30f</Size>
+
+                <Children>
+                  <PushButton>
+                    <TooltipId>eject</TooltipId>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_eject_sampler_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_eject_sampler.png</Unpressed>
+                    </State>
+                    <Pos>0,0</Pos>
+                    <Connection>
+                      <ConfigKey>[Sampler<Variable name="samplernum"/>],eject</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>orientation</TooltipId>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
+                    </State>
+                    <Pos>0,13</Pos>
+                    <Connection>
+                      <ConfigKey>[Sampler<Variable name="samplernum"/>],orientation</ConfigKey>
+                      <EmitOnDownPress>true</EmitOnDownPress>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>5f,40f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>3f,40f</Size>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

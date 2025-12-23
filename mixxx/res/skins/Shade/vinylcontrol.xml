@@ -1,0 +1,116 @@
+<Template>
+	<!-- VinylControl sub-widget -->
+	<WidgetGroup>
+    <BackPath>style/style_bg_vinylcontrol.png</BackPath>
+		<Size>21,82</Size>
+		<Children>
+			<PushButton>
+				<TooltipId>vinylcontrol_status</TooltipId>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_over.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_over.png</Unpressed>
+				</State>
+				<Pos>1,21</Pos>
+				<Connection>
+					<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_enabled</ConfigKey>
+				</Connection>
+			</PushButton>
+
+			<PushButton>
+				<TooltipId>vinylcontrol_status</TooltipId>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_passthrough.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_passthrough.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_passthrough_over.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_passthrough_over.png</Unpressed>
+				</State>
+				<Pos>1,1</Pos>
+				<Connection>
+					<ConfigKey>[Channel<Variable name="channum"/>],passthrough</ConfigKey>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
+			Vinyl- Status
+			// Vinyl status indicators are inside the decks WidgetGroups
+			**********************************************
+			-->
+
+			**********************************************
+			Vinyl- Control Mode
+			**********************************************
+
+			<PushButton>
+				<TooltipId>vinylcontrol_mode</TooltipId>
+				<NumberStates>3</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_abs.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_abs.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_rel.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_rel.png</Unpressed>
+				</State>
+				<State>
+					<Number>2</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_const.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_const.png</Unpressed>
+				</State>
+				<Pos>1,41</Pos>
+				<Connection>
+					<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_mode</ConfigKey>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
+			Vinyl- Cueing Mode
+			**********************************************
+			-->
+
+			<PushButton>
+				<TooltipId>vinylcontrol_cueing</TooltipId>
+				<NumberStates>3</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_cue_off.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_cue_off.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_cue_on.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_cue_on.png</Unpressed>
+				</State>
+				<State>
+					<Number>2</Number>
+					<Pressed>skin:/btn/btn_vinylcontrol_cue_hot.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_cue_hot.png</Unpressed>
+				</State>
+				<Pos>1,62</Pos>
+				<Connection>
+					<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_cueing</ConfigKey>
+				</Connection>
+			</PushButton>
+
+		</Children>
+		<Connection>
+			<ConfigKey>[Skin],show_vinylcontrol</ConfigKey>
+			<BindProperty>visible</BindProperty>
+		</Connection>
+	</WidgetGroup>
+</Template>

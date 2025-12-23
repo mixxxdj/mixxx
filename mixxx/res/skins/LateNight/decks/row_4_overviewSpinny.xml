@@ -1,0 +1,57 @@
+<Template>
+  <SetVariable name="BtnType"></SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>DeckRow_4_OverviewSpinny</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>SpinnyCoverContainer_Small</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>f,f</SizePolicy>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_small_spinny_or_cover</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- SpinnyCoverContainer_Small -->
+
+      <WidgetGroup>
+        <ObjectName>OverviewBox</ObjectName>
+        <Size>me,63me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckSettingsContainer</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup><!-- DeckRow_4_OverviewSpinny -->
+</Template>

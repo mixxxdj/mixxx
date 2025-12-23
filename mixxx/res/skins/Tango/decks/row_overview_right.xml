@@ -1,0 +1,94 @@
+<!--
+Description:
+  Container for
+  * Vinyl controls
+  * CoverArt/Spinny
+  * waveform overview
+Variables:
+  group               : [ChannelN]
+  chanNum             : channel number
+  SignalBgColor       : defined in skin.xml
+  SignalColor         :
+  SignalRGBLowColor   :
+  SignalRGBMidColor   :
+  SignalRGBHighColor  :
+  SignalBgColor_1     : for hidden scrolling waveform
+  SignalColor_1       :
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Spacer0f</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Children>
+
+          <!-- Small Cover/Spinny when explicitly set 'small' -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>50,50</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
+          </WidgetGroup><!-- Small Cover/Spinny 1 -->
+
+          <!-- Small Cover/Spinny when it's actually BIG, but Channel Mixer replaces big Cover/Spinny -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>50,50</MaximumSize>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <MaximumSize>50,50</MaximumSize>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- / Small Cover/Spinny 2 -->
+
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
+            <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+            <SetVariable name="Size">15f,50f</SetVariable>
+            <SetVariable name="ConfigKey">[Tango],vinylControlsDeck<Variable name="chanNum"/></SetVariable>
+          </Template>
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+          <Template src="skins:Tango/decks/vinyl_controls_right.xml"/>
+
+          <SingletonContainer>
+            <ObjectName>DeckOverviewSingleton<Variable name="chanNum"/></ObjectName>
+          </SingletonContainer>
+
+        </Children>
+      </WidgetGroup><!-- /Overview Row -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

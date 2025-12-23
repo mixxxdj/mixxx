@@ -1,0 +1,14 @@
+<svg width="64" height="40" version="1.1" viewBox="0 0 8.4667 5.2917" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="a" x1="9.315" x2="9.315" y1="19.048" y2="1.0256" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#80766b" offset="0"/>
+      <stop stop-color="#a89a8c" offset="1"/>
+    </linearGradient>
+    <linearGradient id="c" x1="7.6989" x2="7.6989" y1="19.048" y2="1.0256" gradientTransform="matrix(.26458 0 0 .26458 1.3333e-8 291.71)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+    <linearGradient id="b" x1="24.427" x2="24.427" y1="19.048" y2="1.0256" gradientTransform="matrix(.26458 0 0 .26458 1.3333e-8 291.71)" gradientUnits="userSpaceOnUse" xlink:href="#a"/>
+  </defs>
+  <g transform="translate(0 -291.71)" shape-rendering="auto" stroke-width=".26458">
+    <path d="m5.9118 293.31c-2.2705 0.32673-3.6547 1.1549-4.9972 2.5673l0.28731 0.27337c1.3034-1.3712 2.5649-2.1311 4.7662-2.4479zm-0.1526-0.80439 0.25667 1.9024 1.7741-1.2079z" color="#000001" color-rendering="auto" dominant-baseline="auto" fill="url(#c)" image-rendering="auto" solid-color="#000001" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000001;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <path d="m0.99994 292.99-0.057362 0.39275c0.83836 0.12216 1.4443 0.26583 2.0824 0.51268 0.15726-0.0788 0.30509-0.16655 0.4718-0.23564-0.75486-0.33443-1.4848-0.52231-2.4969-0.66979zm3.6719 1.2856c-0.16925 0.0508-0.32877 0.10309-0.48575 0.16278 0.79912 0.44672 1.3762 0.96623 2.0745 1.7101l0.2894-0.2718c-0.63114-0.67233-1.1602-1.1575-1.8781-1.601z" color="#000001" color-rendering="auto" dominant-baseline="auto" fill="url(#b)" image-rendering="auto" solid-color="#000001" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000001;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+  </g>
+</svg>

@@ -1,0 +1,285 @@
+<Template>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+  <SetVariable name="BtnSize">square</SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckRateSeparator</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children/>
+        <!-- this is sized and styled in css -->
+       </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>RateContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+
+          <!-- [BPM + rate + Tap overlay] + SyncBox -->
+          <!-- We want the BPM display/edit box to be aligned with the Sync controls.
+               Since size policies are hard to control with the stacked BPM display/edit layout,
+               we put this into a separate container. -->
+          <WidgetGroup>
+            <ObjectName>BpmTapSyncContainer</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>BpmTapContainer</ObjectName>
+                <!-- same width as total width of SyncBox children (40 + 22) -->
+                <Size>62f,42f</Size>
+                <Children>
+                  <!-- BPM + rate -->
+                  <WidgetGroup>
+                    <ObjectName>AlignCenter</ObjectName>
+                    <Pos>0,0</Pos>
+                    <Layout>vertical</Layout>
+                    <Size>62f,-1me</Size>
+                    <Children>
+                      <Number>
+                        <ObjectName>BpmText</ObjectName>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Size>62f,22f</Size>
+                        <Alignment>center</Alignment>
+                        <NumberOfDigits>2</NumberOfDigits>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </Number>
+                      <NumberRate>
+                        <TooltipId>rate_display</TooltipId>
+                        <ObjectName>RateText</ObjectName>
+                        <Alignment>center</Alignment>
+                        <Channel><Variable name="ChanNum" /></Channel>
+                        <NumberOfDigits>2</NumberOfDigits>
+                      </NumberRate>
+                    </Children>
+                  </WidgetGroup>
+                  <!-- invisible Tempo/BPM editor on top of BPM/rate displays -->
+                  <BpmEditor>
+                    <TooltipId>visual_bpm_edit</TooltipId>
+                    <Pos>0,0</Pos>
+                    <Size>62f,42f</Size>
+                    <Group><Variable name="Group"/></Group>
+                  </BpmEditor>
+                </Children>
+              </WidgetGroup><!-- BpmTapContainer -->
+
+              <WidgetGroup>
+                <ObjectName>SyncBox</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <PushButton>
+                    <TooltipId>sync_enabled</TooltipId>
+                    <ObjectName>SyncDeck</ObjectName>
+                    <Size>40f,22f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,sync_enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>sync_leader</TooltipId>
+                    <ObjectName>SyncLeader</ObjectName>
+                    <Size>22f,22f</Size>
+                    <NumberStates>3</NumberStates>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- SyncBox -->
+            </Children>
+          </WidgetGroup><!-- BpmTapSyncContainer -->
+
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>RateControls</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup><!-- Rate slider + range displays -->
+                <ObjectName>RateSliderBox</ObjectName>
+                <Layout>stacked</Layout>
+                <SizePolicy>max,me</SizePolicy>
+                <Children>
+
+                  <!-- Rate slider + center indicator -->
+                  <WidgetGroup>
+                    <Size>54f,121f</Size>
+                    <Children>
+                      <Label>
+                        <ObjectName>RateCenter</ObjectName>
+                        <Size>5f,5f</Size>
+                        <Pos>2,59</Pos>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,rate_set_default</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </Label>
+                      <SliderComposed>
+                        <ObjectName>RateSlider</ObjectName>
+                        <Size>40f,119f</Size>
+                        <Pos>5,2</Pos>
+                        <TooltipId>rate</TooltipId>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
+                        <Horizontal>false</Horizontal>
+                        <BarWidth><Variable name="BarWidth"/></BarWidth>
+                        <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
+                        <BarColor><Variable name="BarColorPitch"/></BarColor>
+                        <BarRoundCaps>true</BarRoundCaps>
+                        <BarAxisPos>20.0</BarAxisPos>
+                        <BarUnipolar>false</BarUnipolar>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup><!-- Rate slider + center indicator -->
+
+                  <WidgetGroup><!-- Rate range indicators -->
+                    <SizePolicy>min,me</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayTop<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayBottom<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup><!-- Rate range indicators -->
+                </Children>
+              </WidgetGroup><!-- Rate slider + range displays -->
+
+              <WidgetGroup><!-- RateButtons for different rate directions -->
+                <ObjectName>RateButtons</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0min,1f</Size></WidgetGroup>
+                  <WidgetGroup><!-- Up = faster -->
+                    <ObjectName>AlignLeft</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_perm_up_rate_perm_up_small</SetVariable>
+                        <SetVariable name="ObjectName">RatePermUp</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_perm_up</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_perm_up_small</SetVariable>
+                      </Template>
+
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+                        <SetVariable name="ObjectName">RateTempUp</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_temp_up</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_up_small</SetVariable>
+                      </Template>
+
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                        <SetVariable name="ObjectName">RateTempDown</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_temp_down</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_down_small</SetVariable>
+                      </Template>
+
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_perm_down_rate_perm_down_small</SetVariable>
+                        <SetVariable name="ObjectName">RatePermDown</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_perm_down</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_perm_down_small</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,rate_dir</ConfigKey>
+                      <Transform><IsEqual>1</IsEqual></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /Rate buttons for up=faster -->
+
+                  <WidgetGroup><!-- Up = slower -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_perm_down_rate_perm_down_small</SetVariable>
+                        <SetVariable name="ObjectName">RatePermDown</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_perm_down</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_perm_down_small</SetVariable>
+                      </Template>
+
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                        <SetVariable name="ObjectName">RateTempDownRev</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_temp_down</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_down_small</SetVariable>
+                      </Template>
+
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+                        <SetVariable name="ObjectName">RateTempUpRev</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_temp_up</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_temp_up_small</SetVariable>
+                      </Template>
+
+                      <Template src="skins:LateNight/controls/button_1state_right.xml">
+                        <SetVariable name="TooltipId">rate_perm_up_rate_perm_up_small</SetVariable>
+                        <SetVariable name="ObjectName">RatePermUp</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,rate_perm_up</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,rate_perm_up_small</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,rate_dir</ConfigKey>
+                      <Transform><IsEqual>-1</IsEqual></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- /Rate buttons for up=slower -->
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_rate_control_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- RateButtons for different rate directions -->
+            </Children>
+          </WidgetGroup><!-- RateControls -->
+
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- RateContainer -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

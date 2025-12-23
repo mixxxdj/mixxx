@@ -1,0 +1,101 @@
+<!--
+Description:
+	Container for Main mixer in topbar.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>MixerbarSection</ObjectName>
+    <Size>-1min,28f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>HeadphoneMixerLabel</ObjectName>
+        <Size>28f,24f</Size>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Headphone Mixer with GUI cover -->
+        <Layout>stacked</Layout>
+        <SizePolicy>max,max</SizePolicy>
+        <Children>
+          <!-- Headphone controls greyed out if no headphone device configured -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>UnconfiguredHeadphoneTopbar</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Text>No Headphone</Text>
+              </Label>
+              <Label>
+                <ObjectName>UnconfiguredHeadphoneTopbar</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Text>device configured</Text>
+              </Label>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- actual headphone controls -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>MixerbarKnob</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>headphone_gain</TooltipId>
+                    <Size>26f,22f</Size>
+                    <Knob>skins:Tango/knobs_sliders/knob_yellow.svg</Knob>
+                    <BackPath>skins:Tango/knobs_sliders/knob_bg_head.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <KnobCenterYOffset>2.000</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey>[Master],headGain</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </WidgetGroup>
+              <SliderComposed>
+                <TooltipId>headMix</TooltipId>
+                <Size>54f,24f</Size>
+                <ObjectName>MixerbarSlider</ObjectName>
+                <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/headMix_handle.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/headMix_scale.svg</Slider>
+                <Horizontal>true</Horizontal>
+                <Connection>
+                  <ConfigKey>[Master],headMix</ConfigKey>
+                </Connection>
+              </SliderComposed>
+                <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+              <Template src="skins:Tango/controls/button_2state.xml">
+                <SetVariable name="TooltipId">headSplit</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,22f</SetVariable>
+                <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+              </Template>
+                <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- /actual headphone controls -->
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Tango],main_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

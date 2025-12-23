@@ -1,0 +1,20 @@
+libshout
+--------
+
+Libshout is a library for communicating with and sending data to an
+icecast server.  It handles the socket connection, the timing of the
+data, and prevents bad data from getting to the icecast server.
+
+With just a few lines of code, a programmer can easily turn any application
+into a streaming source for an icecast server.  Libshout also allows 
+developers who want a specific feature set (database access, request taking)
+to concentrate on that feature set, instead of worrying about how server
+communication works.
+
+Please refer to the api reference and example code to start learning how to 
+use libshout in your own code.
+
+Libshout is licensed under the LGPL.  Please see the COPYING file for details.
+
+If you have any questions or comments, please visit us at 
+http://www.icecast.org or email us at team@icecast.org.

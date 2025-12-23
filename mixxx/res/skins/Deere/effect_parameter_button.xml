@@ -1,0 +1,64 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect parameter button.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+    EffectButtonParameter: the button parameter
+-->
+<Template>
+  <SetVariable name="EffectUnitGroup">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <ObjectName>EffectButtonParameter</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <EffectPushButton>
+            <MinimumSize>34,15</MinimumSize>
+            <MaximumSize>58,15</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <ObjectName>EffectButton</ObjectName>
+            <EffectUnitGroup><Variable name="EffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="Effect"/></Effect>
+            <EffectButtonParameter><Variable name="EffectButtonParameter"/></EffectButtonParameter>
+            <NumberStates>2</NumberStates>
+              <State>
+                <Number>0</Number>
+                <Text>OFF</Text>
+              </State>
+              <State>
+                <Number>1</Number>
+                <Text>ON</Text>
+              </State>
+            <Connection>
+              <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/></ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </EffectPushButton>
+
+          <EffectButtonParameterName>
+            <MinimumSize>34,15</MinimumSize>
+            <MaximumSize>58,15</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Alignment>center</Alignment>
+            <Elide>right</Elide>
+            <ObjectName>EffectButtonLabel</ObjectName>
+            <EffectRack><Variable name="EffectRack"/></EffectRack>
+            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+            <Effect><Variable name="Effect"/></Effect>
+            <EffectButtonParameter><Variable name="EffectButtonParameter"/></EffectButtonParameter>
+          </EffectButtonParameterName>
+        </Children>
+
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],button_parameter<Variable name="EffectButtonParameter"/>_loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

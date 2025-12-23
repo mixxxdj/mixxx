@@ -1,0 +1,20 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob.
+  Variables:
+    control: The control to connect to.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <Template src="skin:knob.xml"/>
+      <Label>
+        <Size>40f,11f</Size>
+        <ObjectName>KnobLabel</ObjectName>
+        <Text><Variable name="label"/></Text>
+      </Label>
+    </Children>
+  </WidgetGroup>
+</Template>

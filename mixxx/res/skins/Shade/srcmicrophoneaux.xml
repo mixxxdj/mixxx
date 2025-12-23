@@ -1,0 +1,55 @@
+<Template>
+  <WidgetGroup>
+    <Size>100e,63f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
+        <Size>5f,60f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>100e,60f</Size>
+        <Layout>horizontal</Layout>
+        <BackPath>style/style_bg_src.png</BackPath>
+        <Children>
+          <WidgetGroup>
+            <Size>93f,54f</Size>
+            <Children>
+              <Template src="skin:microphone.xml">
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Microphone<Variable name="micnum"/>],input_configured</ConfigKey>
+              <!--BindProperty>visible</BindProperty-->
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>0e,54f</Size>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>108f,54f</Size>
+            <Children>
+              <Template src="skin:auxiliary.xml">
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],input_configured</ConfigKey>
+              <!--BindProperty>visible</BindProperty-->
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>5f,60f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>3f,60f</Size>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

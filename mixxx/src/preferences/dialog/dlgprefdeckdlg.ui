@@ -1,0 +1,697 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefDeckDlg</class>
+ <widget class="QWidget" name="DlgPrefDeckDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>710</width>
+    <height>723</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Deck Preferences</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBoxDeckOptions">
+     <property name="title">
+      <string>Deck options</string>
+     </property>
+     <layout class="QGridLayout" name="GridLayout1">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <item row="5" column="0">
+       <widget class="QLabel" name="labelLoadWhenDeckPlaying">
+        <property name="text">
+         <string>Loading a track, when deck is playing</string>
+        </property>
+        <property name="buddy">
+         <cstring>comboBoxLoadWhenDeckPlaying</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCueMode">
+        <property name="text">
+         <string>Cue mode</string>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+        <property name="buddy">
+         <cstring>ComboBoxCueMode</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBoxLoadPoint"/>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxIntroStartMove">
+        <property name="toolTip">
+         <string>When the analyzer places the intro start point automatically,
+it will place it at the main cue point if the main cue point has been set previously.
+This may be helpful for upgrading to Mixxx 2.3 from earlier versions.
+
+If this option is disabled, the intro start point is automatically placed at the first sound.</string>
+        </property>
+        <property name="text">
+         <string>Set intro start to main cue when analyzing tracks</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelIntroStartMove">
+        <property name="text">
+         <string>Intro start</string>
+        </property>
+        <property name="buddy">
+         <cstring>ComboBoxCueMode</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QComboBox" name="ComboBoxCueMode">
+        <property name="toolTip">
+         <string>Mixxx mode:
+- Cue button while pause at cue point = preview
+- Cue button while pause not at cue point = set cue point
+- Cue button while playing = pause at cue point
+Mixxx mode (no blinking):
+- Same as Mixxx mode but with no blinking indicators
+Pioneer mode:
+- Same as Mixxx mode with a flashing play button
+Denon mode:
+- Cue button at cue point = preview
+- Cue button not at cue point = pause at cue point
+- Play = set cue point
+Numark mode:
+- Same as Denon mode, but without a flashing play button
+CUP mode:
+- Cue button while pause at cue point = play after release
+- Cue button while pause not at cue point = set cue point and play after release
+- Cue button while playing = go to cue point and play after release
+</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="labelCloneDeckOnLoadDoubleTap">
+        <property name="text">
+         <string>Clone deck</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxCloneDeckOnLoadDoubleTap</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelTimeDisplay">
+        <property name="text">
+         <string>Time Format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="comboBoxTimeFormat"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelLoadPoint">
+        <property name="text">
+         <string>Track load point</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelPositionDisplay">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font/>
+        </property>
+        <property name="text">
+         <string>Track time display</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+        <property name="buddy">
+         <cstring>radioButtonElapsed</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBoxLoadWhenDeckPlaying"/>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="radioButtonElapsed">
+          <property name="text">
+           <string>Elapsed</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonRemaining">
+          <property name="text">
+           <string>Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonElapsedAndRemaining">
+          <property name="text">
+           <string>Elapsed and Remaining</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTrackTime</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxCloneDeckOnLoadDoubleTap">
+        <property name="toolTip">
+         <string>Create a playing clone of the first playing deck by double-tapping a Load button on a controller or keyboard.
+You can always drag-and-drop tracks on screen to clone a deck.</string>
+        </property>
+        <property name="text">
+         <string>Double-press Load button to clone playing track</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBoxSpeedPitchOptions">
+     <property name="title">
+      <string>Speed (Tempo) and Key (Pitch) options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="GridLayoutSpeedOptions">
+        <item row="11" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxPermanentRateCoarse">
+          <property name="toolTip">
+           <string>Permanent rate change when left-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.500000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QDoubleSpinBox" name="spinBoxPermanentRateFine">
+          <property name="toolTip">
+           <string>Permanent rate change when right-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>0.050000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelSpeedPitchReset">
+          <property name="text">
+           <string>Reset on track load</string>
+          </property>
+          <property name="buddy">
+           <cstring>checkBoxResetPitch</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QRadioButton" name="radioButtonCurrentKey">
+          <property name="text">
+           <string>Current key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyLockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="10" column="1">
+         <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateFine">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Temporary rate change when right-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="labelSpeedPermanent">
+          <property name="text">
+           <string>Permanent</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1" colspan="2">
+         <widget class="QSlider" name="SliderRateRampSensitivity">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="minimum">
+           <number>100</number>
+          </property>
+          <property name="maximum">
+           <number>2500</number>
+          </property>
+          <property name="singleStep">
+           <number>50</number>
+          </property>
+          <property name="value">
+           <number>250</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="labelSpeedTemporary">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Temporary</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelSyncMode">
+          <property name="text">
+           <string>Sync mode (Dynamic tempo tracks)</string>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelKeylockMode">
+          <property name="text">
+           <string>Keylock mode</string>
+          </property>
+          <property name="buddy">
+           <cstring>radioButtonOriginalKey</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="labelSpeedRampSensitivity">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Ramping sensitivity</string>
+          </property>
+          <property name="buddy">
+           <cstring>SliderRateRampSensitivity</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="labelSpeedBendBehavior">
+          <property name="text">
+           <string>Pitch bend behavior</string>
+          </property>
+          <property name="buddy">
+           <cstring>radioButtonRateRampModeStepping</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QRadioButton" name="radioButtonOriginalKey">
+          <property name="text">
+           <string>Original key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyLockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="10" column="2">
+         <widget class="QDoubleSpinBox" name="spinBoxTemporaryRateCoarse">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Temporary rate change when left-clicking</string>
+          </property>
+          <property name="accelerated">
+           <bool>true</bool>
+          </property>
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>2</number>
+          </property>
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="value">
+           <double>4.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QCheckBox" name="checkBoxResetSpeed">
+          <property name="text">
+           <string>Speed/Tempo</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="checkBoxResetPitch">
+          <property name="text">
+           <string>Key/Pitch</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="labelSpeedAdjustment">
+          <property name="text">
+           <string>Adjustment buttons:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QRadioButton" name="radioButtonSoftLeader">
+          <property name="toolTip">
+           <string>Apply tempo changes from a soft-leading track (usually the leaving track in a transition) to the follower tracks. After the transition, the follower track will continue with the previous leader's very last tempo. Changes from explicit selected leaders are always applied.</string>
+          </property>
+          <property name="text">
+           <string>Follow soft leader's tempo</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSyncMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="9" column="2">
+         <widget class="QLabel" name="labelSpeedCoarse">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>Coarse</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+          <property name="buddy">
+           <cstring>spinBoxPermanentRateCoarse</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLabel" name="labelSpeedFine">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="text">
+           <string>Fine</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+          <property name="buddy">
+           <cstring>spinBoxPermanentRateFine</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QCheckBox" name="checkBoxInvertSpeedSlider">
+          <property name="toolTip">
+           <string>Make the speed sliders work like those on DJ turntables and CDJs where moving downward increases the speed</string>
+          </property>
+          <property name="text">
+           <string>Down increases speed</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelSpeedSliderrange">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="font">
+           <font/>
+          </property>
+          <property name="text">
+           <string>Slider range</string>
+          </property>
+          <property name="wordWrap">
+           <bool>false</bool>
+          </property>
+          <property name="buddy">
+           <cstring>ComboBoxRateRange</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="ComboBoxRateRange">
+          <property name="font">
+           <font/>
+          </property>
+          <property name="toolTip">
+           <string>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QRadioButton" name="radioButtonRateRampModeStepping">
+          <property name="text">
+           <string>Abrupt jump</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QRadioButton" name="radioButtonRateRampModeLinear">
+          <property name="toolTip">
+           <string>Smoothly adjusts deck speed when temporary change buttons are held down</string>
+          </property>
+          <property name="text">
+           <string>Smooth ramping</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSpeedBendBehavior</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelKeyunlockMode">
+          <property name="text">
+           <string>Keyunlock mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QRadioButton" name="radioButtonResetUnlockedKey">
+          <property name="text">
+           <string>Reset key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyUnlockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QRadioButton" name="radioButtonKeepUnlockedKey">
+          <property name="text">
+           <string>Keep key</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupKeyUnlockMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QRadioButton" name="radioButtonLockBpm">
+          <property name="toolTip">
+           <string>The tempo of a previous soft leader track at the beginning of the transition is kept steady. After the transition, the follower track will maintain this original tempo. This technique serves as a workaround to avoid dynamic tempo changes, as seen during the outro of rubato-style tracks. For instance, it prevents the follower track from continuing with a slowed-down tempo of the soft leader. This corresponds to the behavior before Mixxx 2.4. Changes from explicit selected leaders are always applied.</string>
+          </property>
+          <property name="text">
+           <string>Use steady tempo</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupSyncMode</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <spacer name="verticalSpacer1">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>15</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <spacer name="verticalSpacer2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>ComboBoxCueMode</tabstop>
+  <tabstop>checkBoxIntroStartMove</tabstop>
+  <tabstop>radioButtonElapsed</tabstop>
+  <tabstop>radioButtonRemaining</tabstop>
+  <tabstop>radioButtonElapsedAndRemaining</tabstop>
+  <tabstop>comboBoxTimeFormat</tabstop>
+  <tabstop>comboBoxLoadPoint</tabstop>
+  <tabstop>comboBoxLoadWhenDeckPlaying</tabstop>
+  <tabstop>checkBoxCloneDeckOnLoadDoubleTap</tabstop>
+  <tabstop>ComboBoxRateRange</tabstop>
+  <tabstop>checkBoxInvertSpeedSlider</tabstop>
+  <tabstop>checkBoxResetPitch</tabstop>
+  <tabstop>checkBoxResetSpeed</tabstop>
+  <tabstop>radioButtonSoftLeader</tabstop>
+  <tabstop>radioButtonOriginalKey</tabstop>
+  <tabstop>radioButtonCurrentKey</tabstop>
+  <tabstop>radioButtonResetUnlockedKey</tabstop>
+  <tabstop>radioButtonKeepUnlockedKey</tabstop>
+  <tabstop>radioButtonRateRampModeLinear</tabstop>
+  <tabstop>radioButtonRateRampModeStepping</tabstop>
+  <tabstop>SliderRateRampSensitivity</tabstop>
+  <tabstop>spinBoxTemporaryRateFine</tabstop>
+  <tabstop>spinBoxTemporaryRateCoarse</tabstop>
+  <tabstop>spinBoxPermanentRateFine</tabstop>
+  <tabstop>spinBoxPermanentRateCoarse</tabstop>
+ </tabstops>
+ <resources/>
+ <buttongroups>
+  <buttongroup name="buttonGroupTrackTime"/>
+  <buttongroup name="buttonGroupKeyUnlockMode"/>
+  <buttongroup name="buttonGroupKeyLockMode"/>
+  <buttongroup name="buttonGroupSpeedBendBehavior"/>
+  <buttongroup name="buttonGroupSyncMode"/>
+ </buttongroups>
+</ui>

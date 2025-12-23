@@ -1,0 +1,25 @@
+<svg width="25" height="25" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs>
+		<linearGradient id="a" x1="8.000597" x2="31.999203" y1="18.998119" y2="18.998119" gradientTransform="rotate(254.03464 -4.469143 20.360757)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#0e0e0e" offset="0"/>
+			<stop stop-color="#5d5d5d" offset="1"/>
+		</linearGradient>
+		<linearGradient id="b" x1="256.73999" x2="446.62161" y1="472.03" y2="483.05225" gradientTransform="matrix(-.0309358 -.09353841 .09280739 -.03117947 -44.769021 43.124832)" gradientUnits="userSpaceOnUse">
+			<stop stop-color="#1e1e1e" offset="0"/>
+			<stop stop-color="#3d3d3d" offset="1"/>
+		</linearGradient>
+	</defs>
+	<path d="m13.382929 1.3434613c-1.442918-.1015316-2.928676.0839128-4.3814054.5915896-5.859482 1.8916979-9.0598725 8.2514501-7.1154584 14.1308011 1.9445374 5.879724 8.2967888 9.031465 14.1107788 7.000781 5.859482-1.891697 9.061691-8.249629 7.117278-14.1289814-1.45885-4.4111423-5.398913-7.2893476-9.731193-7.5941903z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#080808" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke-width=".99999994" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+	<g transform="matrix(.76872597 .34140352 -.34140352 .76872597 3.5802739 -9.0977713)">
+		<g transform="matrix(.10676 0 0 .10676 -19.071124 -31.786292)" opacity=".49300005">
+			<path d="m270.69379 536.40673c20.01433 60.04489 85.31772 92.31846 145.17067 71.75942 60.21816-19.46338 93.09981-84.46428 73.08548-144.50917-78.29686-151.10046-253.52045-44.94758-218.25615 72.74975z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" opacity="1" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+		</g>
+		<g transform="matrix(.10746967 0 0 .10746967 -20.137858 -33.659792)" fill="#050505" opacity=".93999999">
+			<path d="m270.69379 536.40673c20.01433 60.04489 85.31772 92.31846 145.17067 71.75942 60.21816-19.46338 93.09981-84.46428 73.08548-144.50917-20.01433-60.04488-85.31957-92.31785-145.17252-71.7588-60.21816 19.46339-93.09796 84.46366-73.08363 144.50855z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#050505" image-rendering="auto" opacity="1" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+		</g>
+	</g>
+	<g transform="matrix(.84551628 0 0 .84551628 23.076731 14.858902)" stroke-width="1.18270934">
+		<path d="m-24.279204-.40785789c.321108 1.51847199.950906 2.99644599 1.903367 4.34524399 3.68078 5.486321 11.186006 6.9108739 16.6772688 3.169848 5.49160905-3.741264 6.868188-11.224396 3.057458-16.6227683-3.680781-5.4863208-11.1846678-6.9132888-16.6759288-3.1722638-4.119967 2.8068068-5.92628 7.7208059-4.962165 12.27994011z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#a)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+		<path d="m-14.410588-13.267573a10.574617 10.657914 8.0144789 1 1 3.802779 20.9553541 10.574617 10.657914 8.0144789 1 1-3.802779-20.9553541z" fill="url(#b)"/>
+	</g>
+</svg>

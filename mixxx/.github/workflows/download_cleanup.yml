@@ -1,0 +1,47 @@
+name: Clean up downloads
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: "Set up SSH Agent"
+        if: env.SSH_PRIVATE_KEY != null
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_HOST: downloads-hostgator.mixxx.org
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+          mkdir -p "${HOME}/.ssh"
+          ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
+          echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
+
+      - name: Delete obsolete files
+        if: env.SSH_AUTH_SOCK != null
+        run: |
+          mkdir empty_folder
+          echo 2.5.1 >> include_file.txt
+          echo 2.5.1/manifest.json >> include_file.txt
+          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/snapshots/"
+        env:
+          DESTDIR: public_html/downloads
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+
+      - name: Move manifest
+        if: env.SSH_AUTH_SOCK != null
+        run: |
+          ssh "${SSH_USER}@${SSH_HOST}" "
+            set -euo pipefail
+            mv ${DESTDIR}/releases/2.5.3-3-g7a940a8588/manifest.json ${DESTDIR}/releases/2.5.3/manifest.json
+            rm -rf ${DESTDIR}/releases/2.5.3-3-g7a940a8588
+          "
+        env:
+          DESTDIR: public_html/downloads
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx

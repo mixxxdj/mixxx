@@ -1,0 +1,127 @@
+<!--
+Description:
+  A deck container
+  * main deck
+    * artist/title
+    * overview
+    * track comment (if enabled)
+    * deck buttons
+  * mixer / [CoverArt/Spinny]
+  * VU meter
+Variables:
+  chanNum : [ChannelN]
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+  <Overview>
+    <TooltipId>waveform_overview</TooltipId>
+    <Style></Style>
+    <Channel><Variable name="chanNum"/></Channel>
+    <Size>180me,1me</Size>
+    <BgColor><Variable name="SignalBgColor"/></BgColor>
+    <SignalColor><Variable name="SignalColor"/></SignalColor>
+    <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+    <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+    <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+    <PlayPosColor>#FF4300</PlayPosColor>
+    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+    <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+    <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>
+    <SlipBorderTopOutlineSize><Variable name="SlipBorderTopOutlineSize"/></SlipBorderTopOutlineSize>
+    <SlipBorderBottomOutlineSize><Variable name="SlipBorderBottomOutlineSize"/></SlipBorderBottomOutlineSize>
+    <LabelTextColor>#ffffff</LabelTextColor>
+    <LabelBackgroundColor>#85000000</LabelBackgroundColor>
+    <DefaultMark>
+      <Align>bottom|right</Align>
+      <Color>#666666</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <Text> %1 </Text>
+    </DefaultMark>
+    <Mark>
+      <Control>cue_point</Control>
+      <Text>Q</Text>
+      <Align>vcenter|right</Align>
+      <Color>#FF0080</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <!-- Loop -->
+    <MarkRange>
+      <StartControl>loop_start_position</StartControl>
+      <EndControl>loop_end_position</EndControl>
+      <EnabledControl>loop_enabled</EnabledControl>
+      <Color>#00FF00</Color>
+      <Opacity>0.7</Opacity>
+      <DisabledColor>#FFFFFF</DisabledColor>
+      <DisabledOpacity>0.6</DisabledOpacity>
+    </MarkRange>
+    <Mark>
+      <Control>loop_start_position</Control>
+      <!-- A no-break space (U+00A0) is needed here, but the named entity
+           "&nbsp;" is only available in HTML, not plain XML. Hence, we have
+           to use the numeric XML CharRef instead. -->
+      <Text>[&#xA0;</Text>
+      <Align>top|left</Align>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>loop_end_position</Control>
+      <!-- A no-break space (U+00A0) is needed here (see above). -->
+      <Text>&#xA0;]</Text>
+      <Align>top|right</Align>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <!-- Intro -->
+    <MarkRange>
+      <StartControl>intro_start_position</StartControl>
+      <EndControl>intro_end_position</EndControl>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Color>#0000FF</Color>
+      <Opacity>0.6</Opacity>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>after</DurationTextLocation>
+    </MarkRange>
+    <Mark>
+      <Control>intro_start_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Align>top|right</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>intro_end_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Text>&#9698;</Text>
+      <Align>top|left</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <!-- Outro -->
+    <MarkRange>
+      <StartControl>outro_start_position</StartControl>
+      <EndControl>outro_end_position</EndControl>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Color>#0000FF</Color>
+      <Opacity>0.6</Opacity>
+      <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>before</DurationTextLocation>
+    </MarkRange>
+    <Mark>
+      <Control>outro_start_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Text>&#9699;</Text>
+      <Align>top|right</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>outro_end_position</Control>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+      <Align>top|left</Align>
+      <Color>#0000FF</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+    </Connection>
+  </Overview>
+</Template>

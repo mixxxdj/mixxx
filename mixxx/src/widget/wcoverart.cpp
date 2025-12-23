@@ -1,0 +1,308 @@
+#include "widget/wcoverart.h"
+
+#include <QStyleOption>
+#include <QStylePainter>
+
+#include "library/coverartcache.h"
+#include "library/coverartutils.h"
+#include "library/dlgcoverartfullsize.h"
+#include "mixer/basetrackplayer.h"
+#include "moc_wcoverart.cpp"
+#include "skin/legacy/skincontext.h"
+#include "track/track.h"
+#include "util/dnd.h"
+#include "util/math.h"
+#include "widget/wcoverartmenu.h"
+#include "widget/wskincolor.h"
+
+WCoverArt::WCoverArt(QWidget* parent,
+        UserSettingsPointer pConfig,
+        const QString& group,
+        BaseTrackPlayer* pPlayer)
+        : QWidget(parent),
+          WBaseWidget(this),
+          m_group(group),
+          m_pConfig(pConfig),
+          m_bEnable(true),
+          m_pMenu(new WCoverArtMenu(this)),
+          m_pPlayer(pPlayer),
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer, m_pMenu)) {
+    // Accept drops if we have a group to load tracks into.
+    setAcceptDrops(!m_group.isEmpty());
+
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &WCoverArt::slotCoverFound);
+    }
+    connect(m_pMenu, &WCoverArtMenu::coverInfoSelected, this, &WCoverArt::slotCoverInfoSelected);
+    connect(m_pMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArt::slotReloadCoverArt);
+
+    if (m_pPlayer != nullptr) {
+        connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WCoverArt::slotLoadTrack);
+        connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WCoverArt::slotLoadingTrack);
+
+        // just in case a track is already loaded
+        slotLoadTrack(m_pPlayer->getLoadedTrack());
+    }
+}
+
+WCoverArt::~WCoverArt() {
+    delete m_pMenu;
+    delete m_pDlgFullSize;
+}
+
+void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
+    Q_UNUSED(node);
+    setMouseTracking(true);
+
+    // Background color
+    QColor bgc(255,255,255);
+    QString bgColorStr;
+    if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
+        bgc = QColor(bgColorStr);
+        setAutoFillBackground(true);
+    }
+    QPalette pal = palette();
+    pal.setBrush(backgroundRole(), WSkinColor::getCorrectColor(bgc));
+
+    // Foreground color
+    QColor m_fgc(0,0,0);
+    QString fgColorStr;
+    if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
+        m_fgc = QColor(fgColorStr);
+    }
+    bgc = WSkinColor::getCorrectColor(bgc);
+    m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
+    pal.setBrush(foregroundRole(), m_fgc);
+    setPalette(pal);
+
+    QString defaultCoverStr;
+    if (context.hasNodeSelectString(node, "DefaultCover", &defaultCoverStr)) {
+        m_defaultCover = QPixmap(defaultCoverStr);
+    }
+
+    // If no default cover is specified or we failed to load it, fall back on
+    // the resource bundle default cover.
+    if (m_defaultCover.isNull()) {
+        m_defaultCover = QPixmap(CoverArtUtils::defaultCoverLocation());
+    }
+    m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
+}
+
+void WCoverArt::slotReloadCoverArt() {
+    if (!m_loadedTrack) {
+        return;
+    }
+    const auto future = guessTrackCoverInfoConcurrently(m_loadedTrack);
+    // Don't wait for the result and keep running in the background
+    Q_UNUSED(future)
+}
+
+void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
+    if (m_loadedTrack) {
+        // Will trigger slotTrackCoverArtUpdated().
+        m_loadedTrack->setCoverInfo(coverInfo);
+    }
+}
+
+void WCoverArt::slotEnable(bool enable) {
+    bool wasDisabled = !m_bEnable && enable;
+    m_bEnable = enable;
+
+    if (wasDisabled) {
+        slotLoadTrack(m_loadedTrack);
+    }
+    update();
+}
+
+void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
+    slotReset();
+}
+
+void WCoverArt::slotReset() {
+    if (m_loadedTrack) {
+        disconnect(
+                m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
+    }
+    m_loadedTrack.reset();
+    m_lastRequestedCover = CoverInfo();
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
+    update();
+}
+
+void WCoverArt::slotTrackCoverArtUpdated() {
+    if (m_loadedTrack) {
+        CoverArtCache::requestTrackCover(this, m_loadedTrack);
+    }
+}
+
+void WCoverArt::slotCoverFound(
+        const QObject* pRequester,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap) {
+    if (!m_bEnable) {
+        return;
+    }
+
+    if (pRequester == this &&
+            m_loadedTrack &&
+            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
+        m_lastRequestedCover = coverInfo;
+        m_loadedCover = pixmap;
+        m_loadedCoverScaled = scaledCoverArt(pixmap);
+        update();
+    }
+}
+
+void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
+    if (m_loadedTrack) {
+        disconnect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
+    }
+    m_lastRequestedCover = CoverInfo();
+    m_loadedCover = QPixmap();
+    m_loadedCoverScaled = QPixmap();
+    m_loadedTrack = pTrack;
+    if (m_loadedTrack) {
+        connect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
+    }
+
+    if (!m_bEnable) {
+        return;
+    }
+
+    slotTrackCoverArtUpdated();
+}
+
+QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
+    if (normal.isNull()) {
+        return QPixmap();
+    }
+    QPixmap scaled;
+    scaled = normal.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(devicePixelRatioF());
+    return scaled;
+}
+
+void WCoverArt::paintEvent(QPaintEvent* /*unused*/) {
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter painter(this);
+    painter.drawPrimitive(QStyle::PE_Widget, option);
+
+    if (!m_bEnable) {
+        return;
+    }
+
+    QPixmap toDraw = m_loadedCoverScaled;
+    if (toDraw.isNull()) {
+        toDraw = m_defaultCoverScaled;
+    }
+
+    if (!toDraw.isNull()) {
+        QSize widgetSize = size();
+        QSize pixmapSize = toDraw.size();
+
+        int x = math_max(0, (widgetSize.width() - pixmapSize.width()) / 2);
+        int y = math_max(0, (widgetSize.height() - pixmapSize.height()) / 2);
+        painter.drawPixmap(x, y, toDraw);
+    }
+}
+
+void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
+    m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
+    m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
+}
+
+void WCoverArt::contextMenuEvent(QContextMenuEvent* pEvent) {
+    pEvent->accept();
+    if (m_loadedTrack) {
+        m_pMenu->setCoverArt(m_lastRequestedCover);
+        m_pMenu->popup(pEvent->globalPos());
+    }
+}
+
+void WCoverArt::mousePressEvent(QMouseEvent* pEvent) {
+    if (!m_bEnable) {
+        return;
+    }
+
+    DragAndDropHelper::mousePressed(pEvent);
+
+    if (pEvent->buttons() == Qt::LeftButton) {
+        pEvent->accept();
+        // do nothing if left button is pressed,
+        // wait for button release
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
+    }
+}
+
+void WCoverArt::mouseReleaseEvent(QMouseEvent* pEvent) {
+    if (!m_bEnable) {
+        return;
+    }
+
+    if (pEvent->button() == Qt::LeftButton &&
+            m_loadedTrack &&
+            m_clickTimer.isActive()) { // init/close fullsize cover
+        if (m_pDlgFullSize->isVisible()) {
+            m_pDlgFullSize->close();
+        } else if (!m_loadedCover.isNull()) {
+            // Only show the fullsize cover art dialog if the current track
+            // actually has a cover.  The `init` method already shows the
+            // window and then emits a signal to load the cover, so this can't
+            // be handled by the method itself.
+            m_pDlgFullSize->init(m_loadedTrack);
+        }
+    } // else it was a long leftclick or a right click that's already been processed
+}
+
+void WCoverArt::mouseMoveEvent(QMouseEvent* pEvent) {
+    if (m_loadedTrack && DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+        DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
+    }
+}
+
+void WCoverArt::dragEnterEvent(QDragEnterEvent* pEvent) {
+    // If group is empty then we are a library cover art widget and we don't
+    // accept track drops.
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
+    } else {
+        pEvent->ignore();
+    }
+}
+
+void WCoverArt::dropEvent(QDropEvent* pEvent) {
+    // If group is empty then we are a library cover art widget and we don't
+    // accept track drops.
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
+    } else {
+        pEvent->ignore();
+    }
+}
+
+bool WCoverArt::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    }
+    return QWidget::event(pEvent);
+}

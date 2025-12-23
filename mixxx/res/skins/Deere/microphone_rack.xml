@@ -1,0 +1,162 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Microphones container widget.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MicAuxRack</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <!-- Microphone input controls -->
+          <!-- Hide all mic controls but for Mic 1, if not enabled in
+            the sound hardware preferences. Clicking the Mic 1 TALK
+            button opens a modal window which allows to go straight
+            to the preferences pane for easy set up. Once Mic 1 is
+            set up, this widget hides itself. -->
+
+          <Template src="skin:microphone.xml"/>
+          <Template src="skin:microphone_unconfigured.xml"/>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <ObjectName>MicDuckingContainer</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,me</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>DuckingLabel</ObjectName>
+                    <Text>DUCKING</Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>MicDuckingControls</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <PushButton>
+                    <TooltipId>talkover_duck_mode</TooltipId>
+                    <Size>46f,20f</Size>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>OFF</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>AUTO</Text>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Text>MAN</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Master],talkoverDucking</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    </Connection>
+                  </PushButton>
+
+                  <!-- knob_with_label.xml template will not work here because
+                  "Strength" label exceeds width of knob. -->
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">duckStrength</SetVariable>
+                    <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+                    <SetVariable name="color">blue</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                  <Label>
+                    <Size>52f,12f</Size>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <Text>Strength</Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>Spacer33</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+          </WidgetGroup>
+
+          <!-- Auxiliary input controls -->
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">1</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">1</SetVariable>
+          </Template>
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_microphones</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

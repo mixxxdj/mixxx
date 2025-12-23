@@ -1,0 +1,20 @@
+defines that affect compilation
+
+_WIN32
+	this should be defined for Win32 platforms
+
+DEBUG_MUTEXES
+	define this to turn on mutex debugging.  this will log locks/unlocks.
+
+CHECK_MUTEXES (DEBUG_MUTEXES must also be defined)
+	checks to make sure mutex operations make sense.  ie, multi_mutex is locked
+	when locking multiple mutexes, etc.
+
+THREAD_DEBUG (define to 1-4)
+	turns on the thread.log logging
+
+
+
+
+
+

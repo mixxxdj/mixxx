@@ -1,0 +1,20 @@
+<svg width="72" height="36" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 18">
+  <g transform="translate(-7,-2)" fill="none">
+    <path d="m16 8h-7v4h5v2h-5v1h7v-4h-5v-2h5v-1"/>
+    <path d="m26 8v7h2v-6h3v6h2v-7h-7"/>
+    <path d="m34 8v7h7v-1h-5v-5h5v-1h-7"/>
+    <path d="m20 15v-3.5l-3-3v-0.5h1.5l2.5 2.5 2.5-2.5h1.5v0.5l-3 3v3.5h-2"/>
+  </g>
+  <g transform="translate(-7,-2)" fill="none" stroke="#000001" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
+    <path d="m16 8h-7v4h5v2h-5v1h7v-4h-5v-2h5z"/>
+    <path d="m26 8v7h2v-6h3v6h2v-7z"/>
+    <path d="m34 8v7h7v-1h-5v-5h5v-1z"/>
+    <path d="m20 15v-3.5l-3-3v-0.5h1.5l2.5 2.5 2.5-2.5h1.5v0.5l-3 3v3.5z"/>
+  </g>
+  <g transform="translate(-7,-2)" fill="#d2d2d1">
+    <path d="m16 8h-7v4h5v2h-5v1h7v-4h-5v-2h5z"/>
+    <path d="m26 8v7h2v-6h3v6h2v-7z"/>
+    <path d="m34 8v7h7v-1h-5v-5h5v-1z"/>
+    <path d="m20 15v-3.5l-3-3v-0.5h1.5l2.5 2.5 2.5-2.5h1.5v0.5l-3 3v3.5z"/>
+  </g>
+</svg>

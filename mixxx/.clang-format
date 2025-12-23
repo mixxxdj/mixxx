@@ -1,0 +1,80 @@
+---
+# Common configuration for all languages
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 8
+UseTab: Never
+# A ColumnLimit > 0 causes clang-format to unbreaks all short lines,
+# which is undesired here.
+# If the line length exceeds 100, "ColumnLimit:  80" is used in tools/clang_format.py
+ColumnLimit: 0
+---
+Language: Cpp
+Standard: c++20
+# Customize only those options that differ from the base style!
+# Dumping the options of the base style for comparison:
+# clang-format -style=google -dump-config > .clang-format_google
+AccessModifierOffset: -2
+AlignAfterOpenBracket: DontAlign
+AlignOperands: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BinPackArguments: false
+BinPackParameters: false
+ConstructorInitializerIndentWidth: 8
+ContinuationIndentWidth: 8
+IndentCaseLabels: false
+DerivePointerAlignment: false
+SpaceAfterTemplateKeyword: false
+SpacesBeforeTrailingComments: 1
+PackConstructorInitializers: Never
+# StatementMacros don't require a trailing semicolon.
+# Trailing semicolons should be omitted after these macros
+# when compiling with -Wpedantic to avoid warnings.
+StatementMacros:
+  - Q_DECLARE_FLAGS
+  - Q_DECLARE_METATYPE
+  - Q_DECLARE_OPERATORS_FOR_FLAGS
+  - Q_OBJECT
+  - Q_PROPERTY
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
+---
+Language: ObjC
+ObjCBlockIndentWidth: 4
+# We exclude Objective-C(++) from the second line-wrapping pass in tools/clang_format.py
+# since this pass only applies C++ rules and therefore include the ColumnLimit in the
+# 'main' clang-format config here.
+ColumnLimit: 80
+# Apply the same customizations that we use for Cpp to ObjC.
+AccessModifierOffset: -2
+AlignAfterOpenBracket: DontAlign
+AlignOperands: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+BinPackArguments: false
+BinPackParameters: false
+ConstructorInitializerIndentWidth: 8
+ContinuationIndentWidth: 8
+IndentCaseLabels: false
+DerivePointerAlignment: false
+SpaceAfterTemplateKeyword: false
+SpacesBeforeTrailingComments: 1
+StatementMacros:
+  - Q_DECLARE_FLAGS
+  - Q_DECLARE_METATYPE
+  - Q_DECLARE_OPERATORS_FOR_FLAGS
+  - Q_OBJECT
+  - Q_PROPERTY
+  - Q_UNUSED
+  - QT_REQUIRE_VERSION
+---
+Language: JavaScript
+# Don't format .js files yet
+DisableFormat: true
+---
+Language: Proto
+# Don't format .proto files yet
+DisableFormat: true

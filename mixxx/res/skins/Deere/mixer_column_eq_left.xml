@@ -1,0 +1,35 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,p</SizePolicy>
+    <Children>
+      <Template src="skin:equalizer_rack_parameter_left.xml">
+        <SetVariable name="parameter">3</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter_left.xml">
+        <SetVariable name="parameter">2</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter_left.xml">
+        <SetVariable name="parameter">1</SetVariable>
+      </Template>
+
+      <Template src="skin:quick_effect_superknob_left.xml">
+        <SetVariable name="TooltipId">QuickEffectRack_super1</SetVariable>
+        <SetVariable name="button_TooltipId">QuickEffectRack_enabled</SetVariable>
+        <SetVariable name="color">blue</SetVariable>
+      </Template>
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,108 @@
+<!--
+Description:
+  Container for EffectUnits 1 & 2.
+  Units are pushed apart by spacers, see fx_units_spacer.xml.
+-->
+<Template>
+  <SetVariable name="FxRack">1</SetVariable>
+  <WidgetGroup>
+    <ObjectName>FxUnits12</ObjectName>
+    <SizePolicy>me,max</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <!-- Each EffectUnit's collapsed and expanded version were previously placed
+          side by side. This resulted in a noticeable flickering when swapping
+          visibility of both versions, typically when switching from the one that's
+          later in xml (collapsed) to the earlier (expanded), since none of both versions
+          was visible at that moment and opposing EffectUnit tries to expand horizontally.
+          Putting both versions into a vertical layout fixes this issue.
+          UPDATE: now using WidgetStacks, it appears they are even more stable when switching
+
+          Normally the first widget in stack is shown. currentpage="[XYZ],blabla" makes the
+          WidgetStack remember which item was visible when stack was hidden or Mixxx restarted.
+          To make this persistent, I used the same CO that controls if the parameters are visible.
+          For that to work index of item in stack must match ...,show_parameters
+      -->
+
+      <!-- EffectUnit 1 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit1],show_parameters" persist="true">
+        <Size>502min,-1min</Size>
+        <Children>
+
+          <!-- EffectUnit 1 mini -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skins:Tango/fx/unit_left_mini.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 1 maxi -->
+          <WidgetGroup trigger="[EffectRack1_EffectUnit1],show_parameters" on_hide_select="0" persist="true">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skins:Tango/fx/unit_left.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_effectrack</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetStack><!-- /EffectUnit 1 -->
+
+      <WidgetGroup>
+        <MinimumSize>6,0</MinimumSize>
+        <MaximumSize>10,0</MaximumSize>
+        <SizePolicy>me,min</SizePolicy>
+      </WidgetGroup>
+
+      <!-- EffectUnit 2 -->
+      <WidgetStack currentpage="[EffectRack1_EffectUnit2],show_parameters" persist="true">
+        <Size>502min,-1min</Size>
+        <Children>
+
+          <!-- EffectUnit 2 mini -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skins:Tango/fx/unit_right_mini.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 2 maxi -->
+          <WidgetGroup trigger="[EffectRack1_EffectUnit2],show_parameters" on_hide_select="1" persist="true">
+            <Layout>vertical</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Template src="skins:Tango/fx/unit_right.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
+              <WidgetGroup><Size>1min,5f</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_effectrack</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetStack><!-- /EffectUnit 2 -->
+
+    </Children>
+  </WidgetGroup><!-- /EffectUnits 1 & 2 -->
+</Template>

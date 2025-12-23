@@ -1,0 +1,37 @@
+<!--
+Description:
+  A HotCue button for Samplers and Preview deck only.
+  HotCues can only be activated/recalled but not removed since
+  Samplers and Preview deck lack the controls to properly re-set
+  any HotCue when it was accidentally removed.
+Variables:
+  group : [SamplerN], [PreviewDeck1]
+  HotCue: hotcue number
+-->
+<Template>
+  <HotcueButton>
+    <TooltipId>hotcue</TooltipId>
+    <ObjectName>HotcueButton</ObjectName>
+    <MinimumSize>14,18</MinimumSize>
+    <MaximumSize>20,18</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <Group><Variable name="group"/></Group>
+    <Hotcue><Variable name="HotCue"/></Hotcue>
+    <NumberStates>3</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="HotCue"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="HotCue"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <State>
+      <Number>2</Number>
+      <Text><Variable name="HotCue"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+  </HotcueButton>
+</Template>

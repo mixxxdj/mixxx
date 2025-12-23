@@ -1,0 +1,49 @@
+<Template>
+  <WidgetGroup>
+    <Size>0e,33f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
+        <Size>5f,36f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Size>0e,36f</Size>
+        <BackPath>style/style_bg_looping.png</BackPath>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:effectslotsmall.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum">1</SetVariable>
+          </Template>
+          <Template src="skin:effectslotsmall.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum">2</SetVariable>
+          </Template>
+          <Template src="skin:effectslotsmall.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum">3</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <Size>0e,28f</Size>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>5f,36f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>3f,36f</Size>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

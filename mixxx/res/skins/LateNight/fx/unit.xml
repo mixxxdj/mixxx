@@ -1,0 +1,47 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect unit widget.
+  Variables:
+    group: The group for the controls.
+    FxRack
+    FxUnit
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>FxUnitContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+          <Template src="skins:LateNight/fx/unit_parameters_hidden.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],show_parameters</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- FxSlotsCollapsed -->
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skins:LateNight/fx/unit_parameters_visible.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- FxUnitControlsCollapsed -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

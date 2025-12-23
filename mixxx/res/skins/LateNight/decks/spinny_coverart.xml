@@ -1,0 +1,78 @@
+<Template>
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <!-- Spinny -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>SpinnyContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Spinny>
+                <TooltipId>spinny</TooltipId>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>40,40</MinimumSize>
+                <Group><Variable name="Group"/></Group>
+                <PathBackground scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_bg.svg</PathBackground>
+                <PathMask scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_mask_<Variable name="DeckGroup"/>.svg</PathMask>
+                <PathForeground>skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_indicator.svg</PathForeground>
+                <PathGhost>skins:LateNight/<Variable name="StyleScheme"/>/style/spinny_indicator_ghost.svg</PathGhost>
+                <ShowCoverControl>[Skin],show_coverart</ShowCoverControl>
+              </Spinny>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- Cover Art -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>CoverArtContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <CoverArt>
+                    <TooltipId>coverart</TooltipId>
+                    <SizePolicy>me,me</SizePolicy>
+                    <MinimumSize>40,40</MinimumSize>
+                    <Group><Variable name="Group"/></Group>
+                    <DefaultCover>skins:LateNight/<Variable name="StyleScheme"/>/style/cover_default.svg</DefaultCover>
+                  </CoverArt>
+                </Children>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+
+</Template>

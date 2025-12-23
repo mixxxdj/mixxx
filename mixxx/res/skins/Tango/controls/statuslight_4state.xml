@@ -1,0 +1,31 @@
+<!--
+Description:
+  An indicator for example for control vinyl status
+Variables:
+  ObjectName        : object name
+  Size              : button size
+  ConfigKeyDisp     : display control
+-->
+<Template>
+  <PushButton>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>4</NumberStates>
+    <State>
+      <Number>0</Number>
+    </State>
+    <State>
+      <Number>1</Number>
+    </State>
+    <State>
+      <Number>2</Number>
+    </State>
+    <State>
+      <Number>3</Number>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="ConfigKeyDisp"/></ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+  </PushButton>
+</Template>

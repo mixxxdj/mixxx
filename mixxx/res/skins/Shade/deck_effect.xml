@@ -1,0 +1,142 @@
+<Template>
+  <WidgetGroup>
+    <Size>105f,59f</Size>
+    <Children>
+        <!--
+      **********************************************
+      Button- fx
+      **********************************************
+      -->
+      <PushButton>
+        <TooltipId>show_effects</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_fx_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_fx_plus.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_fx_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_fx_minus.png</Unpressed>
+        </State>
+        <Pos>2,0</Pos>
+        <Connection>
+          <ConfigKey>[Skin],show_effectrack</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <TooltipId>EffectUnit_deck_enabled</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_over.png</Unpressed>
+        </State>
+        <Pos>4,14</Pos>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[Channel<Variable name="effectunitnum"/>]_enable</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <TooltipId>EffectUnit_headphones_enabled</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_pfl_fx_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_pfl_fx.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_pfl_fx_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_pfl_fx_over.png</Unpressed>
+        </State>
+          <Pos>25,14</Pos>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[Headphone]_enable</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <TooltipId>EffectUnit_<Variable name="effectgroup"/>_enabled</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_over.png</Unpressed>
+        </State>
+          <Pos>4,35</Pos>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],group_[<Variable name="effectgroup"/>]_enable</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup>
+        <Size>17f,5f</Size>
+        <Pos>53,14</Pos>
+        <BackPath>skin:/btn/btn_mix.png</BackPath>
+      </WidgetGroup>
+
+      <Knob>
+        <TooltipId>EffectUnit_mix</TooltipId>
+        <NumberStates>64</NumberStates>
+        <Path>knobs_no_center/knob_rotary_s%1.png</Path>
+        <Pos>49,21</Pos>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix</ConfigKey>
+        </Connection>
+      </Knob>
+
+      <PushButton>
+        <TooltipId>EffectUnit_mix_mode</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_fxmix_d-w.svg</Pressed>
+          <Unpressed>skin:/btn/btn_fxmix_d-w.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_fxmix_d+w.svg</Pressed>
+          <Unpressed>skin:/btn/btn_fxmix_d+w.svg</Unpressed>
+        </State>
+        <Size>20f,9f</Size>
+        <Pos>52,46</Pos>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix_mode</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup>
+        <Size>29f,5f</Size>
+        <Pos>76,14</Pos>
+        <BackPath>skin:/btn/btn_super.png</BackPath>
+      </WidgetGroup>
+
+      <Knob>
+        <TooltipId>EffectUnit_super1</TooltipId>
+        <NumberStates>64</NumberStates>
+        <Path>knobs_no_center/knob_rotary_s%1.png</Path>
+        <Pos>77,21</Pos>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],super1</ConfigKey>
+        </Connection>
+      </Knob>
+    </Children>
+  </WidgetGroup>
+</Template>

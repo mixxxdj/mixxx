@@ -1,0 +1,34 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob used for Meta parameter of effect units.
+  Variables:
+    FxRack_FxUnit_FxNum : [EffectRack1_EffectUnitX_EffectY]
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <ObjectName>FxMetaKnob</ObjectName>
+    <SizePolicy>f,max</SizePolicy>
+    <Children>
+      <EffectMetaKnob>
+        <TooltipId>EffectSlot_metaknob</TooltipId>
+        <Size>35f,30f</Size>
+        <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_small_<Variable name="KnobColor"/>.svg</Knob>
+        <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_small.svg</BackPath>
+        <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+        <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <KnobCenterYOffset>1.883</KnobCenterYOffset>
+        <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
+        <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
+        <ArcRoundCaps><Variable name="ArcRoundCaps"/></ArcRoundCaps>
+        <ArcColor><Variable name="ArcColorSuper"/></ArcColor>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <Connection>
+          <ConfigKey>[<Variable name="FxRack_FxUnit_FxNum"/>],meta</ConfigKey>
+        </Connection>
+      </EffectMetaKnob>
+    </Children>
+  </WidgetGroup>
+</Template>

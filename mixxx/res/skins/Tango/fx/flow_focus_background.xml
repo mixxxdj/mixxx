@@ -1,0 +1,22 @@
+<!--
+Description:
+  An expanding filler used as background for effect slots.
+  It is #333 by default and when the respective effect is unfocused,
+  otherwise it turns transparent and the black effect unit background
+  is visible.
+Variables:
+  Size          : Size/SizePolicy for the whole container
+  FxRack_FxUnit :
+  FxNum         : Affected effect (slot)
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>FxFlow_focus_background</ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+      <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

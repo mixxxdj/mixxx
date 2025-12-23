@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg26"
+   version="1.1"
+   height="40"
+   width="92" viewBox="0 0 46 20">
+  <metadata
+     id="metadata32">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs30" />
+  <g
+     style="fill:#000000;fill-opacity:1"
+     id="g24"
+     fill="#d2d2d1"
+     transform="translate(4)">
+    <path
+       style="fill:#000000;fill-opacity:1"
+       id="path14"
+       d="m10 6h-7v4h5v2h-5v1h7v-4h-5v-2h5z" />
+    <path
+       style="fill:#000000;fill-opacity:1"
+       id="path16"
+       d="m18 6v7h6v-1h-4v-6z" />
+    <path
+       style="fill:#000000;fill-opacity:1"
+       id="path18"
+       d="m11 6v7h2v-3h4v-4zm2 1h3v2h-3z" />
+    <path
+       style="fill:#000000;fill-opacity:1"
+       id="path20"
+       d="m28 6h8v1h-3v6h-2v-6h-3z" />
+    <path
+       id="path22"
+       style="paint-order:fill markers stroke;fill:#000000;fill-opacity:1"
+       d="m25 6h2v7h-2z" />
+  </g>
+</svg>
