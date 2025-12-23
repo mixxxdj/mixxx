@@ -124,7 +124,7 @@ RestServerSettings::Values RestServerSettings::get() const {
     values.httpPort = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kConfigPort), kDefaultPort);
     values.httpsPort = m_pConfig->getValue<int>(ConfigKey(kConfigGroup, kConfigHttpsPort), kDefaultHttpsPort);
     values.useHttps = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigUseHttps), false);
-    values.autoGenerateCert = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigAutoGenerate), false);
+    values.autoGenerateCert = m_pConfig->getValue<bool>(ConfigKey(kConfigGroup, kConfigAutoGenerate), true);
     values.certificatePath = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigCertificatePath), QString());
     values.privateKeyPath = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigPrivateKeyPath), QString());
     const QString tokensJson = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigTokens), QString());
@@ -260,7 +260,7 @@ RestServerSettings::Values RestServerSettings::defaults() const {
     values.httpPort = kDefaultPort;
     values.httpsPort = kDefaultHttpsPort;
     values.useHttps = false;
-    values.autoGenerateCert = false;
+    values.autoGenerateCert = true;
     values.certificatePath = QString();
     values.privateKeyPath = QString();
     values.tokens.clear();

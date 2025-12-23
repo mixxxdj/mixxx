@@ -41,6 +41,7 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
 #ifndef MIXXX_HAS_HTTP_SERVER
     labelRestApiUnavailable->setVisible(true);
     checkBoxEnableRestServer->setEnabled(false);
+    groupBoxPreset->setEnabled(false);
     groupBoxNetwork->setEnabled(false);
     groupBoxAuthentication->setEnabled(false);
     groupBoxTls->setEnabled(false);
@@ -70,7 +71,7 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     lineEditTokenValue->setEchoMode(QLineEdit::Password);
     pushButtonToggleToken->setText(tr("Show"));
 
-    comboBoxPreset->addItem(tr("Local (recommended)"));
+    comboBoxPreset->addItem(tr("Local (default)"));
     comboBoxPreset->addItem(tr("Local + HTTPS"));
     comboBoxPreset->addItem(tr("Network (advanced)"));
     comboBoxTokenExpiresPreset->addItem(tr("Never"));
@@ -264,6 +265,7 @@ void DlgPrefRestServer::slotAutoGenerateCertificateChanged(bool /*checked*/) {
 }
 
 void DlgPrefRestServer::slotEnableRestServerChanged(bool checked) {
+    groupBoxPreset->setEnabled(checked);
     groupBoxNetwork->setEnabled(checked);
     groupBoxAuthentication->setEnabled(checked);
     groupBoxTls->setEnabled(checked);
@@ -294,8 +296,8 @@ void DlgPrefRestServer::slotPresetChanged(int index) {
     } else if (index == kPresetNetwork) {
         lineEditHost->setText(QStringLiteral("0.0.0.0"));
         checkBoxEnableHttp->setChecked(true);
-        checkBoxUseHttps->setChecked(false);
-        checkBoxAutoGenerateCertificate->setChecked(false);
+        checkBoxUseHttps->setChecked(true);
+        checkBoxAutoGenerateCertificate->setChecked(true);
         checkBoxRequireTls->setChecked(false);
         lineEditCorsAllowlist->clear();
     }
@@ -370,6 +372,7 @@ void DlgPrefRestServer::slotBrowseKey() {
 void DlgPrefRestServer::loadValues(const RestServerSettings::Values& values) {
     checkBoxEnableRestServer->setChecked(values.enabled);
     checkBoxEnableHttp->setChecked(values.enableHttp);
+    groupBoxPreset->setEnabled(values.enabled);
     groupBoxNetwork->setEnabled(values.enabled);
     groupBoxAuthentication->setEnabled(values.enabled);
     groupBoxTls->setEnabled(values.enabled);
@@ -463,6 +466,7 @@ void DlgPrefRestServer::updateNetworkWarning() {
     const bool showWarning = checkBoxEnableRestServer->isChecked() &&
             !checkBoxEnableHttp->isChecked() &&
             !checkBoxUseHttps->isChecked();
+    frameNetworkWarning->setVisible(showWarning);
     labelNetworkWarningIcon->setVisible(showWarning);
     labelNetworkWarning->setVisible(showWarning);
 }
