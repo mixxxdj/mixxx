@@ -36,6 +36,7 @@ const QString kConfigStatusTlsActive = QStringLiteral("status_tls_active");
 const QString kConfigStatusCertificateGenerated = QStringLiteral("status_certificate_generated");
 const QString kConfigStatusLastError = QStringLiteral("status_last_error");
 const QString kConfigStatusTlsError = QStringLiteral("status_tls_error");
+const QString kConfigStatusTlsErrorDetails = QStringLiteral("status_tls_error_details");
 
 QStringList normalizeScopes(const QStringList& scopes) {
     QStringList normalized;
@@ -287,6 +288,9 @@ RestServerSettings::Status RestServerSettings::getStatus() const {
             false);
     status.lastError = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigStatusLastError), QString());
     status.tlsError = m_pConfig->getValue<QString>(ConfigKey(kConfigGroup, kConfigStatusTlsError), QString());
+    status.tlsErrorDetails = m_pConfig->getValue<QString>(
+            ConfigKey(kConfigGroup, kConfigStatusTlsErrorDetails),
+            QString());
     return status;
 }
 
@@ -296,6 +300,8 @@ void RestServerSettings::setStatus(const Status& status) {
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStatusCertificateGenerated), status.certificateGenerated);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStatusLastError), status.lastError);
     m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStatusTlsError), status.tlsError);
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kConfigStatusTlsErrorDetails),
+            status.tlsErrorDetails);
 }
 
 QString RestServerSettings::defaultCertificatePath() const {

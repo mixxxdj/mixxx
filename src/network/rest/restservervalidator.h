@@ -19,6 +19,7 @@ struct RestServerValidationResult {
     bool success{false};
     QString error;
     QString tlsError;
+    QString tlsErrorDetails;
 };
 
 class RestServerValidator {
@@ -41,4 +42,3 @@ class RestServerValidator {
 } // namespace mixxx::network::rest
 
 #endif // MIXXX_HAS_HTTP_SERVER
-

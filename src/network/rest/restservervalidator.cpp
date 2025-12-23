@@ -89,10 +89,9 @@ RestServerValidationResult RestServerValidator::validate(
     if (settings.useHttps) {
         if (!kHttpServerHasTlsSupport) {
             const QString baseError = QObject::tr("HTTPS is not supported by this Qt build");
-            const QString error = QStringLiteral("%1 (%2)")
-                                          .arg(baseError, tlsSupportDetails());
             result.error = baseError;
-            result.tlsError = error;
+            result.tlsError = baseError;
+            result.tlsErrorDetails = tlsSupportDetails();
             return result;
         }
         const RestServer::TlsResult tlsResult = RestServer::prepareTlsConfiguration(

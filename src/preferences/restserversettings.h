@@ -54,6 +54,7 @@ class RestServerSettings {
         bool certificateGenerated{false};
         QString lastError;
         QString tlsError;
+        QString tlsErrorDetails;
     };
 
     static constexpr int kMaxTokens = 16;

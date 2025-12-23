@@ -569,8 +569,15 @@ void DlgPrefRestServer::updateStatusLabels(const RestServerSettings::Status& sta
     labelTlsStatus->setVisible(showTlsStatus);
     if (hasTlsError) {
         labelTlsStatus->setText(status.tlsError);
+        labelTlsStatus->setToolTip(status.tlsErrorDetails);
+        labelTlsStatusIcon->setToolTip(status.tlsErrorDetails);
     } else if (status.certificateGenerated) {
         labelTlsStatus->setText(tr("A self-signed certificate was generated automatically."));
+        labelTlsStatus->setToolTip(QString());
+        labelTlsStatusIcon->setToolTip(QString());
+    } else {
+        labelTlsStatus->setToolTip(QString());
+        labelTlsStatusIcon->setToolTip(QString());
     }
     updateTlsCertificateStatus();
 
