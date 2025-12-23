@@ -141,6 +141,7 @@ class RestServer : public QObject {
   signals:
     void started(quint16 port);
     void stopped();
+    void tokenUsed(const QString& tokenValue, const QDateTime& usedUtc);
 
   private:
     QHttpServerResponse invokeGateway(
@@ -168,7 +169,7 @@ class RestServer : public QObject {
     bool applyTlsConfiguration();
     AuthorizationResult authorize(
             const QHttpServerRequest& request,
-            const QStringList& requiredScopes) const;
+            const QStringList& requiredScopes);
     bool controlRouteRequiresTls(const QHttpServerRequest& request) const;
     void registerRoutes();
     void addStatusStreamClient(

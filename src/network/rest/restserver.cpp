@@ -578,7 +578,7 @@ bool RestServer::applyTlsConfiguration() {
 
 RestServer::AuthorizationResult RestServer::authorize(
         const QHttpServerRequest& request,
-        const QStringList& requiredScopes) const {
+        const QStringList& requiredScopes) {
     AuthorizationResult result;
 
     if (m_settings.tokens.isEmpty()) {
@@ -666,6 +666,7 @@ RestServer::AuthorizationResult RestServer::authorize(
             result.authorized = true;
             result.tokenValue = token.value;
             result.tokenDescription = tokenDescription;
+            emit tokenUsed(token.value, nowUtc);
             return result;
         }
         result.forbidden = true;

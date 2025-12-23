@@ -3,6 +3,7 @@
 #ifdef MIXXX_HAS_HTTP_SERVER
 
 #include <QObject>
+#include <QDateTime>
 #include <QTimer>
 #include <memory>
 #include <optional>
@@ -36,6 +37,7 @@ class RestServerController : public QObject {
 
   private slots:
     void refreshFromSettings();
+    void updateTokenLastUsed(const QString& tokenValue, const QDateTime& usedUtc);
 
   private:
     struct ListenerConfiguration {
