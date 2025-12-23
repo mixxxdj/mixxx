@@ -63,6 +63,7 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
 
     tableTokens->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableTokens->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableTokens->setEditTriggers(QAbstractItemView::NoEditTriggers);
     tableTokens->horizontalHeader()->setStretchLastSection(true);
     dateTimeEditTokenExpires->setMinimumDateTime(
             QDateTime(QDate(1970, 1, 1), QTime(0, 0), QTimeZone::utc()));
