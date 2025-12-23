@@ -620,21 +620,42 @@
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="labelTokenExpires">
+         <widget class="QLabel" name="labelTokenExpiresCurrent">
           <property name="text">
-           <string>Expires:</string>
+           <string>Current expiration:</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QDateTimeEdit" name="dateTimeEditTokenExpires">
-          <property name="calendarPopup">
-           <bool>true</bool>
-          </property>
-          <property name="specialValueText">
+         <widget class="QLabel" name="labelTokenExpiresValue">
+          <property name="text">
            <string>Never</string>
           </property>
          </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelTokenExpiresSet">
+          <property name="text">
+           <string>Set expiration:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayoutTokenExpiration">
+          <item>
+           <widget class="QComboBox" name="comboBoxTokenExpiresPreset"/>
+          </item>
+          <item>
+           <widget class="QDateTimeEdit" name="dateTimeEditTokenExpires">
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+            <property name="specialValueText">
+             <string>Never</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
