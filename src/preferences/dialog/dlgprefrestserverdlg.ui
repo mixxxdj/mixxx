@@ -589,10 +589,10 @@ Leave blank to disable CORS allowlisting.</string>
      <item>
       <widget class="QCheckBox" name="checkBoxAllowUnauthenticated">
        <property name="toolTip">
-        <string>Allow unauthenticated requests when no access tokens are configured.</string>
+        <string>Allow unauthenticated requests.</string>
        </property>
        <property name="text">
-        <string>Allow unauthenticated requests when no access tokens are configured</string>
+        <string>Allow unauthenticated requests</string>
        </property>
       </widget>
      </item>
