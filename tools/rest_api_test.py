@@ -273,13 +273,13 @@ def parse_playlist_payload(args: argparse.Namespace) -> Optional[Mapping[str, An
     if action in {"delete", "set_active"}:
         if args.playlist_id is None:
             raise ApiTestError(f"Playlist {action} requires --playlist-id")
-        payload["id"] = args.playlist_id
+        payload["playlist_id"] = args.playlist_id
         return payload
 
     if action == "rename":
         if args.playlist_id is None or not args.playlist_name:
             raise ApiTestError("Playlist rename requires --playlist-id and --playlist-name")
-        payload["id"] = args.playlist_id
+        payload["playlist_id"] = args.playlist_id
         payload["name"] = args.playlist_name
         return payload
 
@@ -289,7 +289,7 @@ def parse_playlist_payload(args: argparse.Namespace) -> Optional[Mapping[str, An
         track_ids = parse_csv_list(args.playlist_track_ids, "playlist track id")
         if not track_ids:
             raise ApiTestError("Playlist add requires --playlist-track-id(s)")
-        payload["id"] = args.playlist_id
+        payload["playlist_id"] = args.playlist_id
         payload["track_ids"] = track_ids
         if args.playlist_position is not None:
             payload["position"] = args.playlist_position
@@ -301,7 +301,7 @@ def parse_playlist_payload(args: argparse.Namespace) -> Optional[Mapping[str, An
         positions = parse_int_list(args.playlist_positions, "playlist position")
         if not positions:
             raise ApiTestError("Playlist remove requires --playlist-positions")
-        payload["id"] = args.playlist_id
+        payload["playlist_id"] = args.playlist_id
         payload["positions"] = positions
         return payload
 
@@ -310,7 +310,7 @@ def parse_playlist_payload(args: argparse.Namespace) -> Optional[Mapping[str, An
             raise ApiTestError("Playlist reorder requires --playlist-id")
         if args.playlist_from is None or args.playlist_to is None:
             raise ApiTestError("Playlist reorder requires --playlist-from and --playlist-to")
-        payload["id"] = args.playlist_id
+        payload["playlist_id"] = args.playlist_id
         payload["from"] = args.playlist_from
         payload["to"] = args.playlist_to
         return payload
@@ -322,7 +322,7 @@ def parse_playlist_payload(args: argparse.Namespace) -> Optional[Mapping[str, An
             raise ApiTestError(
                 "Playlist send_to_autodj requires --playlist-autodj-position"
             )
-        payload["id"] = args.playlist_id
+        payload["playlist_id"] = args.playlist_id
         payload["position"] = args.playlist_autodj_position
         return payload
 
