@@ -171,6 +171,7 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
 
 QJsonObject RestApiGateway::deckSummary(int deckIndex) const {
     QJsonObject deck;
+    deck.insert("deck", deckIndex + 1);
     const QString group = PlayerManager::groupForDeck(deckIndex);
     deck.insert("group", group);
     ControlProxy playControl(group, QStringLiteral("play"), nullptr, kStatusControlFlags);
