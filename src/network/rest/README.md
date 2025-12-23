@@ -10,7 +10,8 @@ This document summarizes defaults, security, and available routes.
   - HTTP: `localhost:8989`
   - HTTPS: `localhost:8990` (when TLS is enabled)
 - HTTP access is allowed unless you disable it. TLS is off by default and must be
-  explicitly turned on. Control routes are accessible without TLS but HTTPS is strongly recommended.
+  explicitly turned on. When "Require TLS for write tokens" is enabled, any request
+  using a token with write scopes must use HTTPS.
 
 ## Authentication and authorization
 
@@ -153,4 +154,4 @@ All routes are served under the versioned base path `/api/v1` (for example, `/ap
   - `reorder` with `from`/`to`
   - `send_to_autodj` with `top`, `bottom`, or `replace` (pushes an entire playlist into the AutoDJ queue)
 
-TLS is strongly recommended whenever authentication or control endpoints are used, especially outside localhost.
+TLS is strongly recommended whenever authentication or write capabilities are used, especially outside localhost.

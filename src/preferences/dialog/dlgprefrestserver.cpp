@@ -432,7 +432,7 @@ void DlgPrefRestServer::updateTlsState() {
     if (useHttps) {
         checkBoxRequireTls->setToolTip(QString());
     } else {
-        checkBoxRequireTls->setToolTip(tr("Enable HTTPS to require TLS for control routes."));
+        checkBoxRequireTls->setToolTip(tr("Enable HTTPS to require TLS for write tokens."));
     }
     lineEditCertPath->setEnabled(useHttps && !autoGenerate);
     pushButtonBrowseCert->setEnabled(useHttps && !autoGenerate);

@@ -34,4 +34,12 @@ inline QStringList allScopes() {
     };
 }
 
+inline QStringList writeScopes() {
+    return QStringList{
+            kAutoDjWrite,
+            kPlaylistsWrite,
+            kControlWrite,
+    };
+}
+
 } // namespace mixxx::network::rest::scopes

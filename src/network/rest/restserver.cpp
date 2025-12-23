@@ -55,6 +55,15 @@ const QRegularExpression kUuidRequestIdRegex(
                        "[0-9a-fA-F]{12}$"));
 const QRegularExpression kAllowedRequestIdRegex(QStringLiteral("^[A-Za-z0-9._-]+$"));
 
+bool tokenHasWriteScope(const QStringList& tokenScopes) {
+    for (const auto& scope : scopes::writeScopes()) {
+        if (tokenScopes.contains(scope, Qt::CaseInsensitive)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 #if defined(QT_HTTPSERVER_VERSION)
 #define MIXXX_HAS_QT_HTTPSERVER_VERSION
 #endif
@@ -653,6 +662,7 @@ RestServer::AuthorizationResult RestServer::authorize(
         }
 
         const QStringList tokenScopes = token.scopes;
+        result.usedWriteToken = tokenHasWriteScope(tokenScopes);
         bool hasAllScopes = true;
         QStringList missingScopes;
         for (const auto& required : requiredScopes) {
@@ -701,8 +711,10 @@ RestServer::AuthorizationResult RestServer::authorize(
     return result;
 }
 
-bool RestServer::controlRouteRequiresTls(const QHttpServerRequest& request) const {
-    if (!m_settings.requireTls) {
+bool RestServer::writeTokenRequiresTls(
+        const AuthorizationResult& auth,
+        const QHttpServerRequest& request) const {
+    if (!m_settings.requireTls || !auth.usedWriteToken) {
         return false;
     }
 
@@ -900,14 +912,18 @@ void RestServer::registerRoutes() {
     const auto schemaRoute =
             [this, schemaPayload, authorizeRequest, forbiddenMessage](
                     const QHttpServerRequest& request) {
+        std::optional<AuthorizationResult> auth;
         if (!(m_settings.allowUnauthenticated &&
                     request.value(kAuthHeader).trimmed().isEmpty())) {
-            const AuthorizationResult auth = authorizeRequest(request);
-            if (!auth.authorized) {
-                if (auth.forbidden) {
-                    return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
+            auth = authorizeRequest(request);
+            if (!auth->authorized) {
+                if (auth->forbidden) {
+                    return forbiddenResponse(request, forbiddenMessage(auth->missingScopes));
                 }
                 return unauthorizedResponse(request);
+            }
+            if (writeTokenRequiresTls(*auth, request)) {
+                return tlsRequiredResponse(request);
             }
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
@@ -939,6 +955,9 @@ void RestServer::registerRoutes() {
             }
             return unauthorizedResponse(request);
         }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
+        }
         if (request.method() != QHttpServerRequest::Method::Get) {
             return methodNotAllowedResponse(request);
         }
@@ -957,6 +976,9 @@ void RestServer::registerRoutes() {
             }
             return unauthorizedResponse(request);
         }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
+        }
         if (request.method() != QHttpServerRequest::Method::Get) {
             return methodNotAllowedResponse(request);
         }
@@ -974,6 +996,9 @@ void RestServer::registerRoutes() {
                 return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
             }
             return unauthorizedResponse(request);
+        }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
             return methodNotAllowedResponse(request);
@@ -1002,6 +1027,10 @@ void RestServer::registerRoutes() {
             writeResponder(&responder, unauthorizedResponse(request));
             return;
         }
+        if (writeTokenRequiresTls(auth, request)) {
+            writeResponder(&responder, tlsRequiredResponse(request));
+            return;
+        }
         if (request.method() != QHttpServerRequest::Method::Get) {
             writeResponder(&responder, methodNotAllowedResponse(request));
             return;
@@ -1018,6 +1047,9 @@ void RestServer::registerRoutes() {
                 return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
             }
             return unauthorizedResponse(request);
+        }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
             return methodNotAllowedResponse(request);
@@ -1037,6 +1069,9 @@ void RestServer::registerRoutes() {
                 return forbiddenResponse(request, forbiddenMessage(auth.missingScopes));
             }
             return unauthorizedResponse(request);
+        }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
         }
         if (request.method() != QHttpServerRequest::Method::Get) {
             return methodNotAllowedResponse(request);
@@ -1062,11 +1097,11 @@ void RestServer::registerRoutes() {
             }
             return unauthorizedResponse(request);
         }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
+        }
         if (request.method() != QHttpServerRequest::Method::Post) {
             return methodNotAllowedResponse(request);
-        }
-        if (controlRouteRequiresTls(request)) {
-            return tlsRequiredResponse(request);
         }
 
         if (!isJsonContentType(request)) {
@@ -1119,6 +1154,9 @@ void RestServer::registerRoutes() {
             }
             return unauthorizedResponse(request);
         }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
+        }
         if (request.method() == QHttpServerRequest::Method::Get) {
             return invokeGateway(request, [this]() {
                 return m_gateway->autoDjStatus();
@@ -1126,9 +1164,6 @@ void RestServer::registerRoutes() {
         }
         if (request.method() != QHttpServerRequest::Method::Post) {
             return methodNotAllowedResponse(request);
-        }
-        if (controlRouteRequiresTls(request)) {
-            return tlsRequiredResponse(request);
         }
 
         if (!isJsonContentType(request)) {
@@ -1181,6 +1216,9 @@ void RestServer::registerRoutes() {
             }
             return unauthorizedResponse(request);
         }
+        if (writeTokenRequiresTls(auth, request)) {
+            return tlsRequiredResponse(request);
+        }
         if (request.method() == QHttpServerRequest::Method::Get) {
             std::optional<int> playlistId;
             const QString playlistIdParam = request.query().queryItemValue("id");
@@ -1199,10 +1237,6 @@ void RestServer::registerRoutes() {
 
         if (request.method() != QHttpServerRequest::Method::Post) {
             return methodNotAllowedResponse(request);
-        }
-
-        if (controlRouteRequiresTls(request)) {
-            return tlsRequiredResponse(request);
         }
 
         if (!isJsonContentType(request)) {
@@ -1420,7 +1454,7 @@ bool RestServer::startOnThread() {
     }
 
     if (m_settings.requireTls && !m_settings.useHttps) {
-        kLogger.warning() << "REST API control routes require TLS but HTTPS is disabled";
+        kLogger.warning() << "REST API write tokens require TLS but HTTPS is disabled";
     }
 
     if (m_settings.useHttps && !applyTlsConfiguration()) {
