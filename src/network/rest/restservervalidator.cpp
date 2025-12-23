@@ -76,7 +76,7 @@ RestServerValidationResult RestServerValidator::validate(
                                                   QString::fromLatin1(QT_VERSION_STR),
                                                   QString::fromLatin1(qVersion()));
             result.error = error;
-            result.tlsError = error;
+            result.tlsError = QString();
             return result;
         }
         const RestServer::TlsResult tlsResult = RestServer::prepareTlsConfiguration(
