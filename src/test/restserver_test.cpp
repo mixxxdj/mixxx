@@ -285,9 +285,13 @@ TEST(RestServerRoutesTest, EnforcesAuthorization) {
 
     QNetworkAccessManager manager;
     const QUrl url(QStringLiteral("http://127.0.0.1:%1/api/v1/health").arg(port));
+    const QUrl schemaUrl(QStringLiteral("http://127.0.0.1:%1/schema").arg(port));
 
     const auto unauthorized = sendRequest(&manager, url, "GET");
     EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Unauthorized), unauthorized.status);
+
+    const auto schemaResponse = sendRequest(&manager, schemaUrl, "GET");
+    EXPECT_EQ(static_cast<int>(QHttpServerResponse::StatusCode::Ok), schemaResponse.status);
 
     const auto authorized = sendRequest(
             &manager,
@@ -324,6 +328,7 @@ TEST(RestServerRoutesTest, VersionedPathsServeRequests) {
 
     expectOk("/api/v1/health", "GET");
     expectOk("/api/v1/schema", "GET");
+    expectOk("/schema", "GET");
     expectOk("/api/v1/ready", "GET");
     expectOk("/api/v1/status", "GET");
     expectOk("/api/v1/decks", "GET");
