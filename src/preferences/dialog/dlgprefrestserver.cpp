@@ -491,7 +491,6 @@ void DlgPrefRestServer::updateWarningsPaneVisibility() {
             !labelUnauthWarning->isHidden() ||
             !labelAuthWarning->isHidden() ||
             !labelTlsStatus->isHidden() ||
-            !labelTlsCertificateStatus->isHidden() ||
             !labelStatus->isHidden();
     frameWarningsPane->setVisible(showWarnings);
 }
@@ -631,7 +630,7 @@ void DlgPrefRestServer::updateTlsCertificateStatus() {
             : tr("Unknown");
 
     labelTlsCertificateStatus->setText(
-            tr("Issuer: %1\nExpires: %2").arg(issuer, expiryText));
+            tr("Certificate Info\nIssuer: %1\nExpires: %2").arg(issuer, expiryText));
     labelTlsCertificateStatus->setVisible(true);
 
     bool showWarning = false;
