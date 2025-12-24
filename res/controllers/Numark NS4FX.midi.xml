@@ -1490,17 +1490,8 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>NS4FX.decks[1].stutter_button.input</key>
+                <key>NS4FX.decks[1].transport_pad_1.input</key>
                 <status>0x94</status>
-                <midino>0x18</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>NS4FX.decks[2].stutter_button.input</key>
-                <status>0x95</status>
                 <midino>0x18</midino>
                 <options>
                     <script-binding/>
@@ -1508,42 +1499,141 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>start</key>
-                <description>Back to start</description>
-                <status>0x94</status>
-                <midino>0x19</midino>
+                <key>NS4FX.decks[1].transport_pad_1.input</key>
+                <status>0x84</status>
+                <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>start</key>
-                <description>Back to start</description>
+                <key>NS4FX.decks[2].transport_pad_1.input</key>
                 <status>0x95</status>
-                <midino>0x19</midino>
+                <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].transport_pad_1.input</key>
+                <status>0x85</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>start</key>
-                <description>Back to start</description>
+                <key>NS4FX.decks[3].transport_pad_1.input</key>
                 <status>0x96</status>
-                <midino>0x19</midino>
+                <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].transport_pad_1.input</key>
+                <status>0x86</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>start</key>
+                <key>NS4FX.decks[4].transport_pad_1.input</key>
+                <status>0x97</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].transport_pad_1.input</key>
+                <status>0x87</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NS4FX.decks[1].transport_pad_2.input</key>
+                <description>Back to start</description>
+                <status>0x94</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NS4FX.decks[1].transport_pad_2.input</key>
+                <status>0x84</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].transport_pad_2.input</key>
+                <description>Back to start</description>
+                <status>0x95</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].transport_pad_2.input</key>
+                <status>0x85</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].transport_pad_2.input</key>
+                <description>Back to start</description>
+                <status>0x96</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].transport_pad_2.input</key>
+                <status>0x86</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].transport_pad_2.input</key>
                 <description>Back to start</description>
                 <status>0x97</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].transport_pad_2.input</key>
+                <status>0x87</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1624,42 +1714,78 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>back</key>
+                <key>NS4FX.decks[1].transport_pad_3.input</key>
                 <description>Rewind</description>
                 <status>0x94</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NS4FX.decks[1].transport_pad_3.input</key>
+                <status>0x84</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>back</key>
+                <key>NS4FX.decks[2].transport_pad_3.input</key>
                 <description>Rewind</description>
                 <status>0x95</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].transport_pad_3.input</key>
+                <status>0x85</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>back</key>
+                <key>NS4FX.decks[3].transport_pad_3.input</key>
                 <description>Rewind</description>
                 <status>0x96</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].transport_pad_3.input</key>
+                <status>0x86</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>back</key>
+                <key>NS4FX.decks[4].transport_pad_3.input</key>
                 <description>Rewind</description>
                 <status>0x97</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].transport_pad_3.input</key>
+                <status>0x87</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1776,42 +1902,78 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>fwd</key>
+                <key>NS4FX.decks[1].transport_pad_4.input</key>
                 <description>Forward</description>
                 <status>0x94</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NS4FX.decks[1].transport_pad_4.input</key>
+                <status>0x84</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>fwd</key>
+                <key>NS4FX.decks[2].transport_pad_4.input</key>
                 <description>Forward</description>
                 <status>0x95</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NS4FX.decks[2].transport_pad_4.input</key>
+                <status>0x85</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>fwd</key>
+                <key>NS4FX.decks[3].transport_pad_4.input</key>
                 <description>Forward</description>
                 <status>0x96</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>NS4FX.decks[3].transport_pad_4.input</key>
+                <status>0x86</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>fwd</key>
+                <key>NS4FX.decks[4].transport_pad_4.input</key>
                 <description>Forward</description>
                 <status>0x97</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>NS4FX.decks[4].transport_pad_4.input</key>
+                <status>0x87</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>

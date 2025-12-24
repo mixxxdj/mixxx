@@ -115,6 +115,59 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
     };
 }
 
+function createTransportPad(deck, padNumber, defaultKey, momentary) {
+    var hotcueNumber = padNumber + 4;
+    var midiNote = 0x18 + (padNumber - 1);
+    var midiChan = 0x94 + deck.midi_chan;
+
+    // This component will be connected to the engine, but not to MIDI input directly.
+    // It will receive input from the wrapper button.
+    var hotcueButton = new components.HotcueButton({
+        number: hotcueNumber,
+        group: deck.group,
+        midi: [midiChan, midiNote],
+        output: function(value) {
+            midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01);
+        }
+    });
+    deck['transport_pad_' + padNumber + '_hotcue'] = hotcueButton;
+
+    // This component is connected to MIDI.
+    return new components.Button({
+        input: function(channel, control, value, status, group) {
+            NS4FX.dbg("Transport pad " + padNumber + " on deck " + deck.number + " pressed with value " + value);
+            if (useAdditionalHotcues) {
+                // Manually shift/unshift the hotcue button before calling its input
+                if (NS4FX.shift) {
+                    NS4FX.dbg("Shifting hotcue button for clear");
+                    hotcueButton.shift();
+                } else {
+                    hotcueButton.unshift();
+                }
+                hotcueButton.input(channel, control, value, status, group);
+                // And shift it back if we shifted, so we don't affect other components
+                if (NS4FX.shift) {
+                    hotcueButton.unshift();
+                }
+            } else {
+                if (defaultKey) {
+                    if (momentary) {
+                        var isPress = (value === 0x7F);
+                        engine.setValue(group, defaultKey, isPress ? 1 : 0);
+                    } else {
+                        if (value === 0x7F) {
+                            engine.setValue(group, defaultKey, 1);
+                        }
+                    }
+                    // Also provide visual feedback for default action
+                    midi.sendShortMsg(midiChan, midiNote, (value === 0x7F) ? 0x7F : 0x01);
+                }
+            }
+        }
+    });
+}
+
+
 var NS4FX = {};
 
 NS4FX.dbg = function (str) {
@@ -529,6 +582,7 @@ NS4FX.EffectUnit.prototype = new components.ComponentContainer();
 NS4FX.Deck = function (number, midi_chan) {
     var deck = this;
     this.number = number;
+    this.midi_chan = midi_chan;
     this.active = (number == 1 || number == 2);
 
     // If using stems, create state objects for each pad to track hold timers and states.
@@ -667,14 +721,20 @@ NS4FX.Deck = function (number, midi_chan) {
         shiftOffset: 4,
     });
 
-    this.stutter_button = new components.Button({
-        inKey: 'cue_gotoandplay',
-        input: function (channel, control, value, status, group) {
-            if (value === 0x7F) { // Only trigger on press
-                engine.setValue(group, this.inKey, 1);
-            }
-        }
-    });
+    this.transport_pad_1 = createTransportPad(this, 1, 'cue_gotoandplay', false);
+    this.transport_pad_2 = createTransportPad(this, 2, 'start', false);
+    this.transport_pad_3 = createTransportPad(this, 3, 'back', true);
+    this.transport_pad_4 = createTransportPad(this, 4, 'fwd', true);
+
+    if (useAdditionalHotcues) {
+        // Manually connect the hotcue components for the transport pads
+        // so their LEDs are updated correctly.
+        this.transport_pad_1_hotcue.connect();
+        this.transport_pad_2_hotcue.connect();
+        this.transport_pad_3_hotcue.connect();
+        this.transport_pad_4_hotcue.connect();
+    }
+
     this.sync_button = new components.SyncButton({
         midi: [0x90 + midi_chan, 0x02],
         off: 0x01,
