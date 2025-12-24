@@ -5,6 +5,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"
+#include "controllers/dlgprefkeyboard.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
@@ -18,16 +19,20 @@ const QString kAppGroup = QStringLiteral("[App]");
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         UserSettingsPointer pConfig,
         std::shared_ptr<ControllerManager> pControllerManager,
-        QTreeWidgetItem* pControllersRootItem)
+        QTreeWidgetItem* pControllersRootItem,
+        KeyboardEventFilter* pKeyboardEventFilter)
         : DlgPreferencePage(pPreferences),
           m_pDlgPreferences(pPreferences),
           m_pConfig(pConfig),
           m_pControllerManager(pControllerManager),
           m_pControllersRootItem(pControllersRootItem),
+          m_pKeyboardEventFilter(pKeyboardEventFilter),
           m_pNumDecks(make_parented<ControlProxy>(
                   kAppGroup, QStringLiteral("num_decks"), this)),
           m_pNumSamplers(make_parented<ControlProxy>(
-                  kAppGroup, QStringLiteral("num_samplers"), this)) {
+                  kAppGroup, QStringLiteral("num_samplers"), this)),
+          m_pKeyboardPage(nullptr),
+          m_pKeyboardTreeItem(nullptr) {
     setupUi(this);
     // Create text color for the cue mode link "?" to the manual
     createLinkColor();
@@ -123,17 +128,26 @@ void DlgPrefControllers::slotCancel() {
     for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotCancel();
     }
+    if (m_pKeyboardPage) {
+        m_pKeyboardPage->slotCancel();
+    }
 }
 
 void DlgPrefControllers::slotApply() {
     for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotApply();
     }
+    if (m_pKeyboardPage) {
+        m_pKeyboardPage->slotApply();
+    }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
     for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotResetToDefaults();
+    }
+    if (m_pKeyboardPage) {
+        m_pKeyboardPage->slotResetToDefaults();
     }
 }
 
@@ -150,6 +164,10 @@ bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
                     clickedItem->text(0);
             m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
         }
+        return true;
+    } else if (clickedItem == m_pKeyboardTreeItem) {
+        const QString pageTitle = m_pControllersRootItem->text(0) + " - " + tr("Keyboard");
+        m_pDlgPreferences->switchToPage(pageTitle, m_pKeyboardPage);
         return true;
     } else if (clickedItem == m_pControllersRootItem) {
         // Switch to the root page and expand the controllers tree item.
@@ -182,6 +200,18 @@ void DlgPrefControllers::destroyControllerWidgets() {
     }
 
     m_controllerTreeItems.clear();
+    
+    // Clean up keyboard page
+    if (m_pKeyboardPage) {
+        m_pDlgPreferences->removePageWidget(m_pKeyboardPage);
+        delete m_pKeyboardPage;
+        m_pKeyboardPage = nullptr;
+    }
+    if (m_pKeyboardTreeItem) {
+        delete m_pKeyboardTreeItem;
+        m_pKeyboardTreeItem = nullptr;
+    }
+    
     while (m_pControllersRootItem->childCount() > 0) {
         QTreeWidgetItem* pControllerTreeItem = m_pControllersRootItem->takeChild(0);
         delete pControllerTreeItem;
@@ -257,6 +287,17 @@ void DlgPrefControllers::setupControllerWidgets() {
         temp.setBold(pController->isOpen());
         pControllerTreeItem->setFont(0, temp);
     }
+    
+    // Add Keyboard as a special "controller"
+    m_pKeyboardPage = new DlgPrefKeyboard(this, m_pConfig, m_pKeyboardEventFilter);
+    m_pKeyboardTreeItem = new QTreeWidgetItem(QTreeWidgetItem::Type);
+    
+    m_pDlgPreferences->addPageWidget(
+            DlgPreferences::PreferencesPage(m_pKeyboardPage, m_pKeyboardTreeItem),
+            tr("Keyboard"),
+            QStringLiteral("ic_preferences_controllers.svg"));
+    
+    m_pControllersRootItem->addChild(m_pKeyboardTreeItem);
 }
 
 void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, bool enabled) {

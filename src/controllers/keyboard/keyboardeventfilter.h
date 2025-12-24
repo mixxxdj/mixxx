@@ -28,10 +28,21 @@ class KeyboardEventFilter : public QObject {
     // Returns a valid QString with modifier keys from a QKeyEvent
     static QKeySequence getKeySeq(QKeyEvent* e);
 
-#ifndef __APPLE__
+    // Key learning mode
+    void setLearningMode(bool enable);
+    bool isLearningMode() const { return m_learningMode; }
+
+    void setStrictMode(bool enable) { m_strictMode = enable; }
+    bool isStrictMode() const { return m_strictMode; }
+
   signals:
+#ifndef __APPLE__
     void altPressedWithoutKeys();
 #endif
+    // Emitted when a key is captured in learning mode
+    void keyCaptured(QKeySequence keySequence);
+    // Emitted for every key press (for visual feedback/monitoring)
+    void keyPressed(QKeySequence keySequence);
 
   private:
     struct KeyDownInformation {
@@ -66,4 +77,12 @@ class KeyboardEventFilter : public QObject {
     ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
+    // Learning mode flag
+    bool m_learningMode;
+    // Strict mode flag: consumes all unmapped keys
+    bool m_strictMode;
+
+    // Focused deck for deck-switching logic
+    int m_focusedDeck; 
+    void cycleFocusedDeck();
 };

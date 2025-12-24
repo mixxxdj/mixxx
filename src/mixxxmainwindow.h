@@ -68,6 +68,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result);
     /// show keywheel
     void slotShowKeywheel(bool toggle);
+    /// show visual keyboard
+    void slotShowVisualKeyboard(bool toggle);
     /// toggle full screen mode
     void slotViewFullScreen(bool toggle);
     /// open the developer tools dialog.
@@ -151,6 +153,7 @@ class MixxxMainWindow : public QMainWindow {
 
     DlgPreferences* m_pPrefDlg;
     parented_ptr<DlgKeywheel> m_pKeywheel;
+    class DlgKeyboardVisualLayout* m_pVisualKeyboardDlg;
 
 #ifdef __ENGINEPRIME__
     // Library exporter
