@@ -1,0 +1,90 @@
+
+<Template>
+  <SetVariable name="StemGroup">[Channel<Variable name="ChanNum"/>_Stem<Variable name="StemNum"/>]</SetVariable>
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="label_width">30min</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>StemChannel_ControlContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <PushButton>
+        <TooltipId>StemMuteButton</TooltipId>
+        <Size>15f,20f</Size>
+        <ObjectName>StemMuteButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+        </State>
+        <State>
+          <Number>1</Number>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="StemGroup"/>,mute</ConfigKey>
+          <Transform><Not/></Transform>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+      <StemLabel>
+        <TooltipId>StemLabel</TooltipId>
+        <ObjectName>StemLabel</ObjectName>
+        <Group><Variable name="Group"/></Group>
+        <StemNum><Variable name="StemNum"/></StemNum>
+        <Alignment>left</Alignment>
+        <Elide>right</Elide>
+        <Size>50,26</Size>
+        <Text></Text>
+      </StemLabel>
+
+      <Template src="skin:knob_medium_optional_label.xml">
+        <SetVariable name="TooltipId">StemVolumeKnob</SetVariable>
+        <SetVariable name="control">volume</SetVariable>
+        <SetVariable name="group"><Variable name="StemGroup"/></SetVariable>
+        <SetVariable name="color">green_gapless</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+      <EffectChainPresetSelector>
+        <ObjectName>StemQuickEffectSelector</ObjectName>
+        <Size>85f,18f</Size>
+        <EffectUnitGroup>[QuickEffectRack1_<Variable name="StemGroup"/>]</EffectUnitGroup>
+      </EffectChainPresetSelector>
+
+      <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+      <PushButton>
+        <TooltipId>QuickEffectRack_enabled</TooltipId>
+        <Size>15f,20f</Size>
+        <ObjectName>QuickEffectKillButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+        </State>
+        <State>
+          <Number>1</Number>
+        </State>
+        <Connection>
+          <ConfigKey>[QuickEffectRack1_<Variable name="StemGroup"/>],enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
+        <Size>0me,1min</Size>
+      </WidgetGroup>
+
+      <Template src="skin:knob_medium_optional_label.xml">
+        <SetVariable name="group">[QuickEffectRack1_<Variable name="StemGroup"/>]</SetVariable>
+        <SetVariable name="control">super1</SetVariable>
+        <SetVariable name="color">blue</SetVariable>
+      </Template>
+
+    </Children>
+  </WidgetGroup>
+</Template>

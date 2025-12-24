@@ -1,0 +1,42 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A 3-state status light that only displays if a control is enabled.
+    Currently used in the toolbars notification section.
+    The 'status' controls have 3 values:
+    0 = disconnected / off
+    1 = connecting / enabling
+    2 = connected / enabled
+    https://github.com/mixxxdj/mixxx/issues/5603
+  Variables:
+    ObjectName: The object name.
+    Size: the button size.
+    Tooltip: If no existing TooltipId meets your needs, you can create a custom tooltip using the <Tooltip> tag.
+             Translation or internationalization of these tooltips is not currently possible. (2015/06)
+    state_0: The (optional) text used for this state.
+    state_1: The (optional) image file used for this state.
+    state_2: The (optional) image file used for this state.
+    left_connection_control: the control to connect to
+-->
+
+<Template>
+  <StatusLight>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <Tooltip><Variable name="Tooltip"/></Tooltip>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
+    <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
+    <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
+    <NumberPos>3</NumberPos>
+    <PathStatusLight1 scalemode="STRETCH_ASPECT"><Variable name="state_0"/></PathStatusLight1>
+    <PathStatusLight2 scalemode="STRETCH_ASPECT"><Variable name="state_1"/></PathStatusLight2>
+    <PathStatusLight3 scalemode="STRETCH_ASPECT"><Variable name="state_2"/></PathStatusLight3>
+    <Connection>
+      <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </StatusLight>
+</Template>

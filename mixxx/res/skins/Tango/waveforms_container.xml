@@ -1,0 +1,82 @@
+<!--
+Description:
+  Container for 2 or 4 stacked scrolling waveforms.
+Variables:
+  SignalBgColor_N       : defined skin.xml
+  SignalColor_N         :
+  SignalRGBLowColor_N   :
+  SignalRGBMidColor_N   :
+  SignalRGBHighColor_N  :
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>WaveformContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <Template src="skins:Tango/controls/button_2state_persist.xml">
+        <SetVariable name="ObjectName">StemButtonToggler</SetVariable>
+        <SetVariable name="TooltipId">show_stem_controls</SetVariable>
+        <SetVariable name="Size">14f,22me</SetVariable>
+        <SetVariable name="ConfigKey">[Skin],show_stem_controls</SetVariable>
+      </Template>
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+
+      <WidgetGroup><!-- Waveforms -->
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- 1 & 2 -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skins:Tango/waveform.xml">
+                <SetVariable name="chanNum">1</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/waveform.xml">
+                <SetVariable name="chanNum">2</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /1 & 2 -->
+
+          <WidgetGroup><!-- 3 & 4 -->
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skins:Tango/waveform.xml">
+                <SetVariable name="chanNum">3</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+              </Template>
+
+              <Template src="skins:Tango/waveform.xml">
+                <SetVariable name="chanNum">4</SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /3 & 4 -->
+        </Children>
+      </WidgetGroup><!-- /Waveforms -->
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+
+      <Template src="skins:Tango/controls/button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonToggler</SetVariable>
+        <SetVariable name="Size">14f,22me</SetVariable>
+        <SetVariable name="ConfigKey">[Tango],beatgrid_buttons</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

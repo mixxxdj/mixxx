@@ -1,0 +1,72 @@
+<Template>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+
+  <WidgetGroup>
+    <SizePolicy>max,me</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MixerContainer</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MixerDecks</ObjectName>
+            <SizePolicy>max,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skins:LateNight/mixer/mixer_2decks.xml"/>
+              <Template src="skins:LateNight/mixer/mixer_4decks.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <Template src="skins:LateNight/mixer/mixer_main_headphone.xml"/>
+
+        </Children>
+      </WidgetGroup><!-- MixerContainer -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <SizePolicy>max,me</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName></ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup><!--  width set in qss  -->
+            <ObjectName>CompactDecksCenterSpacer</ObjectName>
+          </WidgetGroup>
+
+          <Template src="skins:LateNight/mixer/vumeters_compact.xml"/>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[LateNight],show_compact_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

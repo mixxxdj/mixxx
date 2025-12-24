@@ -1,0 +1,9 @@
+<svg width="20" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect x=".50632912" y=".50632912" width="18.987" height="18.987341" stroke="#f60" stroke-linecap="square" stroke-width="1.01266" style="paint-order:markers fill stroke"/>
+  <g transform="matrix(1.8 0 0 1.8 .99999986 -38.6)">
+    <g transform="matrix(.4151 0 0 .4151 -1.6604 19.547)">
+      <path d="m8.8184 20.364 4.8181 4.8181 9.6363-14.454" fill="none" stroke="#f60" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.8181"/>
+    </g>
+  </g>
+  <rect x="3.2837546" y="5.0633898" width="0" height="0" rx="10" ry="10" fill="#9a6900" opacity=".7" style="paint-order:markers fill stroke"/>
+</svg>

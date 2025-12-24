@@ -1,0 +1,61 @@
+<!--
+Description:
+  Container that's shown when the auxiliary [auxNum] is not configured.
+  Contains an Add button that shows a popup when pressed.
+Variables:
+  auxNum : text shown on talkover button and internal auxiliary number
+-->
+<Template>
+  <SetVariable name="sourceType">auxiliary</SetVariable>
+  <SetVariable name="group">[Auxiliary<Variable name="auxNum"/>]</SetVariable>
+  <SetVariable name="FxRack">1</SetVariable>
+  <WidgetGroup>
+    <ObjectName>AlignCenter</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AuxUnit</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <Label>
+            <ObjectName>AuxUnitIcon</ObjectName>
+            <Size>17f,32f</Size>
+          </Label>
+
+          <Label>
+            <ObjectName>AuxUnitLabel</ObjectName>
+            <Size>13f,32f</Size>
+            <Text><Variable name="auxNum"/></Text>
+            <Alignment>right</Alignment>
+          </Label>
+
+          <WidgetGroup>
+            <ObjectName>AlignTop</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>20f,28f</Size>
+            <Children>
+              <Template src="skins:Tango/controls/button_1state.xml">
+                <SetVariable name="TooltipId">configure_input</SetVariable>
+                <SetVariable name="ObjectName">MicAuxAdd</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="state_0_text">+</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,main_mix</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

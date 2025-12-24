@@ -1,0 +1,262 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect unit widget hosting all effect controls for both collapsed
+    and expanded state ([FxUnitN],show_parameters)
+  Variables:
+    group: The group for the controls.
+    FxRack
+    FxUnit
+    FxNum
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit">EffectRack1_EffectUnit<Variable name="FxUnit"/></SetVariable>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!-- transparent expand button on top of Fx label & icon -->
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+
+              <!-- transparent expand button -->
+              <PushButton>
+                <TooltipId>EffectUnit_show_parameters</TooltipId>
+                <ObjectName>FxExpandOverlay</ObjectName>
+                <Size>0me,0me</Size>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_parameters</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton><!-- transparent expand button -->
+
+              <!-- Fx label & icon -->
+              <WidgetGroup>
+                <ObjectName>FxUnitHeader</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <!-- Indicates if this FxUnit can currently be accessed by controller.
+                       To be used with default midi-components.js mapping -->
+                  <Label>
+                    <ObjectName>FxUnitControllerInputIndicator</ObjectName>
+                    <Size>2f,0min</Size>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <MinimumSize>3,0</MinimumSize>
+                  </WidgetGroup>
+                  <Label>
+                    <ObjectName>FxUnitLabel</ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MinimunSize>30,20</MinimunSize>
+                    <MaximumSize>38,</MaximumSize>
+                    <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],controller_input_active</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </Label>
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <MinimumSize>1,0</MinimumSize>
+                  </WidgetGroup>
+                  <PushButton>
+                    <ObjectName>FxExpand</ObjectName>
+                    <Size>16f,18me</Size>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_parameters</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- Fx label & icon -->
+
+            </Children>
+          </WidgetGroup><!-- transparent expand button on top of Fx label & icon -->
+        </Children>
+      </WidgetGroup><!-- FxUnitHeader -->
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MixmodePflContainer</ObjectName>
+        <SizePolicy>max,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <PushButton>
+            <TooltipId>EffectUnit_mix_mode</TooltipId>
+            <ObjectName>MixModeButton</ObjectName>
+            <Size>32f,26f</Size>
+            <NumberStates>2</NumberStates>
+            <RightClickIsPushButton>false</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode_active.svg</Pressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode_active.svg</Pressed>
+            </State>
+            <Connection>
+              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],mix_mode</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <Template src="skins:LateNight/controls/button_2state.xml">
+            <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26f,26f</SetVariable>
+            <SetVariable name="BtnSize">square</SetVariable>
+            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_PresetButton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MixmodePflContainer</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectChainPresetButton>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Size>22f,22f</Size>
+            <ObjectName>EffectChainSelector</ObjectName>
+          </EffectChainPresetButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:LateNight/controls/knob.xml">
+            <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="ObjectName">SuperKnob</SetVariable>
+            <SetVariable name="KnobBg">small</SetVariable>
+            <SetVariable name="KnobIndicator">small</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorSuper"/></SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+            <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
+            <SetVariable name="Control">super1</SetVariable>
+            <SetVariable name="Label">Super</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:LateNight/controls/knob.xml">
+            <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="ObjectName">DryWetKnob</SetVariable>
+            <SetVariable name="KnobBg">small</SetVariable>
+            <SetVariable name="KnobIndicator">small</SetVariable>
+            <SetVariable name="KnobColor">red</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+            <SetVariable name="Group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
+            <SetVariable name="Control">mix</SetVariable>
+            <SetVariable name="Label">Mix</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls1</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <MaximumSize>220,</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:LateNight/fx/slot_controls.xml">
+            <SetVariable name="FxNum">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls2</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>p,min</SizePolicy>
+        <MaximumSize>220,</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:LateNight/fx/slot_controls.xml">
+            <SetVariable name="FxNum">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls3</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <SizePolicy>p,min</SizePolicy>
+        <MaximumSize>220,</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:LateNight/fx/slot_controls.xml">
+            <SetVariable name="FxNum">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+</Template>

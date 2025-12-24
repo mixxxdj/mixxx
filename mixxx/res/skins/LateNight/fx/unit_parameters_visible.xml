@@ -1,0 +1,189 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect unit widget.
+  Variables:
+    FxUnit
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>FxUnit<Variable name="FxUnit"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>FxSlotsExpanded</ObjectName>
+        <SizePolicy>me,me</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <!-- Fx Slot 1 -->
+          <WidgetGroup>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:LateNight/fx/slot_parameters.xml">
+                <SetVariable name="FxNum">1</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>182,</MaximumSize>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls1</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Horizontal split line - adjust max-width to fx slot width -->
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>FxSlotSeparatorH</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children/>
+              </WidgetGroup>
+              <WidgetGroup>
+                <SizePolicy>me,f</SizePolicy>
+                <MaximumSize>185,0</MaximumSize>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Fx Slot 2 -->
+          <WidgetGroup>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:LateNight/fx/slot_parameters.xml">
+                <SetVariable name="FxNum">2</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>182,</MaximumSize>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls2</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>FxSlotSeparatorH</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children/>
+              </WidgetGroup>
+              <WidgetGroup>
+                <SizePolicy>me,f</SizePolicy>
+                <MaximumSize>185,0</MaximumSize>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Fx Slot 3 -->
+          <WidgetGroup>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:LateNight/fx/slot_parameters.xml">
+                <SetVariable name="FxNum">3</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>182,</MaximumSize>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>FxUnit<Variable name="FxUnit"/>_FxSlotControls3</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- FxSlotsExpanded -->
+
+      <WidgetGroup><!-- FxUnitHeader + FxUnitControlsExpanded -->
+        <ObjectName></ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>FxUnitHeaderExpanded</ObjectName>
+            <Layout>horizontal</Layout>
+            <Size>0min,35f</Size>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_Header</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>FxUnitControlsExpanded</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
+              </SingletonContainer>
+
+              <WidgetGroup><Size>,1me</Size></WidgetGroup>
+
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_PresetButton</ObjectName>
+              </SingletonContainer>
+
+              <WidgetGroup><Size>,1f</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>,1</MinimumSize>
+                <MaximumSize>,15</MaximumSize>
+              </WidgetGroup>
+
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
+              </SingletonContainer>
+
+              <WidgetGroup><Size>,1me</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>,1me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- FxUnitControlsExpanded -->
+        </Children>
+      </WidgetGroup><!-- FxUnitHeader + FxUnitControlsExpanded -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

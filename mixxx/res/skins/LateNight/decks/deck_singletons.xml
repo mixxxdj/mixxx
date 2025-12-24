@@ -1,0 +1,118 @@
+<Template>
+
+<!-- We need these singletons first because they're -->
+    <!-- used in all three deck variants -->
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/spinny_coverart.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- ...used in full & compact deck -->
+    <SingletonDefinition>
+      <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/overview.xml">
+          <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeDeck"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/deck_settings.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/key_controls.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- Rate range displays, top & bottom -->
+    <SingletonDefinition>
+      <ObjectName>RateRangeDisplayTop<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Size>53f,17f</Size>
+          <Children>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangePrefix</ObjectName>
+              <Channel><Variable name="ChanNum"/></Channel>
+              <Position>Top</Position>
+              <Display>prefix</Display>
+              <Size>7f,16f</Size>
+              <Pos>3,0</Pos>
+            </RateRange>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangeText</ObjectName>
+              <Channel><Variable name="ChanNum"/></Channel>
+              <Position>Top</Position>
+              <Display>range</Display>
+              <Size>18f,16f</Size>
+              <Pos>35,1</Pos>
+            </RateRange>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition>
+    <SingletonDefinition>
+      <ObjectName>RateRangeDisplayBottom<Variable name="ChanNum"/></ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Size>53f,16f</Size>
+          <Children>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangePrefix</ObjectName>
+              <Channel><Variable name="ChanNum" /></Channel>
+              <Position>Bottom</Position>
+              <Display>prefix</Display>
+              <Size>7f,16f</Size>
+              <Pos>3,0</Pos>
+            </RateRange>
+            <RateRange>
+              <TooltipId>rate_range_display</TooltipId>
+              <ObjectName>RateRangeText</ObjectName>
+              <Channel><Variable name="ChanNum" /></Channel>
+              <Position>Bottom</Position>
+              <Display>range</Display>
+              <Size>18f,16f</Size>
+              <Pos>35,0</Pos>
+            </RateRange>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition>
+
+<!-- Decks -->
+    <!-- minimal deck. used in deck stack and above library -->
+    <SingletonDefinition>
+      <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/deck_mini.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- Compact deck. used once in deck stack -->
+    <SingletonDefinition>
+      <ObjectName>Deck<Variable name="ChanNum"/>_Compact</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/deck_compact.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- Minimal deck, used in deck stack and above library -->
+    <SingletonDefinition>
+      <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/decks/deck_full.xml"/>
+      </Children>
+  </SingletonDefinition>
+</Template>

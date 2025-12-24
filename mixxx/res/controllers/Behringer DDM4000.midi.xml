@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.6+">
+  <info>
+    <name>Behringer DDM4000</name>
+    <author>Christian</author>
+    <description>Mixxx controller preset for a Behringer DDM4000 mixer.</description>
+  </info>
+  <controller id="DDM4000">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js" />
+      <file filename="Behringer-Extension-scripts.js" />
+      <file filename="Behringer-DDM4000-scripts.js" functionprefix="DDM4000" />
+    </scriptfiles>
+  </controller>
+</MixxxControllerPreset>

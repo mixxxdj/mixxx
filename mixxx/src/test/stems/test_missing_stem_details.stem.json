@@ -1,0 +1,28 @@
+{
+  "mastering_dsp": {
+    "compressor": {
+      "ratio": 3,
+      "output_gain": 1.919999957084656,
+      "enabled": true,
+      "threshold": -20.21875,
+      "attack": 0.003000000026077032,
+      "input_gain": 0,
+      "release": 0.300000011920929,
+      "hp_cutoff": 195,
+      "dry_wet": 100
+    },
+    "limiter": {
+      "release": 0.05000000074505806,
+      "threshold": -8.0859375,
+      "ceiling": -0.3499999940395355,
+      "enabled": true
+    }
+  },
+  "version": 1,
+  "stems": [
+    {},
+    {},
+    {},
+    {}
+  ]
+}

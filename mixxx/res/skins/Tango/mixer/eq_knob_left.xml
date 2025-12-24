@@ -1,0 +1,87 @@
+<!--
+Description:
+  An EQ knob with a Kill button next to it.
+  A 'button' underneath the knob turns grey when EQ range is killed.
+Variables:
+  PotiMinAngle: -135°, see skin.xml
+  PotiMaxAngle: 135°, see skin.xml
+  group       : affected group
+  parameter   : 1, 2, 3 (low, mid, high)
+-->
+<Template>
+  <SetVariable name="FxUnit">[EqualizerRack1_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="FxUnit_FxNum">[EqualizerRack1_<Variable name="group"/>_Effect1]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>EQKnobContainerLeft</ObjectName>
+    <SizePolicy>max,min</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <!-- Spacer when no EQ plugin is loaded -->
+      <WidgetGroup>
+        <Size>0min,26min</Size>
+        <Connection>
+          <ConfigKey><Variable name="FxUnit_FxNum"/>,loaded</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- EQ knob + Kill button -->
+        <SizePolicy>max,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!-- Kill button -->
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Tango/mixer/eq_button.xml">
+                <SetVariable name="ObjectName">EQKillButton</SetVariable>
+                <SetVariable name="Size">12f,26f</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- EQ knob + Kill indicator underneath -->
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <EffectParameterKnobComposed>
+                <Size>30f,26f</Size>
+                <Knob>skins:Tango/knobs_sliders/knob_white.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <KnobCenterYOffset>2.000</KnobCenterYOffset>
+                <EffectUnitGroup><Variable name="FxUnit"/></EffectUnitGroup>
+                <Effect>1</Effect>
+                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+                <Connection>
+                  <ConfigKey><Variable name="FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
+                </Connection>
+              </EffectParameterKnobComposed>
+
+              <Template src="skins:Tango/mixer/eq_button.xml">
+                <SetVariable name="ObjectName">EQKilledUnderlay</SetVariable>
+                <SetVariable name="Size">30f,26f</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /EQ knob + Kill indicator underneath -->
+
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="FxUnit_FxNum"/>,loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /EQ knob + Kill button -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

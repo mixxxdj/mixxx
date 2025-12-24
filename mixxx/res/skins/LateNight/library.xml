@@ -1,0 +1,126 @@
+<Template>
+  <WidgetGroup>
+    <!-- This extra wrapper with 'ignore' size policy allows to
+      shrink the library to zero height, while the inner LibraryContainer
+      expands to fill the available vertical space. -->
+    <SizePolicy>me,i</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <!--
+      **********************************************
+      Library / Preview Deck / Search / Tree view
+      **********************************************
+      -->
+      <WidgetGroup>
+        <ObjectName>LibraryContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+          <Splitter>
+            <ObjectName>LibrarySplitter</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizes>1,10</SplitSizes>
+            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+            <Collapsible>1,0</Collapsible>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>LibSidebarContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MinimumSize>100,</MinimumSize>
+                <Children>
+
+                  <Template src="skins:LateNight/decks/preview_deck.xml"/>
+
+                  <WidgetGroup><!--SearchBox + Library expand toggle -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
+                    <Children>
+
+                      <WidgetGroup>
+                        <ObjectName>SearchLineBox</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,max</SizePolicy>
+                        <Children>
+                          <SearchBox></SearchBox>
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <ObjectName>LibExpandBox</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <Template src="skins:LateNight/controls/button_2state.xml">
+                            <SetVariable name="TooltipId">maximize_library</SetVariable>
+                            <SetVariable name="ObjectName">LibExpand</SetVariable>
+                            <SetVariable name="Size">18f,18me</SetVariable>
+                            <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup><!-- LibExpandBox -->
+                    </Children>
+                  </WidgetGroup><!--SearchBox + Library expand toggle -->
+
+                  <WidgetGroup>
+                    <ObjectName>SearchTreeSpacer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children/>
+                  </WidgetGroup>
+
+                  <Splitter>
+                    <ObjectName>SidebarCoverSplitter</ObjectName>
+                    <Size>me,me</Size>
+                    <SplitSizes>1,1</SplitSizes>
+                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
+                    <Orientation>vertical</Orientation>
+                    <Collapsible>0,0</Collapsible>
+                    <Children>
+                      <!--Library Tree View-->
+                      <WidgetGroup>
+                        <ObjectName>SidebarBox</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <LibrarySidebar></LibrarySidebar>
+                        </Children>
+                      </WidgetGroup>
+                      <!--Cover Art-->
+                      <WidgetGroup>
+                        <ObjectName>AlignCenter</ObjectName>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <CoverArt>
+                            <SizePolicy>me,me</SizePolicy>
+                            <MinimumSize>40,40</MinimumSize>
+                          </CoverArt>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup><!--Cover Art-->
+                    </Children>
+                  </Splitter><!-- SidebarCoverSplitter -->
+
+                </Children>
+              </WidgetGroup><!-- LibSidebarContainer -->
+
+              <!-- Library Table-->
+              <Library>
+                <ShowButtonText>false</ShowButtonText>
+                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                <!-- Colors for the render modes of the Overview column -->
+                <!-- For the overview column we only set the signal color,
+                     other colors are the defaults. -->
+                <SignalColor><Variable name="SignalColor_12"/></SignalColor>
+              </Library>
+
+            </Children>
+          </Splitter><!-- LibrarySplitter -->
+
+        </Children>
+      </WidgetGroup><!-- LibraryContainer -->
+    </Children>
+  </WidgetGroup>
+</Template>

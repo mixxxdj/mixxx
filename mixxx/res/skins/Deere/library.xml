@@ -1,0 +1,103 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Library widget.
+-->
+<Template>
+<!-- This additional wrapper is necessary for being able to address
+    QMenus in QTableView, QTreeView etc. at once with #LibraryContainer QMenu
+    like in LateNight. Go figure... -->
+  <WidgetGroup>
+    <!-- 'Ignore' is the only thing that lets it
+          shrink to nothing. -->
+    <SizePolicy>me,i</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>LibraryContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <!-- QSplitter between LibrarySidebar and Library -->
+          <Splitter>
+            <ObjectName>LibrarySplitter</ObjectName>
+            <Orientation>horizontal</Orientation>
+            <SizePolicy>me,me</SizePolicy>
+            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+            <SplitSizes>2,8</SplitSizes>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:preview_deck.xml"/>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <SearchBox></SearchBox>
+                      <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="TooltipId">maximize_library</SetVariable>
+                        <SetVariable name="object_name">LibraryToggle</SetVariable>
+                        <SetVariable name="control">[Skin],show_maximized_library</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <!-- QSplitter between LibrarySidebar and CoverArt -->
+                  <Splitter>
+                    <ObjectName>LibraryCoverArtSplitter</ObjectName>
+                    <Orientation>vertical</Orientation>
+                    <SizePolicy>me,me</SizePolicy>
+                    <MinimumSize>30,30</MinimumSize>
+                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
+                    <SplitSizes>2,8</SplitSizes>
+                    <Collapsible>0,0</Collapsible>
+                    <Children>
+                      <LibrarySidebar>
+                      </LibrarySidebar>
+
+                      <CoverArt>
+                        <ObjectName>LibraryCoverArt</ObjectName>
+                        <TooltipId>coverart</TooltipId>
+                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>30,30</MinimumSize>
+                        <Connection>
+                          <ConfigKey>[Skin],show_library_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </CoverArt>
+                    </Children>
+                  </Splitter>
+                </Children>
+              </WidgetGroup>
+
+              <Library>
+                <ShowButtonText>false</ShowButtonText>
+                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                <!-- Colors for the render modes of the Overview column -->
+                <!-- For the overview column we only set the signal color,
+                     other colors are the defaults. -->
+                <SignalColor><Variable name="SignalColor"/></SignalColor>
+              </Library>
+
+            </Children>
+            <!--Connection>
+              <ConfigKey>[Skin],show_library</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection-->
+          </Splitter>
+
+          <!--WidgetGroup>
+            <ObjectName>Spacer22</ObjectName>
+            <SizePolicy>me,me</SizePolicy>
+            <Children/>
+            <Connection>
+              <ConfigKey>[Skin],show_library</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup-->
+
+        </Children>
+      </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+</Template>

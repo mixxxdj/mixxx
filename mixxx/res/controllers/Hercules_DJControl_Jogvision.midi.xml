@@ -1,0 +1,2181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxMIDIPreset mixxxVersion="2.2" schemaVersion="1">
+  <info>
+    <name>Hercules DJControl Jogvision</name>
+    <author>DJ Phatso for Hercules Technical Support</author>
+    <description>MIDI Mapping for Hercules DJControl Jogvision</description>
+    <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12580</forums>
+    <manual>hercules_djcontrol_jogvision</manual>
+  </info>
+  <controller id="Hercules DJControl Jogvision">
+    <scriptfiles>
+      <file filename="lodash.mixxx.js" />
+      <file filename="midi-components-0.0.js" />
+      <file functionprefix="DJCJV" filename="Hercules_DJControl_Jogvision-scripts.js" />
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.modeKey</key>
+        <description>Deck A MODE key management</description>
+        <status>0x90</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.modeKey</key>
+        <description>Deck B MODE key management</description>
+        <status>0x91</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.shiftKey</key>
+        <description>Deck A Shift key management</description>
+        <status>0x90</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.shiftKey</key>
+        <description>Deck B Shift key management</description>
+        <status>0x91</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- NN's MIDI Channel 1 (0x90 - Deck A) -->
+      <!-- Play -->
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <description>Play button</description>
+        <status>0x90</status>
+        <midino>0x32</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>play_stutter</key>
+        <description>SHIFT + Play: Play Stutter</description>
+        <status>0x90</status>
+        <midino>0x37</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- CUE -->
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_default</key>
+        <description>Cue button</description>
+        <status>0x90</status>
+        <midino>0x31</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>start_play</key>
+        <description>SHIFT + Cue: REWIND to beginning</description>
+        <status>0x90</status>
+        <midino>0x36</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Sync -->
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <description>Sync button</description>
+        <status>0x90</status>
+        <midino>0x30</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_leader</key>
+        <description>SHIFT + Sync: Sync Master</description>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!--  PFL -->
+      <control>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <description>PFL button</description>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>DJCJV.headCue</key>
+        <description>Headphone CUE button</description>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>DJCJV.headMix</key>
+        <description>Headphone MIX button</description>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- LOAD A -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.loadTrack</key>
+        <description>LOAD A button</description>
+        <status>0x90</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>eject</key>
+        <description>EJECT A button</description>
+        <status>0x90</status>
+        <midino>0x53</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Key Lock -->
+      <control>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <description>keylock button</description>
+        <status>0x90</status>
+        <midino>0x34</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- SLIP A -->
+      <control>
+        <group>[Channel1]</group>
+        <key>slip_enabled</key>
+        <description>SLIP button</description>
+        <status>0x90</status>
+        <midino>0x39</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Jog Touch A -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.wheelTouch</key>
+        <description>Jog Wheel Touch Deck A</description>
+        <status>0x90</status>
+        <midino>0x55</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Loop Section -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.beatLoopChange</key>
+        <description>Loop Half</description>
+        <status>0x90</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.beatloopActivate</key>
+        <description>Beatloop activate button</description>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.beatLoopChange</key>
+        <description>Loop Double</description>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- FX section -->
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <description>FX Unit 1 - Slot 1 On/Off</description>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <description>FX Unit 1 - Slot 2 On/Off</description>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <description>FX Unit 1 - Slot 3 On/Off</description>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>effect_selector</key>
+        <description>FX Unit 1 - Slot 1 Select</description>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>effect_selector</key>
+        <description>FX Unit 1 - Slot 2 Select</description>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>effect_selector</key>
+        <description>FX Unit 1 - Slot 3 Select</description>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- PADS - Hot Cues (SET) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_activate</key>
+        <description>PAD 1</description>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_activate</key>
+        <description>PAD 2</description>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_3_activate</key>
+        <description>PAD 3</description>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_4_activate</key>
+        <description>PAD 4</description>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_5_activate</key>
+        <description>PAD 5</description>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_6_activate</key>
+        <description>PAD 6</description>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_7_activate</key>
+        <description>PAD 7</description>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_8_activate</key>
+        <description>PAD 8</description>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- PADS - Hot-Cue Delete(SHIFT mode) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_clear</key>
+        <description>PAD 1</description>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_clear</key>
+        <description>PAD 2</description>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_3_clear</key>
+        <description>PAD 3</description>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_4_clear</key>
+        <description>PAD 4</description>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_5_clear</key>
+        <description>PAD 5</description>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_6_clear</key>
+        <description>PAD 6</description>
+        <status>0x90</status>
+        <midino>0x1D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_7_clear</key>
+        <description>PAD 7</description>
+        <status>0x90</status>
+        <midino>0x1E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_8_clear</key>
+        <description>PAD 8</description>
+        <status>0x90</status>
+        <midino>0x1F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- PADS - Sampler -->
+      <control>
+        <group>[Sampler1]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 1</description>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler2]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 2</description>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler3]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 3</description>
+        <status>0x90</status>
+        <midino>0x22</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler4]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 4</description>
+        <status>0x90</status>
+        <midino>0x23</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler5]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 5</description>
+        <status>0x90</status>
+        <midino>0x24</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler6]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 6</description>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler7]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 7</description>
+        <status>0x90</status>
+        <midino>0x26</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler8]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 8</description>
+        <status>0x90</status>
+        <midino>0x27</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- NN's MIDI Channel 2 (0x91 - Deck B ) -->
+      <!-- Play -->
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <description>Play button</description>
+        <status>0x91</status>
+        <midino>0x32</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>play_stutter</key>
+        <description>SHIFT + Play: Play Stutter</description>
+        <status>0x91</status>
+        <midino>0x37</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- CUE -->
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_default</key>
+        <description>Cue button</description>
+        <status>0x91</status>
+        <midino>0x31</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>start_play</key>
+        <description>SHIFT + Cue: REWIND to beginning</description>
+        <status>0x91</status>
+        <midino>0x36</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Sync -->
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <description>Sync button</description>
+        <status>0x91</status>
+        <midino>0x30</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_leader</key>
+        <description>SHIFT + Sync: Sync Master</description>
+        <status>0x91</status>
+        <midino>0x35</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!--  PFL -->
+      <control>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <description>PFL button</description>
+        <status>0x91</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- LOAD B -->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.loadTrack</key>
+        <description>LOAD B button</description>
+        <status>0x91</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>eject</key>
+        <description>EJECT B button</description>
+        <status>0x91</status>
+        <midino>0x53</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Key Lock -->
+      <control>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <description>keylock button</description>
+        <status>0x91</status>
+        <midino>0x34</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- SLIP B -->
+      <control>
+        <group>[Channel2]</group>
+        <key>slip_enabled</key>
+        <description>SLIP button</description>
+        <status>0x91</status>
+        <midino>0x39</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Jog Touch B -->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.wheelTouch</key>
+        <description>Jog Wheel Touch Deck B</description>
+        <status>0x91</status>
+        <midino>0x55</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Loop Section -->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.beatLoopChange</key>
+        <description>Loop Half</description>
+        <status>0x91</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.beatloopActivate</key>
+        <description>Beatloop activate button</description>
+        <status>0x91</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.beatLoopChange</key>
+        <description>Loop Double</description>
+        <status>0x91</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- FX section -->
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
+        <description>FX Unit 2 - Slot 1 On/Off</description>
+        <status>0x91</status>
+        <midino>0x04</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <description>FX Unit 2 - Slot 2 On/Off</description>
+        <status>0x91</status>
+        <midino>0x05</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <description>FX Unit 2 - Slot 3 On/Off</description>
+        <status>0x91</status>
+        <midino>0x06</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>effect_selector</key>
+        <description>FX Unit 2 - Slot 1 Select</description>
+        <status>0x91</status>
+        <midino>0x0C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>effect_selector</key>
+        <description>FX Unit 2 - Slot 2 Select</description>
+        <status>0x91</status>
+        <midino>0x0D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>effect_selector</key>
+        <description>FX Unit 2 - Slot 3 Select</description>
+        <status>0x91</status>
+        <midino>0x0E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- PADS - Hot Cues (SET) -->
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_activate</key>
+        <description>PAD 1</description>
+        <status>0x91</status>
+        <midino>0x10</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_activate</key>
+        <description>PAD 2</description>
+        <status>0x91</status>
+        <midino>0x11</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_3_activate</key>
+        <description>PAD 3</description>
+        <status>0x91</status>
+        <midino>0x12</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_4_activate</key>
+        <description>PAD 4</description>
+        <status>0x91</status>
+        <midino>0x13</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_5_activate</key>
+        <description>PAD 5</description>
+        <status>0x91</status>
+        <midino>0x14</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_6_activate</key>
+        <description>PAD 6</description>
+        <status>0x91</status>
+        <midino>0x15</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_7_activate</key>
+        <description>PAD 7</description>
+        <status>0x91</status>
+        <midino>0x16</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_8_activate</key>
+        <description>PAD 8</description>
+        <status>0x91</status>
+        <midino>0x17</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- PADS - Hot-Cue Delete(SHIFT mode) -->
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_clear</key>
+        <description>PAD 1</description>
+        <status>0x91</status>
+        <midino>0x18</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_clear</key>
+        <description>PAD 2</description>
+        <status>0x91</status>
+        <midino>0x19</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_3_clear</key>
+        <description>PAD 3</description>
+        <status>0x91</status>
+        <midino>0x1A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_4_clear</key>
+        <description>PAD 4</description>
+        <status>0x91</status>
+        <midino>0x1B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_5_clear</key>
+        <description>PAD 5</description>
+        <status>0x91</status>
+        <midino>0x1C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_6_clear</key>
+        <description>PAD 6</description>
+        <status>0x91</status>
+        <midino>0x1D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_7_clear</key>
+        <description>PAD 7</description>
+        <status>0x91</status>
+        <midino>0x1E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_8_clear</key>
+        <description>PAD 8</description>
+        <status>0x91</status>
+        <midino>0x1F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- PADS - Sampler -->
+      <control>
+        <group>[Sampler1]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 1</description>
+        <status>0x91</status>
+        <midino>0x20</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler2]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 2</description>
+        <status>0x91</status>
+        <midino>0x21</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler3]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 3</description>
+        <status>0x91</status>
+        <midino>0x22</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler4]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 4</description>
+        <status>0x91</status>
+        <midino>0x23</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler5]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 5</description>
+        <status>0x91</status>
+        <midino>0x24</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler6]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 6</description>
+        <status>0x91</status>
+        <midino>0x25</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler7]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 7</description>
+        <status>0x91</status>
+        <midino>0x26</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler8]</group>
+        <key>cue_gotoandplay</key>
+        <description>PAD 8</description>
+        <status>0x91</status>
+        <midino>0x27</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- CC's MIDI Generic -->
+      <!-- Vinyl button -->
+      <control>
+        <group>[Master]</group>
+        <key>DJCJV.vinylButton</key>
+        <description>Vinyl Deck A</description>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- View button -->
+      <control>
+        <group>[Skin]</group>
+        <key>show_maximized_library</key>
+        <description>Browser button - Maximize Library view</description>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- LOAD Prepare button -->
+      <control>
+        <group>[AutoDJ]</group>
+        <key>enabled</key>
+        <description>AutoDJ On/Off</description>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Browser section (Encoder button) -->
+      <control>
+        <group>[Library]</group>
+        <key>DJCJV.moveFocus</key>
+        <description>Browser button</description>
+        <status>0x90</status>
+        <midino>0x4F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Crossfader -->
+      <control>
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <description>Crossfader</description>
+        <status>0xB0</status>
+        <midino>0x00</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Browser encoder -->
+      <control>
+        <group>[Library]</group>
+        <key>DJCJV.browseLibrary</key>
+        <description>Move Vertical (Browser Knob)</description>
+        <status>0xB0</status>
+        <midino>0x4E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- CC's MIDI Channel 1 (0xB0 ) -->
+      <!--  Volume -->
+      <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <description>Volume Deck A</description>
+        <status>0xB0</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- EQ -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <description>EQ LOW Deck A</description>
+        <status>0xB0</status>
+        <midino>0x05</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <description>EQ MID Deck A</description>
+        <status>0xB0</status>
+        <midino>0x04</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
+        <description>EQ HIGH Deck A</description>
+        <status>0xB0</status>
+        <midino>0x03</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Gain -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.preGain</key>
+        <description>Gain Deck A</description>
+        <status>0xB0</status>
+        <midino>0x4F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Filter -->
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>DJCJV.Filter</key>
+        <description>Filter (AIR FX) Deck A</description>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Pitch sliders -->
+      <control>
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xB0</status>
+        <midino>0x02</midino>
+        <options>
+          <fourteen-bit-msb />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <fourteen-bit-lsb />
+        </options>
+      </control>
+      <!-- Jog-Wheel -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.scratchWheel</key>
+        <description>Scratch Deck A (Jog-Wheel)</description>
+        <status>0xB0</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.bendWheel</key>
+        <description>Pitch Bend Deck A (Jog-Wheel)</description>
+        <status>0xB0</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- LOOP section -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.beatjumpSize</key>
+        <description>Loop Size</description>
+        <status>0xB0</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJCJV.beatjumpMove</key>
+        <description>Move Loop By N Beats</description>
+        <status>0xB0</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- FX section -->
+      <control>
+        <group>[Channel1]</group>
+        <key>beats_translate_curpos</key>
+        <description>Align beat grid Deck 1 to current playposition</description>
+        <status>0x90</status>
+        <midino>0x52</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>meta</key>
+        <description>Effect Rack 1 - Slot 2 Level</description>
+        <status>0xB0</status>
+        <midino>0x47</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>meta</key>
+        <description>Effect Rack 1 - Slot 2 Level</description>
+        <status>0xB0</status>
+        <midino>0x48</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>meta</key>
+        <description>Effect Rack 1 - Slot 3 Level</description>
+        <status>0xB0</status>
+        <midino>0x49</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>DJCJV.mixLevel</key>
+        <description>Effect Rack 1 - Dry/Wet Level</description>
+        <status>0xB0</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- CC's MIDI Channel 2 (0xB1) -->
+      <!--  Volume -->
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <description>Volume Deck A</description>
+        <status>0xB1</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- EQ -->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <description>EQ LOW Deck A</description>
+        <status>0xB1</status>
+        <midino>0x05</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <description>EQ MID Deck A</description>
+        <status>0xB1</status>
+        <midino>0x04</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
+        <description>EQ HIGH Deck A</description>
+        <status>0xB1</status>
+        <midino>0x03</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Gain -->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.preGain</key>
+        <description>Gain Deck B</description>
+        <status>0xB1</status>
+        <midino>0x4F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Filter -->
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>DJCJV.Filter</key>
+        <description>Filter (AIR FX) Deck B</description>
+        <status>0xB1</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Pitch sliders -->
+      <control>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xB1</status>
+        <midino>0x02</midino>
+        <options>
+          <fourteen-bit-msb />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xB1</status>
+        <midino>0x22</midino>
+        <options>
+          <fourteen-bit-lsb />
+        </options>
+      </control>
+      <!-- Jog-Wheel -->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.scratchWheel</key>
+        <description>Scratch Deck B (Jog-Wheel)</description>
+        <status>0xB1</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.bendWheel</key>
+        <description>Pitch Bend Deck B (Jog-Wheel)</description>
+        <status>0xB1</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- LOOP section -->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.beatjumpSize</key>
+        <description>Loop Size</description>
+        <status>0xB1</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJCJV.beatjumpMove</key>
+        <description>Move Loop By N Beats</description>
+        <status>0xB1</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- FX section -->
+      <control>
+        <group>[Channel2]</group>
+        <key>beats_translate_curpos</key>
+        <description>Align beat grid Deck 2 to current playposition</description>
+        <status>0x91</status>
+        <midino>0x52</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>meta</key>
+        <description>Effect Rack 1 - Slot 2 Level</description>
+        <status>0xB1</status>
+        <midino>0x47</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>meta</key>
+        <description>Effect Rack 1 - Slot 2 Level</description>
+        <status>0xB1</status>
+        <midino>0x48</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>meta</key>
+        <description>Effect Rack 1 - Slot 3 Level</description>
+        <status>0xB1</status>
+        <midino>0x49</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>DJCJV.mixLevel</key>
+        <description>Effect Rack 1 - Dry/Wet Level</description>
+        <status>0xB1</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+    </controls>
+    <outputs>
+      <!-- LED output -->
+      <!-- LED Transport -->
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <description>PLAY LED Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x32</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_stutter</key>
+        <description>PLAY LED Deck A(SHIFT MODE)</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x37</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <description>CUE LED Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x31</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <description>SYNC LED Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x30</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>sync_leader</key>
+        <description>SYNC LED Deck A(SHIFT mode)</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>slip_enabled</key>
+        <description>Slip button Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x39</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <description>Q button Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x34</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <description>PLAY LED Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x32</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_stutter</key>
+        <description>PLAY LED Deck A(SHIFT MODE)</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x37</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <description>CUE LED Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x31</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <description>SYNC LED Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x30</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>sync_leader</key>
+        <description>SYNC LED Deck A(SHIFT mode)</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x35</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>slip_enabled</key>
+        <description>Slip button Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x39</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <description>Q button Deck A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x34</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <!--  LED LOOP -->
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <description>Loop In LED DA</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <on>0x7f</on>
+        <off>0x00</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <description>Loop In LED DB</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x01</midino>
+        <on>0x7f</on>
+        <off>0x00</off>
+      </output>
+      <!-- LED PFL buttons -->
+      <output>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <description>PFL LED DECK A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <description>PFL LED DECK B</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x33</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <!--  Effect Unit On -->
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <description>Effect On/Off button</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <description>Effect On/Off button</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <description>Effect On/Off button</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
+        <description>Effect On/Off button</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x04</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <description>Effect On/Off button</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x05</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <description>Effect On/Off button</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x06</midino>
+        <on>0x7f</on>
+        <off>0x0</off>
+      </output>
+      <!--  Track LED -->
+      <output>
+        <group>[Channel1]</group>
+        <key>end_of_track</key>
+        <description>TRACK LED DECK A</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x45</midino>
+        <on>0x41</on>
+        <off>0x27</off>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>end_of_track</key>
+        <description>TRACK LED DECK B</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x45</midino>
+        <on>0x41</on>
+        <off>0x27</off>
+      </output>
+      <!--  VIEW LED -->
+      <output>
+        <group>[Skin]</group>
+        <key>show_maximized_library</key>
+        <description>VIEW button LED</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+      </output>
+      <!--  LOAD Prepare LED -->
+      <output>
+        <group>[AutoDJ]</group>
+        <key>enabled</key>
+        <description>LOAD Prepare button LED</description>
+        <minimum>0.5</minimum>
+        <maximum>1</maximum>
+        <status>0x91</status>
+        <midino>0x45</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+      </output>
+      <!-- LED HOT CUE (Normal Mode) -->
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_5_enabled</key>
+        <description>Hotcue 5 (Pad 5)</description>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_6_enabled</key>
+        <description>Hotcue 6 (Pad 6)</description>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_7_enabled</key>
+        <description>Hotcue 7 (Pad 7)</description>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_8_enabled</key>
+        <description>Hotcue 8 (Pad 8)</description>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x91</status>
+        <midino>0x10</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x91</status>
+        <midino>0x11</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x91</status>
+        <midino>0x12</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x91</status>
+        <midino>0x13</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_5_enabled</key>
+        <description>Hotcue 5 (Pad 5)</description>
+        <status>0x91</status>
+        <midino>0x14</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_6_enabled</key>
+        <description>Hotcue 6 (Pad 6)</description>
+        <status>0x91</status>
+        <midino>0x15</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_7_enabled</key>
+        <description>Hotcue 7 (Pad 7)</description>
+        <status>0x91</status>
+        <midino>0x16</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_8_enabled</key>
+        <description>Hotcue 8 (Pad 8)</description>
+        <status>0x91</status>
+        <midino>0x17</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- LED HOT CUE (SHIFT Mode) -->
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_5_enabled</key>
+        <description>Hotcue 5 (Pad 5)</description>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_6_enabled</key>
+        <description>Hotcue 6 (Pad 6)</description>
+        <status>0x90</status>
+        <midino>0x1D</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_7_enabled</key>
+        <description>Hotcue 7 (Pad 7)</description>
+        <status>0x90</status>
+        <midino>0x1E</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_8_enabled</key>
+        <description>Hotcue 8 (Pad 8)</description>
+        <status>0x90</status>
+        <midino>0x1F</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x91</status>
+        <midino>0x18</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x91</status>
+        <midino>0x19</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x91</status>
+        <midino>0x1A</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x91</status>
+        <midino>0x1B</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_5_enabled</key>
+        <description>Hotcue 5 (Pad 5)</description>
+        <status>0x91</status>
+        <midino>0x1C</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_6_enabled</key>
+        <description>Hotcue 6 (Pad 6)</description>
+        <status>0x91</status>
+        <midino>0x1D</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_7_enabled</key>
+        <description>Hotcue 7 (Pad 7)</description>
+        <status>0x91</status>
+        <midino>0x1E</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_8_enabled</key>
+        <description>Hotcue 8 (Pad 8)</description>
+        <status>0x91</status>
+        <midino>0x1F</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- LED SAMPLE -->
+      <output>
+        <group>[Sampler1]</group>
+        <key>play_indicator</key>
+        <description>(Pad 1 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler1]</group>
+        <key>play_indicator</key>
+        <description>(Pad 1 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x20</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler2]</group>
+        <key>play_indicator</key>
+        <description>(Pad 2 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler2]</group>
+        <key>play_indicator</key>
+        <description>(Pad 2 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x21</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler3]</group>
+        <key>play_indicator</key>
+        <description>(Pad 3 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x22</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler3]</group>
+        <key>play_indicator</key>
+        <description>(Pad 3 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x22</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler4]</group>
+        <key>play_indicator</key>
+        <description>(Pad 4 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x23</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler4]</group>
+        <key>play_indicator</key>
+        <description>(Pad 4 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x23</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler5]</group>
+        <key>play_indicator</key>
+        <description>(Pad 5 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x24</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler5]</group>
+        <key>play_indicator</key>
+        <description>(Pad 5 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x24</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler6]</group>
+        <key>play_indicator</key>
+        <description>(Pad 6 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler6]</group>
+        <key>play_indicator</key>
+        <description>(Pad 6 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x25</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler7]</group>
+        <key>play_indicator</key>
+        <description>(Pad 7 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x26</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler7]</group>
+        <key>play_indicator</key>
+        <description>(Pad 7 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x26</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler8]</group>
+        <key>play_indicator</key>
+        <description>(Pad 8 DECK A)</description>
+        <status>0x90</status>
+        <midino>0x27</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler8]</group>
+        <key>play_indicator</key>
+        <description>(Pad 4 DECK B)</description>
+        <status>0x91</status>
+        <midino>0x27</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+    </outputs>
+  </controller>
+</MixxxMIDIPreset>

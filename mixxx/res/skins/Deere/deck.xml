@@ -1,0 +1,87 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck widget.
+  Variables:
+    i: The deck number (1-indexed)
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Deck<Variable name="i"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <MinimumSize>-1,150</MinimumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckRows</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <Template src="skin:deck_text_row.xml"/>
+
+          <!-- Hides if the 'Parallel Waveforms' option is activated in the skin settings -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Connection>
+                      <ConfigKey>[Skin],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform><Not/></Transform>
+                    </Connection>
+                    <Children>
+                      <Template src="skins:Deere/deck_spinny.xml">
+                        <SetVariable name="cover">true</SetVariable>
+                        <SetVariable name="Size">55f,55f</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Connection>
+                      <ConfigKey>[Skin],show_coverart</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Children>
+                      <Template src="skins:Deere/deck_spinny.xml">
+                        <SetVariable name="cover">false</SetVariable>
+                        <SetVariable name="Size">55f,55f</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <SingletonContainer>
+                <ObjectName>DeckWaveform<Variable name="i"/></ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <Template src="skin:deck_overview_row.xml"/>
+          <Template src="skin:deck_controls_row.xml"/>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckRateSlider</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:deck_tempo_column.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

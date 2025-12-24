@@ -1,0 +1,43 @@
+<Template>
+  <WidgetGroup>
+    <Size>74f,54f</Size>
+    <BackPath>style/style_bg_ducking.png</BackPath>
+    <Children>
+      <PushButton>
+        <TooltipId></TooltipId>
+        <NumberStates>3</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_kill_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_ducking_auto_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_ducking_auto_over.png</Unpressed>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Pressed>skin:/btn/btn_ducking_man_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_ducking_man_over.png</Unpressed>
+        </State>
+        <Pos>6,30</Pos>
+        <Connection>
+          <ConfigKey>[Master],talkoverDucking</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <Knob>
+        <TooltipId></TooltipId>
+        <NumberStates>64</NumberStates>
+        <Path>knobs_no_center_inverted/knob_rotary_s%1.png</Path>
+        <Pos>27,22</Pos>
+        <Connection>
+          <ConfigKey>[Master],duckStrength</ConfigKey>
+        </Connection>
+      </Knob>
+    </Children>
+  </WidgetGroup>
+</Template>

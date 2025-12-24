@@ -1,0 +1,70 @@
+<Template>
+  <WidgetGroup>
+    <SizePolicy>me,f</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>SamplerLeftBorder</ObjectName>
+                <Size>3f,0e</Size>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>EffectUnit</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>0e,1f</Size>
+                  </WidgetGroup>
+                  <Template src="skin:effectunitsmall.xml">
+                    <SetVariable name="effectunitnum">1</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_parameters.xml">
+                    <SetVariable name="effectunitnum">1</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_border.xml"/>
+                  <WidgetGroup>
+                    <Size>0e,2f</Size>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>EffectUnit</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <Size>0e,1f</Size>
+                  </WidgetGroup>
+                  <Template src="skin:effectunitsmall.xml">
+                    <SetVariable name="effectunitnum">2</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_parameters.xml">
+                    <SetVariable name="effectunitnum">2</SetVariable>
+                  </Template>
+                  <Template src="skin:effectunit_border.xml"/>
+                  <WidgetGroup>
+                    <Size>0e,2f</Size>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_effectrack</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

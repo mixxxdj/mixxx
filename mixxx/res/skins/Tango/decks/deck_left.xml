@@ -1,0 +1,165 @@
+<!--
+Description:
+  A deck container
+  * main deck
+    * artist/title
+    * overview
+    * track comment (if enabled)
+    * deck buttons
+  * mixer / [CoverArt/Spinny]
+  * VU meter
+Variables:
+  chanNum : [ChannelN]
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+        <ObjectName>Deck<Variable name="chanNum"/></ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <!-- Packed Waveform & ArtistTitle into a fixed-size container,
+          so Deck stays steady while Comment can expand and LoopBeatjump
+          controls can be toggled -->
+          <WidgetGroup><!-- Overview, Comment, ArtistTitle -->
+            <Layout>vertical</Layout>
+            <Size>250me,111f</Size>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>0me,50f</Size>
+                <Children>
+                  <Template src="skins:Tango/decks/row_overview_left.xml"/>
+                </Children>
+              </WidgetGroup>
+
+              <Template src="skins:Tango/decks/row_comment_fx_left.xml"/>
+
+              <WidgetGroup><!-- Parallel Artist + Time -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Template src="skins:Tango/decks/row_text_left.xml"/>
+                  <Template src="skins:Tango/decks/loop_indicator.xml"/>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Overview, Comment, ArtistTitle -->
+
+          <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size></WidgetGroup>
+
+          <Template src="skins:Tango/decks/row_transport_left.xml"/>
+
+          <Template src="skins:Tango/decks/row_loop_jump.xml">
+            <SetVariable name="SpaceLeft">-1</SetVariable>
+            <SetVariable name="SpaceRight">70</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
+
+      <WidgetGroup><!-- Spinny/Cover + VUMeter -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <!-- Spinny/Cover if BIG spinny is enabled -->
+          <WidgetGroup>
+            <ObjectName>AlignTop</ObjectName>
+            <SizePolicy>max,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <!-- 3px margin to main deck -->
+              <WidgetGroup>
+                <Size>3f,1min</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <Template src="skins:Tango/decks/spinny_cover_maxi.xml"/>
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- /Spinny/Cover if BIG spinny is enabled -->
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Spinny + VUMeter -->
+
+      <WidgetGroup><!-- Mixer -->
+        <Layout>vertical</Layout>
+        <SizePolicy>f,min</SizePolicy>
+        <Children>
+          <Template src="skins:Tango/mixer/mixer_channel_left.xml"/>
+          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0min,0me</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Mixer -->
+
+      <!-- Pitch slider & Key controls -->
+      <WidgetGroup>
+        <Size>3f,1min</Size>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <Template src="skins:Tango/decks/rate_pitch_key.xml"/>
+      <!-- /Pitch slider & Key controls -->
+
+      <WidgetGroup><!-- VUMeter -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+              <Template src="skins:Tango/mixer/vumeter_floating.xml">
+                <SetVariable name="Label">Deck<Variable name="chanNum"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /VUMeter -->
+
+      <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

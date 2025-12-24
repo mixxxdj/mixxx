@@ -1,0 +1,85 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An equalizer rack parameter for the provided group.
+    Assumes the equalizer is effect 1 in the unit.
+  Variables:
+    group: the group
+    parameter: the parameter number
+    color: the notch color. carmine, green, yellow, blue or light_blue.
+-->
+<Template>
+  <SetVariable name="EqualizerNumber">1</SetVariable>
+  <SetVariable name="EffectNumber">1</SetVariable>
+  <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <EffectPushButton>
+        <TooltipId>EqualizerRack_effect_button_parameter</TooltipId>
+        <Size>15f,20f</Size>
+        <ObjectName>EQKillButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+        <Effect><Variable name="EffectNumber"/></Effect>
+        <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+        <State>
+          <Number>0</Number>
+        </State>
+        <State>
+          <Number>1</Number>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </EffectPushButton>
+
+      <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
+        <Size>0me,1min</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EQKnob</ObjectName>
+        <MinimumSize>40,34</MinimumSize>
+        <MaximumSize>40,41</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <EffectParameterKnobComposed>
+            <Size>40f,34f</Size>
+            <Knob>knob.svg</Knob>
+            <BackPath>knob_bg_purple.svg</BackPath>
+            <MinAngle>-135</MinAngle>
+            <MaxAngle>135</MaxAngle>
+            <KnobCenterYOffset>1.602</KnobCenterYOffset>
+            <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="EffectNumber"/></Effect>
+            <EffectParameter><Variable name="parameter"/></EffectParameter>
+            <Connection>
+              <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+            </Connection>
+          </EffectParameterKnobComposed>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

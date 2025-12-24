@@ -1,0 +1,215 @@
+/* Summer Sunset */
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
+QToolTip,
+WLibrarySidebar QMenu,
+WLibrarySidebar QMenu::item,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
+QTextBrowser QMenu,
+QTextBrowser QMenu::item,
+WTrackMenu,
+WTrackMenu::item,
+WTrackMenu QMenu,
+WTrackMenu QMenu::item,
+WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
+QLineEdit QMenu,
+QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
+WBeatSpinBox::up-button,
+WBeatSpinBox::down-button,
+WCueMenuPopup,
+WCoverArtMenu,
+WCoverArtMenu::item,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:unchecked,
+#fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox::item,
+#fadeModeCombobox::indicator:unchecked {
+  color: #101307;
+  background-color: #ad9e4f;
+}
+#MainMenu,
+#MainMenu::item,
+WBeatSpinBox,
+#spinBoxTransition::up-button,
+#spinBoxTransition::down-button,
+#fadeModeCombobox,
+#fadeModeCombobox::down-arrow {
+  color: #060613;
+  background-color: #998A3C;
+}
+#spinBoxTransition {
+  background-color: #7b6f38;
+}
+  #MainMenu QMenu::separator,
+  WLibrarySidebar QMenu::separator,
+  WTrackTableViewHeader QMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
+    border-top: 1px solid #222;
+  }
+#MainMenu::item:selected,
+#MainMenu QMenu::item:selected,
+#MainMenu QMenu::item:focus,
+#MainMenu QMenu::item:hover,
+#MainMenu QMenu::indicator:checked:selected,
+#MainMenu QMenu::indicator:unchecked:selected,
+WLibrarySidebar QMenu::item:selected,
+WLibrarySidebar QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
+WTrackMenu::item:selected,
+WTrackMenu QMenu::item:selected,
+WTrackMenu QMenu QCheckBox:selected,
+WTrackMenu QMenu QCheckBox:focus,
+WTrackMenu QMenu QCheckBox:hover,
+QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
+WCoverArtMenu::item:selected,
+WEffectSelector::item:selected,
+WEffectSelector::indicator:unchecked:selected,
+#fadeModeCombobox::item:selected,
+#fadeModeCombobox::indicator:unchecked:selected {
+  background-color: #d9c663;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-background-color: #d9c663;
+  }
+  WEffectSelector::indicator:unchecked:selected,
+  #fadeModeCombobox::indicator:unchecked:selected {
+    border-color: #d9c663;
+  }
+  /* hover over checked effect */
+  WEffectSelector::item:checked:selected,
+  #fadeModeCombobox::item:checked:selected {
+    background-color: #887a35;
+  }
+  /* unchecked menu checkbox */
+  WLibrarySidebar QMenu::indicator:unchecked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
+  WTrackMenu QMenu QCheckBox::indicator:enabled:unchecked {
+    border-color: #222;
+  }
+
+  /* checked checkbox */
+  /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
+  WLibrarySidebar QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
+  WTrackMenu QMenu QCheckBox::indicator:checked,
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    border-color: #222;
+    background-color: #4bcf09;
+  }
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    border-color: #222;
+    background-color: #85b271;
+  }
+  /* disabled checked box */
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
+    border-color: #666;
+    background-color: #888;
+  }
+
+#MainMenu QMenu::indicator:checked,
+#MainMenu QMenu::indicator:checked:selected {
+  image: url(skin:/btn/btn_mainmenu_summer_checkbox_checked.svg);
+}
+#MainMenu QMenu::indicator:unchecked,
+#MainMenu QMenu::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_mainmenu_summer_checkbox.svg);
+}
+
+#EffectSelectorGroup[highlight="1"]{
+	border: 1px solid #f8ba54;
+}
+#EffectSelectorGroup[highlight="0"]{
+	border: 0px solid #f8ba54;
+}
+
+#CueDeleteButton,
+  #CueStandardButton,
+  #CueSavedLoopButton,
+  #CueSavedJumpButton {
+  background-color: #cdbb5d;
+}
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
+}
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
+  background-color: #54fd05;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
+}
+#CueLabelEdit {
+  background-color: #706633;
+}
+
+WTrackTableView:focus,
+WLibrarySidebar:focus,
+WLibraryTextBrowser:focus,
+WSearchLineEdit:focus {
+  border-color: #78C70B;
+}
+
+#LibraryBPMButton::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_lib_bpm_unlocked_white.svg);
+}
+
+#LibraryFeatureControls QPushButton:enabled {
+  background-color: #998A3C;
+  border: 1px solid #998A3C;
+  }
+  #LibraryFeatureControls QPushButton:!enabled {
+    background-color: #706633;
+    border: 1px solid #706633;
+    }
+  #LibraryFeatureControls QPushButton:unchecked {
+    color: #888;
+    background-color: #444;
+    }
+  #LibraryFeatureControls QPushButton:checked {
+    color: #000;
+    background-color: #52F904;
+    border: 1px solid #52F904;
+    }
+
+#LibraryFeatureControls QRadioButton::indicator:checked {
+  image: url(skin:/btn/btn_lib_radio_button_on_neongreen.svg) center center;
+}
+
+/* 'Enable AutoDJ' button	*/
+QPushButton#pushButtonAutoDJ:hover,
+QPushButton#pushButtonRecording:hover,
+QPushButton#pushButtonAnalyze:hover {
+   border: 1px solid #52F904;
+  }
+
+WRateRange {
+  color: #4B515F;
+}

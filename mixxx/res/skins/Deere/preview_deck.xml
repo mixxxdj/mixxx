@@ -1,0 +1,147 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A simple sample deck.
+  Variables:
+    i: The Sampler number (1-indexed)
+    row: the Sampler row
+-->
+<Template>
+  <SetVariable name="group">[PreviewDeck1]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>i,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>PreviewDeck</ObjectName>
+        <Layout>horizontal</Layout>
+        <!-- When TextRow is laid out, we need to ignore our children.
+              Otherwise decks might end up with different widths based
+              on the size of the labels in this row -->
+        <SizePolicy>i,max</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,max</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>PreviewDeckTextRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <TrackProperty>
+                    <TooltipId>text</TooltipId>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Group><Variable name="group"/></Group>
+                    <Property>info</Property>
+                    <Elide>right</Elide>
+                  </TrackProperty>
+
+                  <Template src="skin:left_1state_button.xml">
+                    <SetVariable name="TooltipId">eject</SetVariable>
+                    <SetVariable name="ObjectName">PreviewDeckEjectButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
+                  <KnobComposed>
+                    <TooltipId>pregain</TooltipId>
+                    <ObjectName>PreviewGain</ObjectName>
+                    <Size>20f,20f</Size>
+                    <Knob>knob_small_green.svg</Knob>
+                    <MinAngle>-230</MinAngle>
+                    <MaxAngle>50</MaxAngle>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+
+                  <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>PreviewDeckVisualRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:left_right_2state_button.xml">
+                    <SetVariable name="TooltipId">play_start</SetVariable>
+                    <SetVariable name="ObjectName">PreviewDeckPlayButton</SetVariable>
+                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+                    <SetVariable name="state_1_text"></SetVariable>
+                    <SetVariable name="state_1_pressed">icon/ic_pause_48px.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">icon/ic_pause_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+                    <SetVariable name="right_connection_control"><Variable name="group"/>,start</SetVariable>
+                  </Template>
+
+                  <Overview>
+                    <TooltipId>waveform_overview</TooltipId>
+                    <Style></Style>
+                    <Group><Variable name="group"/></Group>
+                    <Size>me,30f</Size>
+                    <BgColor></BgColor>
+                    <PlayedOverlayColor>#88000000</PlayedOverlayColor>
+                    <SignalHighColor>#FFE300</SignalHighColor>
+                    <SignalMidColor>#0099FF</SignalMidColor>
+                    <SignalLowColor>#FF0035</SignalLowColor>
+                    <SignalRGBHighColor></SignalRGBHighColor>
+                    <SignalRGBMidColor></SignalRGBMidColor>
+                    <SignalRGBLowColor></SignalRGBLowColor>
+                    <SignalColor><Variable name="SignalColor"/></SignalColor>
+                    <PlayPosColor>#00FF00</PlayPosColor>
+                    <ShowCueTimes>false</ShowCueTimes>
+                    <DefaultMark>
+                      <Align>bottom</Align>
+                      <Color>#FFFFFF</Color>
+                      <TextColor>#00FF00</TextColor>
+                      <Text> %1 </Text>
+                    </DefaultMark>
+                    <Mark>
+                      <Control>cue_point</Control>
+                      <Text> C </Text>
+                      <Align>top</Align>
+                      <Color>#FF001C</Color>
+                      <TextColor>#00FF00</TextColor>
+                    </Mark>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </Overview>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>PreviewDeckVUContainer</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:vumeter.xml">
+                <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
+                <SetVariable name="control">vu_meter</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /PreviewDeck -->
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_preview_decks</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

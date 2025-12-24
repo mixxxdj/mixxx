@@ -1,0 +1,26 @@
+From 31e91d4fefa71419450d0961301bfdd8e233314d Mon Sep 17 00:00:00 2001
+From: Owen Williams <owilliams@mixxx.org>
+Date: Sun, 2 Jan 2022 02:09:40 +0100
+Subject: [PATCH 4/5] Inline the update_monitor function since it is called for
+ every sample.
+
+---
+ timecoder.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/timecoder.c b/timecoder.c
+index 57c4dbb..8cac262 100755
+--- a/timecoder.c
++++ b/timecoder.c
+@@ -400,7 +400,7 @@ static void detect_zero_crossing(struct timecoder_channel *ch,
+  * Plot the given sample value in the x-y monitor
+  */
+ 
+-static void update_monitor(struct timecoder *tc, signed int x, signed int y)
++static inline void update_monitor(struct timecoder *tc, signed int x, signed int y)
+ {
+     int px, py, size, ref;
+ 
+-- 
+2.25.1
+

@@ -1,0 +1,9 @@
+module Mixxx
+linktarget mixxx-libplugin
+optional plugin mixxx-libplugin
+classname MixxxPlugin
+typeinfo mixxx-lib.qmltypes
+import QtQuick
+prefer :/mixxx.org/imports/Mixxx/
+MathUtils 1.0 res/qml/Mixxx/MathUtils.mjs
+PlayerDropArea 1.0 res/qml/Mixxx/PlayerDropArea.qml

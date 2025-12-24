@@ -1,0 +1,118 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sampler controls row (sync, hotcue, etc.).
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>SamplerExpansion</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">repeat</SetVariable>
+            <SetVariable name="ObjectName">RepeatButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_repeat_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,repeat</SetVariable>
+          </Template>
+
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Group><Variable name="group"/></Group>
+            <SizePolicy>me,me</SizePolicy>
+            <BgColor>#333333</BgColor>
+            <PlayedOverlayColor>#88000000</PlayedOverlayColor>
+            <SignalHighColor>#FFE300</SignalHighColor>
+            <SignalMidColor>#0099FF</SignalMidColor>
+            <SignalLowColor>#FF0035</SignalLowColor>
+            <SignalRGBHighColor></SignalRGBHighColor>
+            <SignalRGBMidColor></SignalRGBMidColor>
+            <SignalRGBLowColor></SignalRGBLowColor>
+            <SignalColor><Variable name="SignalColor"/></SignalColor>
+            <PlayPosColor>#00FF00</PlayPosColor>
+            <ShowCueTimes>false</ShowCueTimes>
+            <DefaultMark>
+              <Align>bottom</Align>
+              <Color>#006596</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#00FF00</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>cue_point</Control>
+              <Align>top</Align>
+              <Color>#FF001C</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text>C</Text>
+            </Mark>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </Overview>
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <ObjectName>ButtonGrid</ObjectName>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">green</SetVariable>
+          </Template>
+
+          <Template src="skin:left_right_2state_button.xml">
+            <SetVariable name="TooltipId">sync_enabled</SetVariable>
+            <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
+            <SetVariable name="MinimumSize">32,22</SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy">me,f</SetVariable>
+            <SetVariable name="state_0_text">Sync</SetVariable>
+            <SetVariable name="state_1_text">Sync</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:crossfader_orientation_button.xml">
+            <SetVariable name="Unit">Sampler</SetVariable>
+          </Template>
+
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">eject</SetVariable>
+            <SetVariable name="ObjectName">EjectButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

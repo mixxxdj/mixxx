@@ -1,0 +1,236 @@
+<Template>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>DeckMini<Variable name="ChanNum" /></ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>PlayCueMini</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,f</SizePolicy>
+                <Children>
+                  <CueButton>
+                    <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+                    <ObjectName>CueDeck</ObjectName>
+                    <Size>42f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <Group><Variable name="Group"/></Group>
+                    <DndRectMargin><Variable name="DndRectMarginHotcueBtn"/></DndRectMargin>
+                    <State>
+                      <Number>0</Number>
+                      <Text><Variable name="state_0_text"/></Text>
+                      <Alignment><Variable name="Align"/></Alignment>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text><Variable name="state_1_text"/></Text>
+                      <Alignment><Variable name="Align"/></Alignment>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_set.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,cue_default</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,cue_gotoandstop</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,cue_indicator</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </CueButton>
+
+                  <WidgetGroup><!-- Play + PlayBlink + default grey background -->
+                    <Layout>stacked</Layout>
+                    <Size>42f,26f</Size>
+                    <Children>
+                      <Template src="skins:LateNight/controls/button_play_2state_right_display.xml">
+                        <SetVariable name="TooltipId">play_cue_default</SetVariable>
+                        <SetVariable name="ObjectName">PlayDeckMini</SetVariable>
+                        <SetVariable name="Size">42f,26f</SetVariable>
+                        <SetVariable name="BtnSize">medium</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,play</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_default</SetVariable>
+                        <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_latched</SetVariable>
+                      </Template>
+                      <PushButton>
+                        <ObjectName>PreviewIndicator</ObjectName>
+                        <Size>42f,26f</Size>
+                        <NumberStates>2</NumberStates>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <PushButton>
+                        <ObjectName>PlayIndicator</ObjectName>
+                        <Size>42f,26f</Size>
+                        <NumberStates>2</NumberStates>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,play_indicator</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                    </Children>
+                  </WidgetGroup><!-- Play + PlayBlink + default grey background -->
+
+                </Children>
+              </WidgetGroup><!-- PlayCueSmall -->
+
+              <WidgetGroup>
+                <ObjectName>OverviewBoxMini</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <MinimumSize>250,46</MinimumSize>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/decks/overview.xml">
+                    <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeDeckMini"/></SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- OverviewBoxMini -->
+
+              <WidgetGroup>
+                <ObjectName>SpinnyCoverContainer_MiniDeck</ObjectName>
+                <SizePolicy>f,f</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_spinny_or_cover</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- SpinnyCoverContainer_MiniDeck -->
+
+              <WidgetGroup>
+                <ObjectName>DeckMini_TitlePlayPosKeyBPM</ObjectName>
+                <Layout>vertical</Layout>
+                <Size>200me,46me</Size>
+                <Children>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <Size>200me,23me</Size>
+                    <Children>
+                      <TrackProperty>
+                        <TooltipId>track_title</TooltipId>
+                        <ObjectName>TitleTextSmall</ObjectName>
+                        <Size>100me,23me</Size>
+                        <Property>title</Property>
+                        <Alignment>left</Alignment>
+                        <Elide>right</Elide>
+                        <Channel><Variable name="ChanNum"/></Channel>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </TrackProperty>
+
+                      <NumberPos>
+                        <TooltipId>track_time</TooltipId>
+                        <ObjectName>PlayPositionTextSmall</ObjectName>
+                        <SizePolicy>min,me</SizePolicy>
+                        <MinimumSize>,23</MinimumSize>
+                        <Alignment>center</Alignment>
+                        <Channel><Variable name="ChanNum"/></Channel>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </NumberPos>
+                    </Children>
+                  </WidgetGroup><!-- Title / PlayPos -->
+
+                  <WidgetGroup>
+                    <ObjectName>TrackColorFullMini</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>0me,2f</Size>
+                    <Children>
+                      <TrackWidgetGroup>
+                        <Size>0me,2f</Size>
+                        <Group><Variable name="Group"/></Group>
+                        <TrackColorAlpha>255</TrackColorAlpha>
+                      </TrackWidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- Artist / Key / BPM -->
+                    <Layout>horizontal</Layout>
+                    <Size>200me,23f</Size>
+                    <Children>
+                      <TrackProperty>
+                        <TooltipId>track_title</TooltipId>
+                        <ObjectName>ArtistTextSmall</ObjectName>
+                        <Size>96me,23f</Size>
+                        <Property>artist</Property>
+                        <Alignment>left</Alignment>
+                        <Elide>right</Elide>
+                        <Channel><Variable name="ChanNum"/></Channel>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </TrackProperty>
+
+                      <Key>
+                        <TooltipId>visual_key</TooltipId>
+                        <ObjectName>KeyTextSmall</ObjectName>
+                        <Channel><Variable name="ChanNum"/></Channel>
+                        <Size>44min,23f</Size>
+                        <Alignment>center</Alignment>
+                        <Elide>right</Elide>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+                        </Connection>
+                      </Key>
+
+                      <NumberBpm>
+                        <ObjectName>BpmTextSmall</ObjectName>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Size>60f,23f</Size>
+                        <Alignment>right</Alignment>
+                        <Channel><Variable name="ChanNum" /></Channel>
+                        <NumberOfDigits>2</NumberOfDigits>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </NumberBpm>
+
+                    </Children>
+                  </WidgetGroup><!-- Artist / Key / BPM -->
+
+                </Children>
+              </WidgetGroup><!-- DeckMini_TitlePlayPosKeyBPM -->
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- DeckMiniN -->
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,20 @@
+<svg width="48" height="48" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <g display="none" opacity=".334599">
+    <g fill="none" stroke="#000001" stroke-linejoin="round" stroke-width="1.6">
+      <path d="m11 3h2v6h-2z" color="#000001"/>
+      <path d="m20 5v13h-3l5e-4 -1.5001 1.4995 1e-4v-10l-3.4999 1.49e-4 1.25e-4 -1.5001z" color="#000001"/>
+      <path d="m4 5v13h5v3l7-3.75-7-3.75 1e-4 2.9999-3.5001 1e-4v-10l3.5 1e-4v-1.5001z" color="#000001"/>
+    </g>
+    <g fill="#918273">
+      <path d="m11 3h2v6h-2z" color="#000001"/>
+      <path d="m20 5v13h-3l5e-4 -1.5001 1.4995 1e-4v-10l-3.4999 1.49e-4 1.25e-4 -1.5001z" color="#000001"/>
+      <path d="m4 5v13h5v3l7-3.75-7-3.75 1e-4 2.9999-3.5001 1e-4v-10l3.5 1e-4v-1.5001z" color="#000001"/>
+    </g>
+  </g>
+  <g fill="#918273">
+    <path d="m11 3v6h2v-6h-2zm-5.76172 2c-0.707601 0-1.23828 0.615582-1.23828 1.2793v10.4414c0 0.663715 0.53068 1.2793 1.23828 1.2793h3.76172v3l7-3.75-7-3.75v2.99023h-3.49023v-9.98047h3.49023v-1.50977h-3.76172zm9.76172 0v1.47461l3.49023 0.0351562v9.98047h-1.49023v1.50977h1.76172c0.707602 0 1.23828-0.615581 1.23828-1.2793v-10.4414c0-0.663716-0.53068-1.2793-1.23828-1.2793h-3.76172z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stop-color="#000000" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <path d="m5.23828 5c-0.707601 0-1.23828 0.615582-1.23828 1.2793v10.4414c0 0.663715 0.53068 1.2793 1.23828 1.2793h4.32812v-1.50977h-4.05664v-9.98047h3.49023v-1.50977zm9.76172 0v1.47499l3.49023 0.034777v9.98047h-1.49023v1.50977h1.76172c0.707602 0 1.23828-0.615581 1.23828-1.2793v-10.4414c0-0.663716-0.53068-1.2793-1.23828-1.2793z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stop-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <path d="m11 9v-6h2v6z"/>
+    <path d="m9 13.5v7.5l7-3.75z"/>
+  </g>
+</svg>

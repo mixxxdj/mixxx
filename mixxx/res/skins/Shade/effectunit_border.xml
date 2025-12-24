@@ -1,0 +1,21 @@
+<Template>
+  <WidgetGroup>
+    <Size>0e,5f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <Size>0e,5f</Size>
+        <BackPath>style/style_bg_looping.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>3f,5f</Size>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+      <Transform><IsEqual>0</IsEqual></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

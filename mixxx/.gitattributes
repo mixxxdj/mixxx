@@ -1,0 +1,31 @@
+# Execute the following command in your local project
+# directory to exclude localization files from merges
+# across branches:
+#
+# $ git config --global merge.ours.driver true
+#
+# This command sets a shell script that is used for all
+# merge=ours files. In this case the script "true" does
+# not touch anything, just returns successful.
+#
+# Background: Localization files from external sources like
+# Transifex must not be merged between release branches and
+# should be ignore while merging! Instead those files are
+# updated by re-importing them manually from the external
+# source. This workflow is supported by configuring the merge
+# strategy for the local Git repository appropriately, i.e.
+# by excluding those files from merging and always keeping the
+# files from the current/target branch (= "ours").
+
+# Exclude Transifex files from merging
+/res/translations/*.ts merge=ours
+/res/translations/*.qm merge=ours
+
+# Treat serato test data as binary
+*.octet-stream binary
+
+# shell scripts will always have LF line endings on checkout.
+*.sh text eol=lf
+
+# Windows batch scripts will always have CRLF line endings.
+*.bat text eol=crlf

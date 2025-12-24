@@ -1,0 +1,96 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sample deck container widget.
+-->
+<Template>
+  <SingletonDefinition>
+    <ObjectName>SamplerRow1</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">1</SetVariable>
+        <SetVariable name="1">1</SetVariable>
+        <SetVariable name="2">2</SetVariable>
+        <SetVariable name="3">3</SetVariable>
+        <SetVariable name="4">4</SetVariable>
+        <SetVariable name="5">5</SetVariable>
+        <SetVariable name="6">6</SetVariable>
+        <SetVariable name="7">7</SetVariable>
+        <SetVariable name="8">8</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow2</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">2</SetVariable>
+        <SetVariable name="1">9</SetVariable>
+        <SetVariable name="2">10</SetVariable>
+        <SetVariable name="3">11</SetVariable>
+        <SetVariable name="4">12</SetVariable>
+        <SetVariable name="5">13</SetVariable>
+        <SetVariable name="6">14</SetVariable>
+        <SetVariable name="7">15</SetVariable>
+        <SetVariable name="8">16</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <WidgetGroup>
+    <Connection>
+      <ConfigKey>[Skin],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+    <Layout>vertical</Layout>
+    <!-- I don't now why this works but a WidgetGroup wrapper around a
+         WidgetStack with a 'fixed' size policy makes the group track the
+         minimum size of the current stack widget. -->
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+
+      <WidgetStack currentpage="[Skin],sampler_rows" persist="true">
+        <ObjectName>SampleDecksContainer</ObjectName>
+        <NextControl>[Skin],sampler_row_next</NextControl>
+        <PrevControl>[Skin],sampler_row_prev</PrevControl>
+        <Children>
+
+          <WidgetGroup trigger="[Skin],sampler_row_1">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup trigger="[Skin],sampler_row_2">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+      <WidgetGroup><Size>-1me,3f</Size></WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

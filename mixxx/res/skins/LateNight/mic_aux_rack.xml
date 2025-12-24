@@ -1,0 +1,160 @@
+<Template>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+  <SetVariable name="KnobBg">small</SetVariable>
+  <SetVariable name="KnobIndicator">small</SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
+  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+  <SetVariable name="ArcUnipolar">true</SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MicAuxRack</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>MicRack</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <Template src="skins:LateNight/mic_aux/ducking_controls.xml">
+                <SetVariable name="KnobColor">red</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
+                    <SetVariable name="Mic1Hack">1</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="Mic1Hack">1</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
+                    <SetVariable name="MicNum">2</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="MicNum">2</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
+                    <SetVariable name="MicNum">3</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="MicNum">3</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/mic_unit.xml">
+                    <SetVariable name="MicNum">4</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/mic_unit_unconfigured.xml">
+                    <SetVariable name="MicNum">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- MicRack -->
+
+          <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>AuxRack</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">1</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">1</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">2</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">2</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">3</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">3</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skins:LateNight/mic_aux/aux_unit.xml">
+                    <SetVariable name="AuxNum">4</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/mic_aux/aux_unit_unconfigured.xml">
+                    <SetVariable name="AuxNum">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- AuxRack -->
+
+          <WidgetGroup>
+            <ObjectName>MicAuxRackFiller</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- MicAuxRack -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_microphones</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefControlsDlg</class>
+ <widget class="QWidget" name="DlgPrefControlsDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>602</width>
+    <height>723</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Interface Preferences</string>
+  </property>
+  <layout class="QVBoxLayout" name="gridLayout_skin">
+
+   <item>
+    <widget class="QGroupBox" name="groupBoxSkinOptions">
+     <property name="title">
+      <string>Skin</string>
+     </property>
+     <layout class="QVBoxLayout" name="skinLayout">
+
+      <item>
+       <widget class="QComboBox" name="ComboBoxSkinconf">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="accessibleName">
+         <string>Skin selector</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="labelColorScheme">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font/>
+        </property>
+        <property name="text">
+         <string>Color scheme</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+        <property name="buddy">
+         <cstring>ComboBoxSchemeconf</cstring>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QComboBox" name="ComboBoxSchemeconf">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Select from different color schemes of a skin if available.</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="skinDescriptionText">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string notr="true">skin description goes here</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="warningLabel">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QLabel" name="skinPreviewLabel">
+        <property name="text">
+         <string notr="true">skin preview screenshot goes here</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QGroupBox" name="groupBoxMiscOptions">
+     <property name="title">
+      <string>Miscellaneous</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_Misc">
+
+      <item row="0" column="0">
+       <widget class="QLabel" name="textLabelLocale">
+        <property name="text">
+         <string>Locale</string>
+        </property>
+        <property name="buddy">
+         <cstring>ComboBoxLocale</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QComboBox" name="ComboBoxLocale">
+        <property name="toolTip">
+         <string>Locales determine country and language specific settings.</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelScaleFactor">
+        <property name="text">
+         <string>HiDPI / Retina scaling</string>
+        </property>
+        <property name="buddy">
+         <cstring>spinBoxScaleFactor</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
+          <property name="toolTip">
+           <string>Change the size of text, buttons, and other items.</string>
+          </property>
+          <property name="suffix">
+           <string notr="true"> %</string>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>50.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>400.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>25.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelFullscreenOption">
+        <property name="text">
+         <string>Full-screen mode</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxStartFullScreen</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxStartFullScreen">
+        <property name="text">
+         <string>Start in full-screen mode</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelHideMenuBarOption">
+        <property name="text">
+         <string>Menu bar</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxHideMenuBar</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxHideMenuBar">
+        <property name="text">
+         <string>Auto-hide the menu bar, toggle it with a single Alt key press</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelTooltips">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font/>
+        </property>
+        <property name="text">
+         <string>Tool tips</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+        <property name="buddy">
+         <cstring>radioButtonTooltipsOff</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="radioButtonTooltipsOff">
+          <property name="text">
+           <string>Off</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTooltips</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonTooltipsLibrary">
+          <property name="text">
+           <string>Library only</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTooltips</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioButtonTooltipsLibraryAndSkin">
+          <property name="text">
+           <string>Library and Skin</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroupTooltips</string>
+          </attribute>
+         </widget>
+        </item>
+       </layout>
+      </item>
+
+      <item row="5" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Screen saver</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBoxScreensaver"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="multiSamplingLabel">
+        <property name="text">
+         <string>Multi-Sampling</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QComboBox" name="multiSamplingComboBox"/>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBoxForceHardwareAcceleration">
+        <property name="text">
+         <string>Force 3D acceleration</string>
+        </property>
+        <property name="toolTip">
+         <string>If checked, Mixxx will always assume 3D acceleration is available. This may lead to pour performance if only CP-backed rendering is available..</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>ComboBoxSkinconf</tabstop>
+  <tabstop>ComboBoxSchemeconf</tabstop>
+  <tabstop>ComboBoxLocale</tabstop>
+  <tabstop>spinBoxScaleFactor</tabstop>
+  <tabstop>checkBoxStartFullScreen</tabstop>
+  <tabstop>checkBoxHideMenuBar</tabstop>
+  <tabstop>radioButtonTooltipsOff</tabstop>
+  <tabstop>radioButtonTooltipsLibrary</tabstop>
+  <tabstop>radioButtonTooltipsLibraryAndSkin</tabstop>
+  <tabstop>multiSamplingComboBox</tabstop>
+  <tabstop>checkBoxForceHardwareAcceleration</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupTooltips"/>
+ </buttongroups>
+</ui>

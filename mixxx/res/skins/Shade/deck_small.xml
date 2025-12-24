@@ -1,0 +1,260 @@
+<Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <WidgetGroup>
+    <Size>0e,48f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <Size>5f,48f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckSmall</ObjectName>
+        <Size>i,48f</Size>
+        <BackPath>style/style_bg_deck_small.png</BackPath>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>488min,38f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Overview<Variable name="channum"/></ObjectName>
+              </SingletonContainer>
+
+              <WidgetGroup>
+                <Size>1f,38f</Size>
+                <BackPath>style/style_component_border.png</BackPath>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>DeckSmall_TitleTimeKeyBPM</ObjectName>
+                <Size>220me,38f</Size>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>DeckSmall_TitleTime</ObjectName>
+                    <Size>10me,19f</Size>
+                    <Layout>horizontal</Layout>
+                    <Style>
+                      QLabel {
+                        font-size: 13px;
+                        font-weight: bold;
+                        color: #191F24;
+                      }
+                    </Style>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Title -->
+                      <TrackProperty>
+                        <TooltipId>track_title</TooltipId>
+                        <Style>QLabel {
+                          text-align: left;
+                          padding: 1px 2px;
+                        }
+                        </Style>
+                        <Property>titleInfo</Property>
+                        <Channel><Variable name="channum"/></Channel>
+                        <SizePolicy>e,f</SizePolicy>
+                        <MinimumSize>50,19</MinimumSize>
+                        <Alignment>left</Alignment>
+                        <Elide>right</Elide>
+                      </TrackProperty>
+
+                      <WidgetGroup>
+                        <Size>1f,19f</Size>
+                        <BackPath>style/style_component_border.png</BackPath>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <Size>4f,19f</Size>
+                      </WidgetGroup>
+
+                      <NumberPos>
+                        <TooltipId>track_time</TooltipId>
+                        <Size>50min,19f</Size>
+                        <Style>QLabel {
+                          text-align: right;
+                          padding: 3px 0px 2px 0px;
+                          margin: 0px 0px 0px 0px;
+                        }
+                        </Style>
+                        <Group><Variable name="group"/></Group>
+                        <Alignment>right</Alignment>
+                      </NumberPos>
+                    </Children>
+                  </WidgetGroup>
+
+                  <TrackWidgetGroup>
+                    <Size>0e,1f</Size>
+                    <Group><Variable name="group"/></Group>
+                    <TrackColorAlpha>255</TrackColorAlpha>
+                  </TrackWidgetGroup>
+
+                  <!-- Artist / Key /BPM -->
+                  <WidgetGroup>
+                    <Size>100me,18f</Size>
+                    <Layout>horizontal</Layout>
+                    <Style>
+                      QLabel {
+                        font-size: 13px;
+                        font-weight: bold;
+                        color: #191F24;
+                      }
+                    </Style>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <!-- Artist -->
+                      <TrackProperty>
+                        <TooltipId>track_title</TooltipId>
+                        <Style>QLabel {
+                          text-align: left;
+                          padding: 1px 2px;
+                        }
+                        </Style>
+                        <Property>artist</Property>
+                        <Channel><Variable name="channum"/></Channel>
+                        <SizePolicy>me,f</SizePolicy>
+                        <MinimumSize>50,18</MinimumSize>
+                        <MaximumSize>,18</MaximumSize>
+                        <Alignment>left</Alignment>
+                        <Elide>right</Elide>
+                      </TrackProperty>
+
+                      <WidgetGroup>
+                        <Size>1f,18f</Size>
+                        <BackPath>style/style_component_border.png</BackPath>
+                      </WidgetGroup>
+
+                      <Key>
+                        <TooltipId>visual_key</TooltipId>
+                        <Size>30min,18f</Size>
+                        <Style>QLabel {
+                          text-align: center;
+                          padding: 3px 1px 3px 0px;
+                        }
+                        </Style>
+                        <Channel><Variable name="channum"/></Channel>
+                        <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
+                        <Alignment>center</Alignment>
+                        <Elide>right</Elide>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                        </Connection>
+                      </Key>
+
+                      <WidgetGroup>
+                        <Size>1f,18f</Size>
+                        <BackPath>style/style_component_border.png</BackPath>
+                      </WidgetGroup>
+
+                      <NumberBpm>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Size>42f,18f</Size>
+                        <Style>QLabel {
+                          padding: 3px 1px 3px 0px;
+                        }
+                        </Style>
+                        <Channel><Variable name="channum"/></Channel>
+                        <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
+                        <Alignment>center</Alignment>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </NumberBpm>
+                    </Children>
+                  </WidgetGroup><!-- Artist / Key /BPM -->
+
+                </Children>
+              </WidgetGroup><!-- Title / Time // Artist / Key /BPM -->
+
+              <WidgetGroup>
+                <Size>1f,38f</Size>
+                <BackPath>style/style_component_border.png</BackPath>
+              </WidgetGroup>
+
+              <!-- Play -->
+              <WidgetGroup>
+                <Size>41f,38f</Size>
+                <BackPath>style/style_bg_deck_blank.png</BackPath>
+                <Children>
+                  <!-- Play indicator, blinks depending on Cue mode -->
+                  <PushButton>
+                    <Pos>5,8</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small_over.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <!-- Preview indicator -->
+                  <PushButton>
+                    <Pos>5,8</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small_preview.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small_preview.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <!-- Play -->
+                  <PushButton>
+                    <TooltipId>play_cue_default</TooltipId>
+                    <Pos>5,8</Pos>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small_down.png</Pressed>
+                      <Unpressed></Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_deck_small_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_deck_small_over.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_latched</ConfigKey>
+                      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>5f,48f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

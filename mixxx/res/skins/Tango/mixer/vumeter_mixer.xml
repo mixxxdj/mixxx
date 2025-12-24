@@ -1,0 +1,21 @@
+<!--
+Description:
+  VUMeter embedded in channel mixer.
+Variables:
+  chanNum : channel number
+
+Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
+Refer to https://github.com/mixxxdj/mixxx/issues/9201
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VUMeterMixer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <SingletonContainer>
+        <ObjectName>VUMeterDeck<Variable name="chanNum"/></ObjectName>
+      </SingletonContainer>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,312 @@
+/* Dark */
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
+QToolTip,
+WLibrarySidebar QMenu,
+WLibrarySidebar QMenu::item,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
+WLibraryTextBrowser QMenu,
+WLibraryTextBrowser QMenu::item,
+WTrackMenu,
+WTrackMenu::item,
+WTrackMenu QMenu,
+WTrackMenu QMenu::item,
+WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
+QLineEdit QMenu,
+QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
+WBeatSpinBox::up-button,
+WBeatSpinBox::down-button,
+WCueMenuPopup,
+WCoverArtMenu,
+WCoverArtMenu::item,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:unchecked,
+#fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox::item,
+#fadeModeCombobox::indicator:unchecked {
+  color: #000;
+  background-color: #717171;
+  }
+  #MainMenu,
+  #MainMenu::item,
+  WBeatSpinBox,
+  #spinBoxTransition::up-button,
+  #spinBoxTransition::down-button,
+  #fadeModeCombobox,
+  #fadeModeCombobox::down-arrow {
+    color: #000;
+    background-color: #5C5B5D;
+  }
+  #spinBoxTransition {
+    background-color: #444546;
+  }
+#MainMenu::item:selected,
+#MainMenu QMenu::item:selected,
+#MainMenu QMenu::item:focus,
+#MainMenu QMenu::item:hover,
+#MainMenu QMenu::indicator:checked:selected,
+#MainMenu QMenu::indicator:unchecked:selected,
+WLibrarySidebar QMenu::item:selected,
+WLibrarySidebar QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
+WLibraryTextBrowser QMenu::item:selected,
+WTrackMenu::item:selected,
+WTrackMenu QMenu::item:selected,
+WTrackMenu QMenu QCheckBox:selected,
+WTrackMenu QMenu QCheckBox:focus,
+WTrackMenu QMenu QCheckBox:hover,
+QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
+WCoverArtMenu::item:selected,
+WEffectSelector::item:selected,
+WEffectSelector::indicator:unchecked:selected,
+#fadeModeCombobox::item:selected,
+#fadeModeCombobox::indicator:unchecked:selected {
+  background-color: #999;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-background-color: #999;
+  }
+  WEffectSelector::indicator:unchecked:selected,
+  #fadeModeCombobox::indicator:unchecked:selected {
+    border-color: #999;
+  }
+  /* hover over checked effect */
+  WEffectSelector::item:checked:selected,
+  #fadeModeCombobox::item:checked:selected {
+    background-color: #555;
+  }
+
+  #MainMenu QMenu::separator,
+  WLibrarySidebar QMenu::separator,
+  WTrackTableViewHeader QMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
+  WLibraryTextBrowser QMenu::separator,
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
+    border-top: 1px solid #3F3041;
+  }
+  /* checked checkbox */
+  /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
+  WLibrarySidebar QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
+  WTrackMenu QMenu QCheckBox::indicator:checked,
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    border-color: #111;
+    background-color: #B79E00;
+  }
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    border-color: #111;
+    background-color: #897300;
+  }
+  /* disabled menu items and checkboxes */
+  #MainMenu::item:disabled,
+  #MainMenu QMenu::item:disabled,
+  WLibrarySidebar QMenu::item:disabled,
+  WLibraryTextBrowser QMenu::item:disabled,
+  WTrackMenu::item:disabled,
+  WTrackMenu QMenu::item:disabled,
+  WTrackMenu QMenu QCheckBox:disabled,
+  QLineEdit QMenu::item:disabled,
+  QPlainTextEdit QMenu::item:disabled {
+    border-color: #444;
+    color: #444;
+  }
+  WTrackMenu QMenu QCheckBox::indicator:disabled {
+    border-color: #444;
+    background-color: #666;
+  }
+
+#MainMenu QMenu::indicator:checked,
+#MainMenu QMenu::indicator:checked:selected {
+  image: url(skin:/btn/btn_mainmenu_dark_checkbox_checked.svg);
+}
+#MainMenu QMenu::indicator:unchecked,
+#MainMenu QMenu::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_mainmenu_dark_checkbox.svg);
+}
+
+#EffectSelectorGroup[highlight="1"]{
+	border: 1px solid #3c8bb2;
+}
+#EffectSelectorGroup[highlight="0"]{
+	border: 0px solid #3c8bb2;
+}
+
+#CueDeleteButton {
+  background-color: #8a8a8a;
+}
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
+}
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
+  background-color: #b79d00;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
+}
+#CueLabelEdit {
+  background-color: #3F3041;
+}
+
+WTrackTableView,
+WLibrarySidebar {
+  selection-color: #000;
+  /* background of Color delegate in selected row */
+  selection-background-color: #666;
+  /*outline: 1px solid yellow;*/
+}
+
+WTrackTableView:focus,
+WLibrarySidebar:focus,
+WLibraryTextBrowser:focus {
+  border-color: #78C70B;
+}
+
+WSearchLineEdit:focus {
+  border: 2px solid #78C70B;
+}
+WSearchLineEdit QToolButton:focus {
+  image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
+}
+
+WLibrarySidebar::item:selected,
+WTrackTableView::item:selected,
+WLibrarySidebar::branch:selected,
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
+  /* disabled since it interferes with selection-color
+     which we use in DefaultDelegate and TableItemDelegate to
+     blend the highlight color with the played/missing color.
+  color: #000; */
+  /* This is not required for painting the background,
+     but it is for applying the focus outline. */
+  selection-color: #000;
+  background-color: #666;
+}
+WLibrarySidebar,
+WLibrarySidebar::item:focus {
+  outline: none;
+}
+/* Use the native focus decoration */
+/* This is for all cells including Played and Location */
+WTrackTableView,
+/* This is for the BPM and play count cells */
+WTrackTableView QCheckBox:focus {
+  outline: 1px solid #ccc;
+}
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
+  qproperty-focusBorderColor: #ccc;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #69a50f; /* green like fader highlight */
+}
+
+  /* Table cell in edit mode */
+  WLibrary QLineEdit,
+  WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
+  #LibraryBPMSpinBox {
+    color: #ddd;
+    background-color: #0f0f0f;
+    selection-color: #000;
+    selection-background-color: #aaa;
+    border: 1px solid #666;
+  }
+  #LibraryBPMSpinBox::up-button,
+  #LibraryBPMSpinBox::down-button {
+    background-color: #666;
+  }
+
+/* checkbox in library "Played" column */
+#LibraryPlayedCheckbox::indicator:unchecked:selected {
+  background: none;
+  color: #cfcfcf;
+  border: 1px solid #000;
+  }
+
+/* Scroll bars */
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+#LibraryContainer QScrollBar::add-page,
+#LibraryContainer QScrollBar::sub-page,
+WEffectSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
+  background-color: #000;
+}
+WTrackTableViewHeader,
+WTrackTableViewHeader::section,
+#LibraryContainer QScrollBar::handle:vertical,
+#LibraryContainer QScrollBar::handle:horizontal,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical,
+#fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
+  background: #3f3041;
+  color: #999;
+}
+WTrackTableViewHeader::up-arrow,
+WTrackTableViewHeader::down-arrow {
+  background-color: rgba(63,48,65,200);
+  }
+  WTrackTableViewHeader::up-arrow {
+    image: url(skin:/btn/btn_lib_sort_up_green.png)
+  }
+  WTrackTableViewHeader::down-arrow {
+    image: url(skin:/btn/btn_lib_sort_down_green.png)
+  }
+#LibraryFeatureControls QPushButton:enabled {
+  background-color: #5C5B5D;
+  border: 1px solid #5C5B5D;
+  }
+  #LibraryFeatureControls QPushButton:!enabled {
+    background-color: #3D3E3F;
+    border: 1px solid #3D3E3F;
+  }
+  #LibraryFeatureControls QPushButton:checked {
+    color: #000;
+    background-color: #B79E00;
+    border: 1px solid #B79E00;
+  }
+
+#LibraryFeatureControls QRadioButton::indicator:checked {
+  image: url(skin:/btn/btn_lib_radio_button_on_mustard.svg) center center;
+}
+
+WRateRange {
+  color: #181319;
+}

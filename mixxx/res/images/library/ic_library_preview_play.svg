@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="23"
+   height="12"
+   id="svg2"
+   inkscape:version="0.92.3 (unknown)"
+   sodipodi:docname="ic_library_preview_play.svg"
+   style="display:inline"
+   inkscape:export-filename=""
+   inkscape:export-xdpi="135"
+   inkscape:export-ydpi="135">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview26"
+     showgrid="true"
+     inkscape:zoom="11.313708"
+     inkscape:cx="-2.6917692"
+     inkscape:cy="6.398738"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="ic_library_unchecked"
+     inkscape:object-paths="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-midpoints="true"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:bbox-nodes="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3788"
+       empspacing="4"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       originx="4"
+       spacingx="1"
+       spacingy="1"
+       color="#00ffe0"
+       opacity="0.1254902"
+       empcolor="#0072ff"
+       empopacity="0.25098039"
+       originy="4"
+       dotted="false" />
+  </sodipodi:namedview>
+  <title
+     id="title5647">Mixxx 1.12+ iconset</title>
+  <defs
+     id="defs28">
+    <linearGradient
+       id="linearGradient5515"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5517" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-6">
+      <stop
+         style="stop-color:#3c3c3c;stop-opacity:1;"
+         offset="0"
+         id="stop5697-6" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-7" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-4">
+      <stop
+         style="stop-color:#646464;stop-opacity:1;"
+         offset="0"
+         id="stop5697-7" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-73">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-6" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-5">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-9" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-5" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <rdf:Description
+         rdf:about="">
+        <dc:title />
+        <dc:creator />
+        <dc:rights />
+        <dc:description />
+        <dc:format>image/svg+xml</dc:format>
+        <dc:language>en</dc:language>
+      </rdf:Description>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Mixxx 1.12+ iconset</dc:title>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>Mixxx</rdf:li>
+            <rdf:li>GUI</rdf:li>
+            <rdf:li>Interface</rdf:li>
+            <rdf:li>Icons</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>s.brandt@mixxx.org</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:date>2014-04-18</dc:date>
+        <dc:source>www.mixxx.org</dc:source>
+        <dc:description>Iconset for use in Mixxx 1.12s+. Optimized for 48px (16px) icon size. Contains icons for preference menu and library widget
+
+Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
+        <dc:coverage />
+        <dc:language>en</dc:language>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     id="ic_library_crates"
+     inkscape:label="#g6169"
+     transform="translate(0,-20)">
+    <g
+       transform="matrix(0.415098,0,0,0.415098,-1.660392,19.54706)"
+       inkscape:label="#g6145"
+       id="ic_library_unchecked"
+       style="display:inline">
+      <g
+         style="display:inline"
+         id="style_library_preview_pause"
+         inkscape:label="#g4333"
+         transform="matrix(2.4090697,0,0,2.4090697,81.09022,-75.999057)"
+         inkscape:export-filename=""
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <desc
+           id="desc3883">Preview button in library</desc>
+        <path
+           inkscape:export-ydpi="90"
+           inkscape:export-xdpi="90"
+           inkscape:export-filename=""
+           inkscape:transform-center-x="-0.99997903"
+           sodipodi:type="star"
+           style="display:inline;fill:#979797;fill-opacity:0.5;stroke:none"
+           id="path4203"
+           sodipodi:sides="3"
+           sodipodi:cx="570.63519"
+           sodipodi:cy="608.42609"
+           sodipodi:r1="13.462912"
+           sodipodi:r2="6.7314558"
+           sodipodi:arg1="0.52359878"
+           sodipodi:arg2="1.5707963"
+           inkscape:flatsided="true"
+           inkscape:rounded="0"
+           inkscape:randomized="0"
+           d="m 582.29442,615.15754 -23.31845,0 11.65922,-20.19437 z"
+           transform="matrix(0,0.30019152,-0.29711255,0,167.77103,-133.29985)"
+           inkscape:label="#path17862" />
+        <g
+           id="g4247"
+           transform="matrix(0.85714286,0,0,0.85714286,-6.9556151,23.428571)"
+           inkscape:export-filename=""
+           inkscape:export-xdpi="90"
+           inkscape:export-ydpi="90"
+           style="fill:#979797;fill-opacity:0.5">
+          <path
+             id="path4249"
+             transform="matrix(1.1666667,0,0,1.1666667,8.1148843,-27.333333)"
+             d="m -26,32 c -3.376146,0 -5.8125,2.420091 -5.8125,5.75 -0.02885,0.04115 -0.0269,0.04484 0,0.0625 v 2.09375 C -31.95368,40.251454 -32,40.690868 -32,41.1875 c 0,1.08133 0.15281,1.96875 1.21875,1.96875 v -3.9375 c -0.05826,0 -0.103077,0.02604 -0.15625,0.03125 v -1.5 c 0,-0.35788 0.03255,-0.711959 0.09375,-1.03125 0.05746,-0.308575 0.173694,-0.595956 0.28125,-0.875 0.707406,-1.67368 2.381799,-2.625 4.5625,-2.625 2.180238,0 3.886417,0.95132 4.59375,2.625 0.235778,0.557893 0.34375,1.19049 0.34375,1.90625 v 1.46875 c -0.05502,-0.0057 -0.09568,0 -0.15625,0 V 43.125 c 1.065786,0 1.21875,-0.856631 1.21875,-1.9375 0,-0.488809 -0.02108,-0.938349 -0.15625,-1.28125 V 37.75 C -20.15625,34.420091 -22.624315,32 -26,32 Z"
+             style="fill:#979797;fill-opacity:0.5;fill-rule:nonzero;stroke:none"
+             inkscape:connector-curvature="0" />
+          <rect
+             ry="0.2"
+             rx="1"
+             y="18"
+             x="-20.218449"
+             height="6"
+             width="2.5"
+             id="rect4251"
+             style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#979797;fill-opacity:0.5;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.25098039;marker:none;enable-background:accumulate" />
+          <rect
+             style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#979797;fill-opacity:0.5;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.25098039;marker:none;enable-background:accumulate"
+             id="rect4253"
+             width="2.5"
+             height="6"
+             x="-26.718449"
+             y="18"
+             rx="1"
+             ry="0.2" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

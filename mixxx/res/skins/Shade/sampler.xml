@@ -1,0 +1,440 @@
+<Template>
+  <SetVariable name="group">[Sampler<Variable name="samplernum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Sampler</ObjectName>
+    <Size>i,95f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>SamplerLeftBorder</ObjectName>
+        <Size>5f,92f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>0e,95f</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>SamplerTop</ObjectName>
+            <Size>0e,24f</Size>
+            <BackPath>style/style_bg_sampler_top.png</BackPath>
+            <Layout>horizontal</Layout>
+            <Children>
+              <TrackProperty>
+                <TooltipId>text</TooltipId>
+                <Style>QLabel {
+                    font-size: 12px;
+                    line-height: 14px;
+                    font-weight: bold;
+                    background-color: transparent;
+                    color: #191F24;
+                    text-align: left;
+                    padding-left: 1px;
+                    padding-top: 6px;}
+                </Style>
+                <Group><Variable name="group"/></Group>
+                <SizePolicy>me,max</SizePolicy>
+                <Elide>right</Elide>
+                <Property>titleInfo</Property>
+              </TrackProperty>
+              <!-- Alternative "TITLE ONLY" display
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <Style>QLabel {
+                    font-size: 14px;
+                    line-height: 16px;
+                    font-weight: bold;
+                    background-color: transparent;
+                    color: #191F24;
+                    text-align: left;
+                    padding-left: 1px; }
+                </Style>
+                <Property>titleInfo</Property>
+                <Group><Variable name="group"/></Group>
+                <SizePolicy>me,max</SizePolicy>
+                <Elide>right</Elide>
+              </TrackProperty>
+              -->
+              <WidgetGroup>
+                <Size>35f,24f</Size>
+                <Children>
+                  <!-- invisible Tempo/BPM tap button on top of BPM display -->
+                  <Number>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <Style>QLabel {
+                        font-size: 9px;
+                        font-weight: bold;
+                        background-color: transparent;
+                        color: #191F24;
+                        padding-right: 0;
+                        padding-top: 2px;}
+                    </Style>
+                    <Size>35f,24f</Size>
+                    <Pos>0,2</Pos>
+                    <Group><Variable name="group"/></Group>
+                    <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
+                    <Alignment>right</Alignment>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </Number>
+                  <PushButton>
+                    <TooltipId>tempo_tap_bpm_tap_visual_bpm</TooltipId>
+                    <Pos>0,5</Pos>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_tap_sampler_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_tap_sampler.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,tempo_tap</ConfigKey>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>SamplerMid</ObjectName>
+            <Size>0e,36f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <WidgetGroup>
+                <ObjectName>SamplerMid</ObjectName>
+                <Size>27f,36f</Size>
+                <BackPath>style/style_bg_sampler_mid.png</BackPath>
+                <Children>
+                  <!-- Preview indicator -->
+                  <PushButton>
+                    <Pos>3,7</Pos>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_play_sampler.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_sampler_preview.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_sampler_preview.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <!-- Play -->
+                  <PlayButton>
+                    <TooltipId>cue_gotoandplay_cue_default</TooltipId>
+                    <Group><Variable name="group"/></Group>
+                    <Pos>3,7</Pos>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play_latched</ConfigKey>
+                    </Connection>
+                  </PlayButton>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>SamplerMid</ObjectName>
+                <Size>0e,36f</Size>
+                <BackPath>style/style_bg_sampler_mid.png</BackPath>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Overview>
+                    <TooltipId>waveform_overview</TooltipId>
+                    <Group><Variable name="group"/></Group>
+                    <Pos>0,0</Pos>
+                    <Size>0e,35f</Size>
+                    <BgColor>#8D98A3</BgColor>
+                    <PlayedOverlayColor>#60000000</PlayedOverlayColor>
+                    <SignalHighColor></SignalHighColor>
+                    <SignalMidColor></SignalMidColor>
+                    <SignalLowColor></SignalLowColor>
+                    <SignalColor><Variable name="SignalColor"/></SignalColor>
+                    <PlayPosColor>#00FF00</PlayPosColor>
+                    <ShowCueTimes>false</ShowCueTimes>
+                    <DefaultMark>
+                      <Align>bottom|right</Align>
+                      <Color>#FD0564</Color>
+                      <TextColor>#000000</TextColor>
+                      <Text> %1 </Text>
+                    </DefaultMark>
+                    <Mark>
+                      <Control>cue_point</Control>
+                      <Text>C</Text>
+                      <Align>top|right</Align>
+                      <Color>#FF001C</Color>
+                      <TextColor>#000000</TextColor>
+                    </Mark>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </Overview>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>SamplerButtonGrid</ObjectName>
+                <Size>42f,36f</Size>
+                <BackPath>style/style_bg_sampler_woverview_buttons.png</BackPath>
+                <Children>
+                  <PushButton>
+                    <TooltipId>repeat</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_repeat_sampler.png</Pressed>
+                      <Unpressed>skin:/btn/btn_repeat_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_repeat_sampler_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_repeat_sampler_over.png</Unpressed>
+                    </State>
+                    <Pos>1,0</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>eject</TooltipId>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_eject_sampler_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_eject_sampler.png</Unpressed>
+                    </State>
+                    <Pos>22,0</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                      <ConnectValueToWidget>false</ConnectValueToWidget>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>orientation</TooltipId>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
+                    </State>
+                    <Pos>1,17</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
+                      <EmitOnDownPress>true</EmitOnDownPress>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>keylock</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_keylock_sampler.png</Pressed>
+                      <Unpressed>skin:/btn/btn_keylock_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_keylock_sampler_over.png</Pressed>
+                      <Unpressed>skin:/btn/btn_keylock_sampler_over.png</Unpressed>
+                    </State>
+                    <Pos>21,17</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>SamplerBottom</ObjectName>
+            <Size>0e,32f</Size>
+            <BackPath>style/style_bg_sampler_bottom.png</BackPath>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><Size>0e,0min</Size></WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>SamplerBottom</ObjectName>
+                <Size>204f,32f</Size>
+                <Children>
+                  <PushButton>
+                    <TooltipId>sync_enabled</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_sync_sampler_down.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_sampler_over.png</Unpressed>
+                    </State>
+                    <Pos>3,4</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">1</SetVariable>
+                    <SetVariable name="pos">47,4</SetVariable>
+                  </Template>
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">2</SetVariable>
+                    <SetVariable name="pos">68,4</SetVariable>
+                  </Template>
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">3</SetVariable>
+                    <SetVariable name="pos">89,4</SetVariable>
+                  </Template>
+                  <Template src="skin:hotcue_button.xml">
+                    <SetVariable name="hotcue">4</SetVariable>
+                    <SetVariable name="pos">110,4</SetVariable>
+                  </Template>
+
+                  <PushButton>
+                    <TooltipId>pfl</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_pfl_sampler_down.png</Pressed>
+                      <Unpressed>skin:/btn/btn_pfl_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_pfl_sampler_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_pfl_sampler_over.png</Unpressed>
+                    </State>
+                    <Pos>134,4</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
+                    </Connection>
+                  </PushButton>
+                  <Knob>
+                    <TooltipId>pregain</TooltipId>
+                    <NumberStates>64</NumberStates>
+                    <Path>knobs/knob_rotary_s%1.png</Path>
+                    <Pos>168,2</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
+                    </Connection>
+                  </Knob>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- SamplerBottom -->
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>SamplerVUMeter</ObjectName>
+        <Size>8f,92f</Size>
+        <BackPath>style/style_bg_sampler_right.png</BackPath>
+        <Children>
+          <WidgetGroup>
+            <Pos>3,7</Pos>
+            <Children>
+              <StatusLight>
+                <TooltipId>sampler_peak_indicator</TooltipId>
+                <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,peak_indicator</ConfigKey>
+                </Connection>
+              </StatusLight>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Pos>3,24</Pos>
+            <Layout>horizontal</Layout>
+            <Children>
+              <VuMeter>
+                <TooltipId>sampler_VuMeter</TooltipId>
+                <PathVu>skin:/style/volume_display_sampler_over.png</PathVu>
+                <PathBack>skin:/style/volume_display_sampler.png</PathBack>
+                <Horizontal>false</Horizontal>
+                <PeakHoldSize>5</PeakHoldSize>
+                <PeakHoldTime>500</PeakHoldTime>
+                <PeakFallTime>50</PeakFallTime>
+                <PeakFallStep>2</PeakFallStep>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,vu_meter</ConfigKey>
+                </Connection>
+              </VuMeter>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- SamplerVUMeter -->
+      <WidgetGroup>
+        <ObjectName>SamplerPitch</ObjectName>
+        <Size>21f,92f</Size>
+        <BackPath>style/style_bg_sampler_right.png</BackPath>
+        <Children>
+          <SliderComposed>
+            <TooltipId>rate</TooltipId>
+            <Handle>knob_pitch_sampler.png</Handle>
+            <Slider>slider_pitch_sampler.png</Slider>
+            <Pos>3,7</Pos>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </SliderComposed>
+        </Children>
+      </WidgetGroup><!-- SamplerPitch -->
+      <WidgetGroup>
+        <ObjectName>SamplerRightBorder</ObjectName>
+        <Size>5f,92f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>SamplerRightBorder</ObjectName>
+        <Size>3f,92f</Size>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

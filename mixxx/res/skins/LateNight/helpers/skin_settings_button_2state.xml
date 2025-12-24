@@ -1,0 +1,26 @@
+<!--
+Description:
+  2-state button for skin settings menu.
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName>SkinSettingsButton</ObjectName>
+    <Size><Variable name="Width"/>,18f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text>&#8202;&#8202;&#9744;  <Variable name="Text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text>&#8202;&#8202;&#8202;&#10004;&#8202;&#8202; <Variable name="Text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

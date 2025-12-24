@@ -1,0 +1,41 @@
+<!--
+Description:
+  A button that displays focus state of an effect slot.
+  Left-click sets focus, right-click removes focus from all effects.
+  If focused, left-click also removes focus.
+Variables:
+  FxGroup : [EffectRack1_EffectUnitN]
+  FxNum   : effect number
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>AlignVCenter</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>14f,30me</Size>
+    <Children>
+      <PushButton>
+        <TooltipId>EffectSlot_focus</TooltipId>
+        <ObjectName>FxFocusButton</ObjectName>
+        <Size>14f,18f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
+        <Connection>
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
+        </Connection>
+        <Connection>
+          <!-- right click > unfocus -->
+          <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <Transform><IsEqual><Variable name="FxNum"/></IsEqual><Not/></Transform>
+        </Connection>
+      </PushButton>
+    </Children>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,56 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The QuickEffect rack superknob.
+  Variables:
+    QuickEffect: the quick effect rack
+    group: the group
+    color: the knob ring color. carmine, yellow or light_blue
+-->
+<Template>
+  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <Template src="skin:knob.xml">
+        <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+        <SetVariable name="control">super1</SetVariable>
+        <SetVariable name="color"><Variable name="color"/></SetVariable>
+      </Template>
+
+      <PushButton>
+        <TooltipId><Variable name="button_TooltipId"/></TooltipId>
+        <Size>15f,20f</Size>
+        <ObjectName>QuickEffectKillButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+        </State>
+        <State>
+          <Number>1</Number>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="QuickEffectUnitGroup"/>,enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
+        <Size>0me,1min</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

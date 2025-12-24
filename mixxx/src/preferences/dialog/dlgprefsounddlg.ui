@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefSoundDlg</class>
+ <widget class="QWidget" name="DlgPrefSoundDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>686</width>
+    <height>852</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Sound Hardware Preferences</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="apiLabel">
+       <property name="text">
+        <string>Sound API</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="buddy">
+        <cstring>apiComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="apiComboBox"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="sampleRateLabel">
+       <property name="text">
+        <string>Sample Rate</string>
+       </property>
+       <property name="buddy">
+        <cstring>sampleRateComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="sampleRateComboBox"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="audioBufferLabel">
+       <property name="text">
+        <string>Audio Buffer</string>
+       </property>
+       <property name="buddy">
+        <cstring>audioBufferComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="audioBufferComboBox"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="deviceSyncLabel">
+       <property name="text">
+        <string>Multi-Soundcard Synchronization</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="deviceSyncComboBox"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="engineClockLabel">
+       <property name="text">
+        <string>Engine Clock</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="engineClockComboBox">
+       <property name="toolTip">
+        <string>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="keylockLabel">
+       <property name="text">
+        <string>Keylock/Pitch-Bending Engine</string>
+       </property>
+       <property name="buddy">
+        <cstring>keylockComboBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="masteMixLabel">
+       <property name="text">
+        <string>Main Mix</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QComboBox" name="mainMixComboBox"/>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="mainOutputModeComboBox"/>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="mainMonoLabel">
+       <property name="text">
+        <string>Main Output Mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QComboBox" name="micMonitorModeComboBox"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="micMonitorModeLabel">
+       <property name="text">
+        <string>Microphone Monitor Mode</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="latencyCompensationLabel">
+       <property name="text">
+        <string>Microphone Latency Compensation</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QDoubleSpinBox" name="latencyCompensationSpinBox">
+       <property name="suffix">
+        <string> ms</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="mainDelayLabel">
+       <property name="text">
+        <string>Main Output Delay</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QDoubleSpinBox" name="mainDelaySpinBox">
+       <property name="suffix">
+        <string extracomment="milliseconds"> ms</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="headDelayLabel">
+       <property name="text">
+        <string>Headphone Output Delay</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1">
+      <widget class="QDoubleSpinBox" name="headDelaySpinBox">
+       <property name="suffix">
+        <string extracomment="milliseconds"> ms</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="boothDelayLabel">
+       <property name="text">
+        <string>Booth Output Delay</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1">
+      <widget class="QDoubleSpinBox" name="boothDelaySpinBox">
+       <property name="suffix">
+        <string extracomment="milliseconds"> ms</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="maximum">
+        <double>500.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="0" colspan="2">
+      <widget class="QLabel" name="latencyCompensationWarningLabel">
+       <property name="text">
+        <string notr="true">warning goes here</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QComboBox" name="keylockComboBox"/>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="keylockDualthreadedCheckBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Dual-threaded Stereo</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttonsHLayout">
+     <item>
+      <widget class="QPushButton" name="queryButton">
+       <property name="text">
+        <string>Query Devices</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="buttonsHSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="ioTabs">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="outputTab">
+      <attribute name="title">
+       <string>Output</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="outputVLayout">
+       <item>
+        <spacer name="outputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="inputTab">
+      <attribute name="title">
+       <string>Input</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="inputVLayout">
+       <item>
+        <spacer name="inputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="Hints">
+     <property name="title">
+      <string>Hints and Diagnostics</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="deckBusHint">
+        <property name="text">
+         <string>Deck and Bus outputs are for external mixers. They are post-fader and include effects and crossfader (for Auto DJ). For external mixing, make sure all Mixxx faders and EQ knobs are set to their default position (right- or double-click). </string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="underflowCounterHint">
+        <property name="text">
+         <string>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="audioBufferHint">
+        <property name="text">
+         <string>Downsize your audio buffer to improve Mixxx's responsiveness.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QLabel" name="realtimeHint">
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QLabel" name="hardwareGuide">
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="latencyLabel">
+        <property name="text">
+         <string>System Reported Latency</string>
+        </property>
+        <property name="buddy">
+         <cstring>audioBufferComboBox</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLabel" name="currentLatency">
+        <property name="text">
+         <string>20 ms</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="underflowLabel">
+        <property name="text">
+         <string>Buffer Underflow Count</string>
+        </property>
+        <property name="buddy">
+         <cstring>audioBufferComboBox</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLabel" name="bufferUnderflowCount">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>apiComboBox</tabstop>
+  <tabstop>sampleRateComboBox</tabstop>
+  <tabstop>audioBufferComboBox</tabstop>
+  <tabstop>deviceSyncComboBox</tabstop>
+  <tabstop>engineClockComboBox</tabstop>
+  <tabstop>mainMixComboBox</tabstop>
+  <tabstop>mainOutputModeComboBox</tabstop>
+  <tabstop>micMonitorModeComboBox</tabstop>
+  <tabstop>latencyCompensationSpinBox</tabstop>
+  <tabstop>mainDelaySpinBox</tabstop>
+  <tabstop>headDelaySpinBox</tabstop>
+  <tabstop>boothDelaySpinBox</tabstop>
+  <tabstop>queryButton</tabstop>
+  <tabstop>ioTabs</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

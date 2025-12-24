@@ -1,0 +1,30 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A hide/show button.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <PushButton>
+    <ObjectName><Variable name="object_name"/></ObjectName>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <Size>20f,20f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed scalemode="STRETCH_ASPECT">icon/ic_unfold_more_48px.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_unfold_more_48px.svg</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed scalemode="STRETCH_ASPECT">icon/ic_unfold_less_48px.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_unfold_less_48px.svg</Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="control"/></ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

@@ -1,0 +1,140 @@
+<!--
+Description:
+  The channel mixer containing
+  * EQ knobs incl. Kill buttons ] if enabled
+  * QuickEffect knob            ]
+  * Headphone cue button
+  * Volume slider
+  * Gain knob
+  * VUMeter
+Variables:
+  group : [ChannelXY]
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>MixerChannelLeft</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>-1max,136f</Size>
+    <Children>
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
+
+      <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
+      <!-- EQ + QuickEffect | Vol + gain __ QuickEffect selector -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- EQ + QuickEffect | Vol + gain  -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,me</SizePolicy>
+            <Children>
+
+              <WidgetGroup><!-- EQ + QuickEffect knobs/buttons -->
+                <Layout>vertical</Layout>
+                <SizePolicy>max,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+                  <Template src="skins:Tango/mixer/eq_knob_left.xml"><!-- High EQ -->
+                    <SetVariable name="FxParameter">3</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/mixer/eq_knob_left.xml"><!-- Mid EQ -->
+                    <SetVariable name="FxParameter">2</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/mixer/eq_knob_left.xml"><!-- Low EQ -->
+                    <SetVariable name="FxParameter">1</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/mixer/quick_fx_knob_left.xml"/><!-- Quick Effect -->
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
+
+              <WidgetGroup><!--  Volume Slider + Gain knob -->
+                <ObjectName>VolumeSliderGain</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>f,me</SizePolicy>
+                <Children>
+                  <SliderComposed><!-- Volume slider -->
+                    <Size>34f,89min</Size>
+                    <ObjectName>VolumeSlider</ObjectName>
+                    <TooltipId>channel_volume</TooltipId>
+                    <Slider scalemode="STRETCH">skins:Tango/knobs_sliders/volume_scale.svg</Slider>
+                    <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/volume_handle.svg</Handle>
+                    <Horizontal>false</Horizontal>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                    </Connection>
+                  </SliderComposed><!-- /Volume slider -->
+
+                  <!-- Gain knob, centered below Volume slider -->
+                  <Template src="skins:Tango/controls/knob_textless.xml">
+                    <SetVariable name="ObjectName">GainKnob</SetVariable>
+                    <SetVariable name="TooltipId">pregain</SetVariable>
+                    <SetVariable name="Size">34f,30f</SetVariable>
+                    <SetVariable name="Color">yellow</SetVariable>
+                    <SetVariable name="group"><Variable name="group"/></SetVariable>
+                    <SetVariable name="ConfigKey">pregain</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /Volume Slider + Gain knob -->
+
+            </Children>
+          </WidgetGroup><!-- EQ + QuickEffect | Vol + gain  -->
+
+          <WidgetGroup><!-- QuickEffect selector -->
+            <SizePolicy>i,f</SizePolicy>
+            <MinimumSize>,18</MinimumSize>
+            <MaximumSize>,18</MaximumSize>
+            <Layout>vertical</Layout>
+            <Children>
+              <EffectChainPresetSelector>
+                <ObjectName>QuickEffectSelectorLeft</ObjectName>
+                <Size>40min,18f</Size>
+                <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
+              </EffectChainPresetSelector>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- EQ + QuickEffect | Vol + gain __ QuickEffect selector -->
+
+
+      <WidgetGroup><!-- VU Meter + Pfl button -->
+        <ObjectName>AlignCenter</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:Tango/mixer/vumeter_mixer.xml"/>
+
+          <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Pfl button, isolated with a 'gap' -->
+            <ObjectName>PflBoxLeft</ObjectName>
+            <Size>25f,25f</Size>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- Greyed out if no headphone device is configured -->
+              <Template src="skins:Tango/helpers/pfl_cover.xml"/>
+              <Template src="skins:Tango/controls/button_2state.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="ObjectName">PflButton</SetVariable>
+                <SetVariable name="Size">24f,24f</SetVariable>
+                <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- /Pfl button, isolated with a 'gap' -->
+        </Children>
+      </WidgetGroup><!-- /VU Meter + Pfl button -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

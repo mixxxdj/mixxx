@@ -1,0 +1,58 @@
+<!--
+Description:
+  Container for the main level meter, suiting various configurations.
+
+Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
+Refer to https://github.com/mixxxdj/mixxx/issues/9201
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+
+      <!-- Main VU when mixer is hidden but permanent level meters are shown -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName></ObjectName>
+            <Size>min,min</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>VuMeterMain</ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <!-- /Main VU when mixer is hidden but permanent level meters are shown -->
+
+      <WidgetGroup><!-- Main VU when mixer is shown -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>VuMeterMain</ObjectName>
+          </SingletonContainer>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

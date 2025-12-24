@@ -1,0 +1,75 @@
+#pragma once
+
+#include <QTimer>
+#include <QWidget>
+
+#include "library/coverart.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
+#include "util/cache.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wbasewidget.h"
+
+class DlgCoverArtFullSize;
+class QDomNode;
+class SkinContext;
+class WCoverArtMenu;
+class BaseTrackPlayer;
+
+class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
+    Q_OBJECT
+  public:
+    WCoverArt(QWidget* parent, UserSettingsPointer pConfig,
+              const QString& group, BaseTrackPlayer* pPlayer);
+    ~WCoverArt() override;
+
+    void setup(const QDomNode& node, const SkinContext& context);
+
+  public slots:
+    void slotLoadTrack(TrackPointer);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void slotReset();
+    void slotEnable(bool);
+
+  signals:
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
+
+  private slots:
+    void slotCoverFound(
+            const QObject* pRequester,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
+    void slotReloadCoverArt();
+    void slotTrackCoverArtUpdated();
+
+  protected:
+    void paintEvent(QPaintEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
+
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    bool event(QEvent* pEvent) override;
+
+  private:
+    QPixmap scaledCoverArt(const QPixmap& normal);
+
+    const QString m_group;
+    UserSettingsPointer m_pConfig;
+    bool m_bEnable;
+    WCoverArtMenu* m_pMenu;
+    TrackPointer m_loadedTrack;
+    QPixmap m_loadedCover;
+    QPixmap m_loadedCoverScaled;
+    QPixmap m_defaultCover;
+    QPixmap m_defaultCoverScaled;
+    CoverInfo m_lastRequestedCover;
+    BaseTrackPlayer* m_pPlayer;
+    DlgCoverArtFullSize* m_pDlgFullSize;
+    QTimer m_clickTimer;
+};

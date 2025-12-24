@@ -1,0 +1,407 @@
+<Template>
+  <SetVariable name="Group">[Sampler<Variable name="SamplerNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>Sampler</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>SamplerMainControls</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>SamplerTitleRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>i,me</SizePolicy>
+            <Children>
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <ObjectName>SamplerTitle</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <Group><Variable name="Group"/></Group>
+                <Property>titleInfo</Property>
+                <Elide>right</Elide>
+              </TrackProperty>
+
+              <WidgetGroup>
+                <ObjectName>SamplerTitleBpmSeparator</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>f,me</SizePolicy>
+                <Children/>
+              </WidgetGroup>
+
+              <Number>
+                <TooltipId>visual_bpm</TooltipId>
+                <ObjectName>SamplerBpm</ObjectName>
+                <Size>49f,0min</Size>
+                <Group><Variable name="Group"/></Group>
+                <Alignment>center</Alignment>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Number>
+
+              <WidgetGroup>
+                <Size>49f,0min</Size>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+      <!-- Play Overview Settings | Gain |  VU
+           Hotcues                | Pfl  | meter -->
+          <WidgetGroup>
+            <ObjectName>SamplerRows23</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <!-- Play Overview Settings  -->
+              <WidgetGroup>
+                <ObjectName>SamplerPlayRow</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+
+                  <WidgetGroup>
+                    <ObjectName></ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Children>
+
+                      <WidgetGroup>
+                        <ObjectName>SamplerPlayBox</ObjectName>
+                        <Layout>stacked</Layout>
+                        <SizePolicy>max,max</SizePolicy>
+                        <Children>
+                          <Template src="skins:LateNight/controls/button_play_2state_right_display.xml">
+                            <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                            <SetVariable name="ObjectName">PlaySampler</SetVariable>
+                            <SetVariable name="Size">34f,34f</SetVariable>
+                            <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+                            <SetVariable name="BtnSize">square_big</SetVariable>
+                            <SetVariable name="ConfigKey"><Variable name="Group"/>,cue_gotoandplay</SetVariable>
+                            <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_default</SetVariable>
+                            <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_latched</SetVariable>
+                          </Template>
+                          <PushButton>
+                            <ObjectName>PreviewIndicator</ObjectName>
+                            <Size>34f,34f</Size>
+                            <NumberStates>2</NumberStates>
+                            <Connection>
+                              <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+                            </Connection>
+                          </PushButton>
+                        </Children>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <ObjectName>OverviewBox</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                          <Template src="skins:LateNight/samplers/overview.xml"/>
+                        </Children>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </WidgetGroup><!-- OverviewBox -->
+
+                      <WidgetGroup>
+                        <ObjectName>SamplerSettingsContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>max,min</SizePolicy>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>SamplerSettings</ObjectName>
+                            <Layout>vertical</Layout>
+                            <SizePolicy>max,min</SizePolicy>
+                            <Children>
+                              <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>min,min</SizePolicy>
+                                <Children>
+                                  <Template src="skins:LateNight/controls/button_2state.xml">
+                                    <SetVariable name="TooltipId">repeat</SetVariable>
+                                    <SetVariable name="ObjectName">RepeatButton12</SetVariable>
+                                    <SetVariable name="BtnType"></SetVariable>
+                                    <SetVariable name="ConfigKey"><Variable name="Group"/>,repeat</SetVariable>
+                                    <SetVariable name="Size">21f,18f</SetVariable>
+                                  </Template>
+                                  <Template src="skins:LateNight/controls/button_1state.xml">
+                                    <SetVariable name="TooltipId">eject</SetVariable>
+                                    <SetVariable name="ObjectName">EjectButton12</SetVariable>
+                                    <SetVariable name="BtnType"></SetVariable>
+                                    <SetVariable name="ConfigKey"><Variable name="Group"/>,eject</SetVariable>
+                                    <SetVariable name="Size">21f,18f</SetVariable>
+                                  </Template>
+                                </Children>
+                              </WidgetGroup>
+
+                              <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>min,min</SizePolicy>
+                                <Children>
+                                  <Template src="skins:LateNight/controls/button_2state.xml">
+                                    <SetVariable name="TooltipId">keylock</SetVariable>
+                                    <SetVariable name="ObjectName">KeylockButton12</SetVariable>
+                                    <SetVariable name="BtnType"></SetVariable>
+                                    <SetVariable name="ConfigKey"><Variable name="Group"/>,keylock</SetVariable>
+                                    <SetVariable name="Size">21f,18f</SetVariable>
+                                  </Template>
+                                  <PushButton>
+                                    <TooltipId>orientation</TooltipId>
+                                    <Size>21f,18f</Size>
+                                    <NumberStates>3</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Pressed>
+                                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_left.svg</Unpressed>
+                                    </State>
+                                    <State>
+                                      <Number>1</Number>
+                                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Pressed>
+                                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Unpressed>
+                                    </State>
+                                    <State>
+                                      <Number>2</Number>
+                                      <Pressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Pressed>
+                                      <Unpressed scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_right.svg</Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+                                </Children>
+                              </WidgetGroup>
+                            </Children>
+                          </WidgetGroup><!-- SamplerSettings -->
+                        </Children>
+                      </WidgetGroup><!-- SamplerSettingsContainer -->
+                    </Children>
+                  </WidgetGroup><!-- Play + overview + settings + gain -->
+
+                  <WidgetGroup><!-- hotcues + pfl -->
+                    <ObjectName>SamplerButtons</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+
+                      <WidgetGroup>
+                        <ObjectName>SamplerHotcues</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <Template src="skins:LateNight/controls/button_hotcue.xml">
+                            <SetVariable name="number">1</SetVariable>
+                          </Template>
+
+                          <Template src="skins:LateNight/controls/button_hotcue.xml">
+                            <SetVariable name="number">2</SetVariable>
+                          </Template>
+
+                          <Template src="skins:LateNight/controls/button_hotcue.xml">
+                            <SetVariable name="number">3</SetVariable>
+                          </Template>
+
+                          <Template src="skins:LateNight/controls/button_hotcue.xml">
+                            <SetVariable name="number">4</SetVariable>
+                          </Template>
+
+                          <WidgetGroup><!-- /Hotcues 5-8 -->
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>f,min</SizePolicy>
+                            <Children>
+                              <Template src="skins:LateNight/controls/button_hotcue.xml">
+                                <SetVariable name="number">5</SetVariable>
+                              </Template>
+
+                              <Template src="skins:LateNight/controls/button_hotcue.xml">
+                                <SetVariable name="number">6</SetVariable>
+                              </Template>
+
+                              <Template src="skins:LateNight/controls/button_hotcue.xml">
+                                <SetVariable name="number">7</SetVariable>
+                              </Template>
+
+                              <Template src="skins:LateNight/controls/button_hotcue.xml">
+                                <SetVariable name="number">8</SetVariable>
+                              </Template>
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup><!-- /Hotcues 5-8 -->
+
+                          <WidgetGroup>
+                            <SizePolicy>me,min</SizePolicy>
+                          </WidgetGroup>
+
+                          <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>f,min</SizePolicy>
+                            <Children>
+                              <Template src="skins:LateNight/fx/assign_buttons.xml">
+                                <SetVariable name="Type">headphones</SetVariable>
+                              </Template>
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_sampler_fx</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+
+                          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+
+                        </Children>
+                      </WidgetGroup><!-- SamplerHotcues -->
+
+                    </Children>
+                  </WidgetGroup><!-- hotcues + pfl -->
+
+                </Children>
+              </WidgetGroup><!--  * Play, Overview, Controls, Gain
+                                  * hotcues + Pfl  -->
+
+              <WidgetGroup>
+                <ObjectName>SamplerGainPflVu_Container</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>f,me</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>SamplerGainPflVu</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>f,me</SizePolicy>
+                    <Children>
+                      <WidgetGroup>
+                        <!-- <ObjectName>SamplerGainPflVu</ObjectName> -->
+                        <Layout>vertical</Layout>
+                        <SizePolicy>f,me</SizePolicy>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>SamplerGain</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,min</SizePolicy>
+                            <Children>
+                              <Template src="skins:LateNight/controls/knob.xml">
+                                <SetVariable name="TooltipId">pregain</SetVariable>
+                                <SetVariable name="Size">35f,30f</SetVariable>
+                                <SetVariable name="KnobBg">small</SetVariable>
+                                <SetVariable name="KnobIndicator">small</SetVariable>
+                                <SetVariable name="KnobColor">orange</SetVariable>
+                                <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
+                                <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+                                <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
+                                <SetVariable name="ArcUnipolar">true</SetVariable>
+                                <SetVariable name="Group"><Variable name="Group"/></SetVariable>
+                                <SetVariable name="Control">pregain</SetVariable>
+                              </Template>
+                            </Children>
+                          </WidgetGroup><!-- SamplerGain -->
+
+                          <WidgetGroup><SizePolicy>me,me</SizePolicy></WidgetGroup>
+
+                          <WidgetGroup>
+                            <ObjectName>SamplerPfl</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <Size>0min,0min</Size>
+                            <Children>
+                              <Template src="skins:LateNight/controls/button_2state.xml">
+                                <SetVariable name="TooltipId">pfl</SetVariable>
+                                <SetVariable name="ObjectName">PflButton</SetVariable>
+                                <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+                                <SetVariable name="BtnSize">square</SetVariable>
+                                <SetVariable name="Size">26f,26f</SetVariable>
+                                <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
+                              </Template>
+                            </Children>
+                          </WidgetGroup><!-- SamplerPfl -->
+                        </Children>
+                      </WidgetGroup><!-- SamplerGainPfl -->
+
+                      <WidgetGroup>
+                        <ObjectName>SamplerVU</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>f,min</SizePolicy>
+                        <Children>
+                          <Template src="skins:LateNight/mixer/vumeter_single.xml">
+                            <SetVariable name="ChannelType">sampler</SetVariable>
+                            <SetVariable name="VuSize">sampler</SetVariable>
+                          </Template>
+                        </Children>
+                      </WidgetGroup><!-- SamplerVU -->
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- SamplerGainPfl -->
+
+            </Children>
+          </WidgetGroup><!--  * Play, Overview, Controls, Gain  | VU
+                              * hotcues + Pfl                   |  meter -->
+
+        </Children>
+      </WidgetGroup><!-- /SamplerMainControls -->
+
+      <WidgetGroup>
+        <ObjectName>SamplerRateControls</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>AlignHCenter</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_2state.xml">
+                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                <SetVariable name="ObjectName">SyncSampler</SetVariable>
+                <SetVariable name="Size">26f,26f</SetVariable>
+                <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+                <SetVariable name="BtnSize">square</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>SamplerPitchSlider</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <SliderComposed>
+                <TooltipId>rate</TooltipId>
+                <Size>30f,65f</Size>
+                <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_pitch_sampler.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_sampler.svg</Slider>
+                <Horizontal>false</Horizontal>
+                <BarWidth><Variable name="BarWidth"/></BarWidth>
+                <BarMargins><Variable name="BarMarginPitchSampler"/></BarMargins>
+                <BarAxisPos>15.0</BarAxisPos>
+                <BarColor><Variable name="BarColorPitch"/></BarColor>
+                <BarUnipolar>false</BarUnipolar>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
+                </Connection>
+              </SliderComposed>
+            </Children>
+          </WidgetGroup><!-- SamplerPitchSlider -->
+        </Children>
+      </WidgetGroup><!-- SamplerRateControls -->
+
+    </Children>
+  </WidgetGroup><!-- Sampler -->
+</Template>

@@ -1,0 +1,18 @@
+/*  push skin settings Close button to the left so it's not in
+    the same screen position as the Open button. Fixes #9461
+    "settings panel disappears instantly after opening it in Tango & Deere skin" */
+#SkinSettingsTop {
+  padding-right: 27px;
+}
+
+/* Previously necessary hack to avoid cut-off effect names with scaled checkbox
+    on Macs with Retina screens */
+/* WEffectSelector QAbstractItemView {
+  margin: 0px 0px 0px -27px;
+} */
+
+/* just in case there is a partial checkmark shown on some
+  untested screen, hide the checkmark */
+/* WEffectSelector::indicator {
+    border: 0;
+} */

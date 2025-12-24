@@ -1,0 +1,33 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A button with a left-click control that toggles a major skin component.
+    It's button and category label at once.
+    It has un/checked circles before the label for enabled/disabled state.
+  Variables:
+    text: name of the skin setting
+    skinsetting: skin setting control
+    TooltipId
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName>SkinSettingsCategoryButton</ObjectName>
+    <Size>80me,23f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text>&#8198;&#8198;&#9675; <Variable name="text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text>&#8198;&#8198;&#9679; <Variable name="text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="skinsetting"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

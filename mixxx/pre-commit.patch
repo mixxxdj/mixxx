@@ -1,0 +1,158 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2ccd87b4c2..7baeacfde6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2704,15 +2704,14 @@ if(BUILD_TESTING)
+ endif()
+ 
+ if(BUILD_BENCH)
+-    find_package(benchmark)
+-    if(BUILD_TESTING AND benchmark_FOUND)
+-        message(STATUS "Found google-benchmark: mixxx-benchmark enabled")
+-    elseif(BUILD_BENCH AND NOT BUILD_TESTING)
+-        message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
+-    endif()
++  find_package(benchmark)
++  if(BUILD_TESTING AND benchmark_FOUND)
++    message(STATUS "Found google-benchmark: mixxx-benchmark enabled")
++  elseif(BUILD_BENCH AND NOT BUILD_TESTING)
++    message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
++  endif()
+ endif()
+ 
+-
+ # FFmpeg support
+ # FFmpeg is multimedia library that can be found http://ffmpeg.org/
+ find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
+diff --git a/src/engine/controls/cuecontrol.h b/src/engine/controls/cuecontrol.h
+index 8a755d2800..dc011a8ecb 100644
+--- a/src/engine/controls/cuecontrol.h
++++ b/src/engine/controls/cuecontrol.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QAtomicInt>
+ #include <QAtomicPointer>
+ #include <QList>
+diff --git a/src/engine/controls/enginecontrol.h b/src/engine/controls/enginecontrol.h
+index e5da843b82..486ac5e26d 100644
+--- a/src/engine/controls/enginecontrol.h
++++ b/src/engine/controls/enginecontrol.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QObject>
+ #include <gsl/pointers>
+ 
+diff --git a/src/engine/enginebuffer.h b/src/engine/enginebuffer.h
+index e339184aae..0cbd0b610a 100644
+--- a/src/engine/enginebuffer.h
++++ b/src/engine/enginebuffer.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QAtomicInt>
+ #include <QMutex>
+ #include <initializer_list>
+diff --git a/src/engine/sync/enginesync.h b/src/engine/sync/enginesync.h
+index 078880724a..84d96aa0fb 100644
+--- a/src/engine/sync/enginesync.h
++++ b/src/engine/sync/enginesync.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include "engine/sync/syncable.h"
+ #include "preferences/usersettings.h"
+ 
+diff --git a/src/engine/sync/synccontrol.h b/src/engine/sync/synccontrol.h
+index 71c8dc81db..193f5041df 100644
+--- a/src/engine/sync/synccontrol.h
++++ b/src/engine/sync/synccontrol.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QScopedPointer>
+ 
+ #include "engine/controls/enginecontrol.h"
+diff --git a/src/library/scanner/libraryscanner.h b/src/library/scanner/libraryscanner.h
+index a53fecfd0d..defacb3957 100644
+--- a/src/library/scanner/libraryscanner.h
++++ b/src/library/scanner/libraryscanner.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QList>
+ #include <QScopedPointer>
+ #include <QSemaphore>
+diff --git a/src/library/trackcollection.h b/src/library/trackcollection.h
+index 3b6b01629e..38c7f73d2b 100644
+--- a/src/library/trackcollection.h
++++ b/src/library/trackcollection.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QList>
+ #include <QSharedPointer>
+ #include <QSqlDatabase>
+diff --git a/src/mixer/playermanager.h b/src/mixer/playermanager.h
+index 7b58df7b87..7372fb4872 100644
+--- a/src/mixer/playermanager.h
++++ b/src/mixer/playermanager.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QList>
+ #include <QMap>
+ #include <QObject>
+diff --git a/src/sources/soundsourceproxy.h b/src/sources/soundsourceproxy.h
+index bd6234e5aa..9172aa0d6a 100644
+--- a/src/sources/soundsourceproxy.h
++++ b/src/sources/soundsourceproxy.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QMimeType>
+ 
+ #include "sources/soundsourceproviderregistry.h"
+diff --git a/src/track/serato/beatsimporter.h b/src/track/serato/beatsimporter.h
+index aaa5eac401..107223a1fa 100644
+--- a/src/track/serato/beatsimporter.h
++++ b/src/track/serato/beatsimporter.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QList>
+ 
+ #include "track/beats.h"
+diff --git a/src/util/fileinfo.h b/src/util/fileinfo.h
+index 5aae88cba3..b76c226778 100644
+--- a/src/util/fileinfo.h
++++ b/src/util/fileinfo.h
+@@ -4,7 +4,6 @@
+ #include <gtest/gtest_prod.h>
+ #endif
+ 
+-
+ #include <QDateTime>
+ #include <QDir>
+ #include <QFile>

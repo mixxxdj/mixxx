@@ -1,0 +1,188 @@
+/* Style the library preview button with a default image */
+#LibraryPreviewButton {
+  background: transparent; border: 0;
+}
+
+#LibraryPreviewButton:checked {
+  image: url(:/images/library/ic_library_preview_pause.svg);
+}
+
+#LibraryPreviewButton:!checked {
+  image: url(:/images/library/ic_library_preview_play.svg);
+}
+
+/* 'Played' checkbox */
+WTrackTableView::indicator,
+/* BPM lock icon */
+#LibraryBPMButton::indicator {
+  /* The indicator size is dynamically adjusted in c++ to match the size
+  of the library font: width/height = 0.7em*/
+}
+/* Style the library BPM Button with a default image */
+QPushButton#LibraryBPMButton {
+  background: transparent; border: 0;
+}
+
+QPushButton#LibraryBPMButton:checked {
+  image: url(:/images/library/ic_library_locked.svg);
+}
+
+QPushButton#LibraryBPMButton:!checked {
+  image: url(:/images/library/ic_library_unlocked.svg);
+}
+
+
+/* Add default icons for cue menu buttons */
+WCueMenuPopup #CueDeleteButton {
+  image: url(:/images/ic_delete.svg);
+}
+
+WColorPicker QPushButton[noColor="true"] {
+  background-color: black;
+}
+
+WColorPicker QPushButton[customColor="true"] {
+  /* Diagonal Rainbow Gradient */
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                    stop: 0 #FF0000,
+                                    stop: 0.2 #FFFF00,
+                                    stop: 0.4 #00FF00,
+                                    stop: 0.6 #00FFFF,
+                                    stop: 0.8 #0000FF,
+                                    stop: 1 #FF00FF)
+}
+
+WColorPicker QPushButton[checked="false"] {
+  qproperty-icon: none;
+}
+
+WColorPicker QPushButton[checked="true"] {
+  qproperty-icon: url(:/images/ic_checkmark.svg);
+}
+
+/* Clear button */
+#SearchClearButton {
+  background: none;
+  border: 0px solid #fff;
+}
+#SearchClearButton:!focus {
+  image: url(:/images/library/ic_library_cross_grey.svg);
+}
+#SearchClearButton:focus {
+  image: url(:/images/library/ic_library_cross_orange.svg);
+}
+
+
+#MainMenu QMenu::indicator {
+  width: 1em;
+  height: 1em;
+}
+
+/* Lay out all context menus and the track table header with relative sizes,
+adjusting to the system-chosen font (size). Same is done for the Played checkedbox
+and the BPM lock icon in the library above.
+Apparently, the mainmenubar needs special treatment -- see default-menu-styles-linux7windows.qss */
+QToolTip,
+#MainMenu QMenu,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser QMenu,
+WTrackMenu,
+WTrackMenu QMenu,
+QLineEdit QMenu,
+WCueMenuPopup,
+WCoverArtMenu,
+WEffectChainPresetButton QMenu,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea {
+  padding: 0.15em;
+}
+
+#MainMenu QMenu::separator,
+WLibrarySidebar QMenu::separator,
+WTrackMenu::separator,
+WTrackMenu QMenu::separator,
+QLineEdit QMenu::separator,
+WLibraryTextBrowser QMenu::separator,
+WEffectChainPresetButton QMenu::separator {
+  height: 0px;
+  margin: 0.25em;
+}
+
+
+/* All menus that have at least one item with a checkbox*/
+#CratesMenu::item,
+WEffectChainPresetButton QMenu::item {
+/* padding-right reserves space for the submenu expand arrow
+  padding-left should be bigger than the menu icon width +
+  icon margin-left/-right */
+  padding: 0.17em 0.6em 0.17em 1.3em;
+}
+
+WTrackMenu::item,
+WTrackMenu QMenu::item,
+/* This catches context menus of
+  - property cells in the tracks table
+  - WCueMenuPopup cue label editor
+  - WBeatSpinBox
+  - AutoDJ transition QSpinBox*/
+QLineEdit QMenu::item,
+WCoverArtMenu::item,
+/* for the sake of completeness: html root view of Crates, Rec etc. */
+WLibraryTextBrowser QMenu::item,
+WEffectChainPresetButton QMenu::item {
+  padding: 0.17em 0.6em 0.17em 0.6em;
+}
+
+/* Icons in those menus (copy, paste, cut, delete) */
+QLineEdit QMenu::icon,
+WLibraryTextBrowser QMenu::icon {
+  /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
+                on the indicator itself.
+                positive margin-right pushes icon to the right...
+     Qt 5.15.2: needs negative margin-right in order to eliminate the item's
+                padding-left (necessary to avoid text/icon overlap);
+     Qt 6     : use style of #MainMenu QMenu::indicator from default-menu-styles-linux.qss
+                Though, this breaks WTrackTableViewHeader QMenu::indicator and
+                WLibrarySidebar QMenu::indicator which obviously require the Qt5 style ¯\_(ツ)_/¯ */
+  margin: 0em -0.1em 0em -1.3em;
+  padding: 0em 0em 0em 2em;
+}
+
+
+/* Column checkboxes in the table header menu */
+WTrackTableViewHeader QMenu QCheckBox,
+/* items in Crate sub menu and Search related Tracks menu */
+WTrackMenu QMenu QCheckBox,
+WEffectChainPresetButton QMenu QCheckBox {
+  padding: 0.17em 0.6em 0.17em 0.25em;
+}
+
+/* Sidebar with checkbox in Crate name context menu (actually a checkable QAction)
+    "[ ] Auto DJ Track Source" */
+WLibrarySidebar QMenu::item {
+  padding: 0.17em 0.6em 0.17em 0.5em;
+}
+WLibrarySidebar QMenu::indicator {
+  margin: 0em -0.1em 0em 0.3em;
+}
+
+WLibrarySidebar QMenu::indicator,
+WTrackTableViewHeader QMenu QCheckBox::indicator,
+WTrackMenu QMenu QCheckBox::indicator,
+WEffectChainPresetButton QMenu QCheckBox::indicator {
+  width: 0.7em;
+  height: 0.7em;
+}
+
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  image: url(:/images/ic_magnifier.svg);
+  /* Since this indicator doesn't have a border in the official skins,
+   we increase the size a bit in order to make appear as big as the
+   checkboxes, which also aligns the text with the other checkbox texts.
+   0.8em should work fine for a reasonable range of font sizes. */
+  width: 0.8em;
+  height: 0.8em;
+}

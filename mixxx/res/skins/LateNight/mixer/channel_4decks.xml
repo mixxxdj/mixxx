@@ -1,0 +1,141 @@
+<Template>
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="EqFxUnit">[EqualizerRack1_<Variable name="Group"/>]</SetVariable>
+  <SetVariable name="EqEffect">[EqualizerRack1_<Variable name="Group"/>_Effect1]</SetVariable>
+
+  <SetVariable name="KnobBg">regular</SetVariable>
+  <SetVariable name="KnobIndicator">regular</SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusBig"/></SetVariable>
+  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>MixerChannel_4Decks</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>AlignRight</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+          <Template src="skins:LateNight/controls/knob.xml">
+            <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="KnobColor">orange</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
+            <SetVariable name="Control">pregain</SetVariable>
+            <SetVariable name="TooltipId">pregain</SetVariable>
+          </Template>
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <!-- In case an EQ/non-EQ effect has less than 3 knobs we need
+           center those vertically. This spacer and the one below knob 3
+           push Gain and QuickEffect etc. to the top/bottom -->
+      <WidgetGroup><Size>1min,3me</Size></WidgetGroup>
+
+      <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
+        <SetVariable name="EqParameter">3</SetVariable>
+        <SetVariable name="EqRange">High</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+
+      <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
+        <SetVariable name="EqParameter">2</SetVariable>
+        <SetVariable name="EqRange">Mid</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+
+      <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
+        <SetVariable name="EqParameter">1</SetVariable>
+        <SetVariable name="EqRange">Low</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>1min,3me</Size></WidgetGroup>
+
+      <Template src="skins:LateNight/mixer/quick_effect_knob_4decks.xml"/>
+
+      <WidgetGroup>
+        <SizePolicy>i,f</SizePolicy>
+        <MinimumSize>,18</MinimumSize>
+        <MaximumSize>,18</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <EffectChainPresetSelector>
+            <ObjectName>QuickEffectSelectorLeft</ObjectName>
+            <Size>40min,18f</Size>
+            <EffectUnitGroup>[QuickEffectRack1_<Variable name="Group"/>]</EffectUnitGroup>
+          </EffectChainPresetSelector>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>PflBox_4Decks</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skins:LateNight/controls/button_2state.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">PflButton</SetVariable>
+            <SetVariable name="Size">26,26</SetVariable>
+            <SetVariable name="BtnSize">square</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>VuAndSlider_4Decks</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>VuMeterChannel_4Decks</ObjectName>
+            <Size>20f,0min</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>VuMeterChannel<Variable name="ChanNum"/></ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <SliderComposed><!-- Volume -->
+            <TooltipId>channel_volume</TooltipId>
+            <Size>42f,107f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+            <Horizontal>false</Horizontal>
+            <BarColor><Variable name="BarColorVolume"/></BarColor>
+            <BarWidth><Variable name="BarWidth"/></BarWidth>
+            <BarMargins><Variable name="BarMarginVolume"/></BarMargins>
+            <BarRoundCaps>true</BarRoundCaps>
+            <BarAxisPos>21.0</BarAxisPos>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
+            </Connection>
+          </SliderComposed>
+
+        </Children>
+      </WidgetGroup><!-- VuAndSlider_4Decks -->
+
+      <WidgetGroup>
+        <ObjectName>CrossfaderSwitch_4Decks</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skins:LateNight/controls/button_xfader_deck.xml"/>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup><!-- MixerChannel_4Decks -->
+</Template>

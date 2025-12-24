@@ -1,0 +1,112 @@
+<!--
+Description:
+  An effect parameter knob with a 5 state button below
+  that controls SuperKnob linking type.
+Variables:
+  FxRack        : rack number
+  FxUnitNum     : unit number
+  FxGroup_FxNum : EffectRack1_EffectUnitX_EffectY
+  FxNum         : effect number
+  parameter     : the parameter
+-->
+<Template>
+  <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <MinimumSize>43,</MinimumSize>
+    <MaximumSize>52,</MaximumSize>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
+      <WidgetGroup><!-- Parameter knob + parameter name -->
+        <Layout>vertical</Layout>
+        <MinimumSize>42,</MinimumSize>
+        <MaximumSize>51,</MaximumSize>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><!-- Effect parameter knob -->
+            <ObjectName>FxParameterKnob</ObjectName>
+            <Layout>vertical</Layout>
+            <MinimumSize>42,22</MinimumSize>
+            <MaximumSize>51,22</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <EffectParameterKnobComposed>
+                <Size>26f,22f</Size>
+                <Knob>skins:Tango/knobs_sliders/knob_fx_yellow.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <KnobCenterYOffset>1.500</KnobCenterYOffset>
+                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                <Effect><Variable name="FxNum"/></Effect>
+                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+                <Connection>
+                  <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
+                </Connection>
+              </EffectParameterKnobComposed>
+            </Children>
+          </WidgetGroup>
+
+          <EffectParameterName>
+            <ObjectName>FxParameterKnobName</ObjectName>
+            <MinimumSize>42,12</MinimumSize>
+            <MaximumSize>51,12</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+            <Alignment>center</Alignment>
+            <Elide>right</Elide>
+          </EffectParameterName>
+        </Children>
+      </WidgetGroup><!-- Parameter knob + parameter name -->
+
+      <WidgetGroup>
+        <ObjectName>AlignHCenter</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>FxSuperLinkButtonBox</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>39,</MinimumSize>
+            <MaximumSize>51,</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <!-- Meta knob link invert button -->
+              <Template src="skins:Tango/controls/button_2state.xml">
+                <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
+                <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
+                <SetVariable name="Size">10f,5f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
+              </Template>
+
+              <!-- Meta knob link button -->
+              <Template src="skins:Tango/controls/button_5state.xml">
+                <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+                <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
+                <SetVariable name="Size">25me,5f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_type</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+
+    </Children>
+    <!-- show only if parameter is loaded -->
+    <Connection>
+      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

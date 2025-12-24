@@ -1,0 +1,30 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The left gutter.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LeftGutter</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+      <Template src="skin:deck.xml">
+        <SetVariable name="i">1</SetVariable>
+      </Template>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:deck.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,42 @@
+<!--
+Description:
+  A deck control button that is always visible.
+  Set visibility in skin menu: Decks > Permanent Deck Controls
+Variables:
+  ObjectName        : object name
+  ToolTipID         : standard Tooltip from mixxx db
+    see: https://github.com/mixxxdj/mixxx/blob/main/src/skin/legacy/tooltips.cpp
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  Control           : persistent left-click control, also used as
+                      visibility condition
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName>DeckButton</ObjectName>
+    <Size><Variable name="Width"/>,22f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_icon"/></Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_1_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_1_icon"/></Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="group"/>,<Variable name="Control"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey persist="true">[Tango],always_visible_<Variable name="Control"/></ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </PushButton>
+</Template>

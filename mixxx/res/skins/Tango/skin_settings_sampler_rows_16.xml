@@ -1,0 +1,37 @@
+<!--
+Description:
+-->
+<Template>
+  <WidgetStack currentpage="[Skin],sampler_rows" persist="true">
+    <Size>112me,13min</Size>
+    <NextControl>[Tango],sampler_bank_next</NextControl>
+    <PrevControl>[Tango],sampler_bank_prev</PrevControl>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:Tango/controls/skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">1</SetVariable>
+            <SetVariable name="next">2</SetVariable>
+            <SetVariable name="prev">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>AlignLeft</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:Tango/controls/skin_settings_button_sampler_rows.xml">
+            <SetVariable name="current">2</SetVariable>
+            <SetVariable name="next">1</SetVariable>
+            <SetVariable name="prev">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetStack>
+</Template>

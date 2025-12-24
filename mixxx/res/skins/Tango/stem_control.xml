@@ -1,0 +1,34 @@
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <Size>15f,1me</Size>
+      </WidgetGroup>
+      <Template src="skins:Tango/stem_channel.xml">
+        <SetVariable name="stemNum">1</SetVariable>
+      </Template>
+      <WidgetGroup>
+        <Size>15f,1me</Size>
+      </WidgetGroup>
+      <Template src="skins:Tango/stem_channel.xml">
+        <SetVariable name="stemNum">2</SetVariable>
+      </Template>
+      <WidgetGroup>
+        <Size>15f,1me</Size>
+      </WidgetGroup>
+      <Template src="skins:Tango/stem_channel.xml">
+        <SetVariable name="stemNum">3</SetVariable>
+      </Template>
+      <WidgetGroup>
+        <Size>15f,1me</Size>
+      </WidgetGroup>
+      <Template src="skins:Tango/stem_channel.xml">
+        <SetVariable name="stemNum">4</SetVariable>
+      </Template>
+      <WidgetGroup>
+        <Size>15f,1me</Size>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

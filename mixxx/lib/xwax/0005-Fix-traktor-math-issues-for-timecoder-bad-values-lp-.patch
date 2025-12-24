@@ -1,0 +1,29 @@
+From 945947d856710ba7aeadc985734ef991efdaa437 Mon Sep 17 00:00:00 2001
+From: Owen Williams <owilliams@mixxx.org>
+Date: Sun, 2 Jan 2022 02:16:51 +0100
+Subject: [PATCH 5/5] Fix traktor math issues for timecoder bad values
+ (#5908)
+
+---
+ timecoder.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/timecoder.c b/timecoder.c
+index 8cac262..9a54e82 100755
+--- a/timecoder.c
++++ b/timecoder.c
+@@ -633,6 +633,11 @@ signed int timecoder_get_position(struct timecoder *tc, double *when)
+     if (r == -1)
+         return -1;
+ 
++    if (r >= 0) {
++        // normalize position to milliseconds, not timecode steps -- Owen
++        r = (double)r * (1000.0 / ((double)tc->def->resolution * tc->speed));
++    }
++
+     if (when)
+         *when = tc->timecode_ticker * tc->dt;
+ 
+-- 
+2.25.1
+

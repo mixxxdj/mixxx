@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.5" schemaVersion="1">
+  <info>
+    <name>M-Vave SMC-Mixer</name>
+    <author>Sam Whited</author>
+    <description>MIDI mapping for the M-Vave SMC-Mixer.</description>
+    <forums>https://mixxx.discourse.group/t/m-wave-sinco-smc-mixer-radio-broadcast-mapping/30366</forums>
+    <manual>mvave_smc_mixer</manual>
+    <devices>
+      <!--
+        This vendor and product ID is shared between multiple controllers and is
+        not unique to this mixer.
+      -->
+      <product protocol="midi" vendor_id="0x4353" product_id="0x4b4d" />
+    </devices>
+  </info>
+  <controller id="mvave-smc-mixer">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js" functionprefix=""/>
+      <file filename="MVave-SMC-Mixer-scripts.js" functionprefix="SMCMixer"/>
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[0].midKillButton.input</key>
+        <description>First S button.</description>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[0].lowKillButton.input</key>
+        <description>First R button.</description>
+        <status>0x90</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[0].highKillButton.input</key>
+        <description>First M button.</description>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel3]]</group>
+        <key>SMCMixer.controller.eqButtons[0].quickEffectButton.input</key>
+        <description>First square button.</description>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[1].midKillButton.input</key>
+        <description>Second S button.</description>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[1].lowKillButton.input</key>
+        <description>Second R button.</description>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[1].highKillButton.input</key>
+        <description>Second M button.</description>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>SMCMixer.controller.eqButtons[1].quickEffectButton.input</key>
+        <description>Second square button.</description>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[2].midKillButton.input</key>
+        <description>Third S button.</description>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[2].lowKillButton.input</key>
+        <description>Third R button.</description>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[2].highKillButton.input</key>
+        <description>Third M button.</description>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>SMCMixer.controller.eqButtons[2].quickEffectButton.input</key>
+        <description>Third square button.</description>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[3].midKillButton.input</key>
+        <description>Fourth S button.</description>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[3].lowKillButton.input</key>
+        <description>Third R button.</description>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>SMCMixer.controller.eqButtons[3].highKillButton.input</key>
+        <description>Fourth M button.</description>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel4]]</group>
+        <key>SMCMixer.controller.eqButtons[3].quickEffectButton.input</key>
+        <description>Fourth square button.</description>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Slip Mode -->
+      <control>
+        <group>[Channel3]</group>
+        <key>SMCMixer.controller.slipButtons[0].input</key>
+        <description>Fifth M button.</description>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.slipButtons[1].input</key>
+        <description>Sixth M button.</description>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>SMCMixer.controller.slipButtons[2].input</key>
+        <description>Seventh M button.</description>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>SMCMixer.controller.slipButtons[3].input</key>
+        <description>Eighth M button.</description>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Quantize -->
+      <control>
+        <group>[Channel3]</group>
+        <key>SMCMixer.controller.quantizeButtons[0].input</key>
+        <description>Fifth S button.</description>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.quantizeButtons[1].input</key>
+        <description>Sixth S button.</description>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>SMCMixer.controller.quantizeButtons[2].input</key>
+        <description>Seventh S button.</description>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>SMCMixer.controller.quantizeButtons[3].input</key>
+        <description>Eighth S button.</description>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Key Lock -->
+      <control>
+        <group>[Channel3]</group>
+        <key>SMCMixer.controller.keylockButtons[0].input</key>
+        <description>Fifth R button.</description>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.keylockButtons[1].input</key>
+        <description>Sixth R button.</description>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>SMCMixer.controller.keylockButtons[2].input</key>
+        <description>Seventh R button.</description>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>SMCMixer.controller.keylockButtons[3].input</key>
+        <description>Eighth R button.</description>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Headphone Cue / PFL -->
+      <control>
+        <group>[Channel3]</group>
+        <key>SMCMixer.controller.pflButtons[0].input</key>
+        <description>Fifth square button.</description>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.pflButtons[1].input</key>
+        <description>Sixth square button.</description>
+        <status>0x90</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>SMCMixer.controller.pflButtons[2].input</key>
+        <description>Seventh square button.</description>
+        <status>0x90</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>SMCMixer.controller.pflButtons[3].input</key>
+        <description>Eighth square button.</description>
+        <status>0x90</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>SMCMixer.controller.eqButtons[0].knob.input</key>
+        <description>Knob 1.</description>
+        <status>0xB0</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.eqButtons[1].knob.input</key>
+        <description>Knob 2.</description>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>SMCMixer.controller.eqButtons[2].knob.input</key>
+        <description>Knob 3.</description>
+        <status>0xB0</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>SMCMixer.controller.eqButtons[3].knob.input</key>
+        <description>Knob 3.</description>
+        <status>0xB0</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>SMCMixer.controller.gainKnob.input</key>
+        <description>Knob 4.</description>
+        <status>0xB0</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>SMCMixer.controller.balanceKnob.input</key>
+        <description>Knob 5.</description>
+        <status>0xB0</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>SMCMixer.controller.headGainKnob.input</key>
+        <description>Knob 6.</description>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>SMCMixer.controller.headMixKnob.input</key>
+        <description>Knob 7.</description>
+        <status>0xB0</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.deckLeftButton.input</key>
+        <description>Channel Left button.</description>
+        <status>0x90</status>
+        <midino>0x2E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.deckRightButton.input</key>
+        <description>Channel Right button.</description>
+        <status>0x90</status>
+        <midino>0x2F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.activeDeck.backButton.input</key>
+        <description>Rewind transport button.</description>
+        <status>0x90</status>
+        <midino>0x5B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.activeDeck.forwardButton.input</key>
+        <description>Fast forward transport button.</description>
+        <status>0x90</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.activeDeck.cueButton.input</key>
+        <description>Pause transport button (used for Cue).</description>
+        <status>0x90</status>
+        <midino>0x5D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.activeDeck.playButton.input</key>
+        <description>Play transport button.</description>
+        <status>0x90</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Recording]</group>
+        <key>SMCMixer.controller.recordButton.input</key>
+        <description>Record transport button.</description>
+        <status>0x90</status>
+        <midino>0x5F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.downButton.input</key>
+        <description>Down button.</description>
+        <status>0x90</status>
+        <midino>0x61</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.upButton.input</key>
+        <description>Down button.</description>
+        <status>0x90</status>
+        <midino>0x60</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.leftButton.input</key>
+        <description>Left button.</description>
+        <status>0x90</status>
+        <midino>0x62</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.rightButton.input</key>
+        <description>Right button.</description>
+        <status>0x90</status>
+        <midino>0x63</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>SMCMixer.controller.faders[0].input</key>
+        <description>Fader 1.</description>
+        <status>0xE0</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.faders[1].input</key>
+        <description>Fader 2.</description>
+        <status>0xE1</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>SMCMixer.controller.faders[2].input</key>
+        <description>Fader 3.</description>
+        <status>0xE2</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>SMCMixer.controller.faders[3].input</key>
+        <description>Fader 4.</description>
+        <status>0xE3</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>SMCMixer.controller.faders[4].input</key>
+        <description>Fader 5.</description>
+        <status>0xE4</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMCMixer.controller.faders[5].input</key>
+        <description>Fader 6.</description>
+        <status>0xE5</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>SMCMixer.controller.faders[6].input</key>
+        <description>Fader 7.</description>
+        <status>0xE6</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>SMCMixer.controller.faders[7].input</key>
+        <description>Fader 8.</description>
+        <status>0xE7</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+    </controls>
+    <outputs/>
+  </controller>
+</MixxxControllerPreset>

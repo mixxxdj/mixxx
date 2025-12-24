@@ -1,0 +1,52 @@
+<!--
+Effect focus button
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+  Effect: the effect
+-->
+<Template>
+  <SetVariable name="EffectGroup">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectFocusButtonContainer</ObjectName>
+    <MaximumSize>15,15</MaximumSize>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <PushButton>
+        <TooltipId>EffectSlot_focus</TooltipId>
+        <ObjectName>CircleButton</ObjectName>
+        <Size>15f,15f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
+        </State>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
+        <Connection>
+          <ConfigKey><Variable name="EffectGroup"/>,focused_effect</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual></Transform>
+        </Connection>
+        <Connection>
+          <!-- right click > unfocus -->
+          <ConfigKey><Variable name="EffectGroup"/>,focused_effect</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <Transform><IsEqual><Variable name="Effect"/></IsEqual><Not/></Transform>
+        </Connection>
+      </PushButton>
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="EffectGroup"/>,show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

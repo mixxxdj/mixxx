@@ -1,0 +1,19 @@
+<!--
+Description:
+  A translucent layer to cover skin settings that are
+  inactive with the current configuration
+Variables:
+  Setting   : visibility control
+-->
+<Template>
+
+  <WidgetGroup>
+    <ObjectName>SubmenuCover</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Connection>
+      <ConfigKey><Variable name="Setting"/></ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset mixxxVersion="2.2.0" schemaVersion="1">
+  <info>
+    <name>Traktor Kontrol S2 MK3</name>
+    <author>Michael Schmidt</author>
+    <description>HID Mapping for Traktor Kontrol S2 MK3</description>
+    <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12999</forums>
+    <manual>native_instruments_traktor_kontrol_s2_mk3</manual>
+    <devices>
+      <product protocol="hid" vendor_id="0x17cc" product_id="0x1710" usage_page="0xff01" usage="0x1" interface_number="0x3" />
+    </devices>
+  </info>
+  <controller id="Traktor">
+    <scriptfiles>
+      <file filename="common-hid-packet-parser.js" functionprefix="" />
+      <file filename="Traktor-Kontrol-S2-MK3-hid-scripts.js" functionprefix="TraktorS2MK3" />
+    </scriptfiles>
+  </controller>
+</MixxxControllerPreset>

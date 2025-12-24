@@ -1,0 +1,39 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,max</SizePolicy>
+    <Children>
+
+      <WidgetStack currentpage="[Skin],sampler_rows">
+        <NextControl>[Deere],sampler_bank_next</NextControl>
+        <PrevControl>[Deere],sampler_bank_prev</PrevControl>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">1</SetVariable>
+                <SetVariable name="next">2</SetVariable>
+                <SetVariable name="prev">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">2</SetVariable>
+                <SetVariable name="next">1</SetVariable>
+                <SetVariable name="prev">1</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+</Template>

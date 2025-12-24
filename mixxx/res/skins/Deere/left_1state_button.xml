@@ -1,0 +1,33 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A single-state left-click push button.
+  Variables:
+    ObjectName: The object name.
+    Size: the button size.
+    state_0_text:
+    state_0_pressed:
+    state_0_unpressed:
+    left_connection_control:
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
+    <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
+    <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="state_0_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_0_unpressed"/></Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

@@ -1,0 +1,33 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A VU meter that changes less often.
+    Currently used for audio_latency_overload display
+  Variables:
+    group: The group for the controls.
+    control: The control to connect to.
+
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <ObjectName>LatencyMeter</ObjectName>
+    <Children>
+      <VuMeter>
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
+        <MinimumSize>64,4</MinimumSize>
+        <MaximumSize>64,4</MaximumSize>
+        <PathVu>skins:LateNight/<Variable name="StyleScheme"/>/style/vumeter_latency_over.png</PathVu>
+        <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/vumeter_latency_bg.png</PathBack>
+        <Horizontal>true</Horizontal>
+        <PeakHoldSize>5</PeakHoldSize>
+        <PeakHoldTime>1000</PeakHoldTime>
+        <PeakFallTime>100</PeakFallTime>
+        <PeakFallStep>1</PeakFallStep>
+        <Connection>
+          <ConfigKey><Variable name="Group"/>,<Variable name="Control"/></ConfigKey>
+        </Connection>
+      </VuMeter>
+    </Children>
+  </WidgetGroup>
+</Template>

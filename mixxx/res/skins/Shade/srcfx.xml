@@ -1,0 +1,36 @@
+<Template>
+  <WidgetGroup>
+    <Size>100e,63f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
+        <Size>5f,60f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>100e,60f</Size>
+        <Layout>horizontal</Layout>
+        <BackPath>style/style_bg_src.png</BackPath>
+        <Children>
+          <WidgetGroup>
+            <Size>0e,54f</Size>
+          </WidgetGroup>
+          <Template src="skin:ducking.xml"/>
+          <WidgetGroup>
+            <Size>0e,54f</Size>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>5f,60f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>3f,60f</Size>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

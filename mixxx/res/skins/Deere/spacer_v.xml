@@ -1,0 +1,12 @@
+<!DOCTYPE template>
+<!--
+Description:
+A vertical space filling widget. Grows to fit available space.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children/>
+  </WidgetGroup>
+</Template>

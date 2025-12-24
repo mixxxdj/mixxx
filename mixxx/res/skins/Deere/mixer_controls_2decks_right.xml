@@ -1,0 +1,18 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <Template src="skin:mixer_column_pfl_levels.xml"/>
+      <Template src="skin:mixer_column_volume_gain.xml"/>
+      <Template src="skin:mixer_column_eq_right.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

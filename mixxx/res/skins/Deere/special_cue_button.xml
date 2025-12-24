@@ -1,0 +1,45 @@
+<!--
+Description:
+  A special cue button to mark intro and outro sections in a track
+Variables:
+  group: The group for the controls.
+  cue_type: Prefix for COs.
+  label: Button text.
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="cue_type"/></TooltipId>
+    <ObjectName>SpecialCueButton</ObjectName>
+    <MinimumSize>18,22</MinimumSize>
+    <MaximumSize>22,22</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="label"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="label"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_activate</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_clear</ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+  </PushButton>
+</Template>
