@@ -372,7 +372,7 @@ class Track : public QObject {
     mixxx::BeatsPointer getBeats() const;
 
     // Set the track's Beats if not locked
-    bool trySetBeats(mixxx::BeatsPointer pBeats);
+    virtual bool trySetBeats(mixxx::BeatsPointer pBeats);
     bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
 
     void undoBeatsChange();
