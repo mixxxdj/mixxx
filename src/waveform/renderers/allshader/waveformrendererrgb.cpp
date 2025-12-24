@@ -12,12 +12,6 @@ using namespace rendergraph;
 
 namespace allshader {
 
-namespace {
-inline float math_pow2(float x) {
-    return x * x;
-}
-} // namespace
-
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type,
         ::WaveformRendererSignalBase::Options options)
@@ -89,10 +83,14 @@ bool WaveformRendererRGB::preprocessInner() {
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
 
+    // Fixes a sporadic crash caused by a division by zero on waveform initialization
+    if (visualIncrementPerPixel == 0.0) {
+        return false;
+    }
+
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    // applyCompensation = false, as we scale to match filtered.all
-    getGains(&allGain, false, &lowGain, &midGain, &highGain);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
@@ -182,30 +180,10 @@ bool WaveformRendererRGB::preprocessInner() {
             float maxMid = static_cast<float>(u8maxMid[chn]);
             float maxHigh = static_cast<float>(u8maxHigh[chn]);
 
-            // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
-            // We take the square root to get the magnitude below.
-            const float sum = math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh);
-
             // Apply the gains
             maxLow *= lowGain;
             maxMid *= midGain;
             maxHigh *= highGain;
-
-            // Calculate the squared magnitude of the gained maxLow, maxMid and maxHigh values
-            // We take the square root to get the magnitude below.
-            const float sumGained = math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh);
-
-            // The maxAll values will be used to draw the amplitude. We scale them according to
-            // magnitude of the gained maxLow, maxMid and maxHigh values
-            if (sum != 0.f) {
-                // magnitude = sqrt(sum) and magnitudeGained = sqrt(sumGained), and
-                // factor = magnitudeGained / magnitude, but we can do with a single sqrt:
-                const float factor = std::sqrt(sumGained / sum);
-                maxAllChn[chn] *= factor;
-                if (!splitLeftRight) {
-                    maxAllChn[chn + 1] *= factor;
-                }
-            }
 
             // Use the gained maxLow, maxMid and maxHigh values to calculate the color components
             float red = maxLow * low_r + maxMid * mid_r + maxHigh * high_r;

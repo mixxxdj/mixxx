@@ -61,23 +61,11 @@ void main(void) {
       new_currentData.y *= midGain;
       new_currentData.z *= highGain;
 
-      //(vrince) debug see pre-computed signal
-      //gl_FragColor = new_currentData;
-      //return;
-
-      // Represents the [-1, 1] distance of this pixel. Subtracting this from
-      // the signal data in new_currentData, we can tell if a signal band should
-      // show in this pixel if the component is > 0.
+      // ourDistance represents the [0, 1] distance of this pixel from the
+      // center line. If ourDistance is smaller than the signalDistance, show
+      // the pixel.
       float ourDistance = abs((uv.y - 0.5) * 2.0);
-
-      // Since the magnitude of the (low, mid, high) vector is used as the
-      // waveform height, re-scale the maximum height to 1.
-      const float scaleFactor = 1.0 / sqrt(3.0);
-
-      float signalDistance = sqrt(new_currentData.x * new_currentData.x +
-                                  new_currentData.y * new_currentData.y +
-                                  new_currentData.z * new_currentData.z) *
-                             scaleFactor;
+      float signalDistance = new_currentData.w;
       showing = (signalDistance - ourDistance) >= 0.0;
 
       // Linearly combine the low, mid, and high colors according to the low,
@@ -90,24 +78,6 @@ void main(void) {
       float showingMax = max(showingColor.x, max(showingColor.y, showingColor.z));
       showingColor = showingColor / showingMax;
       showingColor.w = 1.0;
-
-      // Now do it all over again for the unscaled version of the waveform,
-      // which we will draw at very low opacity.
-      float signalDistanceUnscaled = sqrt(new_currentDataUnscaled.x * new_currentDataUnscaled.x +
-                                          new_currentDataUnscaled.y * new_currentDataUnscaled.y +
-                                          new_currentDataUnscaled.z * new_currentDataUnscaled.z) * scaleFactor;
-      showingUnscaled = (signalDistanceUnscaled - ourDistance) >= 0.0;
-
-      // Linearly combine the low, mid, and high colors according to the
-      // original low, mid, and high components.
-      showingUnscaledColor = lowColor * new_currentDataUnscaled.x +
-                             midColor * new_currentDataUnscaled.y +
-                             highColor * new_currentDataUnscaled.z;
-
-      // Re-scale the color by the maximum component.
-      float showingUnscaledMax = max(showingUnscaledColor.x, max(showingUnscaledColor.y, showingUnscaledColor.z));
-      showingUnscaledColor = showingUnscaledColor / showingUnscaledMax;
-      showingUnscaledColor.w = 1.0;
     }
 
     // Draw the axes color as the lowest item on the screen.
@@ -115,20 +85,14 @@ void main(void) {
     // rendered even when the waveform is fairly short.  Really this
     // value should be based on the size of the widget.
     if (abs(framebufferSize.y / 2 - pixel.y) <= 4) {
-      outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-      outputColor.w = 1.0;
-    }
-
-    if (showingUnscaled) {
-      float alpha = 0.4;
-      outputColor.xyz = mix(outputColor.xyz, showingUnscaledColor.xyz, alpha);
-      outputColor.w = 1.0;
+        outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
+        outputColor.w = 1.0;
     }
 
     if (showing) {
-      float alpha = 0.8;
-      outputColor.xyz = mix(outputColor.xyz, showingColor.xyz, alpha);
-      outputColor.w = 1.0;
+        float alpha = 1.0;
+        outputColor.xyz = mix(outputColor.xyz, showingColor.xyz, alpha);
+        outputColor.w = 1.0;
     }
     gl_FragColor = outputColor;
 

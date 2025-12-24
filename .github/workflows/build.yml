@@ -276,7 +276,7 @@ jobs:
 
       - name: "[macOS/Windows] Set up build environment cache"
         if: runner.os != 'Linux'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ matrix.buildenv_basepath }}
           key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
@@ -347,7 +347,7 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
@@ -649,7 +649,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
