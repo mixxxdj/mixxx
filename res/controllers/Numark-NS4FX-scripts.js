@@ -116,12 +116,10 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
 }
 
 function createTransportPad(deck, padNumber, defaultKey, momentary) {
-    var hotcueNumber = padNumber + 4;
+    var hotcueNumber = 4 + padNumber;
     var midiNote = 0x18 + (padNumber - 1);
     var midiChan = 0x94 + deck.midi_chan;
 
-    // This component will be connected to the engine, but not to MIDI input directly.
-    // It will receive input from the wrapper button.
     var hotcueButton = new components.HotcueButton({
         number: hotcueNumber,
         group: deck.group,
@@ -132,23 +130,18 @@ function createTransportPad(deck, padNumber, defaultKey, momentary) {
     });
     deck['transport_pad_' + padNumber + '_hotcue'] = hotcueButton;
 
-    // This component is connected to MIDI.
-    return new components.Button({
+    var button = new components.Button({
         input: function(channel, control, value, status, group) {
             NS4FX.dbg("Transport pad " + padNumber + " on deck " + deck.number + " pressed with value " + value);
             if (useAdditionalHotcues) {
-                // Manually shift/unshift the hotcue button before calling its input
                 if (NS4FX.shift) {
-                    NS4FX.dbg("Shifting hotcue button for clear");
-                    hotcueButton.shift();
-                } else {
-                    hotcueButton.unshift();
+                    if (value > 0) { // only trigger on press
+                        NS4FX.dbg("SHIFT on transport pad " + padNumber + " on deck " + deck.number + ". Clearing hotcue " + hotcueNumber);
+                        engine.setValue(group, 'hotcue_' + hotcueNumber + '_clear', 1);
+                    }
+                    return;
                 }
                 hotcueButton.input(channel, control, value, status, group);
-                // And shift it back if we shifted, so we don't affect other components
-                if (NS4FX.shift) {
-                    hotcueButton.unshift();
-                }
             } else {
                 if (defaultKey) {
                     if (momentary) {
@@ -159,12 +152,14 @@ function createTransportPad(deck, padNumber, defaultKey, momentary) {
                             engine.setValue(group, defaultKey, 1);
                         }
                     }
-                    // Also provide visual feedback for default action
                     midi.sendShortMsg(midiChan, midiNote, (value === 0x7F) ? 0x7F : 0x01);
                 }
             }
         }
     });
+    button.padNum = padNumber;
+    button.hcNum = hotcueNumber;
+    return button;
 }
 
 
@@ -797,21 +792,55 @@ NS4FX.Deck = function (number, midi_chan) {
     for (var i = 1; i <= 4; ++i) {
 
         this.hotcue_buttons[i] = new components.HotcueButton({
-            midi: [0x94 + midi_chan, 0x13 + i],
+            midi: [0x94 + midi_chan, 0x1F + i],
+            number: i + 4,
+            output: function (value) {
+                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01);
+            }
+        });
+
+        if (useAdditionalHotcues) {
+            (function(button) {
+                var original_input = button.input;
+                button.input = function(channel, control, value, status, group) {
+                    if (NS4FX.shift) {
+                        var hotcueNumber = button.number;
+                        NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
+                        if (value > 0) { // only trigger on press
+                            engine.setValue(group, 'hotcue_' + hotcueNumber + '_clear', 1);
+                        }
+                    } else {
+                        original_input.call(button, channel, control, value, status, group);
+                    }
+                }
+            })(this.hotcue_buttons[i]);
+        }
+
+        // cue buttons 1 - 4
+        this.hotcue_buttons_secondary[i] = new components.HotcueButton({
+            midi: [0x94 + midi_chan, 0x13 + i], // notes 0x14, 0x15, 0x16, 0x17
             number: i,
             output: function (value) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01);
             }
         });
 
-        // cue buttons 5 - 8
-        this.hotcue_buttons_secondary[5 - i] = new components.HotcueButton({
-            midi: [0x94 + midi_chan, 0x18 - i],
-            number: 9 - i,
-            output: function (value) {
-                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01);
-            }
-        });
+        if (useAdditionalHotcues) {
+            (function(button) {
+                var original_input = button.input;
+                button.input = function(channel, control, value, status, group) {
+                    if (NS4FX.shift) {
+                        var hotcueNumber = button.number;
+                        NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
+                        if (value > 0) { // only trigger on press
+                            engine.setValue(group, 'hotcue_' + hotcueNumber + '_clear', 1);
+                        }
+                    } else {
+                        original_input.call(button, channel, control, value, status, group);
+                    }
+                }
+            })(this.hotcue_buttons_secondary[i]);
+        }
 
         // sampler buttons
         if (deck.number % 2 == 0) {
@@ -943,7 +972,11 @@ NS4FX.Deck = function (number, midi_chan) {
         // This is the main pad mode switching logic.
         // It disconnects the old set of pads and connects the new one.
         if (padmode == "hotcue") {
-            buttons = this.hotcue_buttons;
+            buttons = new components.ComponentContainer();
+            for (var k=1; k<=4; k++) {
+                buttons[k] = this.hotcue_buttons_secondary[k]; // hotcues 1-4
+                buttons[k+4] = this.hotcue_buttons[k]; // hotcues 5-8
+            }
         } else if (padmode == "sampler") {
             deck.sampler_buttons.updateLEDs(`[Channel${this.number}]`);
             buttons = this.sampler_buttons;
