@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "control/controlpushbutton.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
@@ -52,7 +53,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<VinylControlManager> pVCManager,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
-            std::shared_ptr<Library> pLibrary);
+            std::shared_ptr<Library> pLibrary,
+            std::shared_ptr<KeyboardEventFilter> pKeyboardEventFilter = nullptr);
     virtual ~DlgPreferences();
 
     void addPageWidget(PreferencesPage page,

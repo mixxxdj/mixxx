@@ -11,6 +11,7 @@ class ControlProxy;
 class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
+class KeyboardEventFilter;
 class QTreeWidgetItem;
 
 /// Controllers Overview in the preferences
@@ -23,7 +24,8 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     DlgPrefControllers(DlgPreferences* pDlgPreferences,
             UserSettingsPointer pConfig,
             std::shared_ptr<ControllerManager> pControllerManager,
-            QTreeWidgetItem* pControllersRootItem);
+            QTreeWidgetItem* pControllersRootItem,
+            KeyboardEventFilter* pKeyboardEventFilter);
     virtual ~DlgPrefControllers();
 
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
@@ -59,9 +61,14 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     UserSettingsPointer m_pConfig;
     std::shared_ptr<ControllerManager> m_pControllerManager;
     QTreeWidgetItem* m_pControllersRootItem;
+    KeyboardEventFilter* m_pKeyboardEventFilter;
     QList<DlgPrefController*> m_controllerPages;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
 
     const parented_ptr<ControlProxy> m_pNumDecks;
     const parented_ptr<ControlProxy> m_pNumSamplers;
+    
+    // Keyboard mapping UI
+    class DlgPrefKeyboard* m_pKeyboardPage;
+    QTreeWidgetItem* m_pKeyboardTreeItem;
 };

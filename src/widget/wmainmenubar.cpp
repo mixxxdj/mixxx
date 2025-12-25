@@ -360,15 +360,35 @@ void WMainMenuBar::initialize() {
     connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
     pViewMenu->addAction(m_pViewKeywheel);
 
+    // Visual Keyboard (Antigravity Feature)
+    QString visualKeyboardTitle = tr("Show Visual Keyboard");
+    QString visualKeyboardText = tr("Show a live-echo visual keyboard with mapping tools");
+    m_pViewVisualKeyboard = new QAction(visualKeyboardTitle, this);
+    m_pViewVisualKeyboard->setCheckable(true);
+    m_pViewVisualKeyboard->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVisualKeyboard"),
+                    tr("F10", "Menubar|View|Show Visual Keyboard"))));
+    m_pViewVisualKeyboard->setStatusTip(visualKeyboardText);
+    m_pViewVisualKeyboard->setWhatsThis(buildWhatsThis(visualKeyboardTitle, visualKeyboardText));
+    connect(m_pViewVisualKeyboard, &QAction::triggered, this, &WMainMenuBar::showVisualKeyboard);
+    pViewMenu->addAction(m_pViewVisualKeyboard);
+
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
             " " + mayNotBeSupported;
     auto* pViewMaximizeLibrary = new QAction(maximizeLibraryTitle, this);
     pViewMaximizeLibrary->setCheckable(true);
-    pViewMaximizeLibrary->setShortcut(
-        QKeySequence(m_pKbdConfig->getValue(
-                ConfigKey("[KeyboardShortcuts]", "ViewMenu_MaximizeLibrary"),
-                tr("Space", "Menubar|View|Maximize Library"))));
+    QString maximizeLibraryShortcut = m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_MaximizeLibrary"),
+            tr("Ctrl+Shift+L", "Menubar|View|Maximize Library"));
+    // FORCED MIGRATION: If stale config hijacks Spacebar, reset it!
+    if (maximizeLibraryShortcut == "Space") {
+        maximizeLibraryShortcut = "Ctrl+Shift+L";
+        m_pKbdConfig->set(ConfigKey("[KeyboardShortcuts]", "ViewMenu_MaximizeLibrary"), 
+                         ConfigValueKbd(maximizeLibraryShortcut));
+    }
+    pViewMaximizeLibrary->setShortcut(QKeySequence(maximizeLibraryShortcut));
     pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
     createVisibilityControl(pViewMaximizeLibrary,
@@ -781,6 +801,10 @@ void WMainMenuBar::initialize() {
 void WMainMenuBar::onKeywheelChange(int state) {
     Q_UNUSED(state);
     m_pViewKeywheel->setChecked(false);
+}
+
+void WMainMenuBar::onVisualKeyboardHidden() {
+    m_pViewVisualKeyboard->setChecked(false);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {

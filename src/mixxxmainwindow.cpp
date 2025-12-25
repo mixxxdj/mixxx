@@ -27,6 +27,10 @@
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
+#include "controllers/keyboard/dlgkeyboardvisuallayout.h"
+#include "controllers/keyboard/dlgkeyboardmappingeditor.h"
+#include "controllers/keyboard/keyboardactionregistry.h"
+#include "controllers/keyboard/keyboardmappingmanager.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __BROADCAST__
@@ -107,6 +111,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #endif
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
+          m_pVisualKeyboardDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
     DEBUG_ASSERT(pCoreServices);
@@ -311,7 +316,8 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getVinylControlManager(),
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
-            m_pCoreServices->getLibrary());
+            m_pCoreServices->getLibrary(),
+            m_pCoreServices->getKeyboardEventFilter());
     m_pPrefDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
     m_pPrefDlg->setHidden(true);
     connect(m_pPrefDlg,
@@ -822,6 +828,12 @@ void MixxxMainWindow::connectMenuBar() {
 
     // Misc
     connect(m_pMenuBar,
+            &WMainMenuBar::showVisualKeyboard,
+            this,
+            &MixxxMainWindow::slotShowVisualKeyboard,
+            Qt::UniqueConnection);
+
+    connect(m_pMenuBar,
             &WMainMenuBar::quit,
             this,
             &MixxxMainWindow::close,
@@ -1098,6 +1110,96 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
 
 void MixxxMainWindow::slotDeveloperToolsClosed() {
     m_pDeveloperToolsDlg = nullptr;
+}
+
+void MixxxMainWindow::slotShowVisualKeyboard(bool toggle) {
+    if (toggle) {
+        if (m_pVisualKeyboardDlg == nullptr) {
+            auto pKbdConfig = m_pCoreServices->getKeyboardConfig();
+            auto pFilter = m_pCoreServices->getKeyboardEventFilter();
+            
+            m_pVisualKeyboardDlg = new DlgKeyboardVisualLayout(this, pKbdConfig.get(), pFilter.get());
+            
+            connect(m_pVisualKeyboardDlg, &DlgKeyboardVisualLayout::keyClicked,
+                    this, [this](const QKeySequence& seq) {
+                
+                auto pKbdConfig = m_pCoreServices->getKeyboardConfig();
+                // We need an action registry
+                static auto pRegistry = QSharedPointer<KeyboardActionRegistry>::create();
+                
+                // Find current mapping
+                ConfigKey currentKey;
+                QMultiHash<ConfigValueKbd, ConfigKey> transposed = pKbdConfig->transpose();
+                ConfigValueKbd val(seq.toString());
+                if (transposed.contains(val)) {
+                    currentKey = transposed.value(val);
+                }
+
+                DlgKeyboardMappingEditor editor(this, seq, currentKey, pRegistry.data(), pKbdConfig.get());
+                if (editor.exec() == QDialog::Accepted) {
+                    if (editor.isUnmapped()) {
+                        QMultiHash<ConfigValueKbd, ConfigKey> transposed = pKbdConfig->transpose();
+                        ConfigValueKbd val(seq.toString());
+                        QList<ConfigKey> toRemove = transposed.values(val);
+                        for (const auto& exKey : toRemove) {
+                            pKbdConfig->remove(exKey);
+                        }
+                    } else {
+                        QList<ConfigKey> newKeys = editor.getSelectedMappings();
+                        for (const auto& newKey : newKeys) {
+                            pKbdConfig->set(newKey, ConfigValueKbd(seq.toString()));
+                        }
+                    }
+                    
+                    // --- PERSISTENCE FIX ---
+                    KeyboardMappingManager manager(m_pCoreServices->getSettingsManager()->settings());
+                    QString currentPath = m_pCoreServices->getSettingsManager()->settings()->getValueString(
+                            ConfigKey("[Keyboard]", "Mapping"));
+                    
+                    if (currentPath.isEmpty()) {
+                         currentPath = manager.getDefaultMappingPath();
+                    }
+
+                    KeyboardMappingInfo info = manager.getMappingInfo(currentPath);
+                    if (info.isReadOnly || info.isDefault || currentPath.startsWith(":")) {
+                        // Create a custom clone if we're editing a read-only mapping
+                        QString newName = info.name;
+                        if (!newName.endsWith("(Custom)")) newName += " (Custom)";
+                        QString newPath = manager.createCustomMapping(newName, "User", tr("Created via Visual Keyboard"));
+                        if (!newPath.isEmpty()) {
+                            manager.saveMapping(newPath, manager.getMappingInfo(newPath), pKbdConfig.get());
+                            // Update preference to point to new custom mapping
+                            m_pCoreServices->getSettingsManager()->settings()->set(
+                                    ConfigKey("[Keyboard]", "Mapping"), newPath);
+                        }
+                    } else {
+                        manager.saveMapping(currentPath, info, pKbdConfig.get());
+                    }
+                    // -------------------------
+
+                    // Apply to filter
+                    m_pCoreServices->getKeyboardEventFilter()->setKeyboardConfig(pKbdConfig.get());
+                    
+                    // Update visual keyboard
+                    m_pVisualKeyboardDlg->updateMapping(pKbdConfig.get());
+                }
+            });
+
+            connect(m_pVisualKeyboardDlg, &DlgKeyboardVisualLayout::destroyed,
+                    this, [this]() {
+                m_pVisualKeyboardDlg = nullptr;
+                if (m_pMenuBar) {
+                    m_pMenuBar->onVisualKeyboardHidden();
+                }
+            });
+        }
+        m_pVisualKeyboardDlg->show();
+        m_pVisualKeyboardDlg->activateWindow();
+    } else {
+        if (m_pVisualKeyboardDlg) {
+            m_pVisualKeyboardDlg->hide();
+        }
+    }
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
