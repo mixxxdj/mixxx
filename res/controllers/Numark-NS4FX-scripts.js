@@ -133,7 +133,9 @@ function createTransportPad(deck, padNumber, defaultKey, momentary) {
     var button = new components.Button({
         input: function(channel, control, value, status, group) {
             NS4FX.dbg("Transport pad " + padNumber + " on deck " + deck.number + " pressed with value " + value);
-            if (useAdditionalHotcues) {
+            var isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === 'hotcue';
+
+            if (isHotcueModeForTransport) {
                 if (NS4FX.shift) {
                     if (value > 0) { // only trigger on press
                         NS4FX.dbg("SHIFT on transport pad " + padNumber + " on deck " + deck.number + ". Clearing hotcue " + hotcueNumber);
@@ -834,6 +836,7 @@ NS4FX.Deck = function (number, midi_chan) {
         this.hotcue_buttons[i] = new components.HotcueButton({
             group: this.group,
             midi: [0x94 + midi_chan, 0x1F + i],
+            number: i + 4,
             output: function (value) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x00);
             }
@@ -843,6 +846,9 @@ NS4FX.Deck = function (number, midi_chan) {
             (function(button) {
                 var original_input = button.input;
                 button.input = function(channel, control, value, status, group) {
+                    if (deck.padmode_str !== 'hotcue') {
+                        return;
+                    }
                     if (NS4FX.shift) {
                         var hotcueNumber = this.number;
                         NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
