@@ -4,8 +4,8 @@
 /* jshint -W016                                                                  */
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
-/* Traktor Kontrol S2 MK3 HID controller script v1.01                            */
-/* Last modification: February 2021                                              */
+/* Traktor Kontrol S2 MK3 HID controller script v1.02                            */
+/* Last modification: December 2025                                              */
 /* Author: Michael Schmidt                                                       */
 /* https://github.com/mixxxdj/mixxx/wiki/Native%20Instruments%20Traktor%20Kontrol%20S2%20MK3 */
 /*                                                                               */
@@ -30,7 +30,8 @@ var TraktorS2MK3 = new function() {
     this.syncPressedTimer = {"[Channel1]": 0, "[Channel2]": 0}; // Timer to distinguish between short and long press
 
     // Jog wheels
-    this.pitchBendMultiplier = 1.1;
+    this.jogwheelClockHz = 100000;
+    this.pitchBendMultiplier = 0.001;
     this.lastTickVal = [0, 0];
     this.lastTickTime = [0.0, 0.0];
 
@@ -619,7 +620,7 @@ TraktorS2MK3.samplerPregainHandler = function(field) {
 TraktorS2MK3.jogTouchHandler = function(field) {
     const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
     if (field.value > 0) {
-        engine.scratchEnable(deckNumber, 1024, 33 + 1 / 3, 0.125, 0.125 / 8, true);
+        engine.scratchEnable(deckNumber, 648, 33 + 1 / 3, 0.125, 0.125 / 8, true);
     } else {
         engine.scratchDisable(deckNumber);
     }
@@ -634,16 +635,20 @@ TraktorS2MK3.jogHandler = function(field) {
     if (engine.isScratching(deckNumber)) {
         engine.scratchTick(deckNumber, tickDelta);
     } else {
-        const velocity = (tickDelta / timeDelta) * TraktorS2MK3.pitchBendMultiplier;
+        const velocity = (tickDelta / timeDelta) * TraktorS2MK3.pitchBendMultiplier * TraktorS2MK3.jogwheelClockHz;
         engine.setValue(field.group, "jog", velocity);
     }
 };
 
 TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
-    // When the wheel is touched, four bytes change, but only the first behaves predictably.
-    // It looks like the wheel is 1024 ticks per revolution.
-    const tickval = value & 0xFF;
-    let timeval = value >>> 16;
+    // When the wheel is touched, four bytes change.
+    // The first 10 bits change when the wheel is turned.
+    // From testing, it appears the wheel is 600 ticks per revolution.
+    // However, passing 648 to scratchEnable makes the physical wheel line up better with Mixxx.
+    // The last 22 bits are a counter, which constantly increments and overflows.
+    // From testing, it appears the counter is incrementing at 100kHz.
+    const tickval = value & 0x3FF;
+    let timeval = value >>> 10;
     let prevTick = 0;
     let prevTime = 0;
 
@@ -655,7 +660,7 @@ TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.
-        timeval += 0x10000;
+        timeval += 0x400000;
     }
     let timeDelta = timeval - prevTime;
     if (timeDelta === 0) {
@@ -663,13 +668,14 @@ TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
         timeDelta = 1;
     }
 
-    let tickDelta = 0;
-    if (prevTick >= 200 && tickval <= 100) {
-        tickDelta = tickval + 256 - prevTick;
-    } else if (prevTick <= 100 && tickval >= 200) {
-        tickDelta = tickval - prevTick - 256;
-    } else {
-        tickDelta = tickval - prevTick;
+    let tickDelta = tickval - prevTick;
+    // Check if we looped around
+    if (tickDelta > 512) {
+        // Looped around from 0 to max
+        tickDelta -= 1024;
+    } else if (tickDelta < -512) {
+        // Looped around from max to 0
+        tickDelta += 1024;
     }
 
     return [tickDelta, timeDelta];
