@@ -1493,6 +1493,23 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 getLastSoundSecond(pFromDeck),
                 toDeckStartSecond);
     } break;
+    case TransitionMode::FixedCueToTrackEnd: {
+        double startPoint = toDeckPositionSeconds;
+        pToDeck->fadeBeginPos = toDeckEndPosition;
+        if (seekToStartPoint || toDeckPositionSeconds >= pToDeck->fadeBeginPos) {
+            // toDeckPosition >= pToDeck->fadeBeginPos happens when the
+            // user has seeked or played the to track behind fadeBeginPos of
+            // the fade after the next.
+            // In this case we recue the track just before the transition.
+            CuePointer pMainCue = pToDeck->getLoadedTrack()->findCueByType(mixxx::CueType::MainCue);
+            if (pMainCue) {
+                startPoint = framePositionToSeconds(pMainCue->getPosition(), pToDeck);
+            } else {
+                startPoint = 0.0;
+            }
+        }
+        useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startPoint);
+    } break;
     case TransitionMode::FixedFullTrack:
     default: {
         double startPoint;
