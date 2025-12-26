@@ -273,6 +273,23 @@ NS4FX.init = function (id, debug) {
     NS4FX.decks[3] = new NS4FX.Deck(3, 0x02);
     NS4FX.decks[4] = new NS4FX.Deck(4, 0x03);
 
+    // Initialize hotcue pad LEDs to a "dim" state on startup.
+    for (var i = 0; i < 4; ++i) { // For each deck
+        var pad_chan = 4 + i;
+
+        // Dim pads 1-4 (notes 0x14-0x17)
+        for (var n = 0x14; n <= 0x17; n++) {
+            midi.sendShortMsg(0x90 | pad_chan, n, 0x01);
+        }
+
+        if (useAdditionalHotcues) {
+            // Dim pads 5-8 (notes 0x20-0x23)
+            for (var n = 0x20; n <= 0x23; n++) {
+                midi.sendShortMsg(0x90 | pad_chan, n, 0x01);
+            }
+        }
+    }
+
     // set up two banks of samplers, 4 samplers each
     if (engine.getValue("[App]", "num_samplers") < 8) {
         engine.setValue("[App]", "num_samplers", 8);
@@ -359,6 +376,13 @@ NS4FX.init = function (id, debug) {
     engine.makeUnbufferedConnection("[Channel4]", "vu_meter", NS4FX.vuCallback);
     engine.makeUnbufferedConnection("[Main]", "vu_meter_left", NS4FX.vuCallback);
     engine.makeUnbufferedConnection("[Main]", "vu_meter_right", NS4FX.vuCallback);
+
+    // Initial pad mode is 'hotcue'. This will properly initialize the pad LEDs.
+    NS4FX.decks.forEachComponent(function (component) {
+        if (component instanceof NS4FX.Deck) {
+            component.change_padmode(component.padmode_str);
+        }
+    });
 };
 
 NS4FX.shutdown = function () {
@@ -595,6 +619,19 @@ NS4FX.Deck = function (number, midi_chan) {
     components.Deck.call(this, number);
 
 
+    this.updateHotcueLeds = function() {
+        if (this.padmode_str === 'hotcue') {
+            NS4FX.dbg('Updating LEDs for deck ' + this.number);
+            this.hotcues.forEachComponent(function(c) {
+                if (c.number === undefined) return;
+                var outKey = 'hotcue_' + c.number + '_enabled';
+                var value = engine.getValue(c.group, outKey);
+                NS4FX.dbg('  HC ' + c.number + ' (' + c.group + ') val: ' + value);
+                c.output(value);
+            });
+        }
+    };
+
     this.bpm = new components.Component({
         outKey: "bpm",
         output: function (value, group, control) {
@@ -610,6 +647,9 @@ NS4FX.Deck = function (number, midi_chan) {
 
             // when the duration changes, we need to update the play position
             deck.position.trigger();
+
+            deck.updateHotcueLeds();
+            engine.beginTimer(50, function() { deck.updateHotcueLeds(); }, true);
         },
     });
 
@@ -792,10 +832,10 @@ NS4FX.Deck = function (number, midi_chan) {
     for (var i = 1; i <= 4; ++i) {
 
         this.hotcue_buttons[i] = new components.HotcueButton({
+            group: this.group,
             midi: [0x94 + midi_chan, 0x1F + i],
-            number: i + 4,
             output: function (value) {
-                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01);
+                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x00);
             }
         });
 
@@ -804,7 +844,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 var original_input = button.input;
                 button.input = function(channel, control, value, status, group) {
                     if (NS4FX.shift) {
-                        var hotcueNumber = button.number;
+                        var hotcueNumber = this.number;
                         NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
                         if (value > 0) { // only trigger on press
                             engine.setValue(group, 'hotcue_' + hotcueNumber + '_clear', 1);
@@ -818,6 +858,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
         // cue buttons 1 - 4
         this.hotcue_buttons_secondary[i] = new components.HotcueButton({
+            group: this.group,
             midi: [0x94 + midi_chan, 0x13 + i], // notes 0x14, 0x15, 0x16, 0x17
             number: i,
             output: function (value) {
@@ -830,7 +871,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 var original_input = button.input;
                 button.input = function(channel, control, value, status, group) {
                     if (NS4FX.shift) {
-                        var hotcueNumber = button.number;
+                        var hotcueNumber = this.number;
                         NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
                         if (value > 0) { // only trigger on press
                             engine.setValue(group, 'hotcue_' + hotcueNumber + '_clear', 1);
@@ -1007,7 +1048,6 @@ NS4FX.Deck = function (number, midi_chan) {
     }
     this.hotcues = this.hotcue_buttons;
     this.padmode_str = "hotcue";
-    this.change_padmode("hotcue");
     this.pitch = new components.Pot({
         inKey: 'rate',
         invert: true,
@@ -1091,6 +1131,8 @@ NS4FX.Deck = function (number, midi_chan) {
                     this.output(1); // Activates LED for this mode
                     // Activate logic for Hotcue mode
                     deck.change_padmode("hotcue");
+                    // Force an update of the LEDs after a short delay to ensure the engine has caught up
+                    engine.beginTimer(50, function() { deck.updateHotcueLeds(); }, true);
                 }
             },
             output: function (value) {
