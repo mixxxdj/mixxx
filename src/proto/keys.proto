@@ -49,4 +49,11 @@ message KeyMap {
   repeated KeyChange key_change = 3;
 
   optional Source source = 4 [ default = ANALYZER ];
+
+  // Detected tuning frequency in Hz (e.g., 432.0, 440.0, 442.0)
+  // Default is 440Hz (standard concert pitch A4)
+  // Stored as double to preserve cents precision during roundtrips
+  // This allows calculating the exact pitch offset needed for tuning adjustment:
+  // offset_semitones = log2(target_hz / tuning_frequency_hz) * 12
+  optional double tuning_frequency_hz = 6 [ default = 440.0 ];
 }
