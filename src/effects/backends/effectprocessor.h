@@ -167,6 +167,7 @@ class EffectProcessorImpl : public EffectProcessor {
                               "main thread.";
             }
             SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            return;
         }
         processChannel(pState, pInput, pOutput, engineParameters, enableState, groupFeatures);
     }
