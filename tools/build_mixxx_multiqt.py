@@ -362,13 +362,16 @@ def write_tls_validation_project(dest: Path) -> None:
             using BindResult = decltype(http.bind(&sslServer));
             if constexpr (std::is_void_v<BindResult>) {
                 http.bind(&sslServer);
-            } else if constexpr (std::is_convertible_v<BindResult, bool>) {
-                if (!static_cast<bool>(http.bind(&sslServer))) {
-                    qCritical() << "FAIL: QHttpServer could not bind to QSslServer.";
-                    return 6;
-                }
             } else {
-                static_assert(std::is_same_v<BindResult, void>, "Unexpected QHttpServer::bind return type");
+                BindResult bindResult = http.bind(&sslServer);
+                if constexpr (std::is_convertible_v<BindResult, bool>) {
+                    if (!static_cast<bool>(bindResult)) {
+                        qCritical() << "FAIL: QHttpServer could not bind to QSslServer.";
+                        return 6;
+                    }
+                } else {
+                    static_assert(std::is_same_v<BindResult, void>, "Unexpected QHttpServer::bind return type");
+                }
             }
 
             qInfo() << "PASS: TLS+QtHttpServer validated. Listening on https://127.0.0.1:" << port;
