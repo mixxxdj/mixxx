@@ -377,26 +377,37 @@ def write_tls_validation_project(dest: Path) -> None:
             const auto bindHttpServer = [](QHttpServer* http, QSslServer* server) {
                 using BindResult = decltype(std::declval<QHttpServer>().bind(std::declval<QSslServer*>()));
 
-                if constexpr (!std::is_void_v<BindResult>) {
-                    const auto evaluateBindResult = [](auto&& result) {
-                        using Result = std::decay_t<decltype(result)>;
-                        if constexpr (std::is_void_v<Result>) {
-                            return true; // void -> success
-                        } else if constexpr (std::is_convertible_v<Result, bool>) {
-                            return static_cast<bool>(result);
-                        } else if constexpr (BindResultHasBoolConversion<Result>::value) {
-                            return static_cast<bool>(result);
-                        } else {
-                            return true; // Fallback for status-like types without bool conversion
-                        }
-                    };
+                template <typename Result, typename Enable = void>
+                struct BindInvoker;
 
-                    BindResult result = http->bind(server); // Perform the bind exactly once.
-                    return evaluateBindResult(result);
-                } else {
-                    http->bind(server);
-                    return true;
-                }
+                template <typename Result>
+                struct BindInvoker<Result, std::enable_if_t<std::is_void_v<Result>>> {
+                    static bool bind(QHttpServer* http, QSslServer* server) {
+                        http->bind(server);
+                        return true;
+                    }
+                };
+
+                template <typename Result>
+                struct BindInvoker<Result, std::enable_if_t<!std::is_void_v<Result>>> {
+                    static bool bind(QHttpServer* http, QSslServer* server) {
+                        const auto evaluateBindResult = [](auto&& result) {
+                            using Decayed = std::decay_t<decltype(result)>;
+                            if constexpr (std::is_convertible_v<Decayed, bool>) {
+                                return static_cast<bool>(result);
+                            } else if constexpr (BindResultHasBoolConversion<Decayed>::value) {
+                                return static_cast<bool>(result);
+                            } else {
+                                return true; // Fallback for status-like types without bool conversion
+                            }
+                        };
+
+                        Result result = http->bind(server); // Perform the bind exactly once.
+                        return evaluateBindResult(result);
+                    }
+                };
+
+                return BindInvoker<BindResult>::bind(http, server);
             };
 
             if (!bindHttpServer(&http, &sslServer)) {
