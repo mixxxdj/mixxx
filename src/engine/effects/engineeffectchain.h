@@ -32,7 +32,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
 
     /// called from audio thread
     bool processEffectsRequest(
-            EffectsRequest& message,
+            const EffectsRequest& message,
             EffectsResponsePipe* pResponsePipe) override;
 
     /// called from audio thread

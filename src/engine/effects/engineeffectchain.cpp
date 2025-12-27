@@ -87,7 +87,7 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     return true;
 }
 
-bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
+bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
@@ -301,6 +301,9 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                         numSamples);
             }
         }
+    } else {
+        qDebug() << m_group << "EngineEffectChain::process 3 "
+                 << (int)m_enableState << (int)effectiveChainEnableState;
     }
 
     channelStatus.oldMixKnob = currentMixKnob;
@@ -319,6 +322,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         // Effect is paused now, ramp up next callback which may happen later
         channelStatus.enableState = EffectEnableState::Enabling;
     }
+
+    qDebug() << m_group << "EngineEffectChain::process 2 " << (int)m_enableState;
 
     if (m_enableState == EffectEnableState::Disabling) {
         m_enableState = EffectEnableState::Disabled;
