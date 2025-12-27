@@ -322,6 +322,37 @@ def write_tls_validation_project(dest: Path) -> None:
                 std::void_t<decltype(static_cast<bool>(std::declval<const T&>()))>>
                 : std::true_type {};
 
+        template <typename Result, typename Enable = void>
+        struct BindInvoker;
+
+        template <typename Result>
+        struct BindInvoker<Result, std::enable_if_t<std::is_void_v<Result>>> {
+            static bool bind(QHttpServer* http, QSslServer* server) {
+                http->bind(server);
+                return true;
+            }
+        };
+
+        template <typename Result>
+        struct BindInvoker<Result, std::enable_if_t<!std::is_void_v<Result>>> {
+            template <typename T>
+            static bool evaluateBindResult(T&& result) {
+                using Decayed = std::decay_t<T>;
+                if constexpr (std::is_convertible_v<Decayed, bool>) {
+                    return static_cast<bool>(result);
+                } else if constexpr (BindResultHasBoolConversion<Decayed>::value) {
+                    return static_cast<bool>(result);
+                } else {
+                    return true; // Fallback for status-like types without bool conversion
+                }
+            }
+
+            static bool bind(QHttpServer* http, QSslServer* server) {
+                Result result = http->bind(server); // Perform the bind exactly once.
+                return evaluateBindResult(result);
+            }
+        };
+
         int main(int argc, char** argv) {
             QCoreApplication app(argc, argv);
 
@@ -374,43 +405,9 @@ def write_tls_validation_project(dest: Path) -> None:
             // Keep this compatible with C++17 (no requires/constraints) while handling
             // the varying signatures by probing for bool-convertible results and
             // otherwise assuming success.
-            const auto bindHttpServer = [](QHttpServer* http, QSslServer* server) {
-                using BindResult = decltype(std::declval<QHttpServer>().bind(std::declval<QSslServer*>()));
+            using BindResult = decltype(std::declval<QHttpServer>().bind(std::declval<QSslServer*>()));
 
-                template <typename Result, typename Enable = void>
-                struct BindInvoker;
-
-                template <typename Result>
-                struct BindInvoker<Result, std::enable_if_t<std::is_void_v<Result>>> {
-                    static bool bind(QHttpServer* http, QSslServer* server) {
-                        http->bind(server);
-                        return true;
-                    }
-                };
-
-                template <typename Result>
-                struct BindInvoker<Result, std::enable_if_t<!std::is_void_v<Result>>> {
-                    static bool bind(QHttpServer* http, QSslServer* server) {
-                        const auto evaluateBindResult = [](auto&& result) {
-                            using Decayed = std::decay_t<decltype(result)>;
-                            if constexpr (std::is_convertible_v<Decayed, bool>) {
-                                return static_cast<bool>(result);
-                            } else if constexpr (BindResultHasBoolConversion<Decayed>::value) {
-                                return static_cast<bool>(result);
-                            } else {
-                                return true; // Fallback for status-like types without bool conversion
-                            }
-                        };
-
-                        Result result = http->bind(server); // Perform the bind exactly once.
-                        return evaluateBindResult(result);
-                    }
-                };
-
-                return BindInvoker<BindResult>::bind(http, server);
-            };
-
-            if (!bindHttpServer(&http, &sslServer)) {
+            if (!BindInvoker<BindResult>::bind(&http, &sslServer)) {
                 qCritical() << "FAIL: QHttpServer could not bind to QSslServer.";
                 return 6;
             }
