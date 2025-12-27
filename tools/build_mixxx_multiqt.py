@@ -34,12 +34,11 @@ class QtVersion:
 
 
 QT_CATALOG: dict[str, QtVersion] = {
-    "6.5.3": QtVersion(version="6.5.3", stream="6.5"),
     "6.8.3": QtVersion(version="6.8.3", stream="6.8"),
     "6.10.1": QtVersion(version="6.10.1", stream="6.10"),
 }
 
-DEFAULT_QT_VERSIONS = ["6.5.3", "6.8.3", "6.10.1"]
+DEFAULT_QT_VERSIONS = ["6.8.3", "6.10.1"]
 
 DEFAULT_OPT_ROOT = Path("/opt/mixxx-multiqt")  # downloads + builds + validation live here by default
 DEFAULT_INSTALL_ROOT = Path("/opt")            # Qt installs live under /opt/qt/<ver> by default
@@ -237,11 +236,11 @@ def build_qt(
         "-skip", "qtwebengine",
         "-skip", "qtwebview",
 
-        "-skip", "qt3d",
-        "-skip", "qtquick3d",
-        "-skip", "qtquick3dphysics",
-        "-skip", "qtquick3dparticles",
-        "-skip", "qtquickeffectmaker",
+#        "-skip", "qt3d",
+#        "-skip", "qtquick3d",
+#        "-skip", "qtquick3dphysics",
+#        "-skip", "qtquick3dparticles",
+#        "-skip", "qtquickeffectmaker",
 
         "-skip", "qtsensors",
         "-skip", "qtlocation",
@@ -599,7 +598,7 @@ def main() -> int:
               ./build_mixxx_multiqt.py --mixxx-only --mixxx-src ~/src/mixxx
 
               # Select versions
-              ./build_mixxx_multiqt.py --qt-versions 6.5.3 6.10.1 --mixxx-src ~/src/mixxx
+              ./build_mixxx_multiqt.py --qt-versions 6.10.1 --mixxx-src ~/src/mixxx
         """),
     )
 
