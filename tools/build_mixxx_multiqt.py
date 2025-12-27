@@ -210,32 +210,39 @@ def build_qt(
         "-release",
         "-nomake", "examples",
         "-nomake", "tests",
+
+        # Core build options
         "-openssl-linked",
         "-qt-zlib",
         "-qt-libpng",
         "-qt-libjpeg",
+
+        # --- KEEP QML / QUICK STACK (REQUIRED BY MIXXX) ---
+        # qtdeclarative
+        # qtshadertools
+        # qtquickcontrols2
+        # qtquicktimeline
+        # qt5compat
+        # qtmultimedia
+
+        # --- SAFE SKIPS ---
         "-skip", "qtscxml",
         "-skip", "qtopcua",
         "-skip", "qtvirtualkeyboard",
-        "-skip", "qtmultimedia",
-        "-skip", "qtdeclarative",
-        "-skip", "qtquicktimeline",
-        "-skip", "qtquickcontrols2",
-        "-skip", "qtquickcontrols",
-        "-skip", "qtshadertools",
+
+        "-skip", "qttranslations",
         "-skip", "qttools",
         "-skip", "qtdoc",
-        "-skip", "qttranslations",
-        "-skip", "qtexamples",
+
         "-skip", "qtwebengine",
         "-skip", "qtwebview",
-        "-skip", "qt3d",
-        "-skip", "qtquick3d",
+
         "-skip", "qt3d",
         "-skip", "qtquick3d",
         "-skip", "qtquick3dphysics",
         "-skip", "qtquick3dparticles",
         "-skip", "qtquickeffectmaker",
+
         "-skip", "qtsensors",
         "-skip", "qtlocation",
         "-skip", "qtlottie",
