@@ -376,10 +376,7 @@ def write_tls_validation_project(dest: Path) -> None:
             const auto bindHttpServer = [](QHttpServer* http, QSslServer* server) {
                 using BindResult = decltype(http->bind(server));
 
-                if constexpr (std::is_void_v<BindResult>) {
-                    http->bind(server);
-                    return true;
-                } else {
+                if constexpr (!std::is_void_v<BindResult>) {
                     const auto evaluateBindResult = [](auto&& result) {
                         using Result = std::decay_t<decltype(result)>;
                         if constexpr (std::is_void_v<Result>) {
@@ -395,6 +392,9 @@ def write_tls_validation_project(dest: Path) -> None:
 
                     BindResult result = http->bind(server); // Perform the bind exactly once.
                     return evaluateBindResult(result);
+                } else {
+                    http->bind(server);
+                    return true;
                 }
             };
 
