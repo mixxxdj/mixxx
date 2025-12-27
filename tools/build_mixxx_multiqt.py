@@ -305,6 +305,7 @@ def write_tls_validation_project(dest: Path) -> None:
         #include <QHttpServerResponse>
 
         #include <type_traits>
+        #include <utility>
 
         static QByteArray readFile(const QString& p) {
             QFile f(p);
@@ -374,7 +375,7 @@ def write_tls_validation_project(dest: Path) -> None:
             // the varying signatures by probing for bool-convertible results and
             // otherwise assuming success.
             const auto bindHttpServer = [](QHttpServer* http, QSslServer* server) {
-                using BindResult = decltype(http->bind(server));
+                using BindResult = decltype(std::declval<QHttpServer>().bind(std::declval<QSslServer*>()));
 
                 if constexpr (!std::is_void_v<BindResult>) {
                     const auto evaluateBindResult = [](auto&& result) {
