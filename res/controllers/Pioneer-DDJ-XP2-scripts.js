@@ -203,8 +203,15 @@ DDJXP2.init = function() {
             components.Button.prototype.input.call(this, channel, control, 0x7F, status, group);
         },
         inputPress: function(channel, control, value, status, group) {
-            this.inKey = "MoveFocusForward";
-            components.Button.prototype.input.call(this, channel, control, value, status, group);
+            if (control === 0x41) {
+                this.inKey = "MoveFocusForward";
+                components.Button.prototype.input.call(this, channel, control, value, status, group);
+            } else if (value) {
+                this.inKey = "show_maximized_library";
+                this.group = "[Skin]";
+                components.Button.prototype.input.call(this, channel, control, !this.inGetValue(), status, group);
+                this.group = "[Library]";
+            }
         },
     });
 
