@@ -103,9 +103,10 @@ ReloopMixtour.init = function() {
     });
 
     this.backBtn = new components.Button({
-        input: function(_channel, _control, _value, _status, _g) {
-            console.warn("back button has no function yet");
-        },
+        midi: [0x90, 0x08],
+        group: "[Skin]",
+        key: "show_maximized_library",
+        type: components.Button.prototype.types.toggle,
     });
 
     // the rotarySelector only works if mixxx windows is focused, don't be surprised :)

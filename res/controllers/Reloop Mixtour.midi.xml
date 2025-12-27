@@ -375,7 +375,7 @@
                 <status>0x90</status>
                 <midino>0x08</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -385,7 +385,7 @@
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
