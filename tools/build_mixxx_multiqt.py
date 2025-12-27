@@ -376,23 +376,23 @@ def write_tls_validation_project(dest: Path) -> None:
             const auto bindHttpServer = [](QHttpServer* http, QSslServer* server) {
                 using BindResult = decltype(http->bind(server));
 
-                const auto evaluateBindResult = [](auto&& result) {
-                    using Result = std::decay_t<decltype(result)>;
-                    if constexpr (std::is_void_v<Result>) {
-                        return true; // void -> success
-                    } else if constexpr (std::is_convertible_v<Result, bool>) {
-                        return static_cast<bool>(result);
-                    } else if constexpr (BindResultHasBoolConversion<Result>::value) {
-                        return static_cast<bool>(result);
-                    } else {
-                        return true; // Fallback for status-like types without bool conversion
-                    }
-                };
-
                 if constexpr (std::is_void_v<BindResult>) {
                     http->bind(server);
                     return true;
                 } else {
+                    const auto evaluateBindResult = [](auto&& result) {
+                        using Result = std::decay_t<decltype(result)>;
+                        if constexpr (std::is_void_v<Result>) {
+                            return true; // void -> success
+                        } else if constexpr (std::is_convertible_v<Result, bool>) {
+                            return static_cast<bool>(result);
+                        } else if constexpr (BindResultHasBoolConversion<Result>::value) {
+                            return static_cast<bool>(result);
+                        } else {
+                            return true; // Fallback for status-like types without bool conversion
+                        }
+                    };
+
                     BindResult result = http->bind(server); // Perform the bind exactly once.
                     return evaluateBindResult(result);
                 }
