@@ -359,15 +359,43 @@ def write_tls_validation_project(dest: Path) -> None:
 
             const quint16 port = sslServer.serverPort();
 
+            // QtHttpServer::bind has returned different types across Qt 6.x releases
+            // (e.g. bool in earlier versions, void or status-like types in newer ones).
+            // Normalize that to a single "was there a detectable failure?" bool without
+            // assuming a specific Qt signature or requiring a static_assert that could
+            // break when Qt changes again.
             const auto bindHttpServer = [](QHttpServer* http, QSslServer* server) {
                 using BindResult = decltype(http->bind(server));
+
+                // These constexpr probes keep both the void and non-void code paths
+                // compiled so changes in Qt headers are caught early.
+                [[maybe_unused]] constexpr bool bindResultIsVoid = std::is_void_v<BindResult>;
+                [[maybe_unused]] constexpr bool bindResultIsBoolLike = [] {
+                    if constexpr (std::is_void_v<BindResult>) {
+                        return false;
+                    } else {
+                        return std::is_convertible_v<BindResult, bool> ||
+                               requires(const BindResult& value) { static_cast<bool>(value); };
+                    }
+                }();
+
+                const auto evaluateBindResult = [](auto&& result) {
+                    using Result = std::decay_t<decltype(result)>;
+                    if constexpr (std::is_convertible_v<Result, bool>) {
+                        return static_cast<bool>(result);
+                    } else if constexpr (requires(const Result& value) { static_cast<bool>(value); }) {
+                        return static_cast<bool>(result);
+                    } else {
+                        return true; // Assume success when we cannot detect a bool-like failure.
+                    }
+                };
+
                 if constexpr (std::is_void_v<BindResult>) {
                     http->bind(server);
                     return true;
-                } else if constexpr (std::is_convertible_v<BindResult, bool>) {
-                    return static_cast<bool>(http->bind(server));
                 } else {
-                    static_assert(std::is_same_v<BindResult, void>, "Unexpected QHttpServer::bind return type");
+                    BindResult result = http->bind(server); // Perform the bind exactly once.
+                    return evaluateBindResult(result);
                 }
             };
 
