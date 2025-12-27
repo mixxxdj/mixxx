@@ -110,18 +110,19 @@ ReloopMixtour.init = function() {
     });
 
     // the rotarySelector only works if mixxx windows is focused, don't be surprised :)
-    this.rotarySelector = new components.Pot({
-        input: function(_channel, control, value, _status, _group) {
+    this.rotarySelector = new components.Button({
+        group: "[Library]",
+        input: function(channel, control, value, status, group) {
             if (value === 0x01) {
-                engine.setValue("[Library]", (control < 0x40)?"MoveDown":"MoveRight", true);
+                this.inKey = (control < 0x40)?"MoveDown":"MoveRight";
             } else {
-                engine.setValue("[Library]", (control < 0x40)?"MoveUp":"MoveLeft", true);
+                this.inKey = (control < 0x40)?"MoveUp":"MoveLeft";
             }
+            components.Button.prototype.input.call(this, channel, control, 0x7F, status, group);
         },
-        inputPress: function(_channel, _control, value, _status, _group) {
-            if (value) {
-                engine.setValue("[Library]", "MoveFocusForward", true);
-            }
+        inputPress: function(channel, control, value, status, group) {
+            this.inKey = "MoveFocusForward";
+            components.Button.prototype.input.call(this, channel, control, value, status, group);
         },
     });
 };
