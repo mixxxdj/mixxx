@@ -1390,6 +1390,15 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     // On Linux, horrible FPS were seen with "VSync off" before switching to QOpenGLWindow too
     format.setSwapInterval(vsyncMode == VSyncThread::ST_PLL ? 1 : 0);
 #endif
+
+#ifdef FORCE_GLES
+    qDebug() << "QOpenGLContext::openGLModuleType()" << QOpenGLContext::openGLModuleType();
+
+    format.setRenderableType(QSurfaceFormat::OpenGLES);
+    format.setVersion(3, 0);
+    QSurfaceFormat::setDefaultFormat(format);
+#endif
+
     return format;
 }
 
