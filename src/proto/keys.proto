@@ -55,5 +55,5 @@ message KeyMap {
   // Stored as double to preserve cents precision during roundtrips
   // This allows calculating the exact pitch offset needed for tuning adjustment:
   // offset_semitones = log2(target_hz / tuning_frequency_hz) * 12
-  optional double tuning_frequency_hz = 6 [ default = 440.0 ];
+  optional double tuning_frequency_hz = 5 [ default = 440.0 ];
 }
