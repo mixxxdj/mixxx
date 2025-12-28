@@ -46,10 +46,13 @@ MaterialShader::MaterialShader(const char* vertexShaderFilename,
     const QString vertexShaderFileFullPath = resource(vertexShaderFilename);
     const QString fragmentShaderFileFullPath = resource(fragmentShaderFilename);
 
-    addShaderFromSourceCode(QOpenGLShader::Vertex,
-            loadShaderCodeFromFile(vertexShaderFileFullPath));
-    addShaderFromSourceCode(QOpenGLShader::Fragment,
-            loadShaderCodeFromFile(fragmentShaderFileFullPath));
+    QByteArray vertexCode = loadShaderCodeFromFile(vertexShaderFileFullPath);
+    QByteArray fragmentCode = loadShaderCodeFromFile(fragmentShaderFileFullPath);
+    if (vertexCode.isEmpty() || fragmentCode.isEmpty()) {
+        return;
+    }
+    addShaderFromSourceCode(QOpenGLShader::Vertex, vertexCode);
+    addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentCode);
 
     link();
 
