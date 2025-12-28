@@ -266,7 +266,9 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 int playlist_id = query_insert_to_playlists.lastInsertId().toInt();
 
                 //Process playlist entries
+                ScopedTransaction transaction(m_database);
                 importPlaylist(xml, query_insert_to_playlist_tracks, playlist_id);
+                transaction.commit();
             }
         }
     }
