@@ -51,10 +51,25 @@ MaterialShader::MaterialShader(const char* vertexShaderFilename,
     if (vertexCode.isEmpty() || fragmentCode.isEmpty()) {
         return;
     }
-    addShaderFromSourceCode(QOpenGLShader::Vertex, vertexCode);
-    addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentCode);
+    if (!addShaderFromSourceCode(QOpenGLShader::Vertex, vertexCode)) {
+        qWarning() << "MaterialShader - compilation failed:"
+                   << vertexShaderFileFullPath;
+        qDebug() << log();
+        return;
+    }
 
-    link();
+    if (!addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentCode)) {
+        qWarning() << "MaterialShader - compilation failed:"
+                   << fragmentShaderFileFullPath;
+        qDebug() << log();
+        return;
+    }
+
+    if (!link()) {
+        qDebug() << "MaterialShader - linking failed."
+                 << log();
+        return;
+    }
 
     for (const auto& attribute : attributeSet.attributes()) {
         int location = QOpenGLShaderProgram::attributeLocation(attribute.m_name);
