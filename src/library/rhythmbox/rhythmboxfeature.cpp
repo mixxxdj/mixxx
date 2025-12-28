@@ -97,8 +97,8 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 std::unique_ptr<BaseSqlTableModel>
-RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
-    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QString>()) {
+RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& playlist_name) {
+    VERIFY_OR_DEBUG_ASSERT(playlist_name.canConvert<QString>()) {
         return {};
     }
     auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
@@ -107,7 +107,7 @@ RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
             "rhythmbox_playlists",
             "rhythmbox_playlist_tracks",
             m_trackSource);
-    pModel->setPlaylist(data.toString());
+    pModel->setPlaylist(playlist_name.toString());
     return pModel;
 }
 
@@ -251,7 +251,8 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                rootItem->appendChild(playlist_name);
+                //For Rhythmbox, the playlist name _is_ the unique identifier, so we're using it for both the label and data.
+                rootItem->appendChild(playlist_name, playlist_name);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
