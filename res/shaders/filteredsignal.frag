@@ -1,26 +1,24 @@
-#version 120
-
-uniform vec2 framebufferSize;
-uniform vec4 axesColor;
-uniform vec4 lowColor;
-uniform vec4 midColor;
-uniform vec4 highColor;
+uniform highp vec2 framebufferSize;
+uniform highp vec4 axesColor;
+uniform highp vec4 lowColor;
+uniform highp vec4 midColor;
+uniform highp vec4 highColor;
 
 uniform int waveformLength;
 uniform int textureSize;
 uniform int textureStride;
 
-uniform float allGain;
-uniform float lowGain;
-uniform float midGain;
-uniform float highGain;
-uniform float firstVisualIndex;
-uniform float lastVisualIndex;
+uniform highp float allGain;
+uniform highp float lowGain;
+uniform highp float midGain;
+uniform highp float highGain;
+uniform highp float firstVisualIndex;
+uniform highp float lastVisualIndex;
 
 uniform sampler2D waveformDataTexture;
 
 vec4 getWaveformData(float index) {
-    vec2 uv_data;
+    highp vec2 uv_data;
     uv_data.y = floor(index / float(textureStride));
     uv_data.x = floor(index - uv_data.y * float(textureStride));
     // Divide again to convert to normalized UV coordinates.
@@ -28,19 +26,21 @@ vec4 getWaveformData(float index) {
 }
 
 void main(void) {
-    vec2 uv = gl_TexCoord[0].st;
-    vec4 pixel = gl_FragCoord;
+    highp vec2 uv = gl_TexCoord[0].st;
+    highp vec4 pixel = gl_FragCoord;
 
-    float new_currentIndex = floor(firstVisualIndex + uv.x *
-                                   (lastVisualIndex - firstVisualIndex)) * 2;
+    highp float new_currentIndex =
+            floor(firstVisualIndex +
+                    uv.x * (lastVisualIndex - firstVisualIndex)) *
+            2.0;
 
     // Texture coordinates put (0,0) at the bottom left, so show the right
     // channel if we are in the bottom half.
     if (uv.y < 0.5) {
-        new_currentIndex += 1;
+        new_currentIndex += 1.0;
     }
 
-    vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
+    highp vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
     bool lowShowing = false;
     bool midShowing = false;
     bool highShowing = false;
@@ -50,36 +50,36 @@ void main(void) {
     // We don't exit early if the waveform data is not valid because we may want
     // to show other things (e.g. the axes lines) even when we are on a pixel
     // that does not have valid waveform data.
-    if (new_currentIndex >= 0 && new_currentIndex <= waveformLength - 1) {
-      vec4 new_currentDataUnscaled = getWaveformData(new_currentIndex) * allGain;
-      vec4 new_currentData = new_currentDataUnscaled;
+    if (new_currentIndex >= 0.0 && new_currentIndex <= float(waveformLength - 1)) {
+        highp vec4 new_currentDataUnscaled = getWaveformData(new_currentIndex) * allGain;
+        highp vec4 new_currentData = new_currentDataUnscaled;
 
-      new_currentData.x *= lowGain;
-      new_currentData.y *= midGain;
-      new_currentData.z *= highGain;
+        new_currentData.x *= lowGain;
+        new_currentData.y *= midGain;
+        new_currentData.z *= highGain;
 
-      //(vrince) debug see pre-computed signal
-      //gl_FragColor = new_currentData;
-      //return;
+        //(vrince) debug see pre-computed signal
+        // gl_FragColor = new_currentData;
+        // return;
 
-      // Represents the [-1, 1] distance of this pixel. Subtracting this from
-      // the signal data in new_currentData, we can tell if a signal band should
-      // show in this pixel if the component is > 0.
-      float ourDistance = abs((uv.y - 0.5) * 2.0);
+        // Represents the [-1, 1] distance of this pixel. Subtracting this from
+        // the signal data in new_currentData, we can tell if a signal band should
+        // show in this pixel if the component is > 0.
+        float ourDistance = abs((uv.y - 0.5) * 2.0);
 
-      vec4 signalDistance = new_currentData - ourDistance;
-      lowShowing = signalDistance.x >= 0.0;
-      midShowing = signalDistance.y >= 0.0;
-      highShowing = signalDistance.z >= 0.0;
+        highp vec4 signalDistance = new_currentData - ourDistance;
+        lowShowing = signalDistance.x >= 0.0;
+        midShowing = signalDistance.y >= 0.0;
+        highShowing = signalDistance.z >= 0.0;
     }
 
     // Draw the axes color as the lowest item on the screen.
     // TODO(owilliams): The "4" in this line makes sure the axis gets
     // rendered even when the waveform is fairly short.  Really this
     // value should be based on the size of the widget.
-    if (abs(framebufferSize.y / 2 - pixel.y) <= 4) {
-      outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-      outputColor.w = 1.0;
+    if (abs(framebufferSize.y / 2.0 - pixel.y) <= 4.0) {
+        outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
+        outputColor.w = 1.0;
     }
 
     if (lowShowing) {
