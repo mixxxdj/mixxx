@@ -1,8 +1,8 @@
 #version 440
 
 layout(std140, binding = 0) uniform buf {
-    mat4 matrix;
-    vec4 color;
+    highp mat4 matrix;
+    highp vec4 color;
 }
 ubuf;
 
