@@ -134,8 +134,11 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
             fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::HotcueCount)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_HOTCUE_COUNT);
 
-    m_sortColumnIdByColumnIndex.clear();
+    // Now build a map that goes the other way
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
             i < static_cast<int>(TrackModel::SortColumnId::IdMax);
             ++i) {
@@ -823,10 +826,23 @@ void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
 
+    // update cached row data for hotcue count column if it exists
+    const int hotcueCountColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_HOTCUE_COUNT);
+    const bool hasHotcueCountColumn = (hotcueCountColumn >= 0 &&
+            hotcueCountColumn < m_tableColumns.size());
+
     const int numColumns = columnCount();
     for (const auto& trackId : trackIds) {
         const auto rows = getTrackRows(trackId);
         for (int row : rows) {
+            // update cached hotcue count from track source if column exists
+            if (hasHotcueCountColumn && m_trackSource) {
+                QVariant hotcueCount = m_trackSource->data(trackId, hotcueCountColumn);
+                if (hotcueCount.isValid() && row < m_rowInfo.size()) {
+                    m_rowInfo[row].columnValues[hotcueCountColumn] = hotcueCount;
+                }
+            }
+
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
             QModelIndex bottomRight = index(row, numColumns);

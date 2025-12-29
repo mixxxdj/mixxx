@@ -73,6 +73,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             LIBRARYTABLE_COVERART_COLOR,
             LIBRARYTABLE_COVERART_DIGEST,
             LIBRARYTABLE_COVERART_HASH,
+            LIBRARYTABLE_HOTCUE_COUNT,
             LIBRARYTABLE_WAVESUMMARYHEX};
     QStringList searchColumns = {
             LIBRARYTABLE_ARTIST,
