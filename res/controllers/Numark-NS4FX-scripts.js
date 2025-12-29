@@ -998,7 +998,8 @@ NS4FX.Deck = function (number, midi_chan) {
                 var outKey = 'hotcue_' + c.number + '_enabled';
                 var value = engine.getValue(c.group, outKey);
                 NS4FX.dbg('  HC ' + c.number + ' (' + c.group + ') val: ' + value);
-                c.output(value);
+                // Directly send MIDI message to ensure LEDs are completely off (0x00) instead of dim (0x01).
+                midi.sendShortMsg(c.midi[0], c.midi[1], value ? 0x7F : 0x00);
             });
         }
     });
