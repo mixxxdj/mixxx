@@ -619,24 +619,6 @@ NS4FX.Deck = function (number, midi_chan) {
 
     components.Deck.call(this, number);
 
-
-    this.updateHotcueLeds = function () {
-        NS4FX.dbg("Deck " + this.number + " updateHotcueLeds called. padmode=" + this.padmode_str);
-        if (this.padmode_str === 'hotcue') {
-            NS4FX.dbg('Updating LEDs for deck ' + this.number);
-            this.hotcues.forEachComponent(function (c) {
-                if (c.number === undefined) {
-                    NS4FX.dbg('  HC with undefined number, skipping');
-                    return;
-                }
-                var outKey = 'hotcue_' + c.number + '_enabled';
-                var value = engine.getValue(c.group, outKey);
-                NS4FX.dbg('  HC ' + c.number + ' (' + c.group + ') val: ' + value);
-                c.output(value);
-            });
-        }
-    };
-
     this.bpm = new components.Component({
         outKey: "bpm",
         output: function (value, group, control) {
@@ -651,41 +633,24 @@ NS4FX.Deck = function (number, midi_chan) {
             // update duration
             NS4FX.sendScreenDurationMidi(number, duration * 1000);
 
-                        // when the duration changes, we need to update the play position
+            // when the duration changes, we need to update the play position
 
-                        deck.position.trigger();
+            deck.position.trigger();
+            // When a new track loads, the hotcue_enabled states can flicker, causing the LEDs to blink.
+            // To prevent this, we disconnect the buttons, wait for the engine state to settle,
+            // then reconnect and perform a manual update.
+            if (deck.padmode_str === 'hotcue') {
+                deck.hotcues.forEachComponent(function (c) { c.disconnect(); });
+            }
 
-            
-
-                        // When a new track loads, the hotcue_enabled states can flicker, causing the LEDs to blink.
-
-                        // To prevent this, we disconnect the buttons, wait for the engine state to settle,
-
-                        // then reconnect and perform a manual update.
-
-                        if (deck.padmode_str === 'hotcue') {
-
-                            deck.hotcues.forEachComponent(function(c) { c.disconnect(); });
-
-                        }
-
-            
-
-                        engine.beginTimer(50, function() {
-
-                            if (deck.padmode_str === 'hotcue') {
-
-                                deck.hotcues.reconnectComponents();
-
-                            }
-
-                            deck.updateHotcueLeds();
-
-                        }, true);
-
-                    },
-
-                });
+            engine.beginTimer(50, function () {
+                if (deck.padmode_str === 'hotcue') {
+                    deck.hotcues.reconnectComponents();
+                    deck.hotcue_buttons.updateLEDs();
+                }
+            }, true);
+        },
+    });
 
     this.position = new components.Component({
         outKey: "playposition",
@@ -826,6 +791,7 @@ NS4FX.Deck = function (number, midi_chan) {
     // HOTCUES
     this.hotcue_buttons_5_8 = new components.ComponentContainer();
     this.hotcue_buttons_1_4 = new components.ComponentContainer();
+
     this.roll_buttons = new components.ComponentContainer();
     this.slicer_buttons = new components.ComponentContainer();
     this.sampler_buttons = new components.ComponentContainer({
@@ -863,9 +829,9 @@ NS4FX.Deck = function (number, midi_chan) {
         }
     });
 
-    var addShiftClearToHotcue = function(button) {
+    var addShiftClearToHotcue = function (button) {
         var original_input = button.input;
-        button.input = function(channel, control, value, status, group) {
+        button.input = function (channel, control, value, status, group) {
             if (deck.padmode_str === 'hotcue' && NS4FX.shift) {
                 var hotcueNumber = this.number;
                 NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
@@ -887,12 +853,9 @@ NS4FX.Deck = function (number, midi_chan) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x00);
             }
         });
-
-                if (useAdditionalHotcues) {
-
-                    addShiftClearToHotcue(this.hotcue_buttons_5_8[i]);
-
-                }
+        if (useAdditionalHotcues) {
+            addShiftClearToHotcue(this.hotcue_buttons_5_8[i]);
+        }
 
         // cue buttons 1 - 4
         this.hotcue_buttons_1_4[i] = new components.HotcueButton({
@@ -903,12 +866,9 @@ NS4FX.Deck = function (number, midi_chan) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x00);
             }
         });
-
-                if (useAdditionalHotcues) {
-
-                    addShiftClearToHotcue(this.hotcue_buttons_1_4[i]);
-
-                }
+        if (useAdditionalHotcues) {
+            addShiftClearToHotcue(this.hotcue_buttons_1_4[i]);
+        }
 
         // sampler buttons
         if (deck.number % 2 == 0) {
@@ -961,7 +921,7 @@ NS4FX.Deck = function (number, midi_chan) {
             output: function (value) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED an/aus
             },
-            number: i // Speichert die Nummer des Buttons (1–4)
+            number: i // Stores the button number (1-4)
         });
 
         if (!useFadercutsAsStems) {
@@ -972,25 +932,21 @@ NS4FX.Deck = function (number, midi_chan) {
                         return;
                     }
 
-                    const deckGroup = `[Channel${deck.number}]`; // Deck-Gruppe basierend auf Deck-Nummer
+                    const deckGroup = `[Channel${deck.number}]`; // Deck group based on deck number
 
-                    if (value === 0x7F) { // Button gedrückt
-                        const bpm = engine.getValue(deckGroup, 'bpm'); // Hole die BPM des Tracks
-                        const baseInterval = (60 / bpm) * 1000 / 4; // Berechne die Dauer eines Beats in Millisekunden
+                    if (value === 0x7F) { // Button pressed
+                        const bpm = engine.getValue(deckGroup, 'bpm'); // Get the BPM of the track
+                        const baseInterval = (60 / bpm) * 1000 / 4; // Calculate the duration of a beat in milliseconds
 
-                        // Geschwindigkeit basierend auf Button-Nummer (z.B. schneller bei höheren Nummern)
-                        const speedMultiplier = this.number; // Button 1 = langsam, Button 4 = schnell
-                        const interval = baseInterval / speedMultiplier; // Geschwindigkeit anpassen
-
+                        // Speed based on button number (e.g., faster for higher numbers)
+                        const speedMultiplier = this.number; // Button 1 = slow, Button 4 = fast
+                        const interval = baseInterval / speedMultiplier; // Adjust speed
                         print(`BPM=${bpm}, Base Interval=${baseInterval}ms, Speed Multiplier=${speedMultiplier}, Final Interval=${interval}ms`);
-
-                        this.startFaderCuts(deckGroup, interval); // Cuts mit berechneter Geschwindigkeit starten
-
-                        this.output(1); // LED aktivieren
+                        this.startFaderCuts(deckGroup, interval); // Start cuts with calculated speed
+                        this.output(1); // Activate LED
                     } else {
-                        this.stopFaderCuts(deckGroup); // Stoppe Fadercuts
-
-                        this.output(0); // LED deaktivieren
+                        this.stopFaderCuts(deckGroup); // Stop fader cuts
+                        this.output(0); // Deactivate LED
                     }
                 },
                 output: function (value) {
@@ -1001,14 +957,10 @@ NS4FX.Deck = function (number, midi_chan) {
 
                     this.faderCutInterval = engine.beginTimer(interval, () => {
                         toggle = !toggle;
-
                         const newVolume = toggle ? 1 : 0; // Wechsel zwischen voller Volume und Stille
-
                         print(`Toggle=${toggle}, New Volume=${newVolume}`);
-
                         engine.setValue(deckGroup, 'volume', newVolume);
                     });
-
                     print(`Timer started with interval ${interval}ms`);
                 },
                 stopFaderCuts: function (deckGroup) {
@@ -1034,6 +986,26 @@ NS4FX.Deck = function (number, midi_chan) {
         });
 
     }
+    // Combine the two rows of hotcue pads into a single container for easier management in pad modes.
+    this.hotcue_buttons = new components.ComponentContainer({
+        updateLEDs: function () {
+            NS4FX.dbg('Updating hotcue LEDs for deck ' + deck.number);
+            this.forEachComponent(function (c) {
+                if (c.number === undefined) {
+                    NS4FX.dbg('  HC with undefined number, skipping');
+                    return;
+                }
+                var outKey = 'hotcue_' + c.number + '_enabled';
+                var value = engine.getValue(c.group, outKey);
+                NS4FX.dbg('  HC ' + c.number + ' (' + c.group + ') val: ' + value);
+                c.output(value);
+            });
+        }
+    });
+    for (var k = 1; k <= 4; k++) {
+        this.hotcue_buttons[k] = this.hotcue_buttons_1_4[k]; // hotcues 1-4
+        this.hotcue_buttons[k + 4] = this.hotcue_buttons_5_8[k]; // hotcues 5-8
+    }
 
     this.change_padmode = function (padmode) {
         NS4FX.dbg("Deck " + this.number + " change_padmode: from " + this.padmode_str + " to " + padmode);
@@ -1041,14 +1013,8 @@ NS4FX.Deck = function (number, midi_chan) {
         // This is the main pad mode switching logic.
         // It disconnects the old set of pads and connects the new one.
         if (padmode == "hotcue") {
-            buttons = new components.ComponentContainer();
-            for (var k = 1; k <= 4; k++) {
-                buttons[k] = this.hotcue_buttons_1_4[k]; // hotcues 1-4
-                buttons[k + 4] = this.hotcue_buttons_5_8[k]; // hotcues 5-8
-                // TODO - other modes have _buttons.updateLEDs(`[Channel${this.number}]`) functions
-                // why not hotcues? in that function we can play with LEDs
-                // mayne this.updateHotcueLeds is a good candidate?
-            }
+            deck.hotcue_buttons.updateLEDs();
+            buttons = this.hotcue_buttons;
         } else if (padmode == "sampler") {
             deck.sampler_buttons.updateLEDs(`[Channel${this.number}]`);
             buttons = this.sampler_buttons;
@@ -1078,11 +1044,6 @@ NS4FX.Deck = function (number, midi_chan) {
         this.hotcues.reconnectComponents();
     }
     this.hotcues = new components.ComponentContainer();
-    for (var k = 1; k <= 4; k++) {
-        this.hotcues[k] = this.hotcue_buttons_1_4[k]; // hotcues 1-4
-        this.hotcues[k + 4] = this.hotcue_buttons_5_8[k]; // hotcues 5-8
-    }
-
     this.pitch = new components.Pot({
         inKey: 'rate',
         invert: true,
@@ -1166,8 +1127,6 @@ NS4FX.Deck = function (number, midi_chan) {
                     this.output(1); // Activates LED for this mode
                     // Activate logic for Hotcue mode
                     deck.change_padmode("hotcue");
-                    // Force an update of the LEDs after a short delay to ensure the engine has caught up
-                    engine.beginTimer(50, function () { deck.updateHotcueLeds(); }, true);
                 }
             },
             output: function (value) {
