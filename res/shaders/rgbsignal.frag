@@ -37,7 +37,6 @@ void main(void) {
 
     vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
     bool showing = false;
-    bool showingUnscaled = false;
     vec4 showingColor = vec4(0.0, 0.0, 0.0, 0.0);
     vec4 showingUnscaledColor = vec4(0.0, 0.0, 0.0, 0.0);
 
@@ -56,28 +55,33 @@ void main(void) {
             new_currentDataUnscaled = max(leftDataUnscaled, rightDataUnscaled) * allGain;
         }
 
-      vec4 new_currentData = new_currentDataUnscaled;
-      new_currentData.x *= lowGain;
-      new_currentData.y *= midGain;
-      new_currentData.z *= highGain;
+        vec4 new_currentData = new_currentDataUnscaled;
+        new_currentData.x *= lowGain;
+        new_currentData.y *= midGain;
+        new_currentData.z *= highGain;
 
-      // ourDistance represents the [0, 1] distance of this pixel from the
-      // center line. If ourDistance is smaller than the signalDistance, show
-      // the pixel.
-      float ourDistance = abs((uv.y - 0.5) * 2.0);
-      float signalDistance = new_currentData.w;
-      showing = (signalDistance - ourDistance) >= 0.0;
+        // ourDistance represents the [0, 1] distance of this pixel from the
+        // center line. If ourDistance is smaller than the signalDistance, show
+        // the pixel.
+        float ourDistance = abs((uv.y - 0.5) * 2.0);
+        float signalDistance = new_currentData.w;
+        signalDistance /= (new_currentDataUnscaled.x + new_currentDataUnscaled.y + new_currentDataUnscaled.z);
+        signalDistance *= (new_currentData.x + new_currentData.y + new_currentData.z);
 
-      // Linearly combine the low, mid, and high colors according to the low,
-      // mid, and high components.
-      showingColor = lowColor * new_currentData.x +
-                     midColor * new_currentData.y +
-                     highColor * new_currentData.z;
+        showing = (signalDistance - ourDistance) >= 0.0;
 
-      // Re-scale the color by the maximum component.
-      float showingMax = max(showingColor.x, max(showingColor.y, showingColor.z));
-      showingColor = showingColor / showingMax;
-      showingColor.w = 1.0;
+        // Linearly combine the low, mid, and high colors according to the low,
+        // mid, and high components.
+        showingColor = lowColor * new_currentData.x +
+                midColor * new_currentData.y +
+                highColor * new_currentData.z;
+
+        // Re-scale the color by the maximum component.
+        float showingMax = max(showingColor.x, max(showingColor.y, showingColor.z));
+        if (showingMax > 0.0) {
+            showingColor = showingColor / showingMax;
+            showingColor.w = 1.0;
+        }
     }
 
     // Draw the axes color as the lowest item on the screen.

@@ -159,6 +159,12 @@ void WaveformRendererRGB::draw(
         float maxMidF = maxMid * midGain;
         float maxHighF = maxHigh * highGain;
 
+        float allUnscaled = maxLow + maxMid + maxHigh;
+        float eqGain = 1.0f;
+        if (allUnscaled > 0.0f) {
+            eqGain = (maxLowF + maxMidF + maxHighF) / allUnscaled;
+        }
+
         float red = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r +
                 maxHighF * m_rgbHighColor_r;
         float green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g +
@@ -184,7 +190,7 @@ void WaveformRendererRGB::draw(
                             breadth,
                             x,
                             breadth -
-                                    static_cast<int>(heightFactor *
+                                    static_cast<int>(heightFactor * eqGain *
                                             math_max(maxAllLeft, maxAllRight)));
                     break;
                 case Qt::AlignTop:
@@ -192,14 +198,14 @@ void WaveformRendererRGB::draw(
                     painter->drawLine(x,
                             0,
                             x,
-                            static_cast<int>(heightFactor *
+                            static_cast<int>(heightFactor * eqGain *
                                     math_max(maxAllLeft, maxAllRight)));
                     break;
                 default:
                     painter->drawLine(x,
-                            static_cast<int>(halfBreadth - heightFactor * maxAllLeft),
+                            static_cast<int>(halfBreadth - heightFactor * eqGain * maxAllLeft),
                             x,
-                            static_cast<int>(halfBreadth + heightFactor * maxAllRight));
+                            static_cast<int>(halfBreadth + heightFactor * eqGain * maxAllRight));
             }
         }
     }
