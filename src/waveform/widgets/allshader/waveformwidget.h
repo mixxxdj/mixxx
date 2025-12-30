@@ -40,7 +40,8 @@ class allshader::WaveformWidget final : public ::WGLWidget,
         return this;
     }
     static WaveformWidgetVars vars();
-    static WaveformRendererSignalBase::Options supportedOptions(WaveformWidgetType::Type type);
+    static WaveformRendererSignalBase::Options supportedOptions(
+            WaveformWidgetType::Type type, bool useGlsl);
 
   private:
     void castToQWidget() override;
