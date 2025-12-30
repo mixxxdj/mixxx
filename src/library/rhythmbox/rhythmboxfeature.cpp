@@ -250,8 +250,9 @@ TreeItem* RhythmboxFeature::importPlaylists() {
             if (attr.value("type").toString() == "static") {
                 QString playlist_name = attr.value("name").toString();
 
-                //Construct the childmodel
-                //For Rhythmbox, the playlist name _is_ the unique identifier, so we're using it for both the label and data.
+                // Construct the childmodel
+                // For Rhythmbox, the playlist name _is_ the unique identifier,
+                // so we're using it for both the label and data.
                 rootItem->appendChild(playlist_name, playlist_name);
 
                 //Execute SQL statement
