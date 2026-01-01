@@ -220,9 +220,13 @@ class WaveformWidgetFactory : public QObject,
 
     void setVisualGain(BandIndex index, double gain);
     double getVisualGain(BandIndex index) const;
+    static double getVisualGainDefault(BandIndex index);
 
     void setOverviewNormalized(bool normalize);
-    int isOverviewNormalized() const { return m_overviewNormalized;}
+    bool isOverviewNormalized() const {
+        return m_overviewNormalized;
+    }
+    static bool isOverviewNormalizedDefault();
 
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;

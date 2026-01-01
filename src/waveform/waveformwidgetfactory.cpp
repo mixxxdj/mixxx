@@ -37,6 +37,7 @@
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/simplesignalwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wvumeterbase.h"
@@ -44,6 +45,12 @@
 #include "widget/wwaveformviewer.h"
 
 namespace {
+
+// We use an AllBand gain default of 2, because default ReplayGain is "enabled" at -18 LUFS
+// which gives at least 6 dB headroom with modern pop tracks.
+constexpr double kVisualGainDefault[] = {2, 1, 1, 1};
+constexpr bool kOverviewNormalizedDefault = false;
+
 // Returns true if the given waveform should be rendered.
 bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     if (pWaveformWidget == nullptr ||
@@ -123,7 +130,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
-          m_overviewNormalized(false),
+          m_overviewNormalized(kOverviewNormalizedDefault),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
@@ -139,10 +146,10 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameCnt(0),
           m_actualFrameRate(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
-    m_visualGain[AllBand] = 1.0;
-    m_visualGain[Low] = 1.0;
-    m_visualGain[Mid] = 1.0;
-    m_visualGain[High] = 1.0;
+    m_visualGain[AllBand] = kVisualGainDefault[AllBand];
+    m_visualGain[Low] = kVisualGainDefault[Low];
+    m_visualGain[Mid] = kVisualGainDefault[Mid];
+    m_visualGain[High] = kVisualGainDefault[High];
 
 #ifdef MIXXX_USE_QOPENGL
     WGLWidget* widget = SharedGLContext::getWidget();
@@ -399,25 +406,18 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     }
 
     for (int i = 0; i < BandCount; i++) {
-        double visualGain = m_config->getValueString(visualGainKey(i)).toDouble(&ok);
-        if (ok) {
-            // TODO validate value? 0 < value < 5.0
-            setVisualGain(BandIndex(i), visualGain);
-        } else {
-            m_config->setValue(visualGainKey(i), m_visualGain[i]);
-        }
+        m_visualGain[i] = m_config->getValue(visualGainKey(i), kVisualGainDefault[i]);
     }
+    m_overviewNormalized = m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")),
+            kOverviewNormalizedDefault);
 
-    int overviewNormalized =
-            m_config->getValueString(
-                            ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")))
-                    .toInt(&ok);
-    if (ok) {
-        setOverviewNormalized(static_cast<bool>(overviewNormalized));
-    } else {
-        m_config->set(ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")),
-                ConfigValue(m_overviewNormalized));
-    }
+    emit visualGainChanged(
+            m_visualGain[BandIndex::AllBand],
+            m_visualGain[BandIndex::Low],
+            m_visualGain[BandIndex::Mid],
+            m_visualGain[BandIndex::High]);
+    emit overviewScalingChanged();
 
     m_playMarkerPosition =
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("PlayMarkerPosition")),
@@ -757,6 +757,11 @@ double WaveformWidgetFactory::getVisualGain(BandIndex index) const {
     return m_visualGain[index];
 }
 
+// static
+double WaveformWidgetFactory::getVisualGainDefault(BandIndex index) {
+    return kVisualGainDefault[index];
+}
+
 void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     m_overviewNormalized = normalize;
     if (m_config) {
@@ -764,6 +769,11 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
                 ConfigValue(m_overviewNormalized));
     }
     emit overviewScalingChanged();
+}
+
+// static
+bool WaveformWidgetFactory::isOverviewNormalizedDefault() {
+    return kOverviewNormalizedDefault;
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
@@ -1011,6 +1021,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #endif
+            addHandle(collectedHandles, type, waveformWidgetVars<SimpleSignalWaveformWidget>());
             break;
         case WaveformWidgetType::Filtered:
 #ifdef MIXXX_USE_QOPENGL
@@ -1032,11 +1043,11 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
             break;
         case WaveformWidgetType::HSV:
-            addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
 #endif
+            addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
             break;
         case WaveformWidgetType::Stacked:
 #ifdef MIXXX_USE_QOPENGL
@@ -1142,7 +1153,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer, options);
 #endif
     default:
-        return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+        return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
 }
 
