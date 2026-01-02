@@ -1,9 +1,10 @@
-#include <QtDebug>
-#include <QStringList>
+#include "track/keyfactory.h"
+
 #include <QRegularExpression>
+#include <QStringList>
+#include <QtDebug>
 #include <cmath>
 
-#include "track/keyfactory.h"
 #include "track/keys.h"
 #include "track/keyutils.h"
 

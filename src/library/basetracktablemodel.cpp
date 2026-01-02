@@ -470,7 +470,7 @@ QVariant BaseTrackTableModel::data(
                 return pTrack->getTuningFrequencyHz();
             }
         }
-        return 440.0; // Default to 440Hz
+        return Track::kDefaultTuningFrequency;
     }
 
     // Only retrieve a value for supported roles
@@ -779,9 +779,12 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             bool ok = false;
-            const int freq = rawValue.toInt(&ok);
-            if (!ok || freq <= 0) {
+            int freq = rawValue.toInt(&ok);
+            if (!ok || freq < 0) {
                 return QVariant();
+            }
+            if (freq == 0) {
+                freq = int(Track::kDefaultTuningFrequency);
             }
             if (role == Qt::DisplayRole || role == Qt::ToolTipRole || role == kDataExportRole) {
                 return QStringLiteral("%1 Hz").arg(freq);

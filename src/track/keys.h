@@ -36,13 +36,13 @@ class Keys final {
     // Return key text form the track metadata literally (not normalized)
     QString getGlobalKeyText() const;
 
-    // Return the detected tuning frequency in Hz (default 440.0 Hz)
-    // This is the reference frequency A4 that best matches the track's tuning
-    // Stored as double to preserve cents precision
-    double getTuningFrequencyHz() const;
+    // Return the detected tuning frequency in Hz (default 0 Hz).
+    // This is the reference frequency A4 that best matches the track's tuning.
+    // Stored as double to preserve cents precision.
+    double getDetectedTuningFrequencyHz() const;
 
-    // Set the tuning frequency in Hz (<=0 falls back to 440.0 Hz)
-    void setTuningFrequencyHz(double tuningFrequencyHz);
+    // Set the tuning frequency in Hz (<0 falls back to 0 Hz).
+    void setDetectedTuningFrequencyHz(double tuningFrequencyHz);
 
   private:
     explicit Keys(const mixxx::track::io::key::KeyMap& m_keyMap);

@@ -401,6 +401,7 @@ class Track : public QObject {
     QString getKeyText() const;
     void setTuningFrequencyHz(double tuningFrequencyHz);
     double getTuningFrequencyHz() const;
+    static const double kDefaultTuningFrequency;
 
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;

@@ -18,7 +18,7 @@ class TrackModel {
     static constexpr int kHeaderNameRole = Qt::UserRole + 1;
     // This role is used for data export like in CSV files
     static constexpr int kDataExportRole = Qt::UserRole + 2;
-    // This role provides the detected tuning frequency in Hz (default 440.0)
+    // This role provides the tuning frequency in Hz (default 440.0)
     static constexpr int kTuningFrequencyRole = Qt::UserRole + 3;
 
     TrackModel(const QSqlDatabase& db,
