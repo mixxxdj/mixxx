@@ -1,6 +1,5 @@
 #include "library/tabledelegates/keydelegate.h"
 
-#include <cmath>
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
@@ -16,7 +15,11 @@ const QString kTuningSymbolHigh = QStringLiteral("\u2191");  // ↑ (arrow up) f
 constexpr int kTuningSymbolWidth = 14;
 constexpr double kStandardTuningHz = 440.0;
 constexpr double k432Hz = 432.0;
-constexpr double k432HzTolerance = 0.5; // Allow 0.5 Hz tolerance for 432Hz detection
+constexpr double kTuningToleranceHz = 2.5; // 2.5 Hz equals roughly 10 cents for these frequencies
+constexpr double kStandardTuningLowHz = kStandardTuningHz - kTuningToleranceHz;
+constexpr double kStandardTuningHighHz = kStandardTuningHz + kTuningToleranceHz;
+constexpr double k432LowHz = k432Hz - kTuningToleranceHz;
+constexpr double k432HighHz = k432Hz + kTuningToleranceHz;
 } // namespace
 
 void KeyDelegate::paintItem(
@@ -44,15 +47,15 @@ void KeyDelegate::paintItem(
     // Determine which tuning symbol to show (if any)
     QString tuningSymbol;
     QColor symbolColor;
-    if (tuningFrequencyHz > 0.0 && std::abs(tuningFrequencyHz - k432Hz) < k432HzTolerance) {
+    if (tuningFrequencyHz >= k432LowHz && tuningFrequencyHz <= k432HighHz) {
         // 432Hz (with tolerance) gets the sparkle symbol
         tuningSymbol = kTuningSymbol432Hz;
         symbolColor = QColor(218, 165, 32); // Golden color
-    } else if (tuningFrequencyHz > 0.0 && tuningFrequencyHz < kStandardTuningHz) {
+    } else if (tuningFrequencyHz > 0.0 && tuningFrequencyHz < kStandardTuningLowHz) {
         // Lower than 440Hz gets arrow down
         tuningSymbol = kTuningSymbolLow;
         symbolColor = QColor(100, 149, 237); // Cornflower blue
-    } else if (tuningFrequencyHz > kStandardTuningHz) {
+    } else if (tuningFrequencyHz > kStandardTuningHighHz) {
         // Higher than 440Hz gets arrow up
         tuningSymbol = kTuningSymbolHigh;
         symbolColor = QColor(255, 99, 71); // Tomato red
