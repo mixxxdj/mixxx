@@ -1402,6 +1402,7 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
 #endif
 
 #ifdef FORCE_GLES
+    // Define FORCE_GLES to test GLES waveforms on a GLSL Hardware
     qDebug() << "QOpenGLContext::openGLModuleType()" << QOpenGLContext::openGLModuleType();
 
     format.setRenderableType(QSurfaceFormat::OpenGLES);
