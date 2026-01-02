@@ -132,6 +132,20 @@ def apt_install_deps() -> None:
         "libupower-glib-dev",
         "libkeyfinder-dev",
         "libhidapi-dev",
+        # Qt multimedia backends
+        "libgstreamer1.0-dev",
+        "libgstreamer-plugins-base1.0-dev",
+        "libgstreamer-plugins-good1.0-dev",
+        "libgstreamer-plugins-bad1.0-dev",
+        # Audio backends
+        "libpulse-dev",
+        # FFmpeg for Qt multimedia
+        "libavcodec-dev",
+        "libavformat-dev",
+        "libavutil-dev",
+        "libswscale-dev",
+        "libswresample-dev",
+        "libva-dev",
     ]
     run(["sudo", "apt-get", "update"])
     run(["sudo", "apt-get", "install", "-y"] + pkgs)
@@ -198,7 +212,9 @@ def build_qt(
     http_src_dir = extract_tar_xz(http_tar, src_root / f"qthttpserver-src-{qt.version}")
 
     qt_build_dir = build_root / f"qt-{qt.version}"
-    if force_rebuild and qt_build_dir.exists():
+    # Always clean build dir to avoid cached failures (especially OpenSSL detection)
+    if qt_build_dir.exists():
+        print(f"[CLEAN] Removing existing build dir: {qt_build_dir}")
         shutil.rmtree(qt_build_dir, ignore_errors=True)
     qt_build_dir.mkdir(parents=True, exist_ok=True)
 
@@ -210,8 +226,10 @@ def build_qt(
         "-nomake", "examples",
         "-nomake", "tests",
 
-        # Core build options
+        # Core build options with explicit library paths
         "-openssl-linked",
+        "-I", "/usr/include",
+        "-L", "/usr/lib/x86_64-linux-gnu",
         "-qt-zlib",
         "-qt-libpng",
         "-qt-libjpeg",
@@ -253,9 +271,15 @@ def build_qt(
         "-skip", "qtcoap",
     ]
 
-    run(configure_cmd, cwd=qt_build_dir)
-    run(["cmake", "--build", ".", f"-j{jobs}"], cwd=qt_build_dir)
-    run(["cmake", "--install", "."], cwd=qt_build_dir)
+    # Set up environment for OpenSSL detection
+    configure_env = os.environ.copy()
+    configure_env["OPENSSL_ROOT_DIR"] = "/usr"
+    configure_env["OPENSSL_LIBS"] = "-lssl -lcrypto"
+    configure_env["PKG_CONFIG_PATH"] = f"/usr/lib/x86_64-linux-gnu/pkgconfig:{configure_env.get('PKG_CONFIG_PATH', '')}"
+
+    run(configure_cmd, cwd=qt_build_dir, env=configure_env)
+    run(["cmake", "--build", ".", f"-j{jobs}"], cwd=qt_build_dir, env=configure_env)
+    run(["cmake", "--install", "."], cwd=qt_build_dir, env=configure_env)
 
     http_build_dir = build_root / f"qthttpserver-{qt.version}"
     if force_rebuild and http_build_dir.exists():
