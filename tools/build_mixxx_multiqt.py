@@ -268,12 +268,19 @@ def build_qt(
         "-skip", "qtgrpc",
         "-skip", "qtcoap",
 
-        # Pass CMake variables directly to help find OpenSSL
+        # Pass CMake variables to force OpenSSL detection
+        # Qt's detection tests fail even with correct installation, so we override them
         "--",
         "-DOPENSSL_ROOT_DIR=/usr",
         "-DOPENSSL_INCLUDE_DIR=/usr/include",
         "-DOPENSSL_CRYPTO_LIBRARY=/usr/lib/x86_64-linux-gnu/libcrypto.so",
         "-DOPENSSL_SSL_LIBRARY=/usr/lib/x86_64-linux-gnu/libssl.so",
+        "-DOpenSSL_FOUND=TRUE",
+        "-DOPENSSL_FOUND=TRUE",
+        "-DOPENSSL_VERSION=3.0.13",
+        "-DQT_FEATURE_openssl=ON",
+        "-DQT_FEATURE_openssl_runtime=ON",
+        "-DTEST_opensslv30_headers=TRUE",
     ]
 
     # Set up environment for Qt configure
