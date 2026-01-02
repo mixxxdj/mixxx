@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import re
 import sys
 
@@ -76,7 +77,6 @@ def update(defs, channel, data):
     # Perform the replacement
     pattern = defs.get("pattern", DEFAULT_PATTERN).format(**data)
     replace = defs.get("replace", DEFAULT_REPLACE).format(**data)
-    # print(pattern,replace)
     content = re.sub(pattern, replace, content)
 
     with open(defs["file"], "w") as file:
@@ -117,7 +117,14 @@ def extra_info(data):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: %s <channel>" % sys.argv[0], file=sys.stderr)
+        print(
+            (
+                "Usage: %s <channel>\n  <channel> is Mixxx's "
+                "VCPKG release branch, e.g. 2.6."
+            )
+            % sys.argv[0],
+            file=sys.stderr,
+        )
         sys.exit(-1)
     channel_prefix = sys.argv[1]
 
