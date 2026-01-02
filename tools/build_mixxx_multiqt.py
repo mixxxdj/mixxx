@@ -226,10 +226,8 @@ def build_qt(
         "-nomake", "examples",
         "-nomake", "tests",
 
-        # Core build options with explicit library paths
-        "-openssl-linked",
-        "-I", "/usr/include",
-        "-L", "/usr/lib/x86_64-linux-gnu",
+        # Core build options - use runtime OpenSSL loading to avoid detection issues
+        "-openssl-runtime",
         "-qt-zlib",
         "-qt-libpng",
         "-qt-libjpeg",
@@ -271,10 +269,9 @@ def build_qt(
         "-skip", "qtcoap",
     ]
 
-    # Set up environment for OpenSSL detection
+    # Set up environment for Qt configure
+    # Using -openssl-runtime to avoid build-time detection issues
     configure_env = os.environ.copy()
-    configure_env["OPENSSL_ROOT_DIR"] = "/usr"
-    configure_env["OPENSSL_LIBS"] = "-lssl -lcrypto"
     configure_env["PKG_CONFIG_PATH"] = f"/usr/lib/x86_64-linux-gnu/pkgconfig:{configure_env.get('PKG_CONFIG_PATH', '')}"
 
     run(configure_cmd, cwd=qt_build_dir, env=configure_env)
