@@ -225,6 +225,7 @@ def build_qt(
         "-release",
         "-nomake", "examples",
         "-nomake", "tests",
+        "-cmake-generator", "Ninja",
 
         # Core build options - use runtime OpenSSL loading to avoid detection issues
         "-openssl-runtime",
