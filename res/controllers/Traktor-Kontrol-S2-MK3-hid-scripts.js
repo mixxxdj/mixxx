@@ -11,6 +11,26 @@
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 
+// Constant used to scale raw velocity (tick delta / time delta) to the appropriate scratch2 value
+const TICKS_PER_REV = 600;
+const JOG_CLOCK_HZ = 100000;
+const TARGET_RPM = 33 + 1/3;
+const VELOCITY_TO_SCRATCH = JOG_CLOCK_HZ / (TICKS_PER_REV * TARGET_RPM / 60);
+
+// Script will exit scratching mode after the jogwheel stops moving for this many ms.
+const JOG_STOPPER_TIME = 10;
+
+// Script will set scratching velocity to 0 after not receiving jogwheel packets for this many ms.
+const JOG_VELOCITY_RESET_TIME = 10;
+
+// Alpha for the jogwheel input's low pass filter.
+// Range: 0-1. Lower = more smoothing.
+const JOG_ALPHA = 0.25;
+
+// Threshold for the jogwheel input's dead zone. When the raw velocity is lower than this,
+// the jogwheel is assumed to be stopped, allowing it to change directions or exit scratching mode instantly.
+const JOG_EPSILON = 0.001;
+
 var TraktorS2MK3 = new function() {
     this.controller = new HIDController();
     this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
@@ -30,10 +50,11 @@ var TraktorS2MK3 = new function() {
     this.syncPressedTimer = {"[Channel1]": 0, "[Channel2]": 0}; // Timer to distinguish between short and long press
 
     // Jog wheels
-    this.jogwheelClockHz = 100000;
-    this.pitchBendMultiplier = 0.001;
     this.lastTickVal = [0, 0];
-    this.lastTickTime = [0.0, 0.0];
+    this.lastTimestamp = [0, 0];
+    this.lastVelocity = [0.0, 0.0];
+    this.lastWallClock = [0, 0];
+    this.stopTimerId = [null, null];
 
     // VuMeter
     this.vuLeftConnection = {};
@@ -618,45 +639,73 @@ TraktorS2MK3.samplerPregainHandler = function(field) {
 };
 
 TraktorS2MK3.jogTouchHandler = function(field) {
-    const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
     if (field.value > 0) {
-        engine.scratchEnable(deckNumber, 648, 33 + 1 / 3, 0.125, 0.125 / 8, true);
+        engine.setValue(field.group, "scratch2_enable", true);
     } else {
-        engine.scratchDisable(deckNumber);
+        TraktorS2MK3.jogStopper(field);
+    }
+};
+
+// Called after the wheel is released. Stops scratching when the wheel is slow enough, allowing for inertia.
+TraktorS2MK3.jogStopper = function(field) {
+    const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
+    if (Math.abs(engine.getValue(field.group, "scratch2")) <= JOG_EPSILON * VELOCITY_TO_SCRATCH) {
+        engine.setValue(field.group, "scratch2", 0);
+        engine.setValue(field.group, "scratch2_enable", false);
+        TraktorS2MK3.lastVelocity[deckNumber - 1] = 0;
+    } else {
+        engine.beginTimer(JOG_STOPPER_TIME, () => TraktorS2MK3.jogStopper(field), true);
     }
 };
 
 TraktorS2MK3.jogHandler = function(field) {
     const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
-    const deltas = TraktorS2MK3.wheelDeltas(deckNumber, field.value);
-    const tickDelta = deltas[0];
-    const timeDelta = deltas[1];
+    const velocity = VELOCITY_TO_SCRATCH * TraktorS2MK3.wheelVelocity(deckNumber, field.value);
 
-    if (engine.isScratching(deckNumber)) {
-        engine.scratchTick(deckNumber, tickDelta);
+    if (engine.getValue(field.group, "scratch2_enable")) {
+        engine.setValue(field.group, "scratch2", velocity);
+        print(engine.getValue(field.group, "scratch2"));
+
+        // If it has been a while since the last packet, we need to manually set velocity to 0
+        if (TraktorS2MK3.stopTimerId[deckNumber - 1]) {
+            // Cancel any existing timers
+            engine.stopTimer(TraktorS2MK3.stopTimerId[deckNumber - 1]);
+        }
+
+        TraktorS2MK3.stopTimerId[deckNumber - 1] = engine.beginTimer(JOG_VELOCITY_RESET_TIME, () => {
+            // Stop scratch
+            engine.setValue(field.group, "scratch2", 0);
+            TraktorS2MK3.lastVelocity[deckNumber - 1] = 0;
+            TraktorS2MK3.stopTimerId[deckNumber - 1] = null;
+        }, true);
+
     } else {
-        const velocity = (tickDelta / timeDelta) * TraktorS2MK3.pitchBendMultiplier * TraktorS2MK3.jogwheelClockHz;
         engine.setValue(field.group, "jog", velocity);
     }
 };
 
-TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
+TraktorS2MK3.wheelVelocity = function(deckNumber, value) {
     // When the wheel is touched, four bytes change.
     // The first 10 bits change when the wheel is turned.
-    // From testing, it appears the wheel is 600 ticks per revolution.
-    // However, passing 648 to scratchEnable makes the physical wheel line up better with Mixxx.
-    // The last 22 bits are a counter, which constantly increments and overflows.
-    // From testing, it appears the counter is incrementing at 100kHz.
+    // The last 22 bits are a counter, which constantly increments and overflows at 100kHz.
     const tickval = value & 0x3FF;
     let timeval = value >>> 10;
-    let prevTick = 0;
-    let prevTime = 0;
 
     // Group 1 and 2 -> Array index 0 and 1
-    prevTick = this.lastTickVal[deckNumber - 1];
-    prevTime = this.lastTickTime[deckNumber - 1];
+    const prevTick = this.lastTickVal[deckNumber - 1];
+    const prevTime = this.lastTimestamp[deckNumber - 1];
+    const prevWallClock = this.lastWallClock[deckNumber - 1];
     this.lastTickVal[deckNumber - 1] = tickval;
-    this.lastTickTime[deckNumber - 1] = timeval;
+    this.lastTimestamp[deckNumber - 1] = timeval;
+    this.lastWallClock[deckNumber - 1] = Date.now();
+
+    // The user hasn't touched the jog wheel for a long time, so the
+    // internal timer may have looped around more than once. We have nothing
+    // to go by so return 0
+    if (this.lastWallClock[deckNumber - 1] - prevWallClock > 40000) {
+        this.lastVelocity[deckNumber - 1] = 0;
+        return 0;
+    }
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.
@@ -664,7 +713,7 @@ TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
     }
     let timeDelta = timeval - prevTime;
     if (timeDelta === 0) {
-        // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
+        // Spinning too fast to detect speed!  By not dividing we are guessing it took 10us.
         timeDelta = 1;
     }
 
@@ -678,7 +727,23 @@ TraktorS2MK3.wheelDeltas = function(deckNumber, value) {
         tickDelta += 1024;
     }
 
-    return [tickDelta, timeDelta];
+    // Velocity smoothing
+    const velocity = tickDelta / timeDelta;
+    const prevVelocity = this.lastVelocity[deckNumber - 1];
+    let nextVelocity = 0;
+    // Check if the jogwheel is currently stopped or changing directions.
+    // If so, set the velocity to the new value instantly.
+    if (Math.abs(prevVelocity) < JOG_EPSILON) {
+        nextVelocity = velocity;
+    } else if (velocity * prevVelocity < 0) {
+        nextVelocity = velocity;
+    //  Otherwise, smooth the velocity.
+    } else {
+        nextVelocity = JOG_ALPHA * velocity + (1 - JOG_ALPHA) * prevVelocity;
+    }
+    this.lastVelocity[deckNumber - 1] = nextVelocity;
+
+    return nextVelocity;
 };
 
 TraktorS2MK3.fxHandler = function(field) {
