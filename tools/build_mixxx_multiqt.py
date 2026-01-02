@@ -267,10 +267,16 @@ def build_qt(
         "-skip", "qtmqtt",
         "-skip", "qtgrpc",
         "-skip", "qtcoap",
+
+        # Pass CMake variables directly to help find OpenSSL
+        "--",
+        "-DOPENSSL_ROOT_DIR=/usr",
+        "-DOPENSSL_INCLUDE_DIR=/usr/include",
+        "-DOPENSSL_CRYPTO_LIBRARY=/usr/lib/x86_64-linux-gnu/libcrypto.so",
+        "-DOPENSSL_SSL_LIBRARY=/usr/lib/x86_64-linux-gnu/libssl.so",
     ]
 
     # Set up environment for Qt configure
-    # Using -openssl-runtime to avoid build-time detection issues
     configure_env = os.environ.copy()
     configure_env["PKG_CONFIG_PATH"] = f"/usr/lib/x86_64-linux-gnu/pkgconfig:{configure_env.get('PKG_CONFIG_PATH', '')}"
 
