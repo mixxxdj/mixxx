@@ -1568,17 +1568,21 @@ NS4FX.HeadGain.prototype = new components.Pot({
 NS4FX.BrowseKnob = function () {
     this.knob = new components.Encoder({
         group: '[Library]',
+        inKey: 'Move',
         input: function (channel, control, value, status, group) {
+            NS4FX.dbg("Browse knob input. Shift: " + NS4FX.shift + ", inKey: " + this.inKey + ", value: " + value);
             if (value === 1) {
-                engine.setParameter(this.group, this.inKey + 'Down', 1);
+                engine.setValue(this.group, this.inKey + 'Down', 1);
             } else if (value === 127) {
-                engine.setParameter(this.group, this.inKey + 'Up', 1);
+                engine.setValue(this.group, this.inKey + 'Up', 1);
             }
         },
         unshift: function () {
+            NS4FX.dbg("Browse knob unshift.");
             this.inKey = 'Move';
         },
         shift: function () {
+            NS4FX.dbg("Browse knob shift.");
             this.inKey = 'Scroll';
         },
     });
@@ -1587,14 +1591,17 @@ NS4FX.BrowseKnob = function () {
         group: '[Library]',
         inKey: 'GoToItem', // Default action is to go to the selected item.
         input: function (channel, control, value, status, group) {
-            if (value > 0) { // Button gedrückt
-                engine.setParameter(this.group, this.inKey, 1);
+            NS4FX.dbg("Browse button input. Shift: " + NS4FX.shift + ", inKey: " + this.inKey + ", value: " + value);
+            if (value > 0) { // Button pressed
+                engine.setValue(this.group, this.inKey, 1);
             }
         },
         unshift: function () {
+            NS4FX.dbg("Browse button unshift.");
             this.inKey = 'GoToItem';
         },
         shift: function () { // When shifted, move focus instead of selecting.
+            NS4FX.dbg("Browse button shift.");
             this.inKey = 'MoveFocusBackward';
         },
     });

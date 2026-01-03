@@ -204,6 +204,15 @@
                 </options>
             </control>
             <control>
+                <group>[Library]</group>
+                <key>NS4FX.browse.knob.input</key>
+                <status>0xBF</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>NS4FX.decks[1].cue_button.input</key>
                 <status>0x90</status>
