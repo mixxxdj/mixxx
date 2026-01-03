@@ -132,6 +132,8 @@ def apt_install_deps() -> None:
         "libupower-glib-dev",
         "libkeyfinder-dev",
         "libhidapi-dev",
+        "libebur128-dev",
+        "libdjinterop-dev",
         # Qt multimedia backends
         "libgstreamer1.0-dev",
         "libgstreamer-plugins-base1.0-dev",
