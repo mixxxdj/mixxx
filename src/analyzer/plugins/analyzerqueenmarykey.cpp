@@ -68,8 +68,7 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
                 const auto key = static_cast<ChromaticKey>(iKey);
                 if (key != m_prevKey) {
                     // TODO(rryan) reserve?
-                    m_resultKeys.push_back(qMakePair(
-                            key, static_cast<double>(m_currentFrame)));
+                    m_resultKeys.push_back({key, 0.0, mixxx::audio::FramePos(m_currentFrame)});
                     m_prevKey = key;
                 }
                 return true;

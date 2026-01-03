@@ -631,17 +631,17 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
         const KeyChangeList& key_changes, SINT totalFrames, mixxx::audio::SampleRate sampleRate) {
     if (key_changes.size() == 1) {
-        qDebug() << keyDebugName(key_changes[0].first);
-        return key_changes[0].first;
+        qDebug() << keyDebugName(key_changes[0].key);
+        return key_changes[0].key;
     }
     QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
 
     for (int i = 0; i < key_changes.size(); ++i) {
-        mixxx::track::io::key::ChromaticKey key = key_changes[i].first;
-        const double start_frame = key_changes[i].second;
+        mixxx::track::io::key::ChromaticKey key = key_changes[i].key;
+        const double start_frame = key_changes[i].framePos.value();
         const double next_frame = (i == key_changes.size() - 1)
                 ? totalFrames
-                : key_changes[i + 1].second;
+                : key_changes[i + 1].framePos.value();
         key_histogram[key] += (next_frame - start_frame);
     }
 

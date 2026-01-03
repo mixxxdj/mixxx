@@ -135,10 +135,10 @@ Keys KeyFactory::makePreferredKeys(
                 it != key_changes.constEnd();
                 ++it) {
             // Key position is in frames. Do not accept fractional frames.
-            double frame = floor(it->second);
+            double frame = it->framePos.toLowerFrameBoundary().value();
 
             KeyMap::KeyChange* pChange = key_map.add_key_change();
-            pChange->set_key(it->first);
+            pChange->set_key(it->key);
             pChange->set_frame_position(static_cast<int>(frame));
         }
 
