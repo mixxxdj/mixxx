@@ -1779,7 +1779,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         // Encode tuning offset (RapidEvolution style) into key text for tag roundtrip.
         // Keep the database value untouched; only the exported metadata is modified.
         const double tuningHz = m_record.getKeys().getDetectedTuningFrequencyHz();
-        if (tuningHz > 0.0 && tuningHz != kDefaultTuningFrequency) {
+        if (tuningHz > 0.0) {
             QString keyText = normalizedFromRecord.getTrackInfo().getKeyText();
             if (keyText.isEmpty()) {
                 const auto key = m_record.getKeys().getGlobalKey();
@@ -1790,13 +1790,11 @@ ExportTrackMetadataResult Track::exportMetadata(
             if (!keyText.isEmpty()) {
                 const double cents = 1200.0 * std::log2(tuningHz / 440.0);
                 const int centsRounded = static_cast<int>(std::lround(cents));
-                if (centsRounded != 0) {
-                    const QString offsetText = centsRounded > 0
-                            ? QStringLiteral("+%1").arg(centsRounded)
-                            : QString::number(centsRounded);
-                    normalizedFromRecord.refTrackInfo().setKeyText(
-                            QStringLiteral("%1 %2").arg(keyText, offsetText));
-                }
+                const QString offsetText = centsRounded >= 0
+                        ? QStringLiteral("+%1").arg(centsRounded)
+                        : QString::number(centsRounded);
+                normalizedFromRecord.refTrackInfo().setKeyText(
+                        QStringLiteral("%1 %2").arg(keyText, offsetText));
             }
         }
 
