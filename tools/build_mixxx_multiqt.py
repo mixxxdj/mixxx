@@ -139,13 +139,19 @@ def apt_install_deps() -> None:
         "libgstreamer-plugins-bad1.0-dev",
         # Audio backends
         "libpulse-dev",
-        # FFmpeg for Qt multimedia
+        # FFmpeg for Qt multimedia and Mixxx
         "libavcodec-dev",
         "libavformat-dev",
+        "libavdevice-dev",
         "libavutil-dev",
+        "libavfilter-dev",
         "libswscale-dev",
         "libswresample-dev",
         "libva-dev",
+        # Testing and benchmarking
+        "libgtest-dev",
+        "googletest",
+        "libbenchmark-dev",
     ]
     run(["sudo", "apt-get", "update"])
     run(["sudo", "apt-get", "install", "-y"] + pkgs)
