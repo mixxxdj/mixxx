@@ -155,6 +155,24 @@ def apt_install_deps() -> None:
         print("[WARN] 'apt-get build-dep mixxx' failed (maybe src repos not enabled). Continuing.")
 
 
+def ensure_openssl_dev_present() -> None:
+    """Fail fast with a clear message when OpenSSL headers/libs are missing."""
+    required_paths = [
+        Path("/usr/include/openssl/asn1.h"),
+        Path("/usr/lib/x86_64-linux-gnu/libssl.so"),
+        Path("/usr/lib/x86_64-linux-gnu/libcrypto.so"),
+    ]
+
+    missing = [str(p) for p in required_paths if not p.exists()]
+    if missing:
+        missing_list = "\n  - " + "\n  - ".join(missing)
+        raise SystemExit(
+            "Missing OpenSSL development files required to build Qt:"\
+            f"{missing_list}\n"
+            "Install libssl-dev (or rerun with --install-deps) and try again."
+        )
+
+
 def qt_urls(qt: QtVersion) -> tuple[str, str]:
     qt_everywhere = (
         f"https://download.qt.io/official_releases/qt/{qt.stream}/{qt.version}/single/"
@@ -189,6 +207,8 @@ def build_qt(
     Build Qt from source into install_root/qt/<ver> and return the prefix.
     All download/build staging happens under opt_root.
     """
+    ensure_openssl_dev_present()
+
     prefix = install_root / "qt" / qt.version
     qt_bin = prefix / "bin" / "qmake6"
     if qt_bin.exists() and not force_rebuild:
