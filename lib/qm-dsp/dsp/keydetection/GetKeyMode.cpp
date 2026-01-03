@@ -28,23 +28,91 @@
 #include <cstring>
 #include <cstdlib>
 
-static const int kBinsPerOctave = 36;
+namespace {
+
+constexpr int kBinsPerOctave = 36;
+constexpr double kBandwithFactor = pow(2, 1.0 / kBinsPerOctave);
 
 // Chords profile
-static double MajProfile[kBinsPerOctave] = {
+double MajProfile[kBinsPerOctave] = {
     0.0384, 0.0629, 0.0258, 0.0121, 0.0146, 0.0106, 0.0364, 0.0610, 0.0267,
     0.0126, 0.0121, 0.0086, 0.0364, 0.0623, 0.0279, 0.0275, 0.0414, 0.0186, 
     0.0173, 0.0248, 0.0145, 0.0364, 0.0631, 0.0262, 0.0129, 0.0150, 0.0098,
     0.0312, 0.0521, 0.0235, 0.0129, 0.0142, 0.0095, 0.0289, 0.0478, 0.0239
 };
 
-static double MinProfile[kBinsPerOctave] = { 
+double MinProfile[kBinsPerOctave] = {
     0.0375, 0.0682, 0.0299, 0.0119, 0.0138, 0.0093, 0.0296, 0.0543, 0.0257,
     0.0292, 0.0519, 0.0246, 0.0159, 0.0234, 0.0135, 0.0291, 0.0544, 0.0248,
     0.0137, 0.0176, 0.0104, 0.0352, 0.0670, 0.0302, 0.0222, 0.0349, 0.0164,
     0.0174, 0.0297, 0.0166, 0.0222, 0.0401, 0.0202, 0.0175, 0.0270, 0.0146
 };
-//
+
+double safeLog(double x) {
+    return std::log(std::max(x, 1e-12));
+};
+
+double getGaussianPeak(double* pChromaBuffer, int peakBin) {
+    double y0s = 0.0;
+    double y1s = 0.0;
+    double y2s = 0.0;
+    for (int i = 0; i < kBinsPerOctave / 3; ++i) {
+        y0s += pChromaBuffer[i * 3];
+        y1s += pChromaBuffer[i * 3 + 1];
+        y2s += pChromaBuffer[i * 3 + 2];
+    }
+
+    // std::cout << "getGaussianPeak 1: " << y0s << " " << y1s << " " << y2s << " " << peakBin << std::endl;
+
+    int modPeak = peakBin  % 3; // 1 for 440 Hz
+    double y0;
+    double y1;
+    double y2;
+    if (y0s > y1s && y0s > y2s) {
+        y0 = y2s;
+        y1 = y0s;
+        y2 = y1s;
+        if (modPeak == 1) {
+            peakBin -= 1;
+        } else if (modPeak == 2) {
+            peakBin += 1;
+        }
+    } else if (y1s > y0s && y1s > y2s) {
+        y0 = y0s;
+        y1 = y1s;
+        y2 = y2s;
+        if (modPeak == 0) {
+            peakBin += 1;
+        } else if (modPeak == 2) {
+            peakBin -= 1;
+        }
+    } else {
+        y0 = y1s;
+        y1 = y2s;
+        y2 = y0s;
+        if (modPeak == 0) {
+            peakBin -= 1;
+        } else if (modPeak == 1) {
+            peakBin -= 1;
+        }
+    }
+
+    // std::cout << "getGaussianPeak 1: " << y0 << " " << y1 << " " << y2 << std::endl;
+
+    y0 = safeLog(y0 * kBandwithFactor);
+    y1 = safeLog(y1);
+    y2 = safeLog(y2 / kBandwithFactor);
+
+    // std::cout << "getGaussianPeak 2: " << y0 << " " << y1 << " " << y2 << std::endl;
+
+    double denom = (y0 - 2.0 * y1 + y2);
+    if (denom == 0) {
+        return peakBin;
+    }
+    return peakBin + (y0 - y2) / (2 * denom);
+}
+
+} // namespace
     
 
 //////////////////////////////////////////////////////////////////////
@@ -74,11 +142,12 @@ GetKeyMode::GetKeyMode(Config config) :
         chromaConfig.FS = 1;
     }
 
-    // Set C3 (= MIDI #48) as our base:
+    // Set C3 (= MIDI #48) 130,8 Hz as our base:
     // This implies that key = 1 => Cmaj, key = 12 => Bmaj, key = 13 => Cmin, etc.
     const float centsOffset = -12.0f / kBinsPerOctave * 100; // 3 bins per note, start with the first
     chromaConfig.min =
         Pitch::getFrequencyForPitch( 48, centsOffset, config.tuningFrequency );
+    // Set C7 (= MIDI #96) 2093 Hz
     chromaConfig.max =
         Pitch::getFrequencyForPitch( 96, centsOffset, config.tuningFrequency );
 
