@@ -23,6 +23,7 @@
 #include "maths/MathUtilities.h"
 #include "base/Pitch.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include <cstring>
@@ -326,33 +327,23 @@ int GetKeyMode::process(double *pcmData)
         m_medianBufferFilling = m_medianWinSize;
     }
 
-    // shift median buffer
-    for (k = 1; k < m_medianWinSize; k++ ) {
-        m_medianFilterBuffer[ k - 1 ] = m_medianFilterBuffer[ k ];
-    }
+    // rotate right
+    std::rotate(m_medianFilterBuffer, m_medianFilterBuffer + m_medianWinSize - 1, m_medianFilterBuffer + m_medianWinSize);
 
     // write new key value into median buffer
-    m_medianFilterBuffer[ m_medianWinSize - 1 ] = key;
+    m_medianFilterBuffer[0] = key;
 
     // copy median into sorting buffer, reversed
-    int ijx = 0;
-    for (k = 0; k < m_medianWinSize; k++) {
-        m_sortedBuffer[k] = m_medianFilterBuffer[m_medianWinSize - 1 - ijx];
-        ijx++;
-    }
+    std::copy(m_medianFilterBuffer, m_medianFilterBuffer + m_medianBufferFilling, m_sortedBuffer);
+    const std::size_t medianIndex = m_medianBufferFilling / 2;
 
-    qsort(m_sortedBuffer, m_medianBufferFilling, sizeof(int),
-          MathUtilities::compareInt);
+    std::nth_element(
+        m_sortedBuffer,
+        m_sortedBuffer + medianIndex,
+        m_sortedBuffer + m_medianBufferFilling
+    );
 
-    int sortlength = m_medianBufferFilling;
-    int midpoint = (int)ceil((double)sortlength / 2);
-
-    if (midpoint <= 0) {
-        midpoint = 1;
-    }
-
-    key = m_sortedBuffer[midpoint-1];
-
+    key = m_sortedBuffer[medianIndex];
     return key;
 }
 
