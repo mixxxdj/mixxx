@@ -33,7 +33,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
 
   protected:
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
-            const QVariant& data) override;
+            const QVariant& playlist_name) override;
 
   private:
     // Removes all rows from a given table
