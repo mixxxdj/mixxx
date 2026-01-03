@@ -438,6 +438,42 @@
                 </options>
             </control>
             <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>NS4FX.effectUnit.bpmTap.input</key>
+                <status>0x98</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>NS4FX.effectUnit.bpmTap.input</key>
+                <status>0x88</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>NS4FX.effectUnit.bpmTap.input</key>
+                <status>0x99</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>NS4FX.effectUnit.bpmTap.input</key>
+                <status>0x89</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[EffectRack1_EffectUnit1_Effect6]</group>
                 <key>NS4FX.effectUnit.effectButtons.phaser.input</key>
                 <status>0x99</status>

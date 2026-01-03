@@ -592,8 +592,58 @@ NS4FX.EffectUnit = function () {
             var active = this.switch_active_right ? 0x01 : 0x00;
             this.rightSwitch(0, 0, active, 0, 0);
         }
-
     }
+    
+    this.bpmTap = new components.Button({
+        shifted: false,
+        shift: function() {
+            NS4FX.dbg("bpmTap shift");
+            this.shifted = true;
+        },
+        unshift: function() {
+            NS4FX.dbg("bpmTap unshift");
+            this.shifted = false;
+        },
+        input: function(channel, control, value, status, group) {
+            NS4FX.dbg("bpmTap input. value: " + value + ", status: " + status.toString(16) + ", shifted: " + this.shifted);
+            // Only act on button press (value=0x7F) and only on one of the two MIDI messages (status=0x98)
+            // to avoid the action being triggered twice by the single physical button.
+            if (value !== 0x7F || status !== 0x98) {
+                return;
+            }
+
+            var deckGroup = null;
+
+            // Find the sync leader by checking each deck
+            for (var i = 1; i <= 4; i++) {
+                if (engine.getValue('[Channel' + i + ']', 'sync_leader')) {
+                    deckGroup = '[Channel' + i + ']';
+                    NS4FX.dbg("bpmTap target: sync leader " + deckGroup);
+                    break; // Found it, stop looking
+                }
+            }
+
+            // If no sync leader was found, use a fallback
+            if (!deckGroup) {
+                // Fallback: if no sync leader, target the active deck on the left side.
+                var deckNumber = self.deck1 ? 1 : 3;
+                deckGroup = '[Channel' + deckNumber + ']';
+                NS4FX.dbg("bpmTap target: no sync leader, falling back to " + deckGroup);
+            }
+
+            if (deckGroup) {
+                if (this.shifted) {
+                    NS4FX.dbg("bpmTap shifted action: undoing beat adjustment for " + deckGroup);
+                    // Shift + Tap: Undo last BPM adjustment
+                    engine.setValue(deckGroup, 'beats_undo_adjustment', 1);
+                } else {
+                    NS4FX.dbg("bpmTap unshifted action: tapping bpm for " + deckGroup);
+                    // Tap: Tap BPM
+                    engine.setValue(deckGroup, 'bpm_tap', 1);
+                }
+            }
+        }
+    });
 }
 
 NS4FX.EffectUnit.prototype = new components.ComponentContainer();
@@ -1578,11 +1628,9 @@ NS4FX.BrowseKnob = function () {
             }
         },
         unshift: function () {
-            NS4FX.dbg("Browse knob unshift.");
             this.inKey = 'Move';
         },
         shift: function () {
-            NS4FX.dbg("Browse knob shift.");
             this.inKey = 'Scroll';
         },
     });
@@ -1597,11 +1645,9 @@ NS4FX.BrowseKnob = function () {
             }
         },
         unshift: function () {
-            NS4FX.dbg("Browse button unshift.");
             this.inKey = 'GoToItem';
         },
         shift: function () { // When shifted, move focus instead of selecting.
-            NS4FX.dbg("Browse button shift.");
             this.inKey = 'MoveFocusBackward';
         },
     });
@@ -1968,6 +2014,7 @@ NS4FX.shiftToggle = function (channel, control, value, status, group) {
     if (NS4FX.shift) {
         NS4FX.decks.shift();
         NS4FX.sampler_all.shift();
+        NS4FX.effectUnit.shift();
         NS4FX.browse.shift();
         NS4FX.head_gain.shift();
 
@@ -1980,6 +2027,7 @@ NS4FX.shiftToggle = function (channel, control, value, status, group) {
     else {
         NS4FX.decks.unshift();
         NS4FX.sampler_all.unshift();
+        NS4FX.effectUnit.unshift();
         NS4FX.browse.unshift();
         NS4FX.head_gain.unshift();
     }
