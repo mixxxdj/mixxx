@@ -184,7 +184,7 @@ NS4FX.init = function (id, debug) {
 
     // This component handles the BEATS knob.
     // When a stem pad is held, this knob adjusts the stem's volume (or effect amount if SHIFT is also held).
-    // It iterates through all decks and stem pads to find which one is currently in a "held" state.
+    // If no stem pad is held, it controls the superknob for both effect units.
     NS4FX.beatsKnob = new components.Encoder({
         input: function (channel, control, value, status, group) {
             var heldStemInfo = null;
@@ -227,6 +227,22 @@ NS4FX.init = function (id, debug) {
                     newValue = Math.max(0.0, currentValue - step);
                 }
                 engine.setValue(group, control, newValue);
+            } else {
+                // If no stem pad is held, control the superknob of the effect units.
+                var step = 0.05;
+                var effectUnits = ['[EffectRack1_EffectUnit1]', '[EffectRack1_EffectUnit2]'];
+
+                for (var i = 0; i < effectUnits.length; i++) {
+                    var unitGroup = effectUnits[i];
+                    var currentValue = engine.getValue(unitGroup, 'super1');
+                    var newValue;
+                    if (value === 0x01) { // Turned right
+                        newValue = Math.min(1.0, currentValue + step);
+                    } else { // Turned left (0x7F)
+                        newValue = Math.max(0.0, currentValue - step);
+                    }
+                    engine.setValue(unitGroup, 'super1', newValue);
+                }
             }
         }
     });
