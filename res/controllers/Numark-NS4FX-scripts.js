@@ -391,12 +391,22 @@ NS4FX.init = function (id, debug) {
     engine.makeConnection("[Controls]", "ShowDurationRemaining", NS4FX.timeElapsedCallback);
 
     // setup vumeter tracking
-    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", NS4FX.vuCallback);
-    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", NS4FX.vuCallback);
-    engine.makeUnbufferedConnection("[Channel3]", "vu_meter", NS4FX.vuCallback);
-    engine.makeUnbufferedConnection("[Channel4]", "vu_meter", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter_left", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter_right", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter_left", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter_right", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel3]", "vu_meter_left", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel3]", "vu_meter_right", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel4]", "vu_meter_left", NS4FX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel4]", "vu_meter_right", NS4FX.vuCallback);
     engine.makeUnbufferedConnection("[Main]", "vu_meter_left", NS4FX.vuCallback);
     engine.makeUnbufferedConnection("[Main]", "vu_meter_right", NS4FX.vuCallback);
+
+    // object to hold left and right VU levels for each channel
+    NS4FX.vu_levels = {};
+    for (var i = 1; i <= 4; i++) {
+        NS4FX.vu_levels['[Channel' + i + ']'] = { left: 0, right: 0 };
+    }
 
     NS4FX.dbg("NS4FX.init finished");
 };
@@ -2014,42 +2024,53 @@ NS4FX.pflToggle = function (value, group, control) {
 };
 
 NS4FX.vuCallback = function (value, group, control) {
-    // the top LED lights up at 81
-    var level = value * 81;
-    if (engine.getValue(group, "peak_indicator")) {
-        level = 81;
-    }
     if (displayVUFromBothDecks) {
-        if (group == '[Main]' && control == 'vu_meter_left') {
-            if (engine.getValue(group, "peak_indicator_left")) {
-                level = 81;
+        var level = value * 81;
+        // In this mode, we use the main output meters.
+        if (group === '[Main]') {
+            if (control === 'vu_meter_left') {
+                if (engine.getValue(group, "peak_indicator_left")) {
+                    level = 81;
+                }
+                // Send to the active meter on the left side (Deck 1 or 3).
+                var left_midi_chan = NS4FX.effectUnit.deck1 ? 0xB0 : 0xB2;
+                midi.sendShortMsg(left_midi_chan, 0x1F, level);
+            } else if (control === 'vu_meter_right') {
+                if (engine.getValue(group, "peak_indicator_right")) {
+                    level = 81;
+                }
+                // Send to the active meter on the right side (Deck 2 or 4).
+                var right_midi_chan = NS4FX.effectUnit.deck2 ? 0xB1 : 0xB3;
+                midi.sendShortMsg(right_midi_chan, 0x1F, level);
             }
-            midi.sendShortMsg(0xB0, 0x1F, level);
-            midi.sendShortMsg(0xB2, 0x1F, level);
-        }
-        else if (group == '[Main]' && control == 'vu_meter_right') {
-            if (engine.getValue(group, "peak_indicator_right")) {
-                level = 81;
-                midi.sendShortMsg(0xB1, 0x1F, level);
-                midi.sendShortMsg(0xB3, 0x1F, level);
-            }
-
         }
     } else {
-        if (group == '[Channel1]' && NS4FX.decks[1].active) {
-            midi.sendShortMsg(0xB0, 0x1F, level);
+        // In this mode, we use the individual channel meters for the active decks.
+        if (group.substring(0, 8) !== '[Channel' || !NS4FX.vu_levels[group]) {
+            return;
         }
-        else if (group == '[Channel3]' && NS4FX.decks[3].active) {
-            midi.sendShortMsg(0xB2, 0x1F, level);
+
+        // Store the latest left or right value
+        if (control === 'vu_meter_left') {
+            NS4FX.vu_levels[group].left = value;
+        } else if (control === 'vu_meter_right') {
+            NS4FX.vu_levels[group].right = value;
         }
-        else if (group == '[Channel2]' && NS4FX.decks[2].active) {
-            midi.sendShortMsg(0xB1, 0x1F, level);
+
+        // Take the maximum of the left and right channels for the mono meter display
+        var combined_value = Math.max(NS4FX.vu_levels[group].left, NS4FX.vu_levels[group].right);
+        var level = combined_value * 81;
+
+        if (engine.getValue(group, "peak_indicator")) {
+            level = 81;
         }
-        else if (group == '[Channel4]' && NS4FX.decks[4].active) {
-            midi.sendShortMsg(0xB3, 0x1F, level);
+
+        var deckNum = parseInt(group.charAt(8));
+        if (NS4FX.decks[deckNum].active) {
+            var midiChan = 0xB0 + NS4FX.decks[deckNum].midi_chan;
+            midi.sendShortMsg(midiChan, 0x1F, level);
         }
     }
-
 };
 
 // track the state of the shift key
