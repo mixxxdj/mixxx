@@ -16,6 +16,10 @@ namespace {
 // Tuning frequency of concert A in Hertz. Default value from VAMP plugin.
 constexpr int kTuningFrequencyHertz = 440;
 
+double centsToTuningFrequencyHz(double cents) {
+    return kTuningFrequencyHertz * std::pow(2.0, cents / 12);
+}
+
 } // namespace
 
 AnalyzerQueenMaryKey::AnalyzerQueenMaryKey()
@@ -58,7 +62,11 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
 
     return m_helper.initialize(
             windowSize, stepSize, [this](double* pWindow, size_t) {
-                int iKey = m_pKeyMode->process(pWindow);
+                double dKey = m_pKeyMode->process(pWindow);
+                int iKey = static_cast<int>(dKey + 0.5);
+
+                double tuningFrequencyHz = centsToTuningFrequencyHz(dKey - iKey);
+                qWarning() << "tuningFrequencyHz:" << tuningFrequencyHz << dKey << iKey;
 
                 if (!ChromaticKey_IsValid(iKey)) {
                     qWarning() << "No valid key detected in analyzed window:" << iKey;
@@ -68,7 +76,9 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
                 const auto key = static_cast<ChromaticKey>(iKey);
                 if (key != m_prevKey) {
                     // TODO(rryan) reserve?
-                    m_resultKeys.push_back({key, 0.0, mixxx::audio::FramePos(m_currentFrame)});
+                    m_resultKeys.push_back({key,
+                            tuningFrequencyHz,
+                            mixxx::audio::FramePos(m_currentFrame)});
                     m_prevKey = key;
                 }
                 return true;
