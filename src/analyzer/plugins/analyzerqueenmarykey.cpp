@@ -66,7 +66,7 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
                 int iKey = static_cast<int>(dKey + 0.5);
 
                 double tuningFrequencyHz = centsToTuningFrequencyHz(dKey - iKey);
-                qWarning() << "tuningFrequencyHz:" << tuningFrequencyHz << dKey << iKey;
+                // qWarning() << "tuningFrequencyHz:" << tuningFrequencyHz << dKey << iKey;
 
                 if (!ChromaticKey_IsValid(iKey)) {
                     qWarning() << "No valid key detected in analyzed window:" << iKey;
@@ -79,7 +79,15 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
                     m_resultKeys.push_back({key,
                             tuningFrequencyHz,
                             mixxx::audio::FramePos(m_currentFrame)});
+                    m_tuningFrequenciesHz.clear();
+                    m_tuningFrequenciesHz.push_back(tuningFrequencyHz);
                     m_prevKey = key;
+                } else {
+                    m_tuningFrequenciesHz.push_back(tuningFrequencyHz);
+                    double sum = std::accumulate(m_tuningFrequenciesHz.begin(),
+                            m_tuningFrequenciesHz.end(),
+                            0.0);
+                    m_resultKeys.back().tuningFrequencyHz = sum / m_tuningFrequenciesHz.size();
                 }
                 return true;
             });
