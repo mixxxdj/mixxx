@@ -5,6 +5,8 @@
 #include <rhi/qshader.h>
 #endif
 
+#include "../../util/assert.h"
+
 using namespace rendergraph;
 
 namespace {
@@ -48,7 +50,7 @@ MaterialShader::MaterialShader(const char* vertexShaderFilename,
 
     QByteArray vertexCode = loadShaderCodeFromFile(vertexShaderFileFullPath);
     QByteArray fragmentCode = loadShaderCodeFromFile(fragmentShaderFileFullPath);
-    if (vertexCode.isEmpty() || fragmentCode.isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(!vertexCode.isEmpty() && !fragmentCode.isEmpty()) {
         return;
     }
     if (!addShaderFromSourceCode(QOpenGLShader::Vertex, vertexCode)) {
