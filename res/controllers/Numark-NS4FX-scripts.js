@@ -14,7 +14,6 @@
 
 var EnableWheel = engine.getSetting("EnableWheel");
 var ShiftLoadEjects = engine.getSetting("ShiftLoadEjects");
-var ShowFocusedEffectParameters = engine.getSetting("ShowFocusedEffectParameters");
 var OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
 var displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 var defaultPadMode = engine.getSetting("defaultPadMode");
@@ -1507,88 +1506,21 @@ NS4FX.Deck = function (number, midi_chan) {
                 }
             })
         });
-        // EQ and Filter knobs
-        this.EqEffectKnob = function (group, in_key, fx_key, filter_knob) {
-            this.unshift_group = group;
-            this.unshift_key = in_key;
-            this.fx_key = fx_key;
-            if (filter_knob) {
-                this.shift_key = 'super1';
-            }
-            this.ignore_next = null;
-            components.Pot.call(this, {
-                group: group,
-                inKey: in_key,
-            });
-        };
-        this.EqEffectKnob.prototype = new components.Pot({
-            input: function (channel, control, value, status, group) {
-                // if the control group and key has changed, ignore_next will hold
-                // the old settings. We need to tell the soft takeover engine to
-                // ignore the next values for that control so that when we
-                // eventually switch back to it, soft takeover will manage it
-                // properly.
-                // // We call IgnoreNextValue() here instead of in shift()/unshift()
-                // (via connect()/disconnect()) because if we did that, pressing
-                // the shift key would cause the next value on the control to be
-                // ignored even if the control wasn't moved, which would trigger
-                // a phantom soft takeover if the control was moved fast enough. We
-                // only need to IgnoreNextValue() if the control has actually moved
-                // after switching the target group/key.
-                if (this.ignore_next) {
-                    engine.softTakeoverIgnoreNextValue(this.ignore_next.group, this.ignore_next.key);
-                    this.ignore_next = null;
-                }
-                components.Pot.prototype.input.call(this, channel, control, value, status, group);
-            },
-            connect: function () {
-                // enable soft takeover on our controls
-                for (var i = 1; i <= 3; i++) {
-                    var group = '[EffectRack1_EffectUnit1_Effect' + i + ']';
-                    engine.softTakeover(group, this.fx_key, true);
-                }
-                components.Pot.prototype.connect.call(this);
-            },
-            shift: function () {
-                var focused_effect = engine.getValue('[EffectRack1_EffectUnit1]', "focused_effect");
-                if (focused_effect === 0) {
-                    if (this.shift_key) {
-                        engine.softTakeover('[EffectRack1_EffectUnit1]', this.shift_key, true);
-                        this.switchControl('[EffectRack1_EffectUnit1]', this.shift_key);
-                    }
-                } else {
-                    var group = '[EffectRack1_EffectUnit1_Effect' + focused_effect + ']';
-                    this.switchControl(group, this.fx_key);
-                }
-            },
-
-            unshift: function () {
-                this.switchControl(this.unshift_group, this.unshift_key);
-            },
-            switchControl: function (group, key) {
-                if (this.group != group || this.inKey != key) {
-                    this.ignore_next = { 'group': this.group, 'key': this.inKey };
-                }
-                this.group = group;
-                this.inKey = key;
-            },
-        });
 
         var eq_group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
-        this.high_eq = new this.EqEffectKnob(eq_group, 'parameter3', 'parameter3');
-        this.mid_eq = new this.EqEffectKnob(eq_group, 'parameter2', 'parameter4');
-        this.low_eq = new this.EqEffectKnob(eq_group, 'parameter1', 'parameter5');
+        this.high_eq = new components.Pot({ group: eq_group, inKey: 'parameter3' });
+        this.mid_eq = new components.Pot({ group: eq_group, inKey: 'parameter2' });
+        this.low_eq = new components.Pot({ group: eq_group, inKey: 'parameter1' });
 
-        this.filter = new this.EqEffectKnob(
-            '[QuickEffectRack1_' + this.currentDeck + ']',
-            'super1',
-            'parameter1',
-            true);
+        this.filter = new components.Pot({
+            group: '[QuickEffectRack1_' + this.currentDeck + ']',
+            inKey: 'super1',
+        });
 
-        this.gain = new this.EqEffectKnob(
-            this.currentDeck,
-            'pregain',
-            'parameter2');
+        this.gain = new components.Pot({
+            group: this.currentDeck,
+            inKey: 'pregain',
+        });
 
 
         this.reconnectComponents(function (c) {
@@ -2032,6 +1964,7 @@ NS4FX.vuCallback = function (value, group, control) {
                 if (engine.getValue(group, "peak_indicator_left")) {
                     level = 81;
                 }
+                // Send to the active meter on the left side (Deck 1 or 3).
                 // Send to the active meter on the left side (Deck 1 or 3).
                 var left_midi_chan = NS4FX.effectUnit.deck1 ? 0xB0 : 0xB2;
                 midi.sendShortMsg(left_midi_chan, 0x1F, level);
