@@ -72,7 +72,7 @@ case "$1" in
             docbook-to-man \
             dput \
             fonts-open-sans \
-            fonts-ubuntu \
+            fonts-ubuntu-title \
             g++ \
             lcov \
             libavformat-dev \
