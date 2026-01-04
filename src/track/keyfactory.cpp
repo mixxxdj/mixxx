@@ -139,17 +139,19 @@ Keys KeyFactory::makePreferredKeys(
 
             KeyMap::KeyChange* pChange = key_map.add_key_change();
             pChange->set_key(it->key);
+            pChange->set_tuning_frequency_hz(it->tuningFrequencyHz);
             pChange->set_frame_position(static_cast<int>(frame));
         }
 
-        mixxx::track::io::key::ChromaticKey global_key =
+        KeyChange global_key =
                 KeyUtils::calculateGlobalKey(
                         key_changes, totalFrames, sampleRate);
-        key_map.set_global_key(global_key);
+        key_map.set_global_key(global_key.key);
         QString global_key_text = KeyUtils::keyToString(
-                global_key, KeyUtils::KeyNotation::ID3v2);
+                global_key.key, KeyUtils::KeyNotation::ID3v2);
         key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
+        key_map.set_global_tuning_frequency_hz(global_key.tuningFrequencyHz);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
         return keys;
