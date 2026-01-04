@@ -819,6 +819,22 @@ NS4FX.Deck = function (number, midi_chan) {
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 4,
+        input: function (channel, control, value, status, group) {
+            // The controller sends a different MIDI note for a shifted CUE press.
+            // We check for that note here to decide which action to take.
+            var isShiftedPress = (control === (this.midi[1] + this.shiftOffset));
+
+            if (isShiftedPress) {
+                if (this.isPress(channel, control, value, status)) {
+                    NS4FX.dbg("Shift+CUE on deck " + deck.number + ": returning to start of track.");
+                    engine.setValue(group, 'start', 1);
+                }
+            } else {
+                // Unshifted press (control === this.midi[1]), so perform normal CUE behavior
+                // by calling the prototype's input handler.
+                components.CueButton.prototype.input.call(this, channel, control, value, status, group);
+            }
+        }
     });
 
     this.transport_pad_1 = createTransportPad(this, 1, 'cue_gotoandplay', false);
