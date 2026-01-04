@@ -609,18 +609,18 @@ NS4FX.EffectUnit = function () {
             this.rightSwitch(0, 0, active, 0, 0);
         }
     }
-    
+
     this.bpmTap = new components.Button({
         shifted: false,
-        shift: function() {
+        shift: function () {
             NS4FX.dbg("bpmTap shift");
             this.shifted = true;
         },
-        unshift: function() {
+        unshift: function () {
             NS4FX.dbg("bpmTap unshift");
             this.shifted = false;
         },
-        input: function(channel, control, value, status, group) {
+        input: function (channel, control, value, status, group) {
             NS4FX.dbg("bpmTap input. value: " + value + ", status: " + status.toString(16) + ", shifted: " + this.shifted);
             // Only act on button press (value=0x7F) and only on one of the two MIDI messages (status=0x98)
             // to avoid the action being triggered twice by the single physical button.
@@ -1119,30 +1119,46 @@ NS4FX.Deck = function (number, midi_chan) {
         this.pitch.firstValueReceived = true;
     }
 
-    var pitch_or_keylock = function (channel, control, value, status, group) {
-        if (value === 0) {
-            // Button released -> inherit to standard button
-            components.Button.prototype.input.call(this, channel, control, value, status, group);
-            return;
-        }
+    var pitch_button_handler = function (channel, control, value, status, group) {
+        // 'this' is the button component
+        var is_press = this.isPress(channel, control, value, status);
+        this.is_pressed = is_press;
 
-        if (this.other.inGetValue() > 0.0 && this.isPress(channel, control, value, status)) {
-            // Both pitch buttons pressed -> toggle keylock
-            script.toggleControl(this.group, "keylock");
-        } else {
-            // Normal pitch bending
-            components.Button.prototype.input.call(this, channel, control, value, status, group);
+        if (is_press) {
+            if (this.other.is_pressed) {
+                // Second button was pressed, toggle keylock
+                script.toggleControl(this.group, "keylock");
+                // Mark both as having performed a keylock action to handle release correctly
+                this.keylock_action = true;
+                this.other.keylock_action = true;
+            } else {
+                // This is the first button pressed, perform standard/shifted action
+                engine.setValue(this.group, this.inKey, 1);
+            }
+        } else { // button release
+            if (this.keylock_action) {
+                // This button was part of a keylock toggle.
+                // On release, just reset its flag.
+                this.keylock_action = false;
+            } else {
+                // This button was used for its primary/shifted action.
+                engine.setValue(this.group, this.inKey, 0);
+            }
         }
     };
 
     this.pitch_bend_up = new components.Button({
         inKey: 'rate_temp_up',
-        input: pitch_or_keylock,
+        input: pitch_button_handler,
+        shift: function () { this.inKey = 'pitch_up'; },
+        unshift: function () { this.inKey = 'rate_temp_up'; },
     });
 
     this.pitch_bend_down = new components.Button({
         inKey: 'rate_temp_down',
-        input: pitch_or_keylock,
+        input: pitch_button_handler,
+        shift: function () { this.inKey = 'pitch_down'; },
+        unshift: function () { this.inKey = 'rate_temp_down'; },
     });
 
     this.pitch_bend_up.other = this.pitch_bend_down;
