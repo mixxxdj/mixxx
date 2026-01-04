@@ -465,10 +465,9 @@ QVariant BaseTrackTableModel::data(
     if (role == kTuningFrequencyRole) {
         const auto field = mapColumn(index.column());
         if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
-            TrackPointer pTrack = getTrack(index);
-            if (pTrack) {
-                return pTrack->getTuningFrequencyHz();
-            }
+            return rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY);
         }
         return QVariant();
     }
