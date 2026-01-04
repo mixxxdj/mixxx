@@ -125,8 +125,7 @@ Keys KeyFactory::makePreferredKeys(
         const KeyChangeList& key_changes,
         const QHash<QString, QString>& extraVersionInfo,
         const mixxx::audio::SampleRate sampleRate,
-        SINT totalFrames,
-        double tuningFrequencyHz) {
+        SINT totalFrames) {
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
@@ -151,7 +150,6 @@ Keys KeyFactory::makePreferredKeys(
                 global_key, KeyUtils::KeyNotation::ID3v2);
         key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
-        key_map.set_global_tuning_frequency_hz(tuningFrequencyHz);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
         return keys;
