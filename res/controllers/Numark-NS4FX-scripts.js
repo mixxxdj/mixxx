@@ -181,7 +181,6 @@ NS4FX.testMidi = function(status, control, value) {
 NS4FX.init = function (id, debug) {
     NS4FX.debug = debug;
     NS4FX.dbg("NS4FX.init started.");
-    NS4FX.midiTestCounter = 0x08; // Starting note for our test
 
     NS4FX.id = id;
 
@@ -487,8 +486,8 @@ NS4FX.shutdown = function () {
         midi.sendShortMsg(0x80 | i, 0x0D, 0x00);
 
         // turn off bpm arrows
-        midi.sendShortMsg(0x80 | i, 0x0A, 0x00); // up arrow off
-        midi.sendShortMsg(0x80 | i, 0x09, 0x00); // down arrow off
+        midi.sendShortMsg(0x80 | i, 0x0A, 0x00); // down arrow off
+        midi.sendShortMsg(0x80 | i, 0x09, 0x00); // up arrow off
 
         // turn off slip indicator
         midi.sendShortMsg(0x80 | i, 0x0F, 0x00);
@@ -805,31 +804,25 @@ NS4FX.Deck = function (number, midi_chan) {
         },
         input: function (channel, control, value, status, group) {
             // MIDI Test Mode: Deck 1, Shift + Play press
+            // Pitch Display Test Mode: Deck 1, Shift + Play press
             if (deck.number === 1 && NS4FX.shift && this.isPress(channel, control, value, status)) {
-                // Turn off the previously tested LED to avoid confusion
-                var prevNote = (NS4FX.midiTestCounter === 0x08) ? 0x10 : NS4FX.midiTestCounter - 1;
-                NS4FX.testMidi(0x80, prevNote, 0x00);
-
-                NS4FX.dbg("--- MIDI TEST MODE ---");
-                NS4FX.testMidi(0x90, NS4FX.midiTestCounter, 0x7F);
-
-                // Move to the next note for the next press
-                NS4FX.midiTestCounter++;
-                if (NS4FX.midiTestCounter > 0x10) {
-                    NS4FX.midiTestCounter = 0x08; // Loop back to the start
-                }
+                NS4FX.dbg("--- PITCH DISPLAY TEST MODE ---");
+                // The "199.9%" error suggests the data packet was the wrong size.
+                // After reverting that, let's test a non-zero value to see if the display updates.
+                // We'll send 10, which should correspond to "1.0%".
+                NS4FX.sendRawPitchValue(1, 0.105);
                 return; // Prevent the default play/stutter action
             }
 
             if (this.isShifted) {
-                // Shift-Modus Logik
+                // Shift-mode logic
                 if (value === 0x7F) {
                     engine.setValue(group, "play_stutter", 1);
                 } else {
                     engine.setValue(group, "play_stutter", 0);
                 }
             } else {
-                // Normaler Modus Logik
+                // Normal mode logic
                 if (value === 0x7F) {
                     if (hotcuePressed) {
                         playPressedDuringHotcue = true;
@@ -1681,19 +1674,25 @@ NS4FX.BrowseKnob = function () {
 NS4FX.BrowseKnob.prototype = new components.ComponentContainer();
 
 NS4FX.encodeNumToArray = function (number) {
+    var isNegative = number < 0;
+    // The controller expects a custom sign-magnitude format, not standard two's complement.
+    // We work with the absolute value for the magnitude part.
+    var absNumber = isNegative ? -number : number;
+
     var number_array = [
-        (number >> 28) & 0x0F,
-        (number >> 24) & 0x0F,
-        (number >> 20) & 0x0F,
-        (number >> 16) & 0x0F,
-        (number >> 12) & 0x0F,
-        (number >> 8) & 0x0F,
-        (number >> 4) & 0x0F,
-        number & 0x0F,
+        (absNumber >> 28) & 0x0F,
+        (absNumber >> 24) & 0x0F,
+        (absNumber >> 20) & 0x0F,
+        (absNumber >> 16) & 0x0F,
+        (absNumber >> 12) & 0x0F,
+        (absNumber >> 8) & 0x0F,
+        (absNumber >> 4) & 0x0F,
+        absNumber & 0x0F,
     ];
 
-    if (number < 0) number_array[0] = 0x07;
-    else number_array[0] = 0x08;
+    // Manually set the first nibble to indicate the sign.
+    if (isNegative) number_array[0] = 0x07; // Sign nibble for negative
+    else number_array[0] = 0x08; // Sign nibble for positive
 
     return number_array;
 };
@@ -1727,6 +1726,23 @@ NS4FX.sendScreenBpmMidi = function (deck, bpm) {
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x01];
     var bytePostfix = [0xF7];
     var byteArray = bytePrefix.concat(bpmArray, bytePostfix);
+    midi.sendSysexMsg(byteArray, byteArray.length);
+};
+
+NS4FX.sendRawPitchValue = function (deck, rawValue) {
+    NS4FX.dbg("Sending raw pitch value " + rawValue + " to deck " + deck);
+    var pitchArray = NS4FX.encodeNumToArray(rawValue);
+    // You were right. Getting an error message is better than no response, which confirms
+    // that the shorter message format (like the one for the BPM display) is the correct one.
+    // The error is likely due to the value, not the message structure.
+    pitchArray.shift();
+    pitchArray.shift();
+
+    // The other working screen functions use a 1-indexed deck number.
+    // Using a 0-indexed number was causing conflicts with other displays.
+    var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x02]; // 0x02 for Pitch
+    var bytePostfix = [0xF7];
+    var byteArray = bytePrefix.concat(pitchArray, bytePostfix);
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
@@ -2043,8 +2059,8 @@ NS4FX.vuCallback = function (value, group, control) {
 
 NS4FX.setArrow = function(deckNumber, direction) {
     var midi_chan = NS4FX.decks[deckNumber].midi_chan;
-    var upArrowNote = 0x0A;
-    var downArrowNote = 0x09;
+    var upArrowNote = 0x09;
+    var downArrowNote = 0x0A;
 
     // Turn both arrows off first to ensure a clean state
     midi.sendShortMsg(0x80 | midi_chan, upArrowNote, 0x00);
@@ -2060,11 +2076,17 @@ NS4FX.setArrow = function(deckNumber, direction) {
 NS4FX.updateBpmArrows = function(deckNumber) {
     var oppositeDeckNumber;
     // Determine the opposite deck for BPM comparison
-    if (deckNumber === 1) oppositeDeckNumber = 2;
-    else if (deckNumber === 2) oppositeDeckNumber = 1;
-    else if (deckNumber === 3) oppositeDeckNumber = 4;
-    else if (deckNumber === 4) oppositeDeckNumber = 3;
-    else return; // Should not happen
+    if (deckNumber === 1) {
+        oppositeDeckNumber = 2;
+    } else if (deckNumber === 2) {
+        oppositeDeckNumber = 1;
+    } else if (deckNumber === 3) {
+        oppositeDeckNumber = 4;
+    } else if (deckNumber === 4) {
+        oppositeDeckNumber = 3;
+    } else {
+        return; // Should not happen
+    }
 
     var deckGroup = '[Channel' + deckNumber + ']';
     var oppositeDeckGroup = '[Channel' + oppositeDeckNumber + ']';
@@ -2078,11 +2100,18 @@ NS4FX.updateBpmArrows = function(deckNumber) {
         return;
     }
 
-    var tolerance = 0.01; // A small tolerance to avoid flickering when BPMs are very close
-    if (deckBpm < oppositeDeckBpm - tolerance) {
-        NS4FX.setArrow(deckNumber, 'up');
-    } else if (deckBpm > oppositeDeckBpm + tolerance) {
-        NS4FX.setArrow(deckNumber, 'down');
+    var roundedDeckBpm = Math.round(deckBpm * 10) / 10;
+    var roundedOppositeDeckBpm = Math.round(oppositeDeckBpm * 10) / 10;
+
+    // A rate_dir of -1.0 means "down" on the pitch slider increases the track's speed (BPM).
+    var downIncreasesSpeed = (engine.getValue(deckGroup, 'rate_dir') === -1.0);
+
+    if (roundedDeckBpm < roundedOppositeDeckBpm) {
+        // We need to increase BPM
+        NS4FX.setArrow(deckNumber, downIncreasesSpeed ? 'down' : 'up');
+    } else if (roundedDeckBpm > roundedOppositeDeckBpm) {
+        // We need to decrease BPM
+        NS4FX.setArrow(deckNumber, downIncreasesSpeed ? 'up' : 'down');
     } else {
         NS4FX.setArrow(deckNumber, 'off');
     }
