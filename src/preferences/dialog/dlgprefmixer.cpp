@@ -113,6 +113,8 @@ void DlgXfaderCurve::show(bool autoHide) {
         m_hideTimer.start();
     }
 
+    // If we've already moved the window we don't center it on the screen again
+    // in order to keep the previous position.
     if (m_moved) {
         return;
     }
@@ -126,7 +128,8 @@ void DlgXfaderCurve::show(bool autoHide) {
     const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
     QRect screenGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
-        qWarning() << "Assuming screen size of 800x600px.";
+        qWarning() << "DlgXfaderCurve: No screen could be found. "
+                      "Assuming screen size of 800x600px.";
         screenGeometry = QRect(0, 0, 800, 600);
     }
     else {
@@ -1030,8 +1033,6 @@ void DlgPrefMixer::drawXfaderDisplay() {
         m_pxfScene = make_parented<QGraphicsScene>(this);
         // The size of the QGraphicsView doesn't change so we need to do this only once
         graphicsViewXfader->setLineWidth(1); // frame width
-        // int sizeX = graphicsViewXfader->width() - 2;
-        // int sizeY = graphicsViewXfader->height() - 2;
         m_pxfScene->setSceneRect(0, 0, sizeX, sizeY);
         m_pxfScene->setBackgroundBrush(Qt::black);
         graphicsViewXfader->setRenderHints(QPainter::Antialiasing);
@@ -1119,6 +1120,9 @@ void DlgPrefMixer::drawXfaderDisplay() {
 
 void DlgPrefMixer::showXfaderCurvePopup(bool autoHide) {
     if (m_pDlgXfaderCurve.get() == nullptr) {
+        VERIFY_OR_DEBUG_ASSERT(m_pxfScene) {
+            return;
+        }
         m_pDlgXfaderCurve = make_parented<DlgXfaderCurve>(this);
         m_pDlgXfaderCurve->setScene(m_pxfScene);
     }

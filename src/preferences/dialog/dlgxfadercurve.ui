@@ -63,6 +63,8 @@
      </widget>
     </item>
 
+    <!-- invisible overlay that makes catching mouse events much easier than
+         with the complex QGraphicsView/QGraphicsScene mouse event handling-->
     <item row="0" column="0">
      <widget class="QWidget" name="mouseCatcher">
       <property name="sizePolicy">
