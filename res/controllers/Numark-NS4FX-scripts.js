@@ -173,9 +173,15 @@ NS4FX.dbg = function (str) {
     }
 };
 
+NS4FX.testMidi = function(status, control, value) {
+    midi.sendShortMsg(status, control, value);
+    NS4FX.dbg("Sent test MIDI: status=" + status.toString(16) + ", control=" + control.toString(16) + ", value=" + value.toString(16));
+};
+
 NS4FX.init = function (id, debug) {
     NS4FX.debug = debug;
     NS4FX.dbg("NS4FX.init started.");
+    NS4FX.midiTestCounter = 0x08; // Starting note for our test
 
     NS4FX.id = id;
 
@@ -362,10 +368,6 @@ NS4FX.init = function (id, debug) {
         // keylock indicator
         led(group, 'keylock', i, 0x0D);
 
-        // turn off bpm arrows
-        midi.sendShortMsg(0x80 | i, 0x0A, 0x00); // down arrow off
-        midi.sendShortMsg(0x80 | i, 0x09, 0x00); // up arrow off
-
         // slip indicator
         led(group, 'slip_enabled', i, 0x0F);
 
@@ -400,6 +402,22 @@ NS4FX.init = function (id, debug) {
     engine.makeUnbufferedConnection("[Channel4]", "vu_meter_right", NS4FX.vuCallback);
     engine.makeUnbufferedConnection("[Main]", "vu_meter_left", NS4FX.vuCallback);
     engine.makeUnbufferedConnection("[Main]", "vu_meter_right", NS4FX.vuCallback);
+
+    // setup bpm arrow tracking
+    for (var i = 1; i <= 4; i++) {
+        (function(deckNum) {
+            engine.makeConnection('[Channel' + deckNum + ']', 'bpm', function(value) {
+                // When a deck's BPM changes, update its arrows and its opposite's arrows.
+                NS4FX.updateBpmArrows(deckNum);
+                var oppositeDeckNum;
+                if (deckNum === 1) oppositeDeckNum = 2;
+                else if (deckNum === 2) oppositeDeckNum = 1;
+                else if (deckNum === 3) oppositeDeckNum = 4;
+                else if (deckNum === 4) oppositeDeckNum = 3;
+                NS4FX.updateBpmArrows(oppositeDeckNum);
+            });
+        })(i);
+    }
 
     // object to hold left and right VU levels for each channel
     NS4FX.vu_levels = {};
@@ -469,8 +487,8 @@ NS4FX.shutdown = function () {
         midi.sendShortMsg(0x80 | i, 0x0D, 0x00);
 
         // turn off bpm arrows
-        midi.sendShortMsg(0x80 | i, 0x0A, 0x00); // down arrow off
-        midi.sendShortMsg(0x80 | i, 0x09, 0x00); // up arrow off
+        midi.sendShortMsg(0x80 | i, 0x0A, 0x00); // up arrow off
+        midi.sendShortMsg(0x80 | i, 0x09, 0x00); // down arrow off
 
         // turn off slip indicator
         midi.sendShortMsg(0x80 | i, 0x0F, 0x00);
@@ -786,6 +804,23 @@ NS4FX.Deck = function (number, midi_chan) {
             this.type = components.Button.prototype.types.push;
         },
         input: function (channel, control, value, status, group) {
+            // MIDI Test Mode: Deck 1, Shift + Play press
+            if (deck.number === 1 && NS4FX.shift && this.isPress(channel, control, value, status)) {
+                // Turn off the previously tested LED to avoid confusion
+                var prevNote = (NS4FX.midiTestCounter === 0x08) ? 0x10 : NS4FX.midiTestCounter - 1;
+                NS4FX.testMidi(0x80, prevNote, 0x00);
+
+                NS4FX.dbg("--- MIDI TEST MODE ---");
+                NS4FX.testMidi(0x90, NS4FX.midiTestCounter, 0x7F);
+
+                // Move to the next note for the next press
+                NS4FX.midiTestCounter++;
+                if (NS4FX.midiTestCounter > 0x10) {
+                    NS4FX.midiTestCounter = 0x08; // Loop back to the start
+                }
+                return; // Prevent the default play/stutter action
+            }
+
             if (this.isShifted) {
                 // Shift-Modus Logik
                 if (value === 0x7F) {
@@ -2003,6 +2038,53 @@ NS4FX.vuCallback = function (value, group, control) {
             var midiChan = 0xB0 + NS4FX.decks[deckNum].midi_chan;
             midi.sendShortMsg(midiChan, 0x1F, level);
         }
+    }
+};
+
+NS4FX.setArrow = function(deckNumber, direction) {
+    var midi_chan = NS4FX.decks[deckNumber].midi_chan;
+    var upArrowNote = 0x0A;
+    var downArrowNote = 0x09;
+
+    // Turn both arrows off first to ensure a clean state
+    midi.sendShortMsg(0x80 | midi_chan, upArrowNote, 0x00);
+    midi.sendShortMsg(0x80 | midi_chan, downArrowNote, 0x00);
+
+    if (direction === 'up') {
+        midi.sendShortMsg(0x90 | midi_chan, upArrowNote, 0x7F);
+    } else if (direction === 'down') {
+        midi.sendShortMsg(0x90 | midi_chan, downArrowNote, 0x7F);
+    }
+};
+
+NS4FX.updateBpmArrows = function(deckNumber) {
+    var oppositeDeckNumber;
+    // Determine the opposite deck for BPM comparison
+    if (deckNumber === 1) oppositeDeckNumber = 2;
+    else if (deckNumber === 2) oppositeDeckNumber = 1;
+    else if (deckNumber === 3) oppositeDeckNumber = 4;
+    else if (deckNumber === 4) oppositeDeckNumber = 3;
+    else return; // Should not happen
+
+    var deckGroup = '[Channel' + deckNumber + ']';
+    var oppositeDeckGroup = '[Channel' + oppositeDeckNumber + ']';
+
+    var deckBpm = engine.getValue(deckGroup, 'bpm');
+    var oppositeDeckBpm = engine.getValue(oppositeDeckGroup, 'bpm');
+
+    // Don't show arrows if either deck has no track loaded (bpm is 0 or null)
+    if (!deckBpm || !oppositeDeckBpm) {
+        NS4FX.setArrow(deckNumber, 'off');
+        return;
+    }
+
+    var tolerance = 0.01; // A small tolerance to avoid flickering when BPMs are very close
+    if (deckBpm < oppositeDeckBpm - tolerance) {
+        NS4FX.setArrow(deckNumber, 'up');
+    } else if (deckBpm > oppositeDeckBpm + tolerance) {
+        NS4FX.setArrow(deckNumber, 'down');
+    } else {
+        NS4FX.setArrow(deckNumber, 'off');
     }
 };
 
