@@ -718,6 +718,13 @@ NS4FX.Deck = function (number, midi_chan) {
         },
     });
 
+    this.rate = new components.Component({
+        outKey: "rate",
+        output: function (value, group, control) {
+            NS4FX.sendScreenPitchMidi(deck.number, value);
+        },
+    });
+
     this.duration = new components.Component({
         outKey: "duration",
         output: function (duration, group, control) {
@@ -803,17 +810,6 @@ NS4FX.Deck = function (number, midi_chan) {
             this.type = components.Button.prototype.types.push;
         },
         input: function (channel, control, value, status, group) {
-            // MIDI Test Mode: Deck 1, Shift + Play press
-            // Pitch Display Test Mode: Deck 1, Shift + Play press
-            if (deck.number === 1 && NS4FX.shift && this.isPress(channel, control, value, status)) {
-                NS4FX.dbg("--- PITCH DISPLAY TEST MODE ---");
-                // The "199.9%" error suggests the data packet was the wrong size.
-                // After reverting that, let's test a non-zero value to see if the display updates.
-                // We'll send 10, which should correspond to "1.0%".
-                NS4FX.sendRawPitchValue(1, 0.105);
-                return; // Prevent the default play/stutter action
-            }
-
             if (this.isShifted) {
                 // Shift-mode logic
                 if (value === 0x7F) {
@@ -1729,22 +1725,46 @@ NS4FX.sendScreenBpmMidi = function (deck, bpm) {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-NS4FX.sendRawPitchValue = function (deck, rawValue) {
-    NS4FX.dbg("Sending raw pitch value " + rawValue + " to deck " + deck);
-    var pitchArray = NS4FX.encodeNumToArray(rawValue);
-    // You were right. Getting an error message is better than no response, which confirms
-    // that the shorter message format (like the one for the BPM display) is the correct one.
-    // The error is likely due to the value, not the message structure.
-    pitchArray.shift();
-    pitchArray.shift();
+NS4FX.sendScreenPitchMidi = function (deck, rate) {
+    var downIncreasesSpeed =
+        engine.getValue('[Channel' + deck + ']', 'rate_dir') === -1.0;
+    if (downIncreasesSpeed) {
+        rate = -rate;
+    }
 
-    // The other working screen functions use a 1-indexed deck number.
-    // Using a 0-indexed number was causing conflicts with other displays.
-    var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x02]; // 0x02 for Pitch
+    var rateRange = engine.getValue('[Channel' + deck + ']', 'rateRange');
+    var valueToSend = Math.round(rate * rateRange * 10000);
+
+    NS4FX.dbg(
+        "Sending pitch value " + valueToSend +
+        " (rate: " + rate.toFixed(4) +
+        ", rateRange: " + rateRange.toFixed(2) +
+        ") to deck " + deck
+    );
+
+    // OFFSET-BINARY encoding (this matches the working positive case)
+    var encoded = 0x800000 + valueToSend;
+
+    // keep it 24-bit safe
+    encoded &= 0xFFFFFF;
+
+    var pitchArray = [
+        (encoded >> 20) & 0x0F,
+        (encoded >> 16) & 0x0F,
+        (encoded >> 12) & 0x0F,
+        (encoded >> 8)  & 0x0F,
+        (encoded >> 4)  & 0x0F,
+        encoded         & 0x0F
+    ];
+
+    var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x02];
     var bytePostfix = [0xF7];
     var byteArray = bytePrefix.concat(pitchArray, bytePostfix);
+
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
+
+
 
 NS4FX.elapsedToggle = function () {
 
