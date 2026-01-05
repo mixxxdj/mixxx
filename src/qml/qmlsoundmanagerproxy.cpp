@@ -186,13 +186,14 @@ void QmlSoundManagerProxy::setSampleRate(uint32_t sampleRate) {
 }
 
 QList<uint32_t> QmlSoundManagerProxy::getSampleRates(const QString& filterAPI) const {
-    QList<uint32_t> sampleRates;
-    for (const auto& sampleRate : m_pSoundManager->getSampleRates(filterAPI)) {
+    QList<uint32_t> sampleRatesU32;
+    const QList<mixxx::audio::SampleRate> sampleRates = m_pSoundManager->getSampleRates(filterAPI);
+    for (const auto& sampleRate : sampleRates) {
         if (sampleRate.isValid()) {
-            sampleRates.append(sampleRate);
+            sampleRatesU32.append(sampleRate);
         }
     }
-    return sampleRates;
+    return sampleRatesU32;
 }
 
 bool QmlSoundManagerProxy::getForceNetworkClock() const {
