@@ -122,23 +122,23 @@ QList<QString> QmlSoundManagerProxy::getHostAPIList() const {
 }
 
 QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableInputDevices(const QString& filterAPI) {
-    QList<QmlSoundDeviceProxy*> devices;
-
-    for (const auto& device : m_pSoundManager->getDeviceList(filterAPI, false, true)) {
-        devices.push_back(make_qml_owned<QmlSoundInputDeviceProxy>(device, this));
+    QList<QmlSoundDeviceProxy*> devicesQml;
+    const QList<SoundDevicePointer> devices =
+            m_pSoundManager->getDeviceList(filterAPI, false, true);
+    for (const auto& device : devices) {
+        devicesQml.push_back(make_qml_owned<QmlSoundInputDeviceProxy>(device, this));
     }
-
-    return devices;
+    return devicesQml;
 }
 
 QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableOutputDevices(const QString& filterAPI) {
-    QList<QmlSoundDeviceProxy*> devices;
-
-    for (const auto& device : m_pSoundManager->getDeviceList(filterAPI, true, false)) {
-        devices.push_back(make_qml_owned<QmlSoundOutputDeviceProxy>(device, this));
+    QList<QmlSoundDeviceProxy*> devicesQml;
+    const QList<SoundDevicePointer> devices =
+            m_pSoundManager->getDeviceList(filterAPI, true, false);
+    for (const auto& device : devices) {
+        devicesQml.push_back(make_qml_owned<QmlSoundOutputDeviceProxy>(device, this));
     }
-
-    return devices;
+    return devicesQml;
 }
 
 QList<EngineBuffer::KeylockEngine> QmlSoundManagerProxy::getKeylockEngines() const {
