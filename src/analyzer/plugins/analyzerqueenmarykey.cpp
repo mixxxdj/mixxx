@@ -75,7 +75,7 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
                     return false;
                 }
                 const auto key = static_cast<ChromaticKey>(iKey);
-                if (key != m_prevKey) {
+                if (key != m_prevKey || m_resultKeys.isEmpty()) {
                     // TODO(rryan) reserve?
                     m_resultKeys.push_back({key,
                             tuningFrequencyHz,
