@@ -735,7 +735,9 @@ NS4FX.Deck = function (number, midi_chan) {
             // The display expects a "Note On" message on the deck's channel with note 0x0E.
             // The velocity is the pitch range percentage (e.g., 8 for 8%).
             // This was discovered by studying the Numark-NS6II-scripts.js file.
-            var valueToSend = Math.round(value * 100);
+            // The 2-digit display can only show up to 99. We cap it here to prevent overflow.
+            var valueToSend = Math.min(99, Math.round(value * 100));
+            NS4FX.dbg("Updating rateRange display for deck " + deck.number + " to " + valueToSend + "%");
             midi.sendShortMsg(0x90 + deck.midi_chan, 0x0E, valueToSend);
         }
     });
@@ -1172,7 +1174,41 @@ NS4FX.Deck = function (number, midi_chan) {
     this.hotcues = new components.ComponentContainer();
     this.pitch = new components.Pot({
         inKey: 'rate',
-        invert: true,
+        outMin: -1,
+        outMax: 1,
+        inSetParameter: function (value) {
+            // 'value' is the normalized (0-1) value from the MIDI input.
+            var processedValue = 1 - value;
+
+            var calculatedValue = this.outMin + processedValue * (this.outMax - this.outMin);
+
+            if (this.inKey === 'rateRange') {
+                var originalCalculatedValue = calculatedValue;
+                // Round to nearest integer percentage for the Mixxx GUI and controller display.
+                calculatedValue = Math.round(calculatedValue * 100) / 100;
+                NS4FX.dbg(
+                    "Setting rateRange for " + this.group +
+                    ". Input: " + value.toFixed(4) +
+                    ", Inverted: " + processedValue.toFixed(4) +
+                    ", Calculated: " + originalCalculatedValue.toFixed(4) +
+                    ", Rounded: " + calculatedValue.toFixed(2)
+                );
+            }
+
+            engine.setValue(this.group, this.inKey, calculatedValue);
+        },
+        shift: function () {
+            this.inKey = 'rateRange';
+            this.outMin = 0.04;
+            this.outMax = 0.90;
+        },
+        unshift: function () {
+            this.inKey = 'rate';
+            this.outMin = -1;
+            this.outMax = 1;
+            // engine.softTakeover(this.group, 'rateRange', false);
+            engine.softTakeover(this.group, 'rate', true);
+        }
     });
     if (!this.active) {
         this.pitch.firstValueReceived = true;
