@@ -287,7 +287,8 @@ TreeItem* RhythmboxFeature::importPlaylists() {
 QString RhythmboxFeature::maybeDatabaseFolder(void) {
     const QStringList paths = {
             QDir::homePath() + "/.gnome2/rhythmbox/",
-            QDir::homePath() + "/.local/share/rhythmbox/"};
+            QDir::homePath() + "/.local/share/rhythmbox/",
+            QDir::homePath() + "/.var/app/org.gnome.Rhythmbox3/data/rhythmbox/"};
 
     for (const auto& path : paths) {
         if (QDir(path).exists()) {
