@@ -7,13 +7,6 @@
 /* global midi                                                        */
 // //////////////////////////////////////////////////////////////////////
 
-//TODO tbazant: introduce control for slip mode: just on/off
-//TODO tbazant: introduce control for loop roll: shift+loop creates the loop and turns slip mode on, after the loop is left, the slip mode is over
-//TODO tbazant: introduce control for modifying pitchRange: shift + pitch slider changes the range from 4% to 90% with steps
-//TODO tbazant: improve SYNC control: press should just sync and hold shouls make a leader
-//TODO tbazant: improve performance and transport buttons illimintion
-//TODO tbazant: consider modifying individual effects parameter1
-
 /******************
  * CONFIG OPTIONS *
  ******************/
@@ -896,12 +889,54 @@ NS4FX.Deck = function (number, midi_chan) {
         this.transport_pad_4_hotcue.connect();
     }
 
-    this.sync_button = new components.SyncButton({
+    this.sync_button = new components.Button({
         midi: [0x90 + midi_chan, 0x02],
         off: 0x01,
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 1,
+        outKey: 'sync_enabled',
+        longPressTimeout: 400, // A longer timeout to make short presses easier to perform.
+        longPressTimer: null,
+        isPress: function(channel, control, value, status) {
+            // A press is a Note On (0x90-0x9F) with velocity > 0.
+            // A release is a Note Off (0x80-0x8F) or Note On with velocity 0.
+            return (status & 0xF0) === 0x90 && value > 0;
+        },
+        unshift: function () {
+            // Custom input handler for short-press (beatsync) and long-press (sync lock)
+            this.input = function (channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status)) {
+                    // On press, start a timer to detect a long press
+                    NS4FX.dbg("Sync press on " + group + ". Starting timer.");
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
+                        // Timer fired: this is a long press. Toggle sync lock.
+                        NS4FX.dbg("Sync long press on " + group + ", toggling sync lock.");
+                        script.toggleControl(group, "sync_enabled");
+                        this.longPressTimer = null; // Mark timer as fired
+                    }, true); // one-shot timer
+                } else {
+                    // On release, check if it was a short press
+                    NS4FX.dbg("Sync release on " + group + ".");
+                    if (this.longPressTimer) {
+                        // Timer was still running, so it was a short press.
+                        NS4FX.dbg("Timer still active, this was a short press.");
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = null;
+                        // Perform a one-shot BPM/beat sync.
+                        engine.setValue(group, "beatsync", 1);
+                    } else {
+                        NS4FX.dbg("Timer already fired, long press action was taken.");
+                    }
+                }
+            };
+        },
+        shift: function () {
+            // Default shift behavior is to toggle quantize
+            this.inKey = "quantize";
+            this.type = components.Button.prototype.types.toggle;
+            this.input = components.Button.prototype.input;
+        },
     });
 
     this.pfl_button = new components.Button({
