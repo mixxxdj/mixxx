@@ -110,7 +110,15 @@ double getGaussianPeak(double* pChromaBuffer, int peakBin) {
     if (denom == 0) {
         return peakBin;
     }
-    return peakBin + (y0 - y2) / (2 * denom);
+    double gausianPeak = peakBin + (y0 - y2) / (2 * denom);
+
+    // Handle under and overflow for [-0.5...35.5[
+    if (gausianPeak < -0.5) {
+        gausianPeak+= kBinsPerOctave;
+    } else if (gausianPeak >= kBinsPerOctave - 0.5) {
+        gausianPeak -= kBinsPerOctave;
+    }
+    return gausianPeak;
 }
 
 } // namespace

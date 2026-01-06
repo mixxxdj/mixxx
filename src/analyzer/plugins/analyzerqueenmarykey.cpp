@@ -63,6 +63,7 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
     return m_helper.initialize(
             windowSize, stepSize, [this](double* pWindow, size_t) {
                 double dKey = m_pKeyMode->process(pWindow);
+                // dKey is [-0.5...12.5[ / [12.5...24.5[
                 int iKey = static_cast<int>(dKey + 0.5);
 
                 double tuningFrequencyHz = centsToTuningFrequencyHz(dKey - iKey);
