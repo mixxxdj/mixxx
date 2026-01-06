@@ -112,8 +112,8 @@ RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& playlist_name) 
 }
 
 bool RhythmboxFeature::isSupported() {
-    return (QFile::exists(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml") ||
-            QFile::exists(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml"));
+    auto path = RhythmboxFeature::maybeDatabaseFilePath();
+    return !path.isEmpty();
 }
 
 QVariant RhythmboxFeature::title() {
@@ -156,16 +156,14 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
 
 TreeItem* RhythmboxFeature::importMusicCollection() {
     qDebug() << "importMusicCollection Thread Id: " << QThread::currentThread();
-     // Try and open the Rhythmbox DB. An API call which tells us where
-     // the file is would be nice.
-    QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
-    if (!db.exists()) {
-        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
-        if (!db.exists()) {
-            return nullptr;
-        }
+    // Try and open the Rhythmbox DB. An API call which tells us where
+    // the file is would be nice.
+    auto db_path = RhythmboxFeature::maybeDatabaseFilePath();
+    if (db_path.isEmpty()) {
+        return nullptr;
     }
 
+    QFile db(db_path);
     mixxx::FileInfo fileInfo(db);
     if (!Sandbox::askForAccess(&fileInfo) ||
             !db.open(QIODevice::ReadOnly)) {
@@ -217,14 +215,14 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
 }
 
 TreeItem* RhythmboxFeature::importPlaylists() {
-    QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
-    if (!db.exists()) {
-        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
-        if (!db.exists()) {
-            return nullptr;
-        }
+    // Finds playlist file if it exists
+    auto playlists_path = RhythmboxFeature::maybePlaylistsFilePath();
+    if (playlists_path.isEmpty()) {
+        return nullptr;
     }
-    //Open file
+
+    // Open file
+    QFile db(playlists_path);
     if (!db.open(QIODevice::ReadOnly)) {
         return nullptr;
     }
@@ -284,6 +282,46 @@ TreeItem* RhythmboxFeature::importPlaylists() {
     db.close();
 
     return rootItem.release();
+}
+
+QString RhythmboxFeature::maybeDatabaseFolder(void) {
+    const QStringList paths = {
+            QDir::homePath() + "/.gnome2/rhythmbox/",
+            QDir::homePath() + "/.local/share/rhythmbox/"};
+
+    for (const auto& path : paths) {
+        if (QDir(path).exists()) {
+            return path;
+        }
+    }
+
+    return "";
+}
+
+QString RhythmboxFeature::maybeDatabaseFilePath(void) {
+    QString path = RhythmboxFeature::maybeDatabaseFolder();
+    if (!path.isEmpty()) {
+        path += "rhythmdb.xml";
+
+        if (QFile::exists(path)) {
+            return path;
+        }
+    }
+
+    return "";
+}
+
+QString RhythmboxFeature::maybePlaylistsFilePath(void) {
+    QString path = RhythmboxFeature::maybeDatabaseFolder();
+    if (!path.isEmpty()) {
+        path += "playlists.xml";
+
+        if (QFile::exists(path)) {
+            return path;
+        }
+    }
+
+    return "";
 }
 
 void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
