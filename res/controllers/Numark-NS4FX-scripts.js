@@ -7,6 +7,12 @@
 /* global midi                                                        */
 // //////////////////////////////////////////////////////////////////////
 
+//TODO tbazant: introduce control for slip mode: just on/off
+//TODO tbazant: introduce control for loop roll: shift+loop creates the loop and turns slip mode on, after the loop is left, the slip mode is over
+//TODO tbazant: introduce control for modifying pitchRange: shift + pitch slider changes the range from 4% to 90% with steps
+//TODO tbazant: improve SYNC control: press should just sync and hold shouls make a leader
+//TODO tbazant: improve performance and transport buttons illimintion
+//TODO tbazant: consider modifying individual effects parameter1
 
 /******************
  * CONFIG OPTIONS *
@@ -173,7 +179,7 @@ NS4FX.dbg = function (str) {
     }
 };
 
-NS4FX.testMidi = function(status, control, value) {
+NS4FX.testMidi = function (status, control, value) {
     midi.sendShortMsg(status, control, value);
     NS4FX.dbg("Sent test MIDI: status=" + status.toString(16) + ", control=" + control.toString(16) + ", value=" + value.toString(16));
 };
@@ -404,8 +410,8 @@ NS4FX.init = function (id, debug) {
 
     // setup bpm arrow tracking
     for (var i = 1; i <= 4; i++) {
-        (function(deckNum) {
-            engine.makeConnection('[Channel' + deckNum + ']', 'bpm', function(value) {
+        (function (deckNum) {
+            engine.makeConnection('[Channel' + deckNum + ']', 'bpm', function (value) {
                 // When a deck's BPM changes, update its arrows and its opposite's arrows.
                 NS4FX.updateBpmArrows(deckNum);
                 var oppositeDeckNum;
@@ -639,11 +645,9 @@ NS4FX.EffectUnit = function () {
     this.bpmTap = new components.Button({
         shifted: false,
         shift: function () {
-            NS4FX.dbg("bpmTap shift");
             this.shifted = true;
         },
         unshift: function () {
-            NS4FX.dbg("bpmTap unshift");
             this.shifted = false;
         },
         input: function (channel, control, value, status, group) {
@@ -723,6 +727,17 @@ NS4FX.Deck = function (number, midi_chan) {
         output: function (value, group, control) {
             NS4FX.sendScreenPitchMidi(deck.number, value);
         },
+    });
+
+    this.rateRange = new components.Component({
+        outKey: "rateRange",
+        output: function (value) {
+            // The display expects a "Note On" message on the deck's channel with note 0x0E.
+            // The velocity is the pitch range percentage (e.g., 8 for 8%).
+            // This was discovered by studying the Numark-NS6II-scripts.js file.
+            var valueToSend = Math.round(value * 100);
+            midi.sendShortMsg(0x90 + deck.midi_chan, 0x0E, valueToSend);
+        }
     });
 
     this.duration = new components.Component({
@@ -806,27 +821,22 @@ NS4FX.Deck = function (number, midi_chan) {
             this.type = components.Button.prototype.types.toggle;
         },
         shift: function () {
+            // This was missing a call to the prototype, so `this.isShifted` was never getting set.
+            components.PlayButton.prototype.shift.call(this);
             this.inKey = 'play_stutter';
             this.type = components.Button.prototype.types.push;
         },
         input: function (channel, control, value, status, group) {
-            if (this.isShifted) {
-                // Shift-mode logic
-                if (value === 0x7F) {
-                    engine.setValue(group, "play_stutter", 1);
+            if (this.isPress(channel, control, value, status)) {
+                if (NS4FX.shift) {
+                    engine.setValue(group, 'play_stutter', 1);
+                } else if (hotcuePressed) {
+                    playPressedDuringHotcue = true;
                 } else {
-                    engine.setValue(group, "play_stutter", 0);
+                    engine.setValue(group, 'play', !engine.getValue(group, 'play'));
                 }
-            } else {
-                // Normal mode logic
-                if (value === 0x7F) {
-                    if (hotcuePressed) {
-                        playPressedDuringHotcue = true;
-                    } else {
-                        var currentPlayState = engine.getValue(group, "play");
-                        engine.setValue(group, "play", !currentPlayState);
-                    }
-                }
+            } else if (NS4FX.shift) {
+                engine.setValue(group, 'play_stutter', 0);
             }
         }
     });
@@ -1752,9 +1762,9 @@ NS4FX.sendScreenPitchMidi = function (deck, rate) {
         (encoded >> 20) & 0x0F,
         (encoded >> 16) & 0x0F,
         (encoded >> 12) & 0x0F,
-        (encoded >> 8)  & 0x0F,
-        (encoded >> 4)  & 0x0F,
-        encoded         & 0x0F
+        (encoded >> 8) & 0x0F,
+        (encoded >> 4) & 0x0F,
+        encoded & 0x0F
     ];
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x02];
@@ -1763,7 +1773,6 @@ NS4FX.sendScreenPitchMidi = function (deck, rate) {
 
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
-
 
 
 NS4FX.elapsedToggle = function () {
@@ -2077,7 +2086,7 @@ NS4FX.vuCallback = function (value, group, control) {
     }
 };
 
-NS4FX.setArrow = function(deckNumber, direction) {
+NS4FX.setArrow = function (deckNumber, direction) {
     var midi_chan = NS4FX.decks[deckNumber].midi_chan;
     var upArrowNote = 0x09;
     var downArrowNote = 0x0A;
@@ -2093,7 +2102,7 @@ NS4FX.setArrow = function(deckNumber, direction) {
     }
 };
 
-NS4FX.updateBpmArrows = function(deckNumber) {
+NS4FX.updateBpmArrows = function (deckNumber) {
     var oppositeDeckNumber;
     // Determine the opposite deck for BPM comparison
     if (deckNumber === 1) {
