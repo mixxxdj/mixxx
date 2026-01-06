@@ -2,7 +2,7 @@
 <MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
         <name>Numark NS4FX</name>
-        <author>Erik Puschendorf, Matthew Nicholson, Tomáš Bažant</author>
+        <author>Tomáš Bažant, Erik Puschendorf, Matthew Nicholson</author>
         <description>Numark NS4FX mapping with support for LCD screens and 4 deck playback.</description>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=8863</forums>
     </info>
@@ -26,8 +26,8 @@
     </settings>
     <controller id="NS4FX">
         <scriptfiles>
-            <file functionprefix="" filename="lodash.mixxx.js"/>
-            <file functionprefix="" filename="midi-components-0.0.js"/>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
             <file functionprefix="NS4FX" filename="Numark-NS4FX-scripts.js"/>
         </scriptfiles>
         <controls>
