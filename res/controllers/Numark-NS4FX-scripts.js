@@ -811,28 +811,22 @@ NS4FX.Deck = function (number, midi_chan) {
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 4,
-        unshift: function () {
-            components.PlayButton.prototype.unshift.call(this);
-            this.type = components.Button.prototype.types.toggle;
-        },
-        shift: function () {
-            // This was missing a call to the prototype, so `this.isShifted` was never getting set.
-            components.PlayButton.prototype.shift.call(this);
-            this.inKey = 'play_stutter';
-            this.type = components.Button.prototype.types.push;
-        },
         input: function (channel, control, value, status, group) {
+            NS4FX.dbg("play_button.input called. Shift: " + NS4FX.shift + ", isPress: " + this.isPress(channel, control, value, status));
             if (this.isPress(channel, control, value, status)) {
                 if (NS4FX.shift) {
-                    engine.setValue(group, 'play_stutter', 1);
-                } else if (hotcuePressed) {
-                    playPressedDuringHotcue = true;
+                    NS4FX.dbg("Shift+Play pressed. Toggling slip_enabled for " + group);
+                    script.toggleControl(group, 'slip_enabled');
                 } else {
-                    engine.setValue(group, 'play', !engine.getValue(group, 'play'));
+                    NS4FX.dbg("Play pressed. Handling play/pause for " + group);
+                    if (hotcuePressed) {
+                        playPressedDuringHotcue = true;
+                    } else {
+                        engine.setValue(group, 'play', !engine.getValue(group, 'play'));
+                    }
                 }
-            } else if (NS4FX.shift) {
-                engine.setValue(group, 'play_stutter', 0);
             }
+            // No 'else' block is needed for release, as slip_enabled is a toggle on press.
         }
     });
 
