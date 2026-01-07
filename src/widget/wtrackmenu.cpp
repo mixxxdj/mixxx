@@ -308,7 +308,12 @@ void WTrackMenu::createActions() {
         m_pAddToPreviewDeck = make_parented<QAction>(tr("Preview Deck"), m_pLoadToMenu);
         // currently there is only one preview deck so just map it here.
         QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
-        connect(m_pAddToPreviewDeck, &QAction::triggered, this, [this, previewDeckGroup] { loadSelectionToGroup(previewDeckGroup); });
+        connect(m_pAddToPreviewDeck,
+                &QAction::triggered,
+                this,
+                [this, previewDeckGroup] {
+                    loadSelectionToGroup(previewDeckGroup);
+                });
     }
 
     if (featureIsEnabled(Feature::Remove)) {
@@ -958,7 +963,9 @@ void WTrackMenu::updateMenus() {
                 auto pAction = make_parented<QAction>(tr("Deck %1").arg(i), this);
                 pAction->setEnabled(deckEnabled);
                 m_pDeckMenu->addAction(pAction);
-                connect(pAction, &QAction::triggered, this, [this, deckGroup] { loadSelectionToGroup(deckGroup); });
+                connect(pAction, &QAction::triggered, this, [this, deckGroup] {
+                    loadSelectionToGroup(deckGroup);
+                });
             }
         }
 
@@ -1306,6 +1313,25 @@ const QModelIndexList& WTrackMenu::getTrackIndices() const {
 
 void WTrackMenu::slotOpenInFileBrowser() {
     const auto trackRefs = getTrackRefs();
+    // Warn when opening many files to prevent system hangs
+    constexpr int kMaxFilesToOpenInBrowser = 10;
+    if (getTrackCount() > kMaxFilesToOpenInBrowser) {
+        QMessageBox::StandardButton reply = QMessageBox::question(
+                nullptr,
+                tr("Open Many Files in File Browser"),
+                tr("You are about to open %n files in the file browser. "
+                   "This may slow down or hang your system. "
+                   "Are you sure you want to continue?",
+                        "",
+                        getTrackCount()),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
+        if (reply != QMessageBox::Yes) {
+            return;
+        }
+    }
+
     QStringList locations;
     locations.reserve(trackRefs.size());
     for (const auto& trackRef : trackRefs) {
