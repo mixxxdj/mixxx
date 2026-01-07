@@ -102,6 +102,15 @@ class Track : public QObject {
         return fileInfo.location();
     }
 
+    // Returns absolute path to the file, including the filename.
+    QString getDirectory() const {
+        const auto fileInfo = getFileInfo();
+        if (!fileInfo.hasLocation()) {
+            return {};
+        }
+        return fileInfo.locationPath();
+    }
+
     /// Set the file type
     ///
     /// Returns the old type to allow the caller to report if it has changed.
