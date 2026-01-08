@@ -33,12 +33,15 @@ void KeyDelegate::paintItem(
             Qt::ElideRight,
             columnWidth(index) - rectWidth);
 
-    if (option.state & QStyle::State_Selected) {
-        // This uses selection-color from stylesheet for the text pen:
-        // #LibraryContainer QTableView {
-        //   selection-color: #fff;
-        // }
-        painter->setPen(QPen(option.palette.highlightedText().color()));
+    // This is not picking up the 'missing' or 'played' text color via
+    // ForegroundRole from BaseTrackTableModel::data().
+    // Set the palette colors manually and select the appropriate one.
+    QStyleOptionViewItem opt = option;
+    setTextColor(opt, index);
+    if (opt.state & QStyle::State_Selected) {
+        painter->setPen(QPen(opt.palette.highlightedText().color()));
+    } else {
+        painter->setPen(QPen(opt.palette.text().color()));
     }
 
     painter->drawText(option.rect.x() + rectWidth,
