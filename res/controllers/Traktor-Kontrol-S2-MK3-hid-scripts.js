@@ -5,31 +5,36 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
 /* Traktor Kontrol S2 MK3 HID controller script v1.02                            */
-/* Last modification: December 2025                                              */
+/* Last modification: January 2026                                               */
 /* Author: Michael Schmidt                                                       */
 /* https://github.com/mixxxdj/mixxx/wiki/Native%20Instruments%20Traktor%20Kontrol%20S2%20MK3 */
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 
-// Constant used to scale raw velocity (tick delta / time delta) to the appropriate scratch2 value
+// Constants used to scale raw velocity (tick delta / time delta) to the appropriate scratch2 value.
 const TICKS_PER_REV = 600;
-const JOG_CLOCK_HZ = 100000;
+const JOGWHEEL_CLOCK_HZ = 100000;
 const TARGET_RPM = 33 + 1/3;
-const VELOCITY_TO_SCRATCH = JOG_CLOCK_HZ / (TICKS_PER_REV * TARGET_RPM / 60);
+const VELOCITY_TO_SCRATCH = JOGWHEEL_CLOCK_HZ / (TICKS_PER_REV * TARGET_RPM / 60);
 
-// Script will exit scratching mode after the jogwheel stops moving for this many ms.
-const JOG_STOPPER_TIME = 10;
+// Affects how sensitive jogging/nudging (turning the wheel without touching the top) is.
+// A constant of 0.5 makes jogging/nudging roughly equivalent to scratching.
+const JOG_SENSITIVITY = 0.25;
+const VELOCITY_TO_JOG = VELOCITY_TO_SCRATCH * JOG_SENSITIVITY;
 
-// Script will set scratching velocity to 0 after not receiving jogwheel packets for this many ms.
-const JOG_VELOCITY_RESET_TIME = 10;
+// Interval (ms) at which jog velocity is polled after release to determine whether scratching should stop.
+const JOGWHEEL_STOP_POLL_TIME = 20;
+
+// Interval (ms) at which jog velocity is reduced stepwise after release.
+const JOGWHEEL_DECAY_POLL_TIME = 20;
 
 // Alpha for the jogwheel input's low pass filter.
 // Range: 0-1. Lower = more smoothing.
-const JOG_ALPHA = 0.25;
+const JOGWHEEL_ALPHA = 0.5;
 
 // Threshold for the jogwheel input's dead zone. When the raw velocity is lower than this,
-// the jogwheel is assumed to be stopped, allowing it to change directions or exit scratching mode instantly.
-const JOG_EPSILON = 0.001;
+// the jogwheel is considered to be stopped, allowing it to change directions or exit scratching mode instantly.
+const JOGWHEEL_EPSILON = 0.001;
 
 var TraktorS2MK3 = new function() {
     this.controller = new HIDController();
@@ -54,7 +59,8 @@ var TraktorS2MK3 = new function() {
     this.lastTimestamp = [0, 0];
     this.lastVelocity = [0.0, 0.0];
     this.lastWallClock = [0, 0];
-    this.stopTimerId = [null, null];
+    this.jogStopTimerId = [null, null];
+    this.jogDecayTimerId = [null, null];
 
     // VuMeter
     this.vuLeftConnection = {};
@@ -639,7 +645,14 @@ TraktorS2MK3.samplerPregainHandler = function(field) {
 };
 
 TraktorS2MK3.jogTouchHandler = function(field) {
+    const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
+
     if (field.value > 0) {
+        // Cancel any existing stop timers
+        if (TraktorS2MK3.jogStopTimerId[deckNumber - 1] != null) {
+            engine.stopTimer(TraktorS2MK3.jogStopTimerId[deckNumber - 1]);
+            TraktorS2MK3.jogStopTimerId[deckNumber - 1] = null;
+        }
         engine.setValue(field.group, "scratch2_enable", true);
     } else {
         TraktorS2MK3.jogStopper(field);
@@ -649,38 +662,56 @@ TraktorS2MK3.jogTouchHandler = function(field) {
 // Called after the wheel is released. Stops scratching when the wheel is slow enough, allowing for inertia.
 TraktorS2MK3.jogStopper = function(field) {
     const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
-    if (Math.abs(engine.getValue(field.group, "scratch2")) <= JOG_EPSILON * VELOCITY_TO_SCRATCH) {
+
+    // If the wheel is stopped, exit scratching mode
+    if (Math.abs(engine.getValue(field.group, "scratch2")) <= JOGWHEEL_EPSILON * VELOCITY_TO_SCRATCH) {
         engine.setValue(field.group, "scratch2", 0);
         engine.setValue(field.group, "scratch2_enable", false);
         TraktorS2MK3.lastVelocity[deckNumber - 1] = 0;
+        TraktorS2MK3.jogStopTimerId[deckNumber - 1] = null;
+    // Otherwise, check again after a while
     } else {
-        engine.beginTimer(JOG_STOPPER_TIME, () => TraktorS2MK3.jogStopper(field), true);
+        TraktorS2MK3.jogStopTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_STOP_POLL_TIME, () => TraktorS2MK3.jogStopper(field), true);
     }
 };
 
 TraktorS2MK3.jogHandler = function(field) {
     const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
-    const velocity = VELOCITY_TO_SCRATCH * TraktorS2MK3.wheelVelocity(deckNumber, field.value);
+    const velocity = TraktorS2MK3.wheelVelocity(deckNumber, field.value);
 
     if (engine.getValue(field.group, "scratch2_enable")) {
-        engine.setValue(field.group, "scratch2", velocity);
-        print(engine.getValue(field.group, "scratch2"));
+        engine.setValue(field.group, "scratch2", velocity * VELOCITY_TO_SCRATCH);
 
-        // If it has been a while since the last packet, we need to manually set velocity to 0
-        if (TraktorS2MK3.stopTimerId[deckNumber - 1]) {
-            // Cancel any existing timers
-            engine.stopTimer(TraktorS2MK3.stopTimerId[deckNumber - 1]);
+        // Cancel any existing decay timers
+        if (TraktorS2MK3.jogDecayTimerId[deckNumber - 1] != null) {
+            engine.stopTimer(TraktorS2MK3.jogDecayTimerId[deckNumber - 1]);
+            TraktorS2MK3.jogDecayTimerId[deckNumber - 1] = null;
         }
-
-        TraktorS2MK3.stopTimerId[deckNumber - 1] = engine.beginTimer(JOG_VELOCITY_RESET_TIME, () => {
-            // Stop scratch
-            engine.setValue(field.group, "scratch2", 0);
-            TraktorS2MK3.lastVelocity[deckNumber - 1] = 0;
-            TraktorS2MK3.stopTimerId[deckNumber - 1] = null;
+        // Start timer to manually decay the velocity after a while
+        TraktorS2MK3.jogDecayTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_DECAY_POLL_TIME, () => {
+            TraktorS2MK3.jogDecayer(field);
         }, true);
 
     } else {
-        engine.setValue(field.group, "jog", velocity);
+        engine.setValue(field.group, "jog", velocity * VELOCITY_TO_JOG);
+    }
+};
+
+// Called continuously after jogwheel stops sending packets. Gradually slows the jogwheel.
+TraktorS2MK3.jogDecayer = function(field) {
+    const deckNumber = TraktorS2MK3.controller.resolveDeck(field.group);
+
+    // If wheel is slow enough, immediately set scratch2 to 0
+    if (Math.abs(engine.getValue(field.group, "scratch2")) <= JOGWHEEL_EPSILON * VELOCITY_TO_SCRATCH) {
+        TraktorS2MK3.lastVelocity[deckNumber - 1] = 0;
+        engine.setValue(field.group, "scratch2", 0);
+        TraktorS2MK3.jogDecayTimerId[deckNumber - 1] = null;
+    // Otherwise, decay the velocity and call itself again after a while
+    } else {
+        const decayedVelocity = TraktorS2MK3.lastVelocity[deckNumber - 1] * (1 - JOGWHEEL_ALPHA);
+        TraktorS2MK3.lastVelocity[deckNumber - 1] = decayedVelocity;
+        engine.setValue(field.group, "scratch2", decayedVelocity * VELOCITY_TO_SCRATCH);
+        TraktorS2MK3.jogDecayTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_DECAY_POLL_TIME, () => TraktorS2MK3.jogDecayer(field), true);
     }
 };
 
@@ -699,7 +730,7 @@ TraktorS2MK3.wheelVelocity = function(deckNumber, value) {
     this.lastTimestamp[deckNumber - 1] = timeval;
     this.lastWallClock[deckNumber - 1] = Date.now();
 
-    // The user hasn't touched the jog wheel for a long time, so the
+    // If the user hasn't touched the jog wheel for a long time, the
     // internal timer may have looped around more than once. We have nothing
     // to go by so return 0
     if (this.lastWallClock[deckNumber - 1] - prevWallClock > 40000) {
@@ -730,16 +761,14 @@ TraktorS2MK3.wheelVelocity = function(deckNumber, value) {
     // Velocity smoothing
     const velocity = tickDelta / timeDelta;
     const prevVelocity = this.lastVelocity[deckNumber - 1];
-    let nextVelocity = 0;
+    let nextVelocity = null;
     // Check if the jogwheel is currently stopped or changing directions.
     // If so, set the velocity to the new value instantly.
-    if (Math.abs(prevVelocity) < JOG_EPSILON) {
-        nextVelocity = velocity;
-    } else if (velocity * prevVelocity < 0) {
+    if ((Math.abs(prevVelocity) < JOGWHEEL_EPSILON) || (velocity * prevVelocity < 0)) {
         nextVelocity = velocity;
     //  Otherwise, smooth the velocity.
     } else {
-        nextVelocity = JOG_ALPHA * velocity + (1 - JOG_ALPHA) * prevVelocity;
+        nextVelocity = JOGWHEEL_ALPHA * velocity + (1 - JOGWHEEL_ALPHA) * prevVelocity;
     }
     this.lastVelocity[deckNumber - 1] = nextVelocity;
 
