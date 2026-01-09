@@ -183,6 +183,11 @@ void DlgPrefBroadcast::slotUpdate() {
     updateModel();
     connectOnApply->setChecked(false);
 
+    // Load auto-record preference
+    bool autoRecord = m_pBroadcastSettings->getValue(ConfigKey(BROADCAST_PREF_KEY,
+            "auto_record_on_live")).toBool();
+    autoRecordOnLive->setChecked(autoRecord);
+
     // Force select an item to have the current selection
     // set to a profile pointer belonging to the model
     selectConnectionRow(0);
@@ -195,6 +200,8 @@ void DlgPrefBroadcast::slotUpdate() {
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
     connectOnApply->setEnabled(!enabled);
+    autoRecordOnLive->setEnabled(!enabled);
+
 
     btnDisconnectAll->setEnabled(enabled);
 }
@@ -213,6 +220,7 @@ void DlgPrefBroadcast::slotApply() {
     if (m_pProfileListSelection) {
         setValuesToProfile(m_pProfileListSelection);
     }
+
 
     // Make sure the currently selected connection gets saved as expected.
     // Reject if the password contains invalid characters.
@@ -283,6 +291,10 @@ void DlgPrefBroadcast::slotApply() {
         connectOnApply->setChecked(false);
     }
 
+    // Save auto-record preference
+    m_pBroadcastSettings->setValue(ConfigKey(BROADCAST_PREF_KEY, "auto_record_on_live"),
+        autoRecordOnLive->isChecked());
+
     // Don't let user modify information if
     // sending is enabled.
     bool enabled = m_pBroadcastEnabled->toBool();
@@ -291,6 +303,8 @@ void DlgPrefBroadcast::slotApply() {
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
     connectOnApply->setEnabled(!enabled);
+    autoRecordOnLive->setEnabled(!enabled);
+
 
     btnDisconnectAll->setEnabled(enabled);
 }
@@ -304,6 +318,8 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     btnRemoveConnection->setEnabled(!enabled);
     btnRenameConnection->setEnabled(!enabled);
     connectOnApply->setEnabled(!enabled);
+    autoRecordOnLive->setEnabled(!enabled);
+
 
     btnDisconnectAll->setEnabled(enabled);
 }

@@ -16,23 +16,23 @@ Item {
             case 0:
                 return "";
             case 1:
-                return "Master BPM";
+                    return "Master BPM";
             case 2:
                 return "BPM";
             case 3:
-                return "Tempo";
+                    return "Tempo";
             case 4:
                 return "BPM Offset";
             case 5:
-                return "Tempo Offset";
+                    return "Tempo Offset";
             case 6:
                 return "Master Deck";
             case 7:
-                return "Tempo Range";
+                    return "Tempo Range";
             case 8:
                 return "Key";
             case 9:
-                return "Original BPM";
+                    return "Original BPM";
         }
     }
 
@@ -41,23 +41,23 @@ Item {
             case 0:
                 return "";
             case 1:
-                return deckInfo.masterBPMShort;
+                    return deckInfo.masterBPMShort;
             case 2:
                 return deckInfo.bpmString;
             case 3:
-                return deckInfo.tempoStringPer;
+                    return deckInfo.tempoStringPer;
             case 4:
                 return (deckInfo.masterDeck == tempoAdjust.deckId) ? "0.00" : deckInfo.bpmOffset;
             case 5:
-                return (deckInfo.masterDeck == tempoAdjust.deckId) ? "0.00%" : deckInfo.tempoNeededString;
+                    return (deckInfo.masterDeck == tempoAdjust.deckId) ? "0.00%" : deckInfo.tempoNeededString;
             case 6:
                 return deckInfo.masterDeckLetter
             case 7:
-                return deckInfo.tempoRange
+                    return deckInfo.tempoRange
             case 8:
                 return deckInfo.hasKey && (deckInfo.keyAdjustString != "-0") && (deckInfo.keyAdjustString != "+0") ? (settings.camelotKey ? utils.camelotConvert(deckInfo.keyString) : deckInfo.keyString) + deckInfo.keyAdjustString : deckInfo.hasKey ? (settings.camelotKey ? utils.camelotConvert(deckInfo.keyString) : deckInfo.keyString) : "No key";
             case 9:
-                return deckInfo.songBPM
+                    return deckInfo.songBPM
         }
     }
 
@@ -66,23 +66,23 @@ Item {
             case 0:
                 return "white";
             case 1:
-                return settings.enableMasterBpmTextColor ? ((deckInfo.masterDeck == deckInfo.deckId) ? colors.loopActiveColor : colors.lightOrange) : "white";
+                    return settings.enableMasterBpmTextColor ? ((deckInfo.masterDeck == deckInfo.deckId) ? colors.loopActiveColor : colors.lightOrange) : "white";
             case 2:
                 return settings.enableBpmTextColor ? ((deckInfo.masterDeck == tempoAdjust.deckId) || ((deckInfo.bpmOffset <= 0.05) && (deckInfo.bpmOffset >= - 0.05)) ? colors.loopActiveColor : colors.lightOrange) : "white";
             case 3:
-                return settings.enableTempoTextColor ? ((deckInfo.tempoString <= 0.05) && (deckInfo.tempoString >= - 0.05) ? colors.loopActiveColor : colors.lightOrange) : "white";
+                    return settings.enableTempoTextColor ? ((deckInfo.tempoString <= 0.05) && (deckInfo.tempoString >= - 0.05) ? colors.loopActiveColor : colors.lightOrange) : "white";
             case 4:
                 return settings.enableBpmOffsetTextColor ? ((deckInfo.masterDeck == tempoAdjust.deckId) || ((deckInfo.bpmOffset <= 0.05) && (deckInfo.bpmOffset >= - 0.05)) ? colors.loopActiveColor : colors.lightOrange) : "white";
             case 5:
-                return settings.enableTempoOffsetTextColor ? ((deckInfo.masterDeck == tempoAdjust.deckId) || ((deckInfo.tempoNeededVal <= 0.05) && (deckInfo.tempoNeededVal >= - 0.05)) ? colors.loopActiveColor : colors.lightOrange) : "white";
+                    return settings.enableTempoOffsetTextColor ? ((deckInfo.masterDeck == tempoAdjust.deckId) || ((deckInfo.tempoNeededVal <= 0.05) && (deckInfo.tempoNeededVal >= - 0.05)) ? colors.loopActiveColor : colors.lightOrange) : "white";
             case 6:
                 return settings.enableMasterDeckTextColor ? ((deckInfo.masterDeck == deckInfo.deckId) ? colors.loopActiveColor : colors.lightOrange) : "white";
             case 7:
-                return "white"
+                    return "white"
             case 8:
                 return deckInfo.isKeyLockOn ? colors.musicalKeyColors[deckInfo.keyIndex] : "white"
             case 9:
-                return "white"
+                    return "white"
         }
     }
 

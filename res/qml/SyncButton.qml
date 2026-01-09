@@ -28,7 +28,7 @@ Skin.Button {
             case SyncButton.SyncMode.ImplicitLeader:
                 return Theme.yellow;
             case SyncButton.SyncMode.ExplicitLeader:
-                return Theme.red;
+                    return Theme.red;
             default:
                 return Theme.deckActiveColor;
         }
@@ -36,8 +36,8 @@ Skin.Button {
     text: {
         switch (mode) {
             case SyncButton.SyncMode.ImplicitLeader:
-                case SyncButton.SyncMode.ExplicitLeader:
-                    return "Leader";
+            case SyncButton.SyncMode.ExplicitLeader:
+                return "Leader";
             default:
                 return "Sync";
         }

@@ -5,10 +5,12 @@
 #include "broadcast/defs_broadcast.h"
 #include "control/controlpushbutton.h"
 #include "engine/sidechain/enginenetworkstream.h"
+#include "control/controlproxy.h"
 #include "moc_broadcastmanager.cpp"
 #include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
+
 
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");
@@ -27,6 +29,11 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
             &ControlPushButton::valueChanged,
             this,
             &BroadcastManager::slotControlEnabled);
+       
+    // NEW: set up recording control proxies
+    m_pRecordingStatus = new ControlProxy("[Recording]", "status", this);
+    m_pRecordingToggle = new ControlProxy("[Recording]", "toggle_recording", this);
+    m_autoStartedRecording = false;
 
     m_pStatusCO = new ControlObject(ConfigKey(BROADCAST_PREF_KEY, "status"));
     m_pStatusCO->setReadOnly();
@@ -64,6 +71,10 @@ BroadcastManager::~BroadcastManager() {
 
     delete m_pStatusCO;
     delete m_pBroadcastEnabled;
+
+    // NEW: delete recording proxies
+    delete m_pRecordingStatus;
+    delete m_pRecordingToggle;
 
     shout_shutdown();
 }
@@ -108,9 +119,33 @@ void BroadcastManager::slotControlEnabled(double v) {
         }
 
         slotProfilesChanged();
+        // NEW: auto-start recording when going live, if enabled in preferences
+        const bool autoRecordOnLive =
+                m_pConfig->getValue(
+                        ConfigKey(BROADCAST_PREF_KEY, "auto_record_on_live"))
+                        .toBool();
+        const bool recordingActive = m_pRecordingStatus->toBool();
+        
+        if (autoRecordOnLive && !recordingActive) {
+            // Simulate pressing the Record button
+            m_pRecordingToggle->set(1.0);
+            m_autoStartedRecording = true;
+        }
+
     } else {
+        // Turning broadcasting OFF
         m_pBroadcastEnabled->set(false);
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
+
+        // NEW: only stop recording if this session was auto-started
+        if (m_autoStartedRecording) {
+            const bool recordingActive = m_pRecordingStatus->toBool();
+            if (recordingActive) {
+                m_pRecordingToggle->set(1.0);
+            }
+            m_autoStartedRecording = false;
+        }
+        
         const QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
         for (BroadcastProfilePtr profile : profiles) {
             if (profile->connectionStatus() == BroadcastProfile::STATUS_FAILURE) {
