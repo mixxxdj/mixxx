@@ -1,6 +1,8 @@
 #pragma once
 
+#ifdef BUILD_TESTING
 #include <gtest/gtest_prod.h>
+#endif
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"

@@ -1261,7 +1261,7 @@ add_library(
   src/effects/backends/builtin/flangereffect.cpp
   src/effects/backends/builtin/glitcheffect.cpp
   src/effects/backends/builtin/graphiceqeffect.cpp
-  src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
+  src/effects/backends/builtin/linkwitzriley8eqeffect.cppr
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
   src/effects/backends/builtin/metronomeclick.cpp
@@ -2728,16 +2728,13 @@ if(BUILD_TESTING)
   endif()
 endif()
 
-find_package(benchmark)
-default_option(BUILD_BENCH "Build mixxx-benchmark" "benchmark_FOUND")
-if(BUILD_BENCH AND BUILD_TESTING)
-  if(benchmark_FOUND)
+if(BUILD_BENCH)
+  find_package(benchmark)
+  if(BUILD_TESTING AND benchmark_FOUND)
     message(STATUS "Found google-benchmark: mixxx-benchmark enabled")
-  else()
-    message(FATAL_ERROR "google-benchmark: not found")
+  elseif(BUILD_BENCH AND NOT BUILD_TESTING)
+    message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
   endif()
-elseif(BUILD_BENCH AND NOT BUILD_TESTING)
-  message(FATAL_ERROR "Benchmark needs Unittests (-DBUILD_TESTING=ON)")
 endif()
 
 # FFmpeg support
