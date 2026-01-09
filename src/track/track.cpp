@@ -1587,11 +1587,8 @@ void Track::setTuningFrequencyHz(double tuningFrequencyHz) {
 
 double Track::getTuningFrequencyHz() const {
     const auto locked = lockMutex(&m_qMutex);
-    const auto detected = m_record.getKeys().getDetectedTuningFrequencyHz();
-    return detected > 0.0 ? detected : kDefaultTuningFrequency;
+    return m_record.getKeys().getDetectedTuningFrequencyHz();
 }
-
-const double Track::kDefaultTuningFrequency = 440.0;
 
 // normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,

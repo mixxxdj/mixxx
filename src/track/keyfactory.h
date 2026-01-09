@@ -6,7 +6,6 @@
 #include "audio/types.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
-#include "track/track.h"
 #include "util/types.h"
 
 class KeyFactory {
@@ -42,5 +41,5 @@ class KeyFactory {
             const QHash<QString, QString>& extraVersionInfo,
             mixxx::audio::SampleRate sampleRate,
             SINT totalFrames,
-            double tuningFrequencyHz = Track::kDefaultTuningFrequency);
+            double tuningFrequencyHz = 0.0);
 };

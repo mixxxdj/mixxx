@@ -587,7 +587,6 @@ reapplying those migrations.
   <revision version="40" min_compatible="3">
     <description>
       Add tuning_frequency_hz column to persist detected concert pitch (A4) for each track.
-      Default is 0, which may be interpreted as 440Hz for standard tuning.
       Using 0 as the default value to indicate that the pitch hasn't been detected yet.
     </description>
     <sql>
