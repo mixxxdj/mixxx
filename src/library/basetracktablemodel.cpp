@@ -779,12 +779,14 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             bool ok = false;
-            const int freq = rawValue.toInt(&ok);
-            if (!ok || freq <= 0) {
+            const double freq = rawValue.toDouble(&ok);
+            if (!ok || freq <= 0.0) {
                 return QVariant();
             }
-            if (role == Qt::DisplayRole || role == Qt::ToolTipRole || role == kDataExportRole) {
-                return QStringLiteral("%1 Hz").arg(freq);
+            if (role == Qt::DisplayRole) {
+                return QString::number(freq, 'f', 0);
+            } else if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return QStringLiteral("%1 Hz").arg(freq, 0, 'f', 4);
             }
             return freq;
         }
