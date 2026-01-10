@@ -8,6 +8,11 @@ namespace {
 
 constexpr int kNumStableDeltasRequired = 20;
 
+// Timeout for semaphore acquisition to prevent freezes on some Linux systems
+// where the Qt event loop doesn't wake up promptly for cross-thread signals.
+// See: https://github.com/mixxxdj/mixxx/issues/15103
+constexpr int kSemaphoreTimeoutMs = 100;
+
 VSyncThread::VSyncMode defaultVSyncMode() {
 #ifdef __APPLE__
     return VSyncThread::ST_PLL;
@@ -153,9 +158,12 @@ void VSyncThread::runPLL() {
 
         // Signal to swap the gl widgets (waveforms, spinnies, vumeters)
         // and render them for the next swap
+        // Use tryAcquire with timeout to prevent freezes (see kSemaphoreTimeoutMs).
         if (!pllInitializing() || m_pllPendingUpdate) {
             emit vsyncSwapAndRender();
-            m_semaVsyncSlot.acquire();
+            if (!m_semaVsyncSlot.tryAcquire(1, kSemaphoreTimeoutMs)) {
+                m_droppedFrames++;
+            }
             m_pllPendingUpdate = false;
         }
 
@@ -186,8 +194,13 @@ void VSyncThread::runTimer() {
         emit vsyncRender(); // renders the new waveform.
 
         // wait until rendering was scheduled. It might be delayed due a
-        // pending swap (depends one driver vSync settings)
-        m_semaVsyncSlot.acquire();
+        // pending swap (depends on driver vSync settings).
+        // Use tryAcquire with timeout to skip frame if unresponsive.
+        if (!m_semaVsyncSlot.tryAcquire(1, kSemaphoreTimeoutMs)) {
+            m_droppedFrames++;
+            m_sinceLastSwap = m_timer.restart();
+            continue;
+        }
 
         // qDebug() << "ST_TIMER                      " << lastMicros << restMicros;
         int remainingForSwap = m_waitToSwapMicros -
@@ -201,8 +214,12 @@ void VSyncThread::runTimer() {
         emit vsyncSwap();
 
         // wait until swap occurred. It might be delayed due to driver vSync
-        // settings.
-        m_semaVsyncSlot.acquire();
+        // settings. Use tryAcquire with timeout to skip frame if unresponsive.
+        if (!m_semaVsyncSlot.tryAcquire(1, kSemaphoreTimeoutMs)) {
+            m_droppedFrames++;
+            m_sinceLastSwap = m_timer.restart();
+            continue;
+        }
 
         // <- Assume we are VSynced here ->
         m_sinceLastSwap = m_timer.restart();
