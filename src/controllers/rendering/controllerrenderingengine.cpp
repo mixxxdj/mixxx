@@ -176,6 +176,10 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
         kLogger.warning() << "The ControllerRenderingEngine setup must be done by its own thread!";
         return;
     }
+    if (!m_isValid) {
+        DEBUG_ASSERT(!"Trying to setup an invalid engine");
+        return;
+    }
     QSurfaceFormat format;
     // FIXME multi sampling appears to be unsupported when using offscreen
     // rendering on Wayland QPA:
