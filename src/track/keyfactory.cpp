@@ -69,7 +69,7 @@ Keys KeyFactory::makeBasicKeysKeepText(
             const double tuningHz = 440.0 * std::pow(2.0, static_cast<double>(cents) / 1200.0);
             // Additional sanity check: ensure frequency is in reasonable range
             if (tuningHz >= 220.0 && tuningHz <= 880.0) {
-                key_map.set_tuning_frequency_hz(tuningHz);
+                key_map.set_global_tuning_frequency_hz(tuningHz);
             }
         }
     }
@@ -138,7 +138,7 @@ Keys KeyFactory::makePreferredKeys(
                 global_key, KeyUtils::KeyNotation::ID3v2);
         key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
-        key_map.set_tuning_frequency_hz(tuningFrequencyHz);
+        key_map.set_global_tuning_frequency_hz(tuningFrequencyHz);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
         return keys;

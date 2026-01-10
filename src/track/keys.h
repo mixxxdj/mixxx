@@ -39,10 +39,10 @@ class Keys final {
     // Return the detected tuning frequency in Hz (default 0 Hz).
     // This is the reference frequency A4 that best matches the track's tuning.
     // Stored as double to preserve cents precision.
-    double getDetectedTuningFrequencyHz() const;
+    double getGlobalTuningFrequencyHz() const;
 
     // Set the tuning frequency in Hz (<0 falls back to 0 Hz).
-    void setDetectedTuningFrequencyHz(double tuningFrequencyHz);
+    void setGlobalTuningFrequencyHz(double tuningFrequencyHz);
 
   private:
     explicit Keys(const mixxx::track::io::key::KeyMap& m_keyMap);

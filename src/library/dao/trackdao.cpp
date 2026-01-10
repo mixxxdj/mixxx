@@ -612,7 +612,7 @@ void bindTrackLibraryValues(
             track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
     pTrackLibraryQuery->bindValue(":tuning_frequency_hz",
-            track.getKeys().getDetectedTuningFrequencyHz());
+            track.getKeys().getGlobalTuningFrequencyHz());
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 

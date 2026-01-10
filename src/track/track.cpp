@@ -1580,14 +1580,14 @@ QString Track::getKeyText() const {
 void Track::setTuningFrequencyHz(double tuningFrequencyHz) {
     auto locked = lockMutex(&m_qMutex);
     Keys keys = m_record.getKeys();
-    keys.setDetectedTuningFrequencyHz(tuningFrequencyHz);
+    keys.setGlobalTuningFrequencyHz(tuningFrequencyHz);
     m_record.setKeys(std::move(keys));
     afterKeysUpdated(&locked);
 }
 
 double Track::getTuningFrequencyHz() const {
     const auto locked = lockMutex(&m_qMutex);
-    return m_record.getKeys().getDetectedTuningFrequencyHz();
+    return m_record.getKeys().getGlobalTuningFrequencyHz();
 }
 
 // normalizes the keyText before storing
@@ -1775,7 +1775,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         normalizedFromRecord.normalizeBeforeExport();
         // Encode tuning offset (RapidEvolution style) into key text for tag roundtrip.
         // Keep the database value untouched; only the exported metadata is modified.
-        const double tuningHz = m_record.getKeys().getDetectedTuningFrequencyHz();
+        const double tuningHz = m_record.getKeys().getGlobalTuningFrequencyHz();
         if (tuningHz > 0.0) {
             QString keyText = normalizedFromRecord.getTrackInfo().getKeyText();
             if (keyText.isEmpty()) {

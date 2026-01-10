@@ -37,13 +37,13 @@ QString Keys::getGlobalKeyText() const {
     return QString::fromStdString(m_keyMap.global_key_text());
 }
 
-double Keys::getDetectedTuningFrequencyHz() const {
-    return m_keyMap.tuning_frequency_hz();
+double Keys::getGlobalTuningFrequencyHz() const {
+    return m_keyMap.global_tuning_frequency_hz();
 }
 
-void Keys::setDetectedTuningFrequencyHz(double tuningFrequencyHz) {
+void Keys::setGlobalTuningFrequencyHz(double tuningFrequencyHz) {
     const double clamped = tuningFrequencyHz > 0.0 ? tuningFrequencyHz : 0.0;
-    m_keyMap.set_tuning_frequency_hz(clamped);
+    m_keyMap.set_global_tuning_frequency_hz(clamped);
 }
 
 bool Keys::readByteArray(const QByteArray& byteArray) {
