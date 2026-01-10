@@ -951,7 +951,7 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    if (speed != 0.0) {
+    if (speed != 0.0 || is_scratching) {
         // Do not switch scaler when we have no transport
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                 iBufferSize);
