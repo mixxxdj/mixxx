@@ -18,6 +18,9 @@ const mixxx::Logger kLogger("Track");
 
 constexpr bool kLogStats = false;
 
+constexpr double kCentsPerOctave = 1200.0;
+constexpr double kStandardTuningHz = 440.0;
+
 // Count the number of currently existing instances for detecting
 // memory leaks.
 std::atomic<int> s_numberOfInstances;
@@ -1785,7 +1788,7 @@ ExportTrackMetadataResult Track::exportMetadata(
                 }
             }
             if (!keyText.isEmpty()) {
-                const double cents = 1200.0 * std::log2(tuningHz / 440.0);
+                const double cents = kCentsPerOctave * std::log2(tuningHz / kStandardTuningHz);
                 const int centsRounded = static_cast<int>(std::lround(cents));
                 const QString offsetText = centsRounded >= 0
                         ? QStringLiteral("+%1").arg(centsRounded)

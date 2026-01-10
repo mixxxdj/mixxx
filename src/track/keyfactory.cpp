@@ -10,6 +10,11 @@
 
 using mixxx::track::io::key::KeyMap;
 
+namespace {
+constexpr double kCentsPerOctave = 1200.0;
+constexpr double kStandardTuningHz = 440.0;
+} // namespace
+
 // Static regex for parsing RapidEvolution tuning offsets (e.g., "A +50")
 // Compiled once for performance during library scans
 static const QRegularExpression s_offsetRegex(QStringLiteral(R"(([+-]\d+)\s*$)"));
@@ -57,22 +62,30 @@ Keys KeyFactory::makeBasicKeysKeepText(
     key_map.set_source(source);
     key_map.set_global_key_text(global_key_text.toStdString());
     mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(global_key_text);
-    key_map.set_global_key(global_key);
+
     // RapidEvolution writes tuning offset in cents after the key text, e.g. "A#m +50".
     // Preserve that as tuning_frequency_hz if present.
     const auto offsetMatch = s_offsetRegex.match(global_key_text);
     if (offsetMatch.hasMatch()) {
         bool ok = false;
-        const int cents = offsetMatch.captured(1).toInt(&ok);
-        // Validate cents range: +/- 1 octave (1200 cents) is reasonable
-        if (ok && cents >= -1200 && cents <= 1200) {
-            const double tuningHz = 440.0 * std::pow(2.0, static_cast<double>(cents) / 1200.0);
-            // Additional sanity check: ensure frequency is in reasonable range
-            if (tuningHz >= 220.0 && tuningHz <= 880.0) {
-                key_map.set_global_tuning_frequency_hz(tuningHz);
+        int cents = offsetMatch.captured(1).toInt(&ok);
+        if (ok) {
+            // Limit the cents value to ±50 by adjusting the key.
+            // Calculate how many semitones to shift: round to nearest 100.
+            const int keyShift = static_cast<int>(std::round(cents / 100.0));
+            cents -= keyShift * 100;
+
+            if (keyShift != 0 && global_key != mixxx::track::io::key::INVALID) {
+                global_key = KeyUtils::scaleKeySteps(global_key, keyShift);
             }
+
+            const double tuningHz = kStandardTuningHz * std::pow(2.0, static_cast<double>(cents) / kCentsPerOctave);
+            key_map.set_global_tuning_frequency_hz(tuningHz);
         }
     }
+
+    key_map.set_global_key(global_key);
+
     return Keys(key_map);
 }
 
