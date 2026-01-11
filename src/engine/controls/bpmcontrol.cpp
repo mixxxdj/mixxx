@@ -283,7 +283,6 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
 
     const mixxx::Bpm bpm = pBeats->getBpmInRange(
             mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
-    // Validate BPM before using it
     if (!bpm.isValid()) {
         return;
     }
