@@ -336,9 +336,9 @@ std::optional<mixxx::Bpm> BeatUtils::trySnap(mixxx::Bpm minBpm,
 // static
 mixxx::Bpm BeatUtils::roundBpmWithinRange(
         mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
-    // First validate all BPM values
+    // If any BPM is invalid, return the centerBpm as-is to avoid 
+    // unexpected results in the following calculations
     if (!minBpm.isValid() || !centerBpm.isValid() || !maxBpm.isValid()) {
-        // If any BPM is invalid, return the centerBpm as-is
         return centerBpm;
     }
 
