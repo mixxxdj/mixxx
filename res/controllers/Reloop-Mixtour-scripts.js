@@ -28,7 +28,7 @@ components.Component.prototype.disconnect = function() {
             conn.disconnect();
         });
     }
-    this.connections[0] = undefined;              // <-- added this
+    this.connections = [];              // <-- added this
 };
 
 // eslint-disable-next-line no-var
