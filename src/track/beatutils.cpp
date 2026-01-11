@@ -410,9 +410,7 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
-    //  Validate BPM before using it
     if (!bpm.isValid()) {
-        // If BPM is invalid, return firstBeat without adjustment
         return firstBeat;
     }
 
