@@ -1,10 +1,5 @@
 #pragma once
 
-#include <qglobal.h>
-#include <qqmlintegration.h>
-#include <qstringliteral.h>
-#include <qtmetamacros.h>
-
 #include <QDialog>
 #include <QObject>
 #include <QQmlEngine>
