@@ -15,8 +15,6 @@
 // should wheel be enabled on startup?
 var EnableWheel = true;
 
-// How should the manual loop pads behave by default?
-var manualLoopMode = engine.getSetting('manualLoopMode');
 
 // should we use the auto loop buttons as hotcue buttons 5-8?
 var UseAutoLoopAsCue = false;
@@ -92,7 +90,7 @@ MixtrackPlatinum.init = function(id, debug) {
 
     // init a bunch of channel specific leds
     for (var i = 0; i < 4; ++i) {
-        var group = "[Channel" + (i + 1) + "]";
+        const group = `[Channel${  i + 1  }]`;
 
         // keylock indicator
         led(group, 'keylock', i, 0x0D);
@@ -235,7 +233,7 @@ MixtrackPlatinum.EffectUnit = function(unitNumbers) {
                 if (effectMatch !== null) {
                     component.group = '[EffectRack1_EffectUnit' +
                         eu.currentUnitNumber +
-                        '_Effect' + effectMatch[2] + ']';
+                        "_Effect" + effectMatch[2] + "]";
                 }
             }
         });
@@ -246,12 +244,12 @@ MixtrackPlatinum.EffectUnit = function(unitNumbers) {
     this.dryWetKnob = new components.Encoder({
         group: this.group,
         inKey: 'mix',
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value) {
             // 'this' is the dryWetKnob (components.Encoder) instance
             // 'eu' is the EffectUnit instance, available via closure
 
-            var activeDeckNumber = eu.currentUnitNumber; // Deck number (1-4)
-            var activeDeck = MixtrackPlatinum.decks[activeDeckNumber];
+            const activeDeckNumber = eu.currentUnitNumber; // Deck number (1-4)
+            const activeDeck = MixtrackPlatinum.decks[activeDeckNumber];
 
             if (activeDeck) {
                 // Check for SHIFT + Stem Pad Hold for effect parameter
@@ -269,11 +267,11 @@ MixtrackPlatinum.EffectUnit = function(unitNumbers) {
                     }
 
                     if (stemForEffectParam !== null) {
-                        var stemGroupForEffect = activeDeck.currentDeck.slice(0, -1) + '_Stem' + stemForEffectParam + ']';
-                        var quickEffectGroup = '[QuickEffectRack1_' + stemGroupForEffect + ']';
-                        var currentEffectValue = engine.getValue(quickEffectGroup, 'super1');
-                        var newEffectValue;
-                        var valueStep = 0.05;
+                        const stemGroupForEffect = `${activeDeck.currentDeck.slice(0, -1)  }_Stem${  stemForEffectParam  }]`;
+                        const quickEffectGroup = `[QuickEffectRack1_${  stemGroupForEffect  }]`;
+                        const currentEffectValue = engine.getValue(quickEffectGroup, "super1");
+                        let newEffectValue;
+                        const valueStep = 0.05;
 
                         if (value === 1) { // Clockwise
                             newEffectValue = Math.min(1.0, currentEffectValue + valueStep);
@@ -282,7 +280,7 @@ MixtrackPlatinum.EffectUnit = function(unitNumbers) {
                         } else {
                             return;
                         }
-                        engine.setValue(quickEffectGroup, 'super1', newEffectValue);
+                        engine.setValue(quickEffectGroup, "super1", newEffectValue);
                         return; // Skip all other knob functionality
                     }
                 }
@@ -301,10 +299,10 @@ MixtrackPlatinum.EffectUnit = function(unitNumbers) {
                 }
 
                 if (stemToControl !== null) {
-                    var stemGroup = activeDeck.currentDeck.slice(0, -1) + '_Stem' + stemToControl + ']';
-                    var currentStemVolume = engine.getValue(stemGroup, "volume");
-                    var newStemVolume;
-                    var volumeStep = 0.05; // How much to change volume per knob tick
+                    const stemGroup = `${activeDeck.currentDeck.slice(0, -1)  }_Stem${  stemToControl  }]`;
+                    const currentStemVolume = engine.getValue(stemGroup, "volume");
+                    let newStemVolume;
+                    const volumeStep = 0.05; // How much to change volume per knob tick
 
                     if (value === 1) { // Clockwise
                         newStemVolume = Math.min(1.0, currentStemVolume + volumeStep);
@@ -394,7 +392,7 @@ MixtrackPlatinum.EffectUnit = function(unitNumbers) {
     this.EffectEnableButton = function(number) {
         this.number = number;
         this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
-            '_Effect' + this.number + ']';
+            "_Effect" + this.number + "]";
         this.midi = [0x97 + eu.currentUnitNumber, this.number - 1];
         this.flash_timer = null;
 
@@ -526,9 +524,16 @@ MixtrackPlatinum.EffectUnit.prototype = new components.ComponentContainer();
 // Helper function to create configuration for stem control pads
 // This handles the "tap to toggle mute, hold to adjust volume via dry/wet knob" logic
 // and manages the LED state.
+/**
+ *
+ * @param deckInstance
+ * @param padStateProperty
+ * @param stemNumber
+ * @param midiDetails
+ */
 function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDetails) {
     // midiDetails = { channel: midi_chan (0-3), note: 0xXX, on: 0x01, off: 0x00 }
-    var fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
+    const fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
 
     return {
         midi: fullMidi,
@@ -537,18 +542,18 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         input: function(channel, control, value, status) {
             // 'this' is the components.Button instance
 
-            var padState = deckInstance[padStateProperty];
+            const padState = deckInstance[padStateProperty];
 
             if (MixtrackPlatinum.shift) {
-                var stemGroupForEffect = deckInstance.currentDeck.slice(0, -1) + '_Stem' + stemNumber + ']';
-                var quickEffectGroup = '[QuickEffectRack1_' + stemGroupForEffect + ']';
+                const stemGroupForEffect = `${deckInstance.currentDeck.slice(0, -1)  }_Stem${  stemNumber  }]`;
+                const quickEffectGroup = `[QuickEffectRack1_${  stemGroupForEffect  }]`;
 
                 if (value === 0x7F) { // Pad pressed
                     padState.isHeldForEffectVolume = false; // Reset on press
                     if (padState.shiftTimerId) {
                         engine.stopTimer(padState.shiftTimerId);
                     }
-                    var localTimerId = engine.beginTimer(250, function() { // 250ms threshold for hold
+                    const localTimerId = engine.beginTimer(250, function() { // 250ms threshold for hold
                         if (padState.shiftTimerId === localTimerId) {
                             MixtrackPlatinum.dbg(`Deck ${padState.deckNumber} SHIFT+Stem ${stemNumber} HELD.`);
                             padState.isHeldForEffectVolume = true;
@@ -557,15 +562,15 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
                     }, true); // Make it a one-shot timer
                     padState.shiftTimerId = localTimerId;
                 } else if (value === 0x00) { // Pad released
-                    var timerIdAtRelease = padState.shiftTimerId;
+                    const timerIdAtRelease = padState.shiftTimerId;
                     if (padState.shiftTimerId) {
                         engine.stopTimer(padState.shiftTimerId);
                         padState.shiftTimerId = null;
                     }
 
                     if (timerIdAtRelease && !padState.isHeldForEffectVolume) {
-                        MixtrackPlatinum.dbg('SHIFT + Stem ' + stemNumber + ' pad release (quick tap) on Deck ' + deckInstance.number + '. Toggling ' + quickEffectGroup + ' enabled.');
-                        script.toggleControl(quickEffectGroup, 'enabled');
+                        MixtrackPlatinum.dbg(`SHIFT + Stem ${  stemNumber  } pad release (quick tap) on Deck ${  deckInstance.number  }. Toggling ${  quickEffectGroup  } enabled.`);
+                        script.toggleControl(quickEffectGroup, "enabled");
                     } else {
                         padState.isHeldForEffectVolume = false;
                     }
@@ -573,12 +578,12 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
                 return;
             }
             // 'this' is the components.Button instance
-            var stemGroup = deckInstance.currentDeck.slice(0, -1) + '_Stem' + stemNumber + ']';
-            var buttonInstance = this;
+            const stemGroup = `${deckInstance.currentDeck.slice(0, -1)  }_Stem${  stemNumber  }]`;
+            const buttonInstance = this;
 
-            var updateLedState = function() {
-                var isMuted = engine.getValue(stemGroup, "mute");
-                var ledValue = (isMuted === 0) ? buttonInstance.on : buttonInstance.off;
+            const updateLedState = function() {
+                const isMuted = engine.getValue(stemGroup, "mute");
+                const ledValue = (isMuted === 0) ? buttonInstance.on : buttonInstance.off;
                 midi.sendShortMsg(buttonInstance.midi[0], buttonInstance.midi[1], ledValue);
                 MixtrackPlatinum.dbg(`Deck ${padState.deckNumber} Stem ${stemNumber} LED MANUALLY SET: mute=${isMuted}, MIDI val=${ledValue} to ${buttonInstance.midi[0].toString(16)} ${buttonInstance.midi[1].toString(16)}`);
             };
@@ -592,7 +597,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
                 }
                 padState.isHeldForVolume = false;
 
-                var localTimerId = engine.beginTimer(250, function() {
+                const localTimerId = engine.beginTimer(250, function() {
                     if (padState.timerId === localTimerId) {
                         MixtrackPlatinum.dbg(`Deck ${padState.deckNumber} Stem ${stemNumber} HELD (timer ${localTimerId}).`);
                         padState.isHeldForVolume = true;
@@ -604,7 +609,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
 
             } else if (value === 0x00) { // Pad released
                 MixtrackPlatinum.dbg(`Deck ${padState.deckNumber} Stem ${stemNumber} released. Current timer: ${padState.timerId}, isHeld: ${padState.isHeldForVolume}, timerAtRelease: ${timerIdAtRelease}`);
-                var timerIdAtRelease = padState.timerId;
+                const timerIdAtRelease = padState.timerId;
 
                 if (padState.timerId) {
                     engine.stopTimer(padState.timerId);
@@ -614,7 +619,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
 
                 if (timerIdAtRelease && !padState.isHeldForVolume) {
                     MixtrackPlatinum.dbg(`Deck ${padState.deckNumber} Stem ${stemNumber} - Quick Tap: Toggling mute.`);
-                    var currentMuteState = engine.getValue(stemGroup, "mute");
+                    const currentMuteState = engine.getValue(stemGroup, "mute");
                     engine.setValue(stemGroup, "mute", currentMuteState === 0 ? 1 : 0);
                     updateLedState();
                 } else if (padState.isHeldForVolume) {
@@ -626,13 +631,13 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         },
         connect: function() {
             components.Button.prototype.connect.call(this);
-            var stemGroup = deckInstance.currentDeck.slice(0, -1) + '_Stem' + stemNumber + ']';
-            var buttonInstance = this; // Capture 'this' for the closure
+            const stemGroup = `${deckInstance.currentDeck.slice(0, -1)  }_Stem${  stemNumber  }]`;
+            const buttonInstance = this; // Capture 'this' for the closure
             this.mute_connection = engine.makeConnection(stemGroup, "mute", function(value) {
                 // If mute value is 1, it's muted. Otherwise (0 or undefined), it's unmuted.
                 // Stems default to unmuted (0).
-                var isMuted = (value === 1);
-                var ledValue = isMuted ? buttonInstance.off : buttonInstance.on;
+                const isMuted = (value === 1);
+                const ledValue = isMuted ? buttonInstance.off : buttonInstance.on;
                 midi.sendShortMsg(buttonInstance.midi[0], buttonInstance.midi[1], ledValue);
                 MixtrackPlatinum.dbg(`Deck ${deckInstance.loopInPadState.deckNumber} Stem ${stemNumber} MuteConnCB: muteValue=${value}, isMuted=${isMuted}, LED=${ledValue}`);
             });
@@ -653,8 +658,8 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
 }
 
 MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
-    var self = this; // Use 'self' for 'this' in closures to avoid confusion
-    var eu = effects_unit;
+    const self = this; // Use 'self' for 'this' in closures to avoid confusion
+    const eu = effects_unit;
     self.active = (number == 1 || number == 2);
 
     // State for the loop_in pad (Stem 1)
@@ -704,24 +709,24 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             // the controller appears to expect a value in the range of 0-52
             // representing the position of the track. Here we send a message to the
             // controller to update the position display with our current position.
-            var pos = Math.round(playposition * 52);
+            let pos = Math.round(playposition * 52);
             if (pos < 0) {
                 pos = 0;
             }
             midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
 
             // get the current duration
-            duration = self.duration.outGetValue();
+            const duration = self.duration.outGetValue();
 
             // update the time display
-            var time = MixtrackPlatinum.timeMs(number, playposition, duration);
+            const time = MixtrackPlatinum.timeMs(number, playposition, duration);
             MixtrackPlatinum.sendScreenTimeMidi(number, time);
 
             // update the spinner (range 64-115, 52 values)
             //
             // the visual spinner in the mixxx interface takes 1.8 seconds to loop
             // (60 seconds/min divided by 33 1/3 revolutions per min)
-            var period = 60 / (33 + 1 / 3);
+            const period = 60 / (33 + 1 / 3);
             var midiResolution = 52; // the controller expects a value range of 64-115
             var timeElapsed = duration * playposition;
             var spinner = Math.round(timeElapsed % period * (midiResolution / period));
@@ -818,14 +823,14 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     this.hotcues = this.hotcue_buttons;
 
     this.pitch = new components.Pot({
-        inKey: 'rate',
+        inKey: "rate",
         invert: true,
     });
     if (!this.active) {
         this.pitch.firstValueReceived = true;
     }
 
-    var pitch_or_keylock = function(channel, control, value, status, group) {
+    const pitch_or_keylock = function(channel, control, value, status, group) {
         if (this.other.inGetValue() > 0.0 && this.isPress(channel, control, value, status)) {
             // toggle keylock, both keys pressed
             script.toggleControl(this.group, "keylock");
@@ -845,7 +850,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     this.pitch_bend_up.other = this.pitch_bend_down;
     this.pitch_bend_down.other = this.pitch_bend_up;
 
-    var key_up_or_down = function(channel, control, value, status, group) {
+    const key_up_or_down = function(channel, control, value, status) {
         this.is_pressed = this.isPress(channel, control, value, status);
         if (this.is_pressed) {
             if (this.other.is_pressed) {
@@ -863,7 +868,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         input: key_up_or_down,
     });
     this.key_down = new components.Button({
-        inKey: 'pitch_down',
+        inKey: "pitch_down",
         direction: -1,
         input: key_up_or_down,
     });
@@ -882,16 +887,16 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         }, obj);
     };
     this.stem_manloop = new components.ComponentContainer({
-        loop_in: new components.Button(createStemPadConfig(self, 'loopInPadState', 1,
-            { channel: midi_chan, note: 0x38, on: 0x01, off: 0x00 })),
-        loop_out: new components.Button(createStemPadConfig(self, 'loopOutPadState', 2,
-            { channel: midi_chan, note: 0x39, on: 0x01, off: 0x00 })),
-        loop_toggle: new components.Button(createStemPadConfig(self, 'loopTogglePadState', 3,
-            { channel: midi_chan, note: 0x32, on: 0x01, off: 0x00 })),
-        loop_halve: new components.Button(createStemPadConfig(self, 'loopHalvePadState', 4,
-            { channel: midi_chan, note: 0x34, on: 0x01, off: 0x00 })),
-        loop_double: new components.Button(createStemPadConfig(self, 'loopDoublePadState', 4,
-            { channel: midi_chan, note: 0x35, on: 0x01, off: 0x00 })),
+        loop_in: new components.Button(createStemPadConfig(self, "loopInPadState", 1,
+            {channel: midi_chan, note: 0x38, on: 0x01, off: 0x00})),
+        loop_out: new components.Button(createStemPadConfig(self, "loopOutPadState", 2,
+            {channel: midi_chan, note: 0x39, on: 0x01, off: 0x00})),
+        loop_toggle: new components.Button(createStemPadConfig(self, "loopTogglePadState", 3,
+            {channel: midi_chan, note: 0x32, on: 0x01, off: 0x00})),
+        loop_halve: new components.Button(createStemPadConfig(self, "loopHalvePadState", 4,
+            {channel: midi_chan, note: 0x34, on: 0x01, off: 0x00})),
+        loop_double: new components.Button(createStemPadConfig(self, "loopDoublePadState", 4,
+            {channel: midi_chan, note: 0x35, on: 0x01, off: 0x00})),
     });
     this.cue_manloop = new components.ComponentContainer({
         loop_in: new components.HotcueButton(loop_base(0x38, {
@@ -931,7 +936,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         })),
         loop_toggle: new components.LoopToggleButton(loop_base(0x32, {})),
         loop_halve: new components.Button(loop_base(0x34, {
-            key: 'loop_halve',
+            key: "loop_halve",
             input: function(channel, control, value, status) {
                 if (this.isPress(channel, control, value, status)) {
                     engine.setValue(self.currentDeck, "loop_scale", 0.5);
@@ -939,7 +944,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             },
         })),
         loop_double: new components.Button(loop_base(0x35, {
-            key: 'loop_double',
+            key: "loop_double",
             input: function(channel, control, value, status) {
                 if (this.isPress(channel, control, value, status)) {
                     engine.setValue(self.currentDeck, "loop_scale", 2.0);
@@ -949,9 +954,9 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     });
 
 
-
+    let UseManualLoopAs;
     // swap normal and cue manual loop controls
-    if (UseManualLoopAs === 'cue') {
+    if (UseManualLoopAs === "cue") {
         var manloop = this.normal_manloop;
         this.normal_manloop = this.cue_manloop;
         this.cue_manloop = manloop;
@@ -961,7 +966,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     // If 'stem' is chosen, it takes precedence.
     // this.normal_manloop at this point is either actual normal loops or cues (if UseManualLoopAs was 'cue').
     // We want this.normal_manloop to become stems if 'stem' is the chosen mode.
-    if (UseManualLoopAs === 'stem') {
+    if (UseManualLoopAs === "stem") {
         var manloop = this.normal_manloop;
         this.normal_manloop = this.stem_manloop;
         this.stem_manloop = manloop;
@@ -1044,19 +1049,19 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 
     // swap normal and alternate auto loop controls
     if (UseAutoLoopAsCue) {
-        var autoloop = this.normal_autoloop;
+        const autoloop = this.normal_autoloop;
         this.normal_autoloop = this.alternate_autoloop;
         this.alternate_autoloop = autoloop;
     }
     this.autoloop = this.normal_autoloop;
 
     this.pad_mode = new components.Component({
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value) {
             // only handle button down events
-            if (value != 0x7F) return;
+            if (value !== 0x7F) { return; }
 
-            var shifted_hotcues = self.sampler_buttons;
-            var normal_hotcues = self.hotcue_buttons;
+            let shifted_hotcues = self.sampler_buttons;
+            let normal_hotcues = self.hotcue_buttons;
             if (UseCueAsSampler) {
                 shifted_hotcues = self.hotcue_buttons;
                 normal_hotcues = self.sampler_buttons;
@@ -1148,8 +1153,6 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     };
     self.EqEffectKnob.prototype = new components.Pot({
         input: function(channel, control, value, status, group) {
-            // 'this' is the EqEffectKnob instance
-            var currentDeckInstance = this.deckInstance;
 
             // Original EqEffectKnob input logic
             // if the control group and key has changed, ignore_next will hold
@@ -1173,9 +1176,9 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
         connect: function() {
             // enable soft takeover on our controls
-            for (var i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 3; i++) {
                 if (this.effectsUnit && this.effectsUnit.currentUnitNumber) {
-                    var fxGroup = '[EffectRack1_EffectUnit' + this.effectsUnit.currentUnitNumber + '_Effect' + i + ']';
+                    const fxGroup = `[EffectRack1_EffectUnit${  this.effectsUnit.currentUnitNumber  }_Effect${  i  }]`;
                     engine.softTakeover(fxGroup, this.fx_key, true);
                 }
             }
@@ -1183,7 +1186,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
         shift: function() {
             if (this.effectsUnit && this.effectsUnit.group) {
-                var focused_effect = engine.getValue(this.effectsUnit.group, "focused_effect");
+                const focused_effect = engine.getValue(this.effectsUnit.group, "focused_effect");
                 if (focused_effect === 0) {
                     if (this.shift_key) {
                         engine.softTakeover(this.effectsUnit.group, this.shift_key, true);
@@ -1191,7 +1194,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                     }
                 } else {
                     if (this.effectsUnit.currentUnitNumber) {
-                        var group = '[EffectRack1_EffectUnit' + this.effectsUnit.currentUnitNumber + '_Effect' + focused_effect + ']';
+                        const group = `[EffectRack1_EffectUnit${  this.effectsUnit.currentUnitNumber  }_Effect${  focused_effect  }]`;
                         this.switchControl(group, this.fx_key);
                     }
                 }
@@ -1202,22 +1205,22 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
         switchControl: function(group, key) {
             if (this.group != group || this.inKey != key) {
-                this.ignore_next = { 'group': this.group, 'key': this.inKey };
+                this.ignore_next = {"group": this.group, "key": this.inKey};
             }
             this.group = group;
             this.inKey = key;
         },
     });
 
-    var eq_group = '[EqualizerRack1_' + self.currentDeck + '_Effect1]';
-    self.high_eq = new self.EqEffectKnob(eq_group, 'parameter3', 'parameter3', false, self, eu);
-    self.mid_eq = new self.EqEffectKnob(eq_group, 'parameter2', 'parameter4', false, self, eu);
-    self.low_eq = new self.EqEffectKnob(eq_group, 'parameter1', 'parameter5', false, self, eu);
+    const eq_group = `[EqualizerRack1_${  self.currentDeck  }_Effect1]`;
+    self.high_eq = new self.EqEffectKnob(eq_group, "parameter3", "parameter3", false, self, eu);
+    self.mid_eq = new self.EqEffectKnob(eq_group, "parameter2", "parameter4", false, self, eu);
+    self.low_eq = new self.EqEffectKnob(eq_group, "parameter1", "parameter5", false, self, eu);
 
     self.filter = new self.EqEffectKnob(
-        '[QuickEffectRack1_' + self.currentDeck + ']',
-        'super1',
-        'parameter1',
+        `[QuickEffectRack1_${  self.currentDeck  }]`,
+        "super1",
+        "parameter1",
         true,
         self, // Pass self (Deck instance)
         eu    // Pass effects_unit
@@ -1226,7 +1229,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     self.gain = new self.EqEffectKnob(
         self.currentDeck,
         'pregain',
-        'parameter2',
+        "parameter2",
         false, self, eu);
 
     self.reconnectComponents(function(c) {
@@ -1253,7 +1256,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 MixtrackPlatinum.Deck.prototype = new components.Deck();
 
 MixtrackPlatinum.Sampler = function(base) {
-    for (var i = 1; i <= 4; ++i) {
+    for (let i = 1; i <= 4; ++i) {
         this[i] = new components.SamplerButton({
             midi: [0x9F, 0x20 + i],
             number: base + i - 1,
@@ -1489,8 +1492,8 @@ MixtrackPlatinum.scratchDisable = function(deck) {
 };
 
 MixtrackPlatinum.scratchEnable = function(deck) {
-    var alpha = 1.0 / 8;
-    var beta = alpha / 32;
+    const alpha = 1.0 / 8;
+    const beta = alpha / 32;
 
     engine.scratchEnable(deck, 1240, 33 + 1 / 3, alpha, beta);
     MixtrackPlatinum.stopScratchTimer(deck);
@@ -1500,7 +1503,7 @@ MixtrackPlatinum.scratchEnable = function(deck) {
 // these arrays are indexed from 1, so we initialize them with 5 values
 MixtrackPlatinum.touching = [false, false, false, false, false];
 MixtrackPlatinum.searching = [false, false, false, false, false];
-MixtrackPlatinum.wheelTouch = function(channel, control, value, status, group) {
+MixtrackPlatinum.wheelTouch = function(channel, control, value) {
     var deck = channel + 1;
 
     // ignore touch events if not in vinyl mode
@@ -1519,8 +1522,7 @@ MixtrackPlatinum.wheelTouch = function(channel, control, value, status, group) {
         && !MixtrackPlatinum.shift
         && !MixtrackPlatinum.searching[deck]) {
         MixtrackPlatinum.scratchEnable(deck);
-    }
-    else if (value === 0x7F
+    } else if (value === 0x7F
         && (MixtrackPlatinum.shift
             || MixtrackPlatinum.searching[deck])) {
         MixtrackPlatinum.scratchDisable(deck);
@@ -1644,13 +1646,13 @@ MixtrackPlatinum.pflToggle = function(value, group, control) {
 
 MixtrackPlatinum.vuCallback = function(value, group, control) {
     // the top LED lights up at 81
-    var level = value * 80;
+    let level = value * 80;
 
     // if any channel pfl is active, show channel levels
-    if (engine.getValue('[Channel1]', 'pfl')
+    if (engine.getValue("[Channel1]", "pfl")
         || engine.getValue('[Channel2]', 'pfl')
         || engine.getValue('[Channel3]', 'pfl')
-        || engine.getValue('[Channel4]', 'pfl')) {
+        || engine.getValue("[Channel4]", "pfl")) {
         if (engine.getValue(group, "peak_indicator")) {
             level = 81;
         }
