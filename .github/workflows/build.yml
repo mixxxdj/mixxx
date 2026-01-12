@@ -52,14 +52,9 @@ jobs:
           - name: Ubuntu 24.04
             os: ubuntu-24.04
             cmake_args: >-
-              -DQT6=ON
-              -DQML=ON
-              -DBULK=ON
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
@@ -71,17 +66,14 @@ jobs:
             artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
+            qml: ON
           - name: macOS 15 x64
             os: macos-15-intel
             cmake_args: >-
-              -DBULK=ON
               -DCOREAUDIO=ON
+              -DBUILD_UI_TEST=OFF
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=OFF
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
@@ -94,17 +86,15 @@ jobs:
             artifacts_name: macOS Intel DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
+            # FIXME: QML deployment on Mac appears to be incomplete (#12527)
+            qml: OFF
           - name: macOS 15 arm64
             os: macos-15-intel
             cmake_args: >-
-              -DBULK=ON
               -DCOREAUDIO=ON
+              -DBUILD_UI_TEST=OFF
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             crosscompile: true
@@ -117,21 +107,17 @@ jobs:
             artifacts_name: macOS ARM DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
+            qml: OFF
           - name: Windows 2022 x64
             os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
-              -DBULK=ON
               -DHSS1394=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DMODPLUG=ON
-              -DQT6=ON
-              -DQML=ON
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
             cc: cl
             cxx: cl
@@ -143,6 +129,7 @@ jobs:
             artifacts_name: Windows x64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
+            qml: ON
             arch: x64
           - name: Windows 11 ARM64
             os: windows-11-arm
@@ -171,12 +158,14 @@ jobs:
             artifacts_name: Windows ARM64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-winarm
+            qml: ON
             arch: arm64
           - name: Android 15 arm64
             os: ubuntu-24.04
             # DBUILD_TESTING=OFF: error: OpenMP support and version of OpenMP (31, 40 or 45) differs
             cmake_args: >-
               -DBULK=ON
+              -DBUILD_UI_TEST=OFF
               -DQT6=ON
               -DQML=ON
               -DHID=ON
@@ -193,6 +182,7 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             crosscompile: true
+            qml: ON
             arch: arm64
 
     env:
@@ -390,22 +380,28 @@ jobs:
         run: mkdir build
 
       - name: "Configure"
+        id: configure
         run: >-
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
-          -DCMAKE_BUILD_TYPE=RelWithDebInfo
-          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-          -DWARNINGS_FATAL=ON
-          -DDEBUG_ASSERTIONS_FATAL=OFF
           -DBATTERY=ON
           -DBROADCAST=ON
+          -DBULK=ON
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DWARNINGS_FATAL=ON
+          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -DDEBUG_ASSERTIONS_FATAL=OFF
           -DDOWNLOAD_MANUAL=ON
           -DHID=ON
           -DKEYFINDER=ON
           -DLILV=ON
+          -DMODPLUG=ON
           -DOPUS=ON
+          -DQML=${{ matrix.qml || 'OFF' }}
+          -DQT6=ON
           -DQTKEYCHAIN=ON
           -DVINYLCONTROL=ON
-          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -DWAVPACK=ON
           -L
           ..
         working-directory: build
@@ -534,20 +530,6 @@ jobs:
             build/screenshots
             build/output.mkv
           retention-days: 7
-
-      - name: "[Ubuntu] Generate Coverage Report"
-        if: runner.os == 'Linux' && matrix.crosscompile != true
-        run: >-
-          lcov
-          --capture
-          --directory .
-          --base-directory ..
-          --include "${PWD%/*}/src/*"
-          --exclude "${PWD%/*}/src/test/*"
-          --exclude "${PWD%/*}/build/*"
-          --exclude "${PWD%/*}/lib/*"
-          --output-file lcov.info
-        working-directory: build
 
       - name: "[Ubuntu] Upload Coverage Report to coveralls.io"
         if: runner.os == 'Linux' && matrix.crosscompile != true
