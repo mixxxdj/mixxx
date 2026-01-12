@@ -8,7 +8,7 @@
     </info>
     <controller id="MixTrack">
         <settings>
-            <group label="Perfomance Pads">
+            <group label="Performance Pads">
                 <option variable="manualLoopMode" type="enum" label="Manual Loop Buttons">
                     <value label="Loop In/Out (default)">normal</value>
                     <value label="Additional Hotcues">cue</value>
