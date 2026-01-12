@@ -22,15 +22,21 @@ Mixxx.LibrarySourceTree {
             anchors.fill: parent
             capabilities: cell.caps
 
-            onPressed: {
-                if (pressedButtons == Qt.LeftButton) {
+            drag.onGrabChanged: (transition, eventPoint) => {
+                if (transition != PointerDevice.GrabPassive && transition != PointerDevice.GrabExclusive) {
+                    return;
+                }
+                parent.dragImage.grabToImage((result) => {
+                        parent.Drag.imageSource = result.url;
+                    }, Qt.size(parent.dragImage.width, parent.dragImage.height));
+            }
+
+            tap.onTapped: (eventPoint, button) => {
+                if (button == Qt.LeftButton) {
                     tableView.selectionModel.selectRow(row);
-                    parent.dragImage.grabToImage((result) => {
-                            parent.Drag.imageSource = result.url;
-                        }, Qt.size(parent.dragImage.width, parent.dragImage.height));
                 }
             }
-            onDoubleClicked: {
+            tap.onDoubleTapped: {
                 tableView.selectionModel.selectRow(row);
                 tableView.loadSelectedTrackIntoNextAvailableDeck(false);
             }
@@ -50,7 +56,8 @@ Mixxx.LibrarySourceTree {
 
     defaultColumns: [
         Mixxx.TrackListColumn {
-            preferredWidth: 110
+            preferredWidth: 100
+            autoHideWidth: 750
 
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Album
 
@@ -146,6 +153,7 @@ Mixxx.LibrarySourceTree {
         },
         Mixxx.TrackListColumn {
             label: qsTr("Album")
+            autoHideWidth: 690
             fillSpan: 1
 
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Album
@@ -154,6 +162,7 @@ Mixxx.LibrarySourceTree {
         Mixxx.TrackListColumn {
             label: qsTr("Year")
             preferredWidth: 80
+            autoHideWidth: 750
 
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Year
             delegate: DefaultDelegate { }
@@ -175,6 +184,7 @@ Mixxx.LibrarySourceTree {
         Mixxx.TrackListColumn {
             label: qsTr("File Type")
             preferredWidth: 70
+            autoHideWidth: 900
 
             columnIdx: Mixxx.TrackListColumn.SQLColumns.FileType
             delegate: DefaultDelegate { }
@@ -182,6 +192,7 @@ Mixxx.LibrarySourceTree {
         Mixxx.TrackListColumn {
             label: qsTr("Bitrate")
             preferredWidth: 70
+            autoHideWidth: 1200
 
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Bitrate
             delegate: DefaultDelegate { }
