@@ -1007,6 +1007,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
     QHash<WaveformWidgetType::Type,
             allshader::WaveformRendererSignalBase::Options>
             supportedOptions;
+    bool useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
         case WaveformWidgetType::Empty:
@@ -1017,7 +1018,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
-                            type, isOpenGlesAvailable());
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<SimpleSignalWaveformWidget>());
             break;
@@ -1026,7 +1027,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
-                            type, isOpenGlesAvailable());
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>());
             break;
@@ -1040,7 +1041,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
-                            type, isOpenGlesAvailable());
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
             break;
@@ -1049,7 +1050,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
-                            type, isOpenGlesAvailable());
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
             break;
@@ -1058,7 +1059,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
-                            type, isOpenGlesAvailable());
+                            type, useGles);
 #endif
             break;
         default:
