@@ -124,6 +124,10 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID){&LIBRARYTABLE_KEY_ID,
                 nullptr,
                 0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY){
+                &LIBRARYTABLE_TUNING_FREQUENCY,
+                QT_TRANSLATE_NOOP("BaseTrackTableModel", "Pitch"),
+                kDefaultColumnWidth * 2},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK){&LIBRARYTABLE_BPM_LOCK,
                 nullptr,
                 0},
@@ -238,6 +242,7 @@ void ColumnCache::setColumns(QStringList columns) {
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMMENT, kSortNoCaseLex);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BITRATE, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_SAMPLERATE, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TUNING_FREQUENCY, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, kSortInt);
 
     insertColumnSortByEnum(COLUMN_TRACKLOCATIONSTABLE_LOCATION, kSortNoCase);

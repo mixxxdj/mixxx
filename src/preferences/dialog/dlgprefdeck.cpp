@@ -338,6 +338,18 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
 
+    // 432Hz Pitch Lock configuration
+    m_b432HzPitchLock = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("432HzPitchLock")), false);
+    checkBox432HzPitchLock->setChecked(m_b432HzPitchLock);
+    for (ControlProxy* pControl : std::as_const(m_432HzPitchLockControls)) {
+        pControl->set(m_b432HzPitchLock ? 1.0 : 0.0);
+    }
+    connect(checkBox432HzPitchLock,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slot432HzPitchLockChanged);
+
     //
     // Ramping Temporary Rate Change configuration
     //
@@ -491,6 +503,10 @@ void DlgPrefDeck::slotUpdate() {
         radioButtonResetUnlockedKey->setChecked(true);
     }
 
+    // Update 432Hz pitch lock checkbox
+    checkBox432HzPitchLock->setChecked(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("432HzPitchLock")), false));
+
     int reset = m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),
             static_cast<int>(BaseTrackPlayer::RESET_PITCH));
     if (reset == BaseTrackPlayer::RESET_PITCH) {
@@ -564,6 +580,9 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+
+    // 432Hz pitch lock disabled by default
+    checkBox432HzPitchLock->setChecked(false);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -767,6 +786,13 @@ void DlgPrefDeck::slotApply() {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 
+    // Save 432Hz pitch lock setting
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("432HzPitchLock")),
+            m_b432HzPitchLock);
+    for (ControlProxy* pControl : std::as_const(m_432HzPitchLockControls)) {
+        pControl->set(m_b432HzPitchLock ? 1.0 : 0.0);
+    }
+
     RateControl::setRateRampMode(m_bRateRamping);
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RateRamp")), m_bRateRamping);
 
@@ -817,6 +843,9 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
         m_keyunlockModeControls.push_back(new ControlProxy(
                 group, "keyunlockMode"));
         m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_432HzPitchLockControls.push_back(new ControlProxy(
+                group, "432hz_pitch_lock"));
+        m_432HzPitchLockControls.last()->set(m_b432HzPitchLock ? 1.0 : 0.0);
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -850,6 +879,9 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
         m_keyunlockModeControls.push_back(new ControlProxy(
                 group, "keyunlockMode"));
         m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_432HzPitchLockControls.push_back(new ControlProxy(
+                group, "432hz_pitch_lock"));
+        m_432HzPitchLockControls.last()->set(m_b432HzPitchLock ? 1.0 : 0.0);
     }
 
     m_iNumConfiguredSamplers = numsamplers;
@@ -867,6 +899,13 @@ void DlgPrefDeck::slotUpdateSpeedAutoReset(bool b) {
 
 void DlgPrefDeck::slotUpdatePitchAutoReset(bool b) {
     m_pitchAutoReset = b;
+}
+
+void DlgPrefDeck::slot432HzPitchLockChanged(bool enabled) {
+    m_b432HzPitchLock = enabled;
+    for (ControlProxy* pControl : std::as_const(m_432HzPitchLockControls)) {
+        pControl->set(enabled ? 1.0 : 0.0);
+    }
 }
 
 int DlgPrefDeck::cueDefaultIndexByData(int userData) const {

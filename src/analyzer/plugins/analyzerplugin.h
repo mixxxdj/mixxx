@@ -83,6 +83,37 @@ class AnalyzerKeyPlugin : public AnalyzerPlugin {
     ~AnalyzerKeyPlugin() override = default;
 
     virtual KeyChangeList getKeyChanges() const = 0;
+
+    // Returns true if the track was detected to be tuned to 432Hz
+    virtual bool is432Hz() const {
+        return false;
+    }
+
+    // Enable 432Hz detection mode (analyze at both 440Hz and 432Hz)
+    virtual void setDetect432Hz(bool enabled) {
+        Q_UNUSED(enabled);
+    }
+
+    // Returns the detected tuning frequency in Hz (default 440Hz)
+    // This is the reference frequency A4 that best matches the track's tuning
+    virtual int getTuningFrequencyHz() const {
+        return 440;
+    }
+
+    // Configure the tuning frequency detection range
+    // minFreq: Minimum frequency to test (e.g., 427Hz)
+    // maxFreq: Maximum frequency to test (e.g., 447Hz)
+    // stepFreq: Step size for scanning (e.g., 1Hz)
+    virtual void setTuningDetectionRange(int minFreq, int maxFreq, int stepFreq) {
+        Q_UNUSED(minFreq);
+        Q_UNUSED(maxFreq);
+        Q_UNUSED(stepFreq);
+    }
+
+    // Enable dynamic tuning frequency detection
+    virtual void setDetectTuningFrequency(bool enabled) {
+        Q_UNUSED(enabled);
+    }
 };
 
 } // namespace mixxx
