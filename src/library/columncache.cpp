@@ -124,6 +124,10 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID){&LIBRARYTABLE_KEY_ID,
                 nullptr,
                 0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY){
+                &LIBRARYTABLE_TUNING_FREQUENCY,
+                QT_TRANSLATE_NOOP("BaseTrackTableModel", "A4 Pitch (Hz)"),
+                kDefaultColumnWidth},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK){&LIBRARYTABLE_BPM_LOCK,
                 nullptr,
                 0},
