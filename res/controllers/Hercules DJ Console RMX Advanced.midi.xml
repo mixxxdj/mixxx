@@ -16,7 +16,7 @@
                <control>
                    <status>0xB0</status>
                    <midino>0x3A</midino>
-                   <group>[Master]</group>
+                   <group>[Mixer]</group>
                    <key>HerculesRMX.headPhoneMix</key>
                    <options>
                        <Script-Binding/>
@@ -126,7 +126,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesRMX.crossFader</key>
                 <status>0xB0</status>
                 <midino>0x39</midino>
@@ -135,7 +135,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesRMX.balance</key>
                 <status>0xB0</status>
                 <midino>0x37</midino>
@@ -180,7 +180,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesRMX.volume</key>
                 <status>0xB0</status>
                 <midino>0x38</midino>
@@ -425,7 +425,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesRMX.scratch</key>
                 <status>0xB0</status>
                 <midino>0x29</midino>

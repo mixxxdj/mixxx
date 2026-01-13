@@ -69,7 +69,7 @@
             </control>
         <!-- Main Controls -->
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB2</status>
                 <midino>0x01</midino>
@@ -78,8 +78,8 @@
                 </options>
             </control>
              <control>
-                <group>[Master]</group>
-                <key>volume</key>
+                <group>[Mixer]</group>
+                <key>main_gain</key>
                 <status>0xB2</status>
                 <midino>0x03</midino>
                 <options>
@@ -87,8 +87,8 @@
                 </options>
             </control>
 	    <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB2</status>
                 <midino>0x07</midino>
                 <options>
@@ -608,7 +608,7 @@
         <outputs>
   	<!-- LED Lighting -->
             <output>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>peak_indicator</key>
 		<status>0x92</status>
                 <midino>0x3</midino>

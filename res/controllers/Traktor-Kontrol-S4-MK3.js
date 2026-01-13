@@ -1552,7 +1552,7 @@ class Mixer extends ComponentContainer {
         });
 
         this.crossfader = new Pot({
-            group: "[Master]",
+            group: "[Mixer]",
             inKey: "crossfader",
             inByte: 0,
             inReport: inReports[2],

@@ -220,7 +220,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjusts the headphone output gain.")
             << resetWithRightAndDoubleClick;
 
-    add("headMix")
+    add("headphone_mix")
             << tr("Headphone Mix")
             << tr("Crossfades the headphone output between the main mix and cueing (PFL or Pre-Fader Listening) signal.")
             << resetWithRightAndDoubleClick;

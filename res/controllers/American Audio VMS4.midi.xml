@@ -1468,8 +1468,8 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
 
          <!-- Mixer main-->
          <control>
-            <group>[Master]</group>
-            <key>headMix</key>
+            <group>[Mixer]</group>
+            <key>headphone_mix</key>
             <status>0xB0</status>
             <midino>0x22</midino>
             <options>
@@ -1477,8 +1477,8 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>
-            <group>[Master]</group>
-            <key>headVolume</key>
+            <group>[Mixer]</group>
+            <key>headphone_gain</key>
             <status>0xB0</status>
             <midino>0x23</midino>
             <options>
@@ -1486,8 +1486,8 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>
-            <group>[Master]</group>
-            <key>volume</key>
+            <group>[Mixer]</group>
+            <key>main_gain</key>
             <status>0xB0</status>
             <midino>0x1C</midino>
             <options>
@@ -1495,7 +1495,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>
-            <group>[Master]</group>
+            <group>[Mixer]</group>
             <key>balance</key>
             <status>0xB0</status>
             <midino>0x1D</midino>

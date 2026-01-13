@@ -511,7 +511,6 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pEngine = std::make_shared<EngineMixer>(
             pConfig,
-            "[Master]",
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);

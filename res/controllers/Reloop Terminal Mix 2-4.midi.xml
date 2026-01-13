@@ -15,9 +15,9 @@
     <controls>
 <!-- Center Mixer -->
       <control>
-        <group>[Master]</group>
-        <key>headMix</key>
-        <description>Master</description>
+        <group>[Mixer]</group>
+        <key>headphone_mix</key>
+        <description>Headphone Mix</description>
         <status>0xB0</status>
         <midino>0x33</midino>
         <options>
@@ -25,7 +25,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>TerminalMix.crossFader</key>
         <description>crossfader</description>
         <status>0xB0</status>
@@ -238,7 +238,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>TerminalMix.crossfaderCurve</key>
         <description>crossfader</description>
         <status>0xB0</status>

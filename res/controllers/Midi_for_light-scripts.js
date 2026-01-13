@@ -85,7 +85,7 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
     ];
     midi_for_light.vu_meter_timer = undefined;
 
-    engine.makeConnection("[Master]", "crossfader", midi_for_light.calculateDeckPriority);
+    engine.makeConnection("[Mixer]", "crossfader", midi_for_light.calculateDeckPriority);
 
     if (enable_vu_meter_global === true) midi_for_light.vu_meter_timer = engine.beginTimer(40, midi_for_light.vuMeter);
 
@@ -120,7 +120,7 @@ midi_for_light.shutdown = function(id) { // called when the MIDI device is close
 
 midi_for_light.calculateDeckPriority = function() {
     // Calculate each channels Volume to figure out the most important
-    const crossfader = engine.getValue("[Master]", "crossfader");
+    const crossfader = engine.getValue("[Mixer]", "crossfader");
     const crossfader_left =  Math.min((1 - crossfader) * 1.33, 1);
     const crossfader_right =  Math.min((1 + crossfader) * 1.33, 1);
     const crossfader_factors = [crossfader_left, 1.0, crossfader_right];
