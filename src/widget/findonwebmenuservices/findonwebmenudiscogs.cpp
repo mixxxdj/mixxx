@@ -29,8 +29,10 @@ const QUrl composeDiscogsUrl(const QString& serviceDefaultUrl,
 }
 } //namespace
 
-FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu) {
+FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu,
+        FindOnWebLast* pFindOnWebLast,
+        const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu, pFindOnWebLast) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();
@@ -38,40 +40,43 @@ FindOnWebMenuDiscogs::FindOnWebMenuDiscogs(QMenu* pFindOnWebMenu, const Track& t
     pFindOnWebMenu->addMenu(this);
     addSeparator();
     if (!artist.isEmpty()) {
-        const QUrl discogsUrlArtist = composeDiscogsUrl(kSearchUrl, artist, kQueryTypeArtist);
-        addActionToServiceMenu(
-                composeActionText(tr("Artist"), artist),
-                discogsUrlArtist);
-    }
-    if (!trackTitle.isEmpty()) {
-        if (!artist.isEmpty()) {
-            const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
+        if (!trackTitle.isEmpty()) {
             const QUrl discogsUrlArtistWithTrackTitle = composeDiscogsUrl(
-                    kSearchUrl, artistWithTrackTitle, kQueryTypeRelease);
+                    kSearchUrl, composeSearchQuery(artist, trackTitle), kQueryTypeRelease);
             addActionToServiceMenu(
-                    composeActionText(
-                            tr("Artist + Title"), artistWithTrackTitle),
+                    kServiceTitle + QStringLiteral(",Artist,Title"),
+                    tr("Artist + Title"),
                     discogsUrlArtistWithTrackTitle);
         }
+
+        if (!album.isEmpty()) {
+            const QUrl discogsUrlArtistWithAlbum = composeDiscogsUrl(
+                    kSearchUrl, composeSearchQuery(artist, album), kQueryTypeRelease);
+            addActionToServiceMenu(
+                    kServiceTitle + QStringLiteral(",Artist,Album"),
+                    tr("Artist + Album"),
+                    discogsUrlArtistWithAlbum);
+        }
+
+        const QUrl discogsUrlArtist = composeDiscogsUrl(kSearchUrl, artist, kQueryTypeArtist);
+        addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Artist"),
+                tr("Artist"),
+                discogsUrlArtist);
+    }
+    if (!album.isEmpty() && artist.isEmpty()) {
+        const QUrl discogsUrlAlbum = composeDiscogsUrl(kSearchUrl, album, kQueryTypeRelease);
+        addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Artist,Album"),
+                tr("Album"),
+                discogsUrlAlbum);
+    }
+    if (!trackTitle.isEmpty()) {
         const QUrl discogsUrlTrackTitle =
                 composeDiscogsUrl(kSearchUrl, trackTitle, kQueryTypeRelease);
         addActionToServiceMenu(
-                composeActionText(tr("Title"), trackTitle),
+                kServiceTitle + QStringLiteral(",Title"),
+                tr("Title"),
                 discogsUrlTrackTitle);
-    }
-    if (!album.isEmpty()) {
-        if (!artist.isEmpty()) {
-            const QString artistWithAlbum = composeSearchQuery(artist, album);
-            const QUrl discogsUrlArtistWithAlbum = composeDiscogsUrl(
-                    kSearchUrl, artistWithAlbum, kQueryTypeRelease);
-            addActionToServiceMenu(
-                    composeActionText(tr("Artist + Album"), artistWithAlbum),
-                    discogsUrlArtistWithAlbum);
-        } else {
-            const QUrl discogsUrlAlbum = composeDiscogsUrl(kSearchUrl, album, kQueryTypeRelease);
-            addActionToServiceMenu(
-                    composeActionText(tr("Album"), album),
-                    discogsUrlAlbum);
-        }
     }
 }
