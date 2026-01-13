@@ -596,12 +596,15 @@ TraktorMX2.selectBeatjumpHandler = function (field) {
         delta = -1;
     }
 
-    // Change Functionality in Stems Mode
-    if (TraktorMX2.padModeState[field.group] === 1 && TraktorMX2.padPressed[field.group]) {
+    // Change Functionality in Stems Mode with pressed Pad 5-8
+    if (TraktorMX2.padModeState[field.group] === 1 && Object.values(TraktorMX2.padPressed[field.group]).reduce((v, a) => v || a, false)) {
 
 
         return
     }
+
+
+    //Default Functionality
     if (TraktorMX2.shiftPressed[field.group]) {
         const beatjumpSize = engine.getValue(field.group, "beatjump_size");
         if (delta > 0) {
