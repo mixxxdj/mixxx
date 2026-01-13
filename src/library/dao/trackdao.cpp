@@ -456,6 +456,7 @@ void TrackDAO::addTracksPrepare() {
             "rating,"
             "key,"
             "key_id,"
+            "tuning_frequency_hz,"
             "cuepoint,"
             "bpm,"
             "replaygain,"
@@ -504,6 +505,7 @@ void TrackDAO::addTracksPrepare() {
             ":rating,"
             ":key,"
             ":key_id,"
+            ":tuning_frequency_hz,"
             ":cuepoint,"
             ":bpm,"
             ":replaygain,"
@@ -609,6 +611,7 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":cuepoint",
             track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
+    pTrackLibraryQuery->bindValue(":tuning_frequency_hz", track.getKeys().getTuningFrequencyHz());
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 
@@ -1710,6 +1713,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
             "rating=:rating,"
             "key=:key,"
             "key_id=:key_id,"
+            "tuning_frequency_hz=:tuning_frequency_hz,"
             "cuepoint=:cuepoint,"
             "bpm=:bpm,"
             "replaygain=:replaygain,"

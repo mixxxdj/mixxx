@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <memory>
+#include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
@@ -10,6 +11,20 @@
 class GetKeyMode;
 
 namespace mixxx {
+
+// Structure to hold analysis results for a specific tuning frequency
+struct TuningAnalysisResult {
+    int frequencyHz;
+    int keyChangeCount;
+    bool hasValidStart;
+    KeyChangeList keys;
+
+    TuningAnalysisResult()
+            : frequencyHz(440),
+              keyChangeCount(0),
+              hasValidStart(false) {
+    }
+};
 
 class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
   public:
@@ -38,12 +53,67 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
         return m_resultKeys;
     }
 
+    void setDetect432Hz(bool enabled) override {
+        m_bDetect432Hz = enabled;
+    }
+
+    // Dynamic tuning frequency detection
+    double getTuningFrequencyHz() const override {
+        return m_detectedTuningFrequency;
+    }
+
+    void setTuningDetectionRange(int minFreq, int maxFreq, int stepFreq) override {
+        m_tuningMinFreq = minFreq;
+        m_tuningMaxFreq = maxFreq;
+        m_tuningStepFreq = stepFreq;
+    }
+
+    void setDetectTuningFrequency(bool enabled) override {
+        m_bDetectTuningFrequency = enabled;
+    }
+
   private:
-    std::unique_ptr<GetKeyMode> m_pKeyMode;
-    DownmixAndOverlapHelper m_helper;
-    size_t m_currentFrame;
+    // Helper structure for each frequency analyzer
+    // Destructor defined in cpp file where GetKeyMode is complete
+    struct FrequencyAnalyzer {
+        std::unique_ptr<GetKeyMode> keyMode;
+        DownmixAndOverlapHelper helper;
+        size_t currentFrame;
+        KeyChangeList resultKeys;
+        mixxx::track::io::key::ChromaticKey prevKey;
+        int frequencyHz;
+
+        FrequencyAnalyzer();
+        ~FrequencyAnalyzer();
+        FrequencyAnalyzer(FrequencyAnalyzer&& other) noexcept;
+        FrequencyAnalyzer& operator=(FrequencyAnalyzer&& other) noexcept;
+
+        // Non-copyable due to unique_ptr
+        FrequencyAnalyzer(const FrequencyAnalyzer&) = delete;
+        FrequencyAnalyzer& operator=(const FrequencyAnalyzer&) = delete;
+    };
+
+    // Primary result storage
     KeyChangeList m_resultKeys;
-    mixxx::track::io::key::ChromaticKey m_prevKey;
+
+    // Legacy 432Hz detection (for backwards compatibility)
+    bool m_bDetect432Hz;
+
+    // Dynamic tuning frequency detection
+    bool m_bDetectTuningFrequency;
+    int m_tuningMinFreq;
+    int m_tuningMaxFreq;
+    int m_tuningStepFreq;
+    double m_detectedTuningFrequency;
+
+    // Vector of analyzers for different frequencies
+    std::vector<FrequencyAnalyzer> m_frequencyAnalyzers;
+
+    // Sample rate for initialization
+    mixxx::audio::SampleRate m_sampleRate;
+
+    // Helper to find the best tuning frequency from analysis results
+    int findBestTuningFrequency() const;
 };
 
 } // namespace mixxx
