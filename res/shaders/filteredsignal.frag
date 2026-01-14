@@ -44,9 +44,7 @@ void main(void) {
     bool lowShowing = false;
     bool midShowing = false;
     bool highShowing = false;
-    bool lowShowingUnscaled = false;
-    bool midShowingUnscaled = false;
-    bool highShowingUnscaled = false;
+    bool maxShowingUnscaled = false;
     // We don't exit early if the waveform data is not valid because we may want
     // to show other things (e.g. the axes lines) even when we are on a pixel
     // that does not have valid waveform data.
@@ -71,6 +69,9 @@ void main(void) {
       lowShowing = signalDistance.x >= 0.0;
       midShowing = signalDistance.y >= 0.0;
       highShowing = signalDistance.z >= 0.0;
+      maxShowingUnscaled = new_currentDataUnscaled.x - ourDistance >= 0.0 ||
+              new_currentDataUnscaled.y - ourDistance >= 0.0 ||
+              new_currentDataUnscaled.z - ourDistance >= 0.0;
     }
 
     // Draw the axes color as the lowest item on the screen.
@@ -78,8 +79,10 @@ void main(void) {
     // rendered even when the waveform is fairly short.  Really this
     // value should be based on the size of the widget.
     if (abs(framebufferSize.y / 2 - pixel.y) <= 4) {
-      outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-      outputColor.w = 1.0;
+        outputColor = axesColor;
+    } else if (maxShowingUnscaled) {
+        outputColor.xyz = axesColor.xyz;
+        outputColor.w = axesColor.w * 0.2;
     }
 
     if (lowShowing) {

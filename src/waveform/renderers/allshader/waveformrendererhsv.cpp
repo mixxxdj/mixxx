@@ -76,7 +76,10 @@ bool WaveformRendererHSV::preprocessInner() {
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
 
-    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    float allGain = 1.0f;
+    float lowGain = 1.0f;
+    float midGain = 1.0f;
+    float highGain = 1.0f;
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
@@ -126,34 +129,39 @@ bool WaveformRendererHSV::preprocessInner() {
         float maxMid[2]{};
         float maxHigh[2]{};
         float maxAll[2]{};
+        float eqGain[2] = {1.0f, 1.0f};
 
         for (int chn = 0; chn < 2; chn++) {
             // Find the max values for low, mid, high and all in the waveform data
-            uchar u8maxLow{};
-            uchar u8maxMid{};
-            uchar u8maxHigh{};
-            uchar u8maxAll{};
+            float maxLowU = 0.0f;
+            float maxMidU = 0.0f;
+            float maxHighU = 0.0f;
+            float maxAllU = 0.0f;
             // data is interleaved left / right
             for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                 const WaveformData& waveformData = data[i];
 
-                u8maxLow = math_max(u8maxLow,
-                        static_cast<uchar>(
-                                waveformData.filtered.low * lowGain));
-                u8maxMid = math_max(u8maxMid,
-                        static_cast<uchar>(
-                                waveformData.filtered.mid * midGain));
-                u8maxHigh = math_max(u8maxHigh,
-                        static_cast<uchar>(
-                                waveformData.filtered.high * highGain));
-                u8maxAll = math_max(u8maxAll, waveformData.filtered.all);
+                maxLowU = math_max(maxLowU,
+                        static_cast<float>(
+                                waveformData.filtered.low));
+                maxMidU = math_max(maxMidU,
+                        static_cast<float>(
+                                waveformData.filtered.mid));
+                maxHighU = math_max(maxHighU,
+                        static_cast<float>(
+                                waveformData.filtered.high));
+                maxAllU = math_max(maxAllU, static_cast<float>(waveformData.filtered.all));
             }
 
-            // Cast to float
-            maxLow[chn] = static_cast<float>(u8maxLow);
-            maxMid[chn] = static_cast<float>(u8maxMid);
-            maxHigh[chn] = static_cast<float>(u8maxHigh);
-            maxAll[chn] = static_cast<float>(u8maxAll);
+            maxLow[chn] = maxLowU * lowGain;
+            maxMid[chn] = maxMidU * midGain;
+            maxHigh[chn] = maxHighU * highGain;
+            maxAll[chn] = maxAllU;
+
+            float allUnscaled = maxLowU + maxMidU + maxHighU;
+            if (allUnscaled > 0.0f) {
+                eqGain[chn] = (maxLow[chn] + maxMid[chn] + maxHigh[chn]) / allUnscaled;
+            }
         }
 
         float total{};
@@ -182,9 +190,9 @@ bool WaveformRendererHSV::preprocessInner() {
         // Lines are thin rectangles
         // maxAll[0] is for left channel, maxAll[1] is for right channel
         vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                           halfBreadth - heightFactor * maxAll[0]},
+                                           halfBreadth - heightFactor * eqGain[0] * maxAll[0]},
                 {fpos + halfPixelSize,
-                        halfBreadth + heightFactor * maxAll[1]},
+                        halfBreadth + heightFactor * eqGain[1] * maxAll[1]},
                 {static_cast<float>(color.redF()),
                         static_cast<float>(color.greenF()),
                         static_cast<float>(color.blueF())});

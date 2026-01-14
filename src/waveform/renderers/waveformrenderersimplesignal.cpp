@@ -130,18 +130,18 @@ void WaveformRendererSimpleSignal::draw(
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;
 
-        float maxAll = 0.;
-        float maxAllNext = 0.;
+        float maxAllLeft = 0.;
+        float maxAllRight = 0.;
 
         for (int i = visualIndexStart;
                 i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop;
                 i += 2) {
-            const WaveformData& waveformData = data[i];
-            const WaveformData& waveformDataNext = data[i + 1];
-            float all = waveformData.filtered.all;
-            maxAll = math_max(maxAll, all);
-            float allNext = waveformDataNext.filtered.all;
-            maxAllNext = math_max(maxAllNext, allNext);
+            const WaveformData& waveformDataLeft = data[i];
+            const WaveformData& waveformDataRight = data[i + 1];
+            float allLeft = waveformDataLeft.filtered.all;
+            maxAllLeft = math_max(maxAllLeft, allLeft);
+            float allRight = waveformDataRight.filtered.all;
+            maxAllRight = math_max(maxAllRight, allRight);
         }
 
         pen.setColor(color);
@@ -154,18 +154,18 @@ void WaveformRendererSimpleSignal::draw(
                     x,
                     breadth -
                             static_cast<int>(heightFactor *
-                                    math_max(maxAll, maxAllNext)));
+                                    math_max(maxAllLeft, maxAllRight)));
             break;
         case Qt::AlignTop:
         case Qt::AlignLeft:
             painter->drawLine(
-                    x, 0, x, static_cast<int>(heightFactor * math_max(maxAll, maxAllNext)));
+                    x, 0, x, static_cast<int>(heightFactor * math_max(maxAllLeft, maxAllRight)));
             break;
         default:
             painter->drawLine(x,
-                    static_cast<int>(halfBreadth - heightFactor * maxAll),
+                    static_cast<int>(halfBreadth - heightFactor * maxAllLeft),
                     x,
-                    static_cast<int>(halfBreadth + heightFactor * maxAllNext));
+                    static_cast<int>(halfBreadth + heightFactor * maxAllRight));
         }
     }
 }
