@@ -13,13 +13,23 @@ components.Component.prototype.sendShifted = true;
 // original connect function will override connections[0] and
 // this way looses control of existing connection
 components.Component.prototype.connect = function() {
-    if (this.connections[0] === undefined &&
+    if (this.connections[0] === undefined &&      // <-- added this condition
         undefined !== this.group &&
         undefined !== this.outKey &&
         undefined !== this.output &&
         typeof this.output === "function") {
         this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
     }
+};
+// override Component prototype to reset connection after disconnect
+// original disconnect will never reset connections[0] to undefined
+components.Component.prototype.disconnect = function() {
+    if (this.connections[0] !== undefined) {
+        this.connections.forEach(function(conn) {
+            conn.disconnect();
+        });
+    }
+    this.connections = [];              // <-- added this
 };
 
 // helper to convert RGB into Pioneers color code. Not perfect, because there has been no
