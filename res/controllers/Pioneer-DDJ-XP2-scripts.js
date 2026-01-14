@@ -1480,6 +1480,8 @@ DDJXP2.DeckControls4Deck = class extends components.Deck {
         this.forEachComponent(function(component) {
             if (component.group === undefined) {
                 component.group = this.currentDeck;
+                component.connect();
+                component.trigger();
             };
         });
     }
@@ -1548,6 +1550,8 @@ DDJXP2.DeckControls2Deck = class extends components.Deck {
         this.forEachComponent(function(component) {
             if (component.group === undefined) {
                 component.group = this.currentDeck;
+                component.connect();
+                component.trigger();
             };
         });
     }
