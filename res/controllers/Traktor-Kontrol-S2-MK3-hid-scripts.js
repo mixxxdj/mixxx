@@ -649,7 +649,7 @@ TraktorS2MK3.jogTouchHandler = function(field) {
 
     if (field.value > 0) {
         // Cancel any existing stop timers
-        if ((TraktorS2MK3.jogStopTimerId[deckNumber - 1] !== null) ||
+        if ((TraktorS2MK3.jogStopTimerId[deckNumber - 1] !== null) &&
             (TraktorS2MK3.jogStopTimerId[deckNumber - 1] !== undefined)) {
             engine.stopTimer(TraktorS2MK3.jogStopTimerId[deckNumber - 1]);
             TraktorS2MK3.jogStopTimerId[deckNumber - 1] = null;
@@ -684,7 +684,7 @@ TraktorS2MK3.jogHandler = function(field) {
         engine.setValue(field.group, "scratch2", velocity * VELOCITY_TO_SCRATCH);
 
         // Cancel any existing decay timers
-        if ((TraktorS2MK3.jogDecayTimerId[deckNumber - 1] !== null) ||
+        if ((TraktorS2MK3.jogDecayTimerId[deckNumber - 1] !== null) &&
             (TraktorS2MK3.jogDecayTimerId[deckNumber - 1] !== undefined)) {
             engine.stopTimer(TraktorS2MK3.jogDecayTimerId[deckNumber - 1]);
             TraktorS2MK3.jogDecayTimerId[deckNumber - 1] = null;
