@@ -29,19 +29,38 @@ void KeyDelegate::paintItem(
     paintItemBackground(painter, option, index);
 
     const QString keyText = index.data().value<QString>();
-    const QColor keyColor = index.data(Qt::DecorationRole).value<QColor>();
+    const QVariantMap colorRect = index.data(Qt::DecorationRole).value<QVariantMap>();
     const double tuningFrequencyHz = index.data(TrackModel::kTuningFrequencyRole).toDouble();
-    int rectWidth = 0;
+    int leftMargin = 0;
 
-    if (keyColor.isValid()) {
+    const QColor colorTop = colorRect["top"].value<QColor>();
+    const QColor colorBottom = colorRect["bottom"].value<QColor>();
+    const double splitPoint = colorRect["splitPoint"].value<double>();
+
+    if (colorTop.isValid() && colorBottom.isValid()) {
         // Draw the colored rectangle next to the key label
-        rectWidth = 8; //  4px width + 4px right padding
+        constexpr int width = 4;
+        leftMargin = width + 4; // 4px right padding
+
+        const int x = option.rect.x();
+        constexpr int yPad = 2;
+        const int padTop = option.rect.y() + yPad;
+        const int padHeight = option.rect.height() - 2 * yPad;
+        // adding 0.5 to get the round int instead of floor int
+        const int splitHeight = static_cast<int>(padHeight * splitPoint + 0.5);
+
         painter->fillRect(
-                option.rect.x(),
-                option.rect.y() + 2,
-                4, // width
-                option.rect.height() - 4,
-                keyColor);
+                x,
+                padTop,
+                width,
+                splitHeight,
+                colorTop);
+        painter->fillRect(
+                x,
+                padTop + splitHeight,
+                width,
+                padHeight - splitHeight,
+                colorBottom);
     }
 
     // Determine which tuning symbol to show (if any)
@@ -68,7 +87,7 @@ void KeyDelegate::paintItem(
     QString elidedText = option.fontMetrics.elidedText(
             keyText,
             Qt::ElideRight,
-            columnWidth(index) - rectWidth - rightMargin);
+            columnWidth(index) - leftMargin - rightMargin);
 
     // This is not picking up the 'missing' or 'played' text color via
     // ForegroundRole from BaseTrackTableModel::data().
@@ -81,9 +100,9 @@ void KeyDelegate::paintItem(
         painter->setPen(QPen(opt.palette.text().color()));
     }
 
-    painter->drawText(option.rect.x() + rectWidth,
+    painter->drawText(option.rect.x() + leftMargin,
             option.rect.y(),
-            option.rect.width() - rectWidth - rightMargin,
+            option.rect.width() - leftMargin - rightMargin,
             option.rect.height(),
             Qt::AlignVCenter,
             elidedText);
