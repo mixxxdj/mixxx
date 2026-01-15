@@ -2,8 +2,7 @@
 
 #include "library/librarytablemodel.h"
 
-class AnalysisLibraryTableModel : public LibraryTableModel
-{
+class AnalysisLibraryTableModel : public LibraryTableModel {
     Q_OBJECT
   public:
     AnalysisLibraryTableModel(
@@ -11,7 +10,7 @@ class AnalysisLibraryTableModel : public LibraryTableModel
             TrackCollectionManager* pTrackCollectionManager);
     ~AnalysisLibraryTableModel() override = default;
 
-    void showRecentSongs();
+    void showRecentSongs(int days);
     void showAllSongs();
-    void searchCurrentTrackSet(const QString& text, bool useRecentFilter);
+    void searchCurrentTrackSet(const QString& text, bool useRecentFilter, int days);
 };

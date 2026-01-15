@@ -11,8 +11,8 @@
 #include "widget/wlibrary.h"
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
-                       UserSettingsPointer pConfig,
-                       Library* pLibrary)
+        UserSettingsPointer pConfig,
+        Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_bAnalysisActive(false) {
@@ -41,7 +41,8 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
-    } else {
+    }
+    else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pAnalysisLibraryTableView);
@@ -59,6 +60,11 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
             &QRadioButton::clicked,
             this,
             &DlgAnalysis::slotShowAllSongs);
+
+    connect(spinBoxRecentDays,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgAnalysis::slotRecentDaysChanged);
     // Don't click those radio buttons now reduce skin loading time.
     // 'RecentlyAdded' is clicked in onShow()
 
@@ -114,11 +120,11 @@ void DlgAnalysis::setFocus() {
 
 void DlgAnalysis::onSearch(const QString& text) {
     m_pAnalysisLibraryTableModel->searchCurrentTrackSet(
-            text, radioButtonRecentlyAdded->isChecked());
+            text, radioButtonRecentlyAdded->isChecked(), spinBoxRecentDays->value());
 }
 
 void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,
-                                       const QItemSelection& deselected) {
+        const QItemSelection& deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
     bool tracksSelected = m_pAnalysisLibraryTableView->selectionModel()->hasSelection();
@@ -130,14 +136,14 @@ void DlgAnalysis::selectAll() {
 }
 
 void DlgAnalysis::analyze() {
-    //qDebug() << this << "analyze()";
+    // qDebug() << this << "analyze()";
     if (m_bAnalysisActive) {
         emit stopAnalysis();
     } else {
         QList<AnalyzerScheduledTrack> tracks;
 
         QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
-        foreach(QModelIndex selectedIndex, selectedIndexes) {
+        foreach (QModelIndex selectedIndex, selectedIndexes) {
             TrackId trackId(m_pAnalysisLibraryTableModel->getFieldVariant(
                     selectedIndex, ColumnCache::COLUMN_LIBRARYTABLE_ID));
             if (trackId.isValid()) {
@@ -149,7 +155,7 @@ void DlgAnalysis::analyze() {
 }
 
 void DlgAnalysis::slotAnalysisActive(bool bActive) {
-    //qDebug() << this << "slotAnalysisActive" << bActive;
+    // qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
         pushButtonAnalyze->setChecked(true);
@@ -166,21 +172,22 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
 
 void DlgAnalysis::onTrackAnalysisSchedulerProgress(
         AnalyzerProgress analyzerProgress, int finishedCount, int totalCount) {
-    //qDebug() << this << "onTrackAnalysisSchedulerProgress" << analyzerProgress << finishedCount << totalCount;
+    // qDebug() << this << "onTrackAnalysisSchedulerProgress" <<
+    // analyzerProgress << finishedCount << totalCount;
     if (labelProgress->isEnabled()) {
         QString progressText;
         if (analyzerProgress >= kAnalyzerProgressNone) {
             QString progressPercent = QString::number(
                     analyzerProgressPercent(analyzerProgress));
-            progressText = tr("Analyzing %1% %2/%3").arg(
-                    progressPercent,
-                    QString::number(finishedCount),
-                    QString::number(totalCount));
+            progressText = tr("Analyzing %1% %2/%3")
+                                   .arg(progressPercent,
+                                           QString::number(finishedCount),
+                                           QString::number(totalCount));
         } else {
             // Omit to display any percentage
-            progressText = tr("Analyzing %1/%2").arg(
-                    QString::number(finishedCount),
-                    QString::number(totalCount));
+            progressText = tr("Analyzing %1/%2")
+                                   .arg(QString::number(finishedCount),
+                                           QString::number(totalCount));
         }
         labelProgress->setText(progressText);
     }
@@ -191,7 +198,13 @@ void DlgAnalysis::onTrackAnalysisSchedulerFinished() {
 }
 
 void DlgAnalysis::slotShowRecentSongs() {
-    m_pAnalysisLibraryTableModel->showRecentSongs();
+    m_pAnalysisLibraryTableModel->showRecentSongs(spinBoxRecentDays->value());
+}
+
+void DlgAnalysis::slotRecentDaysChanged(int days) {
+    if (radioButtonRecentlyAdded->isChecked()) {
+        m_pAnalysisLibraryTableModel->showRecentSongs(days);
+    }
 }
 
 void DlgAnalysis::slotShowAllSongs() {
