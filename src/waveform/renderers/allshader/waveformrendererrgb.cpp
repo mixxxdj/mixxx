@@ -89,7 +89,10 @@ bool WaveformRendererRGB::preprocessInner() {
     }
 
     // Per-band gain from the EQ knobs.
-    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    float allGain = 1.0f;
+    float lowGain = 1.0f;
+    float midGain = 1.0f;
+    float highGain = 1.0f;
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
@@ -176,14 +179,20 @@ bool WaveformRendererRGB::preprocessInner() {
                 chn < (splitLeftRight && !m_isSlipRenderer ? 2 : 1);
                 chn++) {
             // Cast to float
-            float maxLow = static_cast<float>(u8maxLow[chn]);
-            float maxMid = static_cast<float>(u8maxMid[chn]);
-            float maxHigh = static_cast<float>(u8maxHigh[chn]);
+            float maxLowU = static_cast<float>(u8maxLow[chn]);
+            float maxMidU = static_cast<float>(u8maxMid[chn]);
+            float maxHighU = static_cast<float>(u8maxHigh[chn]);
 
             // Apply the gains
-            maxLow *= lowGain;
-            maxMid *= midGain;
-            maxHigh *= highGain;
+            float maxLow = maxLowU * lowGain;
+            float maxMid = maxMidU * midGain;
+            float maxHigh = maxHighU * highGain;
+
+            float allUnscaled = maxLowU + maxMidU + maxHighU;
+            float eqGain = 1.0f;
+            if (allUnscaled > 0.0f) {
+                eqGain = (maxLow + maxMid + maxHigh) / allUnscaled;
+            }
 
             // Use the gained maxLow, maxMid and maxHigh values to calculate the color components
             float red = maxLow * low_r + maxMid * mid_r + maxHigh * high_r;
@@ -206,22 +215,24 @@ bool WaveformRendererRGB::preprocessInner() {
 
             // Lines are thin rectangles
             if (!splitLeftRight) {
-                vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                                   halfBreadth - heightFactorAbs * maxAllChn[chn]},
+                vertexUpdater.addRectangle(
+                        {fpos - halfPixelSize,
+                                halfBreadth -
+                                        heightFactorAbs * eqGain *
+                                                maxAllChn[chn]},
                         {fpos + halfPixelSize,
-                                m_isSlipRenderer
-                                        ? halfBreadth
-                                        : halfBreadth + heightFactorAbs * maxAllChn[chn]},
-                        {red,
-                                green,
-                                blue});
+                                m_isSlipRenderer ? halfBreadth
+                                                 : halfBreadth +
+                                                heightFactorAbs * eqGain *
+                                                        maxAllChn[chn]},
+                        {red, green, blue});
             } else {
                 // note: heightFactor is the same for left and right,
                 // but negative for left (chn 0) and positive for right (chn 1)
                 vertexUpdater.addRectangle({fpos - halfPixelSize,
                                                    halfBreadth},
                         {fpos + halfPixelSize,
-                                halfBreadth + heightFactor[chn] * maxAllChn[chn]},
+                                halfBreadth + heightFactor[chn] * eqGain * maxAllChn[chn]},
                         {red,
                                 green,
                                 blue});

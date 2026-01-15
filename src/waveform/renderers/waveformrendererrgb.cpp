@@ -77,7 +77,10 @@ void WaveformRendererRGB::draw(
     const double gain = (lastVisualIndex - firstVisualIndex) / length;
 
     // Per-band gain from the EQ knobs.
-    float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
+    float allGain = 1.0f;
+    float lowGain = 1.0f;
+    float midGain = 1.0f;
+    float highGain = 1.0f;
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     QColor color;
@@ -130,26 +133,38 @@ void WaveformRendererRGB::draw(
         unsigned char maxLow  = 0;
         unsigned char maxMid  = 0;
         unsigned char maxHigh = 0;
-        float maxAll = 0.;
-        float maxAllNext = 0.;
+        float maxAllLeft = 0.;
+        float maxAllRight = 0.;
 
         for (int i = visualIndexStart;
              i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop; i += 2) {
-            const WaveformData& waveformData = data[i];
-            const WaveformData& waveformDataNext = data[i + 1];
+            const WaveformData& waveformDataLeft = data[i];
+            const WaveformData& waveformDataRight = data[i + 1];
 
-            maxLow  = math_max3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
-            maxMid  = math_max3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
-            maxHigh = math_max3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
-            float all = waveformData.filtered.all;
-            maxAll = math_max(maxAll, all);
-            float allNext = waveformDataNext.filtered.all;
-            maxAllNext = math_max(maxAllNext, allNext);
+            maxLow = math_max3(maxLow,
+                    waveformDataLeft.filtered.low,
+                    waveformDataRight.filtered.low);
+            maxMid = math_max3(maxMid,
+                    waveformDataLeft.filtered.mid,
+                    waveformDataRight.filtered.mid);
+            maxHigh = math_max3(maxHigh,
+                    waveformDataLeft.filtered.high,
+                    waveformDataRight.filtered.high);
+            float allLeft = waveformDataLeft.filtered.all;
+            maxAllLeft = math_max(maxAllLeft, allLeft);
+            float allRight = waveformDataRight.filtered.all;
+            maxAllRight = math_max(maxAllRight, allRight);
         }
 
         float maxLowF = maxLow * lowGain;
         float maxMidF = maxMid * midGain;
         float maxHighF = maxHigh * highGain;
+
+        float allUnscaled = maxLow + maxMid + maxHigh;
+        float eqGain = 1.0f;
+        if (allUnscaled > 0.0f) {
+            eqGain = (maxLowF + maxMidF + maxHighF) / allUnscaled;
+        }
 
         float red = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r +
                 maxHighF * m_rgbHighColor_r;
@@ -176,19 +191,22 @@ void WaveformRendererRGB::draw(
                             breadth,
                             x,
                             breadth -
-                                    static_cast<int>(heightFactor *
-                                            math_max(maxAll, maxAllNext)));
+                                    static_cast<int>(heightFactor * eqGain *
+                                            math_max(maxAllLeft, maxAllRight)));
                     break;
                 case Qt::AlignTop:
                 case Qt::AlignLeft:
-                    painter->drawLine(
-                            x, 0, x, static_cast<int>(heightFactor * math_max(maxAll, maxAllNext)));
+                    painter->drawLine(x,
+                            0,
+                            x,
+                            static_cast<int>(heightFactor * eqGain *
+                                    math_max(maxAllLeft, maxAllRight)));
                     break;
                 default:
                     painter->drawLine(x,
-                            static_cast<int>(halfBreadth - heightFactor * maxAll),
+                            static_cast<int>(halfBreadth - heightFactor * eqGain * maxAllLeft),
                             x,
-                            static_cast<int>(halfBreadth + heightFactor * maxAllNext));
+                            static_cast<int>(halfBreadth + heightFactor * eqGain * maxAllRight));
             }
         }
     }
