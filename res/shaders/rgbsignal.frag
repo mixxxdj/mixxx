@@ -30,70 +30,82 @@ vec4 getWaveformData(float index) {
 
 void main(void) {
     vec2 uv = gl_TexCoord[0].st;
-    vec4 pixel = gl_FragCoord;
+    float pixelY = gl_FragCoord.y;
 
-    float new_currentIndex = floor(firstVisualIndex + uv.x *
-                                   (lastVisualIndex - firstVisualIndex)) * 2;
+    float indexRange = lastVisualIndex - firstVisualIndex;
+    float currentIndex = floor(firstVisualIndex + uv.x * indexRange) * 2.0;
 
     vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
-    bool showing = false;
-    bool showingUnscaled = false;
-    vec4 showingColor = vec4(0.0, 0.0, 0.0, 0.0);
-    vec4 showingUnscaledColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-    // We don't exit early if the waveform data is not valid because we may want
-    // to show other things (e.g. the axes lines) even when we are on a pixel
-    // that does not have valid waveform data.
-    if (new_currentIndex >= 0 && new_currentIndex <= waveformLength - 1) {
-        vec4 new_currentDataUnscaled;
+    bool showing = false;
+    bool shadow = false;
+
+    if (currentIndex >= 0.0 && currentIndex <= float(waveformLength - 1)) {
+        vec4 dataUnscaled;
+
         if (splitStereoSignal) {
             // Texture coordinates put (0,0) at the bottom left, so show the right
             // channel if we are in the bottom half.
-            new_currentDataUnscaled = getWaveformData(uv.y < 0.5 ? new_currentIndex + 1 : new_currentIndex) * allGain;
+            float stereoIndex = (uv.y < 0.5) ? currentIndex + 1.0 : currentIndex;
+            dataUnscaled = getWaveformData(stereoIndex);
         } else {
-            vec4 leftDataUnscaled = getWaveformData(new_currentIndex);
-            vec4 rightDataUnscaled = getWaveformData(new_currentIndex + 1);
-            new_currentDataUnscaled = max(leftDataUnscaled, rightDataUnscaled) * allGain;
+            vec4 left = getWaveformData(currentIndex);
+            vec4 right = getWaveformData(currentIndex + 1.0);
+            dataUnscaled = max(left, right);
         }
 
-      vec4 new_currentData = new_currentDataUnscaled;
-      new_currentData.x *= lowGain;
-      new_currentData.y *= midGain;
-      new_currentData.z *= highGain;
+        dataUnscaled *= allGain;
+        vec3 data = dataUnscaled.xyz * vec3(lowGain, midGain, highGain);
 
-      // ourDistance represents the [0, 1] distance of this pixel from the
-      // center line. If ourDistance is smaller than the signalDistance, show
-      // the pixel.
-      float ourDistance = abs((uv.y - 0.5) * 2.0);
-      float signalDistance = new_currentData.w;
-      showing = (signalDistance - ourDistance) >= 0.0;
+        // ourDistance represents the [0, 1] distance of this pixel from the
+        // center line. If ourDistance is smaller than the signalDistance, show
+        // the pixel.
+        float ourDistance = abs(uv.y - 0.5) * 2.0;
 
-      // Linearly combine the low, mid, and high colors according to the low,
-      // mid, and high components.
-      showingColor = lowColor * new_currentData.x +
-                     midColor * new_currentData.y +
-                     highColor * new_currentData.z;
+        float sumUnscaled = dataUnscaled.x + dataUnscaled.y + dataUnscaled.z;
+        float sumScaled = data.x + data.y + data.z;
 
-      // Re-scale the color by the maximum component.
-      float showingMax = max(showingColor.x, max(showingColor.y, showingColor.z));
-      showingColor = showingColor / showingMax;
-      showingColor.w = 1.0;
-    }
+        float signalDistance = dataUnscaled.w;
+        if (sumUnscaled > 0.0) {
+            signalDistance *= sumScaled / sumUnscaled;
+        }
 
-    // Draw the axes color as the lowest item on the screen.
-    // TODO(owilliams): The "4" in this line makes sure the axis gets
-    // rendered even when the waveform is fairly short.  Really this
-    // value should be based on the size of the widget.
-    if (abs(framebufferSize.y / 2 - pixel.y) <= 4) {
-        outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-        outputColor.w = 1.0;
+        showing = signalDistance >= ourDistance;
+        shadow = !showing && (dataUnscaled.w >= ourDistance);
+
+        // Linearly combine the low, mid, and high colors according to the low,
+        // mid, and high components.
+        if (showing) {
+            outputColor =
+                    lowColor * data.x +
+                    midColor * data.y +
+                    highColor * data.z;
+        } else if (shadow) {
+            outputColor =
+                    lowColor * dataUnscaled.x +
+                    midColor * dataUnscaled.y +
+                    highColor * dataUnscaled.z;
+        }
+
+        float maxComponent = max(outputColor.x,
+                max(outputColor.y, outputColor.z));
+
+        if (maxComponent > 0.0) {
+            outputColor.xyz /= maxComponent;
+        }
     }
 
     if (showing) {
-        float alpha = 1.0;
-        outputColor.xyz = mix(outputColor.xyz, showingColor.xyz, alpha);
         outputColor.w = 1.0;
+    } else if (abs(framebufferSize.y / 2 - pixelY) <= 4.0) {
+        // Draw the axes color as the lowest item on the screen.
+        // TODO(owilliams): The "4" in this line makes sure the axis gets
+        // rendered even when the waveform is fairly short.  Really this
+        // value should be based on the size of the widget.
+        outputColor = axesColor;
+    } else if (shadow) {
+        outputColor.w = 0.4;
     }
-    gl_FragColor = outputColor;
 
+    gl_FragColor = outputColor;
 }

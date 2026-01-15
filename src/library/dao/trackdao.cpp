@@ -361,7 +361,7 @@ bool TrackDAO::saveTrack(Track* pTrack) const {
 
     const TrackId trackId = pTrack->getId();
     DEBUG_ASSERT(trackId.isValid());
-    kLogger.debug() << "TrackDAO: Saving track"
+    kLogger.debug() << "Saving track"
                     << trackId
                     << pTrack->getLocation();
     if (!updateTrack(*pTrack)) {
@@ -740,7 +740,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         return TrackId();
     }
 
-    kLogger.debug() << "TrackDAO: Adding track"
+    kLogger.debug() << "Adding track"
                     << fileInfo.location();
 
     TrackId trackId;
@@ -1679,8 +1679,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
     const TrackId trackId = track.getId();
     DEBUG_ASSERT(trackId.isValid());
 
-    kLogger.debug() << "TrackDAO:"
-                    << "Updating track in database"
+    kLogger.debug() << "Updating track in database"
                     << trackId
                     << track.getLocation();
 
