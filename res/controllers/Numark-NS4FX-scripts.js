@@ -41,32 +41,32 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         off: 0x01,
         // This function is now primarily for setting the LED from the script,
         // not just toggling. The connect function handles state-based LED updates.
-        output: function (value) {
+        output: function(value) {
             if (deckInstance[padStateProperty].isHeldForVolume) {
                 return; // Don't change LED if pad is held for volume control
             }
             midi.sendShortMsg(this.midi[0], this.midi[1], value ? this.on : this.off);
         },
-        connect: function () {
+        connect: function() {
             components.Button.prototype.connect.call(this);
             var stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
             var buttonInstance = this;
             // This connection ensures the pad LED reflects the stem's mute state in Mixxx.
-            this.mute_connection = engine.makeConnection(stemGroup, "mute", function (value) {
+            this.mute_connection = engine.makeConnection(stemGroup, "mute", function(value) {
                 var isMuted = (value === 1);
                 var ledValue = isMuted ? buttonInstance.off : buttonInstance.on;
                 midi.sendShortMsg(buttonInstance.midi[0], buttonInstance.midi[1], ledValue);
             });
             this.mute_connection.trigger();
         },
-        disconnect: function () {
+        disconnect: function() {
             components.Button.prototype.disconnect.call(this);
             if (this.mute_connection) {
                 this.mute_connection.disconnect();
                 this.mute_connection = null;
             }
         },
-        input: function (channel, control, value, status) {
+        input: function(channel, control, value, status) {
             var padState = deckInstance[padStateProperty];
 
             // If shift is held, a pad tap will toggle the QuickEffect for that stem.
@@ -88,7 +88,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
                     engine.stopTimer(padState.timerId);
                 }
                 // Start a timer to detect if the pad is being held.
-                var localTimerId = engine.beginTimer(250, function () { // 250ms hold threshold
+                var localTimerId = engine.beginTimer(250, function() { // 250ms hold threshold
                     if (padState.timerId === localTimerId) {
                         padState.isHeldForVolume = true;
                         NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " HELD.");
@@ -123,14 +123,14 @@ function createTransportPad(deck, padNumber, defaultKey, momentary) {
         number: hotcueNumber,
         group: deck.group,
         midi: [midiChan, midiNote],
-        output: function (value) {
+        output: function(value) {
             midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01);
         }
     });
     deck['transport_pad_' + padNumber + '_hotcue'] = hotcueButton;
 
     var button = new components.Button({
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             NS4FX.dbg("Transport pad " + padNumber + " on deck " + deck.number + " pressed with value " + value);
             var isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === 'hotcue';
 
@@ -166,18 +166,18 @@ function createTransportPad(deck, padNumber, defaultKey, momentary) {
 
 var NS4FX = {};
 
-NS4FX.dbg = function (str) {
+NS4FX.dbg = function(str) {
     if (NS4FX.debug) {
         print(str);
     }
 };
 
-NS4FX.testMidi = function (status, control, value) {
+NS4FX.testMidi = function(status, control, value) {
     midi.sendShortMsg(status, control, value);
     NS4FX.dbg("Sent test MIDI: status=" + status.toString(16) + ", control=" + control.toString(16) + ", value=" + value.toString(16));
 };
 
-NS4FX.init = function (id, debug) {
+NS4FX.init = function(id, debug) {
     NS4FX.debug = debug;
     NS4FX.dbg("NS4FX.init started.");
 
@@ -189,7 +189,7 @@ NS4FX.init = function (id, debug) {
     // When a stem pad is held, this knob adjusts the stem's volume (or effect amount if SHIFT is also held).
     // If no stem pad is held, it controls the superknob for both effect units.
     NS4FX.beatsKnob = new components.Encoder({
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             var heldStemInfo = null;
             for (var i = 1; i <= 4; i++) {
                 var deck = NS4FX.decks[i];
@@ -256,7 +256,7 @@ NS4FX.init = function (id, debug) {
     NS4FX.crossfader = new components.Pot({
         group: '[Master]',
         inKey: 'crossfader',
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             if (useFadercutsAsStems) {
                 if (NS4FX.decks[1].padmode_str === 'stems' || NS4FX.decks[2].padmode_str === 'stems' || NS4FX.decks[3].padmode_str === 'stems' || NS4FX.decks[4].padmode_str === 'stems') {
                     return; // In stems mode, so do nothing.
@@ -280,7 +280,7 @@ NS4FX.init = function (id, debug) {
         { unit: 2, slot: 3, id: 18, meta: 1 }
     ];
 
-    effects.forEach(function (effect) {
+    effects.forEach(function(effect) {
         var group = '[EffectRack1_EffectUnit' + effect.unit + '_Effect' + effect.slot + ']';
         engine.setParameter(group, 'meta', effect.meta);
         engine.setValue(group, "clear", 1);
@@ -322,7 +322,7 @@ NS4FX.init = function (id, debug) {
     NS4FX.sampler_all[2] = new NS4FX.Sampler(5);
 
     NS4FX.sampler = NS4FX.sampler_all[1];
-    NS4FX.sampler_all[2].forEachComponent(function (component) {
+    NS4FX.sampler_all[2].forEachComponent(function(component) {
         component.disconnect();
     });
 
@@ -336,21 +336,21 @@ NS4FX.init = function (id, debug) {
 
     // initialize some leds
     // Initialize effect LEDs
-    NS4FX.effectUnit.effects.forEach(function (effect) {
+    NS4FX.effectUnit.effects.forEach(function(effect) {
         var button = NS4FX.effectUnit.effectButtons[effect.name];
         if (button && button.trigger) {
             button.trigger();
         }
     });
 
-    NS4FX.decks.forEachComponent(function (component) {
+    NS4FX.decks.forEachComponent(function(component) {
         component.trigger();
     });
 
     NS4FX.browse = new NS4FX.BrowseKnob();
 
     // helper functions
-    var led = function (group, key, midi_channel, midino) {
+    var led = function(group, key, midi_channel, midino) {
         if (engine.getValue(group, key)) {
             midi.sendShortMsg(0x90 | midi_channel, midino, 0x7F);
         }
@@ -403,8 +403,8 @@ NS4FX.init = function (id, debug) {
 
     // setup bpm arrow tracking
     for (var i = 1; i <= 4; i++) {
-        (function (deckNum) {
-            engine.makeConnection('[Channel' + deckNum + ']', 'bpm', function (value) {
+        (function(deckNum) {
+            engine.makeConnection('[Channel' + deckNum + ']', 'bpm', function(value) {
                 // When a deck's BPM changes, update its arrows and its opposite's arrows.
                 NS4FX.updateBpmArrows(deckNum);
                 var oppositeDeckNum;
@@ -426,7 +426,7 @@ NS4FX.init = function (id, debug) {
     NS4FX.dbg("NS4FX.init finished");
 };
 
-NS4FX.shutdown = function () {
+NS4FX.shutdown = function() {
     // note: not all of this appears to be strictly necessary, things work fine
     // with out this, but Serato has been observed sending these led reset
     // messages during shutdown. The last sysex message may be necessary to
@@ -518,14 +518,14 @@ NS4FX.shutdown = function () {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-NS4FX.EffectUnit = function () {
+NS4FX.EffectUnit = function() {
     var self = this;
     this.deck1 = true;
     this.deck2 = true;
     this.switch_active_left = false;
     this.switch_active_right = false;
 
-    this.toggleEffect = function (effectName) {
+    this.toggleEffect = function(effectName) {
         var effect = this.effects.find(e => e.name === effectName);
         if (!effect) return;
 
@@ -539,9 +539,9 @@ NS4FX.EffectUnit = function () {
         this.updateEffectButtons();
     };
 
-    this.updateEffectButtons = function () {
+    this.updateEffectButtons = function() {
         var self = this;
-        this.effects.forEach(function (effect) {
+        this.effects.forEach(function(effect) {
             var group = '[EffectRack1_EffectUnit' + effect.unit + '_Effect' +
                 (self.effects.filter(e => e.unit === effect.unit).indexOf(effect) + 1) + ']';
             var isEnabled = engine.getValue(group, 'enabled');
@@ -553,7 +553,7 @@ NS4FX.EffectUnit = function () {
         midi: [0xB8, 0x04],
         group: '[EffectRack1_EffectUnit1]',
         inKey: 'mix',
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             var newValue = value / 127;
             engine.setValue('[EffectRack1_EffectUnit1]', 'mix', newValue);
             engine.setValue('[EffectRack1_EffectUnit2]', 'mix', newValue);
@@ -571,12 +571,12 @@ NS4FX.EffectUnit = function () {
     this.activeEffect = null;
 
     this.effectButtons = {};
-    this.effects.forEach(function (effect) {
+    this.effects.forEach(function(effect) {
         self.effectButtons[effect.name] = new components.Button({
             midi: [effect.status, effect.control],
             group: '[EffectRack1_EffectUnit' + effect.unit + ']',
             inKey: 'enabled',
-            input: function (channel, control, value, status, group) {
+            input: function(channel, control, value, status, group) {
                 if (value === 0x7F) {
                     self.toggleEffect(effect.name);
                 }
@@ -584,7 +584,7 @@ NS4FX.EffectUnit = function () {
         });
     });
 
-    this.setEffectUnitsForChannel = function (channel, active) {
+    this.setEffectUnitsForChannel = function(channel, active) {
         var unit1 = "[EffectRack1_EffectUnit1]";
         var unit2 = "[EffectRack1_EffectUnit2]";
         var groupKey = "group_[Channel" + channel + "]_enable";
@@ -600,7 +600,7 @@ NS4FX.EffectUnit = function () {
     };
 
     // Linker Switch (Deck 1)
-    this.leftSwitch = function (channel, control, value, status, group) {
+    this.leftSwitch = function(channel, control, value, status, group) {
         var active = value !== 0x00;
         var inactiveDeck = this.deck1 ? 3 : 1;
         var activeDeck = this.deck1 ? 1 : 3;
@@ -610,7 +610,7 @@ NS4FX.EffectUnit = function () {
         this.setEffectUnitsForChannel(activeDeck, isActive(activeDeck) && active);
     };
 
-    this.rightSwitch = function (channel, control, value, status, group) {
+    this.rightSwitch = function(channel, control, value, status, group) {
         var active = value !== 0x00;
         var inactiveDeck = this.deck2 ? 4 : 2;
         var activeDeck = this.deck2 ? 2 : 4;
@@ -620,7 +620,7 @@ NS4FX.EffectUnit = function () {
         this.setEffectUnitsForChannel(activeDeck, isActive(activeDeck) && active);
     };
 
-    this.updateEffectOnDeckSwitch = function (leftSide) {
+    this.updateEffectOnDeckSwitch = function(leftSide) {
         if (!OnlyActiveDeckEffect) {
             return;
         }
@@ -637,13 +637,13 @@ NS4FX.EffectUnit = function () {
 
     this.bpmTap = new components.Button({
         shifted: false,
-        shift: function () {
+        shift: function() {
             this.shifted = true;
         },
-        unshift: function () {
+        unshift: function() {
             this.shifted = false;
         },
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             NS4FX.dbg("bpmTap input. value: " + value + ", status: " + status.toString(16) + ", shifted: " + this.shifted);
             // Only act on button press (value=0x7F) and only on one of the two MIDI messages (status=0x98)
             // to avoid the action being triggered twice by the single physical button.
@@ -687,7 +687,7 @@ NS4FX.EffectUnit = function () {
 
 NS4FX.EffectUnit.prototype = new components.ComponentContainer();
 
-NS4FX.Deck = function (number, midi_chan) {
+NS4FX.Deck = function(number, midi_chan) {
     NS4FX.dbg("NS4FX.Deck constructor for deck " + number);
     var deck = this;
     this.number = number;
@@ -710,21 +710,21 @@ NS4FX.Deck = function (number, midi_chan) {
 
     this.bpm = new components.Component({
         outKey: "bpm",
-        output: function (value, group, control) {
+        output: function(value, group, control) {
             NS4FX.sendScreenBpmMidi(number, Math.round(value * 100));
         },
     });
 
     this.rate = new components.Component({
         outKey: "rate",
-        output: function (value, group, control) {
+        output: function(value, group, control) {
             NS4FX.sendScreenPitchMidi(deck.number, value);
         },
     });
 
     this.rateRange = new components.Component({
         outKey: "rateRange",
-        output: function (value) {
+        output: function(value) {
             // The display expects a "Note On" message on the deck's channel with note 0x0E.
             // The velocity is the pitch range percentage (e.g., 8 for 8%).
             // This was discovered by studying the Numark-NS6II-scripts.js file.
@@ -737,7 +737,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
     this.duration = new components.Component({
         outKey: "duration",
-        output: function (duration, group, control) {
+        output: function(duration, group, control) {
             NS4FX.dbg("Deck " + deck.number + " track loaded/changed, duration=" + duration);
             // update duration
             NS4FX.sendScreenDurationMidi(number, duration * 1000);
@@ -749,10 +749,10 @@ NS4FX.Deck = function (number, midi_chan) {
             // To prevent this, we disconnect the buttons, wait for the engine state to settle,
             // then reconnect and perform a manual update.
             if (deck.padmode_str === 'hotcue') {
-                deck.hotcues.forEachComponent(function (c) { c.disconnect(); });
+                deck.hotcues.forEachComponent(function(c) { c.disconnect(); });
             }
 
-            engine.beginTimer(50, function () {
+            engine.beginTimer(50, function() {
                 if (deck.padmode_str === 'hotcue') {
                     deck.hotcues.reconnectComponents();
                     deck.hotcue_buttons.updateLEDs();
@@ -763,7 +763,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
     this.position = new components.Component({
         outKey: "playposition",
-        output: function (playposition, group, control) {
+        output: function(playposition, group, control) {
             // the controller appears to expect a value in the range of 0-52
             // representing the position of the track. Here we send a message to the
             // controller to update the position display with our current position.
@@ -799,7 +799,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
     this.orientation = new components.Button({
         midi: [0xB0 - 1 + midi_chan, 0x1E],
-        input: function (channel, control, value, status) {
+        input: function(channel, control, value, status) {
             var desiredOrientation = [1, 0, 2][value]
             engine.setValue(this.group, "orientation", desiredOrientation);
         },
@@ -811,7 +811,7 @@ NS4FX.Deck = function (number, midi_chan) {
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 4,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             NS4FX.dbg("play_button.input called. Shift: " + NS4FX.shift + ", isPress: " + this.isPress(channel, control, value, status));
             if (this.isPress(channel, control, value, status)) {
                 if (NS4FX.shift) {
@@ -832,7 +832,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
     this.load = new components.Button({
         inKey: 'LoadSelectedTrack',
-        shift: function () {
+        shift: function() {
             if (ShiftLoadEjects) {
                 this.inKey = 'eject';
             }
@@ -840,7 +840,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 this.inKey = 'LoadSelectedTrackAndPlay';
             }
         },
-        unshift: function () {
+        unshift: function() {
             this.inKey = 'LoadSelectedTrack';
         },
     });
@@ -851,7 +851,7 @@ NS4FX.Deck = function (number, midi_chan) {
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 4,
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             // The controller sends a different MIDI note for a shifted CUE press.
             // We check for that note here to decide which action to take.
             var isShiftedPress = (control === (this.midi[1] + this.shiftOffset));
@@ -897,9 +897,9 @@ NS4FX.Deck = function (number, midi_chan) {
             // A release is a Note Off (0x80-0x8F) or Note On with velocity 0.
             return (status & 0xF0) === 0x90 && value > 0;
         },
-        unshift: function () {
+        unshift: function() {
             // Custom input handler for short-press (beatsync) and long-press (sync lock)
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(channel, control, value, status, group) {
                 if (this.isPress(channel, control, value, status)) {
                     // On press, start a timer to detect a long press
                     NS4FX.dbg("Sync press on " + group + ". Starting timer.");
@@ -925,7 +925,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 }
             };
         },
-        shift: function () {
+        shift: function() {
             // Default shift behavior is to toggle quantize
             this.inKey = "quantize";
             this.type = components.Button.prototype.types.toggle;
@@ -938,7 +938,7 @@ NS4FX.Deck = function (number, midi_chan) {
         key: 'pfl',
         off: 0x01,
         type: components.Button.prototype.types.toggle,
-        connect: function () {
+        connect: function() {
             components.Button.prototype.connect.call(this);
             this.connections[1] = engine.makeConnection(this.group, this.outKey, NS4FX.pflToggle.bind(this));
         },
@@ -951,7 +951,7 @@ NS4FX.Deck = function (number, midi_chan) {
     this.roll_buttons = new components.ComponentContainer();
     this.slicer_buttons = new components.ComponentContainer();
     this.sampler_buttons = new components.ComponentContainer({
-        updateLEDs: function () {
+        updateLEDs: function() {
             for (let button in deck.sampler_buttons) {
                 if (this[button] instanceof components.SamplerButton) {
                     const samplerGroup = `[Sampler${this[button].number}]`; // Group of the corresponding sampler
@@ -963,7 +963,7 @@ NS4FX.Deck = function (number, midi_chan) {
         }
     });
     this.fadercuts_buttons = new components.ComponentContainer({
-        updateLEDs: function (deckGroup) {
+        updateLEDs: function(deckGroup) {
             for (let button in deck.fadercuts_buttons) {
                 if (deck.fadercuts_buttons[button] instanceof components.Button) {
                     deck.fadercuts_buttons[button].output(0);
@@ -972,7 +972,7 @@ NS4FX.Deck = function (number, midi_chan) {
         }
     });
     this.autoloop_buttons = new components.ComponentContainer({
-        updateLEDs: function (deckGroup) {
+        updateLEDs: function(deckGroup) {
             for (let button in deck.autoloop_buttons) { // Iterate directly over autoloop_buttons
                 if (deck.autoloop_buttons[button] instanceof components.Button) {
                     const loopLength = Math.pow(2, 5 - deck.autoloop_buttons[button].number); // Calculate loop length for the button
@@ -985,9 +985,9 @@ NS4FX.Deck = function (number, midi_chan) {
         }
     });
 
-    var addShiftClearToHotcue = function (button) {
+    var addShiftClearToHotcue = function(button) {
         var original_input = button.input;
-        button.input = function (channel, control, value, status, group) {
+        button.input = function(channel, control, value, status, group) {
             if (deck.padmode_str === 'hotcue' && NS4FX.shift) {
                 var hotcueNumber = this.number;
                 NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
@@ -1005,7 +1005,7 @@ NS4FX.Deck = function (number, midi_chan) {
             group: this.group,
             midi: [0x94 + midi_chan, 0x1F + i],
             number: i + 4,
-            output: function (value) {
+            output: function(value) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x00);
             }
         });
@@ -1018,7 +1018,7 @@ NS4FX.Deck = function (number, midi_chan) {
             group: this.group,
             midi: [0x94 + midi_chan, 0x13 + i], // notes 0x14, 0x15, 0x16, 0x17
             number: i,
-            output: function (value) {
+            output: function(value) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x00);
             }
         });
@@ -1041,7 +1041,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
         this.autoloop_buttons[5 - i] = new components.Button({
             midi: [0x94 + midi_chan, 0x18 - i], // Example MIDI addresses
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 // Guard to ensure this logic only runs when autoloop mode is active.
                 if (deck.padmode_str !== 'autoloop') {
                     return;
@@ -1074,7 +1074,7 @@ NS4FX.Deck = function (number, midi_chan) {
                     deck.autoloop_buttons.updateLEDs(deckGroup);
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
             },
             number: i // Stores the button number (1-4)
@@ -1083,7 +1083,7 @@ NS4FX.Deck = function (number, midi_chan) {
         if (!useFadercutsAsStems) {
             this.fadercuts_buttons[5 - i] = new components.Button({
                 midi: [0x94 + midi_chan, 0x18 - i], // Example MIDI addresses
-                input: function (channel, control, value, status) {
+                input: function(channel, control, value, status) {
                     if (deck.padmode_str !== 'fadercuts') {
                         return;
                     }
@@ -1105,10 +1105,10 @@ NS4FX.Deck = function (number, midi_chan) {
                         this.output(0); // Deactivate LED
                     }
                 },
-                output: function (value) {
+                output: function(value) {
                     midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
                 },
-                startFaderCuts: function (deckGroup, interval) {
+                startFaderCuts: function(deckGroup, interval) {
                     let toggle = false;
 
                     this.faderCutInterval = engine.beginTimer(interval, () => {
@@ -1119,7 +1119,7 @@ NS4FX.Deck = function (number, midi_chan) {
                     });
                     print(`Timer started with interval ${interval}ms`);
                 },
-                stopFaderCuts: function (deckGroup) {
+                stopFaderCuts: function(deckGroup) {
                     if (this.faderCutInterval) {
                         engine.stopTimer(this.faderCutInterval);
                         this.faderCutInterval = null;
@@ -1144,9 +1144,9 @@ NS4FX.Deck = function (number, midi_chan) {
     }
     // Combine the two rows of hotcue pads into a single container for easier management in pad modes.
     this.hotcue_buttons = new components.ComponentContainer({
-        updateLEDs: function () {
+        updateLEDs: function() {
             NS4FX.dbg('Updating hotcue LEDs for deck ' + deck.number);
-            this.forEachComponent(function (c) {
+            this.forEachComponent(function(c) {
                 if (c.number === undefined) {
                     NS4FX.dbg('  HC with undefined number, skipping');
                     return;
@@ -1164,7 +1164,7 @@ NS4FX.Deck = function (number, midi_chan) {
         this.hotcue_buttons[k + 4] = this.hotcue_buttons_5_8[k]; // hotcues 5-8
     }
 
-    this.change_padmode = function (padmode) {
+    this.change_padmode = function(padmode) {
         NS4FX.dbg("Deck " + this.number + " change_padmode: from " + this.padmode_str + " to " + padmode);
         this.padmode_str = padmode;
         // This is the main pad mode switching logic.
@@ -1194,7 +1194,7 @@ NS4FX.Deck = function (number, midi_chan) {
         } else if (padmode == "scratchbanks") {
             print("not implemented yet");
         }
-        this.hotcues.forEachComponent(function (component) {
+        this.hotcues.forEachComponent(function(component) {
             component.disconnect();
         })
         this.hotcues = buttons;
@@ -1205,7 +1205,7 @@ NS4FX.Deck = function (number, midi_chan) {
         inKey: 'rate',
         outMin: -1,
         outMax: 1,
-        inSetParameter: function (value) {
+        inSetParameter: function(value) {
             // 'value' is the normalized (0-1) value from the MIDI input.
             var processedValue = 1 - value;
 
@@ -1226,12 +1226,12 @@ NS4FX.Deck = function (number, midi_chan) {
 
             engine.setValue(this.group, this.inKey, calculatedValue);
         },
-        shift: function () {
+        shift: function() {
             this.inKey = 'rateRange';
             this.outMin = 0.04;
             this.outMax = 0.90;
         },
-        unshift: function () {
+        unshift: function() {
             this.inKey = 'rate';
             this.outMin = -1;
             this.outMax = 1;
@@ -1243,7 +1243,7 @@ NS4FX.Deck = function (number, midi_chan) {
         this.pitch.firstValueReceived = true;
     }
 
-    var pitch_button_handler = function (channel, control, value, status, group) {
+    var pitch_button_handler = function(channel, control, value, status, group) {
         // 'this' is the button component
         var is_press = this.isPress(channel, control, value, status);
         this.is_pressed = is_press;
@@ -1274,21 +1274,21 @@ NS4FX.Deck = function (number, midi_chan) {
     this.pitch_bend_up = new components.Button({
         inKey: 'rate_temp_up',
         input: pitch_button_handler,
-        shift: function () { this.inKey = 'pitch_up'; },
-        unshift: function () { this.inKey = 'rate_temp_up'; },
+        shift: function() { this.inKey = 'pitch_up'; },
+        unshift: function() { this.inKey = 'rate_temp_up'; },
     });
 
     this.pitch_bend_down = new components.Button({
         inKey: 'rate_temp_down',
         input: pitch_button_handler,
-        shift: function () { this.inKey = 'pitch_down'; },
-        unshift: function () { this.inKey = 'rate_temp_down'; },
+        shift: function() { this.inKey = 'pitch_down'; },
+        unshift: function() { this.inKey = 'rate_temp_down'; },
     });
 
     this.pitch_bend_up.other = this.pitch_bend_down;
     this.pitch_bend_down.other = this.pitch_bend_up;
 
-    var key_up_or_down = function (channel, control, value, status, group) {
+    var key_up_or_down = function(channel, control, value, status, group) {
         this.is_pressed = this.isPress(channel, control, value, status);
         if (this.is_pressed) {
             if (this.other.is_pressed) {
@@ -1328,7 +1328,7 @@ NS4FX.Deck = function (number, midi_chan) {
     this.padMode = new components.ComponentContainer({
         pad_hotcue: new components.Button({
             midi: [0x94 + midi_chan, 0x00], // MIDI address for Hotcue mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) { // Button pressed
                     this.groupContainer.turnOffOtherButtons(this); // Deactivates other LEDs
                     this.output(1); // Activates LED for this mode
@@ -1336,26 +1336,26 @@ NS4FX.Deck = function (number, midi_chan) {
                     deck.change_padmode("hotcue");
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x01); // LED on/off
             }
         }),
         pad_autoloop: new components.Button({
             midi: [0x94 + midi_chan, 0x0D], // MIDI address for Autoloop mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) { // Button pressed
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
                     deck.change_padmode("autoloop");
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x00);
             }
         }),
         pad_fadercuts: new components.Button({
             midi: [0x94 + midi_chan, 0x07], // MIDI address for Fadercuts mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
@@ -1370,76 +1370,76 @@ NS4FX.Deck = function (number, midi_chan) {
                     }
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x00);
             }
         }),
         pad_sampler: new components.Button({
             midi: [0x94 + midi_chan, 0x0B], // MIDI address for Sample mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
                     deck.change_padmode("sampler");
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x00);
             }
         }),
         pad_pitchplay: new components.Button({
             midi: [0x94 + midi_chan, 0x02], // MIDI address for Pitch Play mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
                     deck.change_padmode("pitchplay");
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x00);
             }
         }),
         pad_roll: new components.Button({
             midi: [0x94 + midi_chan, 0x06], // MIDI address for Roll mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
                     deck.change_padmode("roll");
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x00);
             }
         }),
         pad_slicer: new components.Button({
             midi: [0x94 + midi_chan, 0x0E], // MIDI address for Slicer mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
                     deck.change_padmode("slicer");
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x00);
             }
         }),
         pad_scratchbanks: new components.Button({
             midi: [0x94 + midi_chan, 0x0F], // MIDI address for Scratch Banks mode
-            input: function (channel, control, value, status) {
+            input: function(channel, control, value, status) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
                     deck.change_padmode("scratchbanks");
                 }
             },
-            output: function (value) {
+            output: function(value) {
                 this.send(value ? 0x7F : 0x00);
             }
         }),
-        turnOffOtherButtons: function (activeButton) {
+        turnOffOtherButtons: function(activeButton) {
             for (var button in this) { // NOSONAR
                 if (this[button] instanceof components.Button && this[button] !== activeButton) {
                     this[button].output(0); // Turns off LEDs of other buttons
@@ -1465,7 +1465,7 @@ NS4FX.Deck = function (number, midi_chan) {
         this.loopControls = new components.ComponentContainer({
             loop_halve: new components.Button({
                 midi: [0x94 + midi_chan, 0x34],
-                input: function (channel, control, value, status) {
+                input: function(channel, control, value, status) {
                     if (value === 0x7F) { // Button pressed
                         engine.setValue(this.group, "loop_halve", 1);
                         this.output(1);
@@ -1476,14 +1476,14 @@ NS4FX.Deck = function (number, midi_chan) {
                         }
                     }
                 },
-                output: function (value) {
+                output: function(value) {
                     this.send(value ? 0x7F : 0x01);
                 }
             }),
 
             loop_double: new components.Button({
                 midi: [0x94 + midi_chan, 0x35],
-                input: function (channel, control, value, status) {
+                input: function(channel, control, value, status) {
                     if (value === 0x7F) { // Button pressed
                         engine.setValue(this.group, "loop_double", 1);
                         this.output(1);
@@ -1494,14 +1494,14 @@ NS4FX.Deck = function (number, midi_chan) {
                         }
                     }
                 },
-                output: function (value) {
+                output: function(value) {
                     this.send(value ? 0x7F : 0x01);
                 }
             }),
 
             loop_in: new components.Button({
                 midi: [0x94 + midi_chan, 0x36],
-                input: function (channel, control, value, status) {
+                input: function(channel, control, value, status) {
                     if (value === 0x7F) { // Button pressed
                         engine.setValue(this.group, "loop_in", 1);
                         this.output(1);
@@ -1510,14 +1510,14 @@ NS4FX.Deck = function (number, midi_chan) {
                         this.output(0);
                     }
                 },
-                output: function (value) {
+                output: function(value) {
                     this.send(value ? 0x7F : 0x01);
                 }
             }),
 
             loop_out: new components.Button({
                 midi: [0x94 + midi_chan, 0x37],
-                input: function (channel, control, value, status) {
+                input: function(channel, control, value, status) {
                     if (value === 0x7F) { // Button pressed
                         engine.setValue(this.group, "loop_out", 1);
                         this.output(1);
@@ -1526,13 +1526,13 @@ NS4FX.Deck = function (number, midi_chan) {
                         this.output(0);
                     }
                 },
-                output: function (value) {
+                output: function(value) {
                     this.send(value ? 0x7F : 0x01);
                 }
             }),
             reloop: new components.Button({
                 midi: [0x94 + midi_chan, 0x41],
-                input: function (channel, control, value, status) {
+                input: function(channel, control, value, status) {
                     if (value === 0x7F) { // Button pressed
                         var loopEnabled = engine.getValue(this.group, "loop_enabled");
                         if (loopEnabled) {
@@ -1547,12 +1547,12 @@ NS4FX.Deck = function (number, midi_chan) {
                         this.output(0);
                     }
                 },
-                output: function (value) {
+                output: function(value) {
                     this.send(value ? 0x7F : 0x01);
                 },
-                connect: function () { // NOSONAR
+                connect: function() { // NOSONAR
                     this.connections.push(
-                        engine.connectControl(this.group, "loop_enabled", function (value) {
+                        engine.connectControl(this.group, "loop_enabled", function(value) {
                             this.output(value);
                         }.bind(this))
                     );
@@ -1561,7 +1561,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
             loop_toggle: new components.Button({
                 midi: [0x94 + midi_chan, 0x40],
-                input: function (channel, control, value, status) {
+                input: function(channel, control, value, status) {
                     if (value === 0x7F) { // Button pressed
                         var loopEnabled = engine.getValue(this.group, "loop_enabled");
                         var loopStartPosition = engine.getValue(this.group, "loop_start_position");
@@ -1589,15 +1589,15 @@ NS4FX.Deck = function (number, midi_chan) {
                         }
                     }
                 },
-                output: function (value) {
+                output: function(value) {
                     this.send(value ? 0x7F : 0x01);
                 },
-                connect: function () {
+                connect: function() {
                     this.connections.push(
-                        engine.connectControl(this.group, "loop_enabled", function (value) {
+                        engine.connectControl(this.group, "loop_enabled", function(value) {
                             this.output(value);
                         }.bind(this)),
-                        engine.connectControl(this.group, "track_loaded", function () {
+                        engine.connectControl(this.group, "track_loaded", function() {
                             var loopEnabled = engine.getValue(this.group, "loop_enabled");
                             this.output(loopEnabled);
                         }.bind(this))
@@ -1622,13 +1622,13 @@ NS4FX.Deck = function (number, midi_chan) {
         });
 
 
-        this.reconnectComponents(function (c) {
+        this.reconnectComponents(function(c) {
             if (c.group === undefined) {
                 c.group = deck.currentDeck;
             }
         });
 
-        this.setActive = function (active) {
+        this.setActive = function(active) {
             this.active = active;
 
             if (!active) {
@@ -1641,7 +1641,7 @@ NS4FX.Deck = function (number, midi_chan) {
 
 NS4FX.Deck.prototype = new components.Deck();
 
-NS4FX.Sampler = function (base) {
+NS4FX.Sampler = function(base) {
     for (var i = 1; i <= 4; ++i) {
         this[i] = new components.SamplerButton({
             midi: [0x9F, 0x20 + i],
@@ -1654,27 +1654,27 @@ NS4FX.Sampler = function (base) {
 
 NS4FX.Sampler.prototype = new components.ComponentContainer();
 
-NS4FX.HeadGain = function (sampler) {
+NS4FX.HeadGain = function(sampler) {
     components.Pot.call(this);
 
     this.ignore_next = null;
     this.shifted = false;
     this.sampler = sampler;
-    this.sampler.forEachComponent(function (component) {
+    this.sampler.forEachComponent(function(component) {
         engine.softTakeover(component.group, 'volume', true);
     });
 };
 NS4FX.HeadGain.prototype = new components.Pot({
     group: '[Master]',
     inKey: 'headGain',
-    input: function (channel, control, value, status, group) {
+    input: function(channel, control, value, status, group) {
         // we call softTakeoverIgnoreNextValue() here on the non-targeted
         // control only if the control was moved when focus was switched. This
         // is to avoid a phantom triggering of soft takeover that can happen if
         // ignoreNextValue() is called un-conditionally when the control target
         // is changed (like in shift()/unshift()).
         if (this.ignore_next == "sampler" && !this.shifted) {
-            this.sampler.forEachComponent(function (component) {
+            this.sampler.forEachComponent(function(component) {
                 engine.softTakeoverIgnoreNextValue(component.group, 'volume');
             });
             this.ignore_next = null;
@@ -1687,28 +1687,28 @@ NS4FX.HeadGain.prototype = new components.Pot({
         if (this.shifted) {
             // make head gain control the sampler volume when shifted
             var pot = this;
-            this.sampler.forEachComponent(function (component) {
+            this.sampler.forEachComponent(function(component) {
                 engine.setParameter(component.group, 'volume', pot.inValueScale(value));
             });
         } else {
             components.Pot.prototype.input.call(this, channel, control, value, status, group);
         }
     },
-    shift: function () {
+    shift: function() {
         this.shifted = true;
         this.ignore_next = "headgain";
     },
-    unshift: function () {
+    unshift: function() {
         this.shifted = false;
         this.ignore_next = "sampler";
     },
 });
 
-NS4FX.BrowseKnob = function () {
+NS4FX.BrowseKnob = function() {
     this.knob = new components.Encoder({
         group: '[Library]',
         inKey: 'Move',
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             NS4FX.dbg("Browse knob input. Shift: " + NS4FX.shift + ", inKey: " + this.inKey + ", value: " + value);
             if (value === 1) {
                 engine.setValue(this.group, this.inKey + 'Down', 1);
@@ -1716,10 +1716,10 @@ NS4FX.BrowseKnob = function () {
                 engine.setValue(this.group, this.inKey + 'Up', 1);
             }
         },
-        unshift: function () {
+        unshift: function() {
             this.inKey = 'Move';
         },
-        shift: function () {
+        shift: function() {
             this.inKey = 'Scroll';
         },
     });
@@ -1727,16 +1727,16 @@ NS4FX.BrowseKnob = function () {
     this.button = new components.Button({
         group: '[Library]',
         inKey: 'GoToItem', // Default action is to go to the selected item.
-        input: function (channel, control, value, status, group) {
+        input: function(channel, control, value, status, group) {
             NS4FX.dbg("Browse button input. Shift: " + NS4FX.shift + ", inKey: " + this.inKey + ", value: " + value);
             if (value > 0) { // Button pressed
                 engine.setValue(this.group, this.inKey, 1);
             }
         },
-        unshift: function () {
+        unshift: function() {
             this.inKey = 'GoToItem';
         },
-        shift: function () { // When shifted, move focus instead of selecting.
+        shift: function() { // When shifted, move focus instead of selecting.
             this.inKey = 'MoveFocusBackward';
         },
     });
@@ -1744,7 +1744,7 @@ NS4FX.BrowseKnob = function () {
 
 NS4FX.BrowseKnob.prototype = new components.ComponentContainer();
 
-NS4FX.encodeNumToArray = function (number) {
+NS4FX.encodeNumToArray = function(number) {
     var isNegative = number < 0;
     // The controller expects a custom sign-magnitude format, not standard two's complement.
     // We work with the absolute value for the magnitude part.
@@ -1768,7 +1768,7 @@ NS4FX.encodeNumToArray = function (number) {
     return number_array;
 };
 
-NS4FX.sendScreenDurationMidi = function (deck, duration) {
+NS4FX.sendScreenDurationMidi = function(deck, duration) {
     if (duration < 1) {
         duration = 1;
     }
@@ -1780,7 +1780,7 @@ NS4FX.sendScreenDurationMidi = function (deck, duration) {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-NS4FX.sendScreenTimeMidi = function (deck, time) {
+NS4FX.sendScreenTimeMidi = function(deck, time) {
     var timeArray = NS4FX.encodeNumToArray(time);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x04];
@@ -1789,7 +1789,7 @@ NS4FX.sendScreenTimeMidi = function (deck, time) {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-NS4FX.sendScreenBpmMidi = function (deck, bpm) {
+NS4FX.sendScreenBpmMidi = function(deck, bpm) {
     bpmArray = NS4FX.encodeNumToArray(bpm);
     bpmArray.shift();
     bpmArray.shift();
@@ -1800,7 +1800,7 @@ NS4FX.sendScreenBpmMidi = function (deck, bpm) {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-NS4FX.sendScreenPitchMidi = function (deck, rate) {
+NS4FX.sendScreenPitchMidi = function(deck, rate) {
     var downIncreasesSpeed =
         engine.getValue('[Channel' + deck + ']', 'rate_dir') === -1.0;
     if (downIncreasesSpeed) {
@@ -1840,7 +1840,7 @@ NS4FX.sendScreenPitchMidi = function (deck, rate) {
 };
 
 
-NS4FX.elapsedToggle = function () {
+NS4FX.elapsedToggle = function() {
 
     var current_setting = engine.getValue('[Controls]', 'ShowDurationRemaining');
     if (current_setting === 0) {
@@ -1855,7 +1855,7 @@ NS4FX.elapsedToggle = function () {
     }
 };
 
-NS4FX.timeElapsedCallback = function (value, group, control) {
+NS4FX.timeElapsedCallback = function(value, group, control) {
     // 0 = elapsed
     // 1 = remaining
     // 2 = both (we ignore this as the controller can't show both)
@@ -1878,7 +1878,7 @@ NS4FX.timeElapsedCallback = function (value, group, control) {
     midi.sendShortMsg(0x93, 0x46, on_off);
 };
 
-NS4FX.timeMs = function (deck, position, duration) {
+NS4FX.timeMs = function(deck, position, duration) {
     return Math.round(duration * position * 1000);
 };
 
@@ -1886,12 +1886,12 @@ NS4FX.timeMs = function (deck, position, duration) {
 // still spinning
 NS4FX.scratch_timer = []; // initialized before use (null is an acceptable value)
 NS4FX.scratch_tick = [];  // initialized before use
-NS4FX.resetScratchTimer = function (deck, tick) {
+NS4FX.resetScratchTimer = function(deck, tick) {
     if (!NS4FX.scratch_timer[deck]) return;
     NS4FX.scratch_tick[deck] = tick;
 };
 
-NS4FX.startScratchTimer = function (deck) {
+NS4FX.startScratchTimer = function(deck) {
     if (NS4FX.scratch_timer[deck]) return;
 
     NS4FX.scratch_tick[deck] = 0;
@@ -1900,14 +1900,14 @@ NS4FX.startScratchTimer = function (deck) {
     });
 };
 
-NS4FX.stopScratchTimer = function (deck) {
+NS4FX.stopScratchTimer = function(deck) {
     if (NS4FX.scratch_timer[deck]) {
         engine.stopTimer(NS4FX.scratch_timer[deck]);
     }
     NS4FX.scratch_timer[deck] = null;
 };
 
-NS4FX.scratchTimerCallback = function (deck) {
+NS4FX.scratchTimerCallback = function(deck) {
     // here we see if the platter is still physically moving even though the
     // platter is not being touched. For forward motion, we stop scratching
     // before the platter has physically stopped  and delay a little longer
@@ -1924,13 +1924,13 @@ NS4FX.scratchTimerCallback = function (deck) {
     NS4FX.scratchDisable(deck);
 };
 
-NS4FX.scratchDisable = function (deck) {
+NS4FX.scratchDisable = function(deck) {
     NS4FX.searching[deck] = false;
     NS4FX.stopScratchTimer(deck);
     engine.scratchDisable(deck, false);
 };
 
-NS4FX.scratchEnable = function (deck) {
+NS4FX.scratchEnable = function(deck) {
     var alpha = 1.0 / 8;
     var beta = alpha / 32;
 
@@ -1942,7 +1942,7 @@ NS4FX.scratchEnable = function (deck) {
 // these arrays are indexed from 1, so we initialize them with 5 values
 NS4FX.touching = [false, false, false, false, false];
 NS4FX.searching = [false, false, false, false, false];
-NS4FX.wheelTouch = function (channel, control, value, status, group) {
+NS4FX.wheelTouch = function(channel, control, value, status, group) {
     var deck = channel + 1;
 
     NS4FX.touching[deck] = (value === 0x7F);
@@ -1977,7 +1977,7 @@ NS4FX.wheelTouch = function (channel, control, value, status, group) {
 NS4FX.scratch_direction = [null, null, null, null, null]; // true == forward
 NS4FX.scratch_accumulator = [0, 0, 0, 0, 0];
 NS4FX.last_scratch_tick = [0, 0, 0, 0, 0];
-NS4FX.wheelTurn = function (channel, control, value, status, group) {
+NS4FX.wheelTurn = function(channel, control, value, status, group) {
     var deck = channel + 1;
     var direction;
     var newValue;
@@ -2050,7 +2050,7 @@ NS4FX.wheelTurn = function (channel, control, value, status, group) {
 };
 
 NS4FX.wheel = []; // initialized in the NS4FX.init() function
-NS4FX.wheelToggle = function (channel, control, value, status, group) {
+NS4FX.wheelToggle = function(channel, control, value, status, group) {
     if (value != 0x7F) return;
     if (NS4FX.shift) {
         NS4FX.elapsedToggle();
@@ -2062,7 +2062,7 @@ NS4FX.wheelToggle = function (channel, control, value, status, group) {
     }
 };
 
-NS4FX.deckSwitch = function (channel, control, value, status, group) {
+NS4FX.deckSwitch = function(channel, control, value, status, group) {
     this.ignore_deck_switch = !this.ignore_deck_switch;
 
     if (!this.ignore_deck_switch) {
@@ -2093,14 +2093,14 @@ NS4FX.deckSwitch = function (channel, control, value, status, group) {
 };
 
 // zero vu meters when toggling pfl
-NS4FX.pflToggle = function (value, group, control) {
+NS4FX.pflToggle = function(value, group, control) {
     midi.sendShortMsg(0xB0, 0x1F, 0);
     midi.sendShortMsg(0xB1, 0x1F, 0);
     midi.sendShortMsg(0xB2, 0x1F, 0);
     midi.sendShortMsg(0xB3, 0x1F, 0);
 };
 
-NS4FX.vuCallback = function (value, group, control) {
+NS4FX.vuCallback = function(value, group, control) {
     if (displayVUFromBothDecks) {
         var level = value * 81;
         // In this mode, we use the main output meters.
@@ -2151,7 +2151,7 @@ NS4FX.vuCallback = function (value, group, control) {
     }
 };
 
-NS4FX.setArrow = function (deckNumber, direction) {
+NS4FX.setArrow = function(deckNumber, direction) {
     var midi_chan = NS4FX.decks[deckNumber].midi_chan;
     var upArrowNote = 0x09;
     var downArrowNote = 0x0A;
@@ -2167,7 +2167,7 @@ NS4FX.setArrow = function (deckNumber, direction) {
     }
 };
 
-NS4FX.updateBpmArrows = function (deckNumber) {
+NS4FX.updateBpmArrows = function(deckNumber) {
     var oppositeDeckNumber;
     // Determine the opposite deck for BPM comparison
     if (deckNumber === 1) {
@@ -2213,7 +2213,7 @@ NS4FX.updateBpmArrows = function (deckNumber) {
 
 // track the state of the shift key
 NS4FX.shift = false;
-NS4FX.shiftToggle = function (channel, control, value, status, group) {
+NS4FX.shiftToggle = function(channel, control, value, status, group) {
     if (control === 0x20) {
         NS4FX.shift = value == 0x7F;
     }
