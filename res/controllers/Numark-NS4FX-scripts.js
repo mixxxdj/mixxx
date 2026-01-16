@@ -954,9 +954,9 @@ NS4FX.Deck = function (number, midi_chan) {
         updateLEDs: function () {
             for (let button in deck.sampler_buttons) {
                 if (this[button] instanceof components.SamplerButton) {
-                    const samplerGroup = `[Sampler${this[button].number}]`; // Gruppe des entsprechenden Samplers
-                    const isTrackLoaded = engine.getValue(samplerGroup, 'track_loaded'); // Prüfe, ob ein Track geladen ist
-                    // LED leuchtet, wenn ein Track geladen ist
+                    const samplerGroup = `[Sampler${this[button].number}]`; // Group of the corresponding sampler
+                    const isTrackLoaded = engine.getValue(samplerGroup, 'track_loaded'); // Check if a track is loaded
+                    // LED lights up when a track is loaded
                     deck.sampler_buttons[button].output(isTrackLoaded ? 1 : 0);
                 }
             }
@@ -973,13 +973,13 @@ NS4FX.Deck = function (number, midi_chan) {
     });
     this.autoloop_buttons = new components.ComponentContainer({
         updateLEDs: function (deckGroup) {
-            for (let button in deck.autoloop_buttons) { // Iteriere direkt über autoloop_buttons
+            for (let button in deck.autoloop_buttons) { // Iterate directly over autoloop_buttons
                 if (deck.autoloop_buttons[button] instanceof components.Button) {
-                    const loopLength = Math.pow(2, 5 - deck.autoloop_buttons[button].number); // Berechne Loop-Länge für den Button
+                    const loopLength = Math.pow(2, 5 - deck.autoloop_buttons[button].number); // Calculate loop length for the button
                     const currentLoopLength = engine.getValue(deckGroup, 'beatloop_size');
-                    const isActive = engine.getValue(deckGroup, 'loop_enabled') && currentLoopLength === loopLength; // Prüfe ob der Loop aktiv ist und die Länge übereinstimmt
+                    const isActive = engine.getValue(deckGroup, 'loop_enabled') && currentLoopLength === loopLength; // Check if the loop is active and the length matches
 
-                    deck.autoloop_buttons[button].output(isActive ? 1 : 0); // LED an/aus basierend auf Zustand
+                    deck.autoloop_buttons[button].output(isActive ? 1 : 0); // LED on/off based on state
                 }
             }
         }
@@ -1075,7 +1075,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 }
             },
             output: function (value) {
-                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED an/aus
+                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
             },
             number: i // Stores the button number (1-4)
         });
@@ -1106,14 +1106,14 @@ NS4FX.Deck = function (number, midi_chan) {
                     }
                 },
                 output: function (value) {
-                    midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED an/aus
+                    midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
                 },
                 startFaderCuts: function (deckGroup, interval) {
                     let toggle = false;
 
                     this.faderCutInterval = engine.beginTimer(interval, () => {
                         toggle = !toggle;
-                        const newVolume = toggle ? 1 : 0; // Wechsel zwischen voller Volume und Stille
+                        const newVolume = toggle ? 1 : 0; // Switch between full volume and silence
                         print(`Toggle=${toggle}, New Volume=${newVolume}`);
                         engine.setValue(deckGroup, 'volume', newVolume);
                     });
@@ -1132,12 +1132,12 @@ NS4FX.Deck = function (number, midi_chan) {
             });
         }
 
-        const rollDuration = Math.pow(2, -(i)); // Berechnet die Loop Roll Dauer (0.5, 0.25, 0.125, 0.0625)
+        const rollDuration = Math.pow(2, -(i)); // Calculates the loop roll duration (0.5, 0.25, 0.125, 0.0625)
         const rollDurationString = rollDuration.toFixed(4).replace(/0+$/, '');
         this.roll_buttons[5 - i] = new components.Button({
-            midi: [0x94 + midi_chan, 0x18 - i], // MIDI-Adresse für die Buttons
-            number: 5 - i, // Button-Nummer (1 bis 4)
-            inKey: `beatlooproll_${rollDurationString}_activate`, // Automatisch berechneter inKey
+            midi: [0x94 + midi_chan, 0x18 - i], // MIDI address for the buttons
+            number: 5 - i, // Button number (1 to 4)
+            inKey: `beatlooproll_${rollDurationString}_activate`, // Automatically calculated inKey
             outKey: `beatloop_${rollDurationString}_enabled`,
         });
 
@@ -1337,7 +1337,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 }
             },
             output: function (value) {
-                this.send(value ? 0x7F : 0x01); // LED an/aus
+                this.send(value ? 0x7F : 0x01); // LED on/off
             }
         }),
         pad_autoloop: new components.Button({
@@ -1536,10 +1536,10 @@ NS4FX.Deck = function (number, midi_chan) {
                     if (value === 0x7F) { // Button pressed
                         var loopEnabled = engine.getValue(this.group, "loop_enabled");
                         if (loopEnabled) {
-                            // If der Loop aktiv ist, deaktivieren wir ihn
+                            // If the loop is active, we deactivate it
                             engine.setValue(this.group, "loop_enabled", 0);
                         } else {
-                            // If kein Loop aktiv ist, aktivieren wir den letzten Loop
+                            // If no loop is active, we activate the last loop
                             engine.setValue(this.group, "reloop_toggle", 1);
                         }
                         this.output(1);
@@ -1550,7 +1550,7 @@ NS4FX.Deck = function (number, midi_chan) {
                 output: function (value) {
                     this.send(value ? 0x7F : 0x01);
                 },
-                connect: function () {
+                connect: function () { // NOSONAR
                     this.connections.push(
                         engine.connectControl(this.group, "loop_enabled", function (value) {
                             this.output(value);
@@ -1569,22 +1569,22 @@ NS4FX.Deck = function (number, midi_chan) {
                         var currentPosition = engine.getValue(this.group, "playposition");
                         var trackSamples = engine.getValue(this.group, "track_samples");
 
-                        // Konvertiere currentPosition zu Samples
+                        // Convert currentPosition to samples
                         var currentSamplePosition = currentPosition * trackSamples;
 
                         if (loopEnabled) {
-                            // If ein Loop aktiv ist, deaktivieren wir ihn
+                            // If a loop is active, we deactivate it
                             engine.setValue(this.group, "loop_enabled", 0);
                         } else if (loopStartPosition >= 0 && loopEndPosition > loopStartPosition &&
                             currentSamplePosition >= loopStartPosition && currentSamplePosition <= loopEndPosition) {
-                            // If wir uns innerhalb eines definierten Loops befinden, aktivieren wir ihn
+                            // If we are inside a defined loop, we activate it
                             engine.setValue(this.group, "loop_enabled", 1);
                         } else {
-                            // Ansonsten setzen wir einen neuen Loop
+                            // Otherwise we set a new loop
                             engine.setValue(this.group, "beatloop_activate", 1);
                         }
                         if (deck.padmode_str == "autoloop") {
-                            var deckGroup = `[Channel${deck.number}]`; // Deck-Gruppe basierend auf Deck-Nummer
+                            var deckGroup = `[Channel${deck.number}]`; // Deck group based on deck number
                             deck.autoloop_buttons.updateLEDs(deckGroup);
                         }
                     }
