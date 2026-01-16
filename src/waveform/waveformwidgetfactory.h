@@ -227,6 +227,15 @@ class WaveformWidgetFactory : public QObject,
     }
     static bool isOverviewNormalizedDefault();
 
+    WaveformWidgetBackend setAcceleration(bool enabled);
+
+    allshader::WaveformRendererSignalBase::Options getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options getWaveformOptionsSupportedByType(
+            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void setWaveformOption(
+            allshader::WaveformRendererSignalBase::Option option, bool enabled);
+    void resetWaveformOptions();
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }
