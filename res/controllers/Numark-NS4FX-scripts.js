@@ -10,14 +10,13 @@
 /******************
  * CONFIG OPTIONS *
  ******************/
-
-var EnableWheel = engine.getSetting("EnableWheel");
-var ShiftLoadEjects = engine.getSetting("ShiftLoadEjects");
-var OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
-var displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
-var defaultPadMode = engine.getSetting("defaultPadMode");
-var useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
-var useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
+const EnableWheel = engine.getSetting("EnableWheel");
+const ShiftLoadEjects = engine.getSetting("ShiftLoadEjects");
+const OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
+const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
+const defaultPadMode = engine.getSetting("defaultPadMode");
+const useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
+const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -30,12 +29,12 @@ var useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
  * @param {string} padStateProperty - The name of the property on the deck object that holds the state for this pad.
  */
 function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDetails) {
-    var fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
+    const fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
 
     return {
         midi: fullMidi,
         type: components.Button.prototype.types.toggle,
-        inKey: 'mute',
+        inKey: "mute",
         group: `[Channel${deckInstance.number}_Stem${stemNumber}]`,
         on: 0x7F,
         off: 0x01,
@@ -53,8 +52,8 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
             var buttonInstance = this;
             // This connection ensures the pad LED reflects the stem's mute state in Mixxx.
             this.mute_connection = engine.makeConnection(stemGroup, "mute", function(value) {
-                var isMuted = (value === 1);
-                var ledValue = isMuted ? buttonInstance.off : buttonInstance.on;
+                const isMuted = (value === 1);
+                const ledValue = isMuted ? buttonInstance.off : buttonInstance.on;
                 midi.sendShortMsg(buttonInstance.midi[0], buttonInstance.midi[1], ledValue);
             });
             this.mute_connection.trigger();
@@ -67,15 +66,15 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
             }
         },
         input: function(_channel, _control, value, _status) {
-            var padState = deckInstance[padStateProperty];
+            const padState = deckInstance[padStateProperty];
 
             // If shift is held, a pad tap will toggle the QuickEffect for that stem.
             // The hold-for-volume logic is bypassed.
             if (NS4FX.shift) {
                 if (value === 0x7F) { // Button pressed
-                    var quickEffectGroup = `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`;
-                    NS4FX.dbg("Toggling " + quickEffectGroup);
-                    var currentEffectState = engine.getValue(quickEffectGroup, "enabled");
+                    const quickEffectGroup = `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`;
+                    NS4FX.dbg(`Toggling ${quickEffectGroup}`);
+                    const currentEffectState = engine.getValue(quickEffectGroup, "enabled");
                     engine.setValue(quickEffectGroup, "enabled", !currentEffectState);
                 }
                 return;
@@ -88,10 +87,10 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
                     engine.stopTimer(padState.timerId);
                 }
                 // Start a timer to detect if the pad is being held.
-                let localTimerId = engine.beginTimer(250, function() { // 250ms hold threshold
+                const localTimerId = engine.beginTimer(250, function() { // 250ms hold threshold
                     if (padState.timerId === localTimerId) {
                         padState.isHeldForVolume = true;
-                        NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " HELD.");
+                        NS4FX.dbg(`Stem pad ${stemNumber} on deck ${deckInstance.number} HELD.`);
                         padState.timerId = null;
                     }
                 }, true); // one-shot timer
@@ -103,9 +102,10 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
                     padState.timerId = null;
                 }
                 if (!padState.isHeldForVolume) {
-                    NS4FX.dbg("Stem pad " + stemNumber + " on deck " + deckInstance.number + " TAPPED.");
-                    var stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
-                    var currentMuteState = engine.getValue(stemGroup, "mute");
+                    NS4FX.dbg(`Stem pad ${stemNumber} on deck ${deckInstance.number} TAPPED.`);
+                    const stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
+                    const currentMuteState = 
+                    engine.getValue(stemGroup, "mute");
                     engine.setValue(stemGroup, "mute", currentMuteState === 0 ? 1 : 0);
                 }
                 padState.isHeldForVolume = false;
@@ -115,11 +115,11 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
 }
 
 function createTransportPad(deck, padNumber, defaultKey, momentary) {
-    var hotcueNumber = 4 + padNumber;
-    var midiNote = 0x18 + (padNumber - 1);
-    var midiChan = 0x94 + deck.midi_chan;
+    const hotcueNumber = 4 + padNumber;
+    const midiNote = 0x18 + (padNumber - 1);
+    const midiChan = 0x94 + deck.midi_chan;
 
-    var hotcueButton = new components.HotcueButton({
+    const hotcueButton = new components.HotcueButton({
         number: hotcueNumber,
         group: deck.group,
         midi: [midiChan, midiNote],
@@ -127,7 +127,7 @@ function createTransportPad(deck, padNumber, defaultKey, momentary) {
             midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01);
         }
     });
-    deck['transport_pad_' + padNumber + '_hotcue'] = hotcueButton;
+    deck[`transport_pad_${padNumber}_hotcue`] = hotcueButton;
 
     var button = new components.Button({
         input: function(channel, control, value, status, group) {
@@ -220,8 +220,8 @@ NS4FX.init = function(id, debug) {
                     currentValue = engine.getValue(group, control);
                     step = 0.05;
                 }
-                var newValue;
 
+                var newValue;
                 if (value === 0x01) { // Turned right
                     newValue = Math.min(1.0, currentValue + step);
                 } else { // Turned left (0x7F)
@@ -235,8 +235,7 @@ NS4FX.init = function(id, debug) {
 
                 for (var i = 0; i < effectUnits.length; i++) {
                     var unitGroup = effectUnits[i];
-                    var currentValue = engine.getValue(unitGroup, 'super1');
-                    var newValue;
+                    currentValue = engine.getValue(unitGroup, 'super1');
                     if (value === 0x01) { // Turned right
                         newValue = Math.min(1.0, currentValue + step);
                     } else { // Turned left (0x7F)
@@ -295,17 +294,17 @@ NS4FX.init = function(id, debug) {
     NS4FX.decks[4] = new NS4FX.Deck(4, 0x03);
 
     // Initialize hotcue pad LEDs to a "dim" state on startup.
-    for (var i = 0; i < 4; ++i) { // For each deck
+    for (let i = 0; i < 4; ++i) { // For each deck
         var pad_chan = 4 + i;
 
         // Dim pads 1-4 (notes 0x14-0x17)
-        for (var n = 0x14; n <= 0x17; n++) {
+        for (let n = 0x14; n <= 0x17; n++) {
             midi.sendShortMsg(0x90 | pad_chan, n, 0x00);
         }
 
         if (useAdditionalHotcues) {
             // Turn off pads 5-8 (notes 0x20-0x23) with a Note-On message and velocity 0.
-            for (var n = 0x20; n <= 0x23; n++) {
+            for (let n = 0x20; n <= 0x23; n++) {
                 midi.sendShortMsg(0x90 | pad_chan, n, 0x00);
             }
         }
@@ -358,7 +357,7 @@ NS4FX.init = function(id, debug) {
     };
 
     // init a bunch of channel specific leds
-    for (var i = 0; i < 4; ++i) {
+    for (let i = 0; i < 4; ++i) {
         var group = "[Channel" + (i + 1) + "]";
 
         // keylock indicator
@@ -400,7 +399,7 @@ NS4FX.init = function(id, debug) {
     engine.makeUnbufferedConnection("[Main]", "vu_meter_right", NS4FX.vuCallback);
 
     // setup bpm arrow tracking
-    for (var i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 4; i++) {
         (function(deckNum) {
             engine.makeConnection(`[Channel${deckNum}]`, "bpm", function(_value) {
                 // When a deck's BPM changes, update its arrows and its opposite's arrows.
@@ -690,7 +689,7 @@ NS4FX.Deck = function(number, midi_chan) {
     var deck = this;
     this.number = number;
     this.midi_chan = midi_chan;
-    this.active = (number == 1 || number == 2);
+    this.active = (number === 1 || number === 2);
 
     // If using stems, create state objects for each pad to track hold timers and states.
     // This is necessary for the hold-for-volume/effect functionality.
@@ -701,8 +700,6 @@ NS4FX.Deck = function(number, midi_chan) {
         this.stemPad4 = { timerId: null, isHeldForVolume: false };
     }
 
-    hotcuePressed = false;
-    playPressedDuringHotcue = false;
 
     components.Deck.call(this, number);
 
@@ -772,7 +769,7 @@ NS4FX.Deck = function(number, midi_chan) {
             midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
 
             // get the current duration
-            duration = deck.duration.outGetValue();
+            let duration = deck.duration.outGetValue();
 
             // update the time display
             var time = NS4FX.timeMs(number, playposition, duration);
@@ -816,12 +813,8 @@ NS4FX.Deck = function(number, midi_chan) {
                     NS4FX.dbg("Shift+Play pressed. Toggling slip_enabled for " + group);
                     script.toggleControl(group, 'slip_enabled');
                 } else {
-                    NS4FX.dbg("Play pressed. Handling play/pause for " + group);
-                    if (hotcuePressed) {
-                        playPressedDuringHotcue = true;
-                    } else {
-                        engine.setValue(group, 'play', !engine.getValue(group, 'play'));
-                    }
+                    NS4FX.dbg(`Play pressed. Handling play/pause for ${group}`);
+                    engine.setValue(group, "play", !engine.getValue(group, "play"));
                 }
             }
             // No 'else' block is needed for release, as slip_enabled is a toggle on press.
