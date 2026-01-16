@@ -641,7 +641,7 @@ NS4FX.EffectUnit = function() {
             this.shifted = false;
         },
         input: function(_channel, _control, value, status, _group) {
-            NS4FX.dbg("bpmTap input. value: " + value + ", status: " + status.toString(16) + ", shifted: " + this.shifted);
+            NS4FX.dbg(`bpmTap input. value: ${value}, status: ${status.toString(16)}, shifted: ${this.shifted}`);
             // Only act on button press (value=0x7F) and only on one of the two MIDI messages (status=0x98)
             // to avoid the action being triggered twice by the single physical button.
             if (value !== 0x7F || status !== 0x98) {
