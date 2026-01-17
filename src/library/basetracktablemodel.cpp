@@ -6,6 +6,7 @@
 #include <QScreen>
 #include <QtGlobal>
 
+#include "base/Pitch.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
@@ -935,7 +936,28 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID || !s_keyColorPalette.has_value()) {
                 return QVariant();
             }
-            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette.value()));
+
+            const float tuningHz = (float)rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
+                                           .value<double>();
+            float cents = 0;
+            Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
+            cents /= 100.0f; // normalize between -1 and 1
+            QVariantMap colorRect;
+            if (cents < 0) {
+                colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                colorRect["bottom"] =
+                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, -1),
+                                s_keyColorPalette.value());
+                colorRect["splitPoint"] = cents + 1;
+            } else {
+                colorRect["top"] =
+                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, 1),
+                                s_keyColorPalette.value());
+                colorRect["bottom"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                colorRect["splitPoint"] = cents;
+            }
+            return colorRect;
         }
         default:
             return QVariant();
