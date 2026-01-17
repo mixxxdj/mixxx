@@ -119,10 +119,7 @@ case "$1" in
             qtkeychain-qt6-dev \
             qt6-declarative-private-dev \
             qt6-base-private-dev \
-            qt6-qpa-plugins \
             qt6-multimedia-dev \
-            libqt6multimedia6 \
-            libqt6multimediaquick6 \
             qml6-module-qt5compat-graphicaleffects \
             qml6-module-qtqml-workerscript \
             qml6-module-qtquick-controls \
