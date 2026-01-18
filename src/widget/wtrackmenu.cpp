@@ -1398,6 +1398,25 @@ const QModelIndexList& WTrackMenu::getTrackIndices() const {
 
 void WTrackMenu::slotOpenInFileBrowser() {
     const auto trackRefs = getTrackRefs();
+    // Warn when opening many files to prevent system hangs
+    constexpr int kMaxFilesToOpenInBrowser = 10;
+    if (getTrackCount() > kMaxFilesToOpenInBrowser) {
+        QMessageBox::StandardButton reply = QMessageBox::question(
+                nullptr,
+                tr("Open Many Files in File Browser"),
+                tr("You are about to open %n files in the file browser. "
+                   "This may slow down or hang your system. "
+                   "Are you sure you want to continue?",
+                        "",
+                        getTrackCount()),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
+        if (reply != QMessageBox::Yes) {
+            return;
+        }
+    }
+
     QStringList locations;
     locations.reserve(trackRefs.size());
     for (const auto& trackRef : trackRefs) {

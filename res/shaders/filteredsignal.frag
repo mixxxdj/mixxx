@@ -44,9 +44,7 @@ void main(void) {
     bool lowShowing = false;
     bool midShowing = false;
     bool highShowing = false;
-    bool lowShowingUnscaled = false;
-    bool midShowingUnscaled = false;
-    bool highShowingUnscaled = false;
+    bool maxShowingUnscaled = false;
     // We don't exit early if the waveform data is not valid because we may want
     // to show other things (e.g. the axes lines) even when we are on a pixel
     // that does not have valid waveform data.
@@ -65,12 +63,15 @@ void main(void) {
         // Represents the [-1, 1] distance of this pixel. Subtracting this from
         // the signal data in new_currentData, we can tell if a signal band should
         // show in this pixel if the component is > 0.
-        float ourDistance = abs((uv.y - 0.5) * 2.0);
+        highp float ourDistance = abs((uv.y - 0.5) * 2.0);
 
         highp vec4 signalDistance = new_currentData - ourDistance;
         lowShowing = signalDistance.x >= 0.0;
         midShowing = signalDistance.y >= 0.0;
         highShowing = signalDistance.z >= 0.0;
+        maxShowingUnscaled = new_currentDataUnscaled.x - ourDistance >= 0.0 ||
+                new_currentDataUnscaled.y - ourDistance >= 0.0 ||
+                new_currentDataUnscaled.z - ourDistance >= 0.0;
     }
 
     // Draw the axes color as the lowest item on the screen.
@@ -78,8 +79,10 @@ void main(void) {
     // rendered even when the waveform is fairly short.  Really this
     // value should be based on the size of the widget.
     if (abs(framebufferSize.y / 2.0 - pixel.y) <= 4.0) {
-        outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-        outputColor.w = 1.0;
+        outputColor = axesColor;
+    } else if (maxShowingUnscaled) {
+        outputColor.xyz = axesColor.xyz;
+        outputColor.w = axesColor.w * 0.2;
     }
 
     if (lowShowing) {
@@ -101,8 +104,8 @@ void main(void) {
     }
 
     /*
-    vec4 distanceToRightSignal = 0.5 - uv.y - 0.5 *texture2D(signalTexture,vec2(uv.x,0.25));
-    vec4 distanceToLeftSignal = uv.y - 0.5 * texture2D(signalTexture,vec2(uv.x,0.75)) - 0.5;
+    highp vec4 distanceToRightSignal = 0.5 - uv.y - 0.5 *texture2D(signalTexture,vec2(uv.x,0.25));
+    highp vec4 distanceToLeftSignal = uv.y - 0.5 * texture2D(signalTexture,vec2(uv.x,0.75)) - 0.5;
 
     if (distanceToRightSignal.x < 0.0 && distanceToLeftSignal.x < 0.0)
         outputColor += lowColor;
@@ -118,15 +121,15 @@ void main(void) {
 
     /*
     uv.y = 0.25;
-    vec4 signalRight = texture2D(signalTexture,uv);
+    highp vec4 signalRight = texture2D(signalTexture,uv);
 
 
-    vec4 outputColor = vec4(0.0,0.0,0.0,0.0);
-    vec3 accumulatedData = vec3(0.0,0.0,0.0);
+    highp vec4 outputColor = vec4(0.0,0.0,0.0,0.0);
+    highp vec3 accumulatedData = vec3(0.0,0.0,0.0);
     //vec3 meanData = vec3(0.0);
 
-    for( float i = firstPixelPosition; i < lastPixelPosition; i += 2.0) {
-        vec4 currentData;
+    for(highp float i = firstPixelPosition; i < lastPixelPosition; i += 2.0) {
+        highp vec4 currentData;
         if( uv.y > 0.5) {
             //currentData = getWaveformData_linearInterpolation(i);
             currentData = getWaveformData(i);
@@ -150,15 +153,15 @@ void main(void) {
         }
     }
 
-    vec4 low = lowColor;
+    highp vec4 low = lowColor;
     //low.a = 0.25+3.0*abs(uv.y-0.5)/accumulatedData.x;
     low.a = accumulatedData.x;
 
-    vec4 mid = midColor;
+    highp vec4 mid = midColor;
     //mid.a = 0.5+3.0*abs(uv.y-0.5)/accumulatedData.y;
     mid.a = accumulatedData.y;
 
-    vec4 high = highColor;
+    highp vec4 high = highColor;
     //high.a = clamp(0.25+(1.0-abs(uv.y-0.5)-0.1*accumulatedData.z)/accumulatedData.z,0.f,1.f);
     high.a = accumulatedData.z;
 

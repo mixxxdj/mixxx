@@ -1073,6 +1073,12 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
         scriptFileLinks = mappingFileLinks(pMapping);
     }
 
+    // In order to ease pre-formatting of the description in xml
+    // we remove leading whitespaces from each line.
+    // (apparently this also removes leading blank lines)
+    static QRegularExpression re(QStringLiteral("(?m)^\\s+"));
+    description.remove(re);
+
     m_ui.labelMappingNameValue->setText(name);
     m_ui.labelMappingDescriptionValue->setText(description);
     m_ui.labelMappingAuthorValue->setText(author);

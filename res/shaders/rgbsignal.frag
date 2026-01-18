@@ -28,75 +28,82 @@ highp vec4 getWaveformData(highp float index) {
 
 void main(void) {
     highp vec2 uv = gl_TexCoord[0].st;
-    highp vec4 pixel = gl_FragCoord;
+    highp float pixelY = gl_FragCoord.y;
 
-    highp float new_currentIndex =
-            floor(firstVisualIndex +
-                    uv.x * (lastVisualIndex - firstVisualIndex)) *
-            2.0;
+    highp float indexRange = lastVisualIndex - firstVisualIndex;
+    highp float currentIndex = floor(firstVisualIndex + uv.x * indexRange) * 2.0;
 
     highp vec4 outputColor = vec4(0.0, 0.0, 0.0, 0.0);
-    bool showing = false;
-    bool showingUnscaled = false;
-    highp vec4 showingColor = vec4(0.0, 0.0, 0.0, 0.0);
-    highp vec4 showingUnscaledColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-    // We don't exit early if the waveform data is not valid because we may want
-    // to show other things (e.g. the axes lines) even when we are on a pixel
-    // that does not have valid waveform data.
-    if (new_currentIndex >= 0.0 && new_currentIndex <= float(waveformLength - 1)) {
-        highp vec4 new_currentDataUnscaled;
+    bool showing = false;
+    bool shadow = false;
+
+    if (currentIndex >= 0.0 && currentIndex <= float(waveformLength - 1)) {
+        highp vec4 dataUnscaled;
+
         if (splitStereoSignal) {
             // Texture coordinates put (0,0) at the bottom left, so show the right
             // channel if we are in the bottom half.
-            new_currentDataUnscaled =
-                    getWaveformData(uv.y < 0.5 ? new_currentIndex + 1.0
-                                               : new_currentIndex) *
-                    allGain;
+            highp float stereoIndex = (uv.y < 0.5) ? currentIndex + 1.0 : currentIndex;
+            dataUnscaled = getWaveformData(stereoIndex);
         } else {
-            highp vec4 leftDataUnscaled = getWaveformData(new_currentIndex);
-            highp vec4 rightDataUnscaled = getWaveformData(new_currentIndex + 1.0);
-            new_currentDataUnscaled = max(leftDataUnscaled, rightDataUnscaled) * allGain;
+            highp vec4 left = getWaveformData(currentIndex);
+            highp vec4 right = getWaveformData(currentIndex + 1.0);
+            dataUnscaled = max(left, right);
         }
 
-        highp vec4 new_currentData = new_currentDataUnscaled;
-        new_currentData.x *= lowGain;
-        new_currentData.y *= midGain;
-        new_currentData.z *= highGain;
+        dataUnscaled *= allGain;
+        highp vec3 data = dataUnscaled.xyz * vec3(lowGain, midGain, highGain);
 
         // ourDistance represents the [0, 1] distance of this pixel from the
         // center line. If ourDistance is smaller than the signalDistance, show
         // the pixel.
-        highp float ourDistance = abs((uv.y - 0.5) * 2.0);
-        highp float signalDistance = new_currentData.w;
-        showing = (signalDistance - ourDistance) >= 0.0;
+        highp float ourDistance = abs(uv.y - 0.5) * 2.0;
+
+        highp float sumUnscaled = dataUnscaled.x + dataUnscaled.y + dataUnscaled.z;
+        highp float sumScaled = data.x + data.y + data.z;
+
+        highp float signalDistance = dataUnscaled.w;
+        if (sumUnscaled > 0.0) {
+            signalDistance *= sumScaled / sumUnscaled;
+        }
+
+        showing = signalDistance >= ourDistance;
+        shadow = !showing && (dataUnscaled.w >= ourDistance);
 
         // Linearly combine the low, mid, and high colors according to the low,
         // mid, and high components.
-        showingColor = lowColor * new_currentData.x +
-                midColor * new_currentData.y +
-                highColor * new_currentData.z;
+        if (showing) {
+            outputColor =
+                    lowColor * data.x +
+                    midColor * data.y +
+                    highColor * data.z;
+        } else if (shadow) {
+            outputColor =
+                    lowColor * dataUnscaled.x +
+                    midColor * dataUnscaled.y +
+                    highColor * dataUnscaled.z;
+        }
 
-        // Re-scale the color by the maximum component.
-        highp float showingMax = max(showingColor.x, max(showingColor.y, showingColor.z));
-        showingColor = showingColor / showingMax;
-        showingColor.w = 1.0;
-    }
+        highp float maxComponent = max(outputColor.x,
+                max(outputColor.y, outputColor.z));
 
-    // Draw the axes color as the lowest item on the screen.
-    // TODO(owilliams): The "4" in this line makes sure the axis gets
-    // rendered even when the waveform is fairly short.  Really this
-    // value should be based on the size of the widget.
-    if (abs(framebufferSize.y / 2.0 - pixel.y) <= 4.0) {
-        outputColor.xyz = mix(outputColor.xyz, axesColor.xyz, axesColor.w);
-        outputColor.w = 1.0;
+        if (maxComponent > 0.0) {
+            outputColor.xyz /= maxComponent;
+        }
     }
 
     if (showing) {
-        highp float alpha = 1.0;
-        outputColor.xyz = mix(outputColor.xyz, showingColor.xyz, alpha);
         outputColor.w = 1.0;
+    } else if (abs(framebufferSize.y / 2.0 - pixelY) <= 4.0) {
+        // Draw the axes color as the lowest item on the screen.
+        // TODO(owilliams): The "4" in this line makes sure the axis gets
+        // rendered even when the waveform is fairly short.  Really this
+        // value should be based on the size of the widget.
+        outputColor = axesColor;
+    } else if (shadow) {
+        outputColor.w = 0.4;
     }
-    gl_FragColor = outputColor;
 
+    gl_FragColor = outputColor;
 }
