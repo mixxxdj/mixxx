@@ -52,14 +52,39 @@ case "$1" in
         fi
 
         # Install a faster linker. Prefer mold, fall back to lld
-        if apt-cache show mold 2>%1 >/dev/null;
-        then
+        if apt-cache show mold 2>/dev/null >/dev/null;
+	then
             sudo apt-get install -y --no-install-recommends mold
         else
-            if apt-cache show lld 2>%1 >/dev/null;
+            if apt-cache show lld 2>/dev/null >/dev/null;
             then
                 sudo apt-get install -y --no-install-recommends lld
             fi
+        fi
+
+	# Check if fonts-ubuntu is available (from non-free repository)
+        if ! apt-cache show fonts-ubuntu 2>/dev/null | grep -q "Package: fonts-ubuntu"; then
+            echo ""
+            echo "⚠️  WARNING: The package 'fonts-ubuntu' is not available."
+            echo "This package is required for Mixxx and is located in the Debian non-free repository."
+            echo ""
+            read -p "Do you want to enable the non-free repository and install fonts-ubuntu? (y/n) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo "Enabling non-free repository..."
+                # Add non-free to sources.list if not already present
+                if ! grep -q " non-free$" /etc/apt/sources.list; then
+                    sudo sed -i 's/^\(deb.*\) \(main\|contrib\|non-free-firmware\)$/\1 \2 non-free/' /etc/apt/sources.list
+                fi
+                echo "Updating package list..."
+                sudo apt-get update
+                FONTS_UBUNTU_AVAILABLE=true
+            else
+                echo "Continuing without fonts-ubuntu..."
+                FONTS_UBUNTU_AVAILABLE=false
+            fi
+        else
+            FONTS_UBUNTU_AVAILABLE=true
         fi
 
         sudo apt-get install -y --no-install-recommends -- \
@@ -72,7 +97,7 @@ case "$1" in
             docbook-to-man \
             dput \
             fonts-open-sans \
-            fonts-ubuntu \
+	    $([ "$FONTS_UBUNTU_AVAILABLE" = true ] && echo "fonts-ubuntu") \
             g++ \
             lcov \
             libavformat-dev \
