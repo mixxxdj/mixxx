@@ -622,12 +622,13 @@ NS4FX.EffectUnit = function() {
             return;
         }
 
+        let active;
         if (leftSide) {
-            var active = this.switch_active_left ? 0x01 : 0x00;
+            active = this.switch_active_left ? 0x01 : 0x00;
             this.leftSwitch(0, 0, active, 0, 0)
         } else {
             // var func = this.rightSwitch;
-            var active = this.switch_active_right ? 0x01 : 0x00;
+            active = this.switch_active_right ? 0x01 : 0x00;
             this.rightSwitch(0, 0, active, 0, 0);
         }
     }
@@ -1018,7 +1019,8 @@ NS4FX.Deck = function(number, midi_chan) {
         }
 
         // sampler buttons
-        if (deck.number % 2 == 0) {
+        var sampler_offset;
+        if (deck.number % 2 === 0) {
             sampler_offset = 4;
         } else {
             sampler_offset = 0;
@@ -1160,29 +1162,30 @@ NS4FX.Deck = function(number, midi_chan) {
         this.padmode_str = padmode;
         // This is the main pad mode switching logic.
         // It disconnects the old set of pads and connects the new one.
-        if (padmode == "hotcue") {
+        let buttons;
+        if (padmode === "hotcue") {
             deck.hotcue_buttons.updateLEDs();
             buttons = this.hotcue_buttons;
-        } else if (padmode == "sampler") {
+        } else if (padmode === "sampler") {
             deck.sampler_buttons.updateLEDs(`[Channel${this.number}]`);
             buttons = this.sampler_buttons;
-        } else if (padmode == "autoloop") {
+        } else if (padmode === "autoloop") {
             deck.autoloop_buttons.updateLEDs(`[Channel${this.number}]`);
             buttons = this.autoloop_buttons;
-        } else if (padmode == "fadercuts") {
+        } else if (padmode === "fadercuts") {
             deck.fadercuts_buttons.updateLEDs(`[Channel${this.number}]`);
             buttons = this.fadercuts_buttons;
-        } else if (padmode == "stems") {
+        } else if (padmode === "stems") {
             // When switching to stems mode, set the active pads to the stems_buttons container.
             // LED updates are handled by the connections within each stem button.
             buttons = this.stems_buttons;
-        } else if (padmode == "pitchplay") {
+        } else if (padmode === "pitchplay") {
             print("not implemented yet");
-        } else if (padmode == "roll") {
+        } else if (padmode === "roll") {
             buttons = this.roll_buttons;
-        } else if (padmode == "slicer") {
+        } else if (padmode === "slicer") {
             buttons = this.slicer_buttons;
-        } else if (padmode == "scratchbanks") {
+        } else if (padmode === "scratchbanks") {
             print("not implemented yet");
         }
         this.hotcues.forEachComponent(function(component) {
@@ -1306,7 +1309,7 @@ NS4FX.Deck = function(number, midi_chan) {
 
     this.stems_buttons = new components.ComponentContainer();
     if (useFadercutsAsStems) {
-        for (var i = 1; i <= 4; ++i) {
+        for (let i = 1; i <= 4; ++i) {
             this.stems_buttons[i] = new components.Button(createStemPadConfig(deck, 'stemPad' + i, i, {
                 channel: midi_chan,
                 note: 0x13 + i
