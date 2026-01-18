@@ -156,22 +156,35 @@ void MixxxMainWindow::initializeQOpenGL() {
     // QGLFormat::hasOpenGL() has been removed.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
 #else
-    if (!CmdlineArgs::Instance().getSafeMode()) {
+    // With EGLFS there is always exactly one native window and one EGL window surface
+    // OpenGL windows cannot be embedded into our QWidgets main window we already have.
+    // https://doc.qt.io/qt-6/embedded-linux.html
+    bool isEglfs = QGuiApplication::platformName() == "eglfs";
+
+    if (!CmdlineArgs::Instance().getSafeMode() && !isEglfs) {
 #endif
         QOpenGLContext context;
         context.setFormat(WaveformWidgetFactory::getSurfaceFormat(m_pCoreServices->getSettings()));
         if (context.create()) {
+            std::pair version = context.format().version();
+            qDebug().noquote()
+                    << "QOpenGLContext created:"
+                    << QGuiApplication::platformName()
+                    << context.format().renderableType()
+                    << QString("V%1.%2").arg(QString::number(version.first),
+                               QString::number(version.second))
+                    << context.format().profile();
             // This widget and its QOpenGLWindow will be used to query QOpenGL
             // information (version, driver, etc) in WaveformWidgetFactory.
             // The "SharedGLContext" terminology here doesn't really apply,
             // but allows us to take advantage of the existing classes.
-            WInitialGLWidget* widget = new WInitialGLWidget(this);
-            widget->setGeometry(QRect(0, 0, 3, 3));
-            SharedGLContext::setWidget(widget);
+            WInitialGLWidget* pWidget = new WInitialGLWidget(this);
+            pWidget->setGeometry(QRect(0, 0, 3, 3));
+            SharedGLContext::setWidget(pWidget);
             // When the widget's QOpenGLWindow has been initialized, we continue
             // with the actual initialization
-            connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
-            widget->show();
+            connect(pWidget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
+            pWidget->show();
             return;
         }
         qDebug() << "QOpenGLContext::create() failed";
