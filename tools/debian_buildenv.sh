@@ -62,10 +62,10 @@ case "$1" in
             fi
         fi
 
-		# Check if fonts-ubuntu is available (from non-free repository)
+        # Check if fonts-ubuntu is available (from non-free repository)
         if ! apt-cache show fonts-ubuntu 2>/dev/null | grep -q "Package: fonts-ubuntu"; then
             echo ""
-            echo "⚠️  WARNING: The package 'fonts-ubuntu' is not available."
+            echo "WARNING: The package 'fonts-ubuntu' is not available."
             echo "This package is required for Mixxx and is located in the Debian non-free repository."
             echo ""
             read -p "Do you want to enable the non-free repository and install fonts-ubuntu? (y/n) " -n 1 -r
