@@ -243,6 +243,8 @@ class TrackModel {
     virtual void select() {
     }
 
+    virtual void removeTrackRows(const QSet<TrackId>&) {};
+
     /// This is an interface to stop any potentially running
     /// model population when switching models in WTrackTableView.
     /// Only implemented in ProxyTrackModel.
