@@ -1007,6 +1007,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
     QHash<WaveformWidgetType::Type,
             allshader::WaveformRendererSignalBase::Options>
             supportedOptions;
+    bool useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
         case WaveformWidgetType::Empty:
@@ -1015,40 +1016,50 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::Simple:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<SimpleSignalWaveformWidget>());
             break;
         case WaveformWidgetType::Filtered:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>());
             break;
         case WaveformWidgetType::VSyncTest:
-#ifdef MIXXX_USE_QOPENGL
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_OPENGL_ES_2)
             addHandle(collectedHandles, type, waveformWidgetVars<GLVSyncTestWidget>());
 #endif
             break;
         case WaveformWidgetType::RGB:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
             break;
         case WaveformWidgetType::HSV:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
             break;
         case WaveformWidgetType::Stacked:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             break;
         default:
@@ -1390,6 +1401,16 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     // On Linux, horrible FPS were seen with "VSync off" before switching to QOpenGLWindow too
     format.setSwapInterval(vsyncMode == VSyncThread::ST_PLL ? 1 : 0);
 #endif
+
+#ifdef FORCE_GLES
+    // Define FORCE_GLES to test GLES waveforms on a GLSL Hardware
+    qDebug() << "QOpenGLContext::openGLModuleType()" << QOpenGLContext::openGLModuleType();
+
+    format.setRenderableType(QSurfaceFormat::OpenGLES);
+    format.setVersion(3, 0);
+    QSurfaceFormat::setDefaultFormat(format);
+#endif
+
     return format;
 }
 

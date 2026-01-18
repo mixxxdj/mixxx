@@ -251,16 +251,27 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 
 void DlgPrefWaveform::slotSetWaveformOptions(
         allshader::WaveformRendererSignalBase::Option option, bool enabled) {
+    auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
+            allshader::WaveformRendererSignalBase::Option::None;
+
+#ifdef MIXXX_USE_QOPENGL
+    auto* pFactory = WaveformWidgetFactory::instance();
+    auto backend = m_pConfig->getValue(kHardwareAccelerationKey, pFactory->preferredBackend());
+    int handleIdx = pFactory->findHandleIndexFromType(type);
+    if (handleIdx >= 0 && handleIdx < pFactory->getAvailableTypes().size()) {
+        supportedOptions = pFactory->getAvailableTypes()[handleIdx].supportedOptions(backend);
+    }
+#endif
+
     allshader::WaveformRendererSignalBase::Options currentOption = m_pConfig->getValue(
             kWaveformOptionsKey,
             allshader::WaveformRendererSignalBase::Option::None);
-    m_pConfig->setValue<int>(ConfigKey("[Waveform]", "waveform_options"),
-            enabled ? currentOption |
-                            option
-                    : currentOption ^
-                            option);
-    auto type = static_cast<WaveformWidgetType::Type>(
-            waveformTypeComboBox->currentData().toInt());
+    currentOption.setFlag(option, enabled);
+    // clear unsupported options
+    currentOption &= supportedOptions;
+    m_pConfig->setValue<int>(kWaveformOptionsKey, currentOption);
+
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(
             factory->findHandleIndexFromType(type), true);
@@ -553,21 +564,20 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform,
 
 #ifdef MIXXX_USE_QOPENGL
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    allshader::WaveformRendererSignalBase::Options supportedOption =
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
             allshader::WaveformRendererSignalBase::Option::None;
 
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     int handleIdx = factory->findHandleIndexFromType(type);
-
-    if (handleIdx != -1) {
-        supportedOption = factory->getAvailableTypes()[handleIdx].supportedOptions(backend);
+    if (handleIdx >= 0 && handleIdx < factory->getAvailableTypes().size()) {
+        supportedOptions = factory->getAvailableTypes()[handleIdx].supportedOptions(backend);
     }
 
     splitLeftRightCheckBox->setEnabled(useWaveform &&
-            (supportedOption &
+            (supportedOptions &
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setEnabled(useWaveform &&
-            (supportedOption &
+            (supportedOptions &
                     allshader::WaveformRendererSignalBase::Option::HighDetail));
     splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
             (currentOptions &

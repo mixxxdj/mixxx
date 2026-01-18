@@ -1,16 +1,15 @@
-#version 120
 //// GENERATED - EDITS WILL BE OVERWRITTEN
 
 struct buf
 {
-    mat4 matrix;
+    highp mat4 matrix;
 };
 
 uniform buf ubuf;
 
-varying vec2 vTexcoord;
-attribute vec2 texcoord;
-attribute vec4 position;
+varying highp vec2 vTexcoord;
+attribute highp vec2 texcoord;
+attribute highp vec4 position;
 
 void main()
 {
