@@ -1365,10 +1365,12 @@ QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type ty
 }
 
 // static
-QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer config) {
+QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConfig) {
     // The first call should pass the config to set the vsync mode. Subsequent
     // calls will use the value as set on the first call.
-    static const auto vsyncMode = config->getValue(kVSyncKey, 0);
+    static const VSyncThread::VSyncMode vsyncMode = pConfig
+            ? pConfig->getValue(kVSyncKey, VSyncThread::ST_DEFAULT)
+            : VSyncThread::ST_DEFAULT;
 
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
