@@ -233,7 +233,14 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
             DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
             m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, nullptr);
-    return trackIds.size() > 0;
+    if (trackIds.size() == 0) {
+        return false;
+    }
+
+    // Update the track count in the sidebar item label.
+    // Calls slotUpdateTrackCount()
+    m_pLibraryTableModel->select();
+    return true;
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(const QList<QUrl>& urls) {
