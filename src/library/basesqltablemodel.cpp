@@ -844,7 +844,59 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
-    select(); //Repopulate the data model.
+
+    QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
+    removeTrackRows(tracksRemovedSet);
+}
+
+void BaseSqlTableModel::removeTrackRows(const QSet<TrackId>& trackIdsToRemove) {
+    // This is called after hiding, purging or removing tracks from a track set.
+    // The purpose is to keep the tracks view constant after after these
+    // operations by avoiding pointless/confusing re-sorting of the model,
+    // which happens when we call select(), which rebuilds the row cache.
+    // We assume metadata of remaining tracks hasn't changed, we can simply
+    // remove the respective track rows.
+
+    // However, if this is a playlist model, track removal likely also changes
+    // the tracks' positions in the playlist. We need to get the tracks' new
+    // positions from the database, so let's do a select().
+    // FIXME Update position without re-sorting
+    if (hasPositionColumn()) {
+        select();
+        return;
+    }
+
+    // For other models we can now remove all track rows.
+    QVector<RowInfo> rowInfos = m_rowInfo;
+    TrackId2Rows trackIdToRows;
+    TrackPos2Row trackPosToRows; // remains empty
+
+    QMutableListIterator<RowInfo> it(rowInfos);
+    while (it.hasNext()) {
+        const RowInfo& rowInfo = it.next();
+        if (trackIdsToRemove.contains(rowInfo.trackId)) {
+            it.remove();
+        }
+    }
+
+    // Recreate TrackId2Rows, taken from select()
+    trackIdToRows.reserve(rowInfos.size());
+    for (int i = 0; i < rowInfos.size(); ++i) {
+        const RowInfo& rowInfo = rowInfos[i];
+        if (rowInfo.row == -1) {
+            // We've reached the end of valid rows. Resize rowInfo to cut off
+            // this and all further elements.
+            rowInfos.resize(i);
+            break;
+        }
+        trackIdToRows[rowInfo.trackId].push_back(i);
+    }
+
+    clearRows();
+    replaceRows(
+            std::move(rowInfos),
+            std::move(trackIdToRows),
+            std::move(trackPosToRows));
 }
 
 QList<TrackRef> BaseSqlTableModel::getTrackRefs(
