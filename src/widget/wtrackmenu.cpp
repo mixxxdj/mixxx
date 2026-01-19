@@ -54,6 +54,9 @@
 #ifdef __STEM__
 #include "widget/wtrackstemmenu.h"
 #endif
+#include "stems/stemconversionmanager.h"
+#include "stems/dlgstemconversion.h"
+#include "widget/wstemconversionbutton.h"
 
 constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
 
@@ -127,6 +130,9 @@ WTrackMenu::WTrackMenu(
     createMenus();
     createActions();
     setupActions();
+
+    // Initialize STEMS convertion manager
+    m_pStemConversionManager = std::make_shared<StemConversionManager>();
 }
 
 WTrackMenu::~WTrackMenu() {
@@ -227,6 +233,9 @@ void WTrackMenu::createMenus() {
         //: Reset metadata in right click track context menu in library
         m_pClearMetadataMenu->setTitle(tr("Clear"));
     }
+
+    // Initialize stem conversion manager
+    m_pStemConversionManager = std::make_shared<StemConversionManager>();
 
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu = make_parented<QMenu>(this);
@@ -573,6 +582,9 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotReanalyzeWithVariableTempo);
+
+        m_pConvertToStemsAction = make_parented<QAction>(tr("Convert to Stems"), this);
+        connect(m_pConvertToStemsAction, &QAction::triggered, this, &WTrackMenu::slotConvertToStems);
     }
 
     // This action is only usable when m_deckGroup is set. That is true only
@@ -744,6 +756,11 @@ void WTrackMenu::setupActions() {
         m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
+
+        // Add separator and Convert to Stems action
+        m_pAnalyzeMenu->addSeparator();
+        m_pAnalyzeMenu->addAction(m_pConvertToStemsAction);
+
         addMenu(m_pAnalyzeMenu);
     }
 
@@ -1799,6 +1816,30 @@ void WTrackMenu::slotReanalyzeWithVariableTempo() {
     AnalyzerTrack::Options options;
     options.useFixedTempo = false;
     addToAnalysis(options);
+}
+
+void WTrackMenu::slotConvertToStems() {
+    if (!m_pStemConversionManager) {
+        qWarning() << "Stem conversion manager is not initialized";
+        return;
+    }
+
+    TrackPointerList tracks = getTrackPointers();
+    if (tracks.isEmpty()) {
+        qWarning() << "No tracks selected for stem conversion";
+        return;
+    }
+
+    // Queue all selected tracks for conversion
+    for (const auto& pTrack : tracks) {
+        if (pTrack) {
+            m_pStemConversionManager->convertTrack(pTrack);
+        }
+    }
+
+    // Open the conversion dialog
+    auto pDialog = std::make_unique<DlgStemConversion>(m_pStemConversionManager, this);
+    pDialog->exec();
 }
 
 void WTrackMenu::slotLockBpm() {

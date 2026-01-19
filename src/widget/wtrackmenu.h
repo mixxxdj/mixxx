@@ -16,6 +16,9 @@
 #include "track/trackref.h"
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
+#include "stems/stemconversionmanager.h"
+#include "stems/dlgstemconversion.h"
+#include "widget/wstemconversionbutton.h"
 
 class DlgTagFetcher;
 class DlgTrackInfo;
@@ -160,6 +163,9 @@ class WTrackMenu : public QMenu {
     void slotReanalyze();
     void slotReanalyzeWithFixedTempo();
     void slotReanalyzeWithVariableTempo();
+
+    // STEMS
+    void slotConvertToStems();
 
     // BPM
     void slotLockBpm();
@@ -358,6 +364,9 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pReanalyzeConstBpmAction;
     parented_ptr<QAction> m_pReanalyzeVarBpmAction;
 
+    // STEMS actions
+    parented_ptr<QAction> m_pConvertToStemsAction;
+
     // Clear track metadata actions
     parented_ptr<QAction> m_pClearBeatsAction;
     parented_ptr<QAction> m_pClearPlayCountAction;
@@ -400,6 +409,8 @@ class WTrackMenu : public QMenu {
     const Features m_eTrackModelFeatures;
 
     QString m_trackProperty;
+
+    StemConversionManagerPointer m_pStemConversionManager;
 
     static bool s_showPurgeSuccessPopup;
     static bool s_confirmForAutoDjReplace;

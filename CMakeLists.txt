@@ -1515,6 +1515,9 @@ add_library(
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
+  src/stems/stemconverter.cpp
+  src/stems/stemconversionmanager.cpp
+  src/stems/dlgstemconversion.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
   src/soundio/sounddeviceportaudio.cpp
@@ -1740,6 +1743,7 @@ add_library(
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
+  src/widget/wstemconversionbutton.cpp
   src/widget/wtime.cpp
   src/widget/wtrackmenu.cpp
   src/widget/wtrackproperty.cpp
@@ -1789,6 +1793,9 @@ set(
   src/engine/channelhandle.h
   src/engine/engine.h
   src/errordialoghandler.h
+  src/stems/stemconverter.h
+  src/stems/stemconversionmanager.h
+  src/stems/dlgstemconversion.h
   src/track/track.h
   src/track/track_decl.h
   src/track/trackid.h
