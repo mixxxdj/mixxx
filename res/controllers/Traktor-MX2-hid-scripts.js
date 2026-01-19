@@ -13,8 +13,11 @@
 
 var TraktorMX2 = new (function () {
     this.controller = new HIDController();
+
     this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
+
     this.jogModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Scratch, 1 = Bend
+
     this.padModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Hotcues, 1 = Stems, 2 = Patterns, 3 = Loops
     this.padPressed = {
         "[Channel1]": {5: false, 6: false, 7: false, 8: false},
@@ -44,26 +47,19 @@ var TraktorMX2 = new (function () {
     this.clipLeftConnection = {};
     this.clipRightConnection = {};
     this.vuMeterThresholds = {
-        "vu-18": 1 / 6, "vu-12": 2 / 6, "vu-6": 3 / 6, vu0: 4 / 6, vu6: 5 / 6,
-    };
-
-    // Sampler callbacks
-    this.samplerCount = 16;
-    this.samplerCallbacks = [];
-    this.samplerHotcuesRelation = {
-        "[Channel1]": {
-            1: 1, 2: 2, 3: 3, 4: 4, 5: 9, 6: 10, 7: 11, 8: 12,
-        }, "[Channel2]": {
-            1: 5, 2: 6, 3: 7, 4: 8, 5: 13, 6: 14, 7: 15, 8: 16,
-        },
+        "vu-18": 1 / 9,
+        "vu-15": 2 / 9,
+        "vu-12": 3 / 9,
+        "vu-9": 4 / 9,
+        "vu-6": 5 / 9,
+        "vu-3": 6 / 9,
+        vu0: 7 / 9,
+        vu3: 8 / 9,
+        vu6: 9 / 6,
     };
 })();
 
 TraktorMX2.init = function (_id) {
-    if (engine.getValue("[App]", "num_samplers") < TraktorMX2.samplerCount) {
-        engine.setValue("[App]", "num_samplers", TraktorMX2.samplerCount);
-    }
-
     TraktorMX2.registerInputPackets();
     TraktorMX2.registerOutputPackets();
     console.log("TraktorMX2: Init done!");
@@ -86,8 +82,8 @@ TraktorMX2.registerInputPackets = function () {
     this.registerInputButton(messageShort, "[Channel1]", "!sync", 0x02, 0x20, this.syncHandler,);
     this.registerInputButton(messageShort, "[Channel2]", "!sync", 0x06, 0x08, this.syncHandler,);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!master", 0x02, 0x40, this.masterHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!master", 0x06, 0x10, this.masterHandler,);
+    this.registerInputButton(messageShort, "[Channel1]", "!sync_leader", 0x02, 0x40, this.masterHandler,);
+    this.registerInputButton(messageShort, "[Channel2]", "!sync_leader", 0x06, 0x10, this.masterHandler,);
 
     this.registerInputButton(messageShort, "[Channel1]", "!keylock", 0x02, 0x80, this.keylockHandler,);
     this.registerInputButton(messageShort, "[Channel2]", "!keylock", 0x06, 0x20, this.keylockHandler,);
@@ -308,7 +304,7 @@ TraktorMX2.masterHandler = function (field) {
         return;
     }
 
-    script.toggleControl(field.group, "sync_master");
+    script.toggleControl(field.group, "sync_leader");
 };
 
 TraktorMX2.syncHandler = function (field) {
@@ -412,98 +408,15 @@ TraktorMX2.padModeHandler = function (field) {
 
 };
 
-TraktorMX2.PadColorMap = new ColorMapper({
-    0x755771: 0x00,
-    0xe9c9da: 0x01,
-    0x372c2b: 0x02,
-    0x2b2b21: 0x03,
-    0xaf262e: 0x04,
-    0xcb242c: 0x05,
-    0xff2916: 0x06,
-    0xfe354f: 0x07,
-    0xb8332d: 0x08,
-    0xd1322c: 0x09,
-    0xfd5921: 0x0a,
-    0xf95364: 0x0b,
-    0xa53a2e: 0x0c,
-    0xb03e2b: 0x0d,
-    0xfd7bab: 0x0e,
-    0xfb8553: 0x0f,
-    0xbe712f: 0x10,
-    0xc57831: 0x11,
-    0xf8ab36: 0x12,
-    0xf6aa80: 0x13,
-    0x9c7132: 0x14,
-    0xb07b31: 0x15,
-    0xe9ba3d: 0x16,
-    0xecbc92: 0x17,
-    0x626341: 0x18,
-    0x6d6c43: 0x19,
-    0xb6b959: 0x1a,
-    0xa9bb91: 0x1b,
-    0x2e5c45: 0x1c,
-    0x2b7446: 0x1d,
-    0x2ccf68: 0x1e,
-    0x92c7b0: 0x1f,
-    0x409654: 0x20,
-    0x39a97f: 0x21,
-    0x3fd2b0: 0x22,
-    0xb0c6c9: 0x23,
-    0x2c8fe4: 0x24,
-    0x7f97de: 0x25,
-    0x0de1ff: 0x26,
-    0xb3d5ff: 0x27,
-    0x059bf3: 0x28,
-    0x6b97ef: 0x29,
-    0x00c3ff: 0x2a,
-    0x63d3ff: 0x2b,
-    0x1860dd: 0x2c,
-    0x0482f8: 0x2d,
-    0x00a1ff: 0x2e,
-    0x42b3ff: 0x2f,
-    0x8d52dd: 0x30,
-    0xb171ea: 0x31,
-    0xe298fe: 0x32,
-    0xceb4fd: 0x33,
-    0xeb4bd3: 0x34,
-    0xeb5ddb: 0x35,
-    0xf263e3: 0x36,
-    0xf08cea: 0x37,
-    0xc33196: 0x38,
-    0xc944a1: 0x39,
-    0xfc4dc0: 0x3a,
-    0xfa6ddc: 0x3b,
-    0xa82c6b: 0x3c,
-    0xb13a74: 0x3d,
-    0xfb359f: 0x3e,
-    0xf94eae: 0x3f,
-    0xd12a40: 0x40,
-    0xda394f: 0x41,
-    0xfb3672: 0x42,
-    0xf8487e: 0x43,
-    0x6d5a77: 0x44,
-    0x836295: 0x45,
-    0xe5bada: 0x46,
-    0xe1bce3: 0x47,
-    0x7f6487: 0x48,
-    0x916ca0: 0x49,
-    0xdcb6d4: 0x4a,
-    0xd6b3db: 0x4b,
-    0x795f82: 0x4c,
-    0x8e689e: 0x4d,
-    0xddb9d4: 0x4e,
-    0xd6b7d9: 0x4f,
-});
-
 TraktorMX2.padHandler = function (field) {
     const padNumber = parseInt(field.id[field.id.length - 1]);
     switch (TraktorMX2.padModeState[field.group]) {
         case 0:
             // Hotcues mode
             if (TraktorMX2.shiftPressed[field.group]) {
-                engine.setValue(field.group, "hotcue_" + padNumber + "_clear", field.value,);
+                engine.setValue(field.group, "hotcue_" + padNumber + "_clear", field.value);
             } else {
-                engine.setValue(field.group, "hotcue_" + padNumber + "_activate", field.value,);
+                engine.setValue(field.group, "hotcue_" + padNumber + "_activate", field.value);
             }
 
             break;
@@ -535,7 +448,12 @@ TraktorMX2.padHandler = function (field) {
             break;
 
         case 3:
-            // Loops Mode
+            // only first 4 pads are used for loops
+            if (TraktorMX2.shiftPressed[field.group]) {
+                engine.setValue(field.group, "beatlooproll_" + (2 ** (padNumber - 1)) + "_activate", field.value);
+            } else {
+                engine.setValue(field.group, "beatloop_" + 2 ** ((padNumber - 5)) + "_activate", field.value);
+            }
             break;
     }
 };
@@ -546,6 +464,7 @@ TraktorMX2.headphoneHandler = function (field) {
     }
 
     script.toggleControl(field.group, "pfl");
+    TraktorMX2.outputHandler(engine.getValue(field.group, "pfl"), field.group, "pfl");
 };
 
 TraktorMX2.selectTrackHandler = function (field) {
@@ -587,7 +506,10 @@ TraktorMX2.previewHandler = function (field) {
     if (field.value === 0) {
         return;
     }
+
+
     engine.setValue(field.group, "LoadSelectedTrackAndPlay", field.value);
+    TraktorMX2.outputHandler(engine.getValue(field.group, "play_indicator"), field.group, "preview");
 };
 
 TraktorMX2.favListHandler = function (field) {
@@ -602,7 +524,11 @@ TraktorMX2.maximizeLibraryHandler = function (field) {
         return;
     }
 
-    script.toggleControl("[Skin]", "show_maximized_library");
+    let group = "[Skin]"
+    let control = "show_maximized_library"
+
+    script.toggleControl(group, control);
+    TraktorMX2.outputHandler(engine.getValue(group, control), field.group, "maximizeLibrary");
 };
 
 TraktorMX2.selectLoopHandler = function (field) {
@@ -717,17 +643,6 @@ TraktorMX2.activateBeatjumpHandler = function (field) {
     }
 };
 
-TraktorMX2.quantizeHandler = function (field) {
-    if (field.value === 0) {
-        return;
-    }
-
-    const res = !(engine.getValue("[Channel1]", "quantize") && engine.getValue("[Channel2]", "quantize"));
-    engine.setValue("[Channel1]", "quantize", res);
-    engine.setValue("[Channel2]", "quantize", res);
-    TraktorMX2.outputHandler(res, field.group, "quantize");
-};
-
 TraktorMX2.microphoneHandler = function (field) {
     if (field.value) {
         if (TraktorMX2.microphonePressedTimer === 0) {
@@ -762,11 +677,19 @@ TraktorMX2.jogModeHandler = function (field) {
     }
 
     const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
+
     if (field.name === "!tt") {
         TraktorMX2.jogModeState[field.group] = 0;
+
+        TraktorMX2.outputHandler(false, field.group, "jog");
+        TraktorMX2.outputHandler(true, field.group, "turntable");
+
     } else if (field.name === "!jog") {
         TraktorMX2.jogModeState[field.group] = 1;
         engine.scratchDisable(deckNumber);
+
+        TraktorMX2.outputHandler(true, field.group, "jog");
+        TraktorMX2.outputHandler(false, field.group, "turntable");
     }
 };
 
@@ -836,8 +759,11 @@ TraktorMX2.fxHandler = function (field) {
         return;
     }
 
-    script.toggleControl("[EffectRack1_" + field.group + "_" + field.name + "]", "enabled",);
-    TraktorMX2.outputHandler(field.value, field.group, field.name);
+    let group = "[EffectRack1_" + field.group + "_" + field.name + "]"
+    let control = "enabled"
+
+    script.toggleControl(group, control);
+    TraktorMX2.outputHandler(engine.getValue(group, control), field.group, "fx_" + field.name[field.name.length - 1]);
 };
 
 TraktorMX2.fxSelectHandler = function (field) {
@@ -845,17 +771,22 @@ TraktorMX2.fxSelectHandler = function (field) {
         return;
     }
 
-    script.toggleControl("[EffectRack1_" + field.name + "]", "group_" + field.group + "_enable",);
-    TraktorMX2.outputHandler(field.value, field.group, "gfx");
+    let group = "[EffectRack1_" + field.name + "]"
+    let control = "group_" + field.group + "_enable"
+
+    script.toggleControl(group, control);
+    TraktorMX2.outputHandler(engine.getValue(group, control), field.group, "gfx");
 };
 
 TraktorMX2.gfxToggleHandler = function (field) {
     if (field.value === 0) {
         return;
     }
+    let group = "[QuickEffectRack1_" + field.group + "]"
+    let control = "enabled"
 
-    script.toggleControl("[QuickEffectRack1_" + field.group + "]", "enabled");
-    TraktorMX2.outputHandler(field.value, field.group, "gfx");
+    script.toggleControl(group, control);
+    TraktorMX2.outputHandler(engine.getValue(group, control), field.group, "gfx_toggle");
 };
 
 TraktorMX2.globalfxHandler = function (field) {
@@ -953,66 +884,123 @@ TraktorMX2.fluxHandler = function (field) {
 TraktorMX2.registerOutputPackets = function () {
     const output = new HIDPacket("output", 0x80);
 
-    output.addOutput("[Channel1]", "play_indicator", 0x0c, "B");
+    output.addOutput("[Channel1]", "play_indicator", 0x1c, "B");
     output.addOutput("[Channel2]", "play_indicator", 0x33, "B");
 
-    output.addOutput("[Channel1]", "cue_indicator", 0x0b, "B");
+    output.addOutput("[Channel1]", "preview_indicator", 0x07, "B");
+    output.addOutput("[Channel2]", "preview_indicator", 0x33, "B");
+
+    output.addOutput("[Channel1]", "cue_indicator", 0x20, "B");
     output.addOutput("[Channel2]", "cue_indicator", 0x32, "B");
 
     output.addOutput("[Channel1]", "shift", 0x06, "B");
     output.addOutput("[Channel2]", "shift", 0x2d, "B");
 
-    output.addOutput("[Channel1]", "hotcues", 0x07, "B");
+    output.addOutput("[Channel1]", "hotcues", 0x11, "B");
     output.addOutput("[Channel2]", "hotcues", 0x2e, "B");
 
-    output.addOutput("[Channel1]", "samples", 0x08, "B");
-    output.addOutput("[Channel2]", "samples", 0x2f, "B");
+    output.addOutput("[Channel1]", "stems", 0x12, "B");
+    output.addOutput("[Channel2]", "stems", 0x2f, "B");
+
+    output.addOutput("[Channel1]", "patterns", 0x13, "B");
+    output.addOutput("[Channel2]", "patterns", 0x2f, "B");
+
+    output.addOutput("[Channel1]", "loops", 0x14, "B");
+    output.addOutput("[Channel2]", "loops", 0x2f, "B");
 
     output.addOutput("[Channel1]", "sync_enabled", 0x09, "B");
     output.addOutput("[Channel2]", "sync_enabled", 0x30, "B");
 
+    output.addOutput("[Channel1]", "sync_leader", 0x09, "B");
+    output.addOutput("[Channel2]", "sync_leader", 0x30, "B");
+
     output.addOutput("[Channel1]", "keylock", 0x0a, "B");
     output.addOutput("[Channel2]", "keylock", 0x31, "B");
 
-    output.addOutput("[Channel1]", "pad_1", 0x0d, "B");
-    output.addOutput("[Channel1]", "pad_2", 0x0e, "B");
-    output.addOutput("[Channel1]", "pad_3", 0x0f, "B");
-    output.addOutput("[Channel1]", "pad_4", 0x10, "B");
-    output.addOutput("[Channel1]", "pad_5", 0x11, "B");
-    output.addOutput("[Channel1]", "pad_6", 0x12, "B");
-    output.addOutput("[Channel1]", "pad_7", 0x13, "B");
-    output.addOutput("[Channel1]", "pad_8", 0x14, "B");
+    output.addOutput("[Channel1]", "bottom_led_1", 0x0d, "B");
+    output.addOutput("[Channel1]", "bottom_led_2", 0x0e, "B");
+    output.addOutput("[Channel1]", "bottom_led_3", 0x0f, "B");
+    output.addOutput("[Channel1]", "bottom_led_4", 0x10, "B");
+    output.addOutput("[Channel1]", "bottom_led_5", 0x11, "B");
+    output.addOutput("[Channel1]", "bottom_led_6", 0x12, "B");
 
-    output.addOutput("[Channel2]", "pad_1", 0x34, "B");
-    output.addOutput("[Channel2]", "pad_2", 0x35, "B");
-    output.addOutput("[Channel2]", "pad_3", 0x36, "B");
-    output.addOutput("[Channel2]", "pad_4", 0x37, "B");
-    output.addOutput("[Channel2]", "pad_5", 0x38, "B");
-    output.addOutput("[Channel2]", "pad_6", 0x39, "B");
-    output.addOutput("[Channel2]", "pad_7", 0x3a, "B");
-    output.addOutput("[Channel2]", "pad_8", 0x3b, "B");
+    output.addOutput("[Channel2]", "bottom_led_1", 0x0d, "B");
+    output.addOutput("[Channel2]", "bottom_led_2", 0x0e, "B");
+    output.addOutput("[Channel2]", "bottom_led_3", 0x0f, "B");
+    output.addOutput("[Channel2]", "bottom_led_4", 0x10, "B");
+    output.addOutput("[Channel2]", "bottom_led_5", 0x11, "B");
+    output.addOutput("[Channel2]", "bottom_led_6", 0x12, "B");
+
+    output.addOutput("[Channel1]", "pad_1", 0x15, "B");
+    output.addOutput("[Channel1]", "pad_2", 0x16, "B");
+    output.addOutput("[Channel1]", "pad_3", 0x17, "B");
+    output.addOutput("[Channel1]", "pad_4", 0x18, "B");
+    output.addOutput("[Channel1]", "pad_5", 0x19, "B");
+    output.addOutput("[Channel1]", "pad_6", 0x1a, "B");
+    output.addOutput("[Channel1]", "pad_7", 0x1b, "B");
+    output.addOutput("[Channel1]", "pad_8", 0x1c, "B");
+
+    output.addOutput("[Channel2]", "pad_1", 0x33, "B");
+    output.addOutput("[Channel2]", "pad_2", 0x34, "B");
+    output.addOutput("[Channel2]", "pad_3", 0x35, "B");
+    output.addOutput("[Channel2]", "pad_4", 0x36, "B");
+    output.addOutput("[Channel2]", "pad_5", 0x37, "B");
+    output.addOutput("[Channel2]", "pad_6", 0x38, "B");
+    output.addOutput("[Channel2]", "pad_7", 0x39, "B");
+    output.addOutput("[Channel2]", "pad_8", 0x3a, "B");
 
     output.addOutput("[Channel1]", "pfl", 0x1a, "B");
     output.addOutput("[Channel2]", "pfl", 0x1b, "B");
 
+    output.addOutput("[Microphone]", "talkover", 0x3d, "B");
+
+    output.addOutput("[Channel1]", "gfx_toggle", 0x1c, "B");
+    output.addOutput("[Channel2]", "gfx_toggle", 0x1c, "B");
+
+    output.addOutput("[ChannelX]", "gfx_0", 0x31, "B");
+    output.addOutput("[ChannelX]", "gfx_1", 0x2d, "B");
+    output.addOutput("[ChannelX]", "gfx_2", 0x2e, "B");
+    output.addOutput("[ChannelX]", "gfx_3", 0x2f, "B");
+    output.addOutput("[ChannelX]", "gfx_4", 0x30, "B");
+
     output.addOutput("[Channel1]", "vu-18", 0x1c, "B");
+    output.addOutput("[Channel1]", "vu-15", 0x1c, "B");
     output.addOutput("[Channel1]", "vu-12", 0x1d, "B");
+    output.addOutput("[Channel1]", "vu-9", 0x1c, "B");
     output.addOutput("[Channel1]", "vu-6", 0x1e, "B");
+    output.addOutput("[Channel1]", "vu-3", 0x1c, "B");
     output.addOutput("[Channel1]", "vu0", 0x1f, "B");
+    output.addOutput("[Channel1]", "vu3", 0x1f, "B");
     output.addOutput("[Channel1]", "vu6", 0x20, "B");
     output.addOutput("[Channel1]", "peak_indicator", 0x21, "B");
 
     output.addOutput("[Channel2]", "vu-18", 0x22, "B");
+    output.addOutput("[Channel2]", "vu-15", 0x22, "B");
     output.addOutput("[Channel2]", "vu-12", 0x23, "B");
+    output.addOutput("[Channel2]", "vu-9", 0x22, "B");
     output.addOutput("[Channel2]", "vu-6", 0x24, "B");
+    output.addOutput("[Channel2]", "vu-3", 0x22, "B");
     output.addOutput("[Channel2]", "vu0", 0x25, "B");
+    output.addOutput("[Channel2]", "vu3", 0x22, "B");
     output.addOutput("[Channel2]", "vu6", 0x26, "B");
     output.addOutput("[Channel2]", "peak_indicator", 0x27, "B");
 
-    output.addOutput("[ChannelX]", "fxButton1", 0x16, "B");
-    output.addOutput("[ChannelX]", "fxButton2", 0x17, "B");
-    output.addOutput("[ChannelX]", "fxButton3", 0x18, "B");
-    output.addOutput("[ChannelX]", "fxButton4", 0x19, "B");
+    output.addOutput("[ChannelX]", "peak_indicator", 0x27, "B");
+
+    output.addOutput("[Channel1]", "fx_select_1", 0x1c, "B");
+    output.addOutput("[Channel1]", "fx_select_2", 0x1c, "B");
+    output.addOutput("[Channel2]", "fx_select_1", 0x1c, "B");
+    output.addOutput("[Channel2]", "fx_select_2", 0x1c, "B");
+
+    output.addOutput("[Channel1]", "fx_1", 0x1c, "B");
+    output.addOutput("[Channel1]", "fx_2", 0x1c, "B");
+    output.addOutput("[Channel1]", "fx_3", 0x1c, "B");
+    output.addOutput("[Channel1]", "fx_4", 0x1c, "B");
+
+    output.addOutput("[Channel2]", "fx_1", 0x1c, "B");
+    output.addOutput("[Channel2]", "fx_2", 0x1c, "B");
+    output.addOutput("[Channel2]", "fx_3", 0x1c, "B");
+    output.addOutput("[Channel2]", "fx_4", 0x1c, "B");
 
     output.addOutput("[Channel1]", "reverse", 0x01, "B");
     output.addOutput("[Channel2]", "reverse", 0x28, "B");
@@ -1020,17 +1008,23 @@ TraktorMX2.registerOutputPackets = function () {
     output.addOutput("[Channel1]", "slip_enabled", 0x02, "B");
     output.addOutput("[Channel2]", "slip_enabled", 0x29, "B");
 
+    output.addOutput("[Channel1]", "turntable", 0x02, "B");
+    output.addOutput("[Channel2]", "turntable", 0x29, "B");
+
+    output.addOutput("[Channel1]", "jog", 0x02, "B");
+    output.addOutput("[Channel2]", "jog", 0x29, "B");
+
+    output.addOutput("[Channel1]", "preview", 0x08, "B");
+    output.addOutput("[Channel2]", "preview", 0x2b, "B");
+
+    output.addOutput("[Channel1]", "maximizeLibrary", 0x08, "B");
+    output.addOutput("[Channel2]", "maximizeLibrary", 0x2b, "B");
+
     output.addOutput("[Channel1]", "addTrack", 0x03, "B");
     output.addOutput("[Channel2]", "addTrack", 0x2a, "B");
 
-    output.addOutput("[Channel1]", "grid", 0x05, "B");
-    output.addOutput("[Channel2]", "grid", 0x2c, "B");
-
-    output.addOutput("[Channel1]", "MaximizeLibrary", 0x04, "B");
-    output.addOutput("[Channel2]", "MaximizeLibrary", 0x2b, "B");
-
-    output.addOutput("[ChannelX]", "quantize", 0x3c, "B");
-    output.addOutput("[Microphone]", "talkover", 0x3d, "B");
+    output.addOutput("[Channel1]", "favorites", 0x05, "B");
+    output.addOutput("[Channel2]", "favorites", 0x2c, "B");
 
     this.controller.registerOutputPacket(output);
 
@@ -1042,6 +1036,9 @@ TraktorMX2.registerOutputPackets = function () {
 
     this.linkOutput("[Channel1]", "sync_enabled", this.outputHandler);
     this.linkOutput("[Channel2]", "sync_enabled", this.outputHandler);
+
+    this.linkOutput("[Channel1]", "sync_leader", this.outputHandler);
+    this.linkOutput("[Channel2]", "sync_leader", this.outputHandler);
 
     this.linkOutput("[Channel1]", "keylock", this.outputHandler);
     this.linkOutput("[Channel2]", "keylock", this.outputHandler);
@@ -1062,16 +1059,14 @@ TraktorMX2.registerOutputPackets = function () {
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // VuMeter
-    this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler,);
-    this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler,);
-    this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler.bind(this),);
-    this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler.bind(this),);
+    this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler);
+    this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler);
 
-    // Sampler callbacks
-    for (let i = 1; i <= TraktorMX2.samplerCount; ++i) {
-        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler.bind(this),),);
-        this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", this.samplesOutputHandler.bind(this),),);
-    }
+    this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler.bind(this));
+    this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler.bind(this));
+
+    this.clipRightConnection = engine.makeConnection("[ChannelX]", "peak_indicator", this.peakOutputHandler.bind(this));
+
 
     this.fxCallbacks = [];
     for (const group of ["[Channel1]", "[Channel2]"]) {
@@ -1150,55 +1145,6 @@ TraktorMX2.hotcueColorHandler = function (value, group, key) {
     }
 };
 
-TraktorMX2.samplesOutputHandler = function (value, group, key) {
-    // Sampler 1-4, 9-12 -> Channel1
-    // Samples 5-8, 13-16 -> Channel2
-    const sampler = TraktorMX2.resolveSampler(group);
-    let deck = "[Channel1]";
-    let num = sampler;
-    if (sampler === undefined) {
-        return;
-    } else if (sampler > 4 && sampler < 9) {
-        deck = "[Channel2]";
-        num = sampler - 4;
-    } else if (sampler > 8 && sampler < 13) {
-        num = sampler - 4;
-    } else if (sampler > 12 && sampler < 17) {
-        deck = "[Channel2]";
-        num = sampler - 8;
-    }
-
-    // If we are in samples modes light corresponding LED
-    if (TraktorMX2.padModeState[deck] === 1) {
-        if (key === "play" && engine.getValue(group, "track_loaded")) {
-            if (value) {
-                // Green light on play
-                TraktorMX2.outputHandler(0x9e, deck, "pad_" + num);
-            } else {
-                // Reset LED to full white light
-                TraktorMX2.outputHandler(1, deck, "pad_" + num);
-            }
-        } else if (key === "track_loaded") {
-            TraktorMX2.outputHandler(value, deck, "pad_" + num);
-        }
-    }
-};
-
-TraktorMX2.resolveSampler = function (group) {
-    if (group === undefined) {
-        return undefined;
-    }
-
-    const result = group.match(script.samplerRegEx);
-
-    if (result === null) {
-        return undefined;
-    }
-
-    // Return sample number
-    return result[1];
-};
-
 TraktorMX2.lightDeck = function (switchOff) {
     let softLight = 0x7c;
     let fullLight = 0x7e;
@@ -1225,12 +1171,23 @@ TraktorMX2.lightDeck = function (switchOff) {
     current = engine.getValue("[Channel1]", "sync_enabled") ? fullLight : softLight;
     TraktorMX2.controller.setOutput("[Channel2]", "sync_enabled", current, false);
 
+    current = engine.getValue("[Channel1]", "sync_leader") ? fullLight : softLight;
+    TraktorMX2.controller.setOutput("[Channel1]", "sync_leader", current, false);
+    current = engine.getValue("[Channel1]", "sync_leader") ? fullLight : softLight;
+    TraktorMX2.controller.setOutput("[Channel2]", "sync_leader", current, false);
+
     // Hotcues mode is default start value
     TraktorMX2.controller.setOutput("[Channel1]", "hotcues", fullLight, false);
     TraktorMX2.controller.setOutput("[Channel2]", "hotcues", fullLight, false);
 
-    TraktorMX2.controller.setOutput("[Channel1]", "samples", softLight, false);
-    TraktorMX2.controller.setOutput("[Channel2]", "samples", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "stems", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "stems", softLight, false);
+
+    TraktorMX2.controller.setOutput("[Channel1]", "patterns", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "patterns", softLight, false);
+
+    TraktorMX2.controller.setOutput("[Channel1]", "loops", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "loops", softLight, false);
 
     current = engine.getValue("[Channel1]", "keylock") ? fullLight : softLight;
     TraktorMX2.controller.setOutput("[Channel1]", "keylock", current, false);
@@ -1255,10 +1212,31 @@ TraktorMX2.lightDeck = function (switchOff) {
     current = engine.getValue("[Channel2]", "pfl") ? fullLight : softLight;
     TraktorMX2.controller.setOutput("[Channel2]", "pfl", current, false);
 
-    TraktorMX2.controller.setOutput("[ChannelX]", "fxButton1", softLight, false);
-    TraktorMX2.controller.setOutput("[ChannelX]", "fxButton2", softLight, false);
-    TraktorMX2.controller.setOutput("[ChannelX]", "fxButton3", softLight, false);
-    TraktorMX2.controller.setOutput("[ChannelX]", "fxButton4", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "gfx_toggle", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "gfx_toggle", softLight, false);
+
+    TraktorMX2.controller.setOutput("[ChannelX]", "gfx_0", softLight, false);
+    TraktorMX2.controller.setOutput("[ChannelX]", "gfx_1", softLight, false);
+    TraktorMX2.controller.setOutput("[ChannelX]", "gfx_2", softLight, false);
+    TraktorMX2.controller.setOutput("[ChannelX]", "gfx_3", softLight, false);
+    TraktorMX2.controller.setOutput("[ChannelX]", "gfx_4", softLight, false);
+
+    TraktorMX2.controller.setOutput("[Channel1]", "fx_select_1", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "fx_select_2", softLight, false);
+
+    TraktorMX2.controller.setOutput("[Channel2]", "fx_select_1", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "fx_select_2", softLight, false);
+
+    TraktorMX2.controller.setOutput("[Channel1]", "fx_1", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "fx_2", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "fx_3", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "fx_4", softLight, false);
+
+    TraktorMX2.controller.setOutput("[Channel2]", "fx_1", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "fx_2", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "fx_3", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "fx_4", softLight, false);
+
     // Set FX button LED state according to active quick effects on start-up
     if (!switchOff) {
         TraktorMX2.fxOutputHandler();
@@ -1272,16 +1250,24 @@ TraktorMX2.lightDeck = function (switchOff) {
     current = engine.getValue("[Channel2]", "slip_enabled") ? fullLight : softLight;
     TraktorMX2.controller.setOutput("[Channel2]", "slip_enabled", current, false);
 
+    current = TraktorMX2.jogModeState["[Channel1]"] ? fullLight : softLight;
+    TraktorMX2.controller.setOutput("[Channel1]", "turntable", !current, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "jog", current, false);
+    current = TraktorMX2.jogModeState["[Channel2]"] ? fullLight : softLight;
+    TraktorMX2.controller.setOutput("[Channel2]", "turntable", !current, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "jog", current, false);
+
+    TraktorMX2.controller.setOutput("[Channel1]", "preview", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "preview", softLight, false);
+
+    TraktorMX2.controller.setOutput("[Channel1]", "maximizeLibrary", softLight, false,);
+    TraktorMX2.controller.setOutput("[Channel2]", "maximizeLibrary", softLight, false,);
+
     TraktorMX2.controller.setOutput("[Channel1]", "addTrack", softLight, false);
     TraktorMX2.controller.setOutput("[Channel2]", "addTrack", softLight, false);
 
-    TraktorMX2.controller.setOutput("[Channel1]", "grid", softLight, false);
-    TraktorMX2.controller.setOutput("[Channel2]", "grid", softLight, false);
-
-    TraktorMX2.controller.setOutput("[Channel1]", "MaximizeLibrary", softLight, false,);
-    TraktorMX2.controller.setOutput("[Channel2]", "MaximizeLibrary", softLight, false,);
-
-    TraktorMX2.controller.setOutput("[ChannelX]", "quantize", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "favorites", softLight, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "favorites", softLight, false);
 
     // For the last output we should send the packet finally
     current = engine.getValue("[Microphone]", "talkover") ? fullLight : softLight;
@@ -1300,9 +1286,92 @@ TraktorMX2.shutdown = function () {
     // Deactivate all LEDs
     TraktorMX2.lightDeck(true);
 
-    HIDDebug("TraktorMX2: Shutdown done!");
+    console.log("HID: TraktorMX2: Shutdown done!");
 };
 
 TraktorMX2.incomingData = function (data, length) {
     TraktorMX2.controller.parsePacket(data, length);
 };
+
+TraktorMX2.PadColorMap = new ColorMapper({
+    0x755771: 0x00,
+    0xe9c9da: 0x01,
+    0x372c2b: 0x02,
+    0x2b2b21: 0x03,
+    0xaf262e: 0x04,
+    0xcb242c: 0x05,
+    0xff2916: 0x06,
+    0xfe354f: 0x07,
+    0xb8332d: 0x08,
+    0xd1322c: 0x09,
+    0xfd5921: 0x0a,
+    0xf95364: 0x0b,
+    0xa53a2e: 0x0c,
+    0xb03e2b: 0x0d,
+    0xfd7bab: 0x0e,
+    0xfb8553: 0x0f,
+    0xbe712f: 0x10,
+    0xc57831: 0x11,
+    0xf8ab36: 0x12,
+    0xf6aa80: 0x13,
+    0x9c7132: 0x14,
+    0xb07b31: 0x15,
+    0xe9ba3d: 0x16,
+    0xecbc92: 0x17,
+    0x626341: 0x18,
+    0x6d6c43: 0x19,
+    0xb6b959: 0x1a,
+    0xa9bb91: 0x1b,
+    0x2e5c45: 0x1c,
+    0x2b7446: 0x1d,
+    0x2ccf68: 0x1e,
+    0x92c7b0: 0x1f,
+    0x409654: 0x20,
+    0x39a97f: 0x21,
+    0x3fd2b0: 0x22,
+    0xb0c6c9: 0x23,
+    0x2c8fe4: 0x24,
+    0x7f97de: 0x25,
+    0x0de1ff: 0x26,
+    0xb3d5ff: 0x27,
+    0x059bf3: 0x28,
+    0x6b97ef: 0x29,
+    0x00c3ff: 0x2a,
+    0x63d3ff: 0x2b,
+    0x1860dd: 0x2c,
+    0x0482f8: 0x2d,
+    0x00a1ff: 0x2e,
+    0x42b3ff: 0x2f,
+    0x8d52dd: 0x30,
+    0xb171ea: 0x31,
+    0xe298fe: 0x32,
+    0xceb4fd: 0x33,
+    0xeb4bd3: 0x34,
+    0xeb5ddb: 0x35,
+    0xf263e3: 0x36,
+    0xf08cea: 0x37,
+    0xc33196: 0x38,
+    0xc944a1: 0x39,
+    0xfc4dc0: 0x3a,
+    0xfa6ddc: 0x3b,
+    0xa82c6b: 0x3c,
+    0xb13a74: 0x3d,
+    0xfb359f: 0x3e,
+    0xf94eae: 0x3f,
+    0xd12a40: 0x40,
+    0xda394f: 0x41,
+    0xfb3672: 0x42,
+    0xf8487e: 0x43,
+    0x6d5a77: 0x44,
+    0x836295: 0x45,
+    0xe5bada: 0x46,
+    0xe1bce3: 0x47,
+    0x7f6487: 0x48,
+    0x916ca0: 0x49,
+    0xdcb6d4: 0x4a,
+    0xd6b3db: 0x4b,
+    0x795f82: 0x4c,
+    0x8e689e: 0x4d,
+    0xddb9d4: 0x4e,
+    0xd6b7d9: 0x4f,
+});
