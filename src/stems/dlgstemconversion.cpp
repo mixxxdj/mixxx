@@ -16,14 +16,14 @@ DlgStemConversion::DlgStemConversion(
     setMinimumWidth(600);
     setMinimumHeight(400);
 
-    // Fer la finestra modeless (no bloquejant)
+    // Window modeless (not blocked)
     setWindowModality(Qt::NonModal);
 
     createUI();
     connectSignals();
     updateConversionList();
 
-    // Mostrar la finestra
+    // show window
     show();
 }
 
