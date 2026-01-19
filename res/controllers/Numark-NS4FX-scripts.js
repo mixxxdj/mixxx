@@ -1014,6 +1014,7 @@ NS4FX.Deck = function(number, midi_chan) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x00);
             }
         });
+
         if (useAdditionalHotcues) {
             addShiftClearToHotcue(this.hotcue_buttons_1_4[i]);
         }
@@ -2069,11 +2070,11 @@ NS4FX.deckSwitch = function(channel, _control, value, _status, _group) {
     // change effects racks
     if (NS4FX.decks[deck].active && (channel == 0x00 || channel == 0x02)) {
         NS4FX.effectUnit.deck1 = (deck == 1);
-        var left_side = true;
+        left_side = true;
     }
     else if (NS4FX.decks[deck].active && (channel == 0x01 || channel == 0x03)) {
         NS4FX.effectUnit.deck2 = (deck == 2);
-        var left_side = false;
+        left_side = false;
     }
     NS4FX.effectUnit.updateEffectOnDeckSwitch(left_side);
 
@@ -2131,7 +2132,7 @@ NS4FX.vuCallback = function(value, group, control) {
 
         // Take the maximum of the left and right channels for the mono meter display
         var combined_value = Math.max(NS4FX.vu_levels[group].left, NS4FX.vu_levels[group].right);
-        var level = combined_value * 81;
+        level = combined_value * 81;
 
         if (engine.getValue(group, "peak_indicator")) {
             level = 81;
@@ -2224,8 +2225,7 @@ NS4FX.shiftToggle = function(_channel, control, value, _status, _group) {
         NS4FX.scratch_accumulator[2] = 0;
         NS4FX.scratch_accumulator[3] = 0;
         NS4FX.scratch_accumulator[4] = 0;
-    }
-    else {
+    } else {
         NS4FX.decks.unshift();
         NS4FX.sampler_all.unshift();
         NS4FX.effectUnit.unshift();
