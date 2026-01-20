@@ -54,8 +54,7 @@ var TraktorMX2 = new (function () {
         "vu-6": 5 / 9,
         "vu-3": 6 / 9,
         vu0: 7 / 9,
-        vu3: 8 / 9,
-        vu6: 9 / 6,
+        vu6: 8 / 9,
     };
 })();
 
@@ -70,146 +69,172 @@ TraktorMX2.registerInputPackets = function () {
     const messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
     const messageJog = new HIDPacket("reportmessage", 0x03, this.messageCallback);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!play", 0x04, 0x20, this.playHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!play", 0x08, 0x08, this.playHandler,);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!cue_default", 0x04, 0x10, this.cueHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!cue_default", 0x08, 0x04, this.cueHandler,);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!shift", 0x02, 0x10, this.shiftHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!shift", 0x06, 0x04, this.shiftHandler,);
+    // Channel 1
 
-    this.registerInputButton(messageShort, "[Channel1]", "!sync", 0x02, 0x20, this.syncHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!sync", 0x06, 0x08, this.syncHandler,);
+    // // Channel FX
+    this.registerInputButton(messageShort, "EffectUnit1", "misc", 0x01, 0x01, this.fxHandler);
+    this.registerInputButton(messageShort, "EffectUnit1", "Effect1", 0x01, 0x02, this.fxHandler);
+    this.registerInputButton(messageShort, "EffectUnit1", "Effect2", 0x01, 0x04, this.fxHandler);
+    this.registerInputButton(messageShort, "EffectUnit1", "Effect3", 0x01, 0x08, this.fxHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!sync_leader", 0x02, 0x40, this.masterHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!sync_leader", 0x06, 0x10, this.masterHandler,);
+    // // Library Controls
+    this.registerInputButton(messageShort, "[Channel1]", "!FavList", 0x01, 0x10, this.favListHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!AddTrack", 0x01, 0x20, this.addTrackHandler);
+    this.registerInputButton(messageShort, "[PreviewDeck1]", "!PreviewL", 0x01, 0x40, this.previewHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!MaximizeLibrary", 0x01, 0x80, this.maximizeLibraryHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!keylock", 0x02, 0x80, this.keylockHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!keylock", 0x06, 0x20, this.keylockHandler,);
+    // // Rev / FLUX
+    this.registerInputButton(messageShort, "[Channel1]", "!slip_enabled", 0x02, 0x01, this.fluxHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!reverse", 0x02, 0x02, this.reverseHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!hotcues", 0x03, 0x01, this.padModeHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!hotcues", 0x07, 0x40, this.padModeHandler,);
+    // // Jog Mode
+    this.registerInputButton(messageShort, "[Channel1]", "!tt", 0x02, 0x04, this.jogModeHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!jog", 0x02, 0x08, this.jogModeHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!stems", 0x03, 0x02, this.padModeHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!stems", 0x07, 0x80, this.padModeHandler,);
+    this.registerInputButton(messageShort, "[Channel1]", "!shift", 0x02, 0x10, this.shiftHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!sync", 0x02, 0x20, this.syncHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!sync_leader", 0x02, 0x40, this.masterHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!keylock", 0x02, 0x80, this.keylockHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!patterns", 0x03, 0x04, this.padModeHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!patterns", 0x08, 0x10, this.padModeHandler,);
+    // // Hotcue / Stem / Pattern / Loop Mode
+    this.registerInputButton(messageShort, "[Channel1]", "!hotcues", 0x03, 0x01, this.padModeHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!stems", 0x03, 0x02, this.padModeHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!patterns", 0x03, 0x04, this.padModeHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!loops", 0x03, 0x08, this.padModeHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!loops", 0x03, 0x08, this.padModeHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!loops", 0x08, 0x20, this.padModeHandler,);
+    // // Pads (Hotcues, Stems, Patterns and Loops depending on current mode)
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_1", 0x03, 0x10, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_2", 0x03, 0x20, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_3", 0x03, 0x40, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_4", 0x03, 0x80, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_5", 0x04, 0x01, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_6", 0x04, 0x02, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_7", 0x04, 0x04, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pad_8", 0x04, 0x08, this.padHandler);
 
-    // Number pad buttons (Hotcues, Stems, Patterns and Loops depending on current mode)
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_1", 0x03, 0x10, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_2", 0x03, 0x20, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_3", 0x03, 0x40, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_4", 0x03, 0x80, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_5", 0x04, 0x01, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_6", 0x04, 0x02, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_7", 0x04, 0x04, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!pad_8", 0x04, 0x08, this.padHandler,);
+    // // Cue and Play
+    this.registerInputButton(messageShort, "[Channel1]", "!cue_default", 0x04, 0x10, this.cueHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!play", 0x04, 0x20, this.playHandler);
 
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_1", 0x07, 0x04, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_2", 0x07, 0x08, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_3", 0x07, 0x10, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_4", 0x07, 0x20, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_5", 0x07, 0x40, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_6", 0x07, 0x80, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_7", 0x08, 0x01, this.padHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pad_8", 0x08, 0x02, this.padHandler,);
 
-    // Headphone buttons
-    this.registerInputButton(messageShort, "[Channel1]", "!pfl", 0x08, 0x80, this.headphoneHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!pfl", 0x09, 0x08, this.headphoneHandler,);
 
-    // Track browsing
-    this.registerInputButton(messageShort, "[Channel1]", "!SelectTrack", 0x0c, 0x0f, this.selectTrackHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!SelectTrack", 0x0d, 0xf0, this.selectTrackHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!LoadSelectedTrack", 0x0a, 0x04, this.loadTrackHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!LoadSelectedTrack", 0x0a, 0x20, this.loadTrackHandler,);
+    // Channel 2
 
-    this.registerInputButton(messageShort, "[Channel1]", "!MaximizeLibrary", 0x01, 0x80, this.maximizeLibraryHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!MaximizeLibrary", 0x05, 0x20, this.maximizeLibraryHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!AddTrack", 0x01, 0x20, this.addTrackHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!AddTrack", 0x05, 0x08, this.addTrackHandler,);
+    // // Channel FX
+    this.registerInputButton(messageShort, "EffectUnit2", "mics", 0x04, 0x40, this.fxHandler);
+    this.registerInputButton(messageShort, "EffectUnit2", "Effect1", 0x04, 0x80, this.fxHandler);
+    this.registerInputButton(messageShort, "EffectUnit2", "Effect2", 0x05, 0x01, this.fxHandler);
+    this.registerInputButton(messageShort, "EffectUnit2", "Effect3", 0x05, 0x02, this.fxHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!FavList", 0x01, 0x10, this.favListHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!FavList", 0x05, 0x04, this.favListHandler,);
-    this.registerInputButton(messageShort, "[PreviewDeck1]", "!PreviewL", 0x01, 0x40, this.previewHandler,);
-    this.registerInputButton(messageShort, "[PreviewDeck1]", "!PreviewR", 0x05, 0x10, this.previewHandler,);
+    // // Library Controls
+    this.registerInputButton(messageShort, "[Channel2]", "!FavList", 0x05, 0x04, this.favListHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!AddTrack", 0x05, 0x08, this.addTrackHandler);
+    this.registerInputButton(messageShort, "[PreviewDeck1]", "!PreviewR", 0x05, 0x10, this.previewHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!MaximizeLibrary", 0x05, 0x20, this.maximizeLibraryHandler);
 
-    // Loop control
-    this.registerInputButton(messageShort, "[Channel1]", "!SelectLoop", 0x0d, 0x0f, this.selectLoopHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!SelectLoop", 0x0e, 0xf0, this.selectLoopHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!ActivateLoop", 0x0a, 0x10, this.activateLoopHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!ActivateLoop", 0x0a, 0x80, this.activateLoopHandler,);
+    // // Rev / FLUX
+    this.registerInputButton(messageShort, "[Channel2]", "!slip_enabled", 0x05, 0x40, this.fluxHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!reverse", 0x05, 0x80, this.reverseHandler);
 
-    // Beatjump
-    this.registerInputButton(messageShort, "[Channel1]", "!SelectBeatjump", 0x0c, 0xf0, this.selectBeatjumpHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!SelectBeatjump", 0x0e, 0x0f, this.selectBeatjumpHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "!ActivateBeatjump", 0x0a, 0x08, this.activateBeatjumpHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!ActivateBeatjump", 0x0a, 0x40, this.activateBeatjumpHandler,);
+    // // Jog Mode
+    this.registerInputButton(messageShort, "[Channel2]", "!tt", 0x06, 0x01, this.jogModeHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!jog", 0x06, 0x02, this.jogModeHandler);
 
-    // Microphone
-    this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x0a, 0x02, this.microphoneHandler,);
+    // // Shift, Sync, Sync Master, Keylock
+    this.registerInputButton(messageShort, "[Channel2]", "!shift", 0x06, 0x04, this.shiftHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!sync", 0x06, 0x08, this.syncHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!sync_leader", 0x06, 0x10, this.masterHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!keylock", 0x06, 0x20, this.keylockHandler);
 
-    // Jog touch
-    this.registerInputButton(messageShort, "[Channel1]", "!jog_touch", 0x0b, 0x01, this.jogTouchHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!jog_touch", 0x0b, 0x02, this.jogTouchHandler,);
+    // // Hotcue / Stem / Pattern / Loop Mode
+    this.registerInputButton(messageShort, "[Channel2]", "!hotcues", 0x07, 0x40, this.padModeHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!stems", 0x07, 0x80, this.padModeHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!patterns", 0x08, 0x10, this.padModeHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!loops", 0x08, 0x20, this.padModeHandler);
 
-    // Global FX Buttons
-    this.registerInputButton(messageShort, "[Channel1]", "!gfx", 0x08, 0x40, this.gfxToggleHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!gfx", 0x09, 0x04, this.gfxToggleHandler,);
+    // // Pads (Hotcues, Stems, Patterns and Loops depending on current mode)
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_1", 0x07, 0x04, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_2", 0x07, 0x08, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_3", 0x07, 0x10, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_4", 0x07, 0x20, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_5", 0x07, 0x40, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_6", 0x07, 0x80, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_7", 0x08, 0x01, this.padHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pad_8", 0x08, 0x02, this.padHandler);
 
+    // // Cue and Play
+    this.registerInputButton(messageShort, "[Channel2]", "!cue_default", 0x08, 0x04, this.cueHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!play", 0x08, 0x08, this.playHandler);
+
+
+
+    // Mixer and global Effects
+
+    // // Channel 1 FX Select and GFX / PFL
+    this.registerInputButton(messageShort, "[Channel1]", "EffectUnit1", 0x08, 0x10, this.fxSelectHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "EffectUnit2", 0x08, 0x20, this.fxSelectHandler);
+
+    this.registerInputButton(messageShort, "[Channel1]", "!gfx_toggle", 0x08, 0x40, this.gfxToggleHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!pfl", 0x08, 0x80, this.headphoneHandler);
+
+    // // Channel 2 FX Select and GFX / PFL
+    this.registerInputButton(messageShort, "[Channel2]", "EffectUnit1", 0x09, 0x01, this.fxSelectHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "EffectUnit2", 0x09, 0x02, this.fxSelectHandler);
+
+    this.registerInputButton(messageShort, "[Channel2]", "!gfx_toggle", 0x09, 0x04, this.gfxToggleHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!pfl", 0x09, 0x08, this.headphoneHandler);
+
+    // // GFX
     this.registerInputButton(messageShort, "[ChannelX]", "!gfx0", 0x0a, 0x01, this.globalfxHandler,);
     this.registerInputButton(messageShort, "[ChannelX]", "!gfx1", 0x09, 0x10, this.globalfxHandler,);
     this.registerInputButton(messageShort, "[ChannelX]", "!gfx2", 0x09, 0x20, this.globalfxHandler,);
     this.registerInputButton(messageShort, "[ChannelX]", "!gfx3", 0x09, 0x40, this.globalfxHandler,);
     this.registerInputButton(messageShort, "[ChannelX]", "!gfx4", 0x09, 0x80, this.globalfxHandler,);
 
-    // Channel FX Select
-    this.registerInputButton(messageShort, "[Channel1]", "EffectUnit1", 0x08, 0x10, this.fxSelectHandler,);
-    this.registerInputButton(messageShort, "[Channel1]", "EffectUnit2", 0x08, 0x20, this.fxSelectHandler,);
+    // // Microphone
+    this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x0a, 0x02, this.microphoneHandler);
 
-    this.registerInputButton(messageShort, "[Channel2]", "EffectUnit1", 0x09, 0x01, this.fxSelectHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "EffectUnit2", 0x09, 0x02, this.fxSelectHandler,);
 
-    // Channel FX Buttons
-    //this.registerInputButton(messageShort, "EffectUnit1", "Effect1", 0x01, 0x01, this.fxHandler);
-    this.registerInputButton(messageShort, "EffectUnit1", "Effect1", 0x01, 0x02, this.fxHandler,);
-    this.registerInputButton(messageShort, "EffectUnit1", "Effect2", 0x01, 0x04, this.fxHandler,);
-    this.registerInputButton(messageShort, "EffectUnit1", "Effect3", 0x01, 0x08, this.fxHandler,);
 
-    //this.registerInputButton(messageShort, "EffectUnit2", "Effect1", 0x04, 0x40, this.fxHandler);
-    this.registerInputButton(messageShort, "EffectUnit2", "Effect1", 0x04, 0x80, this.fxHandler,);
-    this.registerInputButton(messageShort, "EffectUnit2", "Effect2", 0x05, 0x01, this.fxHandler,);
-    this.registerInputButton(messageShort, "EffectUnit2", "Effect3", 0x05, 0x02, this.fxHandler,);
+    // Other
 
-    // Rev / FLUX
-    this.registerInputButton(messageShort, "[Channel1]", "!reverse", 0x02, 0x02, this.reverseHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!reverse", 0x05, 0x80, this.reverseHandler,);
+    // // Selectors Press
+    this.registerInputButton(messageShort, "[Channel1]", "!LoadSelectedTrack", 0x0a, 0x04, this.loadTrackHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!ActivateBeatjump", 0x0a, 0x08, this.activateBeatjumpHandler,);
+    this.registerInputButton(messageShort, "[Channel1]", "!ActivateLoop", 0x0a, 0x10, this.activateLoopHandler);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!slip_enabled", 0x02, 0x01, this.fluxHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!slip_enabled", 0x05, 0x40, this.fluxHandler,);
+    this.registerInputButton(messageShort, "[Channel2]", "!LoadSelectedTrack", 0x0a, 0x20, this.loadTrackHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!ActivateBeatjump", 0x0a, 0x40, this.activateBeatjumpHandler,);
+    this.registerInputButton(messageShort, "[Channel2]", "!ActivateLoop", 0x0a, 0x80, this.activateLoopHandler);
 
-    // Jog Mode Buttons
-    this.registerInputButton(messageShort, "[Channel1]", "!tt", 0x02, 0x04, this.jogModeHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!tt", 0x06, 0x01, this.jogModeHandler,);
 
-    this.registerInputButton(messageShort, "[Channel1]", "!jog", 0x02, 0x08, this.jogModeHandler,);
-    this.registerInputButton(messageShort, "[Channel2]", "!jog", 0x06, 0x02, this.jogModeHandler,);
+    // // Jog Touch
+    this.registerInputButton(messageShort, "[Channel1]", "!jog_touch", 0x0b, 0x01, this.jogTouchHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!jog_touch", 0x0b, 0x02, this.jogTouchHandler);
+
+    // // Selectors Turn
+    this.registerInputButton(messageShort, "[Channel1]", "!SelectTrack", 0x0c, 0x0f, this.selectTrackHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!SelectBeatjump", 0x0c, 0xf0, this.selectBeatjumpHandler);
+    this.registerInputButton(messageShort, "[Channel1]", "!SelectLoop", 0x0d, 0x0f, this.selectLoopHandler);
+
+    this.registerInputButton(messageShort, "[Channel2]", "!SelectTrack", 0x0d, 0xf0, this.selectTrackHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!SelectBeatjump", 0x0e, 0x0f, this.selectBeatjumpHandler);
+    this.registerInputButton(messageShort, "[Channel2]", "!SelectLoop", 0x0e, 0xf0, this.selectLoopHandler);
 
     this.controller.registerInputPacket(messageShort);
 
-    this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x31, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler,);
+
+
+    this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1b, 0xffff, this.parameterHandler,);
 
     this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x2b, 0xffff, this.parameterHandler,);
     this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x2d, 0xffff, this.parameterHandler,);
 
-    this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1b, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x31, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler,);
 
     // FX Parameter
     this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1]", "mix", 0x01, 0xffff, this.parameterHandler,);
@@ -243,10 +268,14 @@ TraktorMX2.registerInputPackets = function () {
 
     this.controller.registerInputPacket(messageLong);
 
+
+
     this.registerInputJog(messageJog, "[Channel1]", "!jog", 0x08, 0xffffffff, this.jogHandler,);
     this.registerInputJog(messageJog, "[Channel2]", "!jog", 0x10, 0xffffffff, this.jogHandler,);
 
     this.controller.registerInputPacket(messageJog);
+
+
 
     // Dirty hack to set initial values in the packet parser
     const data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -360,9 +389,9 @@ TraktorMX2.padModeHandler = function (field) {
 
             // Light LEDs for all enabled hotcues
             for (let i = 1; i <= 8; ++i) {
-                const active = engine.getValue(field.group, "hotcue_" + i + "_status");
+                const active = engine.getValue(field.group, `hotcue_${i}_status`);
                 if (active) {
-                    const color = engine.getValue(field.group, "hotcue_" + i + "_color");
+                    const color = engine.getValue(field.group, `hotcue_${i}_color`);
                     const colorValue = TraktorMX2.PadColorMap.getValueForNearestColor(color);
                     TraktorMX2.outputHandler(colorValue, field.group, "pad_" + i);
                 } else {
@@ -414,9 +443,9 @@ TraktorMX2.padHandler = function (field) {
         case 0:
             // Hotcues mode
             if (TraktorMX2.shiftPressed[field.group]) {
-                engine.setValue(field.group, "hotcue_" + padNumber + "_clear", field.value);
+                engine.setValue(field.group, `hotcue_${padNumber}_clear`, field.value);
             } else {
-                engine.setValue(field.group, "hotcue_" + padNumber + "_activate", field.value);
+                engine.setValue(field.group, `hotcue_${padNumber}_activate`, field.value);
             }
 
             break;
@@ -509,7 +538,6 @@ TraktorMX2.previewHandler = function (field) {
 
 
     engine.setValue(field.group, "LoadSelectedTrackAndPlay", field.value);
-    TraktorMX2.outputHandler(engine.getValue(field.group, "play_indicator"), field.group, "preview");
 };
 
 TraktorMX2.favListHandler = function (field) {
@@ -682,14 +710,14 @@ TraktorMX2.jogModeHandler = function (field) {
         TraktorMX2.jogModeState[field.group] = 0;
 
         TraktorMX2.outputHandler(false, field.group, "jog");
-        TraktorMX2.outputHandler(true, field.group, "turntable");
+        TraktorMX2.outputHandler(true, field.group, "tt");
 
     } else if (field.name === "!jog") {
         TraktorMX2.jogModeState[field.group] = 1;
         engine.scratchDisable(deckNumber);
 
         TraktorMX2.outputHandler(true, field.group, "jog");
-        TraktorMX2.outputHandler(false, field.group, "turntable");
+        TraktorMX2.outputHandler(false, field.group, "tt");
     }
 };
 
@@ -759,11 +787,10 @@ TraktorMX2.fxHandler = function (field) {
         return;
     }
 
-    let group = "[EffectRack1_" + field.group + "_" + field.name + "]"
+    let group = `[EffectRack1_${field.group}_${field.name}]`
     let control = "enabled"
 
     script.toggleControl(group, control);
-    TraktorMX2.outputHandler(engine.getValue(group, control), field.group, "fx_" + field.name[field.name.length - 1]);
 };
 
 TraktorMX2.fxSelectHandler = function (field) {
@@ -775,7 +802,6 @@ TraktorMX2.fxSelectHandler = function (field) {
     let control = "group_" + field.group + "_enable"
 
     script.toggleControl(group, control);
-    TraktorMX2.outputHandler(engine.getValue(group, control), field.group, "gfx");
 };
 
 TraktorMX2.gfxToggleHandler = function (field) {
@@ -786,7 +812,6 @@ TraktorMX2.gfxToggleHandler = function (field) {
     let control = "enabled"
 
     script.toggleControl(group, control);
-    TraktorMX2.outputHandler(engine.getValue(group, control), field.group, "gfx_toggle");
 };
 
 TraktorMX2.globalfxHandler = function (field) {
@@ -860,7 +885,7 @@ TraktorMX2.fxOutputHandler = function () {
         for (const group of availableGroups) {
             active = active || activeFx[group] === fxButton;
         }
-        TraktorMX2.outputHandler(active, "[ChannelX]", "fxButton" + fxButton);
+        TraktorMX2.outputHandler(active, "[ChannelX]", "gfx_" + fxButton);
     }
 };
 
@@ -884,52 +909,34 @@ TraktorMX2.fluxHandler = function (field) {
 TraktorMX2.registerOutputPackets = function () {
     const output = new HIDPacket("output", 0x80);
 
-    output.addOutput("[Channel1]", "play_indicator", 0x1c, "B");
-    output.addOutput("[Channel2]", "play_indicator", 0x33, "B");
+    // Channel 1
+    output.addOutput("[Channel1]", "fx_misc", 0x01, "B");
+    output.addOutput("[Channel1]", "fx_1", 0x02, "B");
+    output.addOutput("[Channel1]", "fx_2", 0x03, "B");
+    output.addOutput("[Channel1]", "fx_3", 0x04, "B");
 
-    output.addOutput("[Channel1]", "preview_indicator", 0x07, "B");
-    output.addOutput("[Channel2]", "preview_indicator", 0x33, "B");
+    output.addOutput("[Channel1]", "favorites", 0x05, "B");
+    output.addOutput("[Channel1]", "addTrack", 0x06, "B");
+    output.addOutput("[PreviewDeck1]", "play_indicator", 0x07, "B");
+    output.addOutput("[Channel1]", "maximizeLibrary", 0x08, "B");
 
-    output.addOutput("[Channel1]", "cue_indicator", 0x20, "B");
-    output.addOutput("[Channel2]", "cue_indicator", 0x32, "B");
+    output.addOutput("[Channel1]", "slip_enabled", 0x09, "B");
+    output.addOutput("[Channel1]", "reverse", 0x0a, "B");
 
-    output.addOutput("[Channel1]", "shift", 0x06, "B");
-    output.addOutput("[Channel2]", "shift", 0x2d, "B");
+    output.addOutput("[Channel1]", "tt", 0x0b, "B");
+    output.addOutput("[Channel1]", "jog", 0x0c, "B");
+
+    output.addOutput("[Channel1]", "shift", 0x0d, "B");
+
+    output.addOutput("[Channel1]", "sync_enabled", 0x0e, "B");
+    output.addOutput("[Channel1]", "sync_leader", 0x0f, "B");
+
+    output.addOutput("[Channel1]", "keylock", 0x10, "B");
 
     output.addOutput("[Channel1]", "hotcues", 0x11, "B");
-    output.addOutput("[Channel2]", "hotcues", 0x2e, "B");
-
     output.addOutput("[Channel1]", "stems", 0x12, "B");
-    output.addOutput("[Channel2]", "stems", 0x2f, "B");
-
     output.addOutput("[Channel1]", "patterns", 0x13, "B");
-    output.addOutput("[Channel2]", "patterns", 0x2f, "B");
-
     output.addOutput("[Channel1]", "loops", 0x14, "B");
-    output.addOutput("[Channel2]", "loops", 0x2f, "B");
-
-    output.addOutput("[Channel1]", "sync_enabled", 0x09, "B");
-    output.addOutput("[Channel2]", "sync_enabled", 0x30, "B");
-
-    output.addOutput("[Channel1]", "sync_leader", 0x09, "B");
-    output.addOutput("[Channel2]", "sync_leader", 0x30, "B");
-
-    output.addOutput("[Channel1]", "keylock", 0x0a, "B");
-    output.addOutput("[Channel2]", "keylock", 0x31, "B");
-
-    output.addOutput("[Channel1]", "bottom_led_1", 0x0d, "B");
-    output.addOutput("[Channel1]", "bottom_led_2", 0x0e, "B");
-    output.addOutput("[Channel1]", "bottom_led_3", 0x0f, "B");
-    output.addOutput("[Channel1]", "bottom_led_4", 0x10, "B");
-    output.addOutput("[Channel1]", "bottom_led_5", 0x11, "B");
-    output.addOutput("[Channel1]", "bottom_led_6", 0x12, "B");
-
-    output.addOutput("[Channel2]", "bottom_led_1", 0x0d, "B");
-    output.addOutput("[Channel2]", "bottom_led_2", 0x0e, "B");
-    output.addOutput("[Channel2]", "bottom_led_3", 0x0f, "B");
-    output.addOutput("[Channel2]", "bottom_led_4", 0x10, "B");
-    output.addOutput("[Channel2]", "bottom_led_5", 0x11, "B");
-    output.addOutput("[Channel2]", "bottom_led_6", 0x12, "B");
 
     output.addOutput("[Channel1]", "pad_1", 0x15, "B");
     output.addOutput("[Channel1]", "pad_2", 0x16, "B");
@@ -940,6 +947,39 @@ TraktorMX2.registerOutputPackets = function () {
     output.addOutput("[Channel1]", "pad_7", 0x1b, "B");
     output.addOutput("[Channel1]", "pad_8", 0x1c, "B");
 
+    output.addOutput("[Channel1]", "cue_indicator", 0x1d, "B");
+    output.addOutput("[Channel1]", "play_indicator", 0x1e, "B");
+
+
+    // Channel 2
+    output.addOutput("[Channel2]", "fx_misc", 0x1f, "B");
+    output.addOutput("[Channel2]", "fx_1", 0x20, "B");
+    output.addOutput("[Channel2]", "fx_2", 0x21, "B");
+    output.addOutput("[Channel2]", "fx_3", 0x22, "B");
+
+    output.addOutput("[Channel2]", "favorites", 0x23, "B");
+    output.addOutput("[Channel2]", "addTrack", 0x24, "B");
+    output.addOutput("[PreviewDeck2]", "play_indicator", 0x25, "B");
+    output.addOutput("[Channel2]", "maximizeLibrary", 0x26, "B");
+
+    output.addOutput("[Channel2]", "slip_enabled", 0x27, "B");
+    output.addOutput("[Channel2]", "reverse", 0x28, "B");
+
+    output.addOutput("[Channel2]", "tt", 0x29, "B");
+    output.addOutput("[Channel2]", "jog", 0x2a, "B");
+
+    output.addOutput("[Channel2]", "shift", 0x2b, "B");
+
+    output.addOutput("[Channel2]", "sync_enabled", 0x2c, "B");
+    output.addOutput("[Channel2]", "sync_leader", 0x2d, "B");
+
+    output.addOutput("[Channel2]", "keylock", 0x2e, "B");
+
+    output.addOutput("[Channel2]", "hotcues", 0x2f, "B");
+    output.addOutput("[Channel2]", "stems", 0x30, "B");
+    output.addOutput("[Channel2]", "patterns", 0x31, "B");
+    output.addOutput("[Channel2]", "loops", 0x32, "B");
+
     output.addOutput("[Channel2]", "pad_1", 0x33, "B");
     output.addOutput("[Channel2]", "pad_2", 0x34, "B");
     output.addOutput("[Channel2]", "pad_3", 0x35, "B");
@@ -949,114 +989,163 @@ TraktorMX2.registerOutputPackets = function () {
     output.addOutput("[Channel2]", "pad_7", 0x39, "B");
     output.addOutput("[Channel2]", "pad_8", 0x3a, "B");
 
-    output.addOutput("[Channel1]", "pfl", 0x1a, "B");
-    output.addOutput("[Channel2]", "pfl", 0x1b, "B");
+    output.addOutput("[Channel2]", "cue_indicator", 0x3b, "B");
+    output.addOutput("[Channel2]", "play_indicator", 0x3c, "B");
 
-    output.addOutput("[Microphone]", "talkover", 0x3d, "B");
+    // Mixer and Effects
+    output.addOutput("[Channel1]", "fx_select_1", 0x3d, "B");
+    output.addOutput("[Channel1]", "fx_select_2", 0x3e, "B");
+    output.addOutput("[Channel1]", "gfx_toggle", 0x3f, "B");
+    output.addOutput("[Channel1]", "pfl", 0x40, "B");
 
-    output.addOutput("[Channel1]", "gfx_toggle", 0x1c, "B");
-    output.addOutput("[Channel2]", "gfx_toggle", 0x1c, "B");
+    output.addOutput("[Channel2]", "fx_select_1", 0x41, "B");
+    output.addOutput("[Channel2]", "fx_select_2", 0x42, "B");
+    output.addOutput("[Channel2]", "gfx_toggle", 0x43, "B");
+    output.addOutput("[Channel2]", "pfl", 0x44, "B");
 
-    output.addOutput("[ChannelX]", "gfx_0", 0x31, "B");
-    output.addOutput("[ChannelX]", "gfx_1", 0x2d, "B");
-    output.addOutput("[ChannelX]", "gfx_2", 0x2e, "B");
-    output.addOutput("[ChannelX]", "gfx_3", 0x2f, "B");
-    output.addOutput("[ChannelX]", "gfx_4", 0x30, "B");
+    output.addOutput("[ChannelX]", "gfx_1", 0x45, "B");
+    output.addOutput("[ChannelX]", "gfx_2", 0x46, "B");
+    output.addOutput("[ChannelX]", "gfx_3", 0x47, "B");
+    output.addOutput("[ChannelX]", "gfx_4", 0x48, "B");
+    output.addOutput("[ChannelX]", "gfx_0", 0x49, "B");
 
-    output.addOutput("[Channel1]", "vu-18", 0x1c, "B");
-    output.addOutput("[Channel1]", "vu-15", 0x1c, "B");
-    output.addOutput("[Channel1]", "vu-12", 0x1d, "B");
-    output.addOutput("[Channel1]", "vu-9", 0x1c, "B");
-    output.addOutput("[Channel1]", "vu-6", 0x1e, "B");
-    output.addOutput("[Channel1]", "vu-3", 0x1c, "B");
-    output.addOutput("[Channel1]", "vu0", 0x1f, "B");
-    output.addOutput("[Channel1]", "vu3", 0x1f, "B");
-    output.addOutput("[Channel1]", "vu6", 0x20, "B");
-    output.addOutput("[Channel1]", "peak_indicator", 0x21, "B");
+    output.addOutput("[Microphone]", "talkover", 0x4a, "B");
 
-    output.addOutput("[Channel2]", "vu-18", 0x22, "B");
-    output.addOutput("[Channel2]", "vu-15", 0x22, "B");
-    output.addOutput("[Channel2]", "vu-12", 0x23, "B");
-    output.addOutput("[Channel2]", "vu-9", 0x22, "B");
-    output.addOutput("[Channel2]", "vu-6", 0x24, "B");
-    output.addOutput("[Channel2]", "vu-3", 0x22, "B");
-    output.addOutput("[Channel2]", "vu0", 0x25, "B");
-    output.addOutput("[Channel2]", "vu3", 0x22, "B");
-    output.addOutput("[Channel2]", "vu6", 0x26, "B");
-    output.addOutput("[Channel2]", "peak_indicator", 0x27, "B");
+    output.addOutput("[Channel1]", "bottom_led_1", 0x4b, "B");
+    output.addOutput("[Channel1]", "bottom_led_2", 0x4c, "B");
+    output.addOutput("[Channel1]", "bottom_led_3", 0x4d, "B");
+    output.addOutput("[Channel1]", "bottom_led_4", 0x4e, "B");
+    output.addOutput("[Channel1]", "bottom_led_5", 0x4f, "B");
+    output.addOutput("[Channel1]", "bottom_led_6", 0x50, "B");
 
-    output.addOutput("[ChannelX]", "peak_indicator", 0x27, "B");
+    output.addOutput("[Channel2]", "bottom_led_1", 0x51, "B");
+    output.addOutput("[Channel2]", "bottom_led_2", 0x52, "B");
+    output.addOutput("[Channel2]", "bottom_led_3", 0x53, "B");
+    output.addOutput("[Channel2]", "bottom_led_4", 0x54, "B");
+    output.addOutput("[Channel2]", "bottom_led_5", 0x55, "B");
+    output.addOutput("[Channel2]", "bottom_led_6", 0x56, "B");
 
-    output.addOutput("[Channel1]", "fx_select_1", 0x1c, "B");
-    output.addOutput("[Channel1]", "fx_select_2", 0x1c, "B");
-    output.addOutput("[Channel2]", "fx_select_1", 0x1c, "B");
-    output.addOutput("[Channel2]", "fx_select_2", 0x1c, "B");
+    output.addOutput("[Main]", "peak_indicator", 0x57, "B");
 
-    output.addOutput("[Channel1]", "fx_1", 0x1c, "B");
-    output.addOutput("[Channel1]", "fx_2", 0x1c, "B");
-    output.addOutput("[Channel1]", "fx_3", 0x1c, "B");
-    output.addOutput("[Channel1]", "fx_4", 0x1c, "B");
+    output.addOutput("[Channel1]", "vu-18", 0x58, "B");
+    output.addOutput("[Channel1]", "vu-15", 0x59, "B");
+    output.addOutput("[Channel1]", "vu-12", 0x5a, "B");
+    output.addOutput("[Channel1]", "vu-9", 0x5b, "B");
+    output.addOutput("[Channel1]", "vu-6", 0x5c, "B");
+    output.addOutput("[Channel1]", "vu-3", 0x5d, "B");
+    output.addOutput("[Channel1]", "vu0", 0x5e, "B");
+    output.addOutput("[Channel1]", "vu6", 0x5f, "B");
+    output.addOutput("[Channel1]", "peak_indicator", 0x60, "B");
 
-    output.addOutput("[Channel2]", "fx_1", 0x1c, "B");
-    output.addOutput("[Channel2]", "fx_2", 0x1c, "B");
-    output.addOutput("[Channel2]", "fx_3", 0x1c, "B");
-    output.addOutput("[Channel2]", "fx_4", 0x1c, "B");
-
-    output.addOutput("[Channel1]", "reverse", 0x01, "B");
-    output.addOutput("[Channel2]", "reverse", 0x28, "B");
-
-    output.addOutput("[Channel1]", "slip_enabled", 0x02, "B");
-    output.addOutput("[Channel2]", "slip_enabled", 0x29, "B");
-
-    output.addOutput("[Channel1]", "turntable", 0x02, "B");
-    output.addOutput("[Channel2]", "turntable", 0x29, "B");
-
-    output.addOutput("[Channel1]", "jog", 0x02, "B");
-    output.addOutput("[Channel2]", "jog", 0x29, "B");
-
-    output.addOutput("[Channel1]", "preview", 0x08, "B");
-    output.addOutput("[Channel2]", "preview", 0x2b, "B");
-
-    output.addOutput("[Channel1]", "maximizeLibrary", 0x08, "B");
-    output.addOutput("[Channel2]", "maximizeLibrary", 0x2b, "B");
-
-    output.addOutput("[Channel1]", "addTrack", 0x03, "B");
-    output.addOutput("[Channel2]", "addTrack", 0x2a, "B");
-
-    output.addOutput("[Channel1]", "favorites", 0x05, "B");
-    output.addOutput("[Channel2]", "favorites", 0x2c, "B");
+    output.addOutput("[Channel2]", "vu-18", 0x61, "B");
+    output.addOutput("[Channel2]", "vu-15", 0x62, "B");
+    output.addOutput("[Channel2]", "vu-12", 0x63, "B");
+    output.addOutput("[Channel2]", "vu-9", 0x64, "B");
+    output.addOutput("[Channel2]", "vu-6", 0x65, "B");
+    output.addOutput("[Channel2]", "vu-3", 0x66, "B");
+    output.addOutput("[Channel2]", "vu0", 0x67, "B");
+    output.addOutput("[Channel2]", "vu6", 0x68, "B");
+    output.addOutput("[Channel2]", "peak_indicator", 0x69, "B");
 
     this.controller.registerOutputPacket(output);
 
-    this.linkOutput("[Channel1]", "play_indicator", this.outputHandler);
-    this.linkOutput("[Channel2]", "play_indicator", this.outputHandler);
 
-    this.linkOutput("[Channel1]", "cue_indicator", this.outputHandler);
-    this.linkOutput("[Channel2]", "cue_indicator", this.outputHandler);
+    // Link outputs to handlers
+
+    // Channel 1
+    TraktorMX2.controller.linkOutput("[Channel1]", "fx_1", "[EffectRack1_EffectUnit1_Effect1]", "enabled", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel1]", "fx_2", "[EffectRack1_EffectUnit1_Effect2]", "enabled", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel1]", "fx_3", "[EffectRack1_EffectUnit1_Effect3]", "enabled", this.outputHandler);
+
+    // Favorites
+    // Add to List
+    this.linkOutput("[PreviewDeck1]", "play_indicator", this.outputHandler)
+    TraktorMX2.controller.linkOutput("[Channel1]", "maximizeLibrary", "[Skin]", "show_maximized_library", this.outputHandler);
+
+    this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler)
+    // Reverse
+
+    // TT
+    // Jog
+
+    // Shift
 
     this.linkOutput("[Channel1]", "sync_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "sync_enabled", this.outputHandler);
-
     this.linkOutput("[Channel1]", "sync_leader", this.outputHandler);
-    this.linkOutput("[Channel2]", "sync_leader", this.outputHandler);
 
     this.linkOutput("[Channel1]", "keylock", this.outputHandler);
+
+    // Hotcues -> extra
+    // Stems -> extra
+    // Patterns -> extra
+    // Loops -> extra
+
+    // Pads -> extra
+
+    this.linkOutput("[Channel1]", "play_indicator", this.outputHandler);
+    this.linkOutput("[Channel1]", "cue_indicator", this.outputHandler);
+
+
+    // Channel 2
+
+    TraktorMX2.controller.linkOutput("[Channel2]", "fx_1", "[EffectRack1_EffectUnit2_Effect1]", "enabled", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel2]", "fx_2", "[EffectRack1_EffectUnit2_Effect2]", "enabled", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel2]", "fx_3", "[EffectRack1_EffectUnit2_Effect3]", "enabled", this.outputHandler);
+
+    // Favorites
+    // Add to List
+    TraktorMX2.controller.linkOutput("[PreviewDeck2]", "play_indicator","[PreviewDeck1]", "play_indicator", this.outputHandler)
+    TraktorMX2.controller.linkOutput("[Channel2]", "maximizeLibrary", "[Skin]", "show_maximized_library", this.outputHandler);
+
+    this.linkOutput("[Channel2]", "slip_enabled", this.outputHandler)
+    // Reverse
+
+    // TT
+    // Jog
+
+    // Shift
+
+    this.linkOutput("[Channel2]", "sync_enabled", this.outputHandler);
+    this.linkOutput("[Channel2]", "sync_leader", this.outputHandler);
     this.linkOutput("[Channel2]", "keylock", this.outputHandler);
 
-    for (let i = 1; i <= 8; ++i) {
-        engine.makeConnection("[Channel1]", `hotcue_${i}_enabled`, this.hotcueOutputHandler,);
-        engine.makeConnection("[Channel2]", `hotcue_${i}_enabled`, this.hotcueOutputHandler,);
-        engine.makeConnection("[Channel1]", `hotcue_${i}_color`, this.hotcueColorHandler,);
-        engine.makeConnection("[Channel2]", `hotcue_${i}_color`, this.hotcueColorHandler,);
-    }
+    // Hotcues -> extra
+    // Stems -> extra
+    // Patterns -> extra
+    // Loops -> extra
+
+    // Pads -> extra
+
+    this.linkOutput("[Channel2]", "play_indicator", this.outputHandler);
+    this.linkOutput("[Channel2]", "cue_indicator", this.outputHandler);
+
+
+    // Mixer and Effects
+    TraktorMX2.controller.linkOutput("[Channel1]", "fx_select_1", "[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel1]", "fx_select_2", "[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel1]", "gfx_toggle", "[QuickEffectRack1_[Channel1]]", "enabled", this.outputHandler);
+
+    TraktorMX2.controller.linkOutput("[Channel2]", "fx_select_1", "[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel2]", "fx_select_2", "[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", this.outputHandler);
+    TraktorMX2.controller.linkOutput("[Channel2]", "gfx_toggle", "[QuickEffectRack1_[Channel2]]", "enabled", this.outputHandler);
 
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
     this.linkOutput("[Channel2]", "pfl", this.outputHandler);
 
-    this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler);
-    this.linkOutput("[Channel2]", "slip_enabled", this.outputHandler);
+    this.fxCallbacks = [];
+    for (const group of ["[Channel1]", "[Channel2]"]) {
+        this.fxCallbacks.push(engine.makeConnection(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", this.fxOutputHandler));
+    }
 
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
+
+    for (let i = 1; i <= 8; ++i) {
+        engine.makeConnection("[Channel1]", `hotcue_${i}_status`, this.hotcueOutputHandler,);
+        engine.makeConnection("[Channel2]", `hotcue_${i}_status`, this.hotcueOutputHandler,);
+
+        engine.makeConnection("[Channel1]", `hotcue_${i}_color`, this.hotcueColorHandler,);
+        engine.makeConnection("[Channel2]", `hotcue_${i}_color`, this.hotcueColorHandler,);
+    }
 
     // VuMeter
     this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler);
@@ -1065,13 +1154,7 @@ TraktorMX2.registerOutputPackets = function () {
     this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler.bind(this));
     this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler.bind(this));
 
-    this.clipRightConnection = engine.makeConnection("[ChannelX]", "peak_indicator", this.peakOutputHandler.bind(this));
-
-
-    this.fxCallbacks = [];
-    for (const group of ["[Channel1]", "[Channel2]"]) {
-        this.fxCallbacks.push(engine.makeConnection(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", this.fxOutputHandler,),);
-    }
+    this.clipRightConnection = engine.makeConnection("[Main]", "peak_indicator", this.peakOutputHandler.bind(this));
 
     TraktorMX2.lightDeck(false);
 };
@@ -1126,7 +1209,7 @@ TraktorMX2.colorOutputHandler = function (value, group, key) {
 TraktorMX2.hotcueOutputHandler = function (value, group, key) {
     // Light button LED only when we are in hotcue mode
     if (TraktorMX2.padModeState[group] === 0) {
-        const colorKey = key.replace("_enabled", "_color");
+        const colorKey = key.replace("_status", "_color");
         const color = engine.getValue(group, colorKey);
         const padNum = key[7];
         if (value > 0) {
@@ -1200,10 +1283,10 @@ TraktorMX2.lightDeck = function (switchOff) {
             TraktorMX2.outputHandler(0x02, "[Channel1]", "pad_" + i);
             TraktorMX2.outputHandler(0x02, "[Channel2]", "pad_" + i);
         } else {
-            current = engine.getValue("[Channel1]", "hotcue_" + i + "_status");
-            TraktorMX2.hotcueOutputHandler(current, "[Channel1]", "hotcue_" + i + "_enabled",);
-            current = engine.getValue("[Channel2]", "hotcue_" + i + "_status");
-            TraktorMX2.hotcueOutputHandler(current, "[Channel2]", "hotcue_" + i + "_enabled",);
+            current = engine.getValue("[Channel1]", `hotcue_${i}_status`);
+            TraktorMX2.hotcueOutputHandler(current, `[Channel1]", "hotcue_${i}_status`);
+            current = engine.getValue("[Channel2]", `hotcue_${i}_status`);
+            TraktorMX2.hotcueOutputHandler(current, "[Channel2]", `hotcue_${i}_status`);
         }
     }
 
@@ -1227,15 +1310,15 @@ TraktorMX2.lightDeck = function (switchOff) {
     TraktorMX2.controller.setOutput("[Channel2]", "fx_select_1", softLight, false);
     TraktorMX2.controller.setOutput("[Channel2]", "fx_select_2", softLight, false);
 
+    TraktorMX2.controller.setOutput("[Channel1]", "fx_misc", softLight, false);
     TraktorMX2.controller.setOutput("[Channel1]", "fx_1", softLight, false);
     TraktorMX2.controller.setOutput("[Channel1]", "fx_2", softLight, false);
     TraktorMX2.controller.setOutput("[Channel1]", "fx_3", softLight, false);
-    TraktorMX2.controller.setOutput("[Channel1]", "fx_4", softLight, false);
 
+    TraktorMX2.controller.setOutput("[Channel2]", "fx_misc", softLight, false);
     TraktorMX2.controller.setOutput("[Channel2]", "fx_1", softLight, false);
     TraktorMX2.controller.setOutput("[Channel2]", "fx_2", softLight, false);
     TraktorMX2.controller.setOutput("[Channel2]", "fx_3", softLight, false);
-    TraktorMX2.controller.setOutput("[Channel2]", "fx_4", softLight, false);
 
     // Set FX button LED state according to active quick effects on start-up
     if (!switchOff) {
@@ -1251,14 +1334,14 @@ TraktorMX2.lightDeck = function (switchOff) {
     TraktorMX2.controller.setOutput("[Channel2]", "slip_enabled", current, false);
 
     current = TraktorMX2.jogModeState["[Channel1]"] ? fullLight : softLight;
-    TraktorMX2.controller.setOutput("[Channel1]", "turntable", !current, false);
+    TraktorMX2.controller.setOutput("[Channel1]", "tt", !current, false);
     TraktorMX2.controller.setOutput("[Channel1]", "jog", current, false);
     current = TraktorMX2.jogModeState["[Channel2]"] ? fullLight : softLight;
-    TraktorMX2.controller.setOutput("[Channel2]", "turntable", !current, false);
+    TraktorMX2.controller.setOutput("[Channel2]", "tt", !current, false);
     TraktorMX2.controller.setOutput("[Channel1]", "jog", current, false);
 
-    TraktorMX2.controller.setOutput("[Channel1]", "preview", softLight, false);
-    TraktorMX2.controller.setOutput("[Channel2]", "preview", softLight, false);
+    TraktorMX2.controller.setOutput("[PreviewDeck1]", "play_indicator", softLight, false);
+    TraktorMX2.controller.setOutput("[PreviewDeck2]", "play_indicator", softLight, false);
 
     TraktorMX2.controller.setOutput("[Channel1]", "maximizeLibrary", softLight, false,);
     TraktorMX2.controller.setOutput("[Channel2]", "maximizeLibrary", softLight, false,);
