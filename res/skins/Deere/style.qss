@@ -1766,6 +1766,14 @@ WPushButton[value="2"]:hover,
   border: 1px solid transparent;
 }
 
+/* If zoom level is set to default value (with Zoom sync enabled), the Reset button
+   of other deck waveforms would be lit. This is a bit distracting, disable it.
+   Unfortunately it doesn't turn blue if pressed but that's acceptable. */
+WPushButton#WaveformZoomSetDefaultButton[value="1"] {
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+
 WPushButton#PlayToggle[value="0"] {
   image: url(skin:/../Deere/icon/ic_play_48px.svg) no-repeat center center;
   background-color: transparent;
