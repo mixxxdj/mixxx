@@ -1394,19 +1394,19 @@ QString BaseTrackTableModel::composeHotCueTooltip(
             const auto length = pHotcue->getLengthFrames();
             if (length > 0) {
                 if (pBeats) {
-                    tooltip += QStringLiteral("<td>(%1)</td>")
-                                       .arg(posOrLengthToBeats(pBeats, pos, posEnd));
+                    tooltip += QStringLiteral("<td>[%1]</td>")
+                                       .arg(posOrLengthToBeats(pBeats, posEnd, pos));
                 } else {
-                    tooltip += QStringLiteral("<td>(%1)</td>")
+                    tooltip += QStringLiteral("<td>[%1]</td>")
                                        .arg(posOrLengthToSeconds(length, sampleRate));
                 }
             }
         } else if (type == mixxx::CueType::Jump) { // Jump target
             if (pBeats) {
-                tooltip += QStringLiteral("<td>(%1)</td>")
+                tooltip += QStringLiteral("<td>\u2192 %1</td>")
                                    .arg(posOrLengthToBeats(pBeats, pos));
             } else {
-                tooltip += QStringLiteral("<td>(%1)</td>")
+                tooltip += QStringLiteral("<td>\u2192 %1</td>")
                                    .arg(posOrLengthToSeconds(pos.value(), sampleRate));
             }
         }
