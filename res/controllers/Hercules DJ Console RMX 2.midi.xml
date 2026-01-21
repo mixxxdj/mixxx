@@ -1,1954 +1,1608 @@
-<?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="2.0.0+"
-    schemaVersion="1">
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4+">
     <info>
-        <!-- In Geany, go to Document and then Fold All for easier format. -->
-        <name>Hercules DJ Console RMX2</name>
-        <author>Circuitfry</author>
-        <description>This console's mapping comes with a script.</description>
-        <manual>hercules_dj_console_rmx2</manual>
+        <name>Hercules DJ Console RMX 2</name>
+        <author>Maximilian Beiersdorfer, DJMaxergy</author>
+        <description>Hercules DJ Console RMX 2 mapping (using script file).</description>
+        <forums>https://mixxx.discourse.group/t/hercules-dj-console-rmx-2-mapping-overhaul</forums>
+        <wiki>https://github.com/mixxxdj/mixxx/wiki/hercules_dj_console_rmx_2</wiki>
     </info>
-    <controller id="DJConsole">
+    <controller>
         <scriptfiles>
-            <file functionprefix="DJCRMX2" filename="Hercules-DJ-Console-RMX-2-scripts.js"/>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file filename="Hercules-DJ-Console-RMX-2-scripts.js" functionprefix="DJCRMX2"/>
         </scriptfiles>
         <controls>
-            <!-- General Controls -->
             <control>
-                <!-- Master Volume Pt 1 -->
-                <group>[Master]</group>
-                <key>volume</key>
-                <status>0xB0</status>
-                <midino>0x44</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>volume</key>
-                <status>0xB0</status>
-                <midino>0x45</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <!-- Master HeadMix Pt 1 -->
-                <group>[Master]</group>
-                <key>headMix</key>
-                <description>MIDI Learned from 462 messages.</description>
-                <status>0xB0</status>
-                <midino>0x46</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>headMix</key>
-                <description>MIDI Learned from 462 messages.</description>
-                <status>0xB0</status>
-                <midino>0x47</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <!-- Master Crossfader Pt 1 -->
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <status>0xB0</status>
-                <midino>0x48</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <status>0xB0</status>
-                <midino>0x49</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <!-- Microphone -->
-                <status>0x90</status>
-                <!-- ??? -->
-                <midino>0x48</midino>
-                <group>[Microphone]</group>
-                <key>DJCRMX2.micSwitch</key>
-                <description>Utilize Microphone</description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <!-- Select UP -->
-                <status>0x90</status>
-                <midino>0x45</midino>
-                <group>[Playlist]</group>
-                <key>SelectPrevTrack</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Select DOWN -->
-                <status>0x90</status>
-                <midino>0x46</midino>
-                <group>[Playlist]</group>
-                <key>SelectNextTrack</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Select LEFT -->
-                <status>0x90</status>
-                <midino>0x44</midino>
-                <group>[Playlist]</group>
-                <key>SelectPrevPlaylist</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Select RIGHT -->
-                <status>0x90</status>
-                <midino>0x43</midino>
-                <group>[Playlist]</group>
-                <key>SelectNextPlaylist</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <!-- General Controls -->
-            <!-- Deck Controls -->
-            <control>
-                <!-- Left Load Song -->
-                <status>0x90</status>
-                <midino>0x24</midino>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Load Song -->
+                <key>DJCRMX2.decks[1].effectUnit.enableButtons[1].input</key>
+                <description>Left FX PAD 1 - Enables effect 1 of EffectUnit 1.</description>
                 <status>0x90</status>
-                <midino>0x35</midino>
-                <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
-                <description>
-                </description>
+                <midino>0x01</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- L Play -->
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.enableButtons[1].input</key>
+                <description>Left FX PAD 1 + SHIFT - Enables effect 1 of EffectUnit 1 and controls meta its meta knob by velocity.</description>
+                <status>0xB0</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.enableButtons[2].input</key>
+                <description>Left FX PAD 2 - Enables effect 2 of EffectUnit 1.</description>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.enableButtons[2].input</key>
+                <description>Left FX PAD 2 + SHIFT - Enables effect 2 of EffectUnit 1 and controls meta its meta knob by velocity.</description>
+                <status>0xB0</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.enableButtons[3].input</key>
+                <description>Left FX PAD 3 - Enables effect 3 of EffectUnit 1.</description>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.enableButtons[3].input</key>
+                <description>Left FX PAD 3 + SHIFT - Enables effect 3 of EffectUnit 1 and controls meta its meta knob by velocity.</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.effectFocusButton.input</key>
+                <description>Left FX PAD 4 - Short press: Shows/hides focus of EffectUnit 1, hold: Enables EffectFocusMode (+ press FX PAD 1..3 to focus an effect).</description>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.effectFocusButton.input</key>
+                <description>Left FX Pad 4 + SHIFT - Cycle through effectUnit numbers array.</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[1].input</key>
+                <description>Left SAMPLE PAD 1 - Load selected track into Sampler (Index 1) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[1].input</key>
+                <description>Left SAMPLE PAD 1 + SHIFT - Stop Sampler (Index 1) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[2].input</key>
+                <description>Left SAMPLE PAD 2 - Load selected track into Sampler (Index 2) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[2].input</key>
+                <description>Left SAMPLE PAD 2 + SHIFT - Stop Sampler (Index 2) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[3].input</key>
+                <description>Left SAMPLE PAD 3 - Load selected track into Sampler (Index 3) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[3].input</key>
+                <description>Left SAMPLE PAD 3 + SHIFT - Stop Sampler (Index 3) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[4].input</key>
+                <description>Left SAMPLE PAD 4 - Load selected track into Sampler (Index 4) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerButtons[4].input</key>
+                <description>Left SAMPLE PAD 4 + SHIFT - Stop Sampler (Index 4) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[1].input</key>
+                <description>Left CUE PAD 1 - Hotcue 1 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[1].input</key>
+                <description>Left CUE PAD 1 + SHIFT - Hotcue 1 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[2].input</key>
+                <description>Left CUE PAD 2 - Hotcue 2 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[2].input</key>
+                <description>Left CUE PAD 2 + SHIFT - Hotcue 2 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[3].input</key>
+                <description>Left CUE PAD 3 - Hotcue 3 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[3].input</key>
+                <description>Left CUE PAD 3 + SHIFT - Hotcue 3 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[4].input</key>
+                <description>Left CUE PAD 4 - Hotcue 4 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].hotcueButtons[4].input</key>
+                <description>Left CUE PAD 4 + SHIFT - Hotcue 4 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[1].input</key>
+                <description>Left LOOP PAD 1 - Toggles beatloop over beatloop size.</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[1].input</key>
+                <description>Left LOOP PAD 1 + SHIFT - Toggles beatlooproll over 1/16 beats.</description>
+                <status>0xB0</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[2].input</key>
+                <description>Left LOOP PAD 2 - Toggles beatloop over 2 beats.</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[2].input</key>
+                <description>Left LOOP PAD 2 + SHIFT - Toggles beatlooproll over 1/8 beats.</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[3].input</key>
+                <description>Left LOOP PAD 3 - Toggles beatloop over 4 beats.</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[3].input</key>
+                <description>Left LOOP PAD 3 + SHIFT - Toggles beatlooproll over 1/4 beats.</description>
+                <status>0xB0</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[4].input</key>
+                <description>Left LOOP PAD 4 - Toggles beatloop over 8 beats.</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopButtons[4].input</key>
+                <description>Left LOOP PAD 4 + SHIFT - Toggles beatlooproll over 1/2 beats.</description>
+                <status>0xB0</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.enableButtons[1].input</key>
+                <description>Right FX PAD 1 - Enables effect 1 of EffectUnit 2.</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.enableButtons[1].input</key>
+                <description>Right FX PAD 1 + SHIFT - Enables effect 1 of EffectUnit 2 and controls meta its meta knob by velocity.</description>
+                <status>0xB0</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.enableButtons[2].input</key>
+                <description>Right FX PAD 2 - Enables effect 2 of EffectUnit 2.</description>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.enableButtons[2].input</key>
+                <description>Right FX PAD 2 + SHIFT - Enables effect 2 of EffectUnit 2 and controls meta its meta knob by velocity.</description>
+                <status>0xB0</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.enableButtons[3].input</key>
+                <description>Right FX PAD 3 - Enables effect 3 of EffectUnit 2.</description>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.enableButtons[3].input</key>
+                <description>Right FX PAD 3 + SHIFT - Enables effect 3 of EffectUnit 2 and controls meta its meta knob by velocity.</description>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.effectFocusButton.input</key>
+                <description>Right FX PAD 4 - Short press: Shows/hides focus of EffectUnit 2, hold: Enables EffectFocusMode (+ press FX PAD 1..3 to focus an effect).</description>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.effectFocusButton.input</key>
+                <description>Right FX Pad 4 + SHIFT - Cycle through effectUnit numbers array.</description>
+                <status>0xB0</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[1].input</key>
+                <description>Right SAMPLE PAD 1 - Load selected track into Sampler (Index 1) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[1].input</key>
+                <description>Right SAMPLE PAD 1 + SHIFT - Stop Sampler (Index 1) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[2].input</key>
+                <description>Right SAMPLE PAD 2 - Load selected track into Sampler (Index 2) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[2].input</key>
+                <description>Right SAMPLE PAD 2 + SHIFT - Stop Sampler (Index 2) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[3].input</key>
+                <description>Right SAMPLE PAD 3 - Load selected track into Sampler (Index 3) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[3].input</key>
+                <description>Right SAMPLE PAD 3 + SHIFT - Stop Sampler (Index 3) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[4].input</key>
+                <description>Right SAMPLE PAD 4 - Load selected track into Sampler (Index 4) if empty, else go to cue point and play - velocity (volume) controlled.</description>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerButtons[4].input</key>
+                <description>Right SAMPLE PAD 4 + SHIFT - Stop Sampler (Index 4) if playing, else eject loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[1].input</key>
+                <description>Right CUE PAD 1 - Hotcue 1 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[1].input</key>
+                <description>Right CUE PAD 1 + SHIFT - Hotcue 1 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[2].input</key>
+                <description>Right CUE PAD 2 - Hotcue 2 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[2].input</key>
+                <description>Right CUE PAD 2 + SHIFT - Hotcue 2 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[3].input</key>
+                <description>Right CUE PAD 3 - Hotcue 3 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[3].input</key>
+                <description>Right CUE PAD 3 + SHIFT - Hotcue 3 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[4].input</key>
+                <description>Right CUE PAD 4 - Hotcue 4 HotcueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].hotcueButtons[4].input</key>
+                <description>Right CUE PAD 4 + SHIFT - Hotcue 4 HotcueButton behavior of components lib.</description>
+                <status>0xB0</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[1].input</key>
+                <description>Right LOOP PAD 1 - Toggles beatloop over beatloop size.</description>
+                <status>0x90</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[1].input</key>
+                <description>Right LOOP PAD 1 + SHIFT - Toggles beatlooproll over 1/16 beats.</description>
+                <status>0xB0</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[2].input</key>
+                <description>Right LOOP PAD 2 - Toggles beatloop over 2 beats.</description>
+                <status>0x90</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[2].input</key>
+                <description>Right LOOP PAD 2 + SHIFT - Toggles beatlooproll over 1/8 beats.</description>
+                <status>0xB0</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[3].input</key>
+                <description>Right LOOP PAD 3 - Toggles beatloop over 4 beats.</description>
+                <status>0x90</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[3].input</key>
+                <description>Right LOOP PAD 3 + SHIFT - Toggles beatlooproll over 1/4 beats.</description>
+                <status>0xB0</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[4].input</key>
+                <description>Right LOOP PAD 4 - Toggles beatloop over 8 beats.</description>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopButtons[4].input</key>
+                <description>Right LOOP PAD 4 + SHIFT - Toggles beatlooproll over 1/2 beats.</description>
+                <status>0xB0</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].playButton.input</key>
+                <description>Left PLAY button - PlayButton behavior of components lib.</description>
                 <status>0x90</status>
                 <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>play</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- R Play -->
-                <status>0x90</status>
-                <midino>0x32</midino>
-                <group>[Channel2]</group>
-                <key>play</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Headphones -->
-                <status>0x90</status>
-                <midino>0x2e</midino>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Headphones -->
-                <status>0x90</status>
-                <midino>0x3F</midino>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- L Cue -->
+                <key>DJCRMX2.decks[1].cueButton.input</key>
+                <description>Left CUE button - CueButton behavior of components lib.</description>
                 <status>0x90</status>
                 <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- R Cue -->
-                <status>0x90</status>
-                <midino>0x33</midino>
-                <group>[Channel2]</group>
-                <key>cue_default</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- L Sync -->
+                <key>DJCRMX2.decks[1].syncButton.input</key>
+                <description>Left SYNC button - SyncButton behavior of components lib.</description>
                 <status>0x90</status>
                 <midino>0x23</midino>
-                <group>[Channel1]</group>
-                <key>sync_enabled</key>
-                <description>
-                </description>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- R Sync -->
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loadButton.input</key>
+                <description>Left LOAD button - Load selected track, +SHIFT - Eject track.</description>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].rwButton.input</key>
+                <description>Left REWIND button - Fast backward in loaded track.</description>
+                <status>0x90</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].ffButton.input</key>
+                <description>Left FORWARD button - Fast forward in loaded track.</description>
+                <status>0x90</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKillButton[3].input</key>
+                <description>Left KILL TREBLE button - High frequencies kill.</description>
+                <status>0x90</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKillButton[2].input</key>
+                <description>Left KILL MEDIUM button - Middle frequencies kill.</description>
+                <status>0x90</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKillButton[1].input</key>
+                <description>Left KILL BASS button - Low frequencies kill.</description>
+                <status>0x90</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].sourceButton.input</key>
+                <description>Left SOURCE button - Toggle pass thru.</description>
+                <status>0x90</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].pitchBendDecrButton.input</key>
+                <description>Left PITCH BEND MINUS button - Pitch bend down.</description>
+                <status>0x90</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].pitchBendIncrButton.input</key>
+                <description>Left PITCH BEND PLUS button - Pitch bend up.</description>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].pflButton.input</key>
+                <description>Left PREVIEW button - Toggle pfl, +SHIFT - Toggle keylock.</description>
+                <status>0x90</status>
+                <midino>0x2E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.wheelPress</key>
+                <description>Left JOG WHEEL PRESSED DOWN - Toggles scratching.</description>
+                <status>0x90</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].shiftButton</key>
+                <description>Left SHIFT button.</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJCRMX2.library.shiftButton</key>
+                <description>Left SHIFT button.</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.shiftButton</key>
+                <description>Left SHIFT button.</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.wheelTurn</key>
+                <description>Left JOG - Jog playing track, faster/slower (regular).</description>
+                <status>0xB0</status>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.wheelTurn</key>
+                <description>Right JOG - Jog playing track, faster/slower (regular).</description>
+                <status>0xB0</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].playButton.input</key>
+                <description>Right PLAY button - PlayButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.wheelTurn</key>
+                <description>Left JOG SCRATCH - Scratch playing track.</description>
+                <status>0xB0</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].cueButton.input</key>
+                <description>Right CUE button - CueButton behavior of components lib.</description>
+                <status>0x90</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.wheelTurn</key>
+                <description>Right JOG SCRATCH - Scratch playing track.</description>
+                <status>0xB0</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].syncButton.input</key>
+                <description>Right SYNC button - SyncButton behavior of components lib.</description>
                 <status>0x90</status>
                 <midino>0x34</midino>
-                <group>[Channel2]</group>
-                <key>sync_enabled</key>
-                <description>
-                </description>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- L Tempo Slider Pt 1 -->
                 <group>[Channel1]</group>
-                <key>rate</key>
-                <description></description>
+                <key>DJCRMX2.decks[1].loopModeKnob.input</key>
+                <description>Left LOOP MODE encoder - Adjust beatloop size.</description>
+                <status>0xB0</status>
+                <midino>0x34</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loadButton.input</key>
+                <description>Right LOAD button - Load selected track, +SHIFT - Eject track.</description>
+                <status>0x90</status>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopModeKnob.input</key>
+                <description>Right LOOP MODE encoder - Adjust beatloop size.</description>
+                <status>0xB0</status>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].tempoFader.inputMSB</key>
+                <description>Left PITCH FADER MSB - Rate (speed control).</description>
                 <status>0xB0</status>
                 <midino>0x36</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].rwButton.input</key>
+                <description>Right REWIND button - Fast backward in loaded track.</description>
+                <status>0x90</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>rate</key>
-                <description>MIDI Learned from 3206 messages.</description>
+                <key>DJCRMX2.decks[1].tempoFader.inputLSB</key>
+                <description>Left PITCH FADER LSB - Rate (speed control).</description>
                 <status>0xB0</status>
                 <midino>0x37</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- R Tempo Slider Pt 1 -->
                 <group>[Channel2]</group>
-                <key>rate</key>
-                <description>MIDI Learned from 2512 messages.</description>
+                <key>DJCRMX2.decks[2].ffButton.input</key>
+                <description>Right FORWARD button - Fast forward in loaded track.</description>
+                <status>0x90</status>
+                <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].tempoFader.inputMSB</key>
+                <description>Right PITCH FADER MSB - Rate (speed control).</description>
                 <status>0xB0</status>
                 <midino>0x38</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKillButton[3].input</key>
+                <description>Right KILL TREBLE button - High frequencies kill.</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>rate</key>
-                <description>MIDI Learned from 2512 messages.</description>
+                <key>DJCRMX2.decks[2].tempoFader.inputLSB</key>
+                <description>Right PITCH FADER LSB - Rate (speed control).</description>
                 <status>0xB0</status>
                 <midino>0x39</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- L Fader Pt 1 -->
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKillButton[2].input</key>
+                <description>Right KILL MEDIUM button - Middle frequencies kill.</description>
+                <status>0x90</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>volume</key>
-                <description>MIDI Learned from 406 messages.</description>
+                <key>DJCRMX2.decks[1].volumeFader.inputMSB</key>
+                <description>Left VOLUME FADER MSB - Volume.</description>
                 <status>0xB0</status>
                 <midino>0x3A</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKillButton[1].input</key>
+                <description>Right KILL BASS button - Low frequencies kill.</description>
+                <status>0x90</status>
+                <midino>0x3B</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>volume</key>
-                <description>MIDI Learned from 406 messages.</description>
+                <key>DJCRMX2.decks[1].volumeFader.inputLSB</key>
+                <description>Left VOLUME FADER LSB - Volume.</description>
                 <status>0xB0</status>
                 <midino>0x3B</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- R Fader Pt 1 -->
                 <group>[Channel2]</group>
-                <key>volume</key>
-                <description>MIDI Learned from 504 messages.</description>
+                <key>DJCRMX2.decks[2].sourceButton.input</key>
+                <description>Right SOURCE button - Toggle pass thru.</description>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKnob[3].inputMSB</key>
+                <description>Left TREBLE knob MSB - High frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x3C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].pitchBendDecrButton.input</key>
+                <description>Right PITCH BEND MINUS button - Pitch bend down.</description>
+                <status>0x90</status>
+                <midino>0x3D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKnob[3].inputLSB</key>
+                <description>Left TREBLE knob LSB - High frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x3D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].pitchBendIncrButton.input</key>
+                <description>Right PITCH BEND PLUS button - Pitch bend up.</description>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKnob[2].inputMSB</key>
+                <description>Left MEDIUM knob MSB - Middle frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x3E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].pflButton.input</key>
+                <description>Right PREVIEW button - Toggle pfl, +SHIFT - Toggle keylock.</description>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKnob[2].inputLSB</key>
+                <description>Left MEDIUM knob LSB - Middle frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.wheelPress</key>
+                <description>Right JOG WHEEL PRESSED DOWN - Toggles scratching.</description>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKnob[1].inputMSB</key>
+                <description>Left BASS knob MSB - Low frequencies control, +SHIFT - filter (QuickEffectRack) control.</description>
+                <status>0xB0</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].shiftButton</key>
+                <description>Right SHIFT button.</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJCRMX2.library.shiftButton</key>
+                <description>Right SHIFT button.</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.shiftButton</key>
+                <description>Right SHIFT button.</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DJCRMX2.decks[1].eqKnob[1].inputLSB</key>
+                <description>Left BASS knob LSB - Low frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].gainKnob.inputMSB</key>
+                <description>Left GAIN knob MSB - Pregain.</description>
+                <status>0xB0</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJCRMX2.library.navigateRightButton.input</key>
+                <description>FILES button - Go To Item in Library, +SHIFT - Add to bottom of Auto DJ playlist.</description>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].gainKnob.inputLSB</key>
+                <description>Left GAIN knob LSB - Pregain.</description>
+                <status>0xB0</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJCRMX2.library.navigateLeftButton.input</key>
+                <description>FOLDERS button - Move focus backward in Library, +SHIFT - Toggle Auto DJ.</description>
+                <status>0x90</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.masterVolumeKnob.inputMSB</key>
+                <description>MAIN VOLUME knob MSB - Master volume.</description>
+                <status>0xB0</status>
+                <midino>0x44</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJCRMX2.library.navigateUpButton.input</key>
+                <description>UP button - Move vertically up in Library.</description>
+                <status>0x90</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.masterVolumeKnob.inputLSB</key>
+                <description>MAIN VOLUME knob LSB - Master volume.</description>
+                <status>0xB0</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJCRMX2.library.navigateDownButton.input</key>
+                <description>DOWN button - Move vertically down in Library.</description>
+                <status>0x90</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.headMixKnob.inputMSB</key>
+                <description>CUE TO MIX knob MSB - Headmix.</description>
+                <status>0xB0</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.scratchButton.input</key>
+                <description>VINYL(SCRATCH) button - Split headcue, +SHIFT - Maximize library.</description>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.headMixKnob.inputLSB</key>
+                <description>CUE TO MIX knob LSB - Headmix.</description>
+                <status>0xB0</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Microphone]</group>
+                <key>DJCRMX2.micOnOffButton.input</key>
+                <description>MIC ON/OFF (MICROPHONE TALK OVER) button - Toggle microphone on/off and talkover on/off.</description>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.crossfader.inputMSB</key>
+                <description>CROSS FADER MSB.</description>
+                <status>0xB0</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCRMX2.master.crossfader.inputLSB</key>
+                <description>CROSS FADER LSB.</description>
+                <status>0xB0</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].volumeFader.inputMSB</key>
+                <description>Right VOLUME FADER MSB - Volume.</description>
                 <status>0xB0</status>
                 <midino>0x4A</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
+                    <script-binding/>
                 </options>
             </control>
-           <control>
+            <control>
                 <group>[Channel2]</group>
-                <key>volume</key>
-                <description>MIDI Learned from 504 messages.</description>
+                <key>DJCRMX2.decks[2].volumeFader.inputLSB</key>
+                <description>Right VOLUME FADER LSB - Volume.</description>
                 <status>0xB0</status>
                 <midino>0x4B</midino>
                 <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- L Gain -->
-                <status>0xb0</status>
-                <midino>0x42</midino>
-                <group>[Channel1]</group>
-                <key>pregain</key>
-                <description>
-                </description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKnob[3].inputMSB</key>
+                <description>Right TREBLE knob MSB - High frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x4C</midino>
                 <options>
-                    <soft-takeover/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- R Gain -->
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKnob[3].inputLSB</key>
+                <description>Right TREBLE knob LSB - High frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKnob[2].inputMSB</key>
+                <description>Right MEDIUM knob MSB - Middle frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x4E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKnob[2].inputLSB</key>
+                <description>Right MEDIUM knob LSB - Middle frequencies control.</description>
+                <status>0xB0</status>
+                <midino>0x4F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKnob[1].inputMSB</key>
+                <description>Right BASS knob MSB - Low frequencies control, +SHIFT - filter (QuickEffectRack) control.</description>
+                <status>0xB0</status>
+                <midino>0x50</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DJCRMX2.decks[2].eqKnob[1].inputLSB</key>
+                <description>Right BASS knob LSB - Low frequencies control, +SHIFT - filter (QuickEffectRack) control.</description>
+                <status>0xB0</status>
+                <midino>0x51</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].rwButton.input</key>
+                <description>Left REWIND button +SHIFT - Spinback effect.</description>
+                <status>0x90</status>
                 <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel2]</group>
-                <key>pregain</key>
-                <description>
-                </description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Fast Rewind -->
-                <status>0x90</status>
-                <midino>0x26</midino>
-                <group>[Channel1]</group>
-                <key>back</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Fast Rewind + Shift-->
-                <status>0x90</status>
+                <key>DJCRMX2.decks[2].gainKnob.inputMSB</key>
+                <description>Right GAIN knob MSB - Pregain.</description>
+                <status>0xB0</status>
                 <midino>0x52</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>start</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Fast Rewind -->
-                <status>0x90</status>
-                <midino>0x37</midino>
-                <group>[Channel2]</group>
-                <key>back</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Fast Rewind + Shift-->
-                <status>0x90</status>
-                <midino>0x56</midino>
-                <group>[Channel2]</group>
-                <key>start</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Fast Forward -->
-                <status>0x90</status>
-                <midino>0x27</midino>
-                <group>[Channel1]</group>
-                <key>fwd</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Fast Forward + Shift-->
+                <key>DJCRMX2.decks[1].ffButton.input</key>
+                <description>Left FORWARD button +SHIFT - Brake effect.</description>
                 <status>0x90</status>
                 <midino>0x53</midino>
-                <group>[Channel1]</group>
-                <key>end</key>
-                <description>
-                </description>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- Right Fast Forward -->
-                <status>0x90</status>
-                <midino>0x38</midino>
                 <group>[Channel2]</group>
-                <key>fwd</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Fast Forward + Shift -->
-                <status>0x90</status>
-                <midino>0x57</midino>
-                <group>[Channel2]</group>
-                <key>end</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Pitch Down -->
-                <status>0x90</status>
-                <midino>0x2C</midino>
-                <group>[Channel1]</group>
-                <key>rate_temp_down_small</key>
-                <description>L Pitch Down</description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Pitch Up -->
-                <status>0x90</status>
-                <midino>0x2D</midino>
-                <group>[Channel1]</group>
-                <key>rate_temp_up_small</key>
-                <description>L Pitch Down</description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Pitch Down -->
-                <status>0x90</status>
-                <midino>0x3D</midino>
-                <group>[Channel2]</group>
-                <key>rate_temp_down_small</key>
-                <description>R Pitch Down</description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Pitch Up -->
-                <status>0x90</status>
-                <midino>0x3E</midino>
-                <group>[Channel2]</group>
-                <key>rate_temp_up_small</key>
-                <description>R Pitch Down</description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <!-- Deck Controls -->
-            <!-- Jog Wheels -->
-            <control>
-                <!-- Left Press Down -->
-                <status>0x90</status>
-                <midino>0x2F</midino>
-                <group>[Channel1]</group>
-                <key>DJCRMX2.wheelPress</key>
-                <description>Jog Wheel L Pressed Down</description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Press Down -->
-                <status>0x90</status>
-                <midino>0x40</midino>
-                <group>[Channel2]</group>
-                <key>DJCRMX2.wheelPress</key>
-                <description>Jog Wheel R Pressed Down</description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Spin -->
+                <key>DJCRMX2.decks[2].gainKnob.inputLSB</key>
+                <description>Right GAIN knob LSB - Pregain.</description>
                 <status>0xB0</status>
-                <midino>0x30</midino>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
-                <key>DJCRMX2.wheelTurn</key>
-                <description>Wheel Turning (regular)</description>
+                <key>DJCRMX2.decks[1].pitchBendDecrButton.input</key>
+                <description>Left PITCH BEND MINUS button +SHIFT - Decrement (halve) pitch range.</description>
+                <status>0x90</status>
+                <midino>0x54</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- Right Spin -->
-                <status>0xB0</status>
-                <midino>0x31</midino>
-                <group>[Channel2]</group>
-                <key>DJCRMX2.wheelTurn</key>
-                <description>Wheel Turning (regular)</description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Scratch -->
-                <status>0xB0</status>
-                <midino>0x32</midino>
                 <group>[Channel1]</group>
-                <key>DJCRMX2.wheelTurn</key>
-                <description>Wheel Turning (scratching)</description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Scratch -->
-                <status>0xB0</status>
-                <midino>0x33</midino>
-                <group>[Channel2]</group>
-                <key>DJCRMX2.wheelTurn</key>
-                <description>Wheel Turning (scratching)</description>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <!-- Jog Wheels -->
-            <!-- EQ Controls -->
-            <control>
-                <!-- Left Knob High 1 -->
-                <status>0xb0</status>
-                <midino>0x3c</midino>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
-                <description>
-                </description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Knob Mid 1 -->
-                <status>0xb0</status>
-                <midino>0x3e</midino>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
-                <description>
-                </description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Knob Low 1 -->
-                <status>0xb0</status>
-                <midino>0x40</midino>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
-                <description>
-                </description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Kill High -->
-                <status>0x90</status>
-                <midino>0x28</midino>
-                <group>[Channel1]</group>
-                <key>filterHighKill</key>
-                <description>High Left Kill</description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Kill Mid -->
-                <status>0x90</status>
-                <midino>0x29</midino>
-                <group>[Channel1]</group>
-                <key>filterMidKill</key>
-                <description>Mid Left Kill</description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Left Kill Low -->
-                <status>0x90</status>
-                <midino>0x2A</midino>
-                <group>[Channel1]</group>
-                <key>filterLowKill</key>
-                <description>Low Left Kill</description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Knob High 1 -->
-                <status>0xb0</status>
-                <midino>0x4c</midino>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Knob Mid 1 -->
-                <status>0xb0</status>
-                <midino>0x4e</midino>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Knob Low 1 -->
-                <status>0xb0</status>
-                <midino>0x50</midino>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter1</key>
-                <description>
-                </description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Kill High -->
-                <status>0x90</status>
-                <midino>0x39</midino>
-                <group>[Channel2]</group>
-                <key>filterHighKill</key>
-                <description>High Right Kill</description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Kill Mid -->
-                <status>0x90</status>
-                <midino>0x3A</midino>
-                <group>[Channel2]</group>
-                <key>filterMidKill</key>
-                <description>Mid Right Kill</description>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
-                <!-- Right Kill Low -->
-                <status>0x90</status>
-                <midino>0x3B</midino>
-                <group>[Channel2]</group>
-                <key>filterLowKill</key>
-                <description>Low Right Kill</description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <!-- EQ Controls -->
-            <!-- Samplers Controls [Sample Mode] 25% -->
-            <control>
-                <!-- S1 Play -->
-                <status>0x90</status>
-                <midino>0x05</midino>
-                <group>[Sampler1]</group>
-                <key>play</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S2 Play -->
-                <status>0x90</status>
-                <midino>0x6</midino>
-                <group>[Sampler2]</group>
-                <key>play</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S3 Play -->
-                <status>0x90</status>
-                <midino>0x7</midino>
-                <group>[Sampler3]</group>
-                <key>play</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S4 Play -->
-                <status>0x90</status>
-                <midino>0x8</midino>
-                <group>[Sampler4]</group>
-                <key>play</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S1 Keylock -->
-                <status>0x90</status>
-                <midino>0x15</midino>
-                <group>[Sampler1]</group>
-                <key>keylock</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S2 Keylock -->
-                <status>0x90</status>
-                <midino>0x16</midino>
-                <group>[Sampler2]</group>
-                <key>keylock</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S3 Keylock -->
-                <status>0x90</status>
-                <midino>0x17</midino>
-                <group>[Sampler3]</group>
-                <key>keylock</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S4 Keylock -->
-                <status>0x90</status>
-                <midino>0x18</midino>
-                <group>[Sampler4]</group>
-                <key>keylock</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S1 Tempo Tap [UNIMPLEMENTED] -->
-                <status>0xb0</status>
-                <midino>0x15</midino>
-                <group>[Sampler1]</group>
-                <key>bpm</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S2 Tempo Tap [UNIMPLEMENTED] -->
-                <status>0xb0</status>
-                <midino>0x16</midino>
-                <group>[Sampler2]</group>
-                <key>bpm</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S3 Tempo Tap [UNIMPLEMENTED] -->
-                <status>0xb0</status>
-                <midino>0x17</midino>
-                <group>[Sampler3]</group>
-                <key>bpm</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S4 Tempo Tap [UNIMPLEMENTED] -->
-                <status>0xb0</status>
-                <midino>0x18</midino>
-                <group>[Sampler4]</group>
-                <key>bpm</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S1 Headphones [UNIMPLEMENTED] -->
-                <status>0xb0</status>
-                <midino>0x5</midino>
-                <group>[Sampler1]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S2 Headphones [UNIMPLEMENTED] -->
-                <status>0xb0</status>
-                <midino>0x6</midino>
-                <group>[Sampler2]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S3 Headphones [UNIMPLEMENTED] -->
-                <status>0xb0</status>
-                <midino>0x7</midino>
-                <group>[Sampler3]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- S4 Headphones [UNIMPLEMENTED] -->
-                <status>0x80</status>
-                <midino>0x30</midino>
-                <group>[Sampler4]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <!-- Samplers Controls [Sample Mode] -->
-            <!-- Hotcue Controls [Cue Mode] 0% -->
-            <control>
-                <!-- LC1 Activate -->
-                <status>0x90</status>
-                <midino>0x9</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_1_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LC2 Activate -->
-                <status>0x90</status>
-                <midino>0x0A</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_2_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LC3 Activate -->
-                <status>0x90</status>
-                <midino>0x0b</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_3_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LC4 Activate -->
-                <status>0x90</status>
-                <midino>0x0c</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_4_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LC1 Clear -->
-                <status>0xB0</status>
-                <midino>0x09</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_1_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LC2 Clear -->
-                <status>0xB0</status>
-                <midino>0x0a</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_2_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LC3 Clear -->
-                <status>0xB0</status>
-                <midino>0x0b</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_3_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LC4 Clear -->
-                <status>0xB0</status>
-                <midino>0x0C</midino>
-                <group>[Channel1]</group>
-                <key>hotcue_4_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC1 Activate -->
-                <status>0x90</status>
-                <midino>0x19</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_1_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC2 Activate -->
-                <status>0x90</status>
-                <midino>0x1a</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_2_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC3 Activate -->
-                <status>0x90</status>
-                <midino>0x1b</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_3_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC4 Activate -->
-                <status>0x90</status>
-                <midino>0x1c</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_4_activate</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC1 Clear [Should be Shift+RC1, v. 2.0] -->
-                <status>0xB0</status>
-                <midino>0x19</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_1_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC2 Clear -->
-                <status>0xB0</status>
-                <midino>0x1a</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_2_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC3 Clear -->
-                <status>0xB0</status>
-                <midino>0x1b</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_3_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RC4 Clear -->
-                <status>0xB0</status>
-                <midino>0x1c</midino>
-                <group>[Channel2]</group>
-                <key>hotcue_4_clear</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <!-- Hotcue Controls [Cue Mode] -->
-            <!-- Effects Controls [Effect Mode] 70% -->
-            <control>
-                <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x01</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x02</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x03</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1_Effect4]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x04</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x11</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x12</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x13</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2_Effect4]</group>
-                <key>enabled</key>
-                <description></description>
-                <status>0x90</status>
-                <midino>0x14</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>super1</key>
+                <key>DJCRMX2.decks[1].effectUnit.dryWetKnob.input</key>
+                <description>Left FX MODE encoder - EffectUnit's mix knob, in EffectFocusMode in combination with ParameterEditMode - Controls effect's parameters.</description>
                 <status>0xB0</status>
                 <midino>0x54</midino>
                 <options>
-                    <hercjogfast/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>super1</key>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].pitchBendIncrButton.input</key>
+                <description>Left PITCH BEND PLUS button +SHIFT - Increment (double) pitch range.</description>
+                <status>0x90</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.dryWetKnob.input</key>
+                <description>Right FX MODE encoder - EffectUnit's mix knob, in EffectFocusMode in combination with ParameterEditMode - Controls effect's parameters.</description>
                 <status>0xB0</status>
                 <midino>0x55</midino>
                 <options>
-                    <hercjogfast/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>mix</key>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].rwButton.input</key>
+                <description>Right REWIND button +SHIFT - Spinback effect.</description>
+                <status>0x90</status>
+                <midino>0x56</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].samplerModeKnob.input</key>
+                <description>Left SAMPLE MODE encoder - Switch between 4 sampler banks (each of 4 samplers).</description>
+                <status>0xB0</status>
+                <midino>0x56</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].ffButton.input</key>
+                <description>Right FORWARD button +SHIFT - Brake effect.</description>
+                <status>0x90</status>
+                <midino>0x57</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].samplerModeKnob.input</key>
+                <description>Right SAMPLE MODE encoder - Switch between 4 sampler banks (each of 4 samplers).</description>
+                <status>0xB0</status>
+                <midino>0x57</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].pitchBendDecrButton.input</key>
+                <description>Right PITCH BEND MINUS button +SHIFT - Decrement (halve) pitch range.</description>
+                <status>0x90</status>
+                <midino>0x58</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].cueModeKnob.input</key>
+                <description>Left CUE MODE encoder - Adjust key of loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x58</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].pitchBendIncrButton.input</key>
+                <description>Right PITCH BEND PLUS button +SHIFT - Increment (double) pitch range.</description>
+                <status>0x90</status>
+                <midino>0x59</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].cueModeKnob.input</key>
+                <description>Right CUE MODE encoder - Adjust key of loaded track.</description>
+                <status>0xB0</status>
+                <midino>0x59</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].loopModeKnob.input</key>
+                <description>Left LOOP MODE encoder + SHIFT - Move loop forward/backward.</description>
+                <status>0xB0</status>
+                <midino>0x5A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].loopModeKnob.input</key>
+                <description>Right LOOP MODE encoder + SHIFT - Move loop forward/backward.</description>
+                <status>0xB0</status>
+                <midino>0x5B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCRMX2.decks[1].effectUnit.dryWetKnob.input</key>
+                <description>Left FX MODE encoder + SHIFT - EffectUnit's super knob.</description>
                 <status>0xB0</status>
                 <midino>0x5C</midino>
                 <options>
-                    <hercjogfast/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>mix</key>
+                <group>[Channel2]</group>
+                <key>DJCRMX2.decks[2].effectUnit.dryWetKnob.input</key>
+                <description>Right FX MODE encoder + SHIFT - EffectUnit's super knob.</description>
                 <status>0xB0</status>
                 <midino>0x5D</midino>
                 <options>
-                    <hercjogfast/>
-                </options>
-            </control>
-            <!-- Effects Controls [Effect Mode] -->
-            <!-- Looping Controls [Loop Mode] 0% -->
-            <control>
-                <!-- RLoop 4 -->
-                <status>0x90</status>
-                <midino>0x1d</midino>
-                <group>[Channel2]</group>
-                <key>beatloop_4_toggle</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
-                <!-- RLoop 2 -->
-                <status>0x90</status>
-                <midino>0x1e</midino>
-                <group>[Channel2]</group>
-                <key>beatloop_2_toggle</key>
-                <description>
-                </description>
+                <key>DJCRMX2.incomingData</key>
+                <description>InboundSysex data evaluation.</description>
+                <status>0xF0</status>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
-            <control>
-                <!-- RLoop 1 -->
-                <status>0x90</status>
-                <midino>0x1f</midino>
-                <group>[Channel2]</group>
-                <key>beatloop_1_toggle</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- RLoop 1/2 -->
-                <status>0x90</status>
-                <midino>0x20</midino>
-                <group>[Channel2]</group>
-                <key>beatloop_0.5_toggle</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LLoop 4 -->
-                <status>0x90</status>
-                <midino>0x0D</midino>
-                <group>[Channel1]</group>
-                <key>beatloop_4_toggle</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LLoop 2 -->
-                <status>0x90</status>
-                <midino>0x0e</midino>
-                <group>[Channel1]</group>
-                <key>beatloop_2_toggle</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LLoop 1 -->
-                <status>0x90</status>
-                <midino>0x0f</midino>
-                <group>[Channel1]</group>
-                <key>beatloop_1_toggle</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <!-- LLoop 1/2 -->
-                <status>0x90</status>
-                <midino>0x10</midino>
-                <group>[Channel1]</group>
-                <key>beatloop_0.5_toggle</key>
-                <description>
-                </description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <!-- Looping Controls [Loop Mode] -->
-            <!-- End of Controls -->
         </controls>
-        <outputs>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_1_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x09</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_2_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x0A</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_3_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x0B</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_4_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x0C</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_4_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x0D</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_2_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x0E</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_1_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x0F</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.5_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x10</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x19</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_2_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x1A</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_3_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x1B</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_4_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x1C</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_4_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x1D</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_2_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x1E</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_1_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x1F</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.5_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x20</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>play_indicator</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x21</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>cue_indicator</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x22</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>sync_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x23</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>filterHighKill</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x28</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>filterMidKill</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x29</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>filterLowKill</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x2a</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x2E</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>play_indicator</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x32</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>cue_indicator</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x33</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>sync_enabled</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x34</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>filterHighKill</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x39</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>filterMidKill</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x3a</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>filterLowKill</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x3b</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x3F</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x49</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.3</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4A</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4B</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.7</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4C</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.9</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4D</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>peak_indicator</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4E</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4F</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.3</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x50</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x51</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.7</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x52</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>vu_meter</key>
-                <description>
-                </description>
-                <minimum>0.9</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x53</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>peak_indicator</key>
-                <description>
-                </description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x54</midino>
-                <on>0x06</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x01</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x02</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x03</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect4]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x04</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x11</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x12</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x13</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect4]</group>
-                <key>enabled</key>
-                <status>0x90</status>
-                <midino>0x14</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x90</status>
-                <midino>0x09</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x90</status>
-                <midino>0x0A</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_3_enabled</key>
-                <status>0x90</status>
-                <midino>0x0B</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>hotcue_4_enabled</key>
-                <status>0x90</status>
-                <midino>0x0C</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_1_enabled</key>
-                <status>0x90</status>
-                <midino>0x19</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_2_enabled</key>
-                <status>0x90</status>
-                <midino>0x1A</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_3_enabled</key>
-                <status>0x90</status>
-                <midino>0x1B</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>hotcue_4_enabled</key>
-                <status>0x90</status>
-                <midino>0x1C</midino>
-                <minimum>0.5</minimum>
-            </output>
-        </outputs>
+        <outputs/>
     </controller>
 </MixxxControllerPreset>
