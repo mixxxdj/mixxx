@@ -5,10 +5,13 @@
 #include "track/track.h"
 #include "widget/wlabel.h"
 
+class DlgTrackInfo;
+class TrackModel;
+
 class WStemLabel : public WLabel {
     Q_OBJECT
   public:
-    explicit WStemLabel(QWidget* pParent = nullptr);
+    explicit WStemLabel(QWidget* pParent, UserSettingsPointer pConfig);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -19,11 +22,17 @@ class WStemLabel : public WLabel {
   private slots:
     void updateLabel();
 
+  protected:
+    void mouseDoubleClickEvent(QMouseEvent*) override;
+
   private:
     void setTextColor(const QColor& color);
     void setLabelText(const QString& text);
 
-    StemInfo m_stemInfo;
+    mixxx::Stem m_stem;
+    TrackPointer m_pTrack;
     QString m_group;
+    const UserSettingsPointer m_pConfig;
+    std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     int m_stemNo;
 };

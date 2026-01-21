@@ -28,13 +28,18 @@ if(EMSCRIPTEN)
   target_compile_options(mixxx-proto PRIVATE -pthread)
 endif()
 
+set(PROTO_FILES "")
+list(APPEND PROTO_FILES "beats.proto")
+list(APPEND PROTO_FILES "headers.proto")
+list(APPEND PROTO_FILES "keys.proto")
+list(APPEND PROTO_FILES "skin.proto")
+list(APPEND PROTO_FILES "waveform.proto")
+if(STEM)
+  list(APPEND PROTO_FILES "stems.proto")
+endif()
+
 protobuf_generate(
   LANGUAGE cpp
   TARGET mixxx-proto
-  PROTOS
-    beats.proto
-    headers.proto
-    keys.proto
-    skin.proto
-    waveform.proto
+  PROTOS ${PROTO_FILES}
 )
