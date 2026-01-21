@@ -74,19 +74,19 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
         // The positive offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
-        const int maxOffset = static_cast<int>(
+        const int maxOffsetMicros = static_cast<int>(
                 data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
 
         // The minimum offset is limited to -data.m_callbackEntrytoDac to avoid a more
         // negative value indicating an outdated request that is no longer valid anyway.
         // This is probably caused by a vsync problem.
-        const int minOffset = -data.m_callbackEntrytoDac;
+        const int minOffsetMicros = -data.m_callbackEntrytoDac;
 
         // Calculate the offset in micros for the position of the sample that will be transferred
         // to the DAC when the next display frame is displayed
-        int offset = refToVSync - data.m_callbackEntrytoDac;
-        if (offset < minOffset) {
-            offset = minOffset;
+        int offsetMicros = refToVSync - data.m_callbackEntrytoDac;
+        if (offsetMicros < minOffsetMicros) {
+            offsetMicros = minOffsetMicros;
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
                            << m_key << "outdated position request (offset < minOffset)";
@@ -95,11 +95,11 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
                          << data.m_callbackEntrytoDac;
                 m_noTransport = true;
             }
-        } else if (offset > maxOffset) {
-            offset = maxOffset;
+        } else if (offsetMicros > maxOffsetMicros) {
+            offsetMicros = maxOffsetMicros;
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
-                           << m_key << "no transport (offset > maxOffset)";
+                           << m_key << "no transport (offsetMicros > maxOffsetMicros)";
                 qDebug() << m_key << "refToVSync:" << refToVSync
                          << "data.m_callbackEntrytoDac:"
                          << data.m_callbackEntrytoDac;
@@ -114,14 +114,14 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
             m_noTransport = false;
         }
         // Apply the offset proportional to m_positionStep
-        return data.m_positionStep * static_cast<double>(offset) / data.m_audioBufferMicroS;
+        return data.m_positionStep * static_cast<double>(offsetMicros) / data.m_audioBufferMicroS;
     }
     return 0.0;
 }
 
 double VisualPlayPosition::determinePlayPosInLoopBoundries(
-        const VisualPlayPositionData& data, const double& offset) {
-    double interpolatedPlayPos = data.m_playPos + offset * data.m_playRate;
+        const VisualPlayPositionData& data, const double& offsetSteps) {
+    double interpolatedPlayPos = data.m_playPos + offsetSteps * data.m_playRate;
 
     if (data.m_loopEnabled) {
         double loopSize = data.m_loopEndPos - data.m_loopStartPos;
@@ -166,13 +166,13 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
         double* pSlipPosition) {
     if (m_valid.load()) {
         const VisualPlayPositionData data = m_data.getValue();
-        const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
+        const double offsetSteps = calcOffsetAtNextVSync(pVSyncThread, data);
 
-        double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offset);
+        double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offsetSteps);
         *pPlayPosition = interpolatedPlayPos;
 
         if (data.m_slipModeState == SlipModeState::Running) {
-            *pSlipPosition = data.m_slipPos + offset * data.m_slipRate;
+            *pSlipPosition = data.m_slipPos + offsetSteps * data.m_slipRate;
         } else {
             *pSlipPosition = interpolatedPlayPos;
         }
