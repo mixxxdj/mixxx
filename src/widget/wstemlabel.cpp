@@ -1,13 +1,19 @@
 #include "wstemlabel.h"
 
+#include "library/dlgtagfetcher.h"
+#include "library/dlgtrackinfo.h"
 #include "moc_wstemlabel.cpp"
+#include "track/track.h"
+#include "util/assert.h"
 #include "util/logger.h"
+#include "util/parented_ptr.h"
 
 const mixxx::Logger kLogger("WStemLabel");
 
-WStemLabel::WStemLabel(QWidget* pParent)
+WStemLabel::WStemLabel(QWidget* pParent, UserSettingsPointer pConfig)
         : WLabel(pParent),
-          m_stemInfo(QString(), QColor()),
+          m_stem(QString(), QColor()),
+          m_pConfig(pConfig),
           m_stemNo(0) {
 }
 
@@ -28,19 +34,23 @@ void WStemLabel::setup(const QDomNode& node, const SkinContext& context) {
     }
 }
 
-void WStemLabel::slotTrackUnloaded(TrackPointer) {
-    m_stemInfo = StemInfo();
+void WStemLabel::slotTrackUnloaded(TrackPointer oldTrack) {
+    DEBUG_ASSERT(oldTrack == m_pTrack);
+    m_pTrack.reset();
+    m_stem = mixxx::Stem();
     updateLabel();
+    oldTrack->disconnect(nullptr, this);
 }
 
 void WStemLabel::slotTrackLoaded(TrackPointer pTrack) {
+    m_pTrack = pTrack;
     if (!pTrack) {
         return;
     }
 
     auto stemInfo = pTrack->getStemInfo();
 
-    if (stemInfo.isEmpty()) {
+    if (!stemInfo.isValid()) {
         return;
     }
 
@@ -50,13 +60,39 @@ void WStemLabel::slotTrackLoaded(TrackPointer pTrack) {
         return;
     }
 
-    m_stemInfo = stemInfo[m_stemNo - 1];
+    m_stem = stemInfo[m_stemNo - 1];
     updateLabel();
+
+    connect(pTrack.get(), &Track::stemInfoChanged, this, [this, pTrack]() {
+        m_stem = pTrack->getStemInfo()[m_stemNo - 1];
+        updateLabel();
+    });
+}
+
+void WStemLabel::mouseDoubleClickEvent(QMouseEvent*) {
+    if (!m_stem.isValid()) {
+        return;
+    }
+    // Use the single-track editor with Next/Prev buttons and DlgTagFetcher.
+    // Create a fresh dialog on invocation.
+    m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
+            m_pConfig);
+    connect(m_pDlgTrackInfo.get(),
+            &QDialog::finished,
+            this,
+            [this]() {
+                if (m_pDlgTrackInfo.get() == sender()) {
+                    m_pDlgTrackInfo.release()->deleteLater();
+                }
+            });
+    m_pDlgTrackInfo->loadTrack(m_pTrack);
+    m_pDlgTrackInfo->show();
+    m_pDlgTrackInfo->focusField(QStringLiteral("stem_%0").arg(m_stemNo - 1));
 }
 
 void WStemLabel::updateLabel() {
-    QColor color = m_stemInfo.getColor();
-    QString text = m_stemInfo.getLabel();
+    QColor color = m_stem.getColor();
+    QString text = m_stem.getLabel();
     setTextColor(color);
     setLabelText(text);
 }

@@ -90,6 +90,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void loadTrackInternal(const TrackPointer& pTrack);
     void reloadTrackBeats(const Track& track);
     void trackColorDialogSetColor(const mixxx::RgbColor::optional_t& color);
+#ifdef __STEM__
+    void stemColorDialogSetColor(QPushButton* btnStemColorPicker,
+            const mixxx::RgbColor::optional_t& color);
+#endif
     void saveTrack();
     void clear();
     void init();
@@ -135,4 +139,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WColorPickerAction> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+#ifdef __STEM__
+    parented_ptr<QCompleter> m_stemLabelCompleter;
+
+    int m_stemTabIndex; // Index of the stem tab
+#endif
 };

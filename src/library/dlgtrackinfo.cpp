@@ -1,5 +1,8 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QColorDialog>
+#include <QCompleter>
+#include <QPushButton>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
@@ -15,7 +18,11 @@
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
 #include "track/keyfactory.h"
+#ifdef __STEM__
+#include "track/steminfoimporter.h"
+#endif
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/color/color.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
@@ -33,6 +40,42 @@ constexpr int kMinBpm = 30;
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 const QString kBpmPropertyName = QStringLiteral("bpm");
+#ifdef __STEM__
+// The following labels are recommended for use as part of the NI stem specification.
+const QStringList kNIRecommendedStemLabels = {
+        "Acid",
+        "Atmos",
+        "Bass",
+        "Bassline",
+        "Chords",
+        "Clap",
+        "Comp",
+        "Donk",
+        "Drone",
+        "Drums",
+        "FX",
+        "Guitar",
+        "HiHat",
+        "Hits",
+        "Hook",
+        "Kick",
+        "Lead",
+        "Loop",
+        "Melody",
+        "Noise",
+        "Pads",
+        "Reece",
+        "SFX",
+        "Snare",
+        "Stabs",
+        "SubBass",
+        "Synths",
+        "Toms",
+        "Tops",
+        "Vocals",
+        "Voices",
+};
+#endif
 
 } // namespace
 
@@ -53,13 +96,23 @@ DlgTrackInfo::DlgTrackInfo(
                           // TODO(xxx) remove this once the preferences are themed via QSS
                           WColorPicker::Option::NoExtStyleSheet,
                   ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
-                  this)) {
+                  this))
+#ifdef __STEM__
+          ,
+          m_stemLabelCompleter(make_parented<QCompleter>(kNIRecommendedStemLabels, this)),
+          m_stemTabIndex(-1)
+#endif
+{
     init();
 }
 
 void DlgTrackInfo::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
+
+#ifdef __STEM__
+    m_stemTabIndex = tabWidget->indexOf(tabStem);
+#endif
 
     // Store tag edit widget pointers to allow focusing a specific widgets when
     // this is opened by double-clicking a WTrackProperty label.
@@ -295,6 +348,58 @@ void DlgTrackInfo::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotColorButtonClicked);
+
+#ifdef __STEM__
+    QPushButton* btnStemColorPickers[] = {btnFirstStemColorPicker,
+            btnSecondStemColorPicker,
+            btnThirdStemColorPicker,
+            btnFourthStemColorPicker};
+    QLineEdit* txtStemTitles[] = {txtFirstStemTitle,
+            txtSecondStemTitle,
+            txtThirdStemTitle,
+            txtFourthStemTitle};
+
+    m_stemLabelCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+
+    for (qsizetype stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        QPushButton* btnStemColorPicker = btnStemColorPickers[stemIdx];
+        QLineEdit* txtStemTitle = txtStemTitles[stemIdx];
+        connect(btnStemColorPicker,
+                &QPushButton::clicked,
+                this,
+                [this, btnStemColorPicker, stemIdx]() {
+                    auto stemInfo = m_trackRecord.refMetadata().getStemInfo();
+                    VERIFY_OR_DEBUG_ASSERT(stemInfo.size() == mixxx::kMaxSupportedStems) {
+                        return;
+                    }
+                    auto color = QColorDialog::getColor(
+                            stemInfo[stemIdx].getColor(),
+                            btnStemColorPicker,
+                            tr("Choose a new color"));
+                    if (color.isValid()) {
+                        stemInfo[stemIdx].setColor(color);
+                        m_trackRecord.refMetadata().setStemInfo(stemInfo);
+                        stemColorDialogSetColor(btnStemColorPicker,
+                                mixxx::RgbColor::fromQColor(color));
+                    }
+                });
+
+        txtStemTitle->setCompleter(m_stemLabelCompleter);
+        connect(txtStemTitle,
+                &QLineEdit::editingFinished,
+                this,
+                [this, txtStemTitle, stemIdx]() {
+                    auto stemInfo = m_trackRecord.refMetadata().getStemInfo();
+                    VERIFY_OR_DEBUG_ASSERT(stemInfo.size() == mixxx::kMaxSupportedStems) {
+                        return;
+                    }
+                    stemInfo[stemIdx].setLabel(txtStemTitle->text());
+                    m_trackRecord.refMetadata().setStemInfo(stemInfo);
+                });
+        m_propertyWidgets.insert(QStringLiteral("stem_%0").arg(stemIdx), txtStemTitle);
+    }
+#endif
+
     connect(m_pColorPicker.get(),
             &WColorPickerAction::colorPicked,
             this,
@@ -371,6 +476,47 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
     reloadTrackBeats(track);
 
     m_pWStarRating->slotSetRating(m_pLoadedTrack->getRating());
+
+#ifdef __STEM__
+    auto stemInfo = m_trackRecord.refMetadata().getStemInfo();
+    auto maybeStemFile = stemInfo.isValid() ||
+            mixxx::StemInfoImporter::maybeStemFile(
+                    track.getLocation(), {}, true);
+    if (!maybeStemFile) {
+        tabWidget->setTabVisible(m_stemTabIndex, false);
+        tabWidget->setTabEnabled(m_stemTabIndex, false);
+        return;
+    } else if (!stemInfo.isValid()) {
+        // In case we have a a file that could be a STEM file (correct
+        // extension, and stream topology) but is only missing tags, we create a
+        // new empty tags, so Mixxx can be used to "finalise" NI stem creation
+        stemInfo = mixxx::StemInfo::newDefault();
+        m_trackRecord.refMetadata().setStemInfo(stemInfo);
+    }
+    VERIFY_OR_DEBUG_ASSERT(stemInfo.size() == mixxx::kMaxSupportedStems) {
+        return;
+    }
+    tabWidget->setTabVisible(m_stemTabIndex, true);
+    tabWidget->setTabEnabled(m_stemTabIndex, true);
+
+    QPushButton* btnStemColorPickers[] = {btnFirstStemColorPicker,
+            btnSecondStemColorPicker,
+            btnThirdStemColorPicker,
+            btnFourthStemColorPicker};
+    QLineEdit* txtStemTitles[] = {txtFirstStemTitle,
+            txtSecondStemTitle,
+            txtThirdStemTitle,
+            txtFourthStemTitle};
+
+    for (qsizetype stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        QPushButton* btnStemColorPicker = btnStemColorPickers[stemIdx];
+        QLineEdit* txtStemTitle = txtStemTitles[stemIdx];
+
+        stemColorDialogSetColor(btnStemColorPicker,
+                mixxx::RgbColor::fromQColor(stemInfo[stemIdx].getColor()));
+        txtStemTitle->setText(stemInfo[stemIdx].getLabel());
+    }
+#endif
 }
 
 void DlgTrackInfo::replaceTrackRecord(
@@ -534,6 +680,11 @@ void DlgTrackInfo::focusField(const QString& property) {
         if (property == kBpmPropertyName) {
             // If we shall focus the BPM spinbox, switch to BPM tab
             tabWidget->setCurrentIndex(tabWidget->indexOf(tabBPM));
+#ifdef __STEM__
+        } else if (property.startsWith("stem_")) {
+            // If we shall focus a stem textbox, switch to stem tab
+            tabWidget->setCurrentIndex(tabWidget->indexOf(tabStem));
+#endif
         }
         it.value()->setFocus();
     }
@@ -604,6 +755,29 @@ void DlgTrackInfo::trackColorDialogSetColor(const mixxx::RgbColor::optional_t& n
         btnColorPicker->setStyleSheet("");
     }
 }
+
+#ifdef __STEM__
+void DlgTrackInfo::stemColorDialogSetColor(QPushButton* btnStemColorPicker,
+        const mixxx::RgbColor::optional_t& newColor) {
+    if (newColor) {
+        btnStemColorPicker->setObjectName("StemColorPicker");
+        btnStemColorPicker->setText("");
+        const QColor ccolor = mixxx::RgbColor::toQColor(newColor);
+        const QString styleSheet =
+                QStringLiteral(
+                        "QPushButton#StemColorPicker { background-color: %1; color: %2; }")
+                        .arg(ccolor.name(QColor::HexRgb),
+                                Color::isDimColor(ccolor)
+                                        ? "white"
+                                        : "black");
+        btnStemColorPicker->setStyleSheet(styleSheet);
+    } else { // no color
+        btnStemColorPicker->setText(tr("(no color)"));
+        // clear custom stylesheet, i.e. restore Fusion style,
+        btnStemColorPicker->setStyleSheet("");
+    }
+}
+#endif
 
 void DlgTrackInfo::saveTrack() {
     if (!m_pLoadedTrack) {

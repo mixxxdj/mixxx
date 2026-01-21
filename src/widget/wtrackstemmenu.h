@@ -16,7 +16,7 @@ class WTrackStemMenu : public QMenu {
             QWidget* parent,
             bool primaryDeck,
             const QString& group,
-            const QList<StemInfo>& stemInfo);
+            const mixxx::StemInfo& stemInfo);
 
   signals:
     void selectedStem(const QString& group, mixxx::StemChannelSelection stemMask);
@@ -32,7 +32,7 @@ class WTrackStemMenu : public QMenu {
 
     QString m_group;
     bool m_selectMode;
-    QList<StemInfo> m_stemInfo;
+    mixxx::StemInfo m_stemInfo;
     mixxx::StemChannelSelection m_currentSelection;
 
     std::vector<parented_ptr<QAction>> m_stemActions;

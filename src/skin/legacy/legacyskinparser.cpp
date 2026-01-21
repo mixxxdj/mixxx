@@ -1001,7 +1001,7 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 
 #ifdef __STEM__
 QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
-    WStemLabel* pLabel = new WStemLabel(m_pParent);
+    WStemLabel* pLabel = new WStemLabel(m_pParent, m_pConfig);
     setupLabelWidget(element, pLabel);
 
     QString group = lookupNodeGroup(element);

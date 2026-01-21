@@ -4605,10 +4605,104 @@ find_package(SoundTouch 2.1.2 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
 # TagLib
-find_package(TagLib 1.11 REQUIRED)
-target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
-if(QML)
-  target_link_libraries(mixxx-qml-lib PUBLIC TagLib::TagLib)
+if(STEM)
+  set(TAGLIB_VERSION 2.2)
+else()
+  set(TAGLIB_VERSION 1.11)
+endif()
+find_package(TagLib ${TAGLIB_VERSION} EXACT)
+if(NOT TagLib_FOUND)
+  set(TAGLIB_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/taglib-install")
+  set(
+    TAGLIB_LIBRARY
+    "lib/${CMAKE_STATIC_LIBRARY_PREFIX}tag${CMAKE_STATIC_LIBRARY_SUFFIX}"
+  )
+
+  # CMake does not pass lists of paths properly to external projects.
+  # This is worked around by changing the list separator.
+  string(
+    REPLACE
+    ";"
+    "|"
+    PIPE_DELIMITED_CMAKE_PREFIX_PATH
+    "${CMAKE_PREFIX_PATH}"
+  )
+
+  include(ProcessorCount)
+  processorcount(n)
+  ExternalProject_Add(
+    taglib
+    GIT_REPOSITORY "https://github.com/taglib/taglib"
+    GIT_TAG v2.2
+    DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+    DOWNLOAD_NAME "taglib-${TAGLIB_VERSION}.tar.gz"
+    PREFIX "taglib-${TAGLIB_VERSION}"
+    INSTALL_DIR ${TAGLIB_INSTALL_DIR}
+    LIST_SEPARATOR "|"
+    GIT_SUBMODULES "3rdparty/utfcpp"
+    GIT_SUBMODULES_RECURSE ON
+    CMAKE_ARGS
+      -DBUILD_SHARED_LIBS=OFF -DENABLE_STATIC_RUNTIME=ON
+      -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+      -DCMAKE_INSTALL_LIBDIR:PATH=lib
+      -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
+      -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+      -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+      -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+      -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+      -DCMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}
+      -DCMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}
+      -DCMAKE_CXX_FLAGS_RELWITHDEBINFO=${CMAKE_CXX_FLAGS_RELWITHDEBINFO}
+      -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME} -DBUILD_TESTING=OFF
+    BUILD_COMMAND ${CMAKE_COMMAND} --build . -j${n}
+    BUILD_BYPRODUCTS <INSTALL_DIR>/${TAGLIB_LIBRARY}
+    EXCLUDE_FROM_ALL TRUE
+  )
+
+  # The include folder needs to already exist, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be propagated
+  file(MAKE_DIRECTORY "${TAGLIB_INSTALL_DIR}/include/taglib")
+
+  # Assemble a library based on the external project.
+  add_library(mixxx-taglib STATIC IMPORTED)
+  set_target_properties(
+    mixxx-taglib
+    PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${TAGLIB_INSTALL_DIR}/include/taglib"
+      IMPORTED_LOCATION "${TAGLIB_INSTALL_DIR}/${TAGLIB_LIBRARY}"
+  )
+  add_dependencies(mixxx-taglib taglib)
+  # Add the local include directory explicitly before linking the library
+  # to make sure not the system provided headers are used
+  target_include_directories(
+    mixxx-lib
+    BEFORE
+    PRIVATE "${TAGLIB_INSTALL_DIR}/include/taglib"
+  )
+  target_include_directories(
+    mixxx
+    BEFORE
+    PRIVATE "${TAGLIB_INSTALL_DIR}/include/taglib"
+  )
+  if(BUILD_TESTING)
+    target_include_directories(
+      mixxx-test
+      BEFORE
+      PRIVATE "${TAGLIB_INSTALL_DIR}/include/taglib"
+    )
+  endif()
+  target_link_libraries(mixxx-lib PUBLIC mixxx-taglib)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PUBLIC mixxx-taglib)
+  endif()
+else()
+  target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PUBLIC TagLib::TagLib)
+  endif()
 endif()
 
 # Threads
