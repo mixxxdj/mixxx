@@ -1,1307 +1,1469 @@
 <?xml version="1.0" standalone="no"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2.0//EN"
-               "http://docbook.org/xml/4.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2.0//EN" "http://docbook.org/xml/4.2/docbookx.dtd">
 
 <book><title>Programming With Libshout 2</title>
-  <bookinfo>
-    <!--
-    <author>
-      <firstname>Brendan</firstname><surname>Cully</surname>
-      <email>brendan@xiph.org</email>
-    </author>
-    <copyright>
-      <year>2003</year>
-      <holder>Brendan Cully</holder>
-    </copyright>
-    -->
-    <orgname><ulink url="http://xiph.org/">Xiph.org</ulink></orgname>
-    <releaseinfo>$Id: libshout.xml,v 1.5 2003/07/10 01:46:24 brendan Exp $</releaseinfo>
-    <date>09 September 2015</date>
-  </bookinfo>
-
-<chapter><title>Overview</title>
-
-<para>
-libshout is a library for streaming audio to icecast or shoutcast-compatible
-servers. Currently it supports three formats and three protocols.
-</para>
-
-<itemizedlist><title>Audio Formats</title>
-  <listitem>Ogg (audio any video with different codecs)</listitem>
-  <listitem>WebM (audio and video)</listitem>
-  <listitem>MP3</listitem>
-</itemizedlist>
-
-<itemizedlist><title>Protocols</title>
-  <listitem>HTTP</listitem>
-  <listitem>RoarAudio</listitem>
-  <listitem>Audiocast</listitem>
-  <listitem>ShoutCast</listitem>
-</itemizedlist>
-
-</chapter>
-
-<chapter><title>Reference</title>
-
-<section><title>Functions</title>
-
-<section><title>Global functions</title>
-
-<funcsynopsis id="shout_init">
-<funcprototype>
-  <funcdef>void <function>shout_init</function></funcdef>
-  <void/>
-</funcprototype>
-</funcsynopsis>
-<para>
-Initializes the shout library. Currently this initializes the networking
-mutexes when the library is built with thread safety. This function must
-always be called before any other libshout function.
-</para>
-
-<funcsynopsis id="shout_shutdown">
-<funcprototype>
-  <funcdef>void <function>shout_shutdown</function></funcdef>
-  <void/>
-</funcprototype>
-</funcsynopsis>
-<para>
-Releases any resources which may have been allocated by a call to
-<link linkend="shout_init"><function>shout_init</function></link>. An
-application should call this function after it has finished using libshout.
-</para>
-
-<funcsynopsis id="shout_version">
-<funcprototype>
-  <funcdef>const char *<function>shout_version</function></funcdef>
-  <paramdef>int *<parameter>major</parameter></paramdef>
-  <paramdef>int *<parameter>minor</parameter></paramdef>
-  <paramdef>int *<parameter>patch</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the version of the libshout library, both as a string via the
-return value, and as a set of integers corresponding to the major,
-minor and patch levels of the library. The application must allocate
-the integer parameters. If any parameter is NULL, libshout will not
-attempt to set it.
-</para>
-
-</section>
-
-<section><title>Managing connections</title>
-
-<funcsynopsis id="shout_new">
-<funcprototype>
-  <funcdef><type>shout_t</type> *<function>shout_new</function></funcdef>
-  <void/>
-</funcprototype>
-</funcsynopsis>
-<para>
-Allocates a new <type>shout_t</type> structure. May return NULL if no memory
-is available. The result should be disposed of with
-<link linkend="shout_free"><function>shout_free</function></link> when you are
-finished with it.
-</para>
-
-<funcsynopsis id="shout_free">
-<funcprototype>
-  <funcdef>void <function>shout_free</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Frees a <type>shout_t</type> allocated by
-<link linkend="shout_new"><function>shout_new</function></link>.
-</para>
-
-<funcsynopsis id="shout_open">
-<funcprototype>
-  <funcdef>int <function>shout_open</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Opens a connection to a server. All connection parameters must have been
-set prior to this call.
-</para>
-<variablelist><title>Return Values</title>
-  <varlistentry>
-  <term><constant>SHOUTERR_SUCCESS</constant></term>
-  <listitem>The connection was successfully opened.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem><varname>self</varname> is corrupt or incorrect. Possible reasons
-  include an unset host, port, or password.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_CONNECTED</constant></term>
-  <listitem>The connection has already been opened.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_UNSUPPORTED</constant></term>
-  <listitem>The protocol/format combination is unsupported. For instance,
-  Ogg Vorbis may only be sent via the HTTP protocol.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_NOCONNECT</constant></term>
-  <listitem>A connection to the server could not be established.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_SOCKET</constant></term>
-  <listitem>An error occured while talking to the server.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_NOLOGIN</constant></term>
-  <listitem>The server refused login, probably because authentication
-  failed.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_MALLOC</constant></term>
-  <listitem>There wasn't enough memory to complete the operation.</listitem>
-  </varlistentry>
-</variablelist>
-
-<funcsynopsis id="shout_close">
-<funcprototype>
-  <funcdef>int <function>shout_close</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Closes a connection to the server.
-</para>
-
-<variablelist><title>Return Values</title>
-  <varlistentry>
-  <term><constant>SHOUTERR_SUCCESS</constant></term>
-  <listitem>The connection was successfully closed.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem><varname>self</varname> is not a valid <type>shout_t</type>
-  object.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_UNCONNECTED</constant></term>
-  <listitem><varname>self</varname> is not currently connected.</listitem>
-  </varlistentry>
-</variablelist>
-
-<funcsynopsis id="shout_get_connected">
-<funcprototype>
-  <funcdef>int <function>shout_get_connected</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the connection status of the given <type>shout_t</type> object.
-</para>
-
-<variablelist><title>Return Values</title>
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem><varname>self</varname> is not a valid <type>shout_t</type>
-  object.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_UNCONNECTED</constant></term>
-  <listitem><varname>self</varname> is not currently connected.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_CONNECTED</constant></term>
-  <listitem><varname>self</varname> is currently connected.</listitem>
-  </varlistentry>
-</variablelist>
-
-<funcsynopsis id="shout_get_error">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_error</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns a statically allocated string describing the last shout error
-that occured in this connection. Only valid until the next call affecting
-this connection.
-</para>
-
-<funcsynopsis id="shout_get_errno">
-<funcprototype>
-  <funcdef>int <function>shout_get_errno</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the shout error code of the last error that occured in this connection.
-</para>
-
-</section>
-
-<section><title>Sending data</title>
-
-<funcsynopsis id="shout_send">
-<funcprototype>
-  <funcdef>int <function>shout_send</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const unsigned char *<parameter>data></parameter></paramdef>
-  <paramdef><type>size_t</type> <parameter>len</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sends <varname>len</varname> bytes of audio data from the buffer pointed to by
-<varname>data</varname> to the server. The connection must already have been
-established by a successful call to
-<link linkend="shout_open"><function>shout_open</function></link>.
-</para>
-
-<variablelist><title>Return Values</title>
-  <varlistentry>
-  <term><constant>SHOUTERR_SUCCESS</constant></term>
-  <listitem>The audio data was sent successfully.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem><varname>self</varname> is not a valid <type>shout_t</type>
-  object.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_UNCONNECTED</constant></term>
-  <listitem><varname>self</varname> is not currently connected.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_MALLOC</constant></term>
-  <listitem>There wasn't enough memory to complete the operation.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_SOCKET</constant></term>
-  <listitem>An error occured while talking to the server.</listitem>
-  </varlistentry>
-</variablelist>
-
-<funcsynopsis id="shout_send_raw">
-<funcprototype>
-  <funcdef><type>ssize_t</type> <function>shout_send_raw</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const unsigned char *<parameter>data></parameter></paramdef>
-  <paramdef><type>size_t</type> <parameter>len</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sends <varname>len</varname> bytes of audio data from the buffer pointed to by
-<varname>data</varname> to the server. The data is not parsed for timing
-or validity, but sent raw over the connection. The connection must already have been
-established by a successful call to
-<link linkend="shout_open"><function>shout_open</function></link>.
-</para>
-<warning>This function should not be used unless you know exactly what you
-are doing. Its use is deprecated and it may be removed in a future version of
-the library.</warning>
-
-<variablelist><title>Return Values</title>
-  <varlistentry>
-  <term>&gt;= 0</term>
-  <listitem>The number of bytes written.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem><varname>self</varname> is not a valid <type>shout_t</type>
-  object.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_UNCONNECTED</constant></term>
-  <listitem><varname>self</varname> is not currently connected.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_SOCKET</constant></term>
-  <listitem>An error occured while talking to the server.</listitem>
-  </varlistentry>
-</variablelist>
-
-<funcsynopsis id="shout_sync">
-<funcprototype>
-  <funcdef>void <function>shout_sync</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Causes the caller to sleep for the amount of time necessary to play back
-audio sent since the last call to <function>shout_sync</function>. Should
-be called before every call to
-<link linkend="shout_send"><function>shout_send</function></link> to
-ensure that audio data is sent to the server at the correct speed.
-Alternatively, the caller may use
-<link linkend="shout_delay"><function>shout_delay</function></link> to
-determine the number of milliseconds to wait and delay itself.
-</para>
-
-<funcsynopsis id="shout_delay">
-<funcprototype>
-  <funcdef>int <function>shout_delay</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the number of milliseconds the caller should wait before calling
-<link linkend="shout_send"><function>shout_send</function></link> again.
-This function is provided as an alternative to
-<link linkend="shout_sync"><function>shout_sync</function></link> for
-applications that may wish to do other processing in the meantime.
-</para>
-
-<funcsynopsis id="shout_queuelen">
-<funcprototype>
-  <funcdef>ssize_t <function>shout_queuelen</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the number of bytes currently on the write queue.
-</para>
-<tip>This is only useful in non-blocking mode.</tip>
-
-</section>
-
-<section><title>Connection parameters</title>
-
-<para>
-The following functions are used to get or set attributes of the
-<type>shout_t</type> object before calling
-<link linkend="shout_open"><function>shout_open</function></link>.  They all
-work the same way: they operate on one attribute of a
-<type>shout_t</type>*.  The <function>shout_get_*</function> functions
-return the value of their associated parameter, or 0 on error (that's
-NULL for those functions that return strings). The
-<function>shout_set_*</function> functions will return either
-<constant>SHOUTERR_SUCCESS</constant> on success, or one of:
-</para>
-
-<itemizedlist>
-  <listitem><constant>SHOUTERR_INSANE</constant> - <type>shout_t</type>
-  is invalid.</listitem>
-  <listitem><constant>SHOUTERR_MALLOC</constant> - libshout could not
-  allocate enough memory to assign the parameter.</listitem>
-  <listitem><constant>SHOUTERR_CONNECTED</constant> - you are attempting
-  to change a connection attribute while the connection is open. Since these
-  parameters are only used when first opening the connection, this operation
-  would be useless.</listitem>
-</itemizedlist>
-
-<funcsynopsis id="shout_set_nonblocking">
-<funcprototype>
-  <funcdef>int <function>shout_set_nonblocking</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>unsigned int <parameter>nonblocking</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets non-blocking mode. The default is <constant>0</constant>.
-</para>
-
-<funcsynopsis id="shout_get_nonblocking">
-<funcprototype>
-  <funcdef>unsigned int <function>shout_get_nonblocking</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns non-blocking mode or <constant>0</constant> in case of error.
-</para>
-
-<funcsynopsis id="shout_set_host">
-<funcprototype>
-  <funcdef>int <function>shout_set_host</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>host</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the server hostname or IP address. The default is <constant>localhost</constant>.
-</para>
-
-<funcsynopsis id="shout_get_host">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_host</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the server hostname or IP address.
-</para>
-
-<funcsynopsis id="shout_set_port">
-<funcprototype>
-  <funcdef>int <function>shout_set_port</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>unsigned short <parameter>port</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the server port. The default is <constant>8000</constant>.
-</para>
-
-<funcsynopsis id="shout_get_port">
-<funcprototype>
-  <funcdef>unsigned short <function>shout_get_port</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the server port.
-</para>
-
-<funcsynopsis id="shout_set_user">
-<funcprototype>
-  <funcdef>int <function>shout_set_user</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>user</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the user to authenticate as, for protocols that can use this parameter.
-The default is <constant>source</constant>.
-</para>
-
-<funcsynopsis id="shout_get_user">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_user</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the user name.
-</para>
-
-<funcsynopsis id="shout_set_password">
-<funcprototype>
-  <funcdef>int <function>shout_set_password</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>pass</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the password to authenticate to the server with. This parameter
-<emphasis>must</emphasis> be set. There is no default.
-</para>
-
-<funcsynopsis id="shout_get_password">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_password</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the password.
-</para>
-
-<funcsynopsis id="shout_set_protocol">
-<funcprototype>
-  <funcdef>int <function>shout_set_protocol</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>int <parameter>protocol</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Set the protocol with which to connect to the server. Supported protocols
-are listed in <link linkend="protocol_constants">Protocol Constants</link>.
-The default is <constant>SHOUT_PROTOCOL_HTTP</constant> (compatible with
-Icecast 2).
-</para>
-
-<funcsynopsis id="shout_get_protocol">
-<funcprototype>
-  <funcdef>int <function>shout_get_protocol</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the protocol used to connect to the server.
-</para>
-
-<funcsynopsis id="shout_set_format">
-<funcprototype>
-  <funcdef>int <function>shout_set_format</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>int <parameter>format</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the audio format of this stream. The currently supported formats
-are listed in <link linkend="format_constants">Format Constants</link>.
-The default is <constant>SHOUT_FORMAT_OGG</constant>.
-</para>
-
-<funcsynopsis id="shout_get_format">
-<funcprototype>
-  <funcdef>int <function>shout_get_format</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the audio format used by this stream.
-</para>
-
-<funcsynopsis id="shout_set_mount">
-<funcprototype>
-  <funcdef>int <function>shout_set_mount</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>mount</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the mount point for this stream, for protocols that support this option
-(<constant>SHOUT_PROTOCOL_ICY</constant> doesn't).
-</para>
-
-<funcsynopsis id="shout_get_mount">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_mount</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the stream mount point.
-</para>
-
-<funcsynopsis id="shout_set_dumpfile">
-<funcprototype>
-  <funcdef>int <function>shout_set_dumpfile</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>dumpfile</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-If the server supports it, you can request that your stream be archived
-on the server under the name <varname>dumpfile</varname>. This can quickly
-eat a lot of disk space, so think twice before setting it.
-</para>
-
-<funcsynopsis id="shout_get_dumpfile">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_dumpfile</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the dump file, if specified.
-</para>
-
-<funcsynopsis id="shout_set_agent">
-<funcprototype>
-  <funcdef>int <function>shout_set_agent</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>agent</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the user agent header. This is <constant>libshout/VERSION</constant>
-by default. If you don't know what this function is for, don't use it.
-</para>
-
-<funcsynopsis id="shout_get_agent">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_agent</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the user agent.
-</para>
-
-<funcsynopsis id="shout_set_tls">
-<funcprototype>
-  <funcdef>int <function>shout_set_tls</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>int <parameter>mode</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-This function sets the TLS (Transport Layer Security) mode to use.
-<parameter>mode</parameter> is a <link linkend="tls_mode_constants">TLS mode</link>.
-This is <constant>SHOUT_TLS_AUTO</constant> by default.
-</para>
-<tip>To force TLS on you should use <constant>SHOUT_TLS_AUTO_NO_PLAIN</constant> and
-<constant>SHOUT_TLS_DISABLED</constant> to force TLS off.</tip>
-<warning>While <constant>SHOUT_TLS_AUTO</constant> may connect via TLS this is not a
-secure mode as everybody can do a man in the middle kind of attack and downgrade the
-connection to plain.</warning>
-
-<funcsynopsis id="shout_get_tls">
-<funcprototype>
-  <funcdef>int <function>shout_get_tls</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the currently used TLS mode.
-</para>
-
-<funcsynopsis id="shout_set_ca_directory">
-<funcprototype>
-  <funcdef>int <function>shout_set_ca_directory</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>directory</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-This sets the CA directory used by libshout to verify server certificates.
-Defaults to system defaults.
-</para>
-
-<funcsynopsis id="shout_get_ca_directory">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_ca_directory</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the currently used CA directory.
-</para>
-
-<funcsynopsis id="shout_set_ca_file">
-<funcprototype>
-  <funcdef>int <function>shout_set_ca_file</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>file</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets a file with CA certificates used to verify server certificates.
-Defaults to system defaults. The file must be in PEM format.
-</para>
-<tip>You can use this for self signed server certificates.
-In this case you point this to the server certificate in PEM format.
-Keep in mind that this will allow self-signed certificates but other
-checks such as hostname still needs to verify correctly.</tip>
-
-<funcsynopsis id="shout_get_ca_file">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_ca_file</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the currently used CA file.
-</para>
-
-<funcsynopsis id="shout_set_allowed_ciphers">
-<funcprototype>
-  <funcdef>int <function>shout_set_allowed_ciphers</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>ciphers</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-This sets the list of currently allowed ciphers in OpenSSL format.
-Defaults to a list of ciphers considerd secure as of day of release.
-</para>
-<caution>Setting this to a insecure list may render encryption and authentication useless.</caution>
-<warning>Any application using this call must expose this list to the user.
-If the user can not alter this list your application will harm security badly by
-preventing the user to get to a save value by setting it manually or upgrading
-libshout.
-<emphasis>Do not use this call if you don't know what you are doing.</emphasis></warning>
-
-<funcsynopsis id="shout_get_allowed_ciphers">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_allowed_ciphers</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the currently used list of allowed ciphers.
-</para>
-
-<funcsynopsis id="shout_set_client_certificate">
-<funcprototype>
-  <funcdef>int <function>shout_set_client_certificate</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>certificate</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-This sets the client certificate to be used. Defaults to none.
-The file must be in PEM format and must contain both the certificate as well as the
-private key for that certificate.
-</para>
-
-<funcsynopsis id="shout_get_client_certificate">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_client_certificate</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the currently used client certificate.
-</para>
-
-</section>
-
-<section><title>Directory parameters</title>
-
-<para>
-The following parameters are optional. They are used to control whether
-and how your stream will be listed in the server's stream directory (if available).
-</para>
-
-<funcsynopsis id="shout_set_public">
-<funcprototype>
-  <funcdef>int <function>shout_set_public</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>int <parameter>makepublic</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Setting this to <constant>1</constant> asks the server to list the stream in
-any directories it knows about. To suppress listing, set this to
-<constant>0</constant>. The default is <constant>0</constant>.
-</para>
-
-<funcsynopsis id="shout_get_public">
-<funcprototype>
-  <funcdef>int <function>shout_get_public</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns whether or not this stream is public.
-</para>
-
-<funcsynopsis id="shout_set_meta">
-<funcprototype>
-  <funcdef>int <function>shout_set_meta</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>name</parameter></paramdef>
-  <paramdef>const char *<parameter>value</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-This function sets the meta data for the stream.
-</para>
-
-<funcsynopsis id="shout_get_meta">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_meta</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>name</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-This function gets the meta data for the stream. 
-</para>
-
-<funcsynopsis id="shout_set_audio_info">
-<funcprototype>
-  <funcdef>int <function>shout_set_audio_info</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>name</parameter></paramdef>
-  <paramdef>const char *<parameter>value</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets a stream audio parameter (eg bitrate, samplerate, channels or quality).
-The currently defined parameters are listed in the
-<link linkend="audio_info_constants">Audio Info Constants</link> section, but
-you are free to add additional fields if your directory server understands them.
-</para>
-
-<funcsynopsis id="shout_get_audio_info">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_audio_info</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>name</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the value of the audio info field <varname>name</varname>, if defined.
-</para>
-
-</section>
-
-<section><title>Metadata</title>
-<para>
-These functions currently only make sense for MP3 streams. Vorbis streams are expected
-to embed metadata as vorbis comments in the audio stream.
-</para>
-
-<funcsynopsis id="shout_metadata_new">
-<funcprototype>
-  <funcdef><type>shout_metadata_t</type> *<function>shout_metadata_new</function></funcdef>
-  <void/>
-</funcprototype>
-</funcsynopsis>
-<para>
-Allocates a new metadata structure, or returns NULL if no memory is available. The
-returned structure should be freed with
-<link linkend="shout_metadata_free">shout_metadata_free</link> when you are done with
-it.
-</para>
-
-<funcsynopsis id="shout_metadata_free">
-<funcprototype>
-  <funcdef>void <function>shout_metadata_free</function></funcdef>
-  <paramdef><type>shout_metadata_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Frees any resources associated with <varname>self</varname>.
-</para>
-
-<funcsynopsis id="shout_metadata_add">
-<funcprototype>
-  <funcdef>int <function>shout_metadata_add</function></funcdef>
-  <paramdef><type>shout_metadata_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>name</parameter></paramdef>
-  <paramdef>const char *<parameter>value</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Add metadata value <varname>value</varname> to <varname>self</varname>, under the
-key <varname>name</varname>. You'll probably want to set <varname>name</varname>
-to <constant>"song"</constant>, though <constant>"url"</constant> may also be
-useful.
-</para>
-
-<variablelist><title>Return Values</title>
-  <varlistentry>
-  <term><constant>SHOUTERR_SUCCESS</constant></term>
-  <listitem>The metadata was copied into <varname>self</varname>.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem><varname>self</varname> is not a valid <type>shout_metadata_t</type> object.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_MALLOC</constant></term>
-  <listitem>Couldn't allocate enough memory to copy the metadata.</listitem>
-  </varlistentry>
-</variablelist>
-
-<funcsynopsis id="shout_set_metadata">
-<funcprototype>
-  <funcdef>int <function>shout_set_metadata</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef><type>shout_metadata_t</type> *<parameter>metadata</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets metadata on the connection <varname>self</varname> to <varname>metadata</varname>.
-Only MP3 streams support this type of metadata update. You may use this function
-on defined but closed connections (this is useful if you simply want to set the
-metadata for a stream provided by another process).
-</para>
-
-<variablelist><title>Return Values</title>
-  <varlistentry>
-  <term><constant>SHOUTERR_SUCCESS</constant></term>
-  <listitem>Metadata was updated successfully.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem><varname>self</varname> and/or <varname>metadata</varname> is invalid.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_MALLOC</constant></term>
-  <listitem>Couldn't allocate enough memory to complete the operation.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_NOCONNECT</constant></term>
-  <listitem>The server refused the connection attempt.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_NOLOGIN</constant></term>
-  <listitem>The server did not accept your authorization credentials.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_SOCKET</constant></term>
-  <listitem>An error occured talking to the server.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_METADATA</constant></term>
-  <listitem>The server returned any other error (eg bad mount point).</listitem>
-  </varlistentry>
-</variablelist>
-
-</section>
-
-<section><title>Obsolate metadata Interface</title>
-<warning>
-All those functions have been replaced by <function>shout_set_meta</function> and
-<function>shout_get_meta</function>. They may be removed by newer versions of this library.
-</warning>
-
-<funcsynopsis id="shout_set_name">
-<funcprototype>
-  <funcdef>int <function>shout_set_name</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>name</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the name of the stream.
-</para>
-
-<funcsynopsis id="shout_get_name">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_name</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the stream name.
-</para>
-
-<funcsynopsis id="shout_set_url">
-<funcprototype>
-  <funcdef>int <function>shout_set_url</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>url</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the URL of a site about this stream.
-</para>
-
-<funcsynopsis id="shout_get_url">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_url</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the stream URL.
-</para>
-
-<funcsynopsis id="shout_set_genre">
-<funcprototype>
-  <funcdef>int <function>shout_set_genre</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>genre</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the genre (or genres) of the stream. This is usually a keyword list,
-eg "pop rock rap".
-</para>
-
-<funcsynopsis id="shout_get_genre">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_genre</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the stream genre.
-</para>
-
-<funcsynopsis id="shout_set_description">
-<funcprototype>
-  <funcdef>int <function>shout_set_description</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-  <paramdef>const char *<parameter>description</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Sets the description of this stream.
-</para>
-
-<funcsynopsis id="shout_get_description">
-<funcprototype>
-  <funcdef>const char *<function>shout_get_description</function></funcdef>
-  <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
-</funcprototype>
-</funcsynopsis>
-<para>
-Returns the stream description.
-</para>
-
-</section>
-
-</section>
-
-<section><title>Data Types</title>
-
-<variablelist id="data_types">
-  <varlistentry id="shout_t">
-  <term><type>shout_t</type></term>
-  <listitem>Opaque data type that refers to a single server connection.</listitem>
-  </varlistentry>
-
-  <varlistentry id="shout_metadata_t">
-  <term><type>shout_metadata_t</type></term>
-  <listitem>Opaque data type that refers to a set of metadata attributes. Currently
-  the only defined attribute is <constant>song</constant>.</listitem>
-  </varlistentry>
-</variablelist>
-
-</section>
-
-<section><title>Constants</title>
-
-<variablelist id="error_constants"><title>Error Codes</title>
-  <varlistentry>
-  <term><constant>SHOUTERR_SUCCESS</constant></term>
-  <listitem>Indicates success.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_INSANE</constant></term>
-  <listitem>Indicates bad parameters, either nonsense or not applicable due to the current
-  state of the connection.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_MALLOC</constant></term>
-  <listitem>Indicates the function could not allocate the memory it required.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_NOCONNECT</constant></term>
-  <listitem>Indicates a connection with the server could not be established.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_NOLOGIN</constant></term>
-  <listitem>Indicates the server refused to accept a login attempt. This could be caused
-  by a bad user name or password.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_SOCKET</constant></term>
-  <listitem>Indicates an error sending or receiving data.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_METADATA</constant></term>
-  <listitem>Indicates an error updating metadata on the server.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_CONNECTED</constant></term>
-  <listitem>Indicates that, while connected, you attempted to call a function which only makes
-  sense before connection (eg you attempted to set the user name or stream name).</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_UNCONNECTED</constant></term>
-  <listitem>Indicates that you attempted to use a function that requires an open connection
-  (for example, <function>shout_send</function>) while you were not connected.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_UNSUPPORTED</constant></term>
-  <listitem>Indicates that you attempted to use a function which is unsupported in the
-  state of your connection. For example, attempting to set metadata while using the
-  Ogg Vorbis format is unsupported.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_BUSY</constant></term>
-  <listitem>Indicates that the socket is busy. The funtion returning this should be
-  called again later. This is likely to happen in non-blocking mode but may also happen
-  in blocking mode.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_NOTLS</constant></term>
-  <listitem>TLS (Transport Layer Security) was requested via <function>shout_set_tls</function>
-  but is not supported by the server.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_TLSBADCERT</constant></term>
-  <listitem>A TLS (Transport Layer Security) connection has been established but the server
-  returned a certificate which failed the check. The certificate may be invalid or
-  is not signed by a trusted CA. See <function>shout_set_tls</function>.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUTERR_RETRY</constant></term>
-  <listitem>The caller should retry this call later.</listitem>
-  </varlistentry>
-</variablelist>
-
-<variablelist id="format_constants"><title>Formats</title>
-  <varlistentry>
-  <term><constant>SHOUT_FORMAT_OGG</constant></term>
-  <listitem>The Ogg Format. Vorbis or any codec may be used. This is the default format.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_FORMAT_WEBM</constant></term>
-  <listitem>The WebM format.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_FORMAT_WEBMAUDIO</constant></term>
-  <listitem>The WebM format, audio only streams.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_FORMAT_VORBIS</constant></term>
-  <listitem>This is deprecated. It is an alias to <constant>SHOUT_FORMAT_OGG</constant>.
-  Please migrate your code.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_FORMAT_MP3</constant></term>
-  <listitem>The MP3 format.</listitem>
-  </varlistentry>
-</variablelist>
-
-<variablelist id="protocol_constants"><title>Protocols</title>
-  <varlistentry>
-  <term><constant>SHOUT_PROTOCOL_HTTP</constant></term>
-  <listitem>The HTTP protocol. This is the native protocol of the
-  <application>Icecast 2</application> server, and is the default.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_PROTOCOL_ROARAUDIO</constant></term>
-  <listitem>The RoarAudio protocol. This is the native protocol for
-  <application>RoarAudio</application> servers.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_PROTOCOL_XAUDIOCAST</constant></term>
-  <listitem>The Audiocast format. This is the native protocol of
-  <application>Icecast 1</application>.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_PROTOCOL_ICY</constant></term>
-  <listitem>The ShoutCast format. This is the native protocol of
-  <application>ShoutCast</application>.</listitem>
-  </varlistentry>
-</variablelist>
-
-<variablelist id="audio_info_constants"><title>Audio Parameters</title>
-  <varlistentry>
-  <term><constant>SHOUT_AI_BITRATE</constant></term>
-  <listitem>Used to specify the nominal bitrate of the stream.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_AI_SAMPLERATE</constant></term>
-  <listitem>Used to specify the samplerate of the stream.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_AI_CHANNELS</constant></term>
-  <listitem>Used to specify the number of channels (usually one or two).</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_AI_QUALITY</constant></term>
-  <listitem>Used to specify the Ogg Vorbis encoding quality of the stream.</listitem>
-  </varlistentry>
-</variablelist>
-
-<variablelist id="meta_constants"><title>Stream Metadata Parameters</title>
-  <varlistentry>
-  <term><constant>SHOUT_META_NAME</constant></term>
-  <listitem>Sets stream name.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_META_URL</constant></term>
-  <listitem>Sets stream URL.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_META_GENRE</constant></term>
-  <listitem>Sets stream genre.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_META_DESCRIPTION</constant></term>
-  <listitem>Sets stream description.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_META_IRC</constant></term>
-  <listitem>Sets IRC contact information for stream.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_META_AIM</constant></term>
-  <listitem>Sets AIM contact information for stream.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_META_ICQ</constant></term>
-  <listitem>Sets ICQ contact information for stream.</listitem>
-  </varlistentry>
-</variablelist>
-
-<variablelist id="tls_mode_constants"><title>TLS modes</title>
-  <varlistentry>
-  <term><constant>SHOUT_TLS_DISABLED</constant></term>
-  <listitem>TLS (Transport Layer Security) is disabled.
-  Passwords and data will be sent unencrypted.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_TLS_AUTO</constant></term>
-  <listitem>TLS (Transport Layer Security) support by the server will be autodetected. This is the default.
-  In this mode TLS is used if supported by the server.
-  <warning>Please note that this is not a secure mode as it will
-  not prevent any downgrade attacks. <constant>SHOUT_TLS_AUTO_NO_PLAIN</constant> is a more secure version of
-  this mode.</warning>
-  </listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_TLS_AUTO_NO_PLAIN</constant></term>
-  <listitem>TLS (Transport Layer Security) is used. Autodetection is used to find out about which modes
-  are supported by the server. This mode should be used for secure connections.</listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_TLS_RFC2818</constant></term>
-  <listitem>TLS (Transport Layer Security) is used as defined by RFC2818.
-  In this mode libshout expects a TLS socket on the server side and will begin with a TLS handshake
-  prior to any other communication.
-  </listitem>
-  </varlistentry>
-
-  <varlistentry>
-  <term><constant>SHOUT_TLS_RFC2817</constant></term>
-  <listitem>TLS (Transport Layer Security) is used as defined by RFC2817.
-  In this mode libshout will use HTTP/1.1's Upgrade:-process to switch to TLS.
-  This allows to use TLS on a non-TLS socket of the server.</listitem>
-  </varlistentry>
-</variablelist>
-
-</section>
-
-</chapter>
+    <bookinfo>
+        <!--
+        <author>
+            <firstname>Brendan</firstname><surname>Cully</surname>
+            <email>brendan@xiph.org</email>
+        </author>
+        <copyright>
+            <year>2003</year>
+            <holder>Brendan Cully</holder>
+        </copyright>
+        -->
+        <orgname><ulink url="http://xiph.org/">Xiph.org</ulink></orgname>
+        <releaseinfo>$Id: libshout.xml,v 1.5 2003/07/10 01:46:24 brendan Exp $</releaseinfo>
+        <date>09 September 2015</date>
+    </bookinfo>
+
+    <chapter><title>Overview</title>
+
+        <para>
+            libshout is a library for streaming audio to icecast or shoutcast-compatible
+            servers. Currently it supports three formats and three protocols.
+        </para>
+
+        <itemizedlist><title>Audio Formats</title>
+            <listitem>Ogg (audio any video with different codecs)</listitem>
+            <listitem>WebM (audio and video)</listitem>
+            <listitem>Matroska (audio and video)</listitem>
+            <listitem>MP3</listitem>
+        </itemizedlist>
+
+        <itemizedlist><title>Protocols</title>
+            <listitem>HTTP</listitem>
+            <listitem>RoarAudio</listitem>
+            <listitem>XAudioCast (deprecated)</listitem>
+            <listitem>ShoutCast</listitem>
+        </itemizedlist>
+
+    </chapter>
+
+    <chapter><title>Reference</title>
+
+        <section><title>Functions</title>
+
+            <section><title>Global functions</title>
+
+                <funcsynopsis id="shout_init">
+                    <funcprototype>
+                        <funcdef>void <function>shout_init</function></funcdef>
+                        <void/>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Initializes the shout library. Currently this initializes the networking
+                    mutexes when the library is built with thread safety. This function must
+                    always be called before any other libshout function.
+                </para>
+
+                <funcsynopsis id="shout_shutdown">
+                    <funcprototype>
+                        <funcdef>void <function>shout_shutdown</function></funcdef>
+                        <void/>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Releases any resources which may have been allocated by a call to
+                    <link linkend="shout_init"><function>shout_init</function></link>. An
+                    application should call this function after it has finished using libshout.
+                </para>
+
+                <funcsynopsis id="shout_version">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_version</function></funcdef>
+                        <paramdef>int *<parameter>major</parameter></paramdef>
+                        <paramdef>int *<parameter>minor</parameter></paramdef>
+                        <paramdef>int *<parameter>patch</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the version of the libshout library, both as a string via the
+                    return value, and as a set of integers corresponding to the major,
+                    minor and patch levels of the library. The application must allocate
+                    the integer parameters. If any parameter is NULL, libshout will not
+                    attempt to set it.
+                </para>
+
+            </section>
+
+            <section><title>Managing connections</title>
+
+                <funcsynopsis id="shout_new">
+                    <funcprototype>
+                        <funcdef><type>shout_t</type> *<function>shout_new</function></funcdef>
+                        <void/>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Allocates a new <type>shout_t</type> structure. May return NULL if no memory
+                    is available. The result should be disposed of with
+                    <link linkend="shout_free"><function>shout_free</function></link> when you are
+                    finished with it.
+                </para>
+
+                <funcsynopsis id="shout_free">
+                    <funcprototype>
+                        <funcdef>void <function>shout_free</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Frees a <type>shout_t</type> allocated by
+                    <link linkend="shout_new"><function>shout_new</function></link>.
+                </para>
+
+                <funcsynopsis id="shout_open">
+                    <funcprototype>
+                        <funcdef>int <function>shout_open</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Opens a connection to a server. All connection parameters must have been
+                    set prior to this call.
+                </para>
+                <variablelist><title>Return Values</title>
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SUCCESS</constant></term>
+                        <listitem>The connection was successfully opened.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_INSANE</constant></term>
+                        <listitem><varname>self</varname> is corrupt or incorrect. Possible reasons
+                            include an unset host, port, or password.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_CONNECTED</constant></term>
+                        <listitem>The connection has already been opened.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_UNSUPPORTED</constant></term>
+                        <listitem>The protocol/format combination is unsupported. For instance,
+                            Ogg Vorbis may only be sent via the HTTP protocol.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_NOCONNECT</constant></term>
+                        <listitem>A connection to the server could not be established.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SOCKET</constant></term>
+                        <listitem>An error occured while talking to the server.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_NOLOGIN</constant></term>
+                        <listitem>The server refused login, probably because authentication
+                            failed.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_MALLOC</constant></term>
+                        <listitem>There wasn't enough memory to complete the operation.</listitem>
+                    </varlistentry>
+                </variablelist>
+
+                <funcsynopsis id="shout_close">
+                    <funcprototype>
+                        <funcdef>int <function>shout_close</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Closes a connection to the server.
+                </para>
+
+                <variablelist><title>Return Values</title>
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SUCCESS</constant></term>
+                        <listitem>The connection was successfully closed.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_INSANE</constant></term>
+                        <listitem><varname>self</varname> is not a valid <type>shout_t</type>
+                            object.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_UNCONNECTED</constant></term>
+                        <listitem><varname>self</varname> is not currently connected.</listitem>
+                    </varlistentry>
+                </variablelist>
+
+                <funcsynopsis id="shout_get_connected">
+                    <funcprototype>
+                        <funcdef>int <function>shout_get_connected</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the connection status of the given <type>shout_t</type> object.
+                </para>
+
+                <variablelist><title>Return Values</title>
+                    <varlistentry>
+                        <term><constant>SHOUTERR_INSANE</constant></term>
+                        <listitem><varname>self</varname> is not a valid <type>shout_t</type>
+                            object.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_UNCONNECTED</constant></term>
+                        <listitem><varname>self</varname> is not currently connected.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_CONNECTED</constant></term>
+                        <listitem><varname>self</varname> is currently connected.</listitem>
+                    </varlistentry>
+                </variablelist>
+
+                <funcsynopsis id="shout_get_error">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_error</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns a statically allocated string describing the last shout error
+                    that occured in this connection. Only valid until the next call affecting
+                    this connection.
+                </para>
+
+                <funcsynopsis id="shout_get_errno">
+                    <funcprototype>
+                        <funcdef>int <function>shout_get_errno</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the shout error code of the last error that occured in this connection.
+                </para>
+
+            </section>
+
+            <section><title>Sending data</title>
+
+                <funcsynopsis id="shout_send">
+                    <funcprototype>
+                        <funcdef>int <function>shout_send</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const unsigned char *<parameter>data</parameter></paramdef>
+                        <paramdef><type>size_t</type> <parameter>len</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sends <varname>len</varname> bytes of audio data from the buffer pointed to by
+                    <varname>data</varname> to the server. The connection must already have been
+                    established by a successful call to
+                    <link linkend="shout_open"><function>shout_open</function></link>.
+                </para>
+
+                <variablelist><title>Return Values</title>
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SUCCESS</constant></term>
+                        <listitem>The audio data was sent successfully.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_INSANE</constant></term>
+                        <listitem><varname>self</varname> is not a valid <type>shout_t</type>
+                            object.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_UNCONNECTED</constant></term>
+                        <listitem><varname>self</varname> is not currently connected.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_MALLOC</constant></term>
+                        <listitem>There wasn't enough memory to complete the operation.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SOCKET</constant></term>
+                        <listitem>An error occured while talking to the server.</listitem>
+                    </varlistentry>
+                </variablelist>
+
+                <funcsynopsis id="shout_send_raw">
+                    <funcprototype>
+                        <funcdef><type>ssize_t</type> <function>shout_send_raw</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const unsigned char *<parameter>data</parameter></paramdef>
+                        <paramdef><type>size_t</type> <parameter>len</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sends <varname>len</varname> bytes of audio data from the buffer pointed to by
+                    <varname>data</varname> to the server. The data is not parsed for timing
+                    or validity, but sent raw over the connection. The connection must already have been
+                    established by a successful call to
+                    <link linkend="shout_open"><function>shout_open</function></link>.
+                </para>
+                <warning>This function should not be used unless you know exactly what you
+                    are doing. Its use is deprecated and it may be removed in a future version of
+                    the library.</warning>
+
+                <variablelist><title>Return Values</title>
+                    <varlistentry>
+                        <term>&gt;= 0</term>
+                        <listitem>The number of bytes written.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_INSANE</constant></term>
+                        <listitem><varname>self</varname> is not a valid <type>shout_t</type>
+                            object.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_UNCONNECTED</constant></term>
+                        <listitem><varname>self</varname> is not currently connected.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SOCKET</constant></term>
+                        <listitem>An error occured while talking to the server.</listitem>
+                    </varlistentry>
+                </variablelist>
+
+                <funcsynopsis id="shout_sync">
+                    <funcprototype>
+                        <funcdef>void <function>shout_sync</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Causes the caller to sleep for the amount of time necessary to play back
+                    audio sent since the last call to <function>shout_sync</function>. Should
+                    be called before every call to
+                    <link linkend="shout_send"><function>shout_send</function></link> to
+                    ensure that audio data is sent to the server at the correct speed.
+                    Alternatively, the caller may use
+                    <link linkend="shout_delay"><function>shout_delay</function></link> to
+                    determine the number of milliseconds to wait and delay itself.
+                </para>
+
+                <funcsynopsis id="shout_delay">
+                    <funcprototype>
+                        <funcdef>int <function>shout_delay</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the number of milliseconds the caller should wait before calling
+                    <link linkend="shout_send"><function>shout_send</function></link> again.
+                    This function is provided as an alternative to
+                    <link linkend="shout_sync"><function>shout_sync</function></link> for
+                    applications that may wish to do other processing in the meantime.
+                </para>
+
+                <funcsynopsis id="shout_queuelen">
+                    <funcprototype>
+                        <funcdef>ssize_t <function>shout_queuelen</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the number of bytes currently on the write queue.
+                </para>
+                <tip>This is only useful in non-blocking mode.</tip>
+
+            </section>
+
+            <section><title>Connection parameters</title>
+
+                <para>
+                    The following functions are used to get or set attributes of the
+                    <type>shout_t</type> object before calling
+                    <link linkend="shout_open"><function>shout_open</function></link>.  They all
+                    work the same way: they operate on one attribute of a
+                    <type>shout_t</type>*.  The <function>shout_get_*</function> functions
+                    return the value of their associated parameter, or 0 on error (that's
+                    NULL for those functions that return strings). The
+                    <function>shout_set_*</function> functions will return either
+                    <constant>SHOUTERR_SUCCESS</constant> on success, or one of:
+                </para>
+
+                <itemizedlist>
+                    <listitem><constant>SHOUTERR_INSANE</constant> - <type>shout_t</type>
+                        is invalid.</listitem>
+                    <listitem><constant>SHOUTERR_MALLOC</constant> - libshout could not
+                        allocate enough memory to assign the parameter.</listitem>
+                    <listitem><constant>SHOUTERR_CONNECTED</constant> - you are attempting
+                        to change a connection attribute while the connection is open. Since these
+                        parameters are only used when first opening the connection, this operation
+                        would be useless.</listitem>
+                </itemizedlist>
+
+                <funcsynopsis id="shout_set_nonblocking">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_nonblocking</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>unsigned int <parameter>nonblocking</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets non-blocking mode. The default is <constant>SHOUT_BLOCKING_FULL</constant>.
+                </para>
+
+                <funcsynopsis id="shout_get_nonblocking">
+                    <funcprototype>
+                        <funcdef>unsigned int <function>shout_get_nonblocking</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns non-blocking mode or <constant>SHOUT_BLOCKING_FULL</constant> in case of error.
+                </para>
+
+                <funcsynopsis id="shout_set_host">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_host</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>host</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the server hostname or IP address. The default is <constant>localhost</constant>.
+                </para>
+
+                <funcsynopsis id="shout_get_host">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_host</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the server hostname or IP address.
+                </para>
+
+                <funcsynopsis id="shout_set_port">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_port</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>unsigned short <parameter>port</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the server port. The default is <constant>8000</constant>.
+                </para>
+
+                <funcsynopsis id="shout_get_port">
+                    <funcprototype>
+                        <funcdef>unsigned short <function>shout_get_port</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the server port.
+                </para>
+
+                <funcsynopsis id="shout_set_user">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_user</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>user</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the user to authenticate as, for protocols that can use this parameter.
+                    The default is <constant>source</constant>.
+                </para>
+
+                <funcsynopsis id="shout_get_user">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_user</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the user name.
+                </para>
+
+                <funcsynopsis id="shout_set_password">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_password</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>pass</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the password to authenticate to the server with. This parameter
+                    <emphasis>must</emphasis> be set. There is no default.
+                </para>
+
+                <funcsynopsis id="shout_get_password">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_password</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the password.
+                </para>
+
+                <funcsynopsis id="shout_set_protocol">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_protocol</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>int <parameter>protocol</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Set the protocol with which to connect to the server. Supported protocols
+                    are listed in <link linkend="protocol_constants">Protocol Constants</link>.
+                    The default is <constant>SHOUT_PROTOCOL_HTTP</constant> (compatible with
+                    Icecast 2).
+                </para>
+
+                <funcsynopsis id="shout_get_protocol">
+                    <funcprototype>
+                        <funcdef>int <function>shout_get_protocol</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the protocol used to connect to the server.
+                </para>
+
+
+                <funcsynopsis id="shout_set_content_format">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_content_format</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef><type>unsigned int</type> <parameter>format</parameter></paramdef>
+                        <paramdef><type>unsigned int</type> <parameter>usage</parameter></paramdef>
+                        <paramdef><type>const char</type> *<parameter>codecs</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the format of the stream, the usage, and the used codecs.
+                </para>
+                <para>
+                    The format must be one of the supported format constants
+                    are listed in <link linkend="format_constants">Format Constants</link>.
+                    The default is <constant>SHOUT_FORMAT_OGG</constant>.
+                </para>
+                <para>
+                    The usage parameter is a bit-wise or-ed set of usages from the usage constants
+                    are listed in <link linkend="usage_constants">Usage Constants</link>.
+                    The default is <constant>SHOUT_USAGE_UNKNOWN</constant>.
+                </para>
+                <para>
+                    The codecs parameter is used for codec pinning. In codec pinning mode only the listed codecs
+                    are allowed to be contained in the stream. This helps listening software with playback.
+                    This is not yet supported and must be set to NULL meaning no pinning.
+                    The value of NULL will also be supported by future versions.
+                </para>
+                <note>
+                    <constant>SHOUT_FORMAT_WEBMAUDIO</constant> is not accepted by this function as it is deprecated.
+                    Use <constant>SHOUT_FORMAT_WEB</constant> and <constant>SHOUT_USAGE_AUDIO</constant>.
+                </note>
+
+                <funcsynopsis id="shout_get_content_format">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_content_format</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef><type>unsigned int</type> *<parameter>format</parameter></paramdef>
+                        <paramdef><type>unsigned int</type> *<parameter>usage</parameter></paramdef>
+                        <paramdef><type>const char</type> **<parameter>codecs</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>Returns the content format parameters as set by link <link linkend="shout_set_content_format"><function>shout_set_content_format</function></link>.
+                </para>
+
+                <funcsynopsis id="shout_set_mount">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_mount</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>mount</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the mount point for this stream, for protocols that support this option
+                    (<constant>SHOUT_PROTOCOL_ICY</constant> doesn't).
+                </para>
+
+                <funcsynopsis id="shout_get_mount">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_mount</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the stream mount point.
+                </para>
+
+                <funcsynopsis id="shout_set_agent">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_agent</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>agent</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the user agent header. This is <constant>libshout/VERSION</constant>
+                    by default. If you don't know what this function is for, don't use it.
+                </para>
+
+                <funcsynopsis id="shout_get_agent">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_agent</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the user agent.
+                </para>
+
+                <funcsynopsis id="shout_set_tls">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_tls</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>int <parameter>mode</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    This function sets the TLS (Transport Layer Security) mode to use.
+                    <parameter>mode</parameter> is a <link linkend="tls_mode_constants">TLS mode</link>.
+                    This is <constant>SHOUT_TLS_AUTO</constant> by default.
+                </para>
+                <tip>To force TLS on you should use <constant>SHOUT_TLS_AUTO_NO_PLAIN</constant> and
+                    <constant>SHOUT_TLS_DISABLED</constant> to force TLS off.</tip>
+                <warning>While <constant>SHOUT_TLS_AUTO</constant> may connect via TLS this is not a
+                    secure mode as everybody can do a man in the middle kind of attack and downgrade the
+                    connection to plain.</warning>
+
+                <funcsynopsis id="shout_get_tls">
+                    <funcprototype>
+                        <funcdef>int <function>shout_get_tls</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the currently used TLS mode.
+                </para>
+
+                <funcsynopsis id="shout_set_ca_directory">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_ca_directory</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>directory</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    This sets the CA directory used by libshout to verify server certificates.
+                    Defaults to system defaults.
+                </para>
+
+                <funcsynopsis id="shout_get_ca_directory">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_ca_directory</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the currently used CA directory.
+                </para>
+
+                <funcsynopsis id="shout_set_ca_file">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_ca_file</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>file</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets a file with CA certificates used to verify server certificates.
+                    Defaults to system defaults. The file must be in PEM format.
+                </para>
+                <tip>You can use this for self signed server certificates.
+                    In this case you point this to the server certificate in PEM format.
+                    Keep in mind that this will allow self-signed certificates but other
+                    checks such as hostname still needs to verify correctly.</tip>
+
+                <funcsynopsis id="shout_get_ca_file">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_ca_file</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the currently used CA file.
+                </para>
+
+                <funcsynopsis id="shout_set_allowed_ciphers">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_allowed_ciphers</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>ciphers</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    This sets the list of currently allowed ciphers in OpenSSL format.
+                    Defaults to a list of ciphers considerd secure as of day of release.
+                </para>
+                <caution>Setting this to a insecure list may render encryption and authentication useless.</caution>
+                <warning>Any application using this call must expose this list to the user.
+                    If the user can not alter this list your application will harm security badly by
+                    preventing the user to get to a safe value by setting it manually or upgrading
+                    libshout.
+                    <emphasis>Do not use this call if you don't know what you are doing.</emphasis></warning>
+
+                <funcsynopsis id="shout_get_allowed_ciphers">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_allowed_ciphers</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the currently used list of allowed ciphers.
+                </para>
+
+                <funcsynopsis id="shout_set_client_certificate">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_client_certificate</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>certificate</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    This sets the client certificate to be used. Defaults to none.
+                    The file must be in PEM format and must contain both the certificate as well as the
+                    private key for that certificate.
+                </para>
+
+                <funcsynopsis id="shout_get_client_certificate">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_client_certificate</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the currently used client certificate.
+                </para>
+
+            </section>
+
+            <section><title>Directory parameters</title>
+
+                <para>
+                    The following parameters are optional. They are used to control whether
+                    and how your stream will be listed in the server's stream directory (if available).
+                </para>
+
+                <funcsynopsis id="shout_set_public">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_public</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>int <parameter>makepublic</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Setting this to <constant>1</constant> asks the server to list the stream in
+                    any directories it knows about. To suppress listing, set this to
+                    <constant>0</constant>. The default is <constant>0</constant>.
+                </para>
+
+                <funcsynopsis id="shout_get_public">
+                    <funcprototype>
+                        <funcdef>int <function>shout_get_public</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns whether or not this stream is public.
+                </para>
+
+                <funcsynopsis id="shout_set_meta">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_meta</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>name</parameter></paramdef>
+                        <paramdef>const char *<parameter>value</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    This function sets the meta data for the stream.
+                </para>
+
+                <funcsynopsis id="shout_get_meta">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_meta</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>name</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    This function gets the meta data for the stream. 
+                </para>
+
+                <funcsynopsis id="shout_set_audio_info">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_audio_info</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>name</parameter></paramdef>
+                        <paramdef>const char *<parameter>value</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets a stream audio parameter (eg bitrate, samplerate, channels or quality).
+                    The currently defined parameters are listed in the
+                    <link linkend="audio_info_constants">Audio Info Constants</link> section, but
+                    you are free to add additional fields if your directory server understands them.
+                </para>
+
+                <funcsynopsis id="shout_get_audio_info">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_audio_info</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>name</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the value of the audio info field <varname>name</varname>, if defined.
+                </para>
+
+            </section>
+
+            <section><title>ICY Metadata</title>
+                <para>
+                    These functions are only valid for MP3 streams. All other formats are expected
+                    to embed metadata inline according to their own specification.
+                </para>
+                <warning>The functions in this section are only valid for MP3 streams.</warning>
+
+                <funcsynopsis id="shout_metadata_new">
+                    <funcprototype>
+                        <funcdef><type>shout_metadata_t</type> *<function>shout_metadata_new</function></funcdef>
+                        <void/>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Allocates a new metadata structure, or returns NULL if no memory is available. The
+                    returned structure should be freed with
+                    <link linkend="shout_metadata_free">shout_metadata_free</link> when you are done with
+                    it.
+                </para>
+
+                <funcsynopsis id="shout_metadata_free">
+                    <funcprototype>
+                        <funcdef>void <function>shout_metadata_free</function></funcdef>
+                        <paramdef><type>shout_metadata_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Frees any resources associated with <varname>self</varname>.
+                </para>
+
+                <funcsynopsis id="shout_metadata_add">
+                    <funcprototype>
+                        <funcdef>int <function>shout_metadata_add</function></funcdef>
+                        <paramdef><type>shout_metadata_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>name</parameter></paramdef>
+                        <paramdef>const char *<parameter>value</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Add metadata value <varname>value</varname> to <varname>self</varname>, under the
+                    key <varname>name</varname>. You'll probably want to set <varname>name</varname>
+                    to <constant>"song"</constant>, though <constant>"url"</constant> may also be
+                    useful.
+                </para>
+
+                <variablelist><title>Return Values</title>
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SUCCESS</constant></term>
+                        <listitem>The metadata was copied into <varname>self</varname>.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_INSANE</constant></term>
+                        <listitem><varname>self</varname> is not a valid <type>shout_metadata_t</type> object.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_MALLOC</constant></term>
+                        <listitem>Couldn't allocate enough memory to copy the metadata.</listitem>
+                    </varlistentry>
+                </variablelist>
+
+                <funcsynopsis id="shout_set_metadata_utf8">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_metadata_utf8</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef><type>shout_metadata_t</type> *<parameter>metadata</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets metadata on the connection <varname>self</varname> to <varname>metadata</varname>.
+                    Only MP3 streams support this type of metadata update.
+                    The data as added via <link linkend="shout_metadata_add"><function>shout_metadata_add</function></link>
+                    must be encoded in utf-8.
+                </para>
+
+                <variablelist><title>Return Values</title>
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SUCCESS</constant></term>
+                        <listitem>Metadata was updated successfully.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_INSANE</constant></term>
+                        <listitem><varname>self</varname> and/or <varname>metadata</varname> is invalid.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_MALLOC</constant></term>
+                        <listitem>Couldn't allocate enough memory to complete the operation.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_NOCONNECT</constant></term>
+                        <listitem>The server refused the connection attempt.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_NOLOGIN</constant></term>
+                        <listitem>The server did not accept your authorization credentials.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_SOCKET</constant></term>
+                        <listitem>An error occured talking to the server.</listitem>
+                    </varlistentry>
+
+                    <varlistentry>
+                        <term><constant>SHOUTERR_METADATA</constant></term>
+                        <listitem>The server returned any other error (eg bad mount point).</listitem>
+                    </varlistentry>
+                </variablelist>
+
+            </section>
+
+            <section><title>Obsolate Interface</title>
+                <warning>
+                    All those functions have been replaced by <function>shout_set_meta</function> and
+                    <function>shout_get_meta</function>. They may be removed by newer versions of this library.
+                </warning>
+
+                <funcsynopsis id="shout_set_name">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_name</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>name</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the name of the stream.
+                </para>
+
+                <funcsynopsis id="shout_get_name">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_name</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the stream name.
+                </para>
+
+                <funcsynopsis id="shout_set_url">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_url</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>url</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the URL of a site about this stream.
+                </para>
+
+                <funcsynopsis id="shout_get_url">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_url</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the stream URL.
+                </para>
+
+                <funcsynopsis id="shout_set_genre">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_genre</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>genre</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the genre (or genres) of the stream. This is usually a keyword list,
+                    eg "pop rock rap".
+                </para>
+
+                <funcsynopsis id="shout_get_genre">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_genre</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the stream genre.
+                </para>
+
+                <funcsynopsis id="shout_set_description">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_description</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>description</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the description of this stream.
+                </para>
+
+                <funcsynopsis id="shout_get_description">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_description</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the stream description.
+                </para>
+
+                <funcsynopsis id="shout_set_dumpfile">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_dumpfile</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>const char *<parameter>dumpfile</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    If the server supports it, you can request that your stream be archived
+                    on the server under the name <varname>dumpfile</varname>. This can quickly
+                    eat a lot of disk space, so think twice before setting it.
+                </para>
+
+                <funcsynopsis id="shout_get_dumpfile">
+                    <funcprototype>
+                        <funcdef>const char *<function>shout_get_dumpfile</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the dump file, if specified.
+                </para>
+
+                <funcsynopsis id="shout_set_format">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_format</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef>int <parameter>format</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets the audio format of this stream. The currently supported formats
+                    are listed in <link linkend="format_constants">Format Constants</link>.
+                    The default is <constant>SHOUT_FORMAT_OGG</constant>.
+                </para>
+                <warning>This function has been obsoleted and may not be included in future versions of the library.
+                    Please use <link linkend="shout_set_content_format"><function>shout_set_content_format</function></link>
+                </warning>
+
+                <funcsynopsis id="shout_get_format">
+                    <funcprototype>
+                        <funcdef>int <function>shout_get_format</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Returns the audio format used by this stream.
+                </para>
+                <warning>This function has been obsoleted and may not be included in future versions of the library.
+                    Please use <link linkend="shout_get_content_format"><function>shout_get_content_format</function></link>
+                </warning>
+
+                <funcsynopsis id="shout_set_metadata">
+                    <funcprototype>
+                        <funcdef>int <function>shout_set_metadata</function></funcdef>
+                        <paramdef><type>shout_t</type> *<parameter>self</parameter></paramdef>
+                        <paramdef><type>shout_metadata_t</type> *<parameter>metadata</parameter></paramdef>
+                    </funcprototype>
+                </funcsynopsis>
+                <para>
+                    Sets metadata on the connection <varname>self</varname> to <varname>metadata</varname>.
+                    Only MP3 streams support this type of metadata update.
+                    Please use <link linkend="shout_set_metadata_utf8"><function>shout_set_metadata_utf8</function></link>
+                </para>
+            </section>
+
+        </section>
+
+        <section><title>Data Types</title>
+
+            <variablelist id="data_types">
+                <varlistentry id="shout_t">
+                    <term><type>shout_t</type></term>
+                    <listitem>Opaque data type that refers to a single server connection.</listitem>
+                </varlistentry>
+
+                <varlistentry id="shout_metadata_t">
+                    <term><type>shout_metadata_t</type></term>
+                    <listitem>Opaque data type that refers to a set of metadata attributes. Currently
+                        the only defined attribute is <constant>song</constant>.</listitem>
+                </varlistentry>
+            </variablelist>
+
+        </section>
+
+        <section><title>Constants</title>
+
+            <variablelist id="error_constants"><title>Error Codes</title>
+                <varlistentry>
+                    <term><constant>SHOUTERR_SUCCESS</constant></term>
+                    <listitem>Indicates success.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_INSANE</constant></term>
+                    <listitem>Indicates bad parameters, either nonsense or not applicable due to the current
+                        state of the connection.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_MALLOC</constant></term>
+                    <listitem>Indicates the function could not allocate the memory it required.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_NOCONNECT</constant></term>
+                    <listitem>Indicates a connection with the server could not be established.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_NOLOGIN</constant></term>
+                    <listitem>Indicates the server refused to accept a login attempt. This could be caused
+                        by a bad user name or password.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_SOCKET</constant></term>
+                    <listitem>Indicates an error sending or receiving data.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_METADATA</constant></term>
+                    <listitem>Indicates an error updating metadata on the server.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_CONNECTED</constant></term>
+                    <listitem>Indicates that, while connected, you attempted to call a function which only makes
+                        sense before connection (eg you attempted to set the user name or stream name).</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_UNCONNECTED</constant></term>
+                    <listitem>Indicates that you attempted to use a function that requires an open connection
+                        (for example, <function>shout_send</function>) while you were not connected.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_UNSUPPORTED</constant></term>
+                    <listitem>Indicates that you attempted to use a function which is unsupported in the
+                        state of your connection. For example, attempting to set metadata while using the
+                        Ogg Vorbis format is unsupported.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_BUSY</constant></term>
+                    <listitem>Indicates that the socket is busy. The funtion returning this should be
+                        called again later. This is likely to happen in non-blocking mode but may also happen
+                        in blocking mode.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_NOTLS</constant></term>
+                    <listitem>TLS (Transport Layer Security) was requested via <function>shout_set_tls</function>
+                        but is not supported by the server.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_TLSBADCERT</constant></term>
+                    <listitem>A TLS (Transport Layer Security) connection has been established but the server
+                        returned a certificate which failed the check. The certificate may be invalid or
+                        is not signed by a trusted CA. See <function>shout_set_tls</function>.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUTERR_RETRY</constant></term>
+                    <listitem>The caller should retry this call later.</listitem>
+                </varlistentry>
+            </variablelist>
+
+            <variablelist id="blocking_constants"><title>Blocking</title>
+                <varlistentry>
+                    <term><constant>SHOUT_BLOCKING_DEFAULT</constant></term>
+                    <listitem>Selects the default blocking mode.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_BLOCKING_FULL</constant></term>
+                    <listitem>The API is in full blocking mode.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_BLOCKING_NONE</constant></term>
+                    <listitem>The API will not block.</listitem>
+                </varlistentry>
+            </variablelist>
+
+            <variablelist id="format_constants"><title>Formats</title>
+                <varlistentry>
+                    <term><constant>SHOUT_FORMAT_OGG</constant></term>
+                    <listitem>The Ogg Format. Vorbis or any codec may be used. This is the default format.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_FORMAT_WEBM</constant></term>
+                    <listitem>The WebM format.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_FORMAT_WEBMAUDIO</constant></term>
+                    <listitem>his is deprecated. Use <constant>SHOUT_FORMAT_WEBM</constant> with <constant>SHOUT_USAGE_AUDIO</constant></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_FORMAT_MATROSKA</constant></term>
+                    <listitem>The Matroska format.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_FORMAT_VORBIS</constant></term>
+                    <listitem>This is deprecated. It is an alias to <constant>SHOUT_FORMAT_OGG</constant>.
+                        Please migrate your code.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_FORMAT_MP3</constant></term>
+                    <listitem>The MP3 format.</listitem>
+                </varlistentry>
+            </variablelist>
+
+            <variablelist id="usage_constants"><title>Usages</title>
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_AUDIO</constant></term>
+                    <listitem>Contains audio substreams.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_VISUAL</constant></term>
+                    <listitem>Contains Picture/Video substreams. This is often combined with <constant>SHOUT_USAGE_AUDIO</constant>.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_TEXT</constant></term>
+                    <listitem>Contains text substreams that are not subtitles.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_SUBTITLE</constant></term>
+                    <listitem>Contains subtitles as substreams.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_LIGHT</constant></term>
+                    <listitem>Contains light control substreams.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_UI</constant></term>
+                    <listitem>Contains User Interface data as substreams. Example of such are DVD menus or Matroska buttons.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_METADATA</constant></term>
+                    <listitem>Contains additional metadata as substreams. Examples are substreams with references to additional data sources, or program guide data.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_APPLICATION</constant></term>
+                    <listitem>Contains substreams with data specific to the application.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_CONTROL</constant></term>
+                    <listitem>Contains substreams that include control data for the streaming environment. Examples include commands to the signal routers, remuxers, or transmitters.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_COMPLEX</constant></term>
+                    <listitem>Contains substreams that themself contain data of more than one type. Examples include encapsulation of one container into another.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_OTHER</constant></term>
+                    <listitem>Contains substreams of a type not yet known to libshout.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_UNKNOWN</constant></term>
+                    <listitem>May contain (future) substreams of yet unknown nature to the caller.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_3D</constant></term>
+                    <listitem>Contains information for 3D playback.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_USAGE_4D</constant></term>
+                    <listitem>Contains information for 4D/XD playback. 4D/XD playback is used to improve the immersion by adding effects like body shakers or wind.</listitem>
+                </varlistentry>
+
+            </variablelist>
+
+            <variablelist id="protocol_constants"><title>Protocols</title>
+                <varlistentry>
+                    <term><constant>SHOUT_PROTOCOL_HTTP</constant></term>
+                    <listitem>The HTTP protocol. This is the native protocol of the
+                        <application>Icecast 2</application> server, and is the default.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_PROTOCOL_ROARAUDIO</constant></term>
+                    <listitem>The RoarAudio protocol. This is the native protocol for
+                        <application>RoarAudio</application> servers.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_PROTOCOL_XAUDIOCAST</constant></term>
+                    <listitem>
+                        The Audiocast format. This is the native protocol of <application>Icecast 1</application>.
+                        <note>This has been deprecated. Support may be removed in future versions of libshout.</note>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_PROTOCOL_ICY</constant></term>
+                    <listitem>The ShoutCast format. This is the native protocol of
+                        <application>ShoutCast</application>.</listitem>
+                </varlistentry>
+            </variablelist>
+
+            <variablelist id="audio_info_constants"><title>Audio Parameters</title>
+                <varlistentry>
+                    <term><constant>SHOUT_AI_BITRATE</constant></term>
+                    <listitem>Used to specify the nominal bitrate of the stream.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_AI_SAMPLERATE</constant></term>
+                    <listitem>Used to specify the samplerate of the stream.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_AI_CHANNELS</constant></term>
+                    <listitem>Used to specify the number of channels (usually one or two).</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_AI_QUALITY</constant></term>
+                    <listitem>Used to specify the Ogg Vorbis encoding quality of the stream.</listitem>
+                </varlistentry>
+            </variablelist>
+
+            <variablelist id="meta_constants"><title>Stream Metadata Parameters</title>
+                <varlistentry>
+                    <term><constant>SHOUT_META_NAME</constant></term>
+                    <listitem>Sets stream name.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_META_URL</constant></term>
+                    <listitem>Sets stream URL.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_META_GENRE</constant></term>
+                    <listitem>Sets stream genre.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_META_DESCRIPTION</constant></term>
+                    <listitem>Sets stream description.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_META_IRC</constant></term>
+                    <listitem>Sets IRC contact information for stream.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_META_AIM</constant></term>
+                    <listitem>Sets AIM contact information for stream.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_META_ICQ</constant></term>
+                    <listitem>Sets ICQ contact information for stream.</listitem>
+                </varlistentry>
+            </variablelist>
+
+            <variablelist id="tls_mode_constants"><title>TLS modes</title>
+                <varlistentry>
+                    <term><constant>SHOUT_TLS_DISABLED</constant></term>
+                    <listitem>TLS (Transport Layer Security) is disabled.
+                        Passwords and data will be sent unencrypted.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_TLS_AUTO</constant></term>
+                    <listitem>TLS (Transport Layer Security) support by the server will be autodetected. This is the default.
+                        In this mode TLS is used if supported by the server.
+                        <warning>Please note that this is not a secure mode as it will
+                            not prevent any downgrade attacks. <constant>SHOUT_TLS_AUTO_NO_PLAIN</constant> is a more secure version of
+                            this mode.</warning>
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_TLS_AUTO_NO_PLAIN</constant></term>
+                    <listitem>TLS (Transport Layer Security) is used. Autodetection is used to find out about which modes
+                        are supported by the server. This mode should be used for secure connections.</listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_TLS_RFC2818</constant></term>
+                    <listitem>TLS (Transport Layer Security) is used as defined by RFC2818.
+                        In this mode libshout expects a TLS socket on the server side and will begin with a TLS handshake
+                        prior to any other communication.
+                    </listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term><constant>SHOUT_TLS_RFC2817</constant></term>
+                    <listitem>TLS (Transport Layer Security) is used as defined by RFC2817.
+                        In this mode libshout will use HTTP/1.1's Upgrade:-process to switch to TLS.
+                        This allows to use TLS on a non-TLS socket of the server.</listitem>
+                </varlistentry>
+            </variablelist>
+
+        </section>
+
+    </chapter>
 
 </book>
