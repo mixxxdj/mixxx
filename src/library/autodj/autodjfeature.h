@@ -17,6 +17,7 @@ class Library;
 class PlayerManagerInterface;
 class TrackCollection;
 class AutoDJProcessor;
+class AutoFadeController;
 class WLibrarySidebar;
 class QAction;
 class QModelIndex;
@@ -63,6 +64,7 @@ class AutoDJFeature : public LibraryFeature {
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
+    AutoFadeController* m_pAutoFadeController;
     parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
     const QString m_viewName;
