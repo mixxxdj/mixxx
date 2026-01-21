@@ -21,8 +21,13 @@ var TraktorMX2 = new (function () {
     this.padModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Hotcues, 1 = Stems, 2 = Patterns, 3 = Loops
     this.padPressed = {
         "[Channel1]": {5: false, 6: false, 7: false, 8: false},
-        "[Channel2]": {5: false, 6: false, 7: false, 8: false},
+        "[Channel2]": {5: false, 6: false, 7: false, 8: false}
     }; // State of pads for Stems mode
+
+    this.bottomLedState = {
+        "[Channel1]": {1: 0x00, 2: 0x00, 3: 0x00, 4: 0x00, 5: 0x00, 6: 0x00},
+        "[Channel2]": {1: 0x00, 2: 0x00, 3: 0x00, 4: 0x00, 5: 0x00, 6: 0x00}
+    };
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
@@ -184,11 +189,11 @@ TraktorMX2.registerInputPackets = function () {
     this.registerInputButton(messageShort, "[Channel2]", "!pfl", 0x09, 0x08, this.headphoneHandler);
 
     // // GFX
-    this.registerInputButton(messageShort, "[ChannelX]", "!gfx0", 0x0a, 0x01, this.globalfxHandler,);
-    this.registerInputButton(messageShort, "[ChannelX]", "!gfx1", 0x09, 0x10, this.globalfxHandler,);
-    this.registerInputButton(messageShort, "[ChannelX]", "!gfx2", 0x09, 0x20, this.globalfxHandler,);
-    this.registerInputButton(messageShort, "[ChannelX]", "!gfx3", 0x09, 0x40, this.globalfxHandler,);
-    this.registerInputButton(messageShort, "[ChannelX]", "!gfx4", 0x09, 0x80, this.globalfxHandler,);
+    this.registerInputButton(messageShort, "[ChannelX]", "!gfx0", 0x0a, 0x01, this.globalfxHandler);
+    this.registerInputButton(messageShort, "[ChannelX]", "!gfx1", 0x09, 0x10, this.globalfxHandler);
+    this.registerInputButton(messageShort, "[ChannelX]", "!gfx2", 0x09, 0x20, this.globalfxHandler);
+    this.registerInputButton(messageShort, "[ChannelX]", "!gfx3", 0x09, 0x40, this.globalfxHandler);
+    this.registerInputButton(messageShort, "[ChannelX]", "!gfx4", 0x09, 0x80, this.globalfxHandler);
 
     // // Microphone
     this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x0a, 0x02, this.microphoneHandler);
@@ -222,50 +227,50 @@ TraktorMX2.registerInputPackets = function () {
     this.controller.registerInputPacket(messageShort);
 
 
-    this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1b, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1b, 0xffff, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x2b, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x2d, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x2b, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x2d, 0xffff, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x31, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x31, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler);
 
     // FX Parameter
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1]", "mix", 0x01, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect1]", "meta", 0x03, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect2]", "meta", 0x05, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect3]", "meta", 0x07, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1]", "mix", 0x01, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect1]", "meta", 0x03, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect2]", "meta", 0x05, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect3]", "meta", 0x07, 0xffff, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2]", "mix", 0x09, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect1]", "meta", 0x0b, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect2]", "meta", 0x0d, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect3]", "meta", 0x0f, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2]", "mix", 0x09, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect1]", "meta", 0x0b, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect2]", "meta", 0x0d, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect3]", "meta", 0x0f, 0xffff, this.parameterHandler);
 
     // EQ Parameter
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xffff, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x1d, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x1f, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x21, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x1d, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x1f, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x21, 0xffff, this.parameterHandler);
 
     // Global FX Parameter
-    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x23, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x23, 0xffff, this.parameterHandler);
 
     // Master
-    this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x2f, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x2f, 0xffff, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[Master]", "headMix", 0x27, 0xffff, this.parameterHandler,);
-    this.registerInputScaler(messageLong, "[Master]", "headGain", 0x29, 0xffff, this.parameterHandler,);
+    this.registerInputScaler(messageLong, "[Master]", "headMix", 0x27, 0xffff, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Master]", "headGain", 0x29, 0xffff, this.parameterHandler);
 
     this.controller.registerInputPacket(messageLong);
 
 
-    this.registerInputJog(messageJog, "[Channel1]", "!jog", 0x08, 0xffffffff, this.jogHandler,);
-    this.registerInputJog(messageJog, "[Channel2]", "!jog", 0x10, 0xffffffff, this.jogHandler,);
+    this.registerInputJog(messageJog, "[Channel1]", "!jog", 0x08, 0xffffffff, this.jogHandler);
+    this.registerInputJog(messageJog, "[Channel2]", "!jog", 0x10, 0xffffffff, this.jogHandler);
 
     this.controller.registerInputPacket(messageJog);
 
@@ -275,18 +280,18 @@ TraktorMX2.registerInputPackets = function () {
     TraktorMX2.incomingData(data);
 };
 
-TraktorMX2.registerInputJog = function (message, group, name, offset, bitmask, callback,) {
+TraktorMX2.registerInputJog = function (message, group, name, offset, bitmask, callback) {
     // Jog wheels have 4 byte input
     message.addControl(group, name, offset, "I", bitmask);
     message.setCallback(group, name, callback);
 };
 
-TraktorMX2.registerInputScaler = function (message, group, name, offset, bitmask, callback,) {
+TraktorMX2.registerInputScaler = function (message, group, name, offset, bitmask, callback) {
     message.addControl(group, name, offset, "H", bitmask);
     message.setCallback(group, name, callback);
 };
 
-TraktorMX2.registerInputButton = function (message, group, name, offset, bitmask, callback,) {
+TraktorMX2.registerInputButton = function (message, group, name, offset, bitmask, callback) {
     message.addControl(group, name, offset, "B", bitmask);
     message.setCallback(group, name, callback);
 };
@@ -402,11 +407,13 @@ TraktorMX2.padModeHandler = function (field) {
             TraktorMX2.outputHandler(0, field.group, "loops");
 
             // Light LEDs for all enabled stems
-            for (let i = 1; i <= engine.getValue(field.group, "stem_count"); ++i) {
-                const color = engine.getValue("[Channel" + field.group[field.group.length - 2] + "_Stem" + i + "]", "color");
-                const colorValue = TraktorMX2.PadColorMap.getValueForNearestColor(color);
+            for (let i = 1; i <= engine.getValue(field.group, "stem_count"); i++) {
+                const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
+                const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
+                const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
                 TraktorMX2.outputHandler(colorValue, field.group, "pad_" + i);
             }
+
             break;
 
         case "!patterns":
@@ -470,7 +477,13 @@ TraktorMX2.padHandler = function (field) {
                 if (field.value === 0) {
                     return;
                 }
-                script.toggleControl("[Channel" + field.group[field.group.length - 2] + "_Stem" + padNumber + "]", "mute");
+                script.toggleControl(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "mute");
+
+                const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "color");
+                const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "mute");
+                const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
+                TraktorMX2.outputHandler(colorValue, field.group, "pad_" + padNumber);
+
             } else {
                 // pads 5-8 are used for volume and filter control of the stems
                 TraktorMX2.padPressed[field.group][padNumber] = field.value;
@@ -482,11 +495,12 @@ TraktorMX2.padHandler = function (field) {
             break;
 
         case 3:
+
             // only first 4 pads are used for loops
             if (TraktorMX2.shiftPressed[field.group]) {
-                engine.setValue(field.group, "beatlooproll_" + (2 ** (padNumber - 1)) + "_activate", field.value);
+                engine.setValue(field.group, "beatlooproll_" + (2 ** (padNumber - 5)) + "_activate", field.value);
             } else {
-                engine.setValue(field.group, "beatloop_" + 2 ** ((padNumber - 5)) + "_activate", field.value);
+                engine.setValue(field.group, "beatloop_" + 2 ** ((padNumber - 5)) + "_toggle", 1);
             }
             break;
     }
@@ -1101,12 +1115,20 @@ TraktorMX2.registerOutputPackets = function () {
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     for (let i = 1; i <= 8; ++i) {
-        engine.makeConnection("[Channel1]", `hotcue_${i}_status`, this.hotcueOutputHandler,);
-        engine.makeConnection("[Channel2]", `hotcue_${i}_status`, this.hotcueOutputHandler,);
+        engine.makeConnection("[Channel1]", `hotcue_${i}_status`, this.hotcueOutputHandler);
+        engine.makeConnection("[Channel2]", `hotcue_${i}_status`, this.hotcueOutputHandler);
 
-        engine.makeConnection("[Channel1]", `hotcue_${i}_color`, this.hotcueColorHandler,);
-        engine.makeConnection("[Channel2]", `hotcue_${i}_color`, this.hotcueColorHandler,);
+        engine.makeConnection("[Channel1]", `hotcue_${i}_color`, this.hotcueColorHandler);
+        engine.makeConnection("[Channel2]", `hotcue_${i}_color`, this.hotcueColorHandler);
     }
+
+    engine.makeConnection("[Channel1]", `stem_count`, this.patternOutputHandler);
+    engine.makeConnection("[Channel2]", `stem_count`, this.patternOutputHandler);
+
+    // Bottom LEDs
+
+    engine.makeConnection("[App]", "indicator_500ms", this.bottomLedOutputHandler);
+
 
     // VuMeter
     this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterOutputHandler);
@@ -1209,12 +1231,12 @@ TraktorMX2.gfxOutputHandler = function () {
     }
 };
 
-TraktorMX2.hotcueOutputHandler = function (value, group, key) {
+TraktorMX2.hotcueOutputHandler = function (value, group, name) {
     // Light button LED only when we are in hotcue mode
     if (TraktorMX2.padModeState[group] === 0) {
-        const colorKey = key.replace("_status", "_color");
+        const colorKey = name.replace("_status", "_color");
         const color = engine.getValue(group, colorKey);
-        const padNum = key[7];
+        const padNum = name[7];
         if (value > 0) {
             TraktorMX2.colorOutputHandler(color, group, `pad_${padNum}`);
         } else {
@@ -1223,13 +1245,52 @@ TraktorMX2.hotcueOutputHandler = function (value, group, key) {
     }
 };
 
-TraktorMX2.hotcueColorHandler = function (value, group, key) {
+TraktorMX2.hotcueColorHandler = function (value, group, name) {
     // Light button LED only when we are in hotcue mode
-    const padNum = key[7];
+    const padNum = name[7];
     if (TraktorMX2.padModeState[group] === 0) {
         TraktorMX2.colorOutputHandler(value, group, `pad_${padNum}`);
     }
 };
+
+TraktorMX2.patternOutputHandler = function (value, group, name) {
+    if (TraktorMX2.padModeState[group] === 2) {
+        for (let i = 1; i <= engine.getValue(group, name); i++) {
+            const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
+            const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
+            const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
+            TraktorMX2.outputHandler(colorValue, field.group, "pad_" + i);
+        }
+    }
+};
+
+TraktorMX2.bottomLedOutputHandler = function () {
+
+    for (const channel of ["[Channel1]", "[Channel2]"]) {
+        let eot = engine.getValue(channel, "end_of_track")
+        let loop = engine.getValue(channel, "loop_enabled")
+        let playing = engine.getValue(channel, "play")
+        for (let i = 1; i <= 6; i++) {
+            if (eot) {
+                if (TraktorMX2.bottomLedState[channel][i] === TraktorMX2.baseColors.red) {
+                    TraktorMX2.bottomLedState[channel][i] = TraktorMX2.baseColors.off;
+                } else {
+                    TraktorMX2.bottomLedState[channel][i] = TraktorMX2.baseColors.red;
+                }
+            } else if (loop) {
+                TraktorMX2.bottomLedState[channel][i] = playing ? TraktorMX2.baseColors.green : TraktorMX2.baseColors.dimmedGreen;
+            } else {
+                TraktorMX2.bottomLedState[channel][i] = playing ? TraktorMX2.baseColors.blue : TraktorMX2.baseColors.dimmedBlue;
+            }
+        }
+
+        for (let i = 1; i <= 5; i++) {
+            TraktorMX2.controller.setOutput(channel, `bottom_led_${i}`, TraktorMX2.bottomLedState[channel][i], false);
+        }
+        TraktorMX2.controller.setOutput(channel, "bottom_led_" + 6, TraktorMX2.bottomLedState[channel][6], true);
+    }
+
+}
 
 TraktorMX2.lightDeck = function (switchOff) {
 
@@ -1292,10 +1353,10 @@ TraktorMX2.lightDeck = function (switchOff) {
             TraktorMX2.outputHandler(0x00, "[Channel1]", "pad_" + i);
             TraktorMX2.outputHandler(0x00, "[Channel2]", "pad_" + i);
         } else {
-            current = engine.getValue("[Channel1]", `hotcue_${i}_status`);
-            TraktorMX2.hotcueOutputHandler(current, `[Channel1]", "hotcue_${i}_status`);
-            current = engine.getValue("[Channel2]", `hotcue_${i}_status`);
-            TraktorMX2.hotcueOutputHandler(current, "[Channel2]", `hotcue_${i}_status`);
+            current = engine.getValue("[Channel1]", `hotcue_${i}_status`) ? TraktorMX2.baseColors.blue : TraktorMX2.baseColors.dimmed;
+            TraktorMX2.outputHandler(current, "[Channel1]", `pad_${i}`);
+            current = engine.getValue("[Channel2]", `hotcue_${i}_status`) ? TraktorMX2.baseColors.blue : TraktorMX2.baseColors.dimmed;
+            TraktorMX2.outputHandler(current, "[Channel2]", `pad_${i}`);
         }
     }
 
@@ -1388,6 +1449,11 @@ TraktorMX2.incomingData = function (data, length) {
 TraktorMX2.baseColors = {
     off: 0x00,
 
+    // Used for single-colored LED like vumeters -> white on multicolored LEDs
+    dimmed: 0x7c,
+    full: 0x7e,
+
+    // White - used for multi-colored LEDs
     dimmedWhite: 0x48,
     white: 0x4a,
 
