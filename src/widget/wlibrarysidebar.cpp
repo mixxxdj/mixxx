@@ -4,17 +4,27 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "library/sidebaritemdelegate.h"
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
 #include "util/dnd.h"
 
-constexpr int expand_time = 250;
+namespace {
+
+constexpr int expand_time = 250; // ms
+// color for the 'watched path' indicator (cyan)
+const QColor kDefaultWatchedPathColor = QColor("#00ffff"); // clazy:exclude=qcolor-from-literal
+
+} // anonymous namespace
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this),
-          m_lastDragMoveAccepted(false) {
+          m_pSidebarModel(nullptr),
+          m_pItemDelegate(nullptr),
+          m_lastDragMoveAccepted(false),
+          m_watchedPathColor(kDefaultWatchedPathColor) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
     setHeaderHidden(true);
@@ -29,6 +39,24 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+}
+
+void WLibrarySidebar::setModel(QAbstractItemModel* pModel) {
+    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(pModel);
+    DEBUG_ASSERT(pSidebarModel);
+    m_pSidebarModel = pSidebarModel;
+    QTreeView::setModel(pSidebarModel);
+    // Create the delegate for painting the bookmark indicator
+    DEBUG_ASSERT(m_pItemDelegate == nullptr);
+    m_pItemDelegate = new SidebarItemDelegate(this, pSidebarModel);
+    setItemDelegateForColumn(0, m_pItemDelegate);
+    m_pItemDelegate->setWatchedPathColor(m_watchedPathColor);
+    // Color can be set in qss via qproperty-watchedPathColor which happens
+    // when the stylesheet is applied. Push it to delegate.
+    connect(this,
+            &WLibrarySidebar::watchedPathColorChanged,
+            m_pItemDelegate,
+            &SidebarItemDelegate::setWatchedPathColor);
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* pEvent) {
@@ -113,13 +141,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
         return;
     }
 
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        m_lastDragMoveAccepted = false;
-        pEvent->ignore();
-        return;
-    }
-    if (pSidebarModel->dragMoveAccept(index, urls)) {
+    if (m_pSidebarModel->dragMoveAccept(index, urls)) {
         m_lastDragMoveAccepted = true;
         pEvent->acceptProposedAction();
     } else {
@@ -159,15 +181,6 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
         pEvent->ignore();
         return;
     }
-    // Drag-and-drop from an external application (eg. a file manager) or the
-    // track table widget onto the sidebar.
-    // Reset the selected items (if you had anything highlighted, it clears it)
-    // this->selectionModel()->clear();
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        pEvent->ignore();
-        return;
-    }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QPoint pos = pEvent->position().toPoint();
 #else
@@ -178,7 +191,7 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
     // pEvent->source() will return NULL if something is dropped from
     // a different application
     const QList<QUrl> urls = pEvent->mimeData()->urls();
-    if (pSidebarModel->dropAccept(destIndex, urls, pEvent->source())) {
+    if (m_pSidebarModel->dropAccept(destIndex, urls, pEvent->source())) {
         pEvent->acceptProposedAction();
     } else {
         pEvent->ignore();
@@ -223,17 +236,14 @@ void WLibrarySidebar::toggleSelectedItem() {
 }
 
 bool WLibrarySidebar::isLeafNodeSelected() {
-    QModelIndex index = selectedIndex();
-    if (index.isValid()) {
-        if(!index.model()->hasChildren(index)) {
-            return true;
-        }
-        const SidebarModel* pSidebarModel = qobject_cast<const SidebarModel*>(index.model());
-        if (pSidebarModel) {
-            return pSidebarModel->hasTrackTable(index);
-        }
+    const QModelIndex index = selectedIndex();
+    if (!index.isValid()) {
+        return false;
     }
-    return false;
+    if (!index.model()->hasChildren(index)) {
+        return true;
+    }
+    return m_pSidebarModel->hasTrackTable(index);
 }
 
 bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
@@ -242,12 +252,7 @@ bool WLibrarySidebar::isChildIndexSelected(const QModelIndex& index) {
     if (!selIndex.isValid()) {
         return false;
     }
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        // qDebug() << " >> model() is not SidebarModel";
-        return false;
-    }
-    QModelIndex translated = pSidebarModel->translateChildIndex(index);
+    QModelIndex translated = m_pSidebarModel->translateChildIndex(index);
     if (!translated.isValid()) {
         // qDebug() << " >> index can't be translated";
         return false;
@@ -261,11 +266,7 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
     if (!selIndex.isValid()) {
         return false;
     }
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        return false;
-    }
-    const QModelIndex rootIndex = pSidebarModel->getFeatureRootIndex(pFeature);
+    const QModelIndex rootIndex = m_pSidebarModel->getFeatureRootIndex(pFeature);
     return rootIndex == selIndex;
 }
 
@@ -274,11 +275,9 @@ bool WLibrarySidebar::isFeatureRootIndexSelected(LibraryFeature* pFeature) {
 void WLibrarySidebar::keyPressEvent(QKeyEvent* pEvent) {
     // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
     // item is not focused, require second press to perform the desired action.
-
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    QModelIndex selIndex = selectedIndex();
-    if (pSidebarModel && selIndex.isValid() && pEvent->matches(QKeySequence::Paste)) {
-        pSidebarModel->paste(selIndex);
+    const QModelIndex selIndex = selectedIndex();
+    if (selIndex.isValid() && pEvent->matches(QKeySequence::Paste)) {
+        m_pSidebarModel->paste(selIndex);
         return;
     }
 
@@ -405,18 +404,13 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index, bool scrollToIndex) 
 
 /// Selects a child index from a feature and ensures visibility
 void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem) {
-    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        qDebug() << "model() is not SidebarModel";
-        return;
-    }
-    QModelIndex translated = pSidebarModel->translateChildIndex(index);
+    const QModelIndex translated = m_pSidebarModel->translateChildIndex(index);
     if (!translated.isValid()) {
         return;
     }
 
     if (selectItem) {
-        auto* pModel = new QItemSelectionModel(pSidebarModel);
+        auto* pModel = new QItemSelectionModel(m_pSidebarModel);
         pModel->select(translated, QItemSelectionModel::Select);
         if (selectionModel()) {
             selectionModel()->deleteLater();
@@ -433,7 +427,7 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
     scrollTo(translated, EnsureVisible);
 }
 
-QModelIndex WLibrarySidebar::selectedIndex() {
+QModelIndex WLibrarySidebar::selectedIndex() const {
     QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.isEmpty()) {
         return QModelIndex();

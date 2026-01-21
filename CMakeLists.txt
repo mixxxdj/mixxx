@@ -1381,6 +1381,7 @@ add_library(
   src/library/basetrackcache.cpp
   src/library/basetracktablemodel.cpp
   src/library/browse/browsefeature.cpp
+  src/library/browse/browselibrarytablemodel.cpp
   src/library/browse/browsetablemodel.cpp
   src/library/browse/browsethread.cpp
   src/library/browse/foldertreemodel.cpp
@@ -1452,6 +1453,7 @@ add_library(
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
   src/library/serato/seratoplaylistmodel.cpp
+  src/library/sidebaritemdelegate.cpp
   src/library/sidebarmodel.cpp
   src/library/starrating.cpp
   src/library/tabledelegates/bpmdelegate.cpp
