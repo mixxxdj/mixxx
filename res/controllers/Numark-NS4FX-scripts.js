@@ -1466,7 +1466,7 @@ NS4FX.Deck = function(number, midi_chan) {
                         this.output(1);
                     } else if (value === 0x00) { // Button released
                         this.output(0);
-                        if (deck.padmode_str == "autoloop") {
+                        if (deck.padmode_str === "autoloop") {
                             deck.autoloop_buttons.updateLEDs(this.group);
                         }
                     }
@@ -1484,7 +1484,7 @@ NS4FX.Deck = function(number, midi_chan) {
                         this.output(1);
                     } else if (value === 0x00) { // Button released
                         this.output(0);
-                        if (deck.padmode_str == "autoloop") {
+                        if (deck.padmode_str === "autoloop") {
                             deck.autoloop_buttons.updateLEDs(this.group);
                         }
                     }
@@ -1578,7 +1578,7 @@ NS4FX.Deck = function(number, midi_chan) {
                             // Otherwise we set a new loop
                             engine.setValue(this.group, "beatloop_activate", 1);
                         }
-                        if (deck.padmode_str == "autoloop") {
+                        if (deck.padmode_str === "autoloop") {
                             var deckGroup = `[Channel${deck.number}]`; // Deck group based on deck number
                             deck.autoloop_buttons.updateLEDs(deckGroup);
                         }
@@ -1668,13 +1668,13 @@ NS4FX.HeadGain.prototype = new components.Pot({
         // is to avoid a phantom triggering of soft takeover that can happen if
         // ignoreNextValue() is called un-conditionally when the control target
         // is changed (like in shift()/unshift()).
-        if (this.ignore_next == "sampler" && !this.shifted) {
+        if (this.ignore_next === "sampler" && !this.shifted) {
             this.sampler.forEachComponent(function(component) {
                 engine.softTakeoverIgnoreNextValue(component.group, 'volume');
             });
             this.ignore_next = null;
         }
-        else if (this.ignore_next == "headgain" && this.shifted) {
+        else if (this.ignore_next === "headgain" && this.shifted) {
             engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
             this.ignore_next = null;
         }
@@ -1986,7 +1986,7 @@ NS4FX.wheelTurn = function(channel, _control, value, _status, group) {
     // but the platter will be spinning in the opposite direction we expect it
     // to be
     var delta = Math.abs(NS4FX.last_scratch_tick[deck] - value);
-    if (NS4FX.scratch_direction[deck] !== null && NS4FX.scratch_direction[deck] != direction && delta < 64) {
+    if (NS4FX.scratch_direction[deck] !== null && NS4FX.scratch_direction[deck] !== direction && delta < 64) {
         direction = !direction;
     }
 
@@ -2011,7 +2011,7 @@ NS4FX.wheelTurn = function(channel, _control, value, _status, group) {
     if (NS4FX.scratch_direction[deck] === null) {
         NS4FX.scratch_direction[deck] = direction;
     }
-    else if (NS4FX.scratch_direction[deck] != direction) {
+    else if (NS4FX.scratch_direction[deck] !== direction) {
         if (!NS4FX.touching[deck]) {
             NS4FX.scratchDisable(deck);
         }
@@ -2046,7 +2046,7 @@ NS4FX.wheelTurn = function(channel, _control, value, _status, group) {
 
 NS4FX.wheel = []; // initialized in the NS4FX.init() function
 NS4FX.wheelToggle = function(channel, _control, value, _status, _group) {
-    if (value != 0x7F) return;
+    if (value !== 0x7F) return;
     if (NS4FX.shift) {
         NS4FX.elapsedToggle();
     } else {
@@ -2065,21 +2065,21 @@ NS4FX.deckSwitch = function(channel, _control, value, _status, _group) {
     }
 
     var deck = channel + 1;
-    NS4FX.decks[deck].setActive(value == 0x7F);
+    NS4FX.decks[deck].setActive(value === 0x7F);
 
     // change effects racks
-    if (NS4FX.decks[deck].active && (channel == 0x00 || channel == 0x02)) {
-        NS4FX.effectUnit.deck1 = (deck == 1);
+    if (NS4FX.decks[deck].active && (channel === 0x00 || channel === 0x02)) {
+        NS4FX.effectUnit.deck1 = (deck === 1);
         left_side = true;
     }
-    else if (NS4FX.decks[deck].active && (channel == 0x01 || channel == 0x03)) {
-        NS4FX.effectUnit.deck2 = (deck == 2);
+    else if (NS4FX.decks[deck].active && (channel === 0x01 || channel === 0x03)) {
+        NS4FX.effectUnit.deck2 = (deck === 2);
         left_side = false;
     }
     NS4FX.effectUnit.updateEffectOnDeckSwitch(left_side);
 
     // also zero vu meters if vu displays individual decks
-    if (value == 0x7F && !displayVUFromBothDecks) {
+    if (value === 0x7F && !displayVUFromBothDecks) {
         midi.sendShortMsg(0xB0, 0x1F, 0);
         midi.sendShortMsg(0xB1, 0x1F, 0);
         midi.sendShortMsg(0xB2, 0x1F, 0);
@@ -2210,7 +2210,7 @@ NS4FX.updateBpmArrows = function(deckNumber) {
 NS4FX.shift = false;
 NS4FX.shiftToggle = function(_channel, control, value, _status, _group) {
     if (control === 0x20) {
-        NS4FX.shift = value == 0x7F;
+        NS4FX.shift = value === 0x7F;
     }
 
     if (NS4FX.shift) {
