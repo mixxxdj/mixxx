@@ -1,0 +1,115 @@
+<!DOCTYPE template>
+<Template>
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="ChannelType">channel</SetVariable>
+  <SetVariable name="VuSize">deck</SetVariable>
+  <SetVariable name="VuColor">dark</SetVariable>
+  <SetVariable name="EqFxUnit">[EqualizerRack1_<Variable name="Group"/>]</SetVariable>
+  <SetVariable name="EqEffect">[EqualizerRack1_<Variable name="Group"/>_Effect1]</SetVariable>
+
+  <SetVariable name="KnobBg">regular</SetVariable>
+  <SetVariable name="KnobIndicator">regular</SetVariable>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusBig"/></SetVariable>
+  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+
+  <SingletonDefinition>
+    <ObjectName>VuMeterChannel<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!-- AlignRight doesn't seem to work anymore with Qt6?? -->
+          <Template src="skins:LateNight/controls/knob.xml">
+            <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="KnobColor">orange</SetVariable>
+            <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
+            <SetVariable name="Control">pregain</SetVariable>
+            <SetVariable name="TooltipId">pregain</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>EqKnobHigh_4Decks_Ch<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
+            <SetVariable name="EqParameter">3</SetVariable>
+            <SetVariable name="EqRange">High</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>EqKnobMid_4Decks_Ch<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
+            <SetVariable name="EqParameter">2</SetVariable>
+            <SetVariable name="EqRange">Mid</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>EqKnobLow_4Decks_Ch<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/mixer/eq_knob_4decks.xml">
+            <SetVariable name="EqParameter">1</SetVariable>
+            <SetVariable name="EqRange">Low</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>QuickEffectKnob_2Decks_Ch<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/mixer/quick_effect_knob_2decks.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>QuickEffectKnob_4Decks<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/mixer/quick_effect_knob_4decks.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>VuMeterChannel<Variable name="ChanNum"/></ObjectName>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skins:LateNight/mixer/vumeter_single.xml"/>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+</Template>

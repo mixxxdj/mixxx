@@ -554,11 +554,13 @@ WTrackProperty[selected="false"] {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
     }
 
-#CrossfaderAndSwitches2Decks {
+#CrossfaderAndSwitches2Decks,
+#CrossfaderSwitches4Decks {
   qproperty-layoutAlignment: 'AlignHCenter';
-}
-#CrossfaderSwitch_4Decks {
-  qproperty-layoutAlignment: 'AlignRight';
+  }
+  #CrossfaderSwitch_4Decks_Stacked {
+    qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+    /* background-color: #456113; */
   }
   #CrossfaderContainer {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
@@ -646,22 +648,45 @@ WEffectChainPresetSelector {
   }
 
   /* QuickEffect selector of left-hand decks and in 4-decks mixer
-    has it's down arrow on the left side, below the QuickEffect toggle */
-  WEffectChainPresetSelector#QuickEffectSelectorLeft {
-    padding: 0px -5px 0px -1px;
+    has it's down arrow on the left side, below the QuickEffect toggle,
+    and left-aligned text */
+  #Mixer_2Decks WEffectChainPresetSelector#QuickEffectSelector1,
+  #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector1,
+  #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector2,
+  #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector3,
+  #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector4,
+  #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector1,
+  #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector3 {
+    padding: 0px -3px 0px -1px;
     margin: 0px;
     text-align: left;
     }
-    WEffectChainPresetSelector#QuickEffectSelectorLeft::drop-down {
+    #Mixer_2Decks WEffectChainPresetSelector#QuickEffectSelector1::drop-down,
+    #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector1::drop-down,
+    #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector2::drop-down,
+    #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector3::drop-down,
+    #Mixer_4Decks_Stacked WEffectChainPresetSelector#QuickEffectSelector4::drop-down,
+    #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector1::drop-down,
+    #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector3::drop-down {
       subcontrol-origin: margin;
       subcontrol-position: left center;
     }
-  WEffectChainPresetSelector#QuickEffectSelectorRight {
-    padding: 0px -1px 0px -5px;
+  /* QuickEffect selector of right-hand decks,
+     down arrow on the right side, text right-aligned */
+  #Mixer_2Decks WEffectChainPresetSelector#QuickEffectSelector2 {
+    padding: 0px -1px 0px -3px;
     margin: 0px;
     text-align: right;
     }
-    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down {
+    #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector2,
+    #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector4 {
+      padding: 0px -1px 0px 0px;
+      margin: 0px;
+      text-align: right;
+    }
+    #Mixer_2Decks WEffectChainPresetSelector#QuickEffectSelector2::drop-down,
+    #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector2::drop-down,
+    #Mixer_4Decks_Row WEffectChainPresetSelector#QuickEffectSelector4::drop-down {
       subcontrol-origin: margin;
       subcontrol-position: right center;
     }
@@ -974,7 +999,7 @@ WLibrarySidebar {
 }
 
 #TEST1 {
-  background-color: #456113;
+  background-color: #134561;
 }
 
 #TEST2 {
@@ -986,7 +1011,7 @@ WLibrarySidebar {
 }
 
 #TEST4 {
-  background-color: #134561;
+  background-color: #345613;
 }
 
 #TEST33 {
