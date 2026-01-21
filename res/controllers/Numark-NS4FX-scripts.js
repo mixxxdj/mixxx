@@ -19,7 +19,7 @@ const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
  * @param {object} deckInstance - The deck object this pad belongs to.
  * @param {string} padStateProperty - The name of the property on the deck object that holds the state for this pad.
  */
-function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDetails) {
+const createStemPadConfig = function(deckInstance, padStateProperty, stemNumber, midiDetails) {
     const fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
 
     return {
@@ -105,7 +105,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
     };
 }
 
-function createTransportPad(deck, padNumber, defaultKey, momentary) {
+const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
     const hotcueNumber = 4 + padNumber;
     const midiNote = 0x18 + (padNumber - 1);
     const midiChan = 0x94 + deck.midi_chan;
