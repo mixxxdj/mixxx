@@ -1,12 +1,3 @@
-// //////////////////////////////////////////////////////////////////////
-// JSHint configuration                                               //
-// //////////////////////////////////////////////////////////////////////
-/* global engine                                                      */
-/* global script                                                      */
-/* global print                                                       */
-/* global midi                                                        */
-// //////////////////////////////////////////////////////////////////////
-
 /******************
  * CONFIG OPTIONS *
  ******************/
@@ -40,7 +31,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         off: 0x01,
         // This function is now primarily for setting the LED from the script,
         // not just toggling. The connect function handles state-based LED updates.
-        output: function(value) {
+        output: function output(value) {
             if (deckInstance[padStateProperty].isHeldForVolume) {
                 return; // Don't change LED if pad is held for volume control
             }
@@ -48,8 +39,8 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
         },
         connect: function() {
             components.Button.prototype.connect.call(this);
-            var stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
-            var buttonInstance = this;
+            const stemGroup = `[Channel${deckInstance.number}_Stem${stemNumber}]`;
+            const buttonInstance = this;
             // This connection ensures the pad LED reflects the stem's mute state in Mixxx.
             this.mute_connection = engine.makeConnection(stemGroup, "mute", function(value) {
                 const isMuted = (value === 1);
@@ -65,7 +56,7 @@ function createStemPadConfig(deckInstance, padStateProperty, stemNumber, midiDet
                 this.mute_connection = null;
             }
         },
-        input: function(_channel, _control, value, _status) {
+        input: function input(_channel, _control, value, _status) {
             const padState = deckInstance[padStateProperty];
 
             // If shift is held, a pad tap will toggle the QuickEffect for that stem.
@@ -1767,7 +1758,7 @@ NS4FX.sendScreenDurationMidi = function(deck, duration) {
     if (duration < 1) {
         duration = 1;
     }
-    durationArray = NS4FX.encodeNumToArray(duration - 1);
+    var durationArray = NS4FX.encodeNumToArray(duration - 1);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x03];
     var bytePostfix = [0xF7];
@@ -2068,6 +2059,7 @@ NS4FX.deckSwitch = function(channel, _control, value, _status, _group) {
     NS4FX.decks[deck].setActive(value === 0x7F);
 
     // change effects racks
+    var left_side;
     if (NS4FX.decks[deck].active && (channel === 0x00 || channel === 0x02)) {
         NS4FX.effectUnit.deck1 = (deck === 1);
         left_side = true;
