@@ -67,7 +67,7 @@ class KnobEventHandler {
                 m_bRightButtonPressed = true;
                 break;
             case Qt::LeftButton:
-            case Qt::MiddleButton:
+            case Qt::MiddleButton: {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 m_startPos = e->globalPosition().toPoint();
 #else
@@ -77,7 +77,15 @@ class KnobEventHandler {
                 // Somehow using Qt::BlankCursor does not work on Windows
                 // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
                 pWidget->setCursor(m_blankCursor);
+                // Re-set the current value so the ControlObject emits valueChanged.
+                // This works only if `ignoreNoOps` is false for the underlying
+                // ControlPotmeter. Currently only used by ControlEffectKnob
+                // to make clicking a WEffectParameterKnobComposed trigger the
+                // associated WEffectParameterNameBase to show the current value.
+                double currValue = pWidget->getControlParameter();
+                pWidget->setControlParameterDown(currValue);
                 break;
+            }
             default:
                 break;
         }
