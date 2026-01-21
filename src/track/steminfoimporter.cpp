@@ -10,6 +10,8 @@
 #include <QtEndian>
 #include <QtGlobal>
 
+#include "sources/soundsourcestem.h"
+#include "track/steminfo.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -24,12 +26,6 @@ const QStringList kStemMimes = {"audio/mp4", "audio/m4a", "audio/x-m4a", "video/
 // fails, we fallback to match the filename extension with "preferred" file
 // extensions
 const QStringList kStemPreferredFileExtensions = {".stem.mp4", ".stem.m4a"};
-const QColor kStemDefaultColor[] = {
-        QColor(0x00, 0x9E, 0x73),
-        QColor(0xD5, 0x5E, 0x00),
-        QColor(0xCC, 0x79, 0xA7),
-        QColor(0x56, 0xB4, 0xE9),
-};
 
 struct MP4BoxHeader {
     quint32 size;
@@ -110,7 +106,7 @@ bool StemInfoImporter::hasStemAtom(const QString& filePath) {
 
 // static
 bool StemInfoImporter::maybeStemFile(
-        const QString& fileName, QMimeType mimeType) {
+        const QString& fileName, QMimeType mimeType, bool checkFileContent) {
     if (!mimeType.isValid() || mimeType.isDefault()) {
         // If no MIME type was previously detected for the file content, we read it now.
         mimeType = QMimeDatabase().mimeTypeForFile(
@@ -124,33 +120,25 @@ bool StemInfoImporter::maybeStemFile(
             }
         }
     }
-    return kStemMimes.contains(mimeType.name());
+    bool result = kStemMimes.contains(mimeType.name());
+    if (!result || !checkFileContent) {
+        return result;
+    }
+
+    mixxx::AudioSource::OpenParams config;
+    config.setChannelCount(mixxx::audio::ChannelCount(8));
+    return SoundSourceSTEM(QUrl::fromLocalFile(fileName))
+                   .open(AudioSource::OpenMode::Strict, config) ==
+            AudioSource::OpenResult::Succeeded;
 }
 
-QList<StemInfo> StemInfoImporter::importStemInfos(
-        const QString& filePath) {
+StemInfo StemInfoImporter::importStemInfos(
+        const QByteArray& manifest) {
     // Fetch the STEM manifest which contain stream details
-    auto file = QFile(filePath);
-    if (!file.open(QIODeviceBase::ReadOnly | QIODeviceBase::Unbuffered)) {
-        kLogger.warning()
-                << "Failed to open input file"
-                << filePath;
-        return {};
-    }
-
-    uint32_t manifestSize;
-    if (!(manifestSize = seekTillAtom(&file, kStemManifestAtomPath))) {
-        kLogger.debug()
-                << "No stem manifest found in the file"
-                << filePath;
-        return {};
-    }
-
-    auto jsonData = QJsonDocument::fromJson(file.read(manifestSize));
+    auto jsonData = QJsonDocument::fromJson(manifest);
     VERIFY_OR_DEBUG_ASSERT(jsonData.isObject()) {
         kLogger.warning()
-                << "Failed to extract the manifest data"
-                << filePath;
+                << "Failed to extract the manifest data";
         return {};
     };
 
@@ -172,8 +160,8 @@ QList<StemInfo> StemInfoImporter::importStemInfos(
         return {};
     }
     const auto stemArray = stems.toArray();
-    QList<StemInfo> stemsList;
-    stemsList.reserve(stemArray.size());
+    StemInfo stemsInfo(version);
+    stemsInfo.reserve(stemArray.size());
     int stemIdx = 0;
     for (const auto& stemRef : stemArray) {
         if (!stemRef.isObject()) {
@@ -185,31 +173,54 @@ QList<StemInfo> StemInfoImporter::importStemInfos(
         auto name = stem.value("name").toString();
         if (!color.isValid()) {
             kLogger.debug() << "Unexpected or missing stem color in STEM manifest. Using default";
-            color = kStemDefaultColor[stemIdx];
+            color = StemInfo::kStemDefaultColor[stemIdx];
         }
         if (name.isEmpty()) {
             kLogger.debug() << "Unexpected or missing stem name in STEM manifest. Using default";
             name = QObject::tr("Stem #%1").arg(QString::number(stemIdx + 1));
         }
-        stemsList.emplace_back(name, color);
+        stemsInfo.emplace_back(name, color);
         stemIdx++;
     }
 
     // Extract DSP information
     // TODO(XXX) DSP only contains a limiter and a compressor effect, which
     // Mixxx doesn't have yet. Parse and implement when supported
-    auto masteringDsp = json.value("mastering_dsp").toObject();
-    auto compressor = masteringDsp.value("compressor").toObject();
-    auto limiter = masteringDsp.value("limiter").toObject();
+    auto masteringDspData = json.value("mastering_dsp").toObject();
 
-    if (compressor.value("enabled").toBool() || limiter.value("enabled").toBool()) {
+    auto masteringDsp = StemInfo::MasteringDSP::fromJson(masteringDspData);
+
+    if (masteringDsp.compressor.enabled || masteringDsp.limiter.enabled) {
         kLogger.debug() << "The STEM manifest is requesting DSP effects but "
                            "this isn't supported by Mixxx yet.";
     }
+    stemsInfo.setMasteringDSP(masteringDsp);
 
-    file.close();
+    return stemsInfo;
+}
 
-    return stemsList;
+QByteArray StemInfoImporter::exportStemInfos(
+        const StemInfo& manifest) {
+    VERIFY_OR_DEBUG_ASSERT(manifest.isValid()) {
+        kLogger.warning()
+                << "Failed to serialise the manifest data";
+        return {};
+    };
+
+    QJsonObject jsonData{{{"version", manifest.version()}}};
+
+    // Extract stem metadata
+    QJsonArray stemList;
+    for (const auto& stem : manifest) {
+        stemList.append(QJsonObject({
+                {"color", stem.getColor().name()},
+                {"name", stem.getLabel()},
+        }));
+    }
+    jsonData.insert("stems", stemList);
+    jsonData.insert("mastering_dsp", manifest.masteringDSP().toJson());
+
+    return QJsonDocument(jsonData).toJson(QJsonDocument::JsonFormat::Compact);
 }
 
 } // namespace mixxx
