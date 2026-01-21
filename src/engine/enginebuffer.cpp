@@ -1486,8 +1486,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_visualPlayPos->set(
             fFractionalPlaypos,
             speed * m_baserate_old,
-            static_cast<int>(iBufferSize) /
-                    m_trackEndPositionOld.toEngineSamplePos(),
+            iBufferSize / m_trackEndPositionOld.toEngineSamplePos(),
             fFractionalSlipPos,
             effectiveSlipRate,
             m_slipModeState,
