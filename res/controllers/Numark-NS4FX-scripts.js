@@ -123,7 +123,7 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
     var button = new components.Button({
         input: function(channel, control, value, status, group) {
             NS4FX.dbg("Transport pad " + padNumber + " on deck " + deck.number + " pressed with value " + value);
-            var isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === 'hotcue';
+            var isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === "hotcue";
 
             if (isHotcueModeForTransport) {
                 if (NS4FX.shift) {
@@ -735,12 +735,12 @@ NS4FX.Deck = function(number, midi_chan) {
             // When a new track loads, the hotcue_enabled states can flicker, causing the LEDs to blink.
             // To prevent this, we disconnect the buttons, wait for the engine state to settle,
             // then reconnect and perform a manual update.
-            if (deck.padmode_str === 'hotcue') {
+            if (deck.padmode_str === "hotcue") {
                 deck.hotcues.forEachComponent(function(c) { c.disconnect(); });
             }
 
             engine.beginTimer(50, function() {
-                if (deck.padmode_str === 'hotcue') {
+                if (deck.padmode_str === "hotcue") {
                     deck.hotcues.reconnectComponents();
                     deck.hotcue_buttons.updateLEDs();
                 }
@@ -971,7 +971,7 @@ NS4FX.Deck = function(number, midi_chan) {
     var addShiftClearToHotcue = function(button) {
         var original_input = button.input;
         button.input = function(channel, control, value, status, group) {
-            if (deck.padmode_str === 'hotcue' && NS4FX.shift) {
+            if (deck.padmode_str === "hotcue" && NS4FX.shift) {
                 var hotcueNumber = this.number;
                 NS4FX.dbg("SHIFT is on, clearing hotcue " + hotcueNumber);
                 if (value > 0) { // only trigger on press
@@ -2147,9 +2147,9 @@ NS4FX.setArrow = function(deckNumber, direction) {
     midi.sendShortMsg(0x80 | midi_chan, upArrowNote, 0x00);
     midi.sendShortMsg(0x80 | midi_chan, downArrowNote, 0x00);
 
-    if (direction === 'up') {
+    if (direction === "up") {
         midi.sendShortMsg(0x90 | midi_chan, upArrowNote, 0x7F);
-    } else if (direction === 'down') {
+    } else if (direction === "down") {
         midi.sendShortMsg(0x90 | midi_chan, downArrowNote, 0x7F);
     }
 };
@@ -2189,10 +2189,10 @@ NS4FX.updateBpmArrows = function(deckNumber) {
 
     if (roundedDeckBpm < roundedOppositeDeckBpm) {
         // We need to increase BPM
-        NS4FX.setArrow(deckNumber, downIncreasesSpeed ? 'down' : 'up');
+        NS4FX.setArrow(deckNumber, downIncreasesSpeed ? "down" : "up");
     } else if (roundedDeckBpm > roundedOppositeDeckBpm) {
         // We need to decrease BPM
-        NS4FX.setArrow(deckNumber, downIncreasesSpeed ? 'up' : 'down');
+        NS4FX.setArrow(deckNumber, downIncreasesSpeed ? "up" : "down");
     } else {
         NS4FX.setArrow(deckNumber, 'off');
     }
