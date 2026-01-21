@@ -68,7 +68,6 @@ class VisualPlayPosition : public QObject {
             double tempoTrackSeconds,
             double audioBufferMicroS);
 
-    double getAtNextVSync(VSyncThread* pVSyncThread);
     void getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
             double* playPosition,
             double* slipPosition);

@@ -161,16 +161,6 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
     return interpolatedPlayPos;
 }
 
-double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
-    if (m_valid.load()) {
-        const VisualPlayPositionData data = m_data.getValue();
-        const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
-
-        return determinePlayPosInLoopBoundries(data, offset);
-    }
-    return -1;
-}
-
 void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
         double* pPlayPosition,
         double* pSlipPosition) {
