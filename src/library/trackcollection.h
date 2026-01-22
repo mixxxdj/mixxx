@@ -68,6 +68,10 @@ class TrackCollection : public QObject,
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_analysisDao;
     }
+    CueDAO& getCueDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_cueDao;
+    }
 
     void connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
     QWeakPointer<BaseTrackCache> disconnectTrackSource();
