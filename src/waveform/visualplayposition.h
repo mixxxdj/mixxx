@@ -7,6 +7,7 @@
 
 #include "control/controlvalue.h"
 #include "engine/slipmodestate.h"
+#include "util/delayring.h"
 #include "util/performancetimer.h"
 
 class ControlProxy;
@@ -93,7 +94,7 @@ class VisualPlayPosition : public QObject {
   private:
     double calcOffsetAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
             const VisualPlayPositionData& data);
-    ControlValueAtomic<VisualPlayPositionData> m_data;
+    DelayRing<VisualPlayPositionData, 16> m_data;
     std::atomic<bool> m_valid;
     QString m_key;
     bool m_noTransport;
