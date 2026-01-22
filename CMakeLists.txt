@@ -3673,6 +3673,11 @@ target_include_directories(
   PUBLIC lib/rigtorp/SPSCQueue/include
 )
 
+# Kokkos mdspan
+# https://github.com/kokkos/mdspan
+# TODO: obsolete after adopting C++23
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/mdspan/include)
+
 # Qt
 set(
   QT_COMPONENTS
