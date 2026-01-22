@@ -2,6 +2,10 @@
 
 #include <QObject>
 #include <QString>
+#include <QTemporaryFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <memory>
 
 #include "track/track.h"
@@ -63,14 +67,17 @@ class StemConverter : public QObject {
     /// Step 2: Convert separated stems (MP3) to M4A format
     bool convertStemsToM4A(const QString& stemsDir);
 
-    /// Step 3: Create STEM container using mp4box
+    /// Step 3: Create STEM container using ffmpeg and mp4box
     bool createStemContainer(const QString& trackFilePath, const QString& stemsDir);
 
-    /// Create metadata JSON for STEM container
-    QString createMetadataJson();
+    /// Create STEM manifest JSON
+    QString createStemManifest();
 
-    /// Create inline Python script for STEM container creation
-    QString createPythonScript();
+    /// Find MP4Box executable in system
+    QString findMP4Box();
+
+    /// Add STEM metadata atom using MP4Box
+    bool addStemMetadata(const QString& outputPath);
 
     /// Convert a single track to M4A format
     bool convertTrackToM4A(const QString& inputPath, const QString& outputPath);

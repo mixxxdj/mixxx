@@ -303,35 +303,11 @@ case "$1" in
                 rm -rf "$GPAC_BUILD_DIR"
             fi
 
-            # Copy the create_stem_container.py script to the virtual environment
-            SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-            SCRIPT_SOURCE="$SCRIPT_DIR/../tools/stems_create_container.py"
-            SCRIPT_DEST="$VENV_PATH/bin/stems_create_container.py"
-
-            if [ -f "$SCRIPT_SOURCE" ]; then
-                echo ""
-                echo "Installing stems_create_container.py script..."
-                sudo cp "$SCRIPT_SOURCE" "$SCRIPT_DEST"
-                sudo chown "$ACTUAL_USER:$ACTUAL_USER" "$SCRIPT_DEST"
-                sudo chmod +x "$SCRIPT_DEST"
-
-                if [ -f "$SCRIPT_DEST" ]; then
-                    echo "✓ stems_create_container.py installed to $SCRIPT_DEST"
-                else
-                    echo "⚠️  Failed to install stems_create_container.py"
-                    exit 1
-                fi
-            else
-                echo "⚠️  Warning: stems_create_container.py not found at $SCRIPT_SOURCE"
-                echo "   Expected location: {MIXXX}/tools/stems_create_container.py"
-            fi
-
             echo ""
             echo "✓ Mixxx Python environment setup complete!"
             echo "Virtual environment location: $VENV_PATH"
             echo "Demucs: $VENV_PATH/bin/demucs"
             echo "MP4Box: $MP4BOX_PATH"
-            echo "STEM script: $SCRIPT_DEST"
         fi
         ;;
     *)
