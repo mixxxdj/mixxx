@@ -5437,3 +5437,15 @@ if(APPLE AND MACOS_BUNDLE)
   )
   install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()
+
+if(CMAKE_GENERATOR STREQUAL "Xcode")
+  # Generate hierarchical source groups that mirror the folder structure when
+  # using Xcode. Has to be done after all sources have been added.
+  get_target_property(MIXXX_LIB_SOURCES mixxx-lib SOURCES)
+  list(FILTER MIXXX_LIB_SOURCES INCLUDE REGEX "^src/.*") # Ignore files outside src, e.g. lib/apple
+  source_group(
+    TREE ${CMAKE_CURRENT_SOURCE_DIR}/src
+    PREFIX "Source Files"
+    FILES ${MIXXX_LIB_SOURCES}
+  )
+endif()
