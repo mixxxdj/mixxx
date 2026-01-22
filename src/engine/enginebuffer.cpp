@@ -1618,10 +1618,6 @@ mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {
     return getTrackEndPosition() * m_visualPlayPos->getEnginePlayPos();
 }
 
-double EngineBuffer::getVisualPlayPos() const {
-    return m_visualPlayPos->getEnginePlayPos();
-}
-
 mixxx::audio::FramePos EngineBuffer::getTrackEndPosition() const {
     return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
             m_pTrackSamples->get());
