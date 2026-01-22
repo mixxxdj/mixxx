@@ -11,8 +11,7 @@ PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
-        : m_valid{false},
-          m_key{key},
+        : m_key{key},
           m_noTransport{false} {
 }
 
@@ -53,7 +52,6 @@ void VisualPlayPosition::set(
 
     // Atomic write
     m_data.push(data);
-    m_valid.store(true);
 }
 
 double VisualPlayPosition::calcOffsetAtNextVSync(
@@ -155,8 +153,8 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(
         VSyncTimeProvider* pSyncTimeProvider,
         double* pPlayPosition,
         double* pSlipPosition) {
-    if (m_valid.load()) {
-        const VisualPlayPositionData data = m_data.getAt(0);
+    VisualPlayPositionData data;
+    if (m_data.getAt(0, &data)) {
         const double offsetSteps = calcOffsetAtNextVSync(pSyncTimeProvider, data);
 
         double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offsetSteps);
@@ -171,17 +169,17 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(
 }
 
 double VisualPlayPosition::getEnginePlayPos() {
-    if (m_valid.load()) {
-        VisualPlayPositionData data = m_data.getAt(0);
+    VisualPlayPositionData data;
+    if (m_data.getAt(0, &data)) {
         return data.m_playPos;
     } else {
-        return -1;
+        return 0;
     }
 }
 
 void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds) {
-    if (m_valid.load()) {
-        VisualPlayPositionData data = m_data.getAt(0);
+    VisualPlayPositionData data;
+    if (m_data.getAt(0, &data)) {
         *pPlayPosition = data.m_playPos;
         *pTempoTrackSeconds = data.m_tempoTrackSeconds;
     } else {
