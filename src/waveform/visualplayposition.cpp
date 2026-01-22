@@ -52,7 +52,7 @@ void VisualPlayPosition::set(
     data.m_audioBufferMicroS = audioBufferMicroS;
 
     // Atomic write
-    m_data.setValue(data);
+    m_data.push(data);
     m_valid.store(true);
 }
 
@@ -165,7 +165,7 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
         double* pPlayPosition,
         double* pSlipPosition) {
     if (m_valid.load()) {
-        const VisualPlayPositionData data = m_data.getValue();
+        const VisualPlayPositionData data = m_data.getAt(0);
         const double offsetSteps = calcOffsetAtNextVSync(pVSyncThread, data);
 
         double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offsetSteps);
@@ -181,7 +181,7 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
 
 double VisualPlayPosition::getEnginePlayPos() {
     if (m_valid.load()) {
-        VisualPlayPositionData data = m_data.getValue();
+        VisualPlayPositionData data = m_data.getAt(0);
         return data.m_playPos;
     } else {
         return -1;
@@ -190,7 +190,7 @@ double VisualPlayPosition::getEnginePlayPos() {
 
 void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds) {
     if (m_valid.load()) {
-        VisualPlayPositionData data = m_data.getValue();
+        VisualPlayPositionData data = m_data.getAt(0);
         *pPlayPosition = data.m_playPos;
         *pTempoTrackSeconds = data.m_tempoTrackSeconds;
     } else {

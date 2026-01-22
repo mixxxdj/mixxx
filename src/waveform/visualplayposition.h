@@ -91,8 +91,42 @@ class VisualPlayPosition : public QObject {
     }
 
   private:
+    class DelayRing {
+      public:
+        void push(const VisualPlayPositionData& data) {
+            size_t write = writeIndex.load(std::memory_order_relaxed);
+            ring[write % kRingSize] = data;
+            writeIndex.store(write + 1, std::memory_order_release);
+            return;
+        }
+
+        /// returns a delayed value
+        /// getAt(0) returns the most recent value
+        /// getAt(1) returns the value that has been pushed before
+        /// keep 'at' small compared to kRingSize to make a ring lap during the
+        /// call of getAt() unlikely
+        VisualPlayPositionData getAt(std::size_t at) {
+            size_t writeBefore;
+            size_t writeAfter;
+            VisualPlayPositionData data;
+            do {
+                writeBefore = writeIndex.load(std::memory_order_acquire);
+                size_t read = (writeBefore - 1 - at);
+                data = ring[read % kRingSize];
+                writeAfter = writeIndex.load(std::memory_order_acquire);
+                // try again in case of a ring lap
+            } while (writeAfter - writeBefore >= kRingSize - at);
+            return data;
+        }
+
+      private:
+        static constexpr size_t kRingSize = 16;
+        std::array<VisualPlayPositionData, kRingSize> ring;
+        std::atomic<std::size_t> writeIndex = 0;
+    };
+
     double calcOffsetAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
-    ControlValueAtomic<VisualPlayPositionData> m_data;
+    DelayRing m_data;
     std::atomic<bool> m_valid;
     QString m_key;
     bool m_noTransport;
