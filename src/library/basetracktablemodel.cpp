@@ -940,23 +940,30 @@ QVariant BaseTrackTableModel::roleValue(
             const float tuningHz = (float)rawSiblingValue(
                     index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
                                            .value<double>();
-            float cents = 0;
-            Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
-            cents /= 100.0f; // normalize between -1 and 1
             QVariantMap colorRect;
-            if (cents < 0) {
+            if (tuningHz == 0) { // we do not have tuning information
                 colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
-                colorRect["bottom"] =
-                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, -1),
-                                s_keyColorPalette.value());
-                colorRect["splitPoint"] = cents + 1;
+                colorRect["bottom"] = colorRect["top"];
+                colorRect["splitPoint"] = 1;
             } else {
-                colorRect["top"] =
-                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, 1),
-                                s_keyColorPalette.value());
-                colorRect["bottom"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
-                colorRect["splitPoint"] = cents;
+                float cents = 0;
+                Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
+                cents /= 100.0f; // normalize between -1 and 1
+                if (cents < 0) {
+                    colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                    colorRect["bottom"] =
+                            KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, -1),
+                                    s_keyColorPalette.value());
+                    colorRect["splitPoint"] = cents + 1;
+                } else {
+                    colorRect["top"] =
+                            KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, 1),
+                                    s_keyColorPalette.value());
+                    colorRect["bottom"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                    colorRect["splitPoint"] = cents;
+                }
             }
+
             return colorRect;
         }
         default:
