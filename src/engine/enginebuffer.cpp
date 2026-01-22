@@ -1065,6 +1065,19 @@ void EngineBuffer::processTrackLocked(
             readToCrossfadeBuffer(bufferSize);
             // Clear the scaler information
             m_pScale->clear();
+        } else if (m_pScale != m_pScaleVinyl &&
+                speed != 1.0 &&
+                ((pitchRatio >= 1 && m_pitch_old < 1) ||
+                        (pitchRatio <= 1 && m_pitch_old > 1) ||
+                        (pitchRatio != 1 && m_pitch_old == 1 && m_pScale == m_pScaleST))) {
+            // https://bugs.launchpad.net/mixxx/+bug/1933756
+            // Crossing pitch ratio of 1.0 with speed != 1.0
+            // produces a crackling sound with Rubberband and Soundtouch.
+            // Soundtouch also crackles when moving away from 1.0.
+            // With soundtouch there is still a minor crackling left with
+            // buffer sizes <= 23 ms.
+            readToCrossfadeBuffer(iBufferSize);
+            m_pScale->clear();
         }
 
         m_baserate_old = baseSampleRate;
