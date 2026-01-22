@@ -84,11 +84,8 @@ class VisualPlayPosition : public QObject {
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
     void setInvalid() {
-        m_valid.store(false);
+        m_data.reset();
     };
-    bool isValid() const {
-        return m_valid.load();
-    }
 
   private:
     class DelayRing {
@@ -97,37 +94,48 @@ class VisualPlayPosition : public QObject {
             size_t write = writeIndex.load(std::memory_order_relaxed);
             ring[write % kRingSize] = data;
             writeIndex.store(write + 1, std::memory_order_release);
+            if (level.load(std::memory_order_relaxed) < kRingSize) {
+                level.fetch_add(1, std::memory_order_release);
+            }
             return;
         }
 
-        /// returns a delayed value
+        /// returns true on success and a delayed value via pData
         /// getAt(0) returns the most recent value
         /// getAt(1) returns the value that has been pushed before
         /// keep 'at' small compared to kRingSize to make a ring lap during the
         /// call of getAt() unlikely
-        VisualPlayPositionData getAt(std::size_t at) {
+        bool getAt(std::size_t at, VisualPlayPositionData* pData) {
             size_t writeBefore;
             size_t writeAfter;
             VisualPlayPositionData data;
+            if (level.load(std::memory_order_relaxed) <= at) {
+                // value not available
+                return false;
+            }
             do {
                 writeBefore = writeIndex.load(std::memory_order_acquire);
                 size_t read = (writeBefore - 1 - at);
-                data = ring[read % kRingSize];
+                *pData = ring[read % kRingSize];
                 writeAfter = writeIndex.load(std::memory_order_acquire);
                 // try again in case of a ring lap
             } while (writeAfter - writeBefore >= kRingSize - at);
-            return data;
+            return true;
+        }
+
+        void reset() {
+            level.exchange(0, std::memory_order_acquire);
         }
 
       private:
         static constexpr size_t kRingSize = 16;
         std::array<VisualPlayPositionData, kRingSize> ring;
         std::atomic<std::size_t> writeIndex = 0;
+        std::atomic<std::size_t> level = 0;
     };
 
     double calcOffsetAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
     DelayRing m_data;
-    std::atomic<bool> m_valid;
     QString m_key;
     bool m_noTransport;
 

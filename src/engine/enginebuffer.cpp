@@ -1561,9 +1561,6 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {
     // Is updated during postProcess(), after all decks already have been processed
-    if (!m_visualPlayPos->isValid()) {
-        return mixxx::audio::kStartFramePos;
-    }
     return getTrackEndPosition() * m_visualPlayPos->getEnginePlayPos();
 }
 
