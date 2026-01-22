@@ -45,4 +45,5 @@ class ControlObjectScript : public ControlProxy {
     const RuntimeLoggingCategory m_logger;
     CompressingProxy m_proxy;
     bool m_skipSuperseded; // This flag is combined for all connections of this Control Object
+   
 };

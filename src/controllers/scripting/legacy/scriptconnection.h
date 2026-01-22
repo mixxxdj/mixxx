@@ -19,8 +19,12 @@ class ScriptConnection {
     ControllerScriptInterfaceLegacy* engineJSProxy;
     ControllerScriptEngineLegacy* controllerEngine;
     bool skipSuperseded;
+    bool m_callbackExecuting;
+    bool m_preventRecursiveCalls; // New flag to prevent recursive calls without a warning
 
-    void executeCallback(double value) const;
+    ScriptConnection();
+
+    void executeCallback(double value);
 
     // Required for various QList methods and iteration to work.
     inline bool operator==(const ScriptConnection& other) const {
@@ -29,4 +33,6 @@ class ScriptConnection {
     inline bool operator!=(const ScriptConnection& other) const {
         return !(*this == other);
     }
+    private:
+    const RuntimeLoggingCategory m_logger;
 };
