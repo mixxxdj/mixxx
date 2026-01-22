@@ -68,6 +68,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::optional<mixxx::preferences::SoundHardwareTab> tab =
                     std::nullopt);
     void slotButtonPressed(QAbstractButton* pButton);
+
   signals:
     void closeDlg();
     void showDlg();
@@ -82,6 +83,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void reloadUserInterface();
     void tooltipModeChanged(mixxx::preferences::Tooltips tooltipMode);
     void menuBarAutoHideChanged();
+
+    void showXfaderPopupPersist();
 
   protected:
     bool eventFilter(QObject*, QEvent*);
