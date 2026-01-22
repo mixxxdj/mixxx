@@ -101,7 +101,7 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
             m_noTransport = false;
         }
         // Apply the offset proportional to m_positionStep
-        return data.m_positionStep * static_cast<double>(offsetMicros) / data.m_audioBufferMicroS;
+        return static_cast<double>(offsetMicros) / data.m_audioBufferMicroS;
     }
     return 0.0;
 }
@@ -153,17 +153,36 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(
         double* pPlayPosition,
         double* pSlipPosition) {
     VisualPlayPositionData data;
-    if (m_data.getAt(0, &data)) {
-        const double offsetSteps = calcOffsetAtNextVSync(pSyncTimeProvider, data);
-
-        double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offsetSteps);
-        *pPlayPosition = interpolatedPlayPos;
-
-        if (data.m_slipModeState == SlipModeState::Running) {
-            *pSlipPosition = data.m_slipPos + offsetSteps * data.m_slipRate;
-        } else {
-            *pSlipPosition = interpolatedPlayPos;
+    std::size_t i = 0;
+    double offsetBuffers = 0;
+    // Work around #15886: Don't use the most recent buffer right away because
+    // it likely not reached the DAC. This has caused a visible jump back, from
+    // the correct pause position to a too early position when start playing.
+    for (; i < 3; ++i) {
+        // Find buffer that is currently in the DAC.
+        // This is either at 0 or 1, but can also be at 2, if the buffer has
+        // been updated conurrently during the loop
+        if (m_data.getAt(i, &data)) {
+            offsetBuffers = calcOffsetAtNextVSync(pSyncTimeProvider, data);
+            if (offsetBuffers > -1) {
+                // The buffer, currently in the DAC has an offset of -1 ... 0
+                break;
+            }
         }
+    }
+    if (i >= 3) {
+        // No valid data available e.g, track ejected
+        return;
+    }
+
+    const double offsetSteps = data.m_positionStep * offsetBuffers;
+    double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offsetSteps);
+    *pPlayPosition = interpolatedPlayPos;
+
+    if (data.m_slipModeState == SlipModeState::Running) {
+        *pSlipPosition = data.m_slipPos + offsetSteps * data.m_slipRate;
+    } else {
+        *pSlipPosition = interpolatedPlayPos;
     }
 }
 
