@@ -55,7 +55,8 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
-        std::shared_ptr<Library> pLibrary)
+        std::shared_ptr<Library> pLibrary,
+        std::shared_ptr<KeyboardEventFilter> pKeyboardEventFilter)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -119,7 +120,7 @@ DlgPreferences::DlgPreferences(
     QTreeWidgetItem* pControllerRootItem =
             new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControllersDlg = new DlgPrefControllers(
-            this, m_pConfig, pControllerManager, pControllerRootItem);
+            this, m_pConfig, pControllerManager, pControllerRootItem, pKeyboardEventFilter.get());
     addPageWidget(PreferencesPage(m_pControllersDlg,
                           pControllerRootItem),
             tr("Controllers"),

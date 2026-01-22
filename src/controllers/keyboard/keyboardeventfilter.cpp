@@ -14,7 +14,10 @@ KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfi
 #ifndef __APPLE__
           m_altPressedWithoutKey(false),
 #endif
-          m_pKbdConfigObject(nullptr) {
+          m_pKbdConfigObject(nullptr),
+          m_learningMode(false),
+          m_strictMode(true), // Enabled by default for this "Strict Performance" suite
+          m_focusedDeck(1) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }
@@ -45,16 +48,72 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
         QKeySequence ks = getKeySeq(ke);
         if (!ks.isEmpty()) {
+            emit keyPressed(ks);
+
 #ifndef __APPLE__
             m_altPressedWithoutKey = false;
 #endif
+            // If in learning mode, emit the captured key and don't trigger actions
+            if (m_learningMode) {
+                emit keyCaptured(ks);
+                return true;
+            }
+
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
             // using const_iterator here is faster than QMultiHash::values()
             for (auto it = m_keySequenceToControlHash.constFind(ksv);
                  it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
-                const ConfigKey& configKey = it.value();
+                ConfigKey configKey = it.value();
+                
+                // Handle special [Keyboard] group for virtual actions
+                if (configKey.group == "[Keyboard]") {
+                    if (configKey.item == "cycle_focus_deck") {
+                        cycleFocusedDeck();
+                        result = true;
+                        continue;
+                    }
+                }
+
+                // Handle [ActiveDeck] redirection
+                if (configKey.group == "[ActiveDeck]") {
+                    configKey.group = QString("[Channel%1]").arg(m_focusedDeck);
+                }
+
+                QString context;
+                
+                // Parse context suffix if present (e.g., "play:Library")
+                int colonIdx = configKey.item.lastIndexOf(':');
+                if (colonIdx != -1) {
+                    context = configKey.item.mid(colonIdx + 1);
+                    configKey.item = configKey.item.left(colonIdx);
+                }
+                
+                // Check context if specified
+                if (!context.isEmpty()) {
+                    QWidget* focusWidget = QApplication::focusWidget();
+                    bool contextMatched = false;
+                    
+                    if (context == "Library") {
+                        // Check if focus is in library
+                        if (focusWidget && (focusWidget->objectName().contains("Library") || 
+                            focusWidget->inherits("WLibraryTextFilter") || 
+                            focusWidget->inherits("WTrackTableView"))) {
+                            contextMatched = true;
+                        }
+                    } else if (context == "Deck") {
+                        // Check if focus is on a deck component
+                        if (focusWidget && (focusWidget->objectName().contains("Deck") || 
+                            focusWidget->objectName().contains("Channel"))) {
+                            contextMatched = true;
+                        }
+                    }
+                    // Add more contexts as needed
+                    
+                    if (!contextMatched) continue;
+                }
+
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
                     if (control) {
@@ -73,7 +132,31 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                     }
                 }
             }
-            return result;
+            if (result) {
+                return true;
+            }
+
+            // --- STRICT MODE ENFORCEMENT ---
+            if (m_strictMode) {
+                // If not consumed by a mapping, check if we should block it
+                // from reaching default system handlers.
+                QWidget* focusWidget = QApplication::focusWidget();
+                bool isTextInput = focusWidget && (
+                    focusWidget->inherits("QLineEdit") || 
+                    focusWidget->inherits("QTextEdit") || 
+                    focusWidget->inherits("QPlainTextEdit") ||
+                    focusWidget->inherits("QComboBox") // ComboBox often has an edit field
+                );
+
+                if (!isTextInput) {
+                    // Block the key to prevent fallback to system defaults
+                    // (e.g., Space triggering Play even if unmapped)
+                    return true;
+                }
+            }
+            // -------------------------------
+            
+            return false;
 #ifndef __APPLE__
         } else {
             // getKeySeq() returns empty string if the press was a modifier only
@@ -199,4 +282,19 @@ void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdCo
 
 ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
     return m_pKbdConfigObject;
+}
+
+void KeyboardEventFilter::setLearningMode(bool enable) {
+    m_learningMode = enable;
+    if (enable) {
+        // Clear active keys when entering learning mode
+        m_qActiveKeyList.clear();
+    }
+}
+void KeyboardEventFilter::cycleFocusedDeck() {
+    m_focusedDeck++;
+    if (m_focusedDeck > 4) {
+        m_focusedDeck = 1;
+    }
+    qDebug() << "Focused deck changed to:" << m_focusedDeck;
 }
