@@ -14,7 +14,6 @@
 //
 // Known Issue:
 // - Cue Point Led address is missing
-// - ToggleSelectedSidebarItem control is not working
 // - After activating brake, Play button is not working
 
 // 10/26/2016 - Changed by Shaun O'Neill
@@ -24,6 +23,8 @@
 //              Low frequency filter now doubles as filter effect control via shift key.
 // 03/02/2018 - Changed by ninomp
 //              Adapt the mapping for Mixxx 2.1
+// 08/07/2024 - Changed by timkuijsten
+//              fix the ToggleSelectedSidebarItem control
 
 
 function NumarkMixTrackII() {}
@@ -157,6 +158,12 @@ NumarkMixTrackII.selectKnob = function(channel, control, value, status, group) {
         engine.setValue(group, "SelectTrackKnob", value);
     }
 }
+
+NumarkMixTrackII.toggleSelectedSidebarItem = function(channel, control, value) {
+    if (value) {
+        engine.setValue("[Playlist]", "ToggleSelectedSidebarItem", 1);
+    }
+};
 
 NumarkMixTrackII.toggleDirectoryMode = function(channel, control, value, status, group) {
     // Toggle setting and light
