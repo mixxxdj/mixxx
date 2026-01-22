@@ -65,6 +65,7 @@ case "$1" in
             qtkeychain-qt6-devel \
             rubberband-devel \
             soundtouch-devel \
+            libsamplerate-devel \
             sqlite-devel \
             taglib-devel \
             upower-devel \

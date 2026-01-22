@@ -27,7 +27,7 @@ class EncoderWaveSettings : public EncoderRecordingSettings {
 
     static const QString BITS_GROUP;
   private:
-    QList<OptionsGroup> m_radioList;
+    QList<OptionsGroup> m_radioList; // list of bit-depths
     UserSettingsPointer m_pConfig;
     QString m_format;
 };
