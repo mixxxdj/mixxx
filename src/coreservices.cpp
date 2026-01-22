@@ -685,6 +685,14 @@ void CoreServices::initialize(QApplication* pApp) {
         if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
             musicDirAdded = true;
         }
+    } else {
+#ifdef Q_OS_IOS
+        // On iOS the sandbox home directory
+        // (/private/var/mobile/Containers/Data/Application/<uuid>/Documents)
+        // may change its UUID across reinstalls and updates, so we have to
+        // relink any music directories in the sandbox on startup.
+        m_pLibrary->requestRelocateIOSSandboxDirs();
+#endif
     }
 
     emit initializationProgressUpdate(60, tr("controllers"));

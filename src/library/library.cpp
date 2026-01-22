@@ -36,6 +36,7 @@
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/sandbox.h"
+#include "util/sandboxios.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
@@ -717,6 +718,38 @@ bool Library::requestRelocateDir(const QString& oldDir, const QString& newDir) {
     }
     return false;
 }
+
+#ifdef Q_OS_IOS
+void Library::requestRelocateIOSSandboxDirs() {
+    // TODO: If the user selects a different app sandbox than ours (which is
+    // possible via the file picker) relinking will point those directories to
+    // our sandbox. This is not a supported scenario, however, and we should probably
+    // guard against picking directories outside the Mixxx sandbox when adding
+    // new directories.
+
+    // TODO: Do we need to handle external track collections?
+
+    QStringList rootDirs = m_pTrackCollectionManager->internalCollection()->getRootDirStrings();
+
+    for (const QString& dir : rootDirs) {
+        QString newDir = mixxx::updateIOSSandboxPath(dir);
+
+        if (dir == newDir) {
+            // Sandbox directory did not move
+            continue;
+        }
+
+        qInfo() << "Relinking music directory since iOS sandbox moved:"
+                << dir << "->" << newDir;
+
+        auto result = m_pTrackCollectionManager->relocateDirectory(dir, newDir);
+        if (result != DirectoryDAO::RelocateResult::Ok) {
+            qWarning() << "Could not relink music directory after iOS sandbox moved";
+            continue;
+        }
+    }
+}
+#endif
 
 void Library::setFont(const QFont& font) {
     QFontMetrics currMetrics(m_trackTableFont);
