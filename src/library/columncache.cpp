@@ -246,6 +246,8 @@ void ColumnCache::setColumns(QStringList columns) {
 
     insertColumnSortByEnum(COLUMN_TRACKLOCATIONSTABLE_LOCATION, kSortNoCase);
 
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COVERART, "CASE WHEN album_artist IS NULL THEN CASE WHEN GROUP BY album COUNT > 1 THEN \"Various Artists\" ELSE lower(artist) END ELSE lower(album_artist) END");
+
     slotSetKeySortOrder(m_pKeyNotationCP->get());
 }
 
