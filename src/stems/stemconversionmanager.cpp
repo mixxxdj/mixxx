@@ -12,10 +12,14 @@ const mixxx::Logger kLogger("StemConversionManager");
 
 class StemConversionTask : public QRunnable {
   public:
-    StemConversionTask(StemConversionManager* pManager, StemConverterPointer pConverter, TrackPointer pTrack)
+    StemConversionTask(StemConversionManager* pManager, 
+                      StemConverterPointer pConverter, 
+                      TrackPointer pTrack,
+                      StemConverter::Resolution resolution)
             : m_pManager(pManager),
               m_pConverter(pConverter),
-              m_pTrack(pTrack) {
+              m_pTrack(pTrack),
+              m_resolution(resolution) {
     }
 
     void run() override {
@@ -23,38 +27,41 @@ class StemConversionTask : public QRunnable {
             return;
         }
 
-        // Executar la conversió en el thread pool
-        m_pConverter->convertTrack(m_pTrack);
+        // Execute the conversion in the thread pool with the specified resolution
+        m_pConverter->convertTrack(m_pTrack, m_resolution);
     }
 
   private:
     StemConversionManager* m_pManager;
     StemConverterPointer m_pConverter;
     TrackPointer m_pTrack;
+    StemConverter::Resolution m_resolution;
 };
 
 StemConversionManager::StemConversionManager(QObject* parent)
         : QObject(parent),
           m_currentTrackId(TrackId()),
           m_conversionQueue(QList<TrackPointer>()) {
-    // Crear el thread pool per a conversions asíncrones
+    // Create thread pool for asynchronous conversions
     m_pThreadPool = new QThreadPool(this);
-    m_pThreadPool->setMaxThreadCount(1);  // Una conversió a la vegada
+    m_pThreadPool->setMaxThreadCount(1);  // One conversion at a time
 
     kLogger.info() << "StemConversionManager initialized";
 }
 
-void StemConversionManager::convertTrack(const TrackPointer& pTrack) {
+void StemConversionManager::convertTrack(const TrackPointer& pTrack, 
+                                         StemConverter::Resolution resolution) {
     if (!pTrack) {
         kLogger.warning() << "Cannot convert null track";
         return;
     }
 
-    // Afegir a la cua
+    // Add to queue
     m_conversionQueue.append(pTrack);
+    m_resolutionQueue.append(resolution);
     emit queueChanged(m_conversionQueue.size());
 
-    // Si no hi ha cap conversió en curs, iniciar la següent
+    // If no conversion is in progress, start the next one
     if (m_currentTrackId.isValid() == false) {
         processNextInQueue();
     }
@@ -67,14 +74,15 @@ void StemConversionManager::processNextInQueue() {
         return;
     }
 
-    // Agafar la primera pista de la cua
+    // Get the first track from the queue
     TrackPointer pTrack = m_conversionQueue.takeFirst();
+    StemConverter::Resolution resolution = m_resolutionQueue.takeFirst();
     m_currentTrackId = pTrack->getId();
 
-    // Crear el conversor
+    // Create the converter
     StemConverterPointer pConverter = std::make_shared<StemConverter>();
 
-    // Connectar els senyals del conversor
+    // Connect the converter signals
     connect(pConverter.get(), &StemConverter::conversionStarted,
             this, &StemConversionManager::onConversionStarted);
     connect(pConverter.get(), &StemConverter::conversionProgress,
@@ -84,14 +92,14 @@ void StemConversionManager::processNextInQueue() {
     connect(pConverter.get(), &StemConverter::conversionFailed,
             this, &StemConversionManager::onConversionFailed);
 
-    // Emetre que ha començat
+    // Emit that conversion has started
     emit conversionStarted(pTrack->getId(), pTrack->getTitle());
 
-    // Executar la conversió en un thread separat (asíncrona)
-    StemConversionTask* pTask = new StemConversionTask(this, pConverter, pTrack);
+    // Execute the conversion in a separate thread (asynchronous)
+    StemConversionTask* pTask = new StemConversionTask(this, pConverter, pTrack, resolution);
     m_pThreadPool->start(pTask);
 
-    // Guardar el conversor per poder accedir als senyals
+    // Store the converter to access signals
     m_pCurrentConverter = pConverter;
 
     emit queueChanged(m_conversionQueue.size());
@@ -110,7 +118,7 @@ void StemConversionManager::onConversionProgress(TrackId trackId, float progress
 void StemConversionManager::onConversionCompleted(TrackId trackId) {
     kLogger.info() << "Conversion completed for track:" << trackId;
 
-    // Afegir a l'historial
+    // Add to history
     ConversionStatus status;
     status.trackId = trackId;
     status.trackTitle = m_pCurrentConverter ? m_pCurrentConverter->getTrackTitle() : "Unknown";
@@ -118,21 +126,21 @@ void StemConversionManager::onConversionCompleted(TrackId trackId) {
     status.progress = 1.0f;
     m_conversionHistory.prepend(status);
 
-    // Limitar l'historial a 100 elements
+    // Limit history to 100 items
     if (m_conversionHistory.size() > 100) {
         m_conversionHistory.removeLast();
     }
 
     emit conversionCompleted(trackId);
 
-    // Processar la següent de la cua
+    // Process next in queue
     processNextInQueue();
 }
 
 void StemConversionManager::onConversionFailed(TrackId trackId, const QString& errorMessage) {
     kLogger.warning() << "Conversion failed for track:" << trackId << "Error:" << errorMessage;
 
-    // Afegir a l'historial
+    // Add to history
     ConversionStatus status;
     status.trackId = trackId;
     status.trackTitle = m_pCurrentConverter ? m_pCurrentConverter->getTrackTitle() : "Unknown";
@@ -140,14 +148,14 @@ void StemConversionManager::onConversionFailed(TrackId trackId, const QString& e
     status.progress = 0.0f;
     m_conversionHistory.prepend(status);
 
-    // Limitar l'historial a 100 elements
+    // Limit history to 100 items
     if (m_conversionHistory.size() > 100) {
         m_conversionHistory.removeLast();
     }
 
     emit conversionFailed(trackId, errorMessage);
 
-    // Processar la següent de la cua
+    // Process next in queue
     processNextInQueue();
 }
 

@@ -16,14 +16,17 @@ DlgStemConversion::DlgStemConversion(
     setMinimumWidth(600);
     setMinimumHeight(400);
 
-    // Window modeless (not blocked)
+    // Window modeless (non-blocking) - IMPORTANT: This allows the window to be closed
     setWindowModality(Qt::NonModal);
+    
+    // Allow the window to be closed with the X button
+    setWindowFlags(windowFlags() | Qt::WindowCloseButtonHint);
 
     createUI();
     connectSignals();
     updateConversionList();
 
-    // show window
+    // Show window (non-blocking)
     show();
 }
 
@@ -42,7 +45,9 @@ void DlgStemConversion::createUI() {
     m_pProgressBar->setValue(0);
     pCurrentLayout->addWidget(m_pProgressBar);
 
+    // Phase/Status message label (NEW)
     m_pStatusLabel = new QLabel("Waiting for conversion...", this);
+    m_pStatusLabel->setStyleSheet("color: #0066CC; font-weight: bold;");  // Blue, bold
     pCurrentLayout->addWidget(m_pStatusLabel);
 
     pMainLayout->addWidget(pCurrentGroup);
@@ -65,7 +70,8 @@ void DlgStemConversion::createUI() {
     pButtonLayout->addStretch();
 
     m_pCloseButton = new QPushButton("Close", this);
-    connect(m_pCloseButton, &QPushButton::clicked, this, &QDialog::accept);
+    // Use reject() instead of accept() to close the dialog without blocking
+    connect(m_pCloseButton, &QPushButton::clicked, this, &QDialog::reject);
     pButtonLayout->addWidget(m_pCloseButton);
 
     pMainLayout->addLayout(pButtonLayout);
@@ -92,38 +98,60 @@ void DlgStemConversion::onConversionStarted(TrackId trackId, const QString& trac
     Q_UNUSED(trackId);
     m_pCurrentTrackLabel->setText(QString("Converting: %1").arg(trackTitle));
     m_pProgressBar->setValue(0);
-    m_pStatusLabel->setText("Starting conversion...");
-    QApplication::processEvents();  // Actualizar la UI
+    m_pStatusLabel->setText("⏳ Initializing conversion...");
+    QApplication::processEvents();  // Update UI
 }
 
 void DlgStemConversion::onConversionProgress(TrackId trackId, float progress, const QString& message) {
     Q_UNUSED(trackId);
     m_pProgressBar->setValue(static_cast<int>(progress * 100));
-    m_pStatusLabel->setText(message);
-    QApplication::processEvents();  // Actualizar la UI
+
+    // Format the message with progress indicator and emoji
+    QString displayMessage = message;
+
+    // Add progress percentage
+    displayMessage += QString(" (%1%)").arg(static_cast<int>(progress * 100));
+
+    // Add phase emoji based on progress
+    if (progress < 0.2f) {
+        displayMessage = "🔍 " + displayMessage;  // Searching/Initializing
+    } else if (progress < 0.5f) {
+        displayMessage = "🎵 " + displayMessage;  // Demucs separation
+    } else if (progress < 0.7f) {
+        displayMessage = "🔄 " + displayMessage;  // Converting to M4A
+    } else if (progress < 0.9f) {
+        displayMessage = "📦 " + displayMessage;  // Creating container
+    } else {
+        displayMessage = "✅ " + displayMessage;  // Finalizing
+    }
+
+    m_pStatusLabel->setText(displayMessage);
+    QApplication::processEvents();  // Update UI
 }
 
 void DlgStemConversion::onConversionCompleted(TrackId trackId) {
     Q_UNUSED(trackId);
     m_pProgressBar->setValue(100);
-    m_pStatusLabel->setText("Conversion completed successfully");
+    m_pStatusLabel->setText("✅ Conversion completed successfully! (100%)");
     updateConversionList();
-    QApplication::processEvents();  // Actualizar la UI
+    QApplication::processEvents();  // Update UI
 }
 
 void DlgStemConversion::onConversionFailed(TrackId trackId, const QString& errorMessage) {
     Q_UNUSED(trackId);
-    m_pStatusLabel->setText(QString("Error: %1").arg(errorMessage));
+    m_pStatusLabel->setText(QString("❌ Error: %1").arg(errorMessage));
+    m_pStatusLabel->setStyleSheet("color: #CC0000; font-weight: bold;");  // Red, bold
     updateConversionList();
-    QApplication::processEvents();  // Actualizar la UI
+    QApplication::processEvents();  // Update UI
 }
 
 void DlgStemConversion::onQueueChanged(int pendingCount) {
     if (pendingCount == 0) {
         m_pCurrentTrackLabel->setText("No conversion in progress");
+        m_pStatusLabel->setStyleSheet("color: #0066CC; font-weight: bold;");  // Reset to blue
     }
     updateConversionList();
-    QApplication::processEvents();  // Actualizar la UI
+    QApplication::processEvents();  // Update UI
 }
 
 void DlgStemConversion::onClearHistory() {

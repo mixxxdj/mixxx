@@ -1744,6 +1744,7 @@ add_library(
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
   src/widget/wstemconversionbutton.cpp
+  src/widget/dlgstemconversionoptions.cpp
   src/widget/wtime.cpp
   src/widget/wtrackmenu.cpp
   src/widget/wtrackproperty.cpp
@@ -1796,6 +1797,7 @@ set(
   src/stems/stemconverter.h
   src/stems/stemconversionmanager.h
   src/stems/dlgstemconversion.h
+  src/widget/dlgstemconversionoptions.h
   src/track/track.h
   src/track/track_decl.h
   src/track/trackid.h

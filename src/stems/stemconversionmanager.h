@@ -32,8 +32,9 @@ class StemConversionManager : public QObject {
         float progress;
     };
 
-    /// Start converting a track to stems
-    void convertTrack(const TrackPointer& pTrack);
+    /// Start converting a track to stems with specified resolution
+    void convertTrack(const TrackPointer& pTrack, 
+                     StemConverter::Resolution resolution = StemConverter::Resolution::High);
 
     /// Get current conversion info
     std::optional<ConversionInfo> getCurrentConversion() const;
@@ -72,6 +73,7 @@ class StemConversionManager : public QObject {
     QThreadPool* m_pThreadPool;
     TrackId m_currentTrackId;
     QList<TrackPointer> m_conversionQueue;
+    QList<StemConverter::Resolution> m_resolutionQueue;  // Parallel queue for resolutions
     QList<ConversionStatus> m_conversionHistory;
     StemConverterPointer m_pCurrentConverter;
 };

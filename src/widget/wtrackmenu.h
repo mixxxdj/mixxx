@@ -18,6 +18,7 @@
 #include "util/parented_ptr.h"
 #include "stems/stemconversionmanager.h"
 #include "stems/dlgstemconversion.h"
+#include "widget/dlgstemconversionoptions.h"
 #include "widget/wstemconversionbutton.h"
 
 class DlgTagFetcher;
@@ -394,6 +395,9 @@ class WTrackMenu : public QMenu {
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+
+    // STEMS conversion dialog (must be member to prevent destruction)
+    std::unique_ptr<DlgStemConversion> m_pStemConversionDialog;
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> pExternalTrackCollection;

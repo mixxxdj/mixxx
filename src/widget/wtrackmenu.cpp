@@ -57,6 +57,7 @@
 #include "stems/stemconversionmanager.h"
 #include "stems/dlgstemconversion.h"
 #include "widget/wstemconversionbutton.h"
+#include "widget/dlgstemconversionoptions.h"
 
 constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
 
@@ -1830,16 +1831,34 @@ void WTrackMenu::slotConvertToStems() {
         return;
     }
 
-    // Queue all selected tracks for conversion
+    // Show options dialog first to let user select resolution
+    DlgStemConversionOptions optionsDialog(this);
+    if (optionsDialog.exec() != QDialog::Accepted) {
+        // User cancelled the dialog
+        return;
+    }
+
+    // Get selected resolution from dialog
+    auto dialogResolution = optionsDialog.getSelectedResolution();
+
+    // Convert DlgStemConversionOptions::Resolution to StemConverter::Resolution
+    StemConverter::Resolution converterResolution;
+    if (dialogResolution == DlgStemConversionOptions::Resolution::High) {
+        converterResolution = StemConverter::Resolution::High;
+    } else {
+        converterResolution = StemConverter::Resolution::Low;
+    }
+
+    // Queue all selected tracks for conversion with the selected resolution
     for (const auto& pTrack : tracks) {
         if (pTrack) {
-            m_pStemConversionManager->convertTrack(pTrack);
+            m_pStemConversionManager->convertTrack(pTrack, converterResolution);
         }
     }
 
-    // Open the conversion dialog
-    auto pDialog = std::make_unique<DlgStemConversion>(m_pStemConversionManager, this);
-    pDialog->exec();
+    // Open the conversion dialog (modeless - non-blocking)
+    m_pStemConversionDialog = std::make_unique<DlgStemConversion>(m_pStemConversionManager, this);
+    m_pStemConversionDialog->show();
 }
 
 void WTrackMenu::slotLockBpm() {

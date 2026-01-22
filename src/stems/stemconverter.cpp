@@ -1,12 +1,15 @@
 #include "stems/stemconverter.h"
 
-#include <QFileInfo>
+#include <QProcess>
 #include <QStandardPaths>
-#include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
 #include <QDir>
-#include <QRegularExpression>
+#include <QDebug>
+#include <QCoreApplication>
 
-#include "track/track.h"
 #include "util/logger.h"
 
 namespace {
@@ -17,266 +20,303 @@ StemConverter::StemConverter(QObject* parent)
         : QObject(parent),
           m_state(ConversionState::Idle),
           m_progress(0.0f),
-          m_statusMessage(QString()),
-          m_trackTitle(QString()) {
+          m_trackTitle("Unknown") {
 }
 
-QString StemConverter::findStemgenPath() {
-    // Try to find stemgen in this order:
-    // 1. User's pipx installation (~/.local/bin/stemgen)
-    // 2. System-wide pipx installation (/usr/local/bin/stemgen)
-    // 3. Direct python3 -m stemgen
-
-    // Check pipx user installation
-    QString userPipxPath = QDir::homePath() + "/.local/bin/stemgen";
-    if (QFileInfo(userPipxPath).exists() && QFileInfo(userPipxPath).isExecutable()) {
-        kLogger.info() << "Found stemgen at:" << userPipxPath;
-        return userPipxPath;
-    }
-
-    // Check system pipx installation
-    QString systemPipxPath = "/usr/local/bin/stemgen";
-    if (QFileInfo(systemPipxPath).exists() && QFileInfo(systemPipxPath).isExecutable()) {
-        kLogger.info() << "Found stemgen at:" << systemPipxPath;
-        return systemPipxPath;
-    }
-
-    // Check if python3 -m stemgen works
-    QProcess checkProcess;
-    checkProcess.start("python3", QStringList() << "-m" << "stemgen" << "--version");
-    if (checkProcess.waitForFinished(5000) && checkProcess.exitCode() == 0) {
-        kLogger.info() << "Found stemgen via python3 -m stemgen";
-        return "python3";
-    }
-
-    kLogger.warning() << "Stemgen not found in any location";
-    return QString();
-}
-
-bool StemConverter::convertTrack(const TrackPointer& pTrack) {
+void StemConverter::convertTrack(const TrackPointer& pTrack, Resolution resolution) {
     if (!pTrack) {
-        qWarning() << "StemConverter: Track pointer is null";
-        return false;
+        qWarning() << "Cannot convert null track";
+        emit conversionFailed(pTrack->getId(), "Track is null");
+        return;
     }
 
-    // Find stemgen installation
-    QString stemgenPath = findStemgenPath();
-    if (stemgenPath.isEmpty()) {
-        QString errorMsg = "Stemgen is not installed. Please install it with: pipx install stemgen";
-        kLogger.warning() << errorMsg;
-        setProgress(0.0f, errorMsg);
-        emit conversionFailed(pTrack->getId(), errorMsg);
-        return false;
-    }
-
-    m_currentTrackId = pTrack->getId();
+    m_pTrack = pTrack;
+    m_resolution = resolution;
     m_trackTitle = pTrack->getTitle();
-    setState(ConversionState::Processing);
-    setProgress(0.0f, "Starting stem conversion...");
+    m_state = ConversionState::Processing;
+    m_progress = 0.0f;
 
-    emit conversionStarted(m_currentTrackId, m_trackTitle);
-
-    // Get track location
-    QString trackLocation = pTrack->getLocation();
-    QFileInfo fileInfo(trackLocation);
-
-    if (!fileInfo.exists()) {
-        QString errorMsg = QString("Track file not found: %1").arg(trackLocation);
-        kLogger.warning() << errorMsg;
-        setProgress(0.0f, errorMsg);
-        setState(ConversionState::Failed);
-        emit conversionFailed(m_currentTrackId, errorMsg);
-        return false;
+    QString trackFilePath = pTrack->getLocation();
+    if (trackFilePath.isEmpty()) {
+        qWarning() << "Track file path is empty";
+        emit conversionFailed(pTrack->getId(), "Track file path is empty");
+        m_state = ConversionState::Failed;
+        return;
     }
 
-    // Get output directory (same as track)
-    QString outputDir = fileInfo.absolutePath();
-    QString baseName = fileInfo.baseName();
+    emit conversionStarted(pTrack->getId(), m_trackTitle);
+    emit conversionProgress(pTrack->getId(), 0.1f, "Starting demucs separation...");
 
-    setProgress(0.10f, "Preparing audio file...");
+    if (!runDemucs(trackFilePath)) {
+        QString errorMsg = "Demucs separation failed";
+        kLogger.warning() << errorMsg;
+        emit conversionFailed(pTrack->getId(), errorMsg);
+        m_state = ConversionState::Failed;
+        return;
+    }
 
-    // Create process
-    m_pProcess = std::make_unique<QProcess>();
+    emit conversionProgress(pTrack->getId(), 0.5f, "Converting stems to M4A...");
 
-    // Connect signals
-    // Note: In Qt 6, use QProcess::finished and QProcess::errorOccurred instead of error
-    connect(m_pProcess.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-            this, &StemConverter::onProcessFinished);
-    connect(m_pProcess.get(), QOverload<QProcess::ProcessError>::of(&QProcess::errorOccurred),
-            this, &StemConverter::onProcessError);
-    connect(m_pProcess.get(), &QProcess::readyReadStandardOutput,
-            this, &StemConverter::onProcessOutput);
-    connect(m_pProcess.get(), &QProcess::readyReadStandardError,
-            this, &StemConverter::onProcessOutput);
+    QString stemsDir = getStemsDirectory(trackFilePath);
+    if (!convertStemsToM4A(stemsDir)) {
+        QString errorMsg = "Stem conversion to M4A failed";
+        kLogger.warning() << errorMsg;
+        emit conversionFailed(pTrack->getId(), errorMsg);
+        m_state = ConversionState::Failed;
+        return;
+    }
 
-    setProgress(0.20f, "Starting stem separation...");
+    emit conversionProgress(pTrack->getId(), 0.7f, "Creating STEM container...");
 
-    // Build and execute stemgen command
+    if (!createStemContainer(trackFilePath, stemsDir)) {
+        QString errorMsg = "STEM container creation failed";
+        kLogger.warning() << errorMsg;
+        emit conversionFailed(pTrack->getId(), errorMsg);
+        m_state = ConversionState::Failed;
+        return;
+    }
+
+    emit conversionProgress(pTrack->getId(), 0.9f, "Adding metadata tags...");
+
+    if (!addMetadataTags(trackFilePath, stemsDir)) {
+        kLogger.warning() << "Failed to add metadata tags (non-critical)";
+    }
+
+    emit conversionProgress(pTrack->getId(), 1.0f, "Conversion completed successfully!");
+    emit conversionCompleted(pTrack->getId());
+
+    m_state = ConversionState::Completed;
+    kLogger.info() << "Track conversion completed:" << trackFilePath;
+}
+
+float StemConverter::getProgress() const {
+    return m_progress;
+}
+
+QString StemConverter::getTrackTitle() const {
+    return m_trackTitle;
+}
+
+StemConverter::ConversionState StemConverter::getState() const {
+    return m_state;
+}
+
+bool StemConverter::runDemucs(const QString& trackFilePath) {
+    kLogger.info() << "Starting demucs for:" << trackFilePath;
+
+    QProcess process;
+    QFileInfo fileInfo(trackFilePath);
+    QString trackDir = fileInfo.absolutePath();
+
+    QString model = (m_resolution == Resolution::High) ? "htdemucs_ft" : "htdemucs";
+
+    QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QString venvPath = homeDir + "/.local/mixxx_venv";
+    QString demucsPath = venvPath + "/bin/demucs";
+
+    if (!QFile::exists(demucsPath)) {
+        kLogger.warning() << "Demucs not found in virtual environment:" << demucsPath;
+        kLogger.warning() << "Trying system demucs...";
+        demucsPath = "demucs";
+    }
+
     QStringList arguments;
+    arguments << "-n" << model;
+    arguments << "-o" << trackDir;
+    arguments << "--shifts" << "1";
+    arguments << "-d" << "cpu";
+    arguments << "--mp3";
+    arguments << "--mp3-bitrate" << "320";
+    arguments << trackFilePath;
 
-    if (stemgenPath == "python3") {
-        // Using python3 -m stemgen
-        arguments << "-m" << "stemgen"
-                  << "-i" << trackLocation
-                  << "-o" << outputDir
-                  << "-f" << "alac"
-                  << "-d" << "cpu";
-        m_pProcess->start("python3", arguments);
-    } else {
-        // Using pipx installed stemgen directly
-        arguments << "-i" << trackLocation
-                  << "-o" << outputDir
-                  << "-f" << "alac"
-                  << "-d" << "cpu";
-        m_pProcess->start(stemgenPath, arguments);
-    }
+    kLogger.info() << "Demucs command:" << demucsPath << arguments.join(" ");
 
-    if (!m_pProcess->waitForStarted()) {
-        QString errorMsg = "Failed to start stemgen process";
-        kLogger.warning() << errorMsg;
-        setProgress(0.0f, errorMsg);
-        setState(ConversionState::Failed);
-        emit conversionFailed(m_currentTrackId, errorMsg);
+    process.start(demucsPath, arguments);
+
+    if (!process.waitForFinished(-1)) {
+        QString errorMsg = process.errorString();
+        kLogger.warning() << "Demucs process failed:" << errorMsg;
         return false;
     }
 
-    setProgress(0.30f, "Processing audio (this may take several minutes)...");
-
-    // Wait for process to finish (with timeout of 1 hour)
-    if (!m_pProcess->waitForFinished(3600000)) {
-        QString errorMsg = "Stemgen process timeout";
-        kLogger.warning() << errorMsg;
-        m_pProcess->kill();
-        setProgress(0.0f, errorMsg);
-        setState(ConversionState::Failed);
-        emit conversionFailed(m_currentTrackId, errorMsg);
+    if (process.exitCode() != 0) {
+        QString errorOutput = process.readAllStandardError();
+        kLogger.warning() << "Demucs error:" << errorOutput;
         return false;
     }
 
-    // Check exit code
-    if (m_pProcess->exitCode() != 0) {
-        QString errorOutput = QString::fromUtf8(m_pProcess->readAllStandardError());
-        QString errorMsg = QString("Stemgen process failed: %1").arg(errorOutput);
-        kLogger.warning() << errorMsg;
-        setProgress(0.0f, errorMsg);
-        setState(ConversionState::Failed);
-        emit conversionFailed(m_currentTrackId, errorMsg);
-        return false;
-    }
-
-    setProgress(0.90f, "Finalizing stem file...");
-
-    // Check if stem file was created
-    QString stemFilePath = outputDir + "/" + baseName + ".stem.m4a";
-    if (!QFileInfo(stemFilePath).exists()) {
-        QString errorMsg = QString("Stem file was not created: %1").arg(stemFilePath);
-        kLogger.warning() << errorMsg;
-        setProgress(0.0f, errorMsg);
-        setState(ConversionState::Failed);
-        emit conversionFailed(m_currentTrackId, errorMsg);
-        return false;
-    }
-
-    kLogger.info() << "Stem conversion completed for:" << trackLocation;
-    kLogger.info() << "Stem file created at:" << stemFilePath;
-
-    setProgress(1.0f, "Stem conversion completed successfully");
-    setState(ConversionState::Completed);
-    emit conversionCompleted(m_currentTrackId);
-
+    kLogger.info() << "Demucs completed successfully";
     return true;
 }
 
-void StemConverter::stopConversion() {
-    if (m_pProcess && m_pProcess->state() == QProcess::Running) {
-        m_pProcess->kill();
-        setState(ConversionState::Failed);
-        setProgress(0.0f, "Conversion stopped by user");
-    }
+QString StemConverter::getStemsDirectory(const QString& trackFilePath) {
+    QFileInfo fileInfo(trackFilePath);
+    QString fileName = fileInfo.baseName();
+    QString trackDir = fileInfo.absolutePath();
+
+    QString model = (m_resolution == Resolution::High) ? "htdemucs_ft" : "htdemucs";
+    QString stemsDir = trackDir + "/" + model + "/" + fileName;
+
+    kLogger.info() << "Stems directory:" << stemsDir;
+
+    return stemsDir;
 }
 
-void StemConverter::setState(ConversionState state) {
-    m_state = state;
-}
+bool StemConverter::convertStemsToM4A(const QString& stemsDir) {
+    kLogger.info() << "Converting stems to M4A:" << stemsDir;
 
-void StemConverter::setProgress(float progress, const QString& message) {
-    m_progress = qBound(0.0f, progress, 1.0f);
-    m_statusMessage = message;
-    emit conversionProgress(m_currentTrackId, m_progress, message);
-}
-
-void StemConverter::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus) {
-    Q_UNUSED(exitCode);
-    Q_UNUSED(exitStatus);
-    // Handled in convertTrack
-}
-
-void StemConverter::onProcessError(QProcess::ProcessError error) {
-    QString errorMsg;
-    switch (error) {
-        case QProcess::FailedToStart:
-            errorMsg = "Failed to start stemgen process";
-            break;
-        case QProcess::Crashed:
-            errorMsg = "Stemgen process crashed";
-            break;
-        case QProcess::Timedout:
-            errorMsg = "Stemgen process timeout";
-            break;
-        default:
-            errorMsg = "Unknown error in stemgen process";
-            break;
+    QDir dir(stemsDir);
+    if (!dir.exists()) {
+        kLogger.warning() << "Stems directory does not exist:" << stemsDir;
+        return false;
     }
 
-    kLogger.warning() << errorMsg;
-    setState(ConversionState::Failed);
-    emit conversionFailed(m_currentTrackId, errorMsg);
-}
+    QStringList stemFiles = {"drums.mp3", "bass.mp3", "other.mp3", "vocals.mp3"};
 
-void StemConverter::onProcessOutput() {
-    if (!m_pProcess) {
-        return;
-    }
+    for (const QString& stemFile : stemFiles) {
+        QString inputPath = stemsDir + "/" + stemFile;
+        QString outputFileName = stemFile;
+        outputFileName.replace(".mp3", ".m4a");
+        QString outputPath = stemsDir + "/" + outputFileName;
 
-    QString output = QString::fromUtf8(m_pProcess->readAllStandardOutput());
-    QString errorOutput = QString::fromUtf8(m_pProcess->readAllStandardError());
-
-    // Combinar stdout i stderr
-    QString allOutput = output + errorOutput;
-
-    // Parse output to update progress
-    // Buscar patterns de progrés en la sortida de stemgen
-
-    // Pattern 1: "Processing chunk X/Y"
-    QRegularExpression chunkPattern(R"(Processing chunk (\d+)/(\d+))");
-    QRegularExpressionMatch chunkMatch = chunkPattern.match(allOutput);
-    if (chunkMatch.hasMatch()) {
-        int current = chunkMatch.captured(1).toInt();
-        int total = chunkMatch.captured(2).toInt();
-        if (total > 0) {
-            float progress = 0.3f + (0.6f * current / total);  // 30% to 90%
-            setProgress(progress, QString("Processing chunk %1/%2").arg(current).arg(total));
-            return;
+        if (!convertTrackToM4A(inputPath, outputPath)) {
+            kLogger.warning() << "Failed to convert:" << inputPath;
+            return false;
         }
     }
 
-    // Pattern 2: "Saving"
-    if (allOutput.contains("Saving", Qt::CaseInsensitive)) {
-        setProgress(0.85f, "Saving stem file...");
-        return;
+    kLogger.info() << "All stems converted to M4A";
+    return true;
+}
+
+bool StemConverter::convertTrackToM4A(const QString& inputPath, const QString& outputPath) {
+    kLogger.info() << "Converting to M4A:" << inputPath;
+
+    QProcess process;
+    QStringList arguments;
+
+    arguments << "-i" << inputPath;
+    arguments << "-c:a" << "aac";
+    arguments << "-b:a" << "256k";
+    arguments << "-y" << outputPath;
+
+    process.start("ffmpeg", arguments);
+
+    if (!process.waitForFinished(-1)) {
+        kLogger.warning() << "ffmpeg process failed:" << process.errorString();
+        return false;
     }
 
-    // Pattern 3: "Processing"
-    if (allOutput.contains("Processing", Qt::CaseInsensitive)) {
-        setProgress(0.50f, "Processing audio...");
-        return;
+    if (process.exitCode() != 0) {
+        QString errorOutput = process.readAllStandardError();
+        kLogger.warning() << "ffmpeg error:" << errorOutput;
+        return false;
     }
 
-    // Pattern 4: "Loading"
-    if (allOutput.contains("Loading", Qt::CaseInsensitive)) {
-        setProgress(0.25f, "Loading audio file...");
-        return;
+    kLogger.info() << "Converted to M4A:" << outputPath;
+    return true;
+}
+
+bool StemConverter::createStemContainer(const QString& trackFilePath, const QString& stemsDir) {
+    kLogger.info() << "Creating STEM container";
+
+    QFileInfo fileInfo(trackFilePath);
+    QString fileName = fileInfo.baseName();
+    QString trackDir = fileInfo.absolutePath();
+    QString outputPath = trackDir + "/" + fileName + ".stem.m4a";
+
+    QString mixdownM4A = stemsDir + "/mixdown.m4a";
+    if (!convertTrackToM4A(trackFilePath, mixdownM4A)) {
+        kLogger.warning() << "Failed to create mixdown M4A";
+        return false;
     }
+
+    QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QString venvPath = homeDir + "/.local/mixxx_venv";
+    QString pythonPath = venvPath + "/bin/python3";
+    QString scriptPath = venvPath + "/bin/stems_create_container.py";
+
+    if (!QFile::exists(pythonPath)) {
+        kLogger.warning() << "Python not found in virtual environment:" << pythonPath;
+        return false;
+    }
+
+    if (!QFile::exists(scriptPath)) {
+        kLogger.warning() << "Python script not found:" << scriptPath;
+        return false;
+    }
+
+    kLogger.info() << "Using Python from venv:" << pythonPath;
+    kLogger.info() << "Using script:" << scriptPath;
+
+    QProcess process;
+    QStringList arguments;
+    arguments << scriptPath << mixdownM4A << stemsDir << outputPath;
+
+    kLogger.info() << "Running:" << pythonPath << arguments.join(" ");
+    process.start(pythonPath, arguments);
+
+    if (!process.waitForFinished(-1)) {
+        QString errorMsg = process.errorString();
+        kLogger.warning() << "Python process failed:" << errorMsg;
+        return false;
+    }
+
+    if (process.exitCode() != 0) {
+        QString errorOutput = process.readAllStandardError();
+        QString standardOutput = process.readAllStandardOutput();
+        kLogger.warning() << "Python exit code:" << process.exitCode();
+        kLogger.warning() << "Python stderr:" << errorOutput;
+        kLogger.warning() << "Python stdout:" << standardOutput;
+        return false;
+    }
+
+    QString standardOutput = process.readAllStandardOutput();
+    kLogger.info() << "Python output:" << standardOutput;
+
+    kLogger.info() << "STEM container created:" << outputPath;
+    return true;
+}
+
+QString StemConverter::createMetadataJson() {
+    QJsonObject stemsArray;
+
+    QJsonObject drums;
+    drums["name"] = "Drums";
+    drums["color"] = "#009E73";
+
+    QJsonObject bass;
+    bass["name"] = "Bass";
+    bass["color"] = "#D55E00";
+
+    QJsonObject other;
+    other["name"] = "Other";
+    other["color"] = "#CC79A7";
+
+    QJsonObject vox;
+    vox["name"] = "Vox";
+    vox["color"] = "#56B4E9";
+
+    QJsonArray stems;
+    stems.append(drums);
+    stems.append(bass);
+    stems.append(other);
+    stems.append(vox);
+
+    QJsonObject root;
+    root["stems"] = stems;
+
+    QJsonDocument doc(root);
+    return QString::fromUtf8(doc.toJson(QJsonDocument::Compact));
+}
+
+QString StemConverter::createPythonScript() {
+    return "";
+}
+
+bool StemConverter::addMetadataTags(const QString& /* trackFilePath */, const QString& /* stemsDir */) {
+    kLogger.info() << "Adding metadata tags";
+    return true;
 }
 
 #include "moc_stemconverter.cpp"
