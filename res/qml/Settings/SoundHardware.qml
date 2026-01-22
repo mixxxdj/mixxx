@@ -321,6 +321,14 @@ Category {
                                             options.push(qsTr("Rubberband R3"));
                                             tooltips.push(qsTr("Near-hi-fi quality"));
                                             break;
+                                        case 3:
+                                            options.push(qsTr("SiS (Default)"));
+                                            tooltips.push(qsTr("Near-hi-fi quality"));
+                                            break;
+                                        case 4:
+                                            options.push(qsTr("SiS (Cheaper)"));
+                                            tooltips.push(qsTr("Near-hi-fi quality"));
+                                            break;
                                         }
                                     }
                                     keylock.options = options;
