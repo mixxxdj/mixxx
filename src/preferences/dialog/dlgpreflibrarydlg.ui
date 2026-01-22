@@ -508,7 +508,17 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
+	  <item row="6" column="0">
+	   <widget class="QCheckBox" name="checkBox_show_vdj">
+		<property name="text">
+		 <string>Show Virtual DJ Library</string>
+		</property>
+		<property name="checked">
+		 <bool>true</bool>
+		</property>
+	   </widget>
+	  </item>
+      <item row="7" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>All external libraries shown are write protected.</string>
@@ -521,7 +531,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="label_11">
         <property name="text">
          <string>You will need to restart Mixxx for these settings to take effect.</string>
@@ -707,6 +717,7 @@
   <tabstop>checkBox_show_traktor</tabstop>
   <tabstop>checkBox_show_rekordbox</tabstop>
   <tabstop>checkBox_show_serato</tabstop>
+  <tabstop>checkBox_show_vdj</tabstop>
   <tabstop>radioButton_cover_art_fetcher_highest</tabstop>
   <tabstop>radioButton_cover_art_fetcher_high</tabstop>
   <tabstop>radioButton_cover_art_fetcher_medium</tabstop>
@@ -716,3 +727,4 @@
  <resources/>
  <connections/>
 </ui>
+
