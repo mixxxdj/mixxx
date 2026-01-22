@@ -100,7 +100,7 @@ LibraryScanner::LibraryScanner(
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_analysisDao(pConfig),
-          m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
+          m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_genreDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
           m_manualScan(true) {
