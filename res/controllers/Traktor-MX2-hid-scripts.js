@@ -385,7 +385,7 @@ TraktorMX2.padModeHandler = function (field) {
             TraktorMX2.outputHandler(0, field.group, "patterns");
             TraktorMX2.outputHandler(0, field.group, "loops");
 
-            // Light LEDs for all enabled hotcues
+        // Light LEDs (blue for all enabled hotcues, dimmed white for disabled)
             for (let i = 1; i <= 8; ++i) {
                 const active = engine.getValue(field.group, `hotcue_${i}_status`);
                 if (active) {
@@ -406,7 +406,7 @@ TraktorMX2.padModeHandler = function (field) {
             TraktorMX2.outputHandler(0, field.group, "patterns");
             TraktorMX2.outputHandler(0, field.group, "loops");
 
-            // Light LEDs for all enabled stems
+        // Light LEDs (stem color for all unmuted stems, dimmed red for muted)
             for (let i = 1; i <= engine.getValue(field.group, "stem_count"); i++) {
                 const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
                 const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
@@ -417,6 +417,8 @@ TraktorMX2.padModeHandler = function (field) {
             break;
 
         case "!patterns":
+
+        // Patterns mode not implemented yet -> does nothing except lighting
 
             TraktorMX2.padModeState[field.group] = 2;
             TraktorMX2.outputHandler(0, field.group, "hotcues");
@@ -439,7 +441,7 @@ TraktorMX2.padModeHandler = function (field) {
             TraktorMX2.outputHandler(0, field.group, "patterns");
             TraktorMX2.outputHandler(1, field.group, "loops");
 
-            // Turn off LEDs
+        // Turn LEDs green
             for (let i = 1; i <= 8; ++i) {
                 TraktorMX2.outputHandler(TraktorMX2.baseColors.green, field.group, "pad_" + i);
             }
@@ -464,10 +466,9 @@ TraktorMX2.padHandler = function (field) {
 
         case 1:
             // Stems Mode
-            // ignore if no stemfile is loaded
 
             let stemCount = engine.getValue(field.group, "stem_count")
-
+        // ignore if no stemfile is loaded
             if (stemCount === 0) {
                 return;
             }
@@ -555,7 +556,6 @@ TraktorMX2.previewHandler = function (field) {
         return;
     }
 
-
     engine.setValue(field.group, "LoadSelectedTrackAndPlay", field.value);
 };
 
@@ -563,7 +563,6 @@ TraktorMX2.favListHandler = function (field) {
     if (field.value === 0) {
         return;
     }
-    //engine.setValue("[Library]", "AutoDjAddBottom", field.value);
 };
 
 TraktorMX2.maximizeLibraryHandler = function (field) {
@@ -585,10 +584,9 @@ TraktorMX2.selectLoopHandler = function (field) {
         delta = -1;
     }
 
-    // Change Functionality in Stems Mode with pressed Pad 5-8
     if (TraktorMX2.padModeState[field.group] === 1 && Object.values(TraktorMX2.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+        // Change Functionality in Stems Mode with pressed Pad 5-8
         for (const padNum in TraktorMX2.padPressed[field.group]) {
-            // Check if the pad is pressed
             if (TraktorMX2.padPressed[field.group][padNum]) {
 
                 if (!TraktorMX2.shiftPressed[field.group]) {
@@ -608,6 +606,7 @@ TraktorMX2.selectLoopHandler = function (field) {
             }
         }
     } else {
+
         if ((field.value + 1) % 16 === TraktorMX2.loopKnobEncoderState[field.group]) {
             script.triggerControl(field.group, "loop_halve");
         } else {
@@ -623,15 +622,15 @@ TraktorMX2.activateLoopHandler = function (field) {
         return;
     }
 
-    // Change Functionality in Stems Mode with pressed Pad 5-8
     if (TraktorMX2.padModeState[field.group] === 1 && Object.values(TraktorMX2.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+        // Change Functionality in Stems Mode with pressed any of Pad 5-8
         for (const padNum in TraktorMX2.padPressed[field.group]) {
-            // Check if the pad is pressed
             if (TraktorMX2.padPressed[field.group][padNum]) {
                 script.toggleControl("[QuickEffectRack1_[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]]", "enabled");
             }
         }
     } else {
+        //Default Functionality
         if (TraktorMX2.shiftPressed[field.group]) {
             engine.setValue(field.group, "reloop_toggle", field.value);
         } else {
@@ -646,11 +645,9 @@ TraktorMX2.selectBeatjumpHandler = function (field) {
         delta = -1;
     }
 
-    // Change Functionality in Stems Mode with pressed Pad 5-8
     if (TraktorMX2.padModeState[field.group] === 1 && Object.values(TraktorMX2.padPressed[field.group]).reduce((v, a) => v || a, false)) {
-
+        // Change Functionality in Stems Mode with pressed any of Pad 5-8
         for (const padNum in TraktorMX2.padPressed[field.group]) {
-            // Check if the pad is pressed
             if (TraktorMX2.padPressed[field.group][padNum]) {
                 if (delta > 0) {
                     script.triggerControl("[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]", "volume_up");
@@ -726,12 +723,14 @@ TraktorMX2.jogModeHandler = function (field) {
     const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
 
     if (field.name === "!tt") {
+        // Turntable mode
         TraktorMX2.jogModeState[field.group] = 0;
 
         TraktorMX2.outputHandler(false, field.group, "jog");
         TraktorMX2.outputHandler(true, field.group, "tt");
 
     } else if (field.name === "!jog") {
+        // Jog mode
         TraktorMX2.jogModeState[field.group] = 1;
         engine.scratchDisable(deckNumber);
 
@@ -743,6 +742,7 @@ TraktorMX2.jogModeHandler = function (field) {
 TraktorMX2.jogTouchHandler = function (field) {
     const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
     if (TraktorMX2.jogModeState[field.group] === 0) {
+        // Turntable mode
         if (field.value > 0) {
             engine.scratchEnable(deckNumber, 1024, 33 + 1 / 3, 0.125, 0.125 / 8, true,);
         } else {
@@ -763,7 +763,7 @@ TraktorMX2.jogHandler = function (field) {
         //Turntable
 
         if (TraktorMX2.shiftPressed[field.group] && !engine.getValue(field.group, "play")) {
-            // Seek through track
+            // Skip through track
             engine.setValue(field.group, "beatjump", velocity)
         } else {
             if (engine.isScratching(deckNumber)) {
@@ -776,7 +776,6 @@ TraktorMX2.jogHandler = function (field) {
         }
 
     } else {
-
         // Jog
         engine.setValue(field.group, "jog", velocity);
     }
