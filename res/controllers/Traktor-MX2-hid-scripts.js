@@ -269,8 +269,8 @@ TraktorMX2.registerInputPackets = function () {
     this.controller.registerInputPacket(messageLong);
 
 
-    this.registerInputJog(messageJog, "[Channel1]", "!jog", 0x08, 0xffffffff, this.jogHandler);
-    this.registerInputJog(messageJog, "[Channel2]", "!jog", 0x10, 0xffffffff, this.jogHandler);
+    this.registerInputJog(messageJog, "[Channel1]", "jog_wheel", 0x08, 0xffffffff, this.jogHandler);
+    this.registerInputJog(messageJog, "[Channel2]", "jog_wheel", 0x10, 0xffffffff, this.jogHandler);
 
     this.controller.registerInputPacket(messageJog);
 
@@ -495,8 +495,8 @@ TraktorMX2.padHandler = function (field) {
             break;
 
         case 3:
+            // Loops Mode
 
-            // only first 4 pads are used for loops
             if (TraktorMX2.shiftPressed[field.group]) {
                 engine.setValue(field.group, "beatlooproll_" + (2 ** (padNumber - 5)) + "_activate", field.value);
             } else {
@@ -757,10 +757,27 @@ TraktorMX2.jogHandler = function (field) {
     const tickDelta = deltas[0];
     const timeDelta = deltas[1];
 
-    if (engine.isScratching(deckNumber)) {
-        engine.scratchTick(deckNumber, tickDelta);
+    const velocity = (tickDelta / timeDelta) * TraktorMX2.pitchBendMultiplier;
+
+    if (TraktorMX2.jogModeState[field.group] === 0) {
+        //Turntable
+
+        if (TraktorMX2.shiftPressed[field.group] && !engine.getValue(field.group, "play")) {
+            // Seek through track
+            engine.setValue(field.group, "beatjump", velocity)
+        } else {
+            if (engine.isScratching(deckNumber)) {
+                //Scratch
+                engine.scratchTick(deckNumber, tickDelta);
+            } else {
+                // Jog
+                engine.setValue(field.group, "jog", velocity * TraktorMX2.pitchBendMultiplier);
+            }
+        }
+
     } else {
-        const velocity = (tickDelta / timeDelta) * TraktorMX2.pitchBendMultiplier;
+
+        // Jog
         engine.setValue(field.group, "jog", velocity);
     }
 };
