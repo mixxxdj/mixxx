@@ -12,8 +12,6 @@
 # Might be created when running a Python script from the tools folder
 __pycache__
 
-.idea/
-
 # Clang/cmake
 *_build
 compile_commands.json
