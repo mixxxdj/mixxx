@@ -1324,7 +1324,7 @@ TraktorMX2.lightDeck = function (switchOff) {
 
     let current = engine.getValue("[Channel1]", "play_indicator");
     TraktorMX2.controller.setOutput("[Channel1]", "play_indicator", getColorValue("[Channel1]", "play_indicator", current), false,);
-    current = engine.getValue("[Channel2]", "play_indicator")
+    current = engine.getValue("[Channel2]", "play_indicator");
     TraktorMX2.controller.setOutput("[Channel2]", "play_indicator", getColorValue("[Channel2]", "play_indicator", current), false,);
 
     current = engine.getValue("[Channel1]", "cue_indicator");
