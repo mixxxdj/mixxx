@@ -68,21 +68,13 @@ case "$1" in
             echo "WARNING: The package 'fonts-ubuntu' is not available."
             echo "This package is required for Mixxx and is located in the Debian non-free repository."
             echo ""
-            read -p "Do you want to enable the non-free repository and install fonts-ubuntu? (y/n) " -n 1 -r
+            echo "See also: https://wiki.debian.org/SourcesList"
+            echo ""
+            read -p "Would you like to exit to enable 'non-free' now? (y = Exit / n = Continue without fonts): " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-                echo "Enabling non-free repository..."
-                # Add non-free to sources.list if not already present
-                if ! grep -q " non-free$" /etc/apt/sources.list; then
-                    sudo sed -i 's/^\(deb.*\) \(main\|contrib\|non-free-firmware\)$/\1 \2 non-free/' /etc/apt/sources.list
-                fi
-                echo "Updating package list..."
-                sudo apt-get update
-                FONTS_UBUNTU_AVAILABLE=true
-            else
-                echo "Continuing without fonts-ubuntu..."
-                FONTS_UBUNTU_AVAILABLE=false
-            fi
+                echo "Please edit your /etc/apt/sources.list, run 'sudo apt update', and restart this script."
+                exit 1
         else
             FONTS_UBUNTU_AVAILABLE=true
         fi
