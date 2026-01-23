@@ -51,6 +51,7 @@ var TraktorMX2 = new (function () {
     this.vuRightConnection = {};
     this.clipLeftConnection = {};
     this.clipRightConnection = {};
+    this.clipMainConnection = {};
     this.vuMeterThresholds = {
         "vu-18": 1 / 9,
         "vu-15": 2 / 9,
@@ -70,7 +71,7 @@ TraktorMX2.init = function (_id) {
 };
 
 TraktorMX2.registerInputPackets = function () {
-    const messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback,);
+    const messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
     const messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
     const messageJog = new HIDPacket("reportmessage", 0x03, this.messageCallback);
 
@@ -203,11 +204,11 @@ TraktorMX2.registerInputPackets = function () {
 
     // // Selectors Press
     this.registerInputButton(messageShort, "[Channel1]", "!LoadSelectedTrack", 0x0a, 0x04, this.loadTrackHandler);
-    this.registerInputButton(messageShort, "[Channel1]", "!ActivateBeatjump", 0x0a, 0x08, this.activateBeatjumpHandler,);
+    this.registerInputButton(messageShort, "[Channel1]", "!ActivateBeatjump", 0x0a, 0x08, this.activateBeatjumpHandler);
     this.registerInputButton(messageShort, "[Channel1]", "!ActivateLoop", 0x0a, 0x10, this.activateLoopHandler);
 
     this.registerInputButton(messageShort, "[Channel2]", "!LoadSelectedTrack", 0x0a, 0x20, this.loadTrackHandler);
-    this.registerInputButton(messageShort, "[Channel2]", "!ActivateBeatjump", 0x0a, 0x40, this.activateBeatjumpHandler,);
+    this.registerInputButton(messageShort, "[Channel2]", "!ActivateBeatjump", 0x0a, 0x40, this.activateBeatjumpHandler);
     this.registerInputButton(messageShort, "[Channel2]", "!ActivateLoop", 0x0a, 0x80, this.activateLoopHandler);
 
 
@@ -350,7 +351,7 @@ TraktorMX2.syncHandler = function (field) {
                     if (TraktorMX2.syncPressedTimer[field.group] !== 0) {
                         TraktorMX2.syncPressedTimer[field.group] = 0;
                     }
-                }, true,);
+                }, true);
 
                 // Light corresponding LED when button is pressed
                 TraktorMX2.outputHandler(1, field.group, "sync_enabled");
@@ -466,15 +467,13 @@ TraktorMX2.padHandler = function (field) {
 
         case 1:
             // Stems Mode
-
-            let stemCount = engine.getValue(field.group, "stem_count")
-        // ignore if no stemfile is loaded
-            if (stemCount === 0) {
+            // ignore if no stemfile is loaded
+            if (engine.getValue(field.group, "stem_count") === 0) {
                 return;
             }
 
             // only first 4 pads are used for stem mute/unmute
-            if (padNumber <= Math.min(4, stemCount)) {
+            if (padNumber <= Math.min(4, engine.getValue(field.group, "stem_count"))) {
                 if (field.value === 0) {
                     return;
                 }
@@ -696,7 +695,7 @@ TraktorMX2.microphoneHandler = function (field) {
                 if (TraktorMX2.microphonePressedTimer !== 0) {
                     TraktorMX2.microphonePressedTimer = 0;
                 }
-            }, true,);
+            }, true);
         }
 
         script.toggleControl("[Microphone]", "talkover");
@@ -744,7 +743,7 @@ TraktorMX2.jogTouchHandler = function (field) {
     if (TraktorMX2.jogModeState[field.group] === 0) {
         // Turntable mode
         if (field.value > 0) {
-            engine.scratchEnable(deckNumber, 1024, 33 + 1 / 3, 0.125, 0.125 / 8, true,);
+            engine.scratchEnable(deckNumber, 1024, 33 + 1 / 3, 0.125, 0.125 / 8, true);
         } else {
             engine.scratchDisable(deckNumber);
         }
@@ -757,7 +756,7 @@ TraktorMX2.jogHandler = function (field) {
     const tickDelta = deltas[0];
     const timeDelta = deltas[1];
 
-    const velocity = (tickDelta / timeDelta) * TraktorMX2.pitchBendMultiplier;
+    const velocity = (tickDelta / timeDelta);
 
     if (TraktorMX2.jogModeState[field.group] === 0) {
         //Turntable
@@ -896,7 +895,7 @@ TraktorMX2.globalfxHandler = function (field) {
 
     // Now apply the new fx value
     for (const group of availableGroups) {
-        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group] + 1,);
+        engine.setValue(`[QuickEffectRack1_${group}]`, "loaded_chain_preset", fxToApply[group] + 1);
     }
 };
 
@@ -1070,9 +1069,9 @@ TraktorMX2.registerOutputPackets = function () {
 
     // Favorites
     // Add to List
-    engine.makeConnection("[PreviewDeck1]", "play_indicator", this.previewOutputHandler)
+    engine.makeConnection("[PreviewDeck1]", "play_indicator", this.previewOutputHandler);
 
-    this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler)
+    this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler);
     // Reverse
 
     // Shift
@@ -1094,7 +1093,7 @@ TraktorMX2.registerOutputPackets = function () {
 
     // Favorites
     // Add to List
-    engine.makeConnection("[PreviewDeck1]", "play_indicator", this.previewOutputHandler)
+    // Same as Channel 1: engine.makeConnection("[PreviewDeck1]", "play_indicator", this.previewOutputHandler)
 
     this.linkOutput("[Channel2]", "slip_enabled", this.outputHandler)
     // Reverse
@@ -1113,7 +1112,7 @@ TraktorMX2.registerOutputPackets = function () {
     engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", this.fxSelectOutputHandler);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", this.fxSelectOutputHandler);
 
-    engine.makeConnection("[QuickEffectRack1_[Channel1]]", "enabled", this.gfxToggleOutputHandler)
+    engine.makeConnection("[QuickEffectRack1_[Channel1]]", "enabled", this.gfxToggleOutputHandler);
 
     engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", this.fxSelectOutputHandler);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", this.fxSelectOutputHandler);
@@ -1121,7 +1120,7 @@ TraktorMX2.registerOutputPackets = function () {
     this.linkOutput("[Channel1]", "pfl", this.outputHandler);
     this.linkOutput("[Channel2]", "pfl", this.outputHandler);
 
-    engine.makeConnection("[QuickEffectRack1_[Channel2]]", "enabled", this.gfxToggleOutputHandler)
+    engine.makeConnection("[QuickEffectRack1_[Channel2]]", "enabled", this.gfxToggleOutputHandler);
 
     this.fxCallbacks = [];
     for (const group of ["[Channel1]", "[Channel2]"]) {
@@ -1153,7 +1152,7 @@ TraktorMX2.registerOutputPackets = function () {
     this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler.bind(this));
     this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler.bind(this));
 
-    this.clipRightConnection = engine.makeConnection("[Main]", "peak_indicator", this.peakOutputHandler.bind(this));
+    this.clipMainConnection = engine.makeConnection("[Main]", "peak_indicator", this.peakOutputHandler.bind(this));
 
     TraktorMX2.lightDeck(false);
 };
@@ -1174,7 +1173,7 @@ TraktorMX2.outputHandler = function (value, group, key) {
     if (colorConfig) {
         if (value === 0 || value === false) {
             ledValue = colorConfig.dim;
-        } else if (value == 1 || value === true) {
+        } else if (value === 1 || value === true) {
             ledValue = colorConfig.full;
         }
     }
@@ -1225,10 +1224,6 @@ TraktorMX2.gfxToggleOutputHandler = function (_value, group, name) {
 }
 
 TraktorMX2.fxSelectOutputHandler = function (_value, group, name) {
-
-    let s2l = engine.getValue("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable")
-    let s2r = engine.getValue("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable")
-
     TraktorMX2.outputHandler(engine.getValue(group, name), `[Channel${name[name.length - 9]}]`, `fx_select_${group[group.length - 2]}`);
 }
 
@@ -1256,7 +1251,7 @@ TraktorMX2.hotcueOutputHandler = function (value, group, name) {
         if (value > 0) {
             TraktorMX2.colorOutputHandler(color, group, `pad_${padNum}`);
         } else {
-            TraktorMX2.outputHandler(0, group, `pad_${padNum}`);
+            TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedWhite, group, `pad_${padNum}`);
         }
     }
 };
@@ -1272,10 +1267,10 @@ TraktorMX2.hotcueColorHandler = function (value, group, name) {
 TraktorMX2.patternOutputHandler = function (value, group, name) {
     if (TraktorMX2.padModeState[group] === 2) {
         for (let i = 1; i <= engine.getValue(group, name); i++) {
-            const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
-            const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
+            const color = engine.getValue(`[Channel${group[group.length - 2]}_Stem${i}]`, "color");
+            const status = engine.getValue(`[Channel${group[group.length - 2]}_Stem${i}]`, "mute");
             const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
-            TraktorMX2.outputHandler(colorValue, field.group, "pad_" + i);
+            TraktorMX2.outputHandler(colorValue, group, `pad_${  i}`);
         }
     }
 };
@@ -1323,26 +1318,26 @@ TraktorMX2.lightDeck = function (switchOff) {
     };
 
     let current = engine.getValue("[Channel1]", "play_indicator");
-    TraktorMX2.controller.setOutput("[Channel1]", "play_indicator", getColorValue("[Channel1]", "play_indicator", current), false,);
+    TraktorMX2.controller.setOutput("[Channel1]", "play_indicator", getColorValue("[Channel1]", "play_indicator", current), false);
     current = engine.getValue("[Channel2]", "play_indicator");
-    TraktorMX2.controller.setOutput("[Channel2]", "play_indicator", getColorValue("[Channel2]", "play_indicator", current), false,);
+    TraktorMX2.controller.setOutput("[Channel2]", "play_indicator", getColorValue("[Channel2]", "play_indicator", current), false);
 
     current = engine.getValue("[Channel1]", "cue_indicator");
-    TraktorMX2.controller.setOutput("[Channel1]", "cue_indicator", getColorValue("[Channel1]", "cue_indicator", current), false,);
+    TraktorMX2.controller.setOutput("[Channel1]", "cue_indicator", getColorValue("[Channel1]", "cue_indicator", current), false);
     current = engine.getValue("[Channel2]", "cue_indicator");
-    TraktorMX2.controller.setOutput("[Channel2]", "cue_indicator", getColorValue("[Channel2]", "cue_indicator", current), false,);
+    TraktorMX2.controller.setOutput("[Channel2]", "cue_indicator", getColorValue("[Channel2]", "cue_indicator", current), false);
 
     TraktorMX2.controller.setOutput("[Channel1]", "shift", getColorValue("[Channel1]", "shift", false), false);
-    TraktorMX2.controller.setOutput("[Channel2]", "shift", getColorValue("[Channel1]", "shift", false), false);
+    TraktorMX2.controller.setOutput("[Channel2]", "shift", getColorValue("[Channel2]", "shift", false), false);
 
     current = engine.getValue("[Channel1]", "sync_enabled");
     TraktorMX2.controller.setOutput("[Channel1]", "sync_enabled", getColorValue("[Channel1]", "sync_enabled", current), false);
-    current = engine.getValue("[Channel1]", "sync_enabled");
+    current = engine.getValue("[Channel2]", "sync_enabled");
     TraktorMX2.controller.setOutput("[Channel2]", "sync_enabled", getColorValue("[Channel2]", "sync_enabled", current), false);
 
     current = engine.getValue("[Channel1]", "sync_leader");
     TraktorMX2.controller.setOutput("[Channel1]", "sync_leader", getColorValue("[Channel1]", "sync_leader", current), false);
-    current = engine.getValue("[Channel1]", "sync_leader");
+    current = engine.getValue("[Channel2]", "sync_leader");
     TraktorMX2.controller.setOutput("[Channel2]", "sync_leader", getColorValue("[Channel2]", "sync_leader", current), false);
 
     // Hotcues mode is default start value
@@ -1429,8 +1424,8 @@ TraktorMX2.lightDeck = function (switchOff) {
     TraktorMX2.controller.setOutput("[PreviewDeck1]", "play_indicator", getColorValue("[PreviewDeck1]", "play_indicator", false), false);
     TraktorMX2.controller.setOutput("[PreviewDeck2]", "play_indicator", getColorValue("[PreviewDeck2]", "play_indicator", false), false);
 
-    TraktorMX2.controller.setOutput("[Channel1]", "maximizeLibrary", getColorValue("[Channel1]", "maximizeLibrary", false), false,);
-    TraktorMX2.controller.setOutput("[Channel2]", "maximizeLibrary", getColorValue("[Channel2]", "maximizeLibrary", false), false,);
+    TraktorMX2.controller.setOutput("[Channel1]", "maximizeLibrary", getColorValue("[Channel1]", "maximizeLibrary", false), false);
+    TraktorMX2.controller.setOutput("[Channel2]", "maximizeLibrary", getColorValue("[Channel2]", "maximizeLibrary", false), false);
 
     TraktorMX2.controller.setOutput("[Channel1]", "addTrack", getColorValue("[Channel1]", "addTrack", false), false);
     TraktorMX2.controller.setOutput("[Channel2]", "addTrack", getColorValue("[Channel2]", "addTrack", false), false);
