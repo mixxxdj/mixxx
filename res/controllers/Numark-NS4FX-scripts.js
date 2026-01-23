@@ -198,43 +198,46 @@ NS4FX.init = function(id, debug) {
                 }
                 if (heldStemInfo) { break; }
             }
-            let currentValue, step;
             if (heldStemInfo) {
+                let controlSuffix;
+                if (value === 0x01) { // Turned right
+                    controlSuffix = "_up_small";
+                } else { // Turned left (0x7F)
+                    controlSuffix = "_down_small";
+                }
+
                 if (NS4FX.shift) {
                     // Shift is held: control the QuickEffect's super1 parameter for the stem.
                     group = `[QuickEffectRack1_[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]]`;
                     control = "super1";
-                    currentValue = engine.getValue(group, control);
-                    step = 0.05;
                 } else {
                     // No shift, control the stem's volume
                     group = `[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]`;
                     control = "volume";
-                    currentValue = engine.getValue(group, control);
-                    step = 0.05;
                 }
-
-                var newValue;
-                if (value === 0x01) { // Turned right
-                    newValue = Math.min(1.0, currentValue + step);
-                } else { // Turned left (0x7F)
-                    newValue = Math.max(0.0, currentValue - step);
-                }
-                engine.setValue(group, control, newValue);
+                engine.setValue(group, control + controlSuffix, 1);
             } else {
-                // If no stem pad is held, control the superknob of the effect units.
-                step = 0.05;
-                const effectUnits = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
+                // If no stem pad is held...
+                if (NS4FX.shift) {
+                    // control the superknob of the effect units.
+                    const effectUnits = ["[EffectRack1_EffectUnit1]", "[EffectRack1_EffectUnit2]"];
 
-                for (let i = 0; i < effectUnits.length; i++) {
-                    const unitGroup = effectUnits[i];
-                    currentValue = engine.getValue(unitGroup, "super1");
-                    if (value === 0x01) { // Turned right
-                        newValue = Math.min(1.0, currentValue + step);
-                    } else { // Turned left (0x7F)
-                        newValue = Math.max(0.0, currentValue - step);
+                    for (let i = 0; i < effectUnits.length; i++) {
+                        const unitGroup = effectUnits[i];
+                        if (value === 0x01) { // Turned right
+                            engine.setValue(unitGroup, "super1_up_small", 1);
+                        } else { // Turned left (0x7F)
+                            engine.setValue(unitGroup, "super1_down_small", 1);
+                        }
                     }
-                    engine.setValue(unitGroup, "super1", newValue);
+                } else {
+                    // control master volume
+                    const group = "[Master]";
+                    if (value === 0x01) { // Turned right
+                        engine.setValue(group, "gain_up_small", 1);
+                    } else { // Turned left (0x7F)
+                        engine.setValue(group, "gain_down_small", 1);
+                    }
                 }
             }
         }
