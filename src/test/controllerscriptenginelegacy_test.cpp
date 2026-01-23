@@ -140,7 +140,7 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
                 mixxx::StemChannelSelection(),
 #endif
                 false);
-        m_pEngine->process(1024);
+        m_pEngine->process(1024, std::chrono::microseconds(0));
         while (!deck->getEngineDeck()->getEngineBuffer()->isTrackLoaded()) {
             QTest::qSleep(100);
         }
