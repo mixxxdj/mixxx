@@ -12,6 +12,9 @@
 #include "skin/legacy/skinparser.h"
 #include "skin/legacy/tooltips.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#ifdef __STEM_CONVERSION__
+#include "stems/stemconversionmanager.h"
+#endif
 
 class WBaseWidget;
 class Library;
@@ -39,7 +42,11 @@ class LegacySkinParser : public QObject, public SkinParser {
             Library* pLibrary,
             VinylControlManager* pVCMan,
             EffectsManager* pEffectsManager,
-            RecordingManager* pRecordingManager);
+            RecordingManager* pRecordingManager
+        #ifdef __STEM_CONVERSION__
+            , StemConversionManagerPointer pStemConversionManager = nullptr
+        #endif
+            );
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -79,6 +86,10 @@ class LegacySkinParser : public QObject, public SkinParser {
 
 #ifdef __STEM__
     QWidget* parseStemLabelWidget(const QDomElement& element);
+#endif
+
+#ifdef __STEM_CONVERSION__
+    QWidget* parseStemConversionButtonWidget(const QDomElement& element);
 #endif
 
     QWidget* parseText(const QDomElement& node);
@@ -157,6 +168,9 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString parseLaunchImageStyle(const QDomNode& node);
     QString stylesheetAbsIconPaths(QString& style);
     bool requiresStem(const QDomElement& node);
+#ifdef __STEM_CONVERSION__
+    bool requiresStemConversion(const QDomElement& node);
+#endif
     void parseChildren(const QDomElement& node, WWidgetGroup* pGroup);
 
     UserSettingsPointer m_pConfig;
@@ -169,6 +183,9 @@ class LegacySkinParser : public QObject, public SkinParser {
     EffectsManager* m_pEffectsManager;
     RecordingManager* m_pRecordingManager;
     QWidget* m_pParent;
+#ifdef __STEM_CONVERSION__
+    StemConversionManagerPointer m_pStemConversionManager;
+#endif
     std::unique_ptr<SkinContext> m_pContext;
     QString m_style;
     Tooltips m_tooltips;

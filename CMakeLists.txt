@@ -1743,8 +1743,6 @@ add_library(
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
-  src/widget/wstemconversionbutton.cpp
-  src/widget/dlgstemconversionoptions.cpp
   src/widget/wtime.cpp
   src/widget/wtrackmenu.cpp
   src/widget/wtrackproperty.cpp
@@ -2707,6 +2705,8 @@ if(STEM)
         src/stems/stemconverter.cpp
         src/stems/stemconversionmanager.cpp
         src/stems/dlgstemconversion.cpp
+        src/widget/wstemconversionbutton.cpp
+        src/widget/dlgstemconversionoptions.cpp
         src/widget/wstemconversionbutton.cpp
         src/widget/dlgstemconversionoptions.cpp
     )
