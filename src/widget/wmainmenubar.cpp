@@ -14,6 +14,9 @@
 #include "util/desktophelper.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#ifdef __STEM_CONVERSION__
+#include "stems/stemconversionmanager.h"
+#endif
 
 namespace {
 
@@ -489,6 +492,18 @@ void WMainMenuBar::initialize() {
     pOptionsMenu->addAction(pOptionsKeyboard);
 
     pOptionsMenu->addSeparator();
+
+#ifdef __STEM_CONVERSION__
+    QString stemConversionTitle = tr("Stem Conversion...");
+    QString stemConversionText = tr("Open the Stem Conversion dialog.");
+    auto* pOptionsStemConversion = new QAction(stemConversionTitle, this);
+    pOptionsStemConversion->setStatusTip(stemConversionText);
+    pOptionsStemConversion->setWhatsThis(buildWhatsThis(stemConversionTitle, stemConversionText));
+    connect(pOptionsStemConversion, &QAction::triggered, this, &WMainMenuBar::showStemConversionDialog);
+    pOptionsMenu->addAction(pOptionsStemConversion);
+
+    pOptionsMenu->addSeparator();
+#endif
 
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
