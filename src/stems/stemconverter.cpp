@@ -15,6 +15,7 @@
   #include <sndfile.h>
 #endif
 
+#include "sources/soundsourceproxy.h"
 #include "util/logger.h"
 
 namespace {
@@ -240,76 +241,44 @@ bool StemConverter::runInference(const std::vector<float>& inputAudio, int sampl
 
 bool StemConverter::decodeAudioFile(const QString& inputPath, std::vector<float>& audioData,
                                    int& sampleRate, int& channels, int& originalFrames) {
-    // First, decode input file to WAV using ffmpeg
-    QString tempWavPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) +
-                         "/temp_audio.wav";
+    // Use Mixxx's SoundSourceProxy to read the audio file
+    // Create a temporary track for reading
+    auto pTrack = Track::newTemporary(inputPath);
 
-    QProcess ffmpegProcess;
-    ffmpegProcess.setProcessChannelMode(QProcess::MergedChannels);
-
-    QStringList ffmpegArgs;
-    ffmpegArgs << "-i" << inputPath
-               << "-acodec" << "pcm_f32le"
-               << "-ar" << "44100"
-               << "-ac" << "2"
-               << "-y" << tempWavPath;
-
-    ffmpegProcess.start("ffmpeg", ffmpegArgs);
-    if (!ffmpegProcess.waitForFinished(30000)) {
-        kLogger.warning() << "ffmpeg timeout or error";
+    SoundSourceProxy proxy(pTrack);
+    auto pAudioSource = proxy.openAudioSource();
+    if (!pAudioSource) {
+        kLogger.warning() << "Failed to open audio file:" << inputPath;
         return false;
     }
 
-    if (ffmpegProcess.exitCode() != 0) {
-        kLogger.warning() << "ffmpeg failed:" << ffmpegProcess.readAllStandardOutput();
-        return false;
-    }
-
-    // Now read WAV file using libsndfile
-    SF_INFO sfInfo;
-    memset(&sfInfo, 0, sizeof(sfInfo));
-
-    SNDFILE* infile = sf_open(tempWavPath.toStdString().c_str(), SFM_READ, &sfInfo);
-    if (!infile) {
-        kLogger.warning() << "Failed to open WAV file:" << sf_strerror(nullptr);
-        QFile::remove(tempWavPath);
-        return false;
-    }
-
-    sampleRate = sfInfo.samplerate;
-    channels = sfInfo.channels;
+    sampleRate = pAudioSource->getSignalInfo().getSampleRate();
+    channels = pAudioSource->getSignalInfo().getChannelCount();
 
     // The htdemucs model expects fixed-size chunks of stereo audio.
     // The total number of samples per chunk is 343980 for each of the 2 channels.
     const int64_t expected_samples_per_channel = 343980;
-    const int64_t expected_total_samples = expected_samples_per_channel * 2; // Stereo
+    const int64_t expected_total_samples = expected_samples_per_channel * channels;
 
-    // Read audio data
-    std::vector<float> buffer(sfInfo.frames * sfInfo.channels);
-    sf_count_t numFramesRead = sf_readf_float(infile, buffer.data(), sfInfo.frames);
+    // Create a buffer to read samples
+    mixxx::SampleBuffer sampleBuffer(expected_total_samples);
 
-    if (numFramesRead != sfInfo.frames) {
-        kLogger.warning() << "Failed to read all frames from WAV file";
-        sf_close(infile);
-        QFile::remove(tempWavPath);
-        return false;
-    }
+    // Read samples from the audio source
+    mixxx::WritableSampleFrames writableFrames(
+        mixxx::IndexRange::between(0, expected_samples_per_channel),
+        mixxx::SampleBuffer::WritableSlice(sampleBuffer));
 
-    originalFrames = numFramesRead;
-
-    sf_close(infile);
-    QFile::remove(tempWavPath);
+    mixxx::ReadableSampleFrames readableFrames = pAudioSource->readSampleFrames(writableFrames);
+    originalFrames = readableFrames.frameIndexRange().length();
 
     // Resize and pad the audio data to the expected size
     audioData.resize(expected_total_samples, 0.0f);
 
     // Copy the buffer data, ensuring we don't overflow
-    // If the buffer is larger, it will be truncated.
-    // If it's smaller, the rest of audioData will be zeros (padding).
-    size_t samplesToCopy = std::min(buffer.size(), (size_t)expected_total_samples);
-    std::copy(buffer.begin(), buffer.begin() + samplesToCopy, audioData.begin());
+    size_t samplesToCopy = std::min((size_t)(originalFrames * channels), (size_t)expected_total_samples);
+    std::copy(sampleBuffer.data(), sampleBuffer.data() + samplesToCopy, audioData.begin());
 
-    kLogger.info() << "Audio file decoded. Original samples:" << buffer.size()
+    kLogger.info() << "Audio file decoded. Original samples:" << (originalFrames * channels)
                    << "Resized to (samples):" << audioData.size()
                    << "Padding applied:" << (expected_total_samples - samplesToCopy);
 

@@ -2675,21 +2675,17 @@ if(STEM)
 
   # ONNX Runtime - Simple version
   find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime)
-  find_path(ONNXRUNTIME_INCLUDE_DIR NAMES onnxruntime_cxx_api.h)
-  find_library(SNDFILE_LIBRARY NAMES sndfile)
-  find_path(SNDFILE_INCLUDE_DIR NAMES sndfile.h)
+    find_path(ONNXRUNTIME_INCLUDE_DIR NAMES onnxruntime_cxx_api.h PATH_SUFFIXES onnxruntime)
 
-  if(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR AND SNDFILE_LIBRARY AND SNDFILE_INCLUDE_DIR)
-    set(STEM_CONVERSION_ENABLED TRUE)
-    target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY} ${SNDFILE_LIBRARY})
-    target_include_directories(mixxx-lib SYSTEM PRIVATE ${ONNXRUNTIME_INCLUDE_DIR} ${SNDFILE_INCLUDE_DIR})
-    target_compile_definitions(mixxx-lib PUBLIC __STEM_CONVERSION__)
+  if(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR)
+    set(STEM_CONVERSION TRUE)
+    target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY})
+    target_include_directories(mixxx-lib SYSTEM PRIVATE ${ONNXRUNTIME_INCLUDE_DIR})
   endif()
 
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
-  # TEMPORARY SOLUTION FOR DEBIAN
-  target_include_directories(mixxx-lib SYSTEM PRIVATE /usr/include/onnxruntime)
-  target_link_libraries(mixxx-lib PRIVATE onnxruntime)
+  target_compile_definitions(mixxx-lib PUBLIC __STEM_CONVERSION__)
+
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
 
   # Base STEM sources (always compiled)
@@ -2703,8 +2699,8 @@ if(STEM)
       src/widget/wstemlabel.cpp
   )
 
-  # STEM conversion sources (only if ONNX Runtime + libsndfile are available)
-  if(STEM_CONVERSION_ENABLED)
+  # STEM conversion sources (only if ONNX Runtime is available)
+  if(STEM_CONVERSION)
     target_sources(
       mixxx-lib
       PRIVATE
