@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: Update Translations
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ["main", "2.4", "2.5"]
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.7
+        with:
+          ref: ${{ matrix.branch }}
+
+      - name: Install Dependencies
+        run: sudo apt-get install -y --no-install-recommends -- qt6-l10n-tools
+
+      - name: Install transifex client
+        run: curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
+
+      - name: Pull translations
+        run: ./tx pull -a -f --minimum-perc 1
+        env:
+          TX_TOKEN: ${{ secrets.TRANSIFEX_TOKEN }}
+
+      - name: Compile translations
+        run: for XX in res/translations/mixxx_*.ts; do /usr/lib/qt6/bin/lrelease -nounfinished $XX -qm ${XX/%.ts/.qm}; done
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: pull-translations/${{ matrix.branch }}
+          commit-message: |-
+            Pull Transifex translations for ${{ matrix.branch }}
+
+            This pulls the latest translations from the ${{ matrix.branch}} on Transifex
+            and compiles the TS files into QM files using Qt's Linguist tool chain.
+
+            URL: https://www.transifex.com/mixxx-dj-software/mixxxdj/${{ matrix.branch }}/
+          title: Pull Transifex translations for ${{ matrix.branch }}
+          body: |-
+            This pulls the latest translations from the ${{ matrix.branch}} on Transifex
+            and compiles the TS files into QM files using Qt's Linguist tool chain.
+
+            URL: https://www.transifex.com/mixxx-dj-software/mixxxdj/${{ matrix.branch }}/
+          labels: translations
