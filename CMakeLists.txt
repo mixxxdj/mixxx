@@ -2672,8 +2672,23 @@ if(STEM)
   if(NOT FFMPEG)
     message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
   endif()
+
+  # ONNX Runtime - Simple version
+  find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime)
+  find_path(ONNXRUNTIME_INCLUDE_DIR NAMES onnxruntime_cxx_api.h)
+  find_library(SNDFILE_LIBRARY NAMES sndfile)
+  find_path(SNDFILE_INCLUDE_DIR NAMES sndfile.h)
+
+  if(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR AND SNDFILE_LIBRARY AND SNDFILE_INCLUDE_DIR)
+    set(STEM_CONVERSION_ENABLED TRUE)
+    target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY} ${SNDFILE_LIBRARY})
+    target_include_directories(mixxx-lib SYSTEM PRIVATE ${ONNXRUNTIME_INCLUDE_DIR} ${SNDFILE_INCLUDE_DIR})
+  endif()
+
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
+
+  # Base STEM sources (always compiled)
   target_sources(
     mixxx-lib
     PRIVATE
@@ -2683,6 +2698,20 @@ if(STEM)
       src/widget/wtrackstemmenu.cpp
       src/widget/wstemlabel.cpp
   )
+
+  # STEM conversion sources (only if ONNX Runtime + libsndfile are available)
+  if(STEM_CONVERSION_ENABLED)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/stems/stemconverter.cpp
+        src/stems/stemconversionmanager.cpp
+        src/stems/dlgstemconversion.cpp
+        src/widget/wstemconversionbutton.cpp
+        src/widget/dlgstemconversionoptions.cpp
+    )
+  endif()
+
   if(QOPENGL)
     target_sources(
       mixxx-lib

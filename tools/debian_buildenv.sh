@@ -61,10 +61,10 @@ case "$1" in
 
             # Add demucs dependencies if user wants it
             PACKAGES+=(
+                libonnxruntime-dev
+                libsndfile1-dev
                 ffmpeg
                 sox
-                python3-full
-                python3-venv
             )
         else
             INSTALL_DEMUCS=false
@@ -94,6 +94,7 @@ case "$1" in
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 echo "Please edit your /etc/apt/sources.list, run 'sudo apt update', and restart this script."
                 exit 1
+            fi
         else
             FONTS_UBUNTU_AVAILABLE=true
         fi
@@ -171,56 +172,30 @@ case "$1" in
             # Get the actual user running sudo
             ACTUAL_USER="${SUDO_USER:-$USER}"
 
+            # Download htdemucs ONNX mixxx htdemucs model
             echo ""
-            echo "Setting up Python virtual environment for Mixxx stem conversion..."
+            echo "Downloading mixxx htdemucs ONNX model..."
             echo ""
 
-            # Create virtual environment
-            VENV_PATH="/home/$ACTUAL_USER/.local/mixxx_venv"
+            MODEL_PATH="/home/$ACTUAL_USER/.local/mixxx_models"
+            MODEL_FILE="$MODEL_PATH/htdemucs.onnx"
 
-            if [ -d "$VENV_PATH" ]; then
-                echo "✓ Virtual environment already exists at $VENV_PATH"
-            else
-                echo "Creating virtual environment at $VENV_PATH..."
-                sudo -u "$ACTUAL_USER" python3 -m venv "$VENV_PATH"
+            # Create directory with proper ownership
+            sudo -u "$ACTUAL_USER" mkdir -p "$MODEL_PATH"
+
+            if [ $? -eq 0 ]; then
+                # Download model file
+                sudo -u "$ACTUAL_USER" wget -c https://github.com/mixxxdj/demucs/releases/download/v4.0.1-19-gd182d42-onnxmodel/htdemucs.onnx -O "$MODEL_FILE"
 
                 if [ $? -eq 0 ]; then
-                    echo "✓ Virtual environment created successfully"
+                    echo "Model downloaded successfully to $MODEL_FILE"
+                    sudo chown "$ACTUAL_USER:$ACTUAL_USER" "$MODEL_FILE"
                 else
-                    echo "⚠️  Failed to create virtual environment"
+                    echo "Failed to download mixxx htdemucs ONNX model"
                     exit 1
                 fi
-            fi
-
-            # Upgrade pip and setuptools in the virtual environment
-            echo ""
-            echo "Upgrading pip and setuptools..."
-            sudo -u "$ACTUAL_USER" "$VENV_PATH/bin/pip" install --upgrade pip setuptools wheel
-
-            if [ $? -eq 0 ]; then
-                echo "✓ pip and setuptools upgraded"
             else
-                echo "⚠️  Failed to upgrade pip and setuptools"
-            fi
-
-            # Install demucs in the virtual environment
-            echo ""
-            echo "Installing demucs in the virtual environment..."
-            sudo -u "$ACTUAL_USER" "$VENV_PATH/bin/pip" install demucs
-
-            if [ $? -eq 0 ]; then
-                echo "✓ demucs installed successfully in $VENV_PATH"
-                echo "Location: $VENV_PATH/bin/demucs"
-                echo ""
-                echo "Verifying demucs installation..."
-                sudo -u "$ACTUAL_USER" "$VENV_PATH/bin/demucs" --help > /dev/null 2>&1
-                if [ $? -eq 0 ]; then
-                    echo "✓ demucs is working correctly"
-                else
-                    echo "⚠️  demucs installed but verification failed"
-                fi
-            else
-                echo "⚠️  Failed to install demucs"
+                echo "Failed to create model path: $MODEL_PATH"
                 exit 1
             fi
 
@@ -243,7 +218,7 @@ case "$1" in
                 wget -q https://github.com/gpac/gpac/archive/refs/tags/v2.4.0.tar.gz -O gpac-2.4.0.tar.gz
 
                 if [ ! -f "gpac-2.4.0.tar.gz" ]; then
-                    echo "⚠️  Failed to download GPAC"
+                    echo "Failed to download GPAC"
                     exit 1
                 fi
 
@@ -257,7 +232,7 @@ case "$1" in
                 ./configure --prefix=/usr/local
 
                 if [ $? -ne 0 ]; then
-                    echo "⚠️  GPAC configuration failed"
+                    echo "GPAC configuration failed"
                     exit 1
                 fi
 
@@ -265,7 +240,7 @@ case "$1" in
                 make -j$(nproc)
 
                 if [ $? -ne 0 ]; then
-                    echo "⚠️  GPAC compilation failed"
+                    echo "GPAC compilation failed"
                     exit 1
                 fi
 
@@ -273,20 +248,20 @@ case "$1" in
                 sudo make install
 
                 if [ $? -eq 0 ]; then
-                    echo "✓ GPAC v2.4.0 compiled and installed successfully"
+                    echo "GPAC v2.4.0 compiled and installed successfully"
                     echo "Location: /usr/local/bin/MP4Box"
 
                     # Verify MP4Box
                     if [ -f "/usr/local/bin/MP4Box" ]; then
-                        echo "✓ MP4Box executable found"
+                        echo "MP4Box executable found"
                         /usr/local/bin/MP4Box -version
                         MP4BOX_PATH="/usr/local/bin/MP4Box"
                     else
-                        echo "⚠️  MP4Box executable not found after installation"
+                        echo "MP4Box executable not found after installation"
                         exit 1
                     fi
                 else
-                    echo "⚠️  Failed to install GPAC"
+                    echo "Failed to install GPAC"
                     exit 1
                 fi
 
