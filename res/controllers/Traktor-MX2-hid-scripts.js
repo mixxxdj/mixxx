@@ -1,15 +1,40 @@
-///////////////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                                          //
-///////////////////////////////////////////////////////////////////////////////////
-/* jshint -W016                                                                  */
-///////////////////////////////////////////////////////////////////////////////////
-/*                                                                               */
-/* Traktor Kontrol MX2 HID controller script v1.00                               */
-/* Last modification: January 2026                                               */
-/* Author: K7                                                                    */
-/* https://github.com/mixxxdj/mixxx/wiki/Native%20Instruments%20Traktor%20MX2    */
-/*                                                                               */
-///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                                                                            //
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* jshint -W016                                                                                                    */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*                                                                                                                 */
+/* Traktor Kontrol MX2 HID controller script v1.00                                                                 */
+/* Last modification: January 2026                                                                                 */
+/* Author: K7                                                                                                      */
+/* https://github.com/mixxxdj/mixxx-manual/blob/2.6/source/hardware/controllers/native_instruments_traktor_mx2.rst */
+/*                                                                                                                 */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Constants used to scale raw velocity (tick delta / time delta) to the appropriate scratch2 value.
+const TICKS_PER_REV = 1024;
+const JOGWHEEL_CLOCK_HZ = 100000;
+const TARGET_RPM = 33 + 1 / 3;
+const VELOCITY_TO_SCRATCH = JOGWHEEL_CLOCK_HZ / (TICKS_PER_REV * TARGET_RPM / 60);
+
+// Affects how sensitive jogging/nudging (turning the wheel without touching the top) is.
+// A constant of 0.5 makes jogging/nudging roughly equivalent to scratching.
+const JOG_SENSITIVITY = 0.25;
+const VELOCITY_TO_JOG = VELOCITY_TO_SCRATCH * JOG_SENSITIVITY;
+
+// Interval (ms) at which jog velocity is polled after release to determine whether scratching should stop.
+const JOGWHEEL_STOP_POLL_TIME = 20;
+
+// Interval (ms) at which jog velocity is reduced stepwise after release.
+const JOGWHEEL_DECAY_POLL_TIME = 20;
+
+// Alpha for the jogwheel input's low pass filter.
+// Range: 0-1. Lower = more smoothing.
+const JOGWHEEL_ALPHA = 0.5;
+
+// Threshold for the jogwheel input's dead zone. When the raw velocity is lower than this,
+// the jogwheel is considered to be stopped, allowing it to change directions or exit scratching mode instantly.
+const JOGWHEEL_EPSILON = 0.001;
 
 var TraktorMX2 = new (function () {
     this.controller = new HIDController();
@@ -20,8 +45,7 @@ var TraktorMX2 = new (function () {
 
     this.padModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Hotcues, 1 = Stems, 2 = Patterns, 3 = Loops
     this.padPressed = {
-        "[Channel1]": {5: false, 6: false, 7: false, 8: false},
-        "[Channel2]": {5: false, 6: false, 7: false, 8: false}
+        "[Channel1]": {5: false, 6: false, 7: false, 8: false}, "[Channel2]": {5: false, 6: false, 7: false, 8: false}
     }; // State of pads for Stems mode
 
     this.bottomLedState = {
@@ -42,9 +66,12 @@ var TraktorMX2 = new (function () {
     this.syncPressedTimer = {"[Channel1]": 0, "[Channel2]": 0}; // Timer to distinguish between short and long press
 
     // Jog wheels
-    this.pitchBendMultiplier = 1.1;
     this.lastTickVal = [0, 0];
-    this.lastTickTime = [0.0, 0.0];
+    this.lastTimestamp = [0, 0];
+    this.lastVelocity = [0.0, 0.0];
+    this.lastWallClock = [0, 0];
+    this.jogStopTimerId = [null, null];
+    this.jogDecayTimerId = [null, null];
 
     // VuMeter
     this.vuLeftConnection = {};
@@ -379,13 +406,11 @@ TraktorMX2.padModeHandler = function (field) {
     switch (field.name) {
 
         case "!hotcues":
-
             TraktorMX2.padModeState[field.group] = 0;
             TraktorMX2.outputHandler(1, field.group, "hotcues");
             TraktorMX2.outputHandler(0, field.group, "stems");
             TraktorMX2.outputHandler(0, field.group, "patterns");
             TraktorMX2.outputHandler(0, field.group, "loops");
-
         // Light LEDs (blue for all enabled hotcues, dimmed white for disabled)
             for (let i = 1; i <= 8; ++i) {
                 const active = engine.getValue(field.group, `hotcue_${i}_status`);
@@ -400,13 +425,11 @@ TraktorMX2.padModeHandler = function (field) {
             break;
 
         case "!stems":
-
             TraktorMX2.padModeState[field.group] = 1;
             TraktorMX2.outputHandler(0, field.group, "hotcues");
             TraktorMX2.outputHandler(1, field.group, "stems");
             TraktorMX2.outputHandler(0, field.group, "patterns");
             TraktorMX2.outputHandler(0, field.group, "loops");
-
         // Light LEDs (stem color for all unmuted stems, dimmed red for muted)
             for (let i = 1; i <= engine.getValue(field.group, "stem_count"); i++) {
                 const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
@@ -414,39 +437,31 @@ TraktorMX2.padModeHandler = function (field) {
                 const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
                 TraktorMX2.outputHandler(colorValue, field.group, "pad_" + i);
             }
-
             break;
 
         case "!patterns":
-
         // Patterns mode not implemented yet -> does nothing except lighting
-
             TraktorMX2.padModeState[field.group] = 2;
             TraktorMX2.outputHandler(0, field.group, "hotcues");
             TraktorMX2.outputHandler(0, field.group, "stems");
             TraktorMX2.outputHandler(1, field.group, "patterns");
             TraktorMX2.outputHandler(0, field.group, "loops");
-
             // Turn off LEDs
             for (let i = 1; i <= 8; ++i) {
                 TraktorMX2.outputHandler(0x00, field.group, "pad_" + i);
             }
-
             break;
 
         case "!loops":
-
             TraktorMX2.padModeState[field.group] = 3;
             TraktorMX2.outputHandler(0, field.group, "hotcues");
             TraktorMX2.outputHandler(0, field.group, "stems");
             TraktorMX2.outputHandler(0, field.group, "patterns");
             TraktorMX2.outputHandler(1, field.group, "loops");
-
         // Turn LEDs green
             for (let i = 1; i <= 8; ++i) {
                 TraktorMX2.outputHandler(TraktorMX2.baseColors.green, field.group, "pad_" + i);
             }
-
             break;
     }
 
@@ -743,78 +758,141 @@ TraktorMX2.jogTouchHandler = function (field) {
     if (TraktorMX2.jogModeState[field.group] === 0) {
         // Turntable mode
         if (field.value > 0) {
-            engine.scratchEnable(deckNumber, 1024, 33 + 1 / 3, 0.125, 0.125 / 8, true);
+            // Cancel any existing stop timers
+            if ((TraktorMX2.jogStopTimerId[deckNumber - 1] !== null) && (TraktorMX2.jogStopTimerId[deckNumber - 1] !== undefined)) {
+                engine.stopTimer(TraktorMX2.jogStopTimerId[deckNumber - 1]);
+                TraktorMX2.jogStopTimerId[deckNumber - 1] = null;
+            }
+            engine.setValue(field.group, "scratch2_enable", true);
         } else {
-            engine.scratchDisable(deckNumber);
+            TraktorMX2.jogStopper(field);
         }
+    }
+};
+
+// Called after the wheel is released. Stops scratching when the wheel is slow enough, allowing for inertia.
+TraktorMX2.jogStopper = function(field) {
+    const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
+
+    // If the wheel is stopped, exit scratching mode
+    if (Math.abs(engine.getValue(field.group, "scratch2")) <= JOGWHEEL_EPSILON * VELOCITY_TO_SCRATCH) {
+        engine.setValue(field.group, "scratch2", 0);
+        engine.setValue(field.group, "scratch2_enable", false);
+        TraktorMX2.lastVelocity[deckNumber - 1] = 0;
+        TraktorMX2.jogStopTimerId[deckNumber - 1] = null;
+        // Otherwise, check again after a while
+    } else {
+        TraktorMX2.jogStopTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_STOP_POLL_TIME, () => TraktorMX2.jogStopper(field), true);
     }
 };
 
 TraktorMX2.jogHandler = function (field) {
     const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
-    const deltas = TraktorMX2.wheelDeltas(deckNumber, field.value);
-    const tickDelta = deltas[0];
-    const timeDelta = deltas[1];
+    const velocity = TraktorMX2.wheelVelocity(deckNumber, field.value);
 
-    const velocity = (tickDelta / timeDelta);
 
     if (TraktorMX2.jogModeState[field.group] === 0) {
         //Turntable
+        if (engine.getValue(field.group, "scratch2_enable")) {
+            engine.setValue(field.group, "scratch2", velocity * VELOCITY_TO_SCRATCH);
 
-        if (TraktorMX2.shiftPressed[field.group] && !engine.getValue(field.group, "play")) {
-            // Skip through track
-            engine.setValue(field.group, "beatjump", velocity)
-        } else {
-            if (engine.isScratching(deckNumber)) {
-                //Scratch
-                engine.scratchTick(deckNumber, tickDelta);
-            } else {
-                // Jog
-                engine.setValue(field.group, "jog", velocity * TraktorMX2.pitchBendMultiplier);
+            // Cancel any existing decay timers
+            if ((TraktorMX2.jogDecayTimerId[deckNumber - 1] !== null) && (TraktorMX2.jogDecayTimerId[deckNumber - 1] !== undefined)) {
+                engine.stopTimer(TraktorMX2.jogDecayTimerId[deckNumber - 1]);
+                TraktorMX2.jogDecayTimerId[deckNumber - 1] = null;
             }
-        }
+            // Start timer to manually decay the velocity after a while
+            TraktorMX2.jogDecayTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_DECAY_POLL_TIME, () => {
+                TraktorMX2.jogDecayer(field);
+            }, true);
 
+        } else {
+            engine.setValue(field.group, "jog", velocity * VELOCITY_TO_JOG);
+        }
     } else {
         // Jog
-        engine.setValue(field.group, "jog", velocity);
+        engine.setValue(field.group, "jog", velocity * VELOCITY_TO_JOG);
     }
 };
 
-TraktorMX2.wheelDeltas = function (deckNumber, value) {
-    // When the wheel is touched, four bytes change, but only the first behaves predictably.
-    // It looks like the wheel is 1024 ticks per revolution.
-    const tickval = value & 0xff;
-    let timeval = value >>> 16;
-    let prevTick = 0;
-    let prevTime = 0;
+// Called continuously after jogwheel stops sending packets. Gradually slows the jogwheel.
+TraktorMX2.jogDecayer = function(field) {
+    const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
+
+    // If wheel is slow enough, immediately set scratch2 to 0
+    if (Math.abs(engine.getValue(field.group, "scratch2")) <= JOGWHEEL_EPSILON * VELOCITY_TO_SCRATCH) {
+        TraktorMX2.lastVelocity[deckNumber - 1] = 0;
+        engine.setValue(field.group, "scratch2", 0);
+        TraktorMX2.jogDecayTimerId[deckNumber - 1] = null;
+        // Otherwise, decay the velocity and call itself again after a while
+    } else {
+        const decayedVelocity = TraktorMX2.lastVelocity[deckNumber - 1] * (1 - JOGWHEEL_ALPHA);
+        TraktorMX2.lastVelocity[deckNumber - 1] = decayedVelocity;
+        engine.setValue(field.group, "scratch2", decayedVelocity * VELOCITY_TO_SCRATCH);
+        TraktorMX2.jogDecayTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_DECAY_POLL_TIME, () => TraktorMX2.jogDecayer(field), true);
+    }
+};
+
+TraktorMX2.wheelVelocity = function(deckNumber, value) {
+    // When the wheel is touched, four bytes change.
+    // The first 10 bits change when the wheel is turned.
+    // The last 22 bits are a counter, which constantly increments and overflows at 100kHz.
+    const tickval = value & 0x3FF;
+    let timeval = value >>> 10;
 
     // Group 1 and 2 -> Array index 0 and 1
-    prevTick = this.lastTickVal[deckNumber - 1];
-    prevTime = this.lastTickTime[deckNumber - 1];
+    const prevTick = this.lastTickVal[deckNumber - 1];
+    const prevTime = this.lastTimestamp[deckNumber - 1];
+    const prevWallClock = this.lastWallClock[deckNumber - 1];
     this.lastTickVal[deckNumber - 1] = tickval;
-    this.lastTickTime[deckNumber - 1] = timeval;
+    this.lastTimestamp[deckNumber - 1] = timeval;
+    this.lastWallClock[deckNumber - 1] = Date.now();
+
+    // If the user hasn't touched the jog wheel for a long time, the
+    // internal timer may have looped around more than once. We have nothing
+    // to go by so return 0
+    if (this.lastWallClock[deckNumber - 1] - prevWallClock > 40000) {
+        this.lastVelocity[deckNumber - 1] = 0;
+        return 0;
+    }
 
     if (prevTime > timeval) {
         // We looped around.  Adjust current time so that subtraction works.
-        timeval += 0x10000;
+        timeval += 0x400000;
     }
     let timeDelta = timeval - prevTime;
     if (timeDelta === 0) {
-        // Spinning too fast to detect speed!  By not dividing we are guessing it took 1ms.
+        // Spinning too fast to detect speed!  By not dividing we are guessing it took 10us.
         timeDelta = 1;
     }
 
-    let tickDelta = 0;
-    if (prevTick >= 200 && tickval <= 100) {
-        tickDelta = tickval + 256 - prevTick;
-    } else if (prevTick <= 100 && tickval >= 200) {
-        tickDelta = tickval - prevTick - 256;
-    } else {
-        tickDelta = tickval - prevTick;
+    let tickDelta = tickval - prevTick;
+    // Check if we looped around
+    if (tickDelta > 512) {
+        // Looped around from 0 to max
+        tickDelta -= 1024;
+    } else if (tickDelta < -512) {
+        // Looped around from max to 0
+        tickDelta += 1024;
     }
 
-    return [tickDelta, timeDelta];
+    // Velocity smoothing
+    const velocity = tickDelta / timeDelta;
+    const prevVelocity = this.lastVelocity[deckNumber - 1];
+    let nextVelocity = null;
+    // Check if the jogwheel is currently stopped or changing directions.
+    // If so, set the velocity to the new value instantly.
+    if ((Math.abs(prevVelocity) < JOGWHEEL_EPSILON) || (velocity * prevVelocity < 0)) {
+        nextVelocity = velocity;
+        //  Otherwise, smooth the velocity.
+    } else {
+        nextVelocity = JOGWHEEL_ALPHA * velocity + (1 - JOGWHEEL_ALPHA) * prevVelocity;
+    }
+    this.lastVelocity[deckNumber - 1] = nextVelocity;
+
+    return nextVelocity;
 };
+
 
 TraktorMX2.fxHandler = function (field) {
     if (field.value === 0 || field.name === "misc") {
@@ -1270,7 +1348,7 @@ TraktorMX2.patternOutputHandler = function (value, group, name) {
             const color = engine.getValue(`[Channel${group[group.length - 2]}_Stem${i}]`, "color");
             const status = engine.getValue(`[Channel${group[group.length - 2]}_Stem${i}]`, "mute");
             const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
-            TraktorMX2.outputHandler(colorValue, group, `pad_${  i}`);
+            TraktorMX2.outputHandler(colorValue, group, `pad_${i}`);
         }
     }
 };
@@ -1461,27 +1539,20 @@ TraktorMX2.baseColors = {
     off: 0x00,
 
     // Used for single-colored LED like vumeters -> white on multicolored LEDs
-    dimmed: 0x7c,
-    full: 0x7e,
+    dimmed: 0x7c, full: 0x7e,
 
     // White - used for multi-colored LEDs
-    dimmedWhite: 0x48,
-    white: 0x4a,
+    dimmedWhite: 0x48, white: 0x4a,
 
-    dimmedRed: 0x04,
-    red: 0x06,
+    dimmedRed: 0x04, red: 0x06,
 
-    dimmedGreen: 0x1c,
-    green: 0x1e,
+    dimmedGreen: 0x1c, green: 0x1e,
 
-    dimmedBlue: 0x2c,
-    blue: 0x2e,
+    dimmedBlue: 0x2c, blue: 0x2e,
 
-    dimmedYellow: 0x14,
-    yellow: 0x16,
+    dimmedYellow: 0x14, yellow: 0x16,
 
-    dimmedOrange: 0x0c,
-    orange: 0x0e,
+    dimmedOrange: 0x0c, orange: 0x0e,
 }
 
 TraktorMX2.OutputColorMap = {
@@ -1512,8 +1583,7 @@ TraktorMX2.OutputColorMap = {
         "fx_select_2": {dim: TraktorMX2.baseColors.dimmedOrange, full: TraktorMX2.baseColors.orange},
         "gfx_toggle": {dim: TraktorMX2.baseColors.dimmedYellow, full: TraktorMX2.baseColors.yellow},
         "pfl": {dim: TraktorMX2.baseColors.dimmedWhite, full: TraktorMX2.baseColors.white},
-    },
-    // Channel 2 (same structure)
+    }, // Channel 2 (same structure)
     "[Channel2]": {
         "fx_misc": {dim: TraktorMX2.baseColors.dimmedOrange, full: TraktorMX2.baseColors.orange},
         "fx_1": {dim: TraktorMX2.baseColors.dimmedOrange, full: TraktorMX2.baseColors.orange},
@@ -1540,21 +1610,17 @@ TraktorMX2.OutputColorMap = {
         "fx_select_2": {dim: TraktorMX2.baseColors.dimmedOrange, full: TraktorMX2.baseColors.orange},
         "gfx_toggle": {dim: TraktorMX2.baseColors.dimmedYellow, full: TraktorMX2.baseColors.yellow},
         "pfl": {dim: TraktorMX2.baseColors.dimmedWhite, full: TraktorMX2.baseColors.white},
-    },
-    "[ChannelX]": {
+    }, "[ChannelX]": {
         "gfx_0": {dim: TraktorMX2.baseColors.dimmedOrange, full: TraktorMX2.baseColors.orange},
         "gfx_1": {dim: TraktorMX2.baseColors.dimmedRed, full: TraktorMX2.baseColors.red},
         "gfx_2": {dim: 0x20, full: 0x22},
         "gfx_3": {dim: TraktorMX2.baseColors.dimmedBlue, full: TraktorMX2.baseColors.blue},
         "gfx_4": {dim: TraktorMX2.baseColors.dimmedYellow, full: TraktorMX2.baseColors.yellow},
-    },
-    "[Microphone]": {
+    }, "[Microphone]": {
         "talkover": {dim: TraktorMX2.baseColors.dimmedWhite, full: TraktorMX2.baseColors.white},
-    },
-    "[PreviewDeck1]": {
+    }, "[PreviewDeck1]": {
         "play_indicator": {dim: TraktorMX2.baseColors.dimmedBlue, full: TraktorMX2.baseColors.blue},
-    },
-    "[PreviewDeck2]": {
+    }, "[PreviewDeck2]": {
         "play_indicator": {dim: TraktorMX2.baseColors.dimmedBlue, full: TraktorMX2.baseColors.blue},
     },
 };
