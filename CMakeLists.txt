@@ -311,6 +311,16 @@ if(DEFINED MIXXX_VCPKG_ROOT)
     fatal_error_missing_env()
   endif()
 
+  # Validate MIXXX_VCPKG_ROOT points to a vcpkg root to avoid confusing follow-up errors.
+  set(_vcpkg_toolchain "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+  if(NOT EXISTS "${_vcpkg_toolchain}")
+    message(FATAL_ERROR
+      "MIXXX_VCPKG_ROOT was set to \"${MIXXX_VCPKG_ROOT}\", but this is not a valid vcpkg root\n"
+      "Expected to find: ${_vcpkg_toolchain}\n"
+      "Please set MIXXX_VCPKG_ROOT to the vcpkg root directory (the folder containing vcpkg.exe)"
+    )
+  endif()
+
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
     # required for manifest mode
     set(VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/ports")
