@@ -2344,6 +2344,10 @@ class ResetWaveformTrackPointerOperation : public mixxx::TrackPointerOperation {
         // same reasons that apply for reanalyze of the waveforms applies also
         // for the AudibleSound cue.
         pTrack->removeCuesOfType(mixxx::CueType::N60dBSound);
+        // FIX/TODO:
+        // Assumed this Should also apply?
+        pTrack->removeCuesOfType(mixxx::CueType::FadeIn);
+        pTrack->removeCuesOfType(mixxx::CueType::FadeOut);
     }
 
     AnalysisDao& m_analysisDao;
