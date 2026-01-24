@@ -2686,6 +2686,9 @@ if(STEM)
   endif()
 
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
+  # TEMPORARY SOLUTION FOR DEBIAN
+  target_include_directories(mixxx-lib SYSTEM PRIVATE /usr/include/onnxruntime)
+  target_link_libraries(mixxx-lib PRIVATE onnxruntime)
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
 
   # Base STEM sources (always compiled)

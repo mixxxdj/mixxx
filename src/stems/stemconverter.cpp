@@ -10,6 +10,11 @@
 #include <QDebug>
 #include <QCoreApplication>
 
+#ifdef __STEM__
+  #include <onnxruntime_cxx_api.h>
+  #include <sndfile.h>
+#endif
+
 #include "util/logger.h"
 
 namespace {
@@ -21,6 +26,25 @@ StemConverter::StemConverter(QObject* parent)
           m_state(ConversionState::Idle),
           m_progress(0.0f),
           m_trackTitle("Unknown") {
+#ifdef __STEM__
+    // Suppress ONNX Runtime verbose output
+    setenv("ORT_DISABLE_TELEMETRY", "1", 1);
+    setenv("ORT_DISABLE_LOGGING", "1", 1);
+
+    // Redirect stderr to suppress ONNX schema warnings
+    int devNull = open("/dev/null", O_WRONLY);
+    if (devNull != -1) {
+        dup2(devNull, STDERR_FILENO);
+        close(devNull);
+    }
+
+    try {
+        m_pOrtEnv = std::make_unique<Ort::Env>(ORT_LOGGING_LEVEL_WARNING, "StemConverter");
+        kLogger.info() << "ONNX Runtime environment initialized";
+    } catch (const std::exception& e) {
+        kLogger.warning() << "Failed to initialize ONNX Runtime:" << e.what();
+    }
+#endif
 }
 
 void StemConverter::convertTrack(const TrackPointer& pTrack, Resolution resolution) {
@@ -45,19 +69,27 @@ void StemConverter::convertTrack(const TrackPointer& pTrack, Resolution resoluti
     }
 
     emit conversionStarted(pTrack->getId(), m_trackTitle);
-    emit conversionProgress(pTrack->getId(), 0.1f, "Starting demucs separation...");
+    emit conversionProgress(pTrack->getId(), 0.1f, "Starting ONNX separation...");
 
-    if (!runDemucs(trackFilePath)) {
-        QString errorMsg = "Demucs separation failed";
+#ifdef __STEM__
+    QString stemsDir = getStemsDirectory(trackFilePath);
+    if (!runOnnxSeparation(trackFilePath, stemsDir)) {
+        QString errorMsg = "ONNX separation failed";
         kLogger.warning() << errorMsg;
         emit conversionFailed(pTrack->getId(), errorMsg);
         m_state = ConversionState::Failed;
         return;
     }
+#else
+    QString errorMsg = "STEM conversion not available (ONNX Runtime not compiled)";
+    kLogger.warning() << errorMsg;
+    emit conversionFailed(pTrack->getId(), errorMsg);
+    m_state = ConversionState::Failed;
+    return;
+#endif
 
     emit conversionProgress(pTrack->getId(), 0.5f, "Converting stems to M4A...");
 
-    QString stemsDir = getStemsDirectory(trackFilePath);
     if (!convertStemsToM4A(stemsDir)) {
         QString errorMsg = "Stem conversion to M4A failed";
         kLogger.warning() << errorMsg;
@@ -75,6 +107,7 @@ void StemConverter::convertTrack(const TrackPointer& pTrack, Resolution resoluti
         m_state = ConversionState::Failed;
         return;
     }
+
 
     emit conversionProgress(pTrack->getId(), 0.9f, "Adding metadata tags...");
 
@@ -101,65 +134,268 @@ StemConverter::ConversionState StemConverter::getState() const {
     return m_state;
 }
 
-bool StemConverter::runDemucs(const QString& trackFilePath) {
-    kLogger.info() << "Starting demucs for:" << trackFilePath;
-
-    QProcess process;
-    QFileInfo fileInfo(trackFilePath);
-    QString trackDir = fileInfo.absolutePath();
-
-    QString model = (m_resolution == Resolution::High) ? "htdemucs_ft" : "htdemucs";
-
-    QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QString venvPath = homeDir + "/.local/mixxx_venv";
-    QString demucsPath = venvPath + "/bin/demucs";
-
-    if (!QFile::exists(demucsPath)) {
-        kLogger.warning() << "Demucs not found in virtual environment:" << demucsPath;
-        kLogger.warning() << "Trying system demucs...";
-        demucsPath = "demucs";
+#ifdef __STEM__
+bool StemConverter::loadOnnxModel() {
+    if (m_pOrtSession) {
+        return true;  // Already loaded
     }
 
-    QStringList arguments;
-    arguments << "-n" << model;
-    arguments << "-o" << trackDir;
-    arguments << "--shifts" << "1";
-    arguments << "-d" << "cpu";
-    arguments << "--mp3";
-    arguments << "--mp3-bitrate" << "320";
-    arguments << trackFilePath;
-
-    kLogger.info() << "Demucs command:" << demucsPath << arguments.join(" ");
-
-    process.start(demucsPath, arguments);
-
-    if (!process.waitForFinished(-1)) {
-        QString errorMsg = process.errorString();
-        kLogger.warning() << "Demucs process failed:" << errorMsg;
+    if (!m_pOrtEnv) {
+        kLogger.warning() << "ONNX Runtime environment not initialized";
         return false;
     }
 
-    if (process.exitCode() != 0) {
-        QString errorOutput = process.readAllStandardError();
-        kLogger.warning() << "Demucs error:" << errorOutput;
+    try {
+        // Get model path from user's home directory
+        QString homeDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+        QString modelPath = homeDir + "/.local/mixxx_models/htdemucs.onnx";
+
+        if (!QFile::exists(modelPath)) {
+            kLogger.warning() << "ONNX model not found at:" << modelPath;
+            return false;
+        }
+
+        Ort::SessionOptions sessionOptions;
+        sessionOptions.SetIntraOpNumThreads(4);
+        sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+
+        m_pOrtSession = std::make_unique<Ort::Session>(
+            *m_pOrtEnv,
+            modelPath.toStdString().c_str(),
+            sessionOptions);
+
+        kLogger.info() << "ONNX model loaded successfully from:" << modelPath;
+        return true;
+    } catch (const std::exception& e) {
+        kLogger.warning() << "Failed to load ONNX model:" << e.what();
+        return false;
+    }
+}
+
+bool StemConverter::runInference(const std::vector<float>& inputAudio, int sampleRate,
+                                std::vector<std::vector<float>>& outputStems) {
+    if (!m_pOrtSession) {
+        kLogger.warning() << "ONNX session not initialized";
         return false;
     }
 
-    kLogger.info() << "Demucs completed successfully";
+    try {
+        // Prepare input tensor
+        // HTDemucs expects input shape: (1, 2, 343980) for stereo
+        // The model requires exactly 343980 samples per channel
+        Q_UNUSED(sampleRate);
+        const int64_t expected_samples_per_channel = 343980;
+        std::vector<int64_t> inputShape = {1, 2, expected_samples_per_channel};
+
+        Ort::Value inputTensor = Ort::Value::CreateTensor<float>(
+            m_allocator.GetInfo(),
+            const_cast<float*>(inputAudio.data()),
+            inputAudio.size(),
+            inputShape.data(),
+            inputShape.size());
+
+        const char* inputNames[] = {"input"};
+        const char* outputNames[] = {"output"};
+
+        // Run inference
+        auto outputTensors = m_pOrtSession->Run(
+            Ort::RunOptions{nullptr},
+            inputNames,
+            &inputTensor,
+            1,
+            outputNames,
+            1);
+
+        // Extract output stems from the single output tensor
+        // Output shape is expected to be [1, 4, 2, 343980] (batch, stems, channels, samples)
+        auto& outputTensor = outputTensors[0];
+        float* outputData = outputTensor.GetTensorMutableData<float>();
+        auto tensorInfo = outputTensor.GetTensorTypeAndShapeInfo();
+        auto outputShape = tensorInfo.GetShape();
+
+        // Expected: [1, 4, 2, 343980]
+        if (outputShape.size() != 4 || outputShape[1] != 4) {
+            kLogger.warning() << "Unexpected output tensor shape";
+            return false;
+        }
+
+        int64_t numStems = outputShape[1];
+        int64_t numChannels = outputShape[2];
+        int64_t numSamples = outputShape[3];
+
+        outputStems.resize(numStems);
+        for (int i = 0; i < numStems; ++i) {
+            int64_t stemSize = numChannels * numSamples;
+            float* stemStart = outputData + (i * stemSize);
+            outputStems[i].assign(stemStart, stemStart + stemSize);
+        }
+
+        kLogger.info() << "ONNX inference completed successfully";
+        return true;
+    } catch (const std::exception& e) {
+        kLogger.warning() << "ONNX inference failed:" << e.what();
+        return false;
+    }
+}
+
+bool StemConverter::decodeAudioFile(const QString& inputPath, std::vector<float>& audioData,
+                                   int& sampleRate, int& channels, int& originalFrames) {
+    // First, decode input file to WAV using ffmpeg
+    QString tempWavPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation) +
+                         "/temp_audio.wav";
+
+    QProcess ffmpegProcess;
+    ffmpegProcess.setProcessChannelMode(QProcess::MergedChannels);
+
+    QStringList ffmpegArgs;
+    ffmpegArgs << "-i" << inputPath
+               << "-acodec" << "pcm_f32le"
+               << "-ar" << "44100"
+               << "-ac" << "2"
+               << "-y" << tempWavPath;
+
+    ffmpegProcess.start("ffmpeg", ffmpegArgs);
+    if (!ffmpegProcess.waitForFinished(30000)) {
+        kLogger.warning() << "ffmpeg timeout or error";
+        return false;
+    }
+
+    if (ffmpegProcess.exitCode() != 0) {
+        kLogger.warning() << "ffmpeg failed:" << ffmpegProcess.readAllStandardOutput();
+        return false;
+    }
+
+    // Now read WAV file using libsndfile
+    SF_INFO sfInfo;
+    memset(&sfInfo, 0, sizeof(sfInfo));
+
+    SNDFILE* infile = sf_open(tempWavPath.toStdString().c_str(), SFM_READ, &sfInfo);
+    if (!infile) {
+        kLogger.warning() << "Failed to open WAV file:" << sf_strerror(nullptr);
+        QFile::remove(tempWavPath);
+        return false;
+    }
+
+    sampleRate = sfInfo.samplerate;
+    channels = sfInfo.channels;
+
+    // The htdemucs model expects fixed-size chunks of stereo audio.
+    // The total number of samples per chunk is 343980 for each of the 2 channels.
+    const int64_t expected_samples_per_channel = 343980;
+    const int64_t expected_total_samples = expected_samples_per_channel * 2; // Stereo
+
+    // Read audio data
+    std::vector<float> buffer(sfInfo.frames * sfInfo.channels);
+    sf_count_t numFramesRead = sf_readf_float(infile, buffer.data(), sfInfo.frames);
+
+    if (numFramesRead != sfInfo.frames) {
+        kLogger.warning() << "Failed to read all frames from WAV file";
+        sf_close(infile);
+        QFile::remove(tempWavPath);
+        return false;
+    }
+
+    originalFrames = numFramesRead;
+
+    sf_close(infile);
+    QFile::remove(tempWavPath);
+
+    // Resize and pad the audio data to the expected size
+    audioData.resize(expected_total_samples, 0.0f);
+
+    // Copy the buffer data, ensuring we don't overflow
+    // If the buffer is larger, it will be truncated.
+    // If it's smaller, the rest of audioData will be zeros (padding).
+    size_t samplesToCopy = std::min(buffer.size(), (size_t)expected_total_samples);
+    std::copy(buffer.begin(), buffer.begin() + samplesToCopy, audioData.begin());
+
+    kLogger.info() << "Audio file decoded. Original samples:" << buffer.size()
+                   << "Resized to (samples):" << audioData.size()
+                   << "Padding applied:" << (expected_total_samples - samplesToCopy);
+
     return true;
 }
+
+bool StemConverter::saveStemToWav(const std::vector<float>& audioData, const QString& outputPath,
+                                 int sampleRate, int channels, int originalFrames) {
+    SF_INFO sfInfo;
+    memset(&sfInfo, 0, sizeof(sfInfo));
+
+    sfInfo.samplerate = sampleRate;
+    sfInfo.channels = channels;
+    sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+
+    SNDFILE* outfile = sf_open(outputPath.toStdString().c_str(), SFM_WRITE, &sfInfo);
+    if (!outfile) {
+        kLogger.warning() << "Failed to create WAV file:" << sf_strerror(nullptr);
+        return false;
+    }
+
+    // Only write the original frames, not the padding
+    sf_count_t framesToWrite = originalFrames;
+    sf_count_t writtenFrames = sf_writef_float(outfile, audioData.data(), framesToWrite);
+
+    if (writtenFrames != framesToWrite) {
+        kLogger.warning() << "Failed to write all frames to WAV file";
+        sf_close(outfile);
+        return false;
+    }
+
+    sf_close(outfile);
+    kLogger.info() << "Stem saved to WAV:" << outputPath;
+    return true;
+}
+
+bool StemConverter::runOnnxSeparation(const QString& trackFilePath, const QString& outputDir) {
+    kLogger.info() << "Starting ONNX separation for:" << trackFilePath;
+
+    // Load model
+    if (!loadOnnxModel()) {
+        kLogger.warning() << "Failed to load ONNX model";
+        return false;
+    }
+
+    // Decode audio file
+    std::vector<float> audioData;
+    int sampleRate = 0;
+    int channels = 0;
+
+    if (!decodeAudioFile(trackFilePath, audioData, sampleRate, channels, m_originalFrames)) {
+        kLogger.warning() << "Failed to decode audio file";
+        return false;
+    }
+
+    // Run inference
+    std::vector<std::vector<float>> outputStems;
+    if (!runInference(audioData, sampleRate, outputStems)) {
+        kLogger.warning() << "Failed to run ONNX inference";
+        return false;
+    }
+
+    // Save stems to WAV files
+    QStringList stemNames = {"drums", "bass", "other", "vocals"};
+    QDir().mkpath(outputDir);
+
+    for (size_t i = 0; i < outputStems.size(); ++i) {
+        QString stemPath = outputDir + "/" + stemNames[i] + ".wav";
+        if (!saveStemToWav(outputStems[i], stemPath, sampleRate, channels, m_originalFrames)) {
+            kLogger.warning() << "Failed to save stem:" << stemNames[i];
+            return false;
+        }
+    }
+
+    kLogger.info() << "ONNX separation completed successfully";
+    return true;
+}
+#endif
 
 QString StemConverter::getStemsDirectory(const QString& trackFilePath) {
     QFileInfo fileInfo(trackFilePath);
     QString fileName = fileInfo.baseName();
-    QString trackDir = fileInfo.absolutePath();
+    QString dirPath = fileInfo.absolutePath();
 
-    QString model = (m_resolution == Resolution::High) ? "htdemucs_ft" : "htdemucs";
-    QString stemsDir = trackDir + "/" + model + "/" + fileName;
-
-    kLogger.info() << "Stems directory:" << stemsDir;
-
-    return stemsDir;
+    // Create stems directory
+    return dirPath + "/" + fileName;
 }
 
 bool StemConverter::convertStemsToM4A(const QString& stemsDir) {
@@ -171,16 +407,32 @@ bool StemConverter::convertStemsToM4A(const QString& stemsDir) {
         return false;
     }
 
-    QStringList stemFiles = {"drums.mp3", "bass.mp3", "other.mp3", "vocals.mp3"};
+    QStringList stemNames = {"drums", "bass", "other", "vocals"};
 
-    for (const QString& stemFile : stemFiles) {
-        QString inputPath = stemsDir + "/" + stemFile;
-        QString outputFileName = stemFile;
-        outputFileName.replace(".mp3", ".m4a");
-        QString outputPath = stemsDir + "/" + outputFileName;
+    for (const QString& stemName : stemNames) {
+        QString wavPath = stemsDir + "/" + stemName + ".wav";
+        QString m4aPath = stemsDir + "/" + stemName + ".m4a";
 
-        if (!convertTrackToM4A(inputPath, outputPath)) {
-            kLogger.warning() << "Failed to convert:" << inputPath;
+        if (!QFile::exists(wavPath)) {
+            kLogger.warning() << "WAV file not found:" << wavPath;
+            continue;
+        }
+
+        QProcess ffmpegProcess;
+        QStringList args;
+        args << "-i" << wavPath
+             << "-c:a" << "aac"
+             << "-b:a" << "320k"
+             << "-y" << m4aPath;
+
+        ffmpegProcess.start("ffmpeg", args);
+        if (!ffmpegProcess.waitForFinished(-1)) {
+            kLogger.warning() << "ffmpeg timeout for:" << stemName;
+            return false;
+        }
+
+        if (ffmpegProcess.exitCode() != 0) {
+            kLogger.warning() << "ffmpeg failed for:" << stemName;
             return false;
         }
     }
@@ -189,6 +441,7 @@ bool StemConverter::convertStemsToM4A(const QString& stemsDir) {
     return true;
 }
 
+
 bool StemConverter::convertTrackToM4A(const QString& inputPath, const QString& outputPath) {
     kLogger.info() << "Converting to M4A:" << inputPath;
 
@@ -196,8 +449,7 @@ bool StemConverter::convertTrackToM4A(const QString& inputPath, const QString& o
     QStringList arguments;
 
     arguments << "-i" << inputPath;
-    arguments << "-c:a" << "aac";
-    arguments << "-b:a" << "256k";
+    arguments << "-c:a" << "alac";
     arguments << "-y" << outputPath;
 
     process.start("ffmpeg", arguments);
@@ -251,9 +503,9 @@ bool StemConverter::createStemContainer(const QString& trackFilePath, const QStr
     ffmpegArgs << "-map" << "3:a:0";  // other
     ffmpegArgs << "-map" << "4:a:0";  // vocals
 
-    ffmpegArgs << "-c:a" << "aac";
-    ffmpegArgs << "-b:a" << "256k";
+    ffmpegArgs << "-c:a" << "alac";
     ffmpegArgs << "-movflags" << "+faststart";
+    ffmpegArgs << "-fflags" << "+bitexact";
     ffmpegArgs << outputPath;
 
     kLogger.info() << "Running ffmpeg to create multi-track M4A...";

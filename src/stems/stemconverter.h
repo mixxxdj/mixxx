@@ -7,10 +7,18 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <memory>
+#include <vector>
+#include <unistd.h>
+#include <fcntl.h>
+
+#ifdef __STEM__
+  #include <onnxruntime_cxx_api.h>
+  #include <sndfile.h>
+#endif
 
 #include "track/track.h"
 
-/// Converts audio tracks to STEM format using demucs and mp4box
+/// Converts audio tracks to STEM format using ONNX Runtime and mp4box
 class StemConverter : public QObject {
     Q_OBJECT
 
@@ -58,16 +66,36 @@ class StemConverter : public QObject {
     void conversionFailed(TrackId trackId, const QString& errorMessage);
 
   private:
-    /// Step 1: Run demucs to separate stems
-    bool runDemucs(const QString& trackFilePath);
+#ifdef __STEM__
+    /// to save number of track original frames
+    int m_originalFrames = 0;
 
-    /// Get the directory where demucs creates stems
+    /// Step 1: Load ONNX model from ~/.local/mixxx_models/htdemucs.onnx
+    bool loadOnnxModel();
+
+    /// Step 2: Run ONNX inference on audio file
+    bool runInference(const std::vector<float>& inputAudio, int sampleRate,
+                      std::vector<std::vector<float>>& outputStems);
+
+    /// Step 3: Decode audio file to WAV using ffmpeg
+    bool decodeAudioFile(const QString& inputPath, std::vector<float>& audioData,
+                      int& sampleRate, int& channels, int& originalFrames);
+
+    /// Step 4: Save stem to WAV file using libsndfile
+    bool saveStemToWav(const std::vector<float>& audioData, const QString& outputPath,
+                      int sampleRate, int channels, int originalFrames);
+
+    /// Main ONNX separation function
+    bool runOnnxSeparation(const QString& trackFilePath, const QString& outputDir);
+#endif
+
+    /// Get the directory where stems are created
     QString getStemsDirectory(const QString& trackFilePath);
 
-    /// Step 2: Convert separated stems (MP3) to M4A format
+    /// Convert separated stems (WAV) to M4A format
     bool convertStemsToM4A(const QString& stemsDir);
 
-    /// Step 3: Create STEM container using ffmpeg and mp4box
+    /// Create STEM container using ffmpeg and mp4box
     bool createStemContainer(const QString& trackFilePath, const QString& stemsDir);
 
     /// Create STEM manifest JSON
@@ -82,8 +110,15 @@ class StemConverter : public QObject {
     /// Convert a single track to M4A format
     bool convertTrackToM4A(const QString& inputPath, const QString& outputPath);
 
-    /// Step 4: Add metadata tags to the STEM file
+    /// Step 5: Add metadata tags to the STEM file
     bool addMetadataTags(const QString& trackFilePath, const QString& stemsDir);
+
+#ifdef __STEM__
+    // ONNX Runtime members
+    std::unique_ptr<Ort::Env> m_pOrtEnv;
+    std::unique_ptr<Ort::Session> m_pOrtSession;
+    Ort::AllocatorWithDefaultOptions m_allocator;
+#endif
 
     TrackPointer m_pTrack;
     Resolution m_resolution;
