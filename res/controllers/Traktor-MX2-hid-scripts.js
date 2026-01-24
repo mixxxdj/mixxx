@@ -1,25 +1,25 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                                                                            //
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* jshint -W016                                                                                                    */
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*                                                                                                                 */
-/* Traktor Kontrol MX2 HID controller script v1.00                                                                 */
-/* Last modification: January 2026                                                                                 */
-/* Author: K7                                                                                                      */
-/* https://github.com/mixxxdj/mixxx-manual/blob/2.6/source/hardware/controllers/native_instruments_traktor_mx2.rst */
-/*                                                                                                                 */
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                                                //
+/////////////////////////////////////////////////////////////////////////////////////////
+/* jshint -W016                                                                        */
+/////////////////////////////////////////////////////////////////////////////////////////
+/*                                                                                     */
+/* Traktor Kontrol MX2 HID controller script v1.00                                     */
+/* Last modification: January 2026                                                     */
+/* Author: K7                                                                          */
+/* https://manual.mixxx.org/2.6/en/hardware/controllers/native_instruments_traktor_mx2 */
+/*                                                                                     */
+/////////////////////////////////////////////////////////////////////////////////////////
 
 // Constants used to scale raw velocity (tick delta / time delta) to the appropriate scratch2 value.
 const TICKS_PER_REV = 1024;
-const JOGWHEEL_CLOCK_HZ = 100000;
+const JOGWHEEL_CLOCK_HZ = 100000000;
 const TARGET_RPM = 33 + 1 / 3;
 const VELOCITY_TO_SCRATCH = JOGWHEEL_CLOCK_HZ / (TICKS_PER_REV * TARGET_RPM / 60);
 
 // Affects how sensitive jogging/nudging (turning the wheel without touching the top) is.
 // A constant of 0.5 makes jogging/nudging roughly equivalent to scratching.
-const JOG_SENSITIVITY = 0.25;
+const JOG_SENSITIVITY = 0.5;
 const VELOCITY_TO_JOG = VELOCITY_TO_SCRATCH * JOG_SENSITIVITY;
 
 // Interval (ms) at which jog velocity is polled after release to determine whether scratching should stop.
@@ -42,6 +42,7 @@ var TraktorMX2 = new (function () {
     this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
 
     this.jogModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Scratch, 1 = Bend
+    this.jogTimer = {"[Channel1]": 0, "[Channel2]": 0};
 
     this.padModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Hotcues, 1 = Stems, 2 = Patterns, 3 = Loops
     this.padPressed = {
@@ -296,8 +297,10 @@ TraktorMX2.registerInputPackets = function () {
 
     this.controller.registerInputPacket(messageLong);
 
-
+    this.registerInputJog(messageJog, "[Channel1]", "jog_timer", 0x04, 0xffffffff, this.jogHandler);
     this.registerInputJog(messageJog, "[Channel1]", "jog_wheel", 0x08, 0xffffffff, this.jogHandler);
+
+    this.registerInputJog(messageJog, "[Channel2]", "jog_timer", 0x0c, 0xffffffff, this.jogHandler);
     this.registerInputJog(messageJog, "[Channel2]", "jog_wheel", 0x10, 0xffffffff, this.jogHandler);
 
     this.controller.registerInputPacket(messageJog);
@@ -787,27 +790,38 @@ TraktorMX2.jogStopper = function(field) {
 };
 
 TraktorMX2.jogHandler = function (field) {
+
+    if (field.name === "jog_timer") {
+        TraktorMX2.jogTimer[field.group] = field.value;
+        return;
+    }
+
     const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
     const velocity = TraktorMX2.wheelVelocity(deckNumber, field.value);
 
 
     if (TraktorMX2.jogModeState[field.group] === 0) {
         //Turntable
-        if (engine.getValue(field.group, "scratch2_enable")) {
-            engine.setValue(field.group, "scratch2", velocity * VELOCITY_TO_SCRATCH);
-
-            // Cancel any existing decay timers
-            if ((TraktorMX2.jogDecayTimerId[deckNumber - 1] !== null) && (TraktorMX2.jogDecayTimerId[deckNumber - 1] !== undefined)) {
-                engine.stopTimer(TraktorMX2.jogDecayTimerId[deckNumber - 1]);
-                TraktorMX2.jogDecayTimerId[deckNumber - 1] = null;
-            }
-            // Start timer to manually decay the velocity after a while
-            TraktorMX2.jogDecayTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_DECAY_POLL_TIME, () => {
-                TraktorMX2.jogDecayer(field);
-            }, true);
-
+        if (TraktorMX2.shiftPressed[field.group] && !engine.getValue(field.group, "play")) {
+            // Skip through track
+            engine.setValue(field.group, "beatjump", velocity);
         } else {
-            engine.setValue(field.group, "jog", velocity * VELOCITY_TO_JOG);
+            if (engine.getValue(field.group, "scratch2_enable")) {
+                engine.setValue(field.group, "scratch2", velocity * VELOCITY_TO_SCRATCH);
+
+                // Cancel any existing decay timers
+                if ((TraktorMX2.jogDecayTimerId[deckNumber - 1] !== null) && (TraktorMX2.jogDecayTimerId[deckNumber - 1] !== undefined)) {
+                    engine.stopTimer(TraktorMX2.jogDecayTimerId[deckNumber - 1]);
+                    TraktorMX2.jogDecayTimerId[deckNumber - 1] = null;
+                }
+                // Start timer to manually decay the velocity after a while
+                TraktorMX2.jogDecayTimerId[deckNumber - 1] = engine.beginTimer(JOGWHEEL_DECAY_POLL_TIME, () => {
+                    TraktorMX2.jogDecayer(field);
+                }, true);
+
+            } else {
+                engine.setValue(field.group, "jog", velocity * VELOCITY_TO_JOG);
+            }
         }
     } else {
         // Jog
@@ -835,10 +849,11 @@ TraktorMX2.jogDecayer = function(field) {
 
 TraktorMX2.wheelVelocity = function(deckNumber, value) {
     // When the wheel is touched, four bytes change.
-    // The first 10 bits change when the wheel is turned.
-    // The last 22 bits are a counter, which constantly increments and overflows at 100kHz.
-    const tickval = value & 0x3FF;
-    let timeval = value >>> 10;
+    // The first 4 byte are a counter, which constantly increments and overflows at 100kHz.
+    // The next 10 bits change when the wheel is turned.
+
+    let timeval = TraktorMX2.jogTimer[deckNumber === 1 ? "[Channel1]" : "[Channel2]"];
+    const tickval = value;
 
     // Group 1 and 2 -> Array index 0 and 1
     const prevTick = this.lastTickVal[deckNumber - 1];
