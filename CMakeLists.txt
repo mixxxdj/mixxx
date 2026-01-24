@@ -2683,6 +2683,7 @@ if(STEM)
     set(STEM_CONVERSION_ENABLED TRUE)
     target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY} ${SNDFILE_LIBRARY})
     target_include_directories(mixxx-lib SYSTEM PRIVATE ${ONNXRUNTIME_INCLUDE_DIR} ${SNDFILE_INCLUDE_DIR})
+    target_compile_definitions(mixxx-lib PUBLIC __STEM_CONVERSION__)
   endif()
 
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)

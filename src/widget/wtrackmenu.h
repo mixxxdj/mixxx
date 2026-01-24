@@ -16,10 +16,12 @@
 #include "track/trackref.h"
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
+#ifdef __STEM_CONVERSION__
 #include "stems/stemconversionmanager.h"
 #include "stems/dlgstemconversion.h"
 #include "widget/dlgstemconversionoptions.h"
 #include "widget/wstemconversionbutton.h"
+#endif
 
 class DlgTagFetcher;
 class DlgTrackInfo;
@@ -165,8 +167,10 @@ class WTrackMenu : public QMenu {
     void slotReanalyzeWithFixedTempo();
     void slotReanalyzeWithVariableTempo();
 
-    // STEMS
-    void slotConvertToStems();
+    #ifdef __STEM_CONVERSION__
+        // STEMS Conversion
+        void slotConvertToStems();
+    #endif
 
     // BPM
     void slotLockBpm();
@@ -396,8 +400,10 @@ class WTrackMenu : public QMenu {
     std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
-    // STEMS conversion dialog (must be member to prevent destruction)
-    std::unique_ptr<DlgStemConversion> m_pStemConversionDialog;
+    #ifdef __STEM_CONVERSION__
+        // STEMS conversion dialog (must be member to prevent destruction)
+        std::unique_ptr<DlgStemConversion> m_pStemConversionDialog;
+    #endif
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> pExternalTrackCollection;
@@ -414,7 +420,9 @@ class WTrackMenu : public QMenu {
 
     QString m_trackProperty;
 
-    StemConversionManagerPointer m_pStemConversionManager;
+    #ifdef __STEM_CONVERSION__
+        StemConversionManagerPointer m_pStemConversionManager;
+    #endif
 
     static bool s_showPurgeSuccessPopup;
     static bool s_confirmForAutoDjReplace;
