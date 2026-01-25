@@ -13,7 +13,7 @@
 
 #ifdef __STEM_CONVERSION__
   #include <onnxruntime_cxx_api.h>
-  ///#include <sndfile.h>
+  #include <sndfile.h>
 #endif
 
 #include "track/track.h"
