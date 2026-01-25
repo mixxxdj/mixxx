@@ -916,10 +916,10 @@ TraktorMX2.fxHandler = function (field) {
     }
 
     let group = `[EffectRack1_${field.group}_${field.name}]`
-    if (!TraktorMX2.shiftPressed[field.group]) {
+    if (!TraktorMX2.shiftPressed[`[Channel${field.group[field.group.length - 1]}]`]) {
         script.toggleControl(group, "enabled");
     } else {
-        script.toggleControl(group, "next_effect");
+        script.triggerControl(group, "next_effect");
     }
 
 
