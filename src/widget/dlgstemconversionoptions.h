@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QComboBox>
 #include <QPushButton>
+#include <QLabel>
 
 /// Dialog that allows the user to select stem conversion parameters
 class DlgStemConversionOptions : public QDialog {
@@ -14,7 +15,7 @@ class DlgStemConversionOptions : public QDialog {
         High    // 44.1 kHz or higher
     };
 
-    explicit DlgStemConversionOptions(QWidget* parent = nullptr);
+    explicit DlgStemConversionOptions(const QString& trackPath, QWidget* parent = nullptr);
     ~DlgStemConversionOptions() override = default;
 
     /// Get the selected resolution
@@ -28,6 +29,8 @@ class DlgStemConversionOptions : public QDialog {
     void createUI();
     void connectSignals();
 
+    QString m_trackPath;
+    QLabel* m_pTrackPathLabel;
     QComboBox* m_pResolutionComboBox;
     QPushButton* m_pOkButton;
     QPushButton* m_pCancelButton;

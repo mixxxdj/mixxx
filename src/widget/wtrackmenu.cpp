@@ -61,6 +61,10 @@
 #include "widget/dlgstemconversionoptions.h"
 #endif
 
+#ifdef __STEM_CONVERSION__
+StemConversionManagerPointer WTrackMenu::m_pStemConversionManager = nullptr;
+#endif
+
 constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
 
 namespace {
@@ -1840,8 +1844,14 @@ void WTrackMenu::slotReanalyzeWithVariableTempo() {
             return;
         }
 
+        // Get track path from the menu's first selected track
+        const TrackPointer pTrack = getFirstTrackPointer();
+        if (!pTrack) {
+            return;
+        }
+
         // Show options dialog first to let user select resolution
-        DlgStemConversionOptions optionsDialog(this);
+        DlgStemConversionOptions optionsDialog(pTrack->getLocation(), this);
         if (optionsDialog.exec() != QDialog::Accepted) {
             // User cancelled the dialog
             return;
@@ -1859,9 +1869,9 @@ void WTrackMenu::slotReanalyzeWithVariableTempo() {
         }
 
         // Queue all selected tracks for conversion with the selected resolution
-        for (const auto& pTrack : tracks) {
-            if (pTrack) {
-                m_pStemConversionManager->convertTrack(pTrack, converterResolution);
+        for (const auto& track : tracks) {
+            if (track) {
+                m_pStemConversionManager->convertTrack(track, converterResolution);
             }
         }
 

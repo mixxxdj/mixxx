@@ -5,8 +5,9 @@
 #include <QLabel>
 #include <QGroupBox>
 
-DlgStemConversionOptions::DlgStemConversionOptions(QWidget* parent)
+DlgStemConversionOptions::DlgStemConversionOptions(const QString& trackPath, QWidget* parent)
         : QDialog(parent),
+          m_trackPath(trackPath),
           m_selectedResolution(Resolution::High) {
     setWindowTitle("Stem Conversion Options");
     setMinimumWidth(400);
@@ -29,6 +30,14 @@ void DlgStemConversionOptions::createUI() {
     pMainLayout->addWidget(pTitleLabel);
 
     pMainLayout->addSpacing(10);
+
+    // Track path display
+    QGroupBox* pTrackInfoGroup = new QGroupBox("Track to Convert", this);
+    QVBoxLayout* pTrackInfoLayout = new QVBoxLayout(pTrackInfoGroup);
+    m_pTrackPathLabel = new QLabel(m_trackPath, this);
+    m_pTrackPathLabel->setWordWrap(true);
+    pTrackInfoLayout->addWidget(m_pTrackPathLabel);
+    pMainLayout->addWidget(pTrackInfoGroup);
 
     // Resolution selection group
     QGroupBox* pResolutionGroup = new QGroupBox("Audio Resolution", this);

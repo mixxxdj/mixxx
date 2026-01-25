@@ -421,7 +421,7 @@ class WTrackMenu : public QMenu {
     QString m_trackProperty;
 
     #ifdef __STEM_CONVERSION__
-        StemConversionManagerPointer m_pStemConversionManager;
+        static StemConversionManagerPointer m_pStemConversionManager;
     #endif
 
     static bool s_showPurgeSuccessPopup;

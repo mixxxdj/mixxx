@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QFileInfo>
 
 #ifdef __STEM__
   #include <onnxruntime_cxx_api.h>
@@ -57,11 +58,14 @@ void StemConverter::convertTrack(const TrackPointer& pTrack, Resolution resoluti
 
     m_pTrack = pTrack;
     m_resolution = resolution;
-    m_trackTitle = pTrack->getTitle();
+
+    QString trackFilePath = pTrack->getLocation();
+    QFileInfo fileInfo(trackFilePath);
+    m_trackTitle = fileInfo.fileName();
+
     m_state = ConversionState::Processing;
     m_progress = 0.0f;
 
-    QString trackFilePath = pTrack->getLocation();
     if (trackFilePath.isEmpty()) {
         qWarning() << "Track file path is empty";
         emit conversionFailed(pTrack->getId(), "Track file path is empty");

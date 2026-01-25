@@ -6,6 +6,11 @@
 #include <QListWidgetItem>
 #include <QColor>
 #include <QApplication>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QMessageBox>
+#include "widget/dlgstemconversionoptions.h"
+#include "track/track.h"
 
 DlgStemConversion::DlgStemConversion(
         StemConversionManagerPointer pConversionManager,
@@ -69,6 +74,10 @@ void DlgStemConversion::createUI() {
 
     pButtonLayout->addStretch();
 
+    m_pConvertNewButton = new QPushButton("Convert New Track", this);
+    connect(m_pConvertNewButton, &QPushButton::clicked, this, &DlgStemConversion::onConvertNewTrack);
+    pButtonLayout->addWidget(m_pConvertNewButton);
+
     m_pCloseButton = new QPushButton("Close", this);
     // Use reject() instead of accept() to close the dialog without blocking
     connect(m_pCloseButton, &QPushButton::clicked, this, &QDialog::reject);
@@ -129,17 +138,17 @@ void DlgStemConversion::onConversionProgress(TrackId trackId, float progress, co
     QApplication::processEvents();  // Update UI
 }
 
-void DlgStemConversion::onConversionCompleted(TrackId trackId) {
+void DlgStemConversion::onConversionCompleted(TrackId trackId, const QString& trackTitle) {
     Q_UNUSED(trackId);
     m_pProgressBar->setValue(100);
-    m_pStatusLabel->setText("✅ Conversion completed successfully! (100%)");
+    m_pStatusLabel->setText("✅ " + trackTitle + " - Conversion completed successfully! (100%)");
     updateConversionList();
     QApplication::processEvents();  // Update UI
 }
 
-void DlgStemConversion::onConversionFailed(TrackId trackId, const QString& errorMessage) {
+void DlgStemConversion::onConversionFailed(TrackId trackId, const QString& trackTitle, const QString& errorMessage) {
     Q_UNUSED(trackId);
-    m_pStatusLabel->setText(QString("❌ Error: %1").arg(errorMessage));
+    m_pStatusLabel->setText(QString("❌ Error converting %1: %2").arg(trackTitle, errorMessage));
     m_pStatusLabel->setStyleSheet("color: #CC0000; font-weight: bold;");  // Red, bold
     updateConversionList();
     QApplication::processEvents();  // Update UI
@@ -173,10 +182,8 @@ void DlgStemConversion::updateConversionList() {
 
     for (const auto& status : history) {
         QString stateText = getStateDisplayText(status.state);
-        QString itemText = QString("%1 - %2 (%3%)")
-                .arg(status.trackTitle,
-                     stateText,
-                     QString::number(static_cast<int>(status.progress * 100)));
+        QString itemText = QString("%1 - %2")
+                .arg(status.trackTitle, stateText);
 
         QListWidgetItem* pItem = new QListWidgetItem(itemText, m_pConversionListWidget);
 
@@ -203,6 +210,37 @@ QString DlgStemConversion::getStateDisplayText(StemConverter::ConversionState st
             return "Failed";
         default:
             return "Unknown";
+    }
+}
+
+void DlgStemConversion::onConvertNewTrack() {
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "Select Audio File to Convert",
+        QStandardPaths::writableLocation(QStandardPaths::MusicLocation),
+        "Audio Files (*.mp3 *.wav *.flac *.m4a *.ogg)");
+
+    if (filePath.isEmpty()) {
+        return; // User canceled
+    }
+
+    // Create a temporary track object
+    TrackPointer pTrack = Track::newTemporary(filePath);
+    if (!pTrack) {
+        QMessageBox::warning(this, "Error", "Could not load the selected track.");
+        return;
+    }
+
+    // Open the options dialog
+    DlgStemConversionOptions optionsDialog(pTrack->getLocation(), this);
+    if (optionsDialog.exec() == QDialog::Accepted) {
+        StemConverter::Resolution resolution;
+        if (optionsDialog.getSelectedResolution() == DlgStemConversionOptions::Resolution::High) {
+            resolution = StemConverter::Resolution::High;
+        } else {
+            resolution = StemConverter::Resolution::Low;
+        }
+        m_pConversionManager->convertTrack(pTrack, resolution);
     }
 }
 

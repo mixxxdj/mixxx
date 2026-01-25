@@ -17,7 +17,7 @@ class StemConversionManager : public QObject {
 
   public:
     explicit StemConversionManager(QObject* parent = nullptr);
-    ~StemConversionManager() override = default;
+    ~StemConversionManager() override;
 
     struct ConversionInfo {
         TrackId trackId;
@@ -53,10 +53,10 @@ class StemConversionManager : public QObject {
     void conversionProgress(TrackId trackId, float progress, const QString& message);
 
     /// Emitted when a conversion completes successfully
-    void conversionCompleted(TrackId trackId);
+    void conversionCompleted(TrackId trackId, const QString& trackTitle);
 
     /// Emitted when a conversion fails
-    void conversionFailed(TrackId trackId, const QString& errorMessage);
+    void conversionFailed(TrackId trackId, const QString& trackTitle, const QString& errorMessage);
 
     /// Emitted when the queue changes
     void queueChanged(int pendingCount);
@@ -69,6 +69,8 @@ class StemConversionManager : public QObject {
 
   private:
     void processNextInQueue();
+    void loadHistory();
+    void saveHistory();
 
     QThreadPool* m_pThreadPool;
     TrackId m_currentTrackId;
@@ -76,6 +78,7 @@ class StemConversionManager : public QObject {
     QList<StemConverter::Resolution> m_resolutionQueue;  // Parallel queue for resolutions
     QList<ConversionStatus> m_conversionHistory;
     StemConverterPointer m_pCurrentConverter;
+    QString m_historyFilePath;
 };
 
 using StemConversionManagerPointer = std::shared_ptr<StemConversionManager>;

@@ -27,10 +27,10 @@ class DlgStemConversion : public QDialog {
     void onConversionProgress(TrackId trackId, float progress, const QString& message);
 
     /// Updates the UI when a conversion completes
-    void onConversionCompleted(TrackId trackId);
+    void onConversionCompleted(TrackId trackId, const QString& trackTitle);
 
     /// Updates the UI when a conversion fails
-    void onConversionFailed(TrackId trackId, const QString& errorMessage);
+    void onConversionFailed(TrackId trackId, const QString& trackTitle, const QString& errorMessage);
 
     /// Updates the UI when the queue changes
     void onQueueChanged(int pendingCount);
@@ -40,6 +40,9 @@ class DlgStemConversion : public QDialog {
 
     /// Updates the conversion list
     void updateConversionList();
+
+    /// Opens a file dialog to convert a new track
+    void onConvertNewTrack();
 
   private:
     void createUI();
@@ -54,5 +57,6 @@ class DlgStemConversion : public QDialog {
     QLabel* m_pStatusLabel;
     QListWidget* m_pConversionListWidget;
     QPushButton* m_pClearHistoryButton;
+    QPushButton* m_pConvertNewButton;
     QPushButton* m_pCloseButton;
 };
