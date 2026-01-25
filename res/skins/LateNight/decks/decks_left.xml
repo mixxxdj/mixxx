@@ -24,23 +24,6 @@
         </Connection>
       </WidgetGroup>
 
-      <!-- STEM Conversion Button -->
-      <WidgetGroup>
-        <RequiresStemConversion>true</RequiresStemConversion>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <PushButton>
-            <ObjectName>StemConversionButton</ObjectName>
-            <Size>50f,50f</Size>
-            <Text>Stems</Text>
-            <Tooltip>Show stem conversion history</Tooltip>
-            <ConfigKey>[Skin],show_stem_conversion_history</ConfigKey>
-          </PushButton>
-        </Children>
-      </WidgetGroup>
-
-
     </Children>
   </WidgetGroup>
 </Template>

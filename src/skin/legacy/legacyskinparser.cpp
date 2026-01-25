@@ -182,11 +182,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         Library* pLibrary,
         VinylControlManager* pVCMan,
         EffectsManager* pEffectsManager,
-        RecordingManager* pRecordingManager
-    #ifdef __STEM_CONVERSION__
-        , StemConversionManagerPointer pStemConversionManager
-    #endif
-        )
+        RecordingManager* pRecordingManager)
         : m_pConfig(pConfig),
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
@@ -196,11 +192,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pRecordingManager(pRecordingManager),
-          m_pParent(nullptr)
-#ifdef __STEM_CONVERSION__
-          , m_pStemConversionManager(pStemConversionManager)
-#endif
-          {
+          m_pParent(nullptr) {
     DEBUG_ASSERT(m_pSkinCreatedControls);
 }
 
@@ -486,18 +478,6 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     QString nodeName = node.nodeName();
     //qDebug() << "parseNode" << node.nodeName();
 
-#ifndef __STEM__
-    if (requiresStem(node)) {
-        return result;
-    }
-#endif
-
-#ifndef __STEM_CONVERSION__
-    if (requiresStemConversion(node)) {
-        return result;
-    }
-#endif
-
     // TODO(rryan) replace with a map to function pointers?
 
     if (sDebug) {
@@ -602,10 +582,6 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "StemLabel") {
 #ifdef __STEM__
         result = wrapWidget(parseStemLabelWidget(node));
-#endif
-    } else if (nodeName == "WStemConversionButton") {
-#ifdef __STEM_CONVERSION__
-        result = wrapWidget(parseStemConversionButtonWidget(node));
 #endif
     } else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
@@ -1052,18 +1028,6 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
     }
 
     return pLabel;
-}
-#endif
-
-#ifdef __STEM_CONVERSION__
-QWidget* LegacySkinParser::parseStemConversionButtonWidget(const QDomElement& element) {
-    Q_UNUSED(element);
-
-    // Create the button with the StemConversionManager
-    // Note: This requires access to m_pCoreServices or similar
-    // For now, return nullptr as a placeholder
-    // The actual implementation will depend on how you pass the manager
-    return nullptr;
 }
 #endif
 
@@ -2707,14 +2671,3 @@ bool LegacySkinParser::requiresStem(const QDomElement& node) {
     QDomElement requiresStemNode = node.firstChildElement("RequiresStem");
     return !requiresStemNode.isNull() && requiresStemNode.text() == "true";
 }
-
-bool LegacySkinParser::requiresStemConversion(const QDomElement& node) {
-    #ifdef __STEM_CONVERSION__
-        QDomElement requiresStemConversionNode = node.firstChildElement("RequiresStemConversion");
-        return !requiresStemConversionNode.isNull() && requiresStemConversionNode.text() == "true";
-    #else
-        Q_UNUSED(node);
-        return false;
-    #endif
-}
-
