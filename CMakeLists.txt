@@ -300,7 +300,8 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   set(_vcpkg_toolchain "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
   file(TO_NATIVE_PATH "${_vcpkg_toolchain}" _vcpkg_toolchain_native)
   if(NOT EXISTS "${_vcpkg_toolchain}")
-    message(STATUS
+    message(
+      STATUS
       "MIXXX_VCPKG_ROOT was set to \"${MIXXX_VCPKG_ROOT}\", but this is not a valid vcpkg root.\n"
       "Expected to find: ${_vcpkg_toolchain_native}\n"
       "Please set MIXXX_VCPKG_ROOT to the vcpkg root directory, the folder containing the vcpkg tool (vcpkg.exe on Windows)."
