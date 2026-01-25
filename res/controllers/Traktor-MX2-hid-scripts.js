@@ -41,6 +41,9 @@ var TraktorMX2 = new (function () {
 
     this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
 
+    this.keylockPressed = {"[Channel1]": false, "[Channel2]": false};
+    this.keylockIgnore = {"[Channel1]": false, "[Channel2]": false};
+
     this.jogModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Scratch, 1 = Bend
     this.jogTimer = {"[Channel1]": 0, "[Channel2]": 0};
 
@@ -349,11 +352,18 @@ TraktorMX2.shiftHandler = function (field) {
 };
 
 TraktorMX2.keylockHandler = function (field) {
-    if (field.value === 0) {
+
+    TraktorMX2.keylockPressed[field.group] = field.value;
+
+    if (field.value === 1) {
         return;
     }
 
-    script.toggleControl(field.group, "keylock");
+    if (TraktorMX2.keylockIgnore[field.group]) {
+        TraktorMX2.keylockIgnore[field.group] = false;
+    } else {
+        script.toggleControl(field.group, "keylock");
+    }
 };
 
 TraktorMX2.masterHandler = function (field) {
@@ -462,7 +472,7 @@ TraktorMX2.padModeHandler = function (field) {
             TraktorMX2.outputHandler(1, field.group, "loops");
         // Turn LEDs green
             for (let i = 1; i <= 8; ++i) {
-                TraktorMX2.outputHandler(TraktorMX2.baseColors.green, field.group, "pad_" + i);
+            TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedGreen, field.group, `pad_${  i}`);
             }
             break;
     }
@@ -514,11 +524,16 @@ TraktorMX2.padHandler = function (field) {
         case 3:
             // Loops Mode
 
-            if (TraktorMX2.shiftPressed[field.group]) {
+        if (!TraktorMX2.shiftPressed[field.group]) {
                 engine.setValue(field.group, "beatlooproll_" + (2 ** (padNumber - 5)) + "_activate", field.value);
             } else {
                 engine.setValue(field.group, "beatloop_" + 2 ** ((padNumber - 5)) + "_toggle", 1);
             }
+        if (field.value === 1) {
+            TraktorMX2.outputHandler(TraktorMX2.baseColors.green, field.group, `pad_${padNumber}`);
+        } else {
+            TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedGreen, field.group, `pad_${padNumber}`);
+        }
             break;
     }
 };
@@ -622,6 +637,16 @@ TraktorMX2.selectLoopHandler = function (field) {
 
             }
         }
+    } else if (TraktorMX2.keylockPressed[field.group]) {
+
+        TraktorMX2.keylockIgnore[field.group] = true;
+
+        if (delta > 0) {
+            engine.setValue(field.group, "pitch_adjust_up_small", 1);
+        } else {
+            engine.setValue(field.group, "pitch_adjust_down_small", 1);
+        }
+
     } else {
 
         if ((field.value + 1) % 16 === TraktorMX2.loopKnobEncoderState[field.group]) {
@@ -805,7 +830,7 @@ TraktorMX2.jogHandler = function (field) {
         //Turntable
         if (TraktorMX2.shiftPressed[field.group] && !engine.getValue(field.group, "play")) {
             // Skip through track
-            engine.setValue(field.group, "beatjump", velocity);
+            engine.setValue(field.group, "beatjump", velocity * 10 ** 6);
         } else {
             if (engine.getValue(field.group, "scratch2_enable")) {
                 engine.setValue(field.group, "scratch2", velocity * VELOCITY_TO_SCRATCH);
@@ -848,6 +873,7 @@ TraktorMX2.jogDecayer = function(field) {
     }
 };
 
+// Calculate the velocity of the jog wheel based on tick values and time elapsed
 TraktorMX2.wheelVelocity = function(deckNumber, value) {
 
     // Get current timer value - 32bit
