@@ -75,6 +75,7 @@ case "$1" in
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 echo "Please edit your /etc/apt/sources.list, run 'sudo apt update', and restart this script."
                 exit 1
+            fi
         else
             FONTS_UBUNTU_AVAILABLE=true
         fi
@@ -89,7 +90,7 @@ case "$1" in
             docbook-to-man \
             dput \
             fonts-open-sans \
-            $([ "$FONTS_UBUNTU_AVAILABLE" = true ] && echo "fonts-ubuntu") \
+            "$([ "$FONTS_UBUNTU_AVAILABLE" = true ] && echo "fonts-ubuntu")" \
             g++ \
             lcov \
             libavformat-dev \
