@@ -1515,9 +1515,6 @@ add_library(
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
-  src/stems/stemconverter.cpp
-  src/stems/stemconversionmanager.cpp
-  src/stems/dlgstemconversion.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
   src/soundio/sounddeviceportaudio.cpp
@@ -1792,10 +1789,6 @@ set(
   src/engine/channelhandle.h
   src/engine/engine.h
   src/errordialoghandler.h
-  src/stems/stemconverter.h
-  src/stems/stemconversionmanager.h
-  src/stems/dlgstemconversion.h
-  src/widget/dlgstemconversionoptions.h
   src/track/track.h
   src/track/track_decl.h
   src/track/trackid.h
@@ -2682,7 +2675,6 @@ if(STEM)
   endif()
 
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
-  target_compile_definitions(mixxx-lib PUBLIC __STEM_CONVERSION__)
 
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
 
@@ -2699,6 +2691,7 @@ if(STEM)
 
   # STEM conversion sources (only if ONNX Runtime is available)
   if(STEM_CONVERSION)
+    target_compile_definitions(mixxx-lib PUBLIC __STEM_CONVERSION__)
     target_sources(
       mixxx-lib
       PRIVATE
