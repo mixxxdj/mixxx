@@ -11,9 +11,9 @@
 #include <QCoreApplication>
 #include <QFileInfo>
 
-#ifdef __STEM__
+#ifdef __STEM_CONVERSION__
   #include <onnxruntime_cxx_api.h>
-  #include <sndfile.h>
+  ///#include <sndfile.h>
 #endif
 
 #include "sources/soundsourceproxy.h"
