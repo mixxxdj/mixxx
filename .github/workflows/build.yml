@@ -236,7 +236,7 @@ jobs:
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.21.x"
+          cmake-version: "3.24.x"
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.0
@@ -247,7 +247,7 @@ jobs:
           # This is a workaround for a SSL false positive in cmake 3.26.4
           # When downloading the manual. 3.21 is required for installing the
           # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
-          cmake-version: "3.21.x"
+          cmake-version: "3.24.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
