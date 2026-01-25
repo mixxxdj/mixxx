@@ -181,6 +181,28 @@
                     This color defines how the LED next to the tempo fader will be lit when the actual BPM is lower than the fader value.
                 </description>
             </option>
+            <option
+                variable="tempoFaderRelativeMove"
+                type="enum"
+                label="Tempo fader relative move color">
+                <value label="Aqua">aqua</value>
+                <value label="Azalea">azalea</value>
+                <value label="Blue" default="true">blue</value>
+                <value label="Celeste">celeste</value>
+                <value label="Fuscia">fuscia</value>
+                <value label="Green">green</value>
+                <value label="Lime">lime</value>
+                <value label="Orange">orange</value>
+                <value label="Purple">purple</value>
+                <value label="Red">red</value>
+                <value label="Salmon">salmon</value>
+                <value label="Sky">sky</value>
+                <value label="White">white</value>
+                <value label="Yellow">yellow</value>
+                <description>
+                    This color defines how the LED next to the tempo fader will be lit when the tempo fader is using the relative mode.
+                </description>
+            </option>
         </group>
 
         <group label="Tempo Fader">
@@ -250,6 +272,35 @@
                 <value label="Keyboard">keyboard</value>
                 <description>
                     Define the default layout used for the pads.
+                </description>
+            </option>
+            <option
+                variable="alternativeMoveMode"
+                type="boolean"
+                default="false"
+                label="Alternative assignments for move encoder">
+                <description>
+                    Move encoder: Adjust beatjump size
+                    :hwbtn:`SHIFT` + move encoder: Beatjump
+                    Push + move encoder: adjust pitch up and down.
+                </description>
+            </option>
+            <option
+                variable="defaultRelativeTempoMode"
+                type="boolean"
+                default="false"
+                label="Tempo fader uses the relative movement mode by default">
+                <description>
+                    No need for soft takeover. :hwbtn:`SHIFT` + tempo fader does not change tempo.
+                </description>
+            </option>
+            <option
+                variable="shiftTempoMode"
+                type="boolean"
+                default="false"
+                label="For Relative mode, Tempo does not adjust unless :hwbtn:`SHIFT` is held">
+                <description>
+                    Helps protect against accidental bumps.
                 </description>
             </option>
         </group>
@@ -797,6 +848,19 @@
                 Define the sensitivity factor when the jogwheel is used to move the in and out point of a loop using the Loop Mode.
             </description>
             <row>
+                <option
+                    variable="jogwheelAdjustFactor"
+                    type="real"
+                    precision="2"
+                    min="0.1"
+                    max="16.0"
+                    step="0.1"
+                    default="1.0"
+                    label="Jogwheel sensitivity in adjustment">
+                    <description>
+                        Define the sensitivity of the jogwheel when adjusting (not touched).
+                    </description>
+                </option>
                 <option
                     variable="loopEncoderMoveFactor"
                     type="integer"
