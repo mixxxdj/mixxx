@@ -10,6 +10,7 @@
 #include <vector>
 #include <unistd.h>
 #include <fcntl.h>
+
 #ifdef __STEM_CONVERSION__
   #include <onnxruntime_cxx_api.h>
   #include <sndfile.h>
