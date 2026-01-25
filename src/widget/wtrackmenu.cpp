@@ -139,9 +139,9 @@ WTrackMenu::WTrackMenu(
     setupActions();
 
     #ifdef __STEM_CONVERSION__
-        // Initialize STEMS convertion manager
-        m_pStemConversionManager = std::make_shared<StemConversionManager>();
-    #endif
+    // Initialize STEMS conversion manager
+    m_pStemConversionManager = std::make_shared<StemConversionManager>();
+#endif
 }
 
 WTrackMenu::~WTrackMenu() {

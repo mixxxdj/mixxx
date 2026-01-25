@@ -2689,14 +2689,24 @@ if(STEM)
     message(STATUS "ONNX Runtime found. Enabling STEM conversion support.")
   else()
     find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime)
-    find_path(ONNXRUNTIME_INCLUDE_DIR NAMES onnxruntime_cxx_api.h PATH_SUFFIXES onnxruntime)
+    find_path(
+      ONNXRUNTIME_INCLUDE_DIR
+      NAMES onnxruntime_cxx_api.h
+      PATH_SUFFIXES onnxruntime
+    )
 
     if(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR)
       set(STEM_CONVERSION TRUE)
-      message(STATUS "ONNX Runtime found manually. Enabling STEM conversion support.")
+      message(
+        STATUS
+        "ONNX Runtime found manually. Enabling STEM conversion support."
+      )
     else()
       set(STEM_CONVERSION FALSE)
-      message(STATUS "ONNX Runtime not found. STEM conversion support will be disabled.")
+      message(
+        STATUS
+        "ONNX Runtime not found. STEM conversion support will be disabled."
+      )
     endif()
   endif()
 
@@ -2704,10 +2714,14 @@ if(STEM)
     target_compile_definitions(mixxx-lib PUBLIC __STEM_CONVERSION__)
 
     if(TARGET ONNX::Runtime)
-        target_link_libraries(mixxx-lib PRIVATE ONNX::Runtime)
+      target_link_libraries(mixxx-lib PRIVATE ONNX::Runtime)
     elseif(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR)
-        target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY})
-        target_include_directories(mixxx-lib SYSTEM PRIVATE ${ONNXRUNTIME_INCLUDE_DIR})
+      target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY})
+      target_include_directories(
+        mixxx-lib
+        SYSTEM
+        PRIVATE ${ONNXRUNTIME_INCLUDE_DIR}
+      )
     endif()
 
     target_sources(
