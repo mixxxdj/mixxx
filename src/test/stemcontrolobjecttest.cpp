@@ -365,17 +365,15 @@ TEST_P(StemControlFixture, VuMeter) {
 
     // Process enough buffers to allow VU meter to decay to 0
     // Decay is exponential, so it takes time.
-    for (int i = 0; i < 200; ++i) {
+    for (int i = 0; i < 600; ++i) {
         m_pEngineMixer->process(kProcessBufferSize);
     }
 
     // VU Meter should be near zero (allow small epsilon for imperfect decay)
-    // FIXME: This assertion fails in unit test (value stays 1.0) but passed manual verification.
-    // Likely due to test harness buffer handling or settling time.
-    // EXPECT_NEAR(m_pStem1VuMeter->get(), 0.0, 0.001);
+    EXPECT_NEAR(m_pStem1VuMeter->get(), 0.0, 0.001);
 
     // Stem 2 should still be playing
-    // EXPECT_GT(m_pStem2VuMeter->get(), 0.0);
+    EXPECT_GT(m_pStem2VuMeter->get(), 0.0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
