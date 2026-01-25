@@ -2709,7 +2709,12 @@ bool LegacySkinParser::requiresStem(const QDomElement& node) {
 }
 
 bool LegacySkinParser::requiresStemConversion(const QDomElement& node) {
-    QDomElement requiresStemConversionNode = node.firstChildElement("RequiresStemConversion");
-    return !requiresStemConversionNode.isNull() && requiresStemConversionNode.text() == "true";
+    #ifdef __STEM_CONVERSION__
+        QDomElement requiresStemConversionNode = node.firstChildElement("RequiresStemConversion");
+        return !requiresStemConversionNode.isNull() && requiresStemConversionNode.text() == "true";
+    #else
+        Q_UNUSED(node);
+        return false;
+    #endif
 }
 

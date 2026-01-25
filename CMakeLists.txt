@@ -2657,28 +2657,14 @@ if(FFMPEG)
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
-# STEM file support
+# STEM file support (NEW)
 default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
 if(STEM)
   if(NOT FFMPEG)
     message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
   endif()
-
-  # ONNX Runtime - Simple version
-  find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime)
-    find_path(ONNXRUNTIME_INCLUDE_DIR NAMES onnxruntime_cxx_api.h PATH_SUFFIXES onnxruntime)
-
-  if(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR)
-    set(STEM_CONVERSION TRUE)
-    target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY})
-    target_include_directories(mixxx-lib SYSTEM PRIVATE ${ONNXRUNTIME_INCLUDE_DIR})
-  endif()
-
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
-
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
-
-  # Base STEM sources (always compiled)
   target_sources(
     mixxx-lib
     PRIVATE
@@ -2688,6 +2674,26 @@ if(STEM)
       src/widget/wtrackstemmenu.cpp
       src/widget/wstemlabel.cpp
   )
+  if(QOPENGL)
+    target_sources(
+      mixxx-lib
+      PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+
+  # ONNX Runtime - STEMS CONVERSION
+  find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime)
+    find_path(ONNXRUNTIME_INCLUDE_DIR NAMES onnxruntime_cxx_api.h PATH_SUFFIXES onnxruntime)
+
+  if(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR)
+    set(STEM_CONVERSION TRUE)
+    target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY})
+    target_include_directories(mixxx-lib SYSTEM PRIVATE ${ONNXRUNTIME_INCLUDE_DIR})
+    message(WARNING "STEM_CONVERSION IS TRUE")
+  else()
+    set(STEM_CONVERSION FALSE)
+    message(WARNING "STEM_CONVERSION IS FALSE")
+  endif()
 
   # STEM conversion sources (only if ONNX Runtime is available)
   if(STEM_CONVERSION)
@@ -2700,15 +2706,6 @@ if(STEM)
         src/stems/dlgstemconversion.cpp
         src/widget/wstemconversionbutton.cpp
         src/widget/dlgstemconversionoptions.cpp
-        src/widget/wstemconversionbutton.cpp
-        src/widget/dlgstemconversionoptions.cpp
-    )
-  endif()
-
-  if(QOPENGL)
-    target_sources(
-      mixxx-lib
-      PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
     )
   endif()
 endif()
