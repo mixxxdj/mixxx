@@ -1,7 +1,7 @@
 #include "widget/wstemconversionbutton.h"
 
-#include <QPainter>
 #include <QPaintEvent>
+#include <QPainter>
 #include <QTimer>
 
 #include "stems/dlgstemconversion.h"
@@ -180,11 +180,11 @@ void WStemConversionButton::updateButtonState() {
 
     if (m_isProcessing) {
         setToolTip(QString("Converting: %1\nClick for details")
-                .arg(currentConversion->trackTitle));
+                        .arg(currentConversion->trackTitle));
         startAnimation();
     } else if (m_pendingCount > 0) {
         setToolTip(QString("Pending conversions: %1\nClick for details")
-                .arg(m_pendingCount));
+                        .arg(m_pendingCount));
         stopAnimation();
     } else {
         setToolTip("No conversions in progress\nClick to view history");
@@ -198,7 +198,7 @@ void WStemConversionButton::startAnimation() {
     // Create timer for animation
     QTimer* pTimer = new QTimer(this);
     connect(pTimer, &QTimer::timeout, this, &WStemConversionButton::onAnimationTick);
-    pTimer->start(50);  // Update every 50ms
+    pTimer->start(50); // Update every 50ms
 }
 
 void WStemConversionButton::stopAnimation() {

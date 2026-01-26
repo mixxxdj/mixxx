@@ -499,7 +499,10 @@ void WMainMenuBar::initialize() {
     auto* pOptionsStemConversion = new QAction(stemConversionTitle, this);
     pOptionsStemConversion->setStatusTip(stemConversionText);
     pOptionsStemConversion->setWhatsThis(buildWhatsThis(stemConversionTitle, stemConversionText));
-    connect(pOptionsStemConversion, &QAction::triggered, this, &WMainMenuBar::showStemConversionDialog);
+    connect(pOptionsStemConversion,
+            &QAction::triggered,
+            this,
+            &WMainMenuBar::showStemConversionDialog);
     pOptionsMenu->addAction(pOptionsStemConversion);
 
     pOptionsMenu->addSeparator();

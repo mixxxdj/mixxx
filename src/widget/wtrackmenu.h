@@ -17,8 +17,8 @@
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
 #ifdef __STEM_CONVERSION__
-#include "stems/stemconversionmanager.h"
 #include "stems/dlgstemconversion.h"
+#include "stems/stemconversionmanager.h"
 #include "widget/dlgstemconversionoptions.h"
 #include "widget/wstemconversionbutton.h"
 #endif
@@ -167,10 +167,10 @@ class WTrackMenu : public QMenu {
     void slotReanalyzeWithFixedTempo();
     void slotReanalyzeWithVariableTempo();
 
-    #ifdef __STEM_CONVERSION__
-        // STEMS Conversion
-        void slotConvertToStems();
-    #endif
+#ifdef __STEM_CONVERSION__
+    // STEMS Conversion
+    void slotConvertToStems();
+#endif
 
     // BPM
     void slotLockBpm();

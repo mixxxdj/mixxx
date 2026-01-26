@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QDialog>
 #include <QComboBox>
-#include <QPushButton>
+#include <QDialog>
 #include <QLabel>
+#include <QPushButton>
 
 /// Dialog that allows the user to select stem conversion parameters
 class DlgStemConversionOptions : public QDialog {
@@ -11,8 +11,8 @@ class DlgStemConversionOptions : public QDialog {
 
   public:
     enum class Resolution {
-        Low,    // 16 kHz
-        High    // 44.1 kHz or higher
+        Low, // 16 kHz
+        High // 44.1 kHz or higher
     };
 
     explicit DlgStemConversionOptions(const QString& trackPath, QWidget* parent = nullptr);

@@ -1,19 +1,20 @@
 #pragma once
 
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QObject>
 #include <QString>
 #include <QTemporaryFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
 #include <memory>
 #include <vector>
-#include <unistd.h>
-#include <fcntl.h>
 
 #ifdef __STEM_CONVERSION__
-  #include <onnxruntime_cxx_api.h>
-  #include <sndfile.h>
+#include <onnxruntime_cxx_api.h>
+#include <sndfile.h>
 #endif
 
 #include "track/track.h"
@@ -24,8 +25,8 @@ class StemConverter : public QObject {
 
   public:
     enum class Resolution {
-        High,   // 44.1 kHz (htdemucs_ft)
-        Low,    // 16 kHz (htdemucs)
+        High, // 44.1 kHz (htdemucs_ft)
+        Low,  // 16 kHz (htdemucs)
     };
 
     enum class ConversionState {
@@ -74,16 +75,23 @@ class StemConverter : public QObject {
     bool loadOnnxModel();
 
     /// Step 2: Run ONNX inference on audio file
-    bool runInference(const std::vector<float>& inputAudio, int sampleRate,
-                      std::vector<std::vector<float>>& outputStems);
+    bool runInference(const std::vector<float>& inputAudio,
+            int sampleRate,
+            std::vector<std::vector<float>>& outputStems);
 
     /// Step 3: Decode audio file to WAV using ffmpeg
-    bool decodeAudioFile(const QString& inputPath, std::vector<float>& audioData,
-                      int& sampleRate, int& channels, int& originalFrames);
+    bool decodeAudioFile(const QString& inputPath,
+            std::vector<float>& audioData,
+            int& sampleRate,
+            int& channels,
+            int& originalFrames);
 
     /// Step 4: Save stem to WAV file using libsndfile
-    bool saveStemToWav(const std::vector<float>& audioData, const QString& outputPath,
-                      int sampleRate, int channels, int originalFrames);
+    bool saveStemToWav(const std::vector<float>& audioData,
+            const QString& outputPath,
+            int sampleRate,
+            int channels,
+            int originalFrames);
 
     /// Main ONNX separation function
     bool runOnnxSeparation(const QString& trackFilePath, const QString& outputDir);

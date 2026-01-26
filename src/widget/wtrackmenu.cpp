@@ -55,10 +55,10 @@
 #include "widget/wtrackstemmenu.h"
 #endif
 #ifdef __STEM_CONVERSION__
-#include "stems/stemconversionmanager.h"
 #include "stems/dlgstemconversion.h"
-#include "widget/wstemconversionbutton.h"
+#include "stems/stemconversionmanager.h"
 #include "widget/dlgstemconversionoptions.h"
+#include "widget/wstemconversionbutton.h"
 #endif
 
 #ifdef __STEM_CONVERSION__
@@ -138,7 +138,7 @@ WTrackMenu::WTrackMenu(
     createActions();
     setupActions();
 
-    #ifdef __STEM_CONVERSION__
+#ifdef __STEM_CONVERSION__
     // Initialize STEMS conversion manager
     m_pStemConversionManager = std::make_shared<StemConversionManager>();
 #endif
@@ -243,10 +243,10 @@ void WTrackMenu::createMenus() {
         m_pClearMetadataMenu->setTitle(tr("Clear"));
     }
 
-    #ifdef __STEM_CONVERSION__
-        // Initialize stem conversion manager
-        m_pStemConversionManager = std::make_shared<StemConversionManager>();
-    #endif
+#ifdef __STEM_CONVERSION__
+    // Initialize stem conversion manager
+    m_pStemConversionManager = std::make_shared<StemConversionManager>();
+#endif
 
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu = make_parented<QMenu>(this);
@@ -594,10 +594,13 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotReanalyzeWithVariableTempo);
 
-        #ifdef __STEM_CONVERSION__
-            m_pConvertToStemsAction = make_parented<QAction>(tr("Convert to Stems"), this);
-            connect(m_pConvertToStemsAction, &QAction::triggered, this, &WTrackMenu::slotConvertToStems);
-        #endif
+#ifdef __STEM_CONVERSION__
+        m_pConvertToStemsAction = make_parented<QAction>(tr("Convert to Stems"), this);
+        connect(m_pConvertToStemsAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotConvertToStems);
+#endif
     }
 
     // This action is only usable when m_deckGroup is set. That is true only
@@ -1832,53 +1835,54 @@ void WTrackMenu::slotReanalyzeWithVariableTempo() {
 }
 
 #ifdef __STEM_CONVERSION__
-    void WTrackMenu::slotConvertToStems() {
-        if (!m_pStemConversionManager) {
-            qWarning() << "Stem conversion manager is not initialized";
-            return;
-        }
-
-        TrackPointerList tracks = getTrackPointers();
-        if (tracks.isEmpty()) {
-            qWarning() << "No tracks selected for stem conversion";
-            return;
-        }
-
-        // Get track path from the menu's first selected track
-        const TrackPointer pTrack = getFirstTrackPointer();
-        if (!pTrack) {
-            return;
-        }
-
-        // Show options dialog first to let user select resolution
-        DlgStemConversionOptions optionsDialog(pTrack->getLocation(), this);
-        if (optionsDialog.exec() != QDialog::Accepted) {
-            // User cancelled the dialog
-            return;
-        }
-
-        // Get selected resolution from dialog
-        auto dialogResolution = optionsDialog.getSelectedResolution();
-
-        // Convert DlgStemConversionOptions::Resolution to StemConverter::Resolution
-        StemConverter::Resolution converterResolution;
-        if (dialogResolution == DlgStemConversionOptions::Resolution::High) {
-            converterResolution = StemConverter::Resolution::High;
-        } else {
-            converterResolution = StemConverter::Resolution::Low;
-        }
-
-        // Queue all selected tracks for conversion with the selected resolution
-        for (const auto& track : tracks) {
-            if (track) {
-                m_pStemConversionManager->convertTrack(track, converterResolution);
-            }
-        }
-
-        // Open the conversion dialog (modeless - non-blocking)
-        m_pStemConversionDialog = std::make_unique<DlgStemConversion>(m_pStemConversionManager, this);
-        m_pStemConversionDialog->show();
+void WTrackMenu::slotConvertToStems() {
+    if (!m_pStemConversionManager) {
+        qWarning() << "Stem conversion manager is not initialized";
+        return;
     }
+
+    TrackPointerList tracks = getTrackPointers();
+    if (tracks.isEmpty()) {
+        qWarning() << "No tracks selected for stem conversion";
+        return;
+    }
+
+    // Get track path from the menu's first selected track
+    const TrackPointer pTrack = getFirstTrackPointer();
+    if (!pTrack) {
+        return;
+    }
+
+    // Show options dialog first to let user select resolution
+    DlgStemConversionOptions optionsDialog(pTrack->getLocation(), this);
+    if (optionsDialog.exec() != QDialog::Accepted) {
+        // User cancelled the dialog
+        return;
+    }
+
+    // Get selected resolution from dialog
+    auto dialogResolution = optionsDialog.getSelectedResolution();
+
+    // Convert DlgStemConversionOptions::Resolution to StemConverter::Resolution
+    StemConverter::Resolution converterResolution;
+    if (dialogResolution == DlgStemConversionOptions::Resolution::High) {
+        converterResolution = StemConverter::Resolution::High;
+    } else {
+        converterResolution = StemConverter::Resolution::Low;
+    }
+
+    // Queue all selected tracks for conversion with the selected resolution
+    for (const auto& track : tracks) {
+        if (track) {
+            m_pStemConversionManager->convertTrack(track, converterResolution);
+        }
+    }
+
+    // Open the conversion dialog (modeless - non-blocking)
+    m_pStemConversionDialog =
+            std::make_unique<DlgStemConversion>(m_pStemConversionManager, this);
+    m_pStemConversionDialog->show();
+}
 #endif
 
 void WTrackMenu::slotLockBpm() {

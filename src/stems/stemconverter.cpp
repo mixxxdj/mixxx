@@ -1,19 +1,19 @@
 #include "stems/stemconverter.h"
 
-#include <QProcess>
-#include <QStandardPaths>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
-#include <QFile>
-#include <QDir>
-#include <QDebug>
-#include <QCoreApplication>
-#include <QFileInfo>
+#include <QProcess>
+#include <QStandardPaths>
 
 #ifdef __STEM_CONVERSION__
-  #include <onnxruntime_cxx_api.h>
-  #include <sndfile.h>
+#include <onnxruntime_cxx_api.h>
+#include <sndfile.h>
 #endif
 
 #include "sources/soundsourceproxy.h"
@@ -142,7 +142,7 @@ StemConverter::ConversionState StemConverter::getState() const {
 #ifdef __STEM__
 bool StemConverter::loadOnnxModel() {
     if (m_pOrtSession) {
-        return true;  // Already loaded
+        return true; // Already loaded
     }
 
     if (!m_pOrtEnv) {
@@ -165,9 +165,9 @@ bool StemConverter::loadOnnxModel() {
         sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
 
         m_pOrtSession = std::make_unique<Ort::Session>(
-            *m_pOrtEnv,
-            modelPath.toStdString().c_str(),
-            sessionOptions);
+                *m_pOrtEnv,
+                modelPath.toStdString().c_str(),
+                sessionOptions);
 
         kLogger.info() << "ONNX model loaded successfully from:" << modelPath;
         return true;
@@ -177,8 +177,9 @@ bool StemConverter::loadOnnxModel() {
     }
 }
 
-bool StemConverter::runInference(const std::vector<float>& inputAudio, int sampleRate,
-                                std::vector<std::vector<float>>& outputStems) {
+bool StemConverter::runInference(const std::vector<float>& inputAudio,
+        int sampleRate,
+        std::vector<std::vector<float>>& outputStems) {
     if (!m_pOrtSession) {
         kLogger.warning() << "ONNX session not initialized";
         return false;
@@ -193,23 +194,23 @@ bool StemConverter::runInference(const std::vector<float>& inputAudio, int sampl
         std::vector<int64_t> inputShape = {1, 2, expected_samples_per_channel};
 
         Ort::Value inputTensor = Ort::Value::CreateTensor<float>(
-            m_allocator.GetInfo(),
-            const_cast<float*>(inputAudio.data()),
-            inputAudio.size(),
-            inputShape.data(),
-            inputShape.size());
+                m_allocator.GetInfo(),
+                const_cast<float*>(inputAudio.data()),
+                inputAudio.size(),
+                inputShape.data(),
+                inputShape.size());
 
         const char* inputNames[] = {"input"};
         const char* outputNames[] = {"output"};
 
         // Run inference
         auto outputTensors = m_pOrtSession->Run(
-            Ort::RunOptions{nullptr},
-            inputNames,
-            &inputTensor,
-            1,
-            outputNames,
-            1);
+                Ort::RunOptions{nullptr},
+                inputNames,
+                &inputTensor,
+                1,
+                outputNames,
+                1);
 
         // Extract output stems from the single output tensor
         // Output shape is expected to be [1, 4, 2, 343980] (batch, stems, channels, samples)
@@ -243,8 +244,11 @@ bool StemConverter::runInference(const std::vector<float>& inputAudio, int sampl
     }
 }
 
-bool StemConverter::decodeAudioFile(const QString& inputPath, std::vector<float>& audioData,
-                                   int& sampleRate, int& channels, int& originalFrames) {
+bool StemConverter::decodeAudioFile(const QString& inputPath,
+        std::vector<float>& audioData,
+        int& sampleRate,
+        int& channels,
+        int& originalFrames) {
     // Use Mixxx's SoundSourceProxy to read the audio file
     // Create a temporary track for reading
     auto pTrack = Track::newTemporary(inputPath);
@@ -269,8 +273,8 @@ bool StemConverter::decodeAudioFile(const QString& inputPath, std::vector<float>
 
     // Read samples from the audio source
     mixxx::WritableSampleFrames writableFrames(
-        mixxx::IndexRange::between(0, expected_samples_per_channel),
-        mixxx::SampleBuffer::WritableSlice(sampleBuffer));
+            mixxx::IndexRange::between(0, expected_samples_per_channel),
+            mixxx::SampleBuffer::WritableSlice(sampleBuffer));
 
     mixxx::ReadableSampleFrames readableFrames = pAudioSource->readSampleFrames(writableFrames);
     originalFrames = readableFrames.frameIndexRange().length();
@@ -282,15 +286,20 @@ bool StemConverter::decodeAudioFile(const QString& inputPath, std::vector<float>
     size_t samplesToCopy = std::min((size_t)(originalFrames * channels), (size_t)expected_total_samples);
     std::copy(sampleBuffer.data(), sampleBuffer.data() + samplesToCopy, audioData.begin());
 
-    kLogger.info() << "Audio file decoded. Original samples:" << (originalFrames * channels)
+    kLogger.info() << "Audio file decoded. Original samples:"
+                   << (originalFrames * channels)
                    << "Resized to (samples):" << audioData.size()
-                   << "Padding applied:" << (expected_total_samples - samplesToCopy);
+                   << "Padding applied:"
+                   << (expected_total_samples - samplesToCopy);
 
     return true;
 }
 
-bool StemConverter::saveStemToWav(const std::vector<float>& audioData, const QString& outputPath,
-                                 int sampleRate, int channels, int originalFrames) {
+bool StemConverter::saveStemToWav(const std::vector<float>& audioData,
+        const QString& outputPath,
+        int sampleRate,
+        int channels,
+        int originalFrames) {
     SF_INFO sfInfo;
     memset(&sfInfo, 0, sizeof(sfInfo));
 
@@ -470,11 +479,11 @@ bool StemConverter::createStemContainer(const QString& trackFilePath, const QStr
     ffmpegArgs << "-i" << (stemsDir + "/vocals.m4a");
 
     // Map all audio tracks
-    ffmpegArgs << "-map" << "0:a:0";  // mixdown
-    ffmpegArgs << "-map" << "1:a:0";  // drums
-    ffmpegArgs << "-map" << "2:a:0";  // bass
-    ffmpegArgs << "-map" << "3:a:0";  // other
-    ffmpegArgs << "-map" << "4:a:0";  // vocals
+    ffmpegArgs << "-map" << "0:a:0"; // mixdown
+    ffmpegArgs << "-map" << "1:a:0"; // drums
+    ffmpegArgs << "-map" << "2:a:0"; // bass
+    ffmpegArgs << "-map" << "3:a:0"; // other
+    ffmpegArgs << "-map" << "4:a:0"; // vocals
 
     ffmpegArgs << "-c:a" << "alac";
     ffmpegArgs << "-movflags" << "+faststart";
@@ -570,9 +579,9 @@ QString StemConverter::createStemManifest() {
 QString StemConverter::findMP4Box() {
     // List of possible MP4Box locations
     QStringList possibleLocations = {
-        "/usr/local/bin/MP4Box",
-        "/usr/bin/MP4Box",
-        "/opt/local/bin/MP4Box",
+            "/usr/local/bin/MP4Box",
+            "/usr/bin/MP4Box",
+            "/opt/local/bin/MP4Box",
     };
 
     for (const QString& location : possibleLocations) {
@@ -609,7 +618,7 @@ bool StemConverter::addStemMetadata(const QString& outputPath) {
     QString stemManifest = createStemManifest();
 
     QTemporaryFile tempJsonFile;
-    tempJsonFile.setAutoRemove(false);  // We'll delete it manually
+    tempJsonFile.setAutoRemove(false); // We'll delete it manually
 
     if (!tempJsonFile.open()) {
         kLogger.warning() << "Failed to create temporary JSON file";

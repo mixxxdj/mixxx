@@ -1,15 +1,15 @@
 #include "stems/stemconversionmanager.h"
 
-#include <QThreadPool>
-#include <QRunnable>
 #include <QDebug>
-#include <QStandardPaths>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
-#include <QFileInfo>
+#include <QRunnable>
+#include <QStandardPaths>
+#include <QThreadPool>
 
 #include "util/logger.h"
 
@@ -19,10 +19,10 @@ const mixxx::Logger kLogger("StemConversionManager");
 
 class StemConversionTask : public QRunnable {
   public:
-    StemConversionTask(StemConversionManager* pManager, 
-                      StemConverterPointer pConverter, 
-                      TrackPointer pTrack,
-                      StemConverter::Resolution resolution)
+    StemConversionTask(StemConversionManager* pManager,
+            StemConverterPointer pConverter,
+            TrackPointer pTrack,
+            StemConverter::Resolution resolution)
             : m_pManager(pManager),
               m_pConverter(pConverter),
               m_pTrack(pTrack),
@@ -51,7 +51,7 @@ StemConversionManager::StemConversionManager(QObject* parent)
           m_conversionQueue(QList<TrackPointer>()) {
     // Create thread pool for asynchronous conversions
     m_pThreadPool = new QThreadPool(this);
-    m_pThreadPool->setMaxThreadCount(1);  // One conversion at a time
+    m_pThreadPool->setMaxThreadCount(1); // One conversion at a time
 
     // Define history file path
     QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
@@ -70,8 +70,8 @@ StemConversionManager::~StemConversionManager() {
     saveHistory();
 }
 
-void StemConversionManager::convertTrack(const TrackPointer& pTrack, 
-                                         StemConverter::Resolution resolution) {
+void StemConversionManager::convertTrack(const TrackPointer& pTrack,
+        StemConverter::Resolution resolution) {
     if (!pTrack) {
         kLogger.warning() << "Cannot convert null track";
         return;
@@ -104,14 +104,22 @@ void StemConversionManager::processNextInQueue() {
     StemConverterPointer pConverter = std::make_shared<StemConverter>();
 
     // Connect the converter signals
-    connect(pConverter.get(), &StemConverter::conversionStarted,
-            this, &StemConversionManager::onConversionStarted);
-    connect(pConverter.get(), &StemConverter::conversionProgress,
-            this, &StemConversionManager::onConversionProgress);
-    connect(pConverter.get(), &StemConverter::conversionCompleted,
-            this, &StemConversionManager::onConversionCompleted);
-    connect(pConverter.get(), &StemConverter::conversionFailed,
-            this, &StemConversionManager::onConversionFailed);
+    connect(pConverter.get(),
+            &StemConverter::conversionStarted,
+            this,
+            &StemConversionManager::onConversionStarted);
+    connect(pConverter.get(),
+            &StemConverter::conversionProgress,
+            this,
+            &StemConversionManager::onConversionProgress);
+    connect(pConverter.get(),
+            &StemConverter::conversionCompleted,
+            this,
+            &StemConversionManager::onConversionCompleted);
+    connect(pConverter.get(),
+            &StemConverter::conversionFailed,
+            this,
+            &StemConversionManager::onConversionFailed);
 
     // Emit that conversion has started
     QFileInfo fileInfo(pTrack->getLocation());

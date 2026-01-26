@@ -1,9 +1,9 @@
 #include "widget/dlgstemconversionoptions.h"
 
-#include <QVBoxLayout>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QGroupBox>
+#include <QVBoxLayout>
 
 DlgStemConversionOptions::DlgStemConversionOptions(const QString& trackPath, QWidget* parent)
         : QDialog(parent),
@@ -43,14 +43,15 @@ void DlgStemConversionOptions::createUI() {
     QGroupBox* pResolutionGroup = new QGroupBox("Audio Resolution", this);
     QVBoxLayout* pResolutionLayout = new QVBoxLayout(pResolutionGroup);
 
-    QLabel* pResolutionLabel = new QLabel("Select the output resolution for stem separation:", this);
+    QLabel* pResolutionLabel = new QLabel(
+            "Select the output resolution for stem separation:", this);
     pResolutionLayout->addWidget(pResolutionLabel);
 
     m_pResolutionComboBox = new QComboBox(this);
-    m_pResolutionComboBox->addItem("High Resolution (44.1 kHz or higher) - Recommended", 
-                                    static_cast<int>(Resolution::High));
-    m_pResolutionComboBox->addItem("Low Resolution (16 kHz) - Faster processing", 
-                                   static_cast<int>(Resolution::Low));
+    m_pResolutionComboBox->addItem("High Resolution (44.1 kHz or higher) - Recommended",
+            static_cast<int>(Resolution::High));
+    m_pResolutionComboBox->addItem("Low Resolution (16 kHz) - Faster processing",
+            static_cast<int>(Resolution::Low));
     m_pResolutionComboBox->setCurrentIndex(0);
     pResolutionLayout->addWidget(m_pResolutionComboBox);
 

@@ -2,8 +2,8 @@
 
 #include <QDialog>
 #include <QLabel>
-#include <QProgressBar>
 #include <QListWidget>
+#include <QProgressBar>
 #include <QPushButton>
 #include <memory>
 
@@ -30,7 +30,9 @@ class DlgStemConversion : public QDialog {
     void onConversionCompleted(TrackId trackId, const QString& trackTitle);
 
     /// Updates the UI when a conversion fails
-    void onConversionFailed(TrackId trackId, const QString& trackTitle, const QString& errorMessage);
+    void onConversionFailed(TrackId trackId,
+            const QString& trackTitle,
+            const QString& errorMessage);
 
     /// Updates the UI when the queue changes
     void onQueueChanged(int pendingCount);

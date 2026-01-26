@@ -1,12 +1,12 @@
 #pragma once
 
+#include <QList>
 #include <QObject>
 #include <memory>
 #include <optional>
-#include <QList>
 
-#include "track/track.h"
 #include "stems/stemconverter.h"
+#include "track/track.h"
 
 class QThreadPool;
 
@@ -33,8 +33,8 @@ class StemConversionManager : public QObject {
     };
 
     /// Start converting a track to stems with specified resolution
-    void convertTrack(const TrackPointer& pTrack, 
-                     StemConverter::Resolution resolution = StemConverter::Resolution::High);
+    void convertTrack(const TrackPointer& pTrack,
+            StemConverter::Resolution resolution = StemConverter::Resolution::High);
 
     /// Get current conversion info
     std::optional<ConversionInfo> getCurrentConversion() const;
@@ -75,7 +75,7 @@ class StemConversionManager : public QObject {
     QThreadPool* m_pThreadPool;
     TrackId m_currentTrackId;
     QList<TrackPointer> m_conversionQueue;
-    QList<StemConverter::Resolution> m_resolutionQueue;  // Parallel queue for resolutions
+    QList<StemConverter::Resolution> m_resolutionQueue; // Parallel queue for resolutions
     QList<ConversionStatus> m_conversionHistory;
     StemConverterPointer m_pCurrentConverter;
     QString m_historyFilePath;
