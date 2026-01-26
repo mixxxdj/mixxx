@@ -648,7 +648,7 @@ KeyChange KeyUtils::calculateGlobalKey(
                     duration_frames * key_changes[i].tuningFrequencyHz;
             key_histogram[key].framePos += duration_frames;
         } else {
-            qDebug() << key_changes[i].key << ": " << key_changes[i].tuningFrequencyHz;
+            // qDebug() << key_changes[i].key << ": " << key_changes[i].tuningFrequencyHz;
             key_histogram[key] = {key_changes[i].key,
                     duration_frames * key_changes[i].tuningFrequencyHz,
                     mixxx::audio::FramePos(duration_frames)};
@@ -661,8 +661,10 @@ KeyChange KeyUtils::calculateGlobalKey(
     for (auto it = key_histogram.constBegin();
          it != key_histogram.constEnd(); ++it) {
         qDebug() << it.key() << ":" << keyDebugName(it.key())
-                 << it.value().tuningFrequencyHz
-                 << it.value().framePos.value() / sampleRate;
+                 << it.value().tuningFrequencyHz / it.value().framePos.value()
+                 << "Hz"
+                 << it.value().framePos.value() / sampleRate
+                 << "s";
         if (it.value().framePos.value() > max_delta) {
             max_key = it.value();
             max_delta = it.value().framePos.value();
