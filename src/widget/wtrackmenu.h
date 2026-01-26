@@ -400,10 +400,10 @@ class WTrackMenu : public QMenu {
     std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
-    #ifdef __STEM_CONVERSION__
-        // STEMS conversion dialog (must be member to prevent destruction)
-        std::unique_ptr<DlgStemConversion> m_pStemConversionDialog;
-    #endif
+#ifdef __STEM_CONVERSION__
+    // STEMS conversion dialog (must be member to prevent destruction)
+    std::unique_ptr<DlgStemConversion> m_pStemConversionDialog;
+#endif
 
     struct UpdateExternalTrackCollection {
         QPointer<ExternalTrackCollection> pExternalTrackCollection;
@@ -420,9 +420,9 @@ class WTrackMenu : public QMenu {
 
     QString m_trackProperty;
 
-    #ifdef __STEM_CONVERSION__
-        static StemConversionManagerPointer m_pStemConversionManager;
-    #endif
+#ifdef __STEM_CONVERSION__
+    static StemConversionManagerPointer m_pStemConversionManager;
+#endif
 
     static bool s_showPurgeSuccessPopup;
     static bool s_confirmForAutoDjReplace;
