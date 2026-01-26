@@ -109,7 +109,7 @@ case "$1" in
             docbook-to-man \
             dput \
             fonts-open-sans \
-            $([ "$FONTS_UBUNTU_AVAILABLE" = true ] && echo "fonts-ubuntu") \
+            "$([ "$FONTS_UBUNTU_AVAILABLE" = true ] && echo "fonts-ubuntu")" \
             g++ \
             lcov \
             libavformat-dev \
@@ -181,13 +181,9 @@ case "$1" in
             MODEL_FILE="$MODEL_PATH/htdemucs.onnx"
 
             # Create directory with proper ownership
-            sudo -u "$ACTUAL_USER" mkdir -p "$MODEL_PATH"
-
-            if [ $? -eq 0 ]; then
+            if sudo -u "$ACTUAL_USER" mkdir -p "$MODEL_PATH"; then
                 # Download model file
-                sudo -u "$ACTUAL_USER" wget -c https://github.com/mixxxdj/demucs/releases/download/v4.0.1-19-gd182d42-onnxmodel/htdemucs.onnx -O "$MODEL_FILE"
-
-                if [ $? -eq 0 ]; then
+                if sudo -u "$ACTUAL_USER" wget -c https://github.com/mixxxdj/demucs/releases/download/v4.0.1-19-gd182d42-onnxmodel/htdemucs.onnx -O "$MODEL_FILE"; then
                     echo "Model downloaded successfully to $MODEL_FILE"
                     sudo chown "$ACTUAL_USER:$ACTUAL_USER" "$MODEL_FILE"
                 else
@@ -211,7 +207,7 @@ case "$1" in
 
                 # Create build directory
                 mkdir -p "$GPAC_BUILD_DIR"
-                cd "$GPAC_BUILD_DIR"
+                cd "$GPAC_BUILD_DIR" || exit 1
 
                 # Download GPAC v2.4.0
                 echo "Downloading GPAC v2.4.0..."
@@ -225,29 +221,23 @@ case "$1" in
                 # Extract
                 echo "Extracting GPAC..."
                 tar -xzf gpac-2.4.0.tar.gz
-                cd gpac-2.4.0
+                cd gpac-2.4.0 || exit 1
 
                 # Configure and compile for system installation
                 echo "Configuring GPAC..."
-                ./configure --prefix=/usr/local
-
-                if [ $? -ne 0 ]; then
+                if ! ./configure --prefix=/usr/local; then
                     echo "GPAC configuration failed"
                     exit 1
                 fi
 
                 echo "Compiling GPAC (this may take a few minutes)..."
-                make -j$(nproc)
-
-                if [ $? -ne 0 ]; then
+                if ! make -j"$(nproc)"; then
                     echo "GPAC compilation failed"
                     exit 1
                 fi
 
                 echo "Installing GPAC to system..."
-                sudo make install
-
-                if [ $? -eq 0 ]; then
+                if sudo make install; then
                     echo "GPAC v2.4.0 compiled and installed successfully"
                     echo "Location: /usr/local/bin/MP4Box"
 
