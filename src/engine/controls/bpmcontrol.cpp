@@ -553,7 +553,11 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         adjustment = 1.0;
         // When updating the user offset, make sure to remove the existing offset or else it
         // will get double-applied.
-        m_dUserOffset.setValue(error + curUserOffset);
+        double offset = error + curUserOffset;
+        while (std::abs(offset) > 1.0f) {
+            offset -= std::copysign(1.0f, offset);
+        }
+        m_dUserOffset.setValue(offset);
     } else {
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
