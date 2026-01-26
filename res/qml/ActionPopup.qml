@@ -16,13 +16,22 @@ Popup {
     margins: 0
     leftInset: 0
 
+    enum Facing {
+        Left,
+        Top,
+        Right,
+        Bottom
+    }
+
     default property alias children: content.children
+    property variant facing: ActionPopup.Facing.Left
 
     contentItem: Item {
         ColumnLayout {
             spacing: 2
             anchors.fill: parent
-            anchors.leftMargin: 20
+            anchors.leftMargin: root.facing == ActionPopup.Facing.Left ? 20 : 0
+            anchors.rightMargin: root.facing == ActionPopup.Facing.Right ? 20 : 0
             id: content
         }
     }
@@ -32,7 +41,8 @@ Popup {
             id: content3
             anchors.fill: parent
             Shape {
-                anchors.left: parent.left
+                anchors.right: root.facing == ActionPopup.Facing.Right ? parent.right : undefined
+                anchors.left: root.facing == ActionPopup.Facing.Left ? parent.left : undefined
                 anchors.verticalCenter: parent.verticalCenter
                 implicitHeight: 20
                 ShapePath {
@@ -47,11 +57,20 @@ Popup {
                     PathLine { x: 20; y: 20 }
                     PathLine { x: 0; y: 10 }
                 }
+                transformOrigin: Item.Center
+                rotation: {
+                    switch (root.facing) {
+                        case ActionPopup.Facing.Right:
+                            return 180
+                        default:
+                            return 0
+                    }
+                }
             }
             Rectangle {
                 anchors.fill: parent
-                anchors.right: parent.right
-                anchors.leftMargin: 20
+                anchors.leftMargin: root.facing == ActionPopup.Facing.Left ? 20 : 0
+                anchors.rightMargin: root.facing == ActionPopup.Facing.Right ? 20 : 0
                 border.width: 0
                 radius: 8
                 color: Theme.backgroundColor
