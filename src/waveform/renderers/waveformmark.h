@@ -257,6 +257,10 @@ class WaveformMark {
 
     WaveformMarkLabel m_label;
 
+    // Check whether or not there is issues with this marker definition. Empty
+    // string means no issue.
+    QString validate() const;
+
   private:
     QImage performImageGeneration(float devicePixelRatio,
             const QString& pixmapPath,
