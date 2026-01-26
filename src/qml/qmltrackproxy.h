@@ -11,6 +11,7 @@
 #include "qml/qmlbeatsmodel.h"
 #include "qml/qmlcuesmodel.h"
 #include "qml/qmlstemsmodel.h"
+#include "qmlconfigproxy.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
@@ -40,6 +41,7 @@ class QmlTrackProxy : public QObject {
     Q_PROPERTY(int sampleRate READ getSampleRate NOTIFY sampleRateChanged)
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
     Q_PROPERTY(QUrl trackLocationUrl READ getTrackLocationUrl NOTIFY trackLocationUrlChanged)
+    Q_PROPERTY(bool hasWaveform READ hasWaveform STORED false NOTIFY hasWaveformChanged)
 
     Q_PROPERTY(mixxx::qml::QmlBeatsModel* beatsModel READ getBeatsModel CONSTANT);
     Q_PROPERTY(mixxx::qml::QmlCuesModel* hotcuesModel READ getCuesModel CONSTANT);
@@ -66,6 +68,7 @@ class QmlTrackProxy : public QObject {
     QString getTrackTotal() const;
     QString getComment() const;
     QString getKeyText() const;
+    Q_INVOKABLE QColor getKeyColor(const mixxx::qml::QmlConfigProxy* pConfig) const;
     QColor getColor() const;
     double getDuration() const;
     int getSampleRate() const;
@@ -85,6 +88,8 @@ class QmlTrackProxy : public QObject {
         return m_pStemsModel.get();
     }
 #endif
+
+    bool hasWaveform() const;
 
     TrackPointer internal() const {
         return m_pTrack;
@@ -134,6 +139,7 @@ class QmlTrackProxy : public QObject {
 #ifdef __STEM__
     void stemsChanged();
 #endif
+    void hasWaveformChanged();
 
   private:
     TrackPointer m_pTrack;

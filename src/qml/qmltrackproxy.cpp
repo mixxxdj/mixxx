@@ -106,6 +106,14 @@ QmlTrackProxy::QmlTrackProxy(TrackPointer track, QObject* parent)
             &Track::durationChanged,
             this,
             &QmlTrackProxy::durationChanged);
+    connect(m_pTrack.get(),
+            &Track::waveformSummaryUpdated,
+            this,
+            &QmlTrackProxy::hasWaveformChanged);
+    connect(m_pTrack.get(),
+            &Track::waveformUpdated,
+            this,
+            &QmlTrackProxy::hasWaveformChanged);
 #ifdef __STEM__
     connect(m_pTrack.get(),
             &Track::stemsUpdated,
@@ -181,6 +189,16 @@ PROPERTY_IMPL(QString, trackTotal, getTrackTotal, setTrackTotal)
 PROPERTY_IMPL(QString, comment, getComment, setComment)
 PROPERTY_IMPL(QString, keyText, getKeyText, setKeyText)
 
+QColor QmlTrackProxy::getKeyColor(const QmlConfigProxy* pConfig) const {
+    if (m_pTrack == nullptr) {
+        return QColor();
+    }
+    ColorPaletteSettings colorPaletteSettings(pConfig->get());
+    ColorPalette keyColorPalette = colorPaletteSettings.getConfigKeyColorPalette();
+
+    return KeyUtils::keyToColor(m_pTrack->getKey(), keyColorPalette);
+}
+
 QColor QmlTrackProxy::getColor() const {
     if (m_pTrack == nullptr) {
         return QColor();
@@ -238,6 +256,16 @@ QUrl QmlTrackProxy::getTrackLocationUrl() const {
     }
 
     return QUrl::fromLocalFile(m_pTrack->getLocation());
+}
+
+bool QmlTrackProxy::hasWaveform() const {
+    if (m_pTrack == nullptr) {
+        return false;
+    }
+    const auto& waveform = m_pTrack->getWaveform();
+    const auto& waveformSummary = m_pTrack->getWaveformSummary();
+    return waveform && waveform->getDataSize() > 0 && waveformSummary &&
+            waveformSummary->getDataSize() > 0;
 }
 
 } // namespace qml
