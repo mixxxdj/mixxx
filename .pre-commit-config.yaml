@@ -125,10 +125,6 @@ repos:
     hooks:
       - id: prettier
         types: [yaml]
-  - repo: https://github.com/qarmin/qml_formatter.git
-    rev: 706250038bb565f4c630ca3aab09f764faabae67 # No release tag yet including #9 fix
-    hooks:
-      - id: qml_formatter
   - repo: https://github.com/BlankSpruce/gersemi
     rev: 0.17.1
     hooks:
@@ -160,6 +156,17 @@ repos:
         language: python
         types: [text]
         files: ^CHANGELOG.md$
+      - id: qmlformat
+        name: qmlformat
+        entry: qmlformat
+        pass_filenames: true
+        require_serial: true
+        language: system
+        types: [text]
+        files: ^.*\.qml$
+        args: [-n, -i]
+        stages:
+          - manual
       - id: qmllint
         name: qmllint
         entry: qmllint

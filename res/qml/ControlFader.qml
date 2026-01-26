@@ -9,14 +9,15 @@ Skin.Fader {
     required property string key
 
     value: control.parameter
+
     onMoved: control.parameter = value
 
     Mixxx.ControlProxy {
         id: control
+
         group: root.group
         key: root.key
     }
-
     TapHandler {
         onDoubleTapped: control.reset()
     }

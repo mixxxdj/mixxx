@@ -45,8 +45,17 @@ message KeyMap {
   message KeyChange {
     optional int32 frame_position = 1;
     optional ChromaticKey key = 2;
+    optional double tuning_frequency_hz = 3;
   }
   repeated KeyChange key_change = 3;
 
   optional Source source = 4 [ default = ANALYZER ];
+
+  // Detected tuning frequency in Hz (e.g., 432.0, 440.0, 442.0)
+  // Default is 0, which may be interpreted as 440Hz (standard concert pitch A4)
+  // Using 0 as the default value to indicate that the pitch hasn't been detected yet.
+  // Stored as double to preserve cents precision during roundtrips
+  // This allows calculating the exact pitch offset needed for tuning adjustment:
+  // offset_semitones = log2(target_hz / global_tuning_frequency_hz) * 12
+  optional double global_tuning_frequency_hz = 5 [ default = 0.0 ];
 }

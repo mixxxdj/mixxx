@@ -105,8 +105,12 @@ void FakeBulkControllerJSProxy::send(const QList<int>& data, unsigned int length
 
 FakeController::FakeController()
         : Controller("Test Controller"),
-          m_bMidiMapping(false),
-          m_bHidMapping(false) {
+          m_bMidiMapping(false)
+#ifdef __HID
+          ,
+          m_bHidMapping(false)
+#endif
+{
     startEngine();
     getScriptEngine()->setTesting(true);
 }
@@ -117,8 +121,10 @@ FakeController::~FakeController() {
 bool FakeController::isMappable() const {
     if (m_bMidiMapping) {
         return m_pMidiMapping->isMappable();
+#ifdef __HID
     } else if (m_bHidMapping) {
         return m_pHidMapping->isMappable();
+#endif
     }
     return false;
 }
