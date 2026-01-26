@@ -75,7 +75,15 @@ DlgPrefRestServer::DlgPrefRestServer(QWidget* parent, std::shared_ptr<RestServer
     tableTokens->horizontalHeader()->setStretchLastSection(true);
     dateTimeEditTokenExpires->setMinimumDateTime(
             QDateTime(QDate(1970, 1, 1), QTime(0, 0), QTimeZone::utc()));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     dateTimeEditTokenExpires->setTimeZone(QTimeZone::utc());
+#else
+    const auto tokenExpiresDateTime = dateTimeEditTokenExpires->dateTime();
+    dateTimeEditTokenExpires->setDateTime(QDateTime(
+            tokenExpiresDateTime.date(),
+            tokenExpiresDateTime.time(),
+            QTimeZone::utc()));
+#endif
     dateTimeEditTokenExpires->setEnabled(false);
     lineEditTokenValue->setEchoMode(QLineEdit::Password);
     pushButtonToggleToken->setText(tr("Show"));
