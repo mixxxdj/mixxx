@@ -480,6 +480,7 @@ class Component {
         this.send(value);
     }
     outConnect() {
+        // console.warn(`** outConnect ${this.constructor.name}: outKey ${this.outKey}`);
         if (this.outKey !== undefined && this.group !== undefined && this.outConnections.length === 0) {
             const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
@@ -497,8 +498,10 @@ class Component {
         this.outConnections = [];
     }
     outTrigger() {
+        // console.warn(`  ** outTrigger ${this.constructor.name} `);
         for (const connection of this.outConnections) {
             if (!connection) { continue; }
+            // console.warn(`  *** outTrigger ${this.outConnections.indexOf(connection)}**`);
             connection.trigger();
         }
     }
@@ -1438,8 +1441,8 @@ class Mixer extends ComponentContainer {
         this.mixerColumnDeck1 = new S4Mk3MixerColumn(1, inReports, outReports[128],
             {
                 saveGain: {inByte: 11, inBit: 0, outByte: 80},
-                effectUnit1Assign: {inByte: 2, inBit: 3, outByte: 78},
-                effectUnit2Assign: {inByte: 2, inBit: 4, outByte: 79},
+                effectUnit13Assign: {inByte: 2, inBit: 3, outByte: 78},
+                effectUnit24Assign: {inByte: 2, inBit: 4, outByte: 79},
                 gain: {inByte: 16},
                 eqHigh: {inByte: 44},
                 eqMid: {inByte: 46},
@@ -1454,8 +1457,8 @@ class Mixer extends ComponentContainer {
         this.mixerColumnDeck2 = new S4Mk3MixerColumn(2, inReports, outReports[128],
             {
                 saveGain: {inByte: 11, inBit: 1, outByte: 84},
-                effectUnit1Assign: {inByte: 2, inBit: 5, outByte: 82},
-                effectUnit2Assign: {inByte: 2, inBit: 6, outByte: 83},
+                effectUnit13Assign: {inByte: 2, inBit: 5, outByte: 82},
+                effectUnit24Assign: {inByte: 2, inBit: 6, outByte: 83},
                 gain: {inByte: 18},
                 eqHigh: {inByte: 50},
                 eqMid: {inByte: 52},
@@ -1469,8 +1472,8 @@ class Mixer extends ComponentContainer {
         this.mixerColumnDeck3 = new S4Mk3MixerColumn(3, inReports, outReports[128],
             {
                 saveGain: {inByte: 2, inBit: 1, outByte: 88},
-                effectUnit1Assign: {inByte: 2, inBit: 0, outByte: 86},
-                effectUnit2Assign: {inByte: 2, inBit: 2, outByte: 87},
+                effectUnit13Assign: {inByte: 2, inBit: 0, outByte: 86},
+                effectUnit24Assign: {inByte: 2, inBit: 2, outByte: 87},
                 gain: {inByte: 14},
                 eqHigh: {inByte: 38},
                 eqMid: {inByte: 40},
@@ -1484,8 +1487,8 @@ class Mixer extends ComponentContainer {
         this.mixerColumnDeck4 = new S4Mk3MixerColumn(4, inReports, outReports[128],
             {
                 saveGain: {inByte: 11, inBit: 2, outByte: 92},
-                effectUnit1Assign: {inByte: 2, inBit: 7, outByte: 90},
-                effectUnit2Assign: {inByte: 11, inBit: 7, outByte: 91},
+                effectUnit13Assign: {inByte: 2, inBit: 7, outByte: 90},
+                effectUnit24Assign: {inByte: 11, inBit: 7, outByte: 91},
                 gain: {inByte: 20},
                 eqHigh: {inByte: 56},
                 eqMid: {inByte: 58},
@@ -1725,7 +1728,6 @@ class FXSelect extends Button {
             selectedQuickFX: null
         });
     }
-
 }
 
 
@@ -1816,78 +1818,138 @@ Button.prototype.colorMap = new ColorMapper(LedColorMap);
  * Kontrol S4 Mk3 hardware specific mapping logic
  */
 
+// A container for 2 effect units.
+// Uses Mixxx' standard effects mapping, supports effect focus mode.
+// https://manual.mixxx.org/2.5/en/chapters/effects#controller-effects-mapping
+// TODO implement auto-show/hide parameters option
 class S4Mk3EffectUnit extends ComponentContainer {
-    constructor(unitNumber, inReports, outReport, io) {
+    constructor(numbers, inReports, outReport, io) {
         super();
-        this.group = `[EffectRack1_EffectUnit${unitNumber}]`;
-        this.unitNumber = unitNumber;
+        if (!Array.isArray(numbers)) {
+            console.warn("ERROR! new S4Mk3EffectUnit() called without specifying any unit numbers!");
+            return;
+        }
+        if (numbers.length > 2) {
+            console.warn("ERROR! new S4Mk3EffectUnit() called with more than 2 unit numbers!");
+            return;
+        }
+        let numCount = 0;
+        for (const num of numbers) {
+            if (typeof num === "number") {
+                numCount++;
+            }
+        }
+        if (numCount < numbers.length) {
+            console.warn("ERROR! new S4Mk3EffectUnit() called with array that contains other types than numbers!");
+            return;
+        }
+        this.unitNumbers = numbers;
+        this.effectIndices = [0, 1, 2];
+
+        this.unitNumber = this.unitNumbers[0];
+        this.group = this.unitGroupForNumber(this.unitNumber);
         this.focusedEffect = null;
+        this.focusSelectMode = false;
+        // With this control skins can mark the unit that is currently mapped to the controller
+        engine.setValue(this.group, "controller_input_active", 1);
+        // Unset it for the other unit
+        const otherUnitGroup = this.unitGroupForNumber(this.unitNumbers[1]);
+        engine.setValue(otherUnitGroup, "controller_input_active", 0);
+        // From now on we only toggle it in setCurrentUnit()
 
         this.mixKnob = new Pot({
             inKey: "mix",
             group: this.group,
             inReport: inReports[2],
             inByte: io.mixKnob.inByte,
+            // TODO Super knob when shifted?
         });
 
-        this.mainButton = new PowerWindowButton({
+        // Focus button
+        // shortpress: clear focused effect (if any), or toggle parameters
+        // shortpress + Shift: switch unit
+        // longpress: focus select mode
+        // longPress + Shift: toggle 4 effect units in skin
+        // LED: blinking in focus mode, else off
+        this.effectFocusButton = new PowerWindowButton({
             unit: this,
+            group: this.group,
             inReport: inReports[1],
-            inByte: io.mainButton.inByte,
-            inBit: io.mainButton.inBit,
-            outByte: io.mainButton.outByte,
+            inByte: io.effectFocusButton.inByte,
+            inBit: io.effectFocusButton.inBit,
+            outByte: io.effectFocusButton.outByte,
             outReport: outReport,
-            shift: function() {
-                this.group = this.unit.group;
-                this.outKey = "group_[Master]_enable";
-                this.outConnect();
-                this.outTrigger();
-            },
-            unshift: function() {
-                this.outDisconnect();
-                this.outKey = undefined;
-                this.group = undefined;
-                this.output(false);
-            },
-            onPress: function() {
-                if (!this.shifted) {
-                    for (const index of [0, 1, 2]) {
-                        const effectGroup = `[EffectRack1_EffectUnit${unitNumber}_Effect${index + 1}]`;
-                        engine.setValue(effectGroup, "enabled", true);
+            // FIXME dummy impl to avoid warning "Unknown control [EffectRack1_EffectUnit1], "
+            // empty 'key' is not considered in Button/PowerWindowButton
+            onShortPress: function() {},
+            onShortRelease: function() {
+                // console.warn("focusButton shortRelease");
+                if (this.shifted) {
+                    if (this.unit.unitNumbers.length === 1) {
+                        return;
                     }
-                    this.output(true);
+                    // Switch effect unit
+                    let newIndex = this.unit.unitNumbers.indexOf(this.unit.unitNumber) + 1;
+                    if (newIndex === (this.unit.unitNumbers.length)) {
+                        newIndex = 0; // wrap around
+                    }
+                    const newUnitNumber = this.unit.unitNumbers[newIndex];
+                    // Make sure we have 4 units on screen when we switch to unit 3/4.
+                    if (newUnitNumber > 2) {
+                        engine.setValue("[Skin]", "show_4effectunits", 1);
+                    }
+                    this.unit.setCurrentUnit(newUnitNumber);
+                } else if (this.unit.focusedEffect !== null) {
+                    // console.warn("focusButton shortRelease: unfocus");
+                    this.unit.setFocusedEffect(null);
+                    this.unit.stopFocusSelectMode();
                 } else {
-                    if (this.unit.focusedEffect !== null) {
-                        this.unit.setFocusedEffect(null);
-                    } else {
-                        script.toggleControl(this.unit.group, "group_[Master]_enable");
-                        this.shift();
-                    }
+                    // console.warn("focusButton shortRelease: toggle showParam");
+                    script.toggleControl(this.group, "show_parameters");
+                }
+                this.output(0);
+            },
+            onLongPress: function() {
+                if (this.shifted) {
+                    // console.warn("focusButton longPress SHIFT");
+                    script.toggleControl("Skin", "show_4effectunits");
+                } else {
+                    // console.warn("focusButton longPress -> focusSelectMode");
+                    this.unit.startFocusSelectMode();
                 }
             },
-            onRelease: function() {
-                if (!this.shifted) {
-                    for (const index of [0, 1, 2]) {
-                        const effectGroup = `[EffectRack1_EffectUnit${unitNumber}_Effect${index + 1}]`;
-                        engine.setValue(effectGroup, "enabled", false);
-                    }
-                    this.output(false);
-                }
+            onLongRelease: function() {
+                // console.warn("focusButton longRelease -> focusSelectMode OFF");
+                this.unit.stopFocusSelectMode();
+                this.output(0);
             }
         });
 
         this.knobs = [];
         this.buttons = [];
-        for (const index of [0, 1, 2]) {
-            const effectGroup = `[EffectRack1_EffectUnit${unitNumber}_Effect${index + 1}]`;
+        for (const index of this.effectIndices) {
+            const effectGroup = this.effectGroupForNumber(index + 1);
             this.knobs[index] = new Pot({
+                unit: this,
                 inKey: "meta",
                 group: effectGroup,
                 inReport: inReports[2],
                 inByte: io.knobs[index].inByte,
+                stopFocusSelectMode: function(effectGroup, unfocusGroup, noEffectFocused) {
+                    // console.warn(`-- knob ${index + 1} stopFocusSelectMode, effectGroup: ${effectGroup}`);
+                    this.group = noEffectFocused ? unfocusGroup : effectGroup;
+                    this.inKey = noEffectFocused ? "meta" : `parameter${index + 1}`;
+                    this.shift = noEffectFocused ? undefined : function() {
+                        this.setGroupKey(unfocusGroup, "meta");
+                    };
+                    this.unshift = noEffectFocused ? undefined : function() {
+                        this.setGroupKey(effectGroup, `parameter${  index + 1}`);
+                    };
+                }
             });
             this.buttons[index] = new Button({
                 unit: this,
+                index: index,
                 key: "enabled",
                 group: effectGroup,
                 inReport: inReports[1],
@@ -1896,24 +1958,66 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 outByte: io.buttons[index].outByte,
                 outReport: outReport,
                 onShortPress: function() {
-                    if (!this.shifted || this.unit.focusedEffect !== null) {
-                        script.toggleControl(this.group, this.inKey);
-                    }
-                },
-                onLongPress: function() {
-                    if (this.shifted) {
+                    // Connections for normal/focused mode are set in stopFocusSelectMode()
+                    if (this.unit.focusSelectMode) {
+                        // console.warn(`--button ${index + 1} in focusSelectMode`);
+                        // Set/clear focused effect
                         this.unit.setFocusedEffect(index);
-                    }
-                },
-                onShortRelease: function() {
-                    if (this.shifted && this.unit.focusedEffect === null) {
-                        script.triggerControl(this.group, "next_effect");
+                    } else if (this.shifted) {
+                        // console.warn(`--button ${index + 1} shifted`);
+                        // Normal:  select next effect
+                        // Focused: toggle button parameter [index + 1]
+                        if (this.unit.focusedEffect === null) {
+                            // console.warn(`---- focusedEffect === null`);
+                            script.triggerControl(this.group, "next_effect");
+                        } else {
+                            script.toggleControl(this.group, this.inKey);
+                        }
+                    } else {
+                        // console.warn(`--button ${index + 1} else: toggle ${this.group},${this.inKey}`);
+                        // Normal:  toggle effect [index + 1]
+                        // Focused: toggle button parameter [index + 1]
+                        script.toggleControl(this.group, this.inKey);
                     }
                 },
                 onLongRelease: function() {
                     if (!this.shifted) {
+                        // console.warn(`--button ${index + 1} longRel: toggle ${this.group},${this.inKey}`);
                         script.toggleControl(this.group, this.inKey);
                     }
+                },
+                startFocusSelectMode: function() {
+                    this.outDisconnect();
+                    this.outConnections[0] = engine.makeConnection(this.unit.group, "focused_effect", (value) => {
+                        // console.warn(`--button ${index + 1}: outConn val: ${value}`);
+                        this.output(value === index + 1);
+                    });
+                    this.outTrigger();
+                },
+                stopFocusSelectMode: function(effectGroup, unfocusGroup, noEffectFocused) {
+                    this.outDisconnect();
+                    // console.warn(`button/knob ${index + 1} outConns: ${this.outConnections}`);
+                    this.group = noEffectFocused ? unfocusGroup : effectGroup;
+                    this.inKey = noEffectFocused ? "enabled" : `button_parameter${index + 1}`;
+                    this.shift = noEffectFocused ? undefined : function() {
+                        // console.warn(`button SHIFT: ${unfocusGroup},enabled`);
+                        // TODO add setGroupKey() to Button?
+                        // for Pot, this is a wrapper for these 4 commands:
+                        this.setGroup(unfocusGroup);
+                        this.setKey("enabled");
+                        this.outConnect();
+                        this.outTrigger();
+                    };
+                    this.unshift = noEffectFocused ? undefined : function() {
+                        // console.warn(`button unSHIFT: ${effectGroup},buttonPara${index + 1}`);
+                        this.setGroup(effectGroup);
+                        this.setKey(`button_parameter${index + 1}`);
+                        this.outConnect();
+                        this.outTrigger();
+                    };
+                    this.outKey = this.inKey;
+                    this.outConnect();
+                    this.outTrigger();
                 }
             });
         }
@@ -1923,42 +2027,104 @@ class S4Mk3EffectUnit extends ComponentContainer {
             component.outConnect();
             component.outTrigger();
         }
+        this.effectFocusButton.output(0);
+
+        // Restore effect focus state
+        const focusedEffectEngine = engine.getValue(this.group, "focused_effect");
+        if (focusedEffectEngine !== 0) {
+            this.setFocusedEffect(focusedEffectEngine - 1);
+            this.stopFocusSelectMode();
+        }
     }
+
+    // how does this work???
     indicatorLoop() {
         this.focusedEffectIndicator = !this.focusedEffectIndicator;
-        this.mainButton.output(true);
+        this.effectFocusButton.output(0);
     }
-    setFocusedEffect(effectIdx) {
-        this.mainButton.indicator(effectIdx !== null);
-        this.focusedEffect = effectIdx;
-        engine.setValue(this.group, "show_parameters", this.focusedEffect !== null);
 
-
-        const effectGroup = `[EffectRack1_EffectUnit${this.unitNumber}_Effect${this.focusedEffect + 1}]`;
-        for (const index of [0, 1, 2]) {
-            const unfocusGroup = `[EffectRack1_EffectUnit${this.unitNumber}_Effect${index + 1}]`;
-            this.buttons[index].outDisconnect();
-            this.buttons[index].group = this.focusedEffect === null ? unfocusGroup : effectGroup;
-            this.buttons[index].inKey = this.focusedEffect === null ? "enabled" : "button_parameter" + (index + 1);
-            this.buttons[index].shift = this.focusedEffect === null ? undefined : function() {
-                this.setGroup(unfocusGroup);
-                this.setKey("enabled");
-            };
-            this.buttons[index].unshift = this.focusedEffect === null ? undefined : function() {
-                this.setGroup(effectGroup);
-                this.setKey("button_parameter" + (index + 1));
-            };
-            this.buttons[index].outKey = this.buttons[index].inKey;
-            this.knobs[index].group = this.buttons[index].group;
-            this.knobs[index].inKey = this.focusedEffect === null ? "meta" : "parameter" + (index + 1);
-            this.knobs[index].shift = this.focusedEffect === null ? undefined : function() {
-                this.setGroupKey(unfocusGroup, "meta");
-            };
-            this.knobs[index].unshift = this.focusedEffect === null ? undefined : function() {
-                this.setGroupKey(effectGroup, "parameter" + (index + 1));
-            };
-            this.buttons[index].outConnect();
+    startFocusSelectMode() {
+        this.focusSelectMode = true;
+        for (const index of this.effectIndices) {
+            this.buttons[index].startFocusSelectMode();
         }
+    }
+
+    stopFocusSelectMode() {
+        this.focusSelectMode = false;
+        // If we focused an effect, knobs and buttons now control the knob/button parameters 1-3.
+        // With Shift we get the unfocus mapping: Meta knobs / effect toggles 1-3.
+        const effectGroup = this.effectGroupForNumber(this.focusedEffect + 1);
+        const noEffectFocused = this.focusedEffect === null;
+        // console.warn("-- stopFocusSelectMode");
+        for (const index of this.effectIndices) {
+            const unfocusGroup = this.effectGroupForNumber(index + 1);
+            this.buttons[index].stopFocusSelectMode(effectGroup, unfocusGroup, noEffectFocused);
+            this.knobs[index].stopFocusSelectMode(effectGroup, unfocusGroup, noEffectFocused);
+        }
+    }
+
+    setFocusedEffect(effectIdx) {
+        // Set/clear focused effect
+        if (this.focusedEffect === effectIdx) {
+            // console.warn("--> already focused, unfocus");
+            this.focusedEffect = null;
+        } else {
+            // console.warn(`--> set to ${effectIdx}`);
+            this.focusedEffect = effectIdx;
+        }
+        this.effectFocusButton.indicator(this.focusedEffect !== null);
+
+        if (this.focusedEffect === null) {
+            engine.setValue(this.group, "focused_effect", 0);
+            engine.setValue(this.group, "show_focus", 0);
+        } else {
+            engine.setValue(this.group, "focused_effect", effectIdx + 1);
+            engine.setValue(this.group, "show_focus", 1);
+        }
+    }
+
+    setCurrentUnit(newNumber) {
+        // console.warn(`setCurrentUnit: ${newNumber}`);
+        engine.setValue(this.group, "controller_input_active", 0);
+        engine.setValue(this.group, "show_focus", 0);
+
+        this.unitNumber = newNumber;
+        this.group = this.unitGroupForNumber(newNumber);
+        engine.setValue(this.group, "show_focus", 1);
+        engine.setValue(this.group, "controller_input_active", 1);
+
+        // Do not enable soft takeover upon EffectUnit construction
+        // so initial values can be loaded from knobs.
+        if (this.hasInitialized === true) {
+            for (const index of this.effectIndices) {
+                const effectGroup = this.effectGroupForNumber(index + 1);
+                engine.softTakeover(effectGroup, "meta", true);
+                engine.softTakeover(effectGroup, "parameter1", true);
+                engine.softTakeover(effectGroup, "parameter2", true);
+                engine.softTakeover(effectGroup, "parameter3", true);
+            }
+        }
+
+        this.reconnectComponents(function(component) {
+            // update [EffectRack1_EffectUnitX] groups
+            const unitMatch = component.group.match(script.effectUnitRegEx);
+            if (unitMatch !== null) {
+                component.group = this.group;
+            } else {
+                // update [EffectRack1_EffectUnitX_EffectY] groups
+                const effectMatch = component.group.match(script.individualEffectRegEx);
+                if (effectMatch !== null) {
+                    component.group = this.effectGroupForNumber(this.unitNumber);
+                }
+            }
+        });
+    };
+    unitGroupForNumber(number) {
+        return `[EffectRack1_EffectUnit${number}]`;
+    }
+    effectGroupForNumber(number) {
+        return `[EffectRack1_EffectUnit${this.unitNumber}_Effect${number}]`;
     }
 }
 
@@ -2047,7 +2213,7 @@ class S4Mk3Deck extends Deck {
 
                 if (receivingFirstValue) {
                     engine.softTakeover(this.group, this.inKey, true);
-                    // Forec-update LED.
+                    // Force-update LED.
                     // Output connection is made and updated before input() can set this.appliedValue
                     // (doesn't happen until getInputReport())
                     this.outTrigger();
@@ -3414,14 +3580,31 @@ class S4Mk3MixerColumn extends ComponentContainer {
             outKey: "pfl",
         });
 
-        this.effectUnit1Assign = new PowerWindowButton({
+        // Mixxx effect units 1/3 and 2/4
+        this.effectUnit13Assign = new PowerWindowButton({
             group: "[EffectRack1_EffectUnit1]",
             key: `group_${this.group}_enable`,
+            shift() {
+                this.group = "[EffectRack1_EffectUnit3]";
+                this.key = `group_${this.group}_enable`;
+            },
+            unshift() {
+                this.group = "[EffectRack1_EffectUnit1]";
+                this.key = `group_${this.group}_enable`;
+            },
         });
 
-        this.effectUnit2Assign = new PowerWindowButton({
+        this.effectUnit24Assign = new PowerWindowButton({
             group: "[EffectRack1_EffectUnit2]",
             key: `group_${this.group}_enable`,
+            shift() {
+                this.group = "[EffectRack1_EffectUnit4]";
+                this.key = `group_${this.group}_enable`;
+            },
+            unshift() {
+                this.group = "[EffectRack1_EffectUnit2]";
+                this.key = `group_${this.group}_enable`;
+            },
         });
 
         // FIXME: Why is output not working for these?
@@ -3501,7 +3684,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
                 component.outTrigger();
             }
         }
-        for (const property of ["effectUnit1Assign", "effectUnit2Assign"]) {
+        for (const property of ["effectUnit13Assign", "effectUnit24Assign"]) {
             const component = this[property];
             if (component instanceof Component) {
                 component.outDisconnect();
@@ -3539,36 +3722,40 @@ class S4MK3 {
         this.outReports = [];
         this.outReports[128] = new HIDOutputReport(128, 94);
 
-        this.effectUnit1 = new S4Mk3EffectUnit(1, this.inReports, this.outReports[128],
+        this.effectUnits13 = new S4Mk3EffectUnit([1, 3], this.inReports, this.outReports[128],
             {
-                mixKnob: {inByte: 30},
-                mainButton: {inByte: 1, inBit: 6, outByte: 62},
+                // Left to right:
+                // Knobs: Effect 1-2-3 + Mix
+                // Buttons: Effect 1-2-3 + Focus button
+                // Note the weird I/O bit/byte order
                 knobs: [
+                    {inByte: 30},
                     {inByte: 32},
                     {inByte: 34},
-                    {inByte: 36},
                 ],
+                mixKnob: {inByte: 36},
                 buttons: [
+                    {inByte: 1, inBit: 6, outByte: 62},
                     {inByte: 1, inBit: 7, outByte: 63},
                     {inByte: 1, inBit: 3, outByte: 64},
-                    {inByte: 1, inBit: 2, outByte: 65},
                 ],
+                effectFocusButton: {inByte: 1, inBit: 2, outByte: 65},
             }
         );
-        this.effectUnit2 = new S4Mk3EffectUnit(2, this.inReports, this.outReports[128],
+        this.effectUnits24 = new S4Mk3EffectUnit([2, 4], this.inReports, this.outReports[128],
             {
-                mixKnob: {inByte: 70},
-                mainButton: {inByte: 9, inBit: 4, outByte: 73},
                 knobs: [
+                    {inByte: 70},
                     {inByte: 72},
                     {inByte: 74},
-                    {inByte: 76},
                 ],
+                mixKnob: {inByte: 76},
                 buttons: [
+                    {inByte: 9, inBit: 4, outByte: 73},
                     {inByte: 9, inBit: 5, outByte: 74},
                     {inByte: 9, inBit: 6, outByte: 75},
-                    {inByte: 9, inBit: 7, outByte: 76},
                 ],
+                effectFocusButton: {inByte: 9, inBit: 7, outByte: 76},
             }
         );
 
@@ -3584,7 +3771,7 @@ class S4MK3 {
             [1, 3], [DeckColors[0], DeckColors[2]], {
                 tempoCenterLower: TempoCenterLowerLeft,
                 tempoCenterUpper: TempoCenterUpperLeft,
-            }, this.effectUnit1, this.mixer,
+            }, this.effectUnits13, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 4, inBit: 0, outByte: 55},
@@ -3637,7 +3824,7 @@ class S4MK3 {
             [2, 4], [DeckColors[1], DeckColors[3]], {
                 tempoCenterLower: TempoCenterLowerRight,
                 tempoCenterUpper: TempoCenterUpperRight,
-            }, this.effectUnit2, this.mixer,
+            }, this.effectUnits24, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 12, inBit: 0, outByte: 66},
