@@ -941,11 +941,7 @@ QVariant BaseTrackTableModel::roleValue(
                     index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
                                            .value<double>());
             QVariantMap colorRect;
-            if (tuningHz == 0) { // we do not have tuning information
-                colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
-                colorRect["bottom"] = colorRect["top"];
-                colorRect["splitPoint"] = 1;
-            } else {
+            if (tuningHz > 220 && tuningHz < 880) { // is the tuning valid?
                 float cents = 0;
                 Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
                 cents /= 100.0f; // normalize between -1 and 1
@@ -962,6 +958,10 @@ QVariant BaseTrackTableModel::roleValue(
                     colorRect["bottom"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
                     colorRect["splitPoint"] = cents;
                 }
+            } else {
+                colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                colorRect["bottom"] = colorRect["top"];
+                colorRect["splitPoint"] = 1;
             }
 
             return colorRect;
