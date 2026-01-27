@@ -64,21 +64,21 @@ class RestApiGateway : public RestApiProvider {
             const UserSettingsPointer& settings,
             QObject* parent = nullptr);
 
-    QHttpServerResponse health() const;
-    QHttpServerResponse ready() const;
-    QHttpServerResponse status() const;
+    QHttpServerResponse health() const override;
+    QHttpServerResponse ready() const override;
+    QHttpServerResponse status() const override;
     QJsonObject statusPayload() const override;
-    QHttpServerResponse deck(int deckNumber) const;
-    QHttpServerResponse decks() const;
+    QHttpServerResponse deck(int deckNumber) const override;
+    QHttpServerResponse decks() const override;
     QHttpServerResponse control(
             const QString& group,
             const QString& key,
             const std::optional<double>& value) const = delete;
-    QHttpServerResponse control(const QJsonObject& body) const;
-    QHttpServerResponse autoDjStatus() const;
-    QHttpServerResponse autoDj(const QJsonObject& body) const;
-    QHttpServerResponse playlists(const std::optional<int>& playlistId) const;
-    QHttpServerResponse playlistCommand(const QJsonObject& body) const;
+    QHttpServerResponse control(const QJsonObject& body) const override;
+    QHttpServerResponse autoDjStatus() const override;
+    QHttpServerResponse autoDj(const QJsonObject& body) const override;
+    QHttpServerResponse playlists(const std::optional<int>& playlistId) const override;
+    QHttpServerResponse playlistCommand(const QJsonObject& body) const override;
     QHttpServerResponse withIdempotencyCache(
             const QString& token,
             const QString& idempotencyKey,
