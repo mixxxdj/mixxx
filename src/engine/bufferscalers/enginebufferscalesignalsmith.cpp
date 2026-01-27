@@ -38,8 +38,8 @@ void EngineBufferScaleSignalSmith::setScaleParameters(
     // https://signalsmith-audio.co.uk/code/stretch/#how-to-use-latency-starting-and-ending,
     // stretch factor should be used when computing total latency
     m_expectedFrameLatency =
-            static_cast<SINT>(m_effectiveRate *
-                    static_cast<double>(m_stretch.inputLatency())) +
+            static_cast<SINT>(std::round(m_effectiveRate *
+                    static_cast<double>(m_stretch.inputLatency()))) +
             static_cast<SINT>(m_stretch.outputLatency());
 }
 
@@ -214,7 +214,7 @@ double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iO
             // the next retrieval. If we are at EOF this serves to get
             // the last samples out of the scaler.
             for (int ch = 0; ch < getOutputSignal().getChannelCount(); ch++) {
-                SampleUtil::clear(m_buffers[0].data(frameRead), frameRequired - frameRead);
+                SampleUtil::clear(m_buffers[ch].data(frameRead), frameRequired - frameRead);
             }
             frameRead = frameRequired;
             break;

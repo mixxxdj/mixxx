@@ -198,9 +198,9 @@ class EngineBuffer : public EngineObject {
 #endif
 #ifdef __SIGNALSMITH__
         case KeylockEngine::SignalSmithCheaper:
-            return tr("Signal Smith Stretch (Cheaper)");
+            return tr("Signalsmith Stretch (Cheaper)");
         case KeylockEngine::SignalSmithDefault:
-            return tr("Signal Smith Stretch (Default)");
+            return tr("Signalsmith Stretch (Default)");
 #endif
         default:
 #ifdef __RUBBERBAND__
