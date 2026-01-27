@@ -142,7 +142,8 @@ void StemConversionManager::onConversionStarted(TrackId trackId, const QString& 
     emit conversionStarted(trackId, trackTitle);
 }
 
-void StemConversionManager::onConversionProgress(TrackId trackId, float progress, const QString& message) {
+void StemConversionManager::onConversionProgress(
+        TrackId trackId, float progress, const QString& message) {
     emit conversionProgress(trackId, progress, message);
 }
 
@@ -194,7 +195,8 @@ void StemConversionManager::onConversionFailed(TrackId trackId, const QString& e
     processNextInQueue();
 }
 
-std::optional<StemConversionManager::ConversionInfo> StemConversionManager::getCurrentConversion() const {
+std::optional<StemConversionManager::ConversionInfo>
+StemConversionManager::getCurrentConversion() const {
     if (!m_currentTrackId.isValid()) {
         return std::nullopt;
     }

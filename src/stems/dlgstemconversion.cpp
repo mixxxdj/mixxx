@@ -77,7 +77,10 @@ void DlgStemConversion::createUI() {
     pButtonLayout->addStretch();
 
     m_pConvertNewButton = new QPushButton("Convert New Track", this);
-    connect(m_pConvertNewButton, &QPushButton::clicked, this, &DlgStemConversion::onConvertNewTrack);
+    connect(m_pConvertNewButton,
+            &QPushButton::clicked,
+            this,
+            &DlgStemConversion::onConvertNewTrack);
     pButtonLayout->addWidget(m_pConvertNewButton);
 
     m_pCloseButton = new QPushButton("Close", this);
@@ -123,7 +126,8 @@ void DlgStemConversion::onConversionStarted(TrackId trackId, const QString& trac
     QApplication::processEvents(); // Update UI
 }
 
-void DlgStemConversion::onConversionProgress(TrackId trackId, float progress, const QString& message) {
+void DlgStemConversion::onConversionProgress(
+        TrackId trackId, float progress, const QString& message) {
     Q_UNUSED(trackId);
     m_pProgressBar->setValue(static_cast<int>(progress * 100));
 
@@ -158,7 +162,9 @@ void DlgStemConversion::onConversionCompleted(TrackId trackId, const QString& tr
     QApplication::processEvents(); // Update UI
 }
 
-void DlgStemConversion::onConversionFailed(TrackId trackId, const QString& trackTitle, const QString& errorMessage) {
+void DlgStemConversion::onConversionFailed(TrackId trackId,
+        const QString& trackTitle,
+        const QString& errorMessage) {
     Q_UNUSED(trackId);
     m_pStatusLabel->setText(QString("❌ Error converting %1: %2").arg(trackTitle, errorMessage));
     m_pStatusLabel->setStyleSheet("color: #CC0000; font-weight: bold;"); // Red, bold
@@ -226,10 +232,10 @@ QString DlgStemConversion::getStateDisplayText(StemConverter::ConversionState st
 
 void DlgStemConversion::onConvertNewTrack() {
     QString filePath = QFileDialog::getOpenFileName(
-        this,
-        "Select Audio File to Convert",
-        QStandardPaths::writableLocation(QStandardPaths::MusicLocation),
-        "Audio Files (*.mp3 *.wav *.flac *.m4a *.ogg)");
+            this,
+            "Select Audio File to Convert",
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation),
+            "Audio Files (*.mp3 *.wav *.flac *.m4a *.ogg)");
 
     if (filePath.isEmpty()) {
         return; // User canceled

@@ -113,7 +113,6 @@ void StemConverter::convertTrack(const TrackPointer& pTrack, Resolution resoluti
         return;
     }
 
-
     emit conversionProgress(pTrack->getId(), 0.9f, "Adding metadata tags...");
 
     if (!addMetadataTags(trackFilePath, stemsDir)) {
@@ -284,7 +283,9 @@ bool StemConverter::decodeAudioFile(const QString& inputPath,
 
     // Copy the buffer data, ensuring we don't overflow
     size_t samplesToCopy = std::min((size_t)(originalFrames * channels), (size_t)expected_total_samples);
-    std::copy(sampleBuffer.data(), sampleBuffer.data() + samplesToCopy, audioData.begin());
+    std::copy(sampleBuffer.data(),
+            sampleBuffer.data() + samplesToCopy,
+            audioData.begin());
 
     kLogger.info() << "Audio file decoded. Original samples:"
                    << (originalFrames * channels)
@@ -422,7 +423,6 @@ bool StemConverter::convertStemsToM4A(const QString& stemsDir) {
     kLogger.info() << "All stems converted to M4A";
     return true;
 }
-
 
 bool StemConverter::convertTrackToM4A(const QString& inputPath, const QString& outputPath) {
     kLogger.info() << "Converting to M4A:" << inputPath;
