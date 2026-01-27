@@ -1486,8 +1486,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_visualPlayPos->set(
             fFractionalPlaypos,
             speed * m_baserate_old,
-            static_cast<int>(iBufferSize) /
-                    m_trackEndPositionOld.toEngineSamplePos(),
+            iBufferSize / m_trackEndPositionOld.toEngineSamplePos(),
             fFractionalSlipPos,
             effectiveSlipRate,
             m_slipModeState,
@@ -1562,14 +1561,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {
     // Is updated during postProcess(), after all decks already have been processed
-    if (!m_visualPlayPos->isValid()) {
-        return mixxx::audio::kStartFramePos;
-    }
     return getTrackEndPosition() * m_visualPlayPos->getEnginePlayPos();
-}
-
-double EngineBuffer::getVisualPlayPos() const {
-    return m_visualPlayPos->getEnginePlayPos();
 }
 
 mixxx::audio::FramePos EngineBuffer::getTrackEndPosition() const {
