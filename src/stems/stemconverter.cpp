@@ -282,7 +282,8 @@ bool StemConverter::decodeAudioFile(const QString& inputPath,
     audioData.resize(expected_total_samples, 0.0f);
 
     // Copy the buffer data, ensuring we don't overflow
-    size_t samplesToCopy = std::min((size_t)(originalFrames * channels), (size_t)expected_total_samples);
+    size_t samplesToCopy = std::min((size_t)(originalFrames * channels),
+            (size_t)expected_total_samples);
     std::copy(sampleBuffer.data(),
             sampleBuffer.data() + samplesToCopy,
             audioData.begin());
@@ -665,7 +666,8 @@ bool StemConverter::addStemMetadata(const QString& outputPath) {
     return true;
 }
 
-bool StemConverter::addMetadataTags(const QString& /* trackFilePath */, const QString& /* stemsDir */) {
+bool StemConverter::addMetadataTags(
+        const QString& /* trackFilePath */, const QString& /* stemsDir */) {
     kLogger.info() << "Adding metadata tags";
     return true;
 }
