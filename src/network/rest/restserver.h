@@ -4,7 +4,6 @@
 
 #include <QDateTime>
 #include <QHostAddress>
-#include <QHttpHeaders>
 #include <QHttpServer>
 #include <QHttpServerRequest>
 #include <QHttpServerResponse>
@@ -23,6 +22,7 @@
 #include <optional>
 #include <unordered_map>
 
+#include "network/rest/restheaders.h"
 #include "util/logger.h"
 #include "util/ratelimitedlogger.h"
 
@@ -191,7 +191,7 @@ class RestServer : public QObject {
     QString requestDescription(const QHttpServerRequest& request) const;
     QString requestIdFor(const QHttpServerRequest& request) const;
     void addCorsHeaders(
-            QHttpHeaders* headers,
+            RestHeaders* headers,
             const QHttpServerRequest& request,
             bool includeAllowHeaders) const;
     QString allowedCorsOrigin(const QHttpServerRequest& request) const;
