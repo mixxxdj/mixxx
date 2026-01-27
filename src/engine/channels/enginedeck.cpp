@@ -83,7 +83,7 @@ EngineDeck::EngineDeck(
         m_stemMute.push_back(std::move(pMuteButton));
 
         m_stemVuMeter.emplace_back(std::make_unique<EngineVuMeter>(
-                getGroupForStem(getGroup(), stemIdx)));
+                getGroupForStem(getGroup(), stemIdx), QString(), false));
     }
 #endif
 }
