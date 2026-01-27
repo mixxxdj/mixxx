@@ -992,7 +992,7 @@ QString DlgPrefRestServer::makeToken() const {
 void DlgPrefRestServer::refreshTokenTable() {
     tableTokens->setRowCount(m_tokens.size());
     int row = 0;
-    for (const auto& token : m_tokens) {
+    for (const auto& token : std::as_const(m_tokens)) {
         const QString shortToken = token.value.left(8);
         const QString expires = token.expiresUtc.has_value()
                 ? token.expiresUtc->toString(Qt::ISODate)
