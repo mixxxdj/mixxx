@@ -71,6 +71,52 @@ jobs:
             artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
+          - name: Ubuntu 25.10
+            os: ubuntu-24.04
+            container: ubuntu:25.10
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv.sh
+            artifacts_name: Ubuntu 25.10 Qt6 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-questing
+          - name: Debian 13 Trixie
+            os: ubuntu-24.04
+            container: debian:trixie
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv.sh
+            artifacts_name: Debian 13 Trixie Qt6 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: debian-trixie
           - name: macOS 15 x64
             os: macos-15-intel
             cmake_args: >-
@@ -496,14 +542,14 @@ jobs:
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: startsWith(matrix.artifacts_slug, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.name == 'Ubuntu 24.04'
+        if: matrix.artifacts_slug == 'ubuntu-jammy'
         run: |
           if [[ "${{ inputs.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
