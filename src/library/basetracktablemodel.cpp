@@ -944,7 +944,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (tuningHz > 220 && tuningHz < 880) { // is the tuning valid?
                 float cents = 0;
                 Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
-                cents /= 100.0f; // normalize between -1 and 1
+                cents /= 100.0f; // normalize for >= -0.5 and < 0.5
                 if (cents < 0) {
                     colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
                     colorRect["bottom"] =
