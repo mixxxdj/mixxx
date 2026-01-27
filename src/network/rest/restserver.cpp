@@ -115,6 +115,13 @@ struct HasHttpServerResponderWrite<T,
                 std::declval<const QByteArray&>()))>> : std::true_type { };
 
 template<typename T, typename = void>
+struct HasHttpServerServerPort : std::false_type { };
+
+template<typename T>
+struct HasHttpServerServerPort<T,
+        std::void_t<decltype(std::declval<T&>().serverPort())>> : std::true_type { };
+
+template<typename T, typename = void>
 struct HasListenResultErrorStringMethod : std::false_type { };
 
 template<typename T>
@@ -145,6 +152,12 @@ void appendHeader(RestHeaders* headers, const QByteArray& name, const QByteArray
 #endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+using ResponderStatusCode = QHttpServerResponder::StatusCode;
+#else
+using ResponderStatusCode = QHttpServerResponse::StatusCode;
+#endif
+
 template<typename Response, typename Headers, typename = void>
 struct HasSetHeadersMethod : std::false_type { };
 
@@ -163,6 +176,24 @@ void setResponseHeaders(Response* response, const Headers& headers) {
             response->setHeader(it.key(), it.value());
         }
     }
+}
+
+RestHeaders responseHeaders(const QHttpServerResponse& response) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    return response.headers();
+#else
+    Q_UNUSED(response);
+    return RestHeaders{};
+#endif
+}
+
+RestHeaders responseHeadersWithContentType(const QHttpServerResponse& response) {
+    RestHeaders headers = responseHeaders(response);
+    const QByteArray mimeType = response.mimeType();
+    if (!mimeType.isEmpty()) {
+        appendHeader(&headers, QByteArrayLiteral("Content-Type"), mimeType);
+    }
+    return headers;
 }
 
 template<typename Server>
@@ -184,6 +215,7 @@ HttpServerListenStatus listenHttpServer(
         quint16 port,
         quint16* boundPort,
         QString* errorOut) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     if constexpr (HasHttpServerListen<Server>::value) {
         const auto listenResult = server->listen(address, port);
         if (!listenResult) {
@@ -202,6 +234,23 @@ HttpServerListenStatus listenHttpServer(
         return HttpServerListenStatus::Ok;
     }
     return HttpServerListenStatus::NotSupported;
+#else
+    if constexpr (HasHttpServerListen<Server>::value) {
+        const bool listenResult = server->listen(address, port);
+        if (!listenResult) {
+            return HttpServerListenStatus::Failed;
+        }
+        if (boundPort) {
+            if constexpr (HasHttpServerServerPort<Server>::value) {
+                *boundPort = server->serverPort();
+            } else {
+                *boundPort = port;
+            }
+        }
+        return HttpServerListenStatus::Ok;
+    }
+    return HttpServerListenStatus::NotSupported;
+#endif
 }
 
 template<typename Server>
@@ -285,21 +334,17 @@ bool writeResponder(Responder* responder, const Payload& payload) {
         return false;
     }
     if constexpr (std::is_same_v<std::decay_t<Payload>, QHttpServerResponse>) {
-        RestHeaders headers = payload.headers();
-        const QByteArray mimeType = payload.mimeType();
-        if (!mimeType.isEmpty()) {
-            appendHeader(&headers, QByteArrayLiteral("Content-Type"), mimeType);
-        }
+        RestHeaders headers = responseHeadersWithContentType(payload);
         responder->write(
                 responseBody(payload),
                 headers,
-                static_cast<QHttpServerResponder::StatusCode>(payload.statusCode()));
+                static_cast<ResponderStatusCode>(payload.statusCode()));
         return true;
     } else if constexpr (std::is_same_v<std::decay_t<Payload>, QByteArray>) {
         if constexpr (kHttpServerHasResponderWrite) {
             responder->write(payload);
         } else {
-            responder->write(payload, RestHeaders{}, QHttpServerResponder::StatusCode::Ok);
+            responder->write(payload, RestHeaders{}, ResponderStatusCode::Ok);
         }
         return true;
     } else {
@@ -406,7 +451,7 @@ QHttpServerResponse RestServer::jsonResponse(
             QByteArrayLiteral("application/json"),
             QJsonDocument(body).toJson(QJsonDocument::Compact),
             status);
-    RestHeaders headers = response.headers();
+    RestHeaders headers = responseHeaders(response);
     if (!requestId.isEmpty()) {
         appendHeader(&headers, QByteArrayLiteral(kRequestIdHeader), requestId.toUtf8());
     }
@@ -621,7 +666,7 @@ QHttpServerResponse RestServer::invokeGateway(
             },
             Qt::QueuedConnection);
     semaphore.acquire();
-    RestHeaders headers = response.headers();
+    RestHeaders headers = responseHeaders(response);
     if (!requestId.isEmpty()) {
         appendHeader(&headers, QByteArrayLiteral(kRequestIdHeader), requestId.toUtf8());
     }
@@ -973,7 +1018,7 @@ void RestServer::registerRoutes() {
 
     const auto optionsRoute = [this](const QHttpServerRequest& request) {
         QHttpServerResponse response(QHttpServerResponse::StatusCode::NoContent);
-        RestHeaders headers = response.headers();
+        RestHeaders headers = responseHeaders(response);
         addCorsHeaders(&headers, request, true);
         setResponseHeaders(&response, headers);
         return response;
@@ -1373,7 +1418,7 @@ void RestServer::addStatusStreamClient(
     }
 
     QHttpServerResponse response(QHttpServerResponse::StatusCode::Ok);
-    RestHeaders headers = response.headers();
+    RestHeaders headers = responseHeaders(response);
     appendHeader(&headers,
             QByteArrayLiteral(kContentTypeHeader),
             QByteArrayLiteral(kEventStreamContentType));

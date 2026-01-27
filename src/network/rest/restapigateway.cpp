@@ -63,6 +63,15 @@ void setResponseHeaders(Response* response, const Headers& headers) {
         }
     }
 }
+
+RestHeaders responseHeaders(const QHttpServerResponse& response) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    return response.headers();
+#else
+    Q_UNUSED(response);
+    return RestHeaders{};
+#endif
+}
 } // namespace
 
 RestApiGateway::RestApiGateway(
@@ -172,7 +181,7 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
             response.statusCode(),
             response.data(),
             response.mimeType(),
-            response.headers(),
+            responseHeaders(response),
     };
     {
         QMutexLocker locker(&m_idempotencyMutex);
