@@ -7,11 +7,11 @@
 
 namespace {
 
-inline QString recentFilter() {
+inline QString recentFilter(int days) {
     // Create a user-formatted query equal to SQL query
     // datetime_added > datetime('now', '-7 days')
     QDateTime dt(QDateTime::currentDateTimeUtc());
-    dt = dt.addDays(-7);
+    dt = dt.addDays(-days);
     const QString dateStr = QLocale::system().toString(dt.date(), QLocale::ShortFormat);
 
     // FIXME alternatively, use "added:-days" and add the respective
@@ -22,16 +22,15 @@ inline QString recentFilter() {
 } // anonymous namespace
 
 AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
-                                                   TrackCollectionManager* pTrackCollectionManager)
-        : LibraryTableModel(parent, pTrackCollectionManager,
-                            "mixxx.db.model.prepare") {
+        TrackCollectionManager* pTrackCollectionManager)
+        : LibraryTableModel(parent, pTrackCollectionManager, "mixxx.db.model.prepare") {
     // Default to showing recent tracks.
-    setExtraFilter(recentFilter());
+    setExtraFilter(recentFilter(7));
 }
 
-void AnalysisLibraryTableModel::showRecentSongs() {
+void AnalysisLibraryTableModel::showRecentSongs(int days) {
     // Search with the recent filter.
-    setExtraFilter(recentFilter());
+    setExtraFilter(recentFilter(days));
     select();
 }
 
@@ -41,7 +40,8 @@ void AnalysisLibraryTableModel::showAllSongs() {
     select();
 }
 
-void AnalysisLibraryTableModel::searchCurrentTrackSet(const QString& text, bool useRecentFilter) {
-    setExtraFilter(useRecentFilter ? recentFilter() : QString{});
+void AnalysisLibraryTableModel::searchCurrentTrackSet(
+        const QString& text, bool useRecentFilter, int days) {
+    setExtraFilter(useRecentFilter ? recentFilter(days) : QString{});
     search(text);
 }
