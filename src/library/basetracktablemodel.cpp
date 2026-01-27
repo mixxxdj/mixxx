@@ -937,9 +937,9 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
 
-            const float tuningHz = (float)rawSiblingValue(
+            const float tuningHz =  static_cast<float>(rawSiblingValue(
                     index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
-                                           .value<double>();
+                                           .value<double>());
             QVariantMap colorRect;
             if (tuningHz == 0) { // we do not have tuning information
                 colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
