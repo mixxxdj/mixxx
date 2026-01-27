@@ -61,7 +61,7 @@ case "$1" in
             portmidi-devel \
             protobuf-compiler \
             protobuf-lite-devel \
-            qt6-qt{5compat,base,base-private,declarative,multimedia,shadertools,svg}-devel \
+            qt6-qt{5compat,base,base-private,declarative,multimedia,qthttpserver,shadertools,svg}-devel \
             qtkeychain-qt6-devel \
             rubberband-devel \
             soundtouch-devel \
