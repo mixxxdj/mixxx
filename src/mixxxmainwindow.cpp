@@ -27,6 +27,9 @@
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
+#ifdef __STEM_CONVERSION__
+#include "stems/dlgstemconversion.h"
+#endif
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __BROADCAST__
@@ -108,6 +111,9 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
+#ifdef __STEM_CONVERSION__
+          m_pStemConversionDlg(nullptr),
+#endif
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
     DEBUG_ASSERT(pCoreServices);
     // These depend on the settings
@@ -830,6 +836,14 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotFileLoadSongPlayer,
             Qt::UniqueConnection);
+
+#ifdef __STEM_CONVERSION__
+    connect(m_pMenuBar,
+            &WMainMenuBar::showStemConversionDialog,
+            this,
+            &MixxxMainWindow::slotShowStemConversionDialog,
+            Qt::UniqueConnection);
+#endif
 
     connect(m_pMenuBar,
             &WMainMenuBar::showKeywheel,
@@ -1572,3 +1586,15 @@ void MixxxMainWindow::initializationProgressUpdate(int progress, const QString& 
     }
     qApp->processEvents();
 }
+
+#ifdef __STEM_CONVERSION__
+void MixxxMainWindow::slotShowStemConversionDialog() {
+    if (!m_pStemConversionDlg) {
+        m_pStemConversionDlg = make_parented<DlgStemConversion>(
+                m_pCoreServices->getStemConversionManager(), this);
+    }
+    m_pStemConversionDlg->show();
+    m_pStemConversionDlg->raise();
+    m_pStemConversionDlg->activateWindow();
+}
+#endif
