@@ -13,6 +13,8 @@ EngineBufferScaleSignalSmith::EngineBufferScaleSignalSmith(ReadAheadManager* pRe
           m_buffers(),
           m_bufferPtrs(),
           m_interleavedBuffer(mixxx::kMaxSupportedStems * MAX_BUFFER_LEN),
+          m_frameFractionalLeftover(0),
+          m_expectedFrameLatency(0),
           m_currentFrameOffset(0),
           m_currentPreset(Preset::Default) {
     onSignalChanged();
@@ -28,6 +30,17 @@ void EngineBufferScaleSignalSmith::setScaleParameters(
 
     m_stretch.setTransposeFactor(static_cast<float>(m_dBaseRate * m_dPitchRatio));
     m_stretch.setFormantFactor(1.0);
+
+    // The following value is calculated from the block and interval samples
+    // size, which are set in the above preset. It remains constant during the
+    // stretcher process.
+    // As documented in
+    // https://signalsmith-audio.co.uk/code/stretch/#how-to-use-latency-starting-and-ending,
+    // stretch factor should be used when computing total latency
+    m_expectedFrameLatency =
+            static_cast<SINT>(m_effectiveRate *
+                    static_cast<double>(m_stretch.inputLatency())) +
+            static_cast<SINT>(m_stretch.outputLatency());
 }
 
 void EngineBufferScaleSignalSmith::onSignalChanged() {
@@ -70,6 +83,7 @@ void EngineBufferScaleSignalSmith::onSignalChanged() {
 void EngineBufferScaleSignalSmith::clear() {
     m_stretch.reset();
     m_currentFrameOffset = 0;
+    m_frameFractionalLeftover = 0;
 }
 
 SINT EngineBufferScaleSignalSmith::fetchAndDeinterleave(SINT sampleToRead, SINT frameOffset) {
@@ -131,25 +145,62 @@ SINT EngineBufferScaleSignalSmith::fetchAndDeinterleave(SINT sampleToRead, SINT 
 double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iOutputBufferSize) {
     ScopedTimer t(QStringLiteral("EngineBufferScaleSignalsmith::scaleBuffer"));
 
-    auto frameLatency = static_cast<SINT>(m_stretch.inputLatency() + m_stretch.outputLatency());
-    while (m_currentFrameOffset < frameLatency) {
-        ScopedTimer t(QStringLiteral("EngineBufferScaleSignalsmith::scaleBuffer::latencyAdjust"));
-        SINT currentFrameLatency = std::min(static_cast<SINT>(MAX_BUFFER_LEN), frameLatency);
-        const SINT frameRead = fetchAndDeinterleave(
-                getOutputSignal().frames2samples(currentFrameLatency));
-        m_stretch.seek(m_bufferPtrs.data(), frameRead, m_dBaseRate * m_dTempoRatio);
-        m_currentFrameOffset += currentFrameLatency;
-        qDebug()
-                << "EngineBufferScaleSignalSmith::scaleBuffer adjust latency to"
-                << m_currentFrameOffset;
+    // Unlike RubberBand, SignalSmith Stretch always output as much audio as it
+    // was given. However, it does introduce latency (documented at
+    // https://signalsmith-audio.co.uk/code/stretch/#how-to-use-latency) which
+    // initially lead to a silence. To compensate that, we need to use the
+    // `.outputSeek` method, which allows to pre-roll samples a realign the actual
+    // output to real time.
+    // However, this method will reset the buffer so it can only be used right after a reset
+    if (m_currentFrameOffset == 0 &&
+            m_currentFrameOffset < m_expectedFrameLatency
+            // If the track has a zero rate, we skip correction as this is
+            // usually a sign that the track is not playing. This will likely
+            // create undesired silence (as opposite to a "zero BPM" play affect
+            // if a track start playing with a zero BPM, but this is an
+            // acceptable trade off for now)
+            && m_dTempoRatio > 0) {
+        const SINT frameRead =
+                fetchAndDeinterleave(getOutputSignal().frames2samples(
+                        std::min(m_expectedFrameLatency - m_currentFrameOffset,
+                                SINT(MAX_BUFFER_LEN))));
+        m_stretch.outputSeek(m_bufferPtrs.data(), frameRead);
+        m_currentFrameOffset += frameRead;
     }
 
-    DEBUG_ASSERT(m_currentFrameOffset == frameLatency);
+    const SINT outputFrames = getOutputSignal().samples2frames(iOutputBufferSize);
+    auto dFrameRequired =
+            (m_dBaseRate * m_dTempoRatio * static_cast<double>(outputFrames)) +
+            m_frameFractionalLeftover;
 
-    SINT requestFrames = getOutputSignal().samples2frames(iOutputBufferSize);
+    if (m_currentFrameOffset != m_expectedFrameLatency && dFrameRequired > 0) {
+        // In case the latency is not matching anymore, we apply a correction
+        // factor up to 16th of the output buffer. While this might sound much.
+        // The trade favours catching up as quick as possible to synchronisation
+        // without being hearable, as such a high value should lead to sync
+        // after a small amount of buffer process, thus not hearable.
+        //
+        // TLDR; best to have delay in BPM adjustment (a quick 100% to 1%, will in practice
+        // make a few stops along the way), rather than having the actual track
+        // position desynchronised. We could review this decision in the future
+        // depending of the user feedback.
+        auto maxCorrection = std::min(dFrameRequired, static_cast<double>(iOutputBufferSize / 16));
+        auto frameOffset = std::min(maxCorrection,
+                std::max(-maxCorrection,
+                        static_cast<double>(m_expectedFrameLatency) -
+                                static_cast<double>(m_currentFrameOffset)));
+        dFrameRequired += frameOffset;
+        m_currentFrameOffset += static_cast<SINT>(frameOffset);
+    }
 
-    const SINT frameRequired = static_cast<SINT>(std::round(
-            m_dBaseRate * m_dTempoRatio * static_cast<double>(requestFrames)));
+    const SINT frameRequired = static_cast<SINT>(dFrameRequired);
+    VERIFY_OR_DEBUG_ASSERT(frameRequired <= MAX_BUFFER_LEN) {
+        return 0.0;
+    }
+
+    m_frameFractionalLeftover = dFrameRequired - static_cast<double>(frameRequired);
+    DEBUG_ASSERT(0 <= m_frameFractionalLeftover && m_frameFractionalLeftover < 1);
+
     bool last_read_failed = false;
     SINT frameRead = 0;
     while (frameRead < frameRequired) {
@@ -174,28 +225,28 @@ double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iO
 
     DEBUG_ASSERT(frameRead == frameRequired);
 
-    auto output_frame = getOutputSignal().samples2frames(iOutputBufferSize);
-    float* outputBufferPtr[8] = {
-            m_interleavedBuffer.data(),
-            m_interleavedBuffer.data(iOutputBufferSize),
-            m_interleavedBuffer.data(2 * iOutputBufferSize),
-            m_interleavedBuffer.data(3 * iOutputBufferSize),
-            m_interleavedBuffer.data(4 * iOutputBufferSize),
-            m_interleavedBuffer.data(5 * iOutputBufferSize),
-            m_interleavedBuffer.data(6 * iOutputBufferSize),
-            m_interleavedBuffer.data(7 * iOutputBufferSize),
-    };
     {
         ScopedTimer t(QStringLiteral("Signalsmith::process"));
-        m_stretch.process(m_bufferPtrs.data(), frameRead, outputBufferPtr, output_frame);
+        float* outputBufferPtr[8] = {
+                m_interleavedBuffer.data(),
+                m_interleavedBuffer.data(iOutputBufferSize),
+                m_interleavedBuffer.data(2 * iOutputBufferSize),
+                m_interleavedBuffer.data(3 * iOutputBufferSize),
+                m_interleavedBuffer.data(4 * iOutputBufferSize),
+                m_interleavedBuffer.data(5 * iOutputBufferSize),
+                m_interleavedBuffer.data(6 * iOutputBufferSize),
+                m_interleavedBuffer.data(7 * iOutputBufferSize),
+        };
+        m_stretch.process(m_bufferPtrs.data(), frameRead, outputBufferPtr, outputFrames);
     }
 
+    auto outputFrameSize = getOutputSignal().samples2frames(iOutputBufferSize);
     switch (getOutputSignal().getChannelCount()) {
     case mixxx::audio::ChannelCount::stereo():
         SampleUtil::interleaveBuffer(pOutputBuffer,
                 m_interleavedBuffer.data(),
                 m_interleavedBuffer.data(iOutputBufferSize),
-                output_frame);
+                outputFrameSize);
         break;
     case mixxx::audio::ChannelCount::stem():
         SampleUtil::interleaveBuffer(pOutputBuffer,
@@ -207,7 +258,7 @@ double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iO
                 m_interleavedBuffer.data(5 * iOutputBufferSize),
                 m_interleavedBuffer.data(6 * iOutputBufferSize),
                 m_interleavedBuffer.data(7 * iOutputBufferSize),
-                output_frame);
+                outputFrameSize);
         break;
     default: {
         int chCount = getOutputSignal().getChannelCount();
@@ -233,10 +284,8 @@ double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iO
     } break;
     }
 
-    DEBUG_ASSERT(std::round(m_effectiveRate * requestFrames) == frameRead);
-
     // readFramesProcessed is interpreted as the total number of frames
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
-    return m_effectiveRate * requestFrames;
+    return m_effectiveRate * outputFrames;
 }

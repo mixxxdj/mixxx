@@ -47,6 +47,13 @@ class EngineBufferScaleSignalSmith final : public EngineBufferScale {
     mixxx::SampleBuffer m_interleavedBuffer;
 
     mixxx::SampleBuffer m_buffer;
+    // This stores the fractional part of the sample count that should have been
+    // inputted to perfectly match the requested the rates. However, since there
+    // is no such a thing as fractional sample, we keep memory of it till it
+    // constitute and entire frame and add it up to stay as much in sync as
+    // possible.
+    double m_frameFractionalLeftover;
+    SINT m_expectedFrameLatency;
     SINT m_currentFrameOffset;
     // Holds the playback direction
     bool m_bBackwards;
