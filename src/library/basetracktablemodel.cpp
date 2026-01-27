@@ -937,9 +937,9 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
 
-            const float tuningHz =  static_cast<float>(rawSiblingValue(
+            const float tuningHz = static_cast<float>(rawSiblingValue(
                     index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
-                                           .value<double>());
+                            .value<double>());
             QVariantMap colorRect;
             if (tuningHz > 220 && tuningHz < 880) { // is the tuning valid?
                 float cents = 0;
