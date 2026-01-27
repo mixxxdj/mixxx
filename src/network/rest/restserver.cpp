@@ -5,7 +5,6 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QHash>
-#include <QHttpHeaders>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -138,6 +137,34 @@ enum class HttpServerListenStatus {
 constexpr bool kHttpServerHasResponderWrite =
         HasHttpServerResponderWrite<QHttpServerResponder>::value;
 
+void appendHeader(RestHeaders* headers, const QByteArray& name, const QByteArray& value) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    headers->append(name, value);
+#else
+    headers->insert(name, value);
+#endif
+}
+
+template<typename Response, typename Headers, typename = void>
+struct HasSetHeadersMethod : std::false_type { };
+
+template<typename Response, typename Headers>
+struct HasSetHeadersMethod<Response,
+        Headers,
+        std::void_t<decltype(std::declval<Response&>().setHeaders(std::declval<Headers>()))>>
+        : std::true_type { };
+
+template<typename Response, typename Headers>
+void setResponseHeaders(Response* response, const Headers& headers) {
+    if constexpr (HasSetHeadersMethod<Response, Headers>::value) {
+        response->setHeaders(headers);
+    } else {
+        for (auto it = headers.cbegin(); it != headers.cend(); ++it) {
+            response->setHeader(it.key(), it.value());
+        }
+    }
+}
+
 template<typename Server>
 bool configureHttpServerTls(Server* server, const QSslConfiguration& configuration) {
     if constexpr (HasHttpServerSslConfiguration<Server>::value) {
@@ -258,10 +285,10 @@ bool writeResponder(Responder* responder, const Payload& payload) {
         return false;
     }
     if constexpr (std::is_same_v<std::decay_t<Payload>, QHttpServerResponse>) {
-        QHttpHeaders headers = payload.headers();
+        RestHeaders headers = payload.headers();
         const QByteArray mimeType = payload.mimeType();
         if (!mimeType.isEmpty()) {
-            headers.append(QByteArrayLiteral("Content-Type"), mimeType);
+            appendHeader(&headers, QByteArrayLiteral("Content-Type"), mimeType);
         }
         responder->write(
                 responseBody(payload),
@@ -272,7 +299,7 @@ bool writeResponder(Responder* responder, const Payload& payload) {
         if constexpr (kHttpServerHasResponderWrite) {
             responder->write(payload);
         } else {
-            responder->write(payload, QHttpHeaders{}, QHttpServerResponder::StatusCode::Ok);
+            responder->write(payload, RestHeaders{}, QHttpServerResponder::StatusCode::Ok);
         }
         return true;
     } else {
@@ -379,16 +406,17 @@ QHttpServerResponse RestServer::jsonResponse(
             QByteArrayLiteral("application/json"),
             QJsonDocument(body).toJson(QJsonDocument::Compact),
             status);
-    QHttpHeaders headers = response.headers();
+    RestHeaders headers = response.headers();
     if (!requestId.isEmpty()) {
-        headers.append(QByteArrayLiteral(kRequestIdHeader), requestId.toUtf8());
+        appendHeader(&headers, QByteArrayLiteral(kRequestIdHeader), requestId.toUtf8());
     }
     if (m_tlsActive && requestIsSecure(request)) {
-        headers.append(QByteArrayLiteral(kStrictTransportSecurityHeader),
+        appendHeader(&headers,
+                QByteArrayLiteral(kStrictTransportSecurityHeader),
                 QByteArrayLiteral(kStrictTransportSecurityValue));
     }
     addCorsHeaders(&headers, request, false);
-    response.setHeaders(headers);
+    setResponseHeaders(&response, headers);
     return response;
 }
 
@@ -593,12 +621,12 @@ QHttpServerResponse RestServer::invokeGateway(
             },
             Qt::QueuedConnection);
     semaphore.acquire();
-    QHttpHeaders headers = response.headers();
+    RestHeaders headers = response.headers();
     if (!requestId.isEmpty()) {
-        headers.append(QByteArrayLiteral(kRequestIdHeader), requestId.toUtf8());
+        appendHeader(&headers, QByteArrayLiteral(kRequestIdHeader), requestId.toUtf8());
     }
     addCorsHeaders(&headers, request, false);
-    response.setHeaders(headers);
+    setResponseHeaders(&response, headers);
     return response;
 }
 
@@ -945,9 +973,9 @@ void RestServer::registerRoutes() {
 
     const auto optionsRoute = [this](const QHttpServerRequest& request) {
         QHttpServerResponse response(QHttpServerResponse::StatusCode::NoContent);
-        QHttpHeaders headers = response.headers();
+        RestHeaders headers = response.headers();
         addCorsHeaders(&headers, request, true);
-        response.setHeaders(headers);
+        setResponseHeaders(&response, headers);
         return response;
     };
     m_httpServer->route("/*", QHttpServerRequest::Method::Options, optionsRoute);
@@ -1345,24 +1373,31 @@ void RestServer::addStatusStreamClient(
     }
 
     QHttpServerResponse response(QHttpServerResponse::StatusCode::Ok);
-    QHttpHeaders headers = response.headers();
-    headers.append(QByteArrayLiteral(kContentTypeHeader),
+    RestHeaders headers = response.headers();
+    appendHeader(&headers,
+            QByteArrayLiteral(kContentTypeHeader),
             QByteArrayLiteral(kEventStreamContentType));
-    headers.append(QByteArrayLiteral(kCacheControlHeader),
+    appendHeader(&headers,
+            QByteArrayLiteral(kCacheControlHeader),
             QByteArrayLiteral(kNoCacheValue));
-    headers.append(QByteArrayLiteral(kConnectionHeader),
+    appendHeader(&headers,
+            QByteArrayLiteral(kConnectionHeader),
             QByteArrayLiteral(kKeepAliveValue));
-    headers.append(QByteArrayLiteral(kAccelBufferingHeader),
+    appendHeader(&headers,
+            QByteArrayLiteral(kAccelBufferingHeader),
             QByteArrayLiteral(kAccelBufferingDisabled));
     if (m_tlsActive && requestIsSecure(request)) {
-        headers.append(QByteArrayLiteral(kStrictTransportSecurityHeader),
+        appendHeader(&headers,
+                QByteArrayLiteral(kStrictTransportSecurityHeader),
                 QByteArrayLiteral(kStrictTransportSecurityValue));
     }
     const QString allowedOrigin = allowedCorsOrigin(request);
     if (!allowedOrigin.isEmpty()) {
-        headers.append(QByteArrayLiteral(kCorsAllowOriginHeader), allowedOrigin.toUtf8());
+        appendHeader(&headers,
+                QByteArrayLiteral(kCorsAllowOriginHeader),
+                allowedOrigin.toUtf8());
     }
-    response.setHeaders(headers);
+    setResponseHeaders(&response, headers);
     if (!writeResponder(&responder, response)) {
         return;
     }
@@ -1443,23 +1478,28 @@ void RestServer::pushStatusStreamUpdate() {
 }
 
 void RestServer::addCorsHeaders(
-        QHttpHeaders* headers,
+        RestHeaders* headers,
         const QHttpServerRequest& request,
         bool includeAllowHeaders) const {
     const QString allowedOrigin = allowedCorsOrigin(request);
     if (allowedOrigin.isEmpty()) {
         return;
     }
-    headers->append(QByteArrayLiteral(kCorsAllowOriginHeader), allowedOrigin.toUtf8());
+    appendHeader(headers,
+            QByteArrayLiteral(kCorsAllowOriginHeader),
+            allowedOrigin.toUtf8());
     if (includeAllowHeaders) {
-        headers->append(QByteArrayLiteral(kCorsAllowMethodsHeader),
+        appendHeader(headers,
+                QByteArrayLiteral(kCorsAllowMethodsHeader),
                 QByteArrayLiteral("GET, POST, PUT, PATCH, DELETE, OPTIONS"));
         const QByteArray requestedHeaders =
                 QByteArray(request.headers().value(QByteArrayLiteral(kCorsRequestHeadersHeader))).trimmed();
         const QByteArray allowHeaders = requestedHeaders.isEmpty()
                 ? QByteArrayLiteral("Authorization, Content-Type, Idempotency-Key, X-Request-Id")
                 : requestedHeaders;
-        headers->append(QByteArrayLiteral(kCorsAllowHeadersHeader), allowHeaders);
+        appendHeader(headers,
+                QByteArrayLiteral(kCorsAllowHeadersHeader),
+                allowHeaders);
     }
 }
 

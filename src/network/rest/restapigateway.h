@@ -4,7 +4,6 @@
 
 #include <QHttpServerResponse>
 #include <QHash>
-#include <QHttpHeaders>
 #include <QDateTime>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -14,6 +13,7 @@
 #include <optional>
 #include <functional>
 
+#include "network/rest/restheaders.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -91,7 +91,7 @@ class RestApiGateway : public RestApiProvider {
         QHttpServerResponse::StatusCode statusCode;
         QByteArray body;
         QByteArray mimeType;
-        QHttpHeaders headers;
+        RestHeaders headers;
     };
 
     QHttpServerResponse errorResponse(

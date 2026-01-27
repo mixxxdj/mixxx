@@ -9,6 +9,8 @@
 #include <QMutexLocker>
 #include <QThread>
 #include <cmath>
+#include <type_traits>
+#include <utility>
 #ifdef Q_OS_LINUX
 #include <unistd.h>
 #endif
@@ -41,6 +43,26 @@ constexpr int kMaxIdempotencyCacheEntries = 512;
 constexpr int kMaxIdempotencyKeyLength = 128;
 const ControlFlags kStatusControlFlags = ControlFlag::AllowMissingOrInvalid |
         ControlFlag::NoAssertIfMissing | ControlFlag::NoWarnIfMissing;
+
+template<typename Response, typename Headers, typename = void>
+struct HasSetHeadersMethod : std::false_type { };
+
+template<typename Response, typename Headers>
+struct HasSetHeadersMethod<Response,
+        Headers,
+        std::void_t<decltype(std::declval<Response&>().setHeaders(std::declval<Headers>()))>>
+        : std::true_type { };
+
+template<typename Response, typename Headers>
+void setResponseHeaders(Response* response, const Headers& headers) {
+    if constexpr (HasSetHeadersMethod<Response, Headers>::value) {
+        response->setHeaders(headers);
+    } else {
+        for (auto it = headers.cbegin(); it != headers.cend(); ++it) {
+            response->setHeader(it.key(), it.value());
+        }
+    }
+}
 } // namespace
 
 RestApiGateway::RestApiGateway(
@@ -118,7 +140,7 @@ QHttpServerResponse RestApiGateway::withIdempotencyCache(
     const auto responseFromCache = [&](const IdempotencyEntry& entry) {
         QHttpServerResponse response(entry.mimeType, entry.body, entry.statusCode);
         if (!entry.headers.isEmpty()) {
-            response.setHeaders(entry.headers);
+            setResponseHeaders(&response, entry.headers);
         }
         return response;
     };
