@@ -121,6 +121,7 @@ case "$1" in
             qt6-base-private-dev \
             qt6-multimedia-dev \
             qt6-httpserver-dev \
+            qt6-websockets-dev \
             qml6-module-qt5compat-graphicaleffects \
             qml6-module-qtqml-workerscript \
             qml6-module-qtquick-controls \
