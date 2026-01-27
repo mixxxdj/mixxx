@@ -298,8 +298,8 @@ endif()
 if(DEFINED MIXXX_VCPKG_ROOT)
   # Validate MIXXX_VCPKG_ROOT points to a vcpkg root to avoid confusing follow-up errors.
   set(_vcpkg_toolchain "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-  file(TO_NATIVE_PATH "${_vcpkg_toolchain}" _vcpkg_toolchain_native)
   if(NOT EXISTS "${_vcpkg_toolchain}")
+    file(TO_NATIVE_PATH "${_vcpkg_toolchain}" _vcpkg_toolchain_native)
     message(
       STATUS
       "MIXXX_VCPKG_ROOT was set to \"${MIXXX_VCPKG_ROOT}\", but this is not a valid vcpkg root.\n"
