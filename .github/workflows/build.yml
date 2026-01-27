@@ -264,6 +264,12 @@ jobs:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
 
+      - name: "[Linux containers] Install git"
+        if: matrix.container != null
+        run: |
+          apt-get update
+          apt-get install -y git
+
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
         if: matrix.container != null
         # See https://github.com/actions/checkout/issues/760 for details
