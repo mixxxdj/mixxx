@@ -32,7 +32,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
 
     /// called from audio thread
     bool processEffectsRequest(
-            EffectsRequest& message,
+            const EffectsRequest& message,
             EffectsResponsePipe* pResponsePipe) override;
 
     /// called from audio thread
@@ -66,7 +66,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
     bool disableForInputChannel(ChannelHandle inputHandle);
 
     QString m_group;
-    EffectEnableState m_enableState;
+    bool m_enableState;
     EffectChainMixMode::Type m_mixMode;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
