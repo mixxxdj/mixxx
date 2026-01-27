@@ -187,6 +187,7 @@ RestHeaders responseHeaders(const QHttpServerResponse& response) {
 #endif
 }
 
+[[maybe_unused]]
 RestHeaders responseHeadersWithContentType(const QHttpServerResponse& response) {
     RestHeaders headers = responseHeaders(response);
     const QByteArray mimeType = response.mimeType();
@@ -235,6 +236,7 @@ HttpServerListenStatus listenHttpServer(
     }
     return HttpServerListenStatus::NotSupported;
 #else
+    Q_UNUSED(errorOut);
     if constexpr (HasHttpServerListen<Server>::value) {
         const bool listenResult = server->listen(address, port);
         if (!listenResult) {
@@ -362,10 +364,26 @@ bool writeResponder(Responder* responder,
     if (!responder) {
         return false;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     responder->write(
             responseBody(payload),
             headers,
             static_cast<ResponderStatusCode>(payload.statusCode()));
+#else
+    // Qt < 6.5: QHttpServerResponder::write does not accept QMultiMap as
+    // headers.  Extract the Content-Type and use the mime-type overload.
+    QByteArray mimeType;
+    auto ctIt = headers.constFind(QByteArrayLiteral("Content-Type"));
+    if (ctIt != headers.constEnd()) {
+        mimeType = ctIt.value();
+    } else {
+        mimeType = payload.mimeType();
+    }
+    responder->write(
+            responseBody(payload),
+            mimeType,
+            static_cast<ResponderStatusCode>(payload.statusCode()));
+#endif
     return true;
 }
 
@@ -381,7 +399,7 @@ bool writeResponder(Responder* responder, const Payload& payload) {
         if constexpr (kHttpServerHasResponderWrite) {
             responder->write(payload);
         } else {
-            responder->write(payload, RestHeaders{}, ResponderStatusCode::Ok);
+            responder->write(payload, QByteArray{}, ResponderStatusCode::Ok);
         }
         return true;
     } else {
@@ -1191,7 +1209,7 @@ void RestServer::registerRoutes() {
     const auto statusStreamRoute =
             [this, authorizeRequest, forbiddenMessage](
         const QHttpServerRequest& request,
-        QHttpServerResponder& responder) {
+        QHttpServerResponder&& responder) {
         if (!m_settings.streamEnabled) {
             RestHeaders headers;
             auto response = serviceUnavailableResponse(&request, &headers);
