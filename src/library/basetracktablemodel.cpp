@@ -960,7 +960,7 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             } else {
                 colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
-                colorRect["bottom"] = colorRect["top"];
+                // KeyDelegate will not read a bottom color if splitPoint is 1
                 colorRect["splitPoint"] = 1;
             }
 
