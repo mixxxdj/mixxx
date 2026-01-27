@@ -148,24 +148,34 @@ class RestServer : public QObject {
             const QHttpServerRequest& request,
             const std::function<QHttpServerResponse()>& action,
             const QString& requestId = QString()) const;
-    QHttpServerResponse unauthorizedResponse(const QHttpServerRequest& request) const;
+    QHttpServerResponse unauthorizedResponse(
+            const QHttpServerRequest& request,
+            RestHeaders* outHeaders = nullptr) const;
     QHttpServerResponse forbiddenResponse(
             const QHttpServerRequest& request,
-            const QString& message) const;
+            const QString& message,
+            RestHeaders* outHeaders = nullptr) const;
     QHttpServerResponse badRequestResponse(
             const QHttpServerRequest& request, const QString& message) const;
     QHttpServerResponse unsupportedMediaTypeResponse(
             const QHttpServerRequest& request, const QString& message) const;
     QHttpServerResponse payloadTooLargeResponse(const QHttpServerRequest& request) const;
-    QHttpServerResponse methodNotAllowedResponse(const QHttpServerRequest& request) const;
-    QHttpServerResponse serviceUnavailableResponse(const QHttpServerRequest* request) const;
+    QHttpServerResponse methodNotAllowedResponse(
+            const QHttpServerRequest& request,
+            RestHeaders* outHeaders = nullptr) const;
+    QHttpServerResponse serviceUnavailableResponse(
+            const QHttpServerRequest* request,
+            RestHeaders* outHeaders = nullptr) const;
     QHttpServerResponse jsonResponse(
             const QHttpServerRequest& request,
             const QJsonObject& body,
             QHttpServerResponse::StatusCode status,
-            const QString& requestId) const;
+            const QString& requestId,
+            RestHeaders* outHeaders = nullptr) const;
 
-    QHttpServerResponse tlsRequiredResponse(const QHttpServerRequest& request) const;
+    QHttpServerResponse tlsRequiredResponse(
+            const QHttpServerRequest& request,
+            RestHeaders* outHeaders = nullptr) const;
     bool applyTlsConfiguration();
     AuthorizationResult authorize(
             const QHttpServerRequest& request,
