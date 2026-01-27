@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.21)
 # lint_cmake: -readability/wonkycase
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
@@ -3489,7 +3489,11 @@ if(KEYFINDER)
 endif()
 
 # SignalSmith
-option(SIGNALSMITH "Enable the SignalSmith engine for pitch-bending" ON)
+option(
+  SIGNALSMITH
+  "Enable the SignalSmith Stretch engine for pitch-bending (experimental)"
+  OFF
+)
 if(SIGNALSMITH)
   set(
     SIGNALSMITH_INSTALL_DIR
