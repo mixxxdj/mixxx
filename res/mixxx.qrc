@@ -67,6 +67,7 @@
         <file>images/preferences/dark/ic_preferences_vinyl.svg</file>
         <file>images/preferences/dark/ic_preferences_waveforms.svg</file>
         <file>images/preferences/dark/ic_custom.svg</file>
+        <file>images/preferences/dark/ic_preferences_rest_api.svg</file>
         <file>images/preferences/dark/ic_mixxx_symbolic.svg</file>
         <file>images/preferences/dark/ic_none.svg</file>
       <!-- light icon set for preferences -->
@@ -94,6 +95,7 @@
         <file>images/preferences/light/ic_preferences_vinyl.svg</file>
         <file>images/preferences/light/ic_preferences_waveforms.svg</file>
         <file>images/preferences/light/ic_custom.svg</file>
+        <file>images/preferences/light/ic_preferences_rest_api.svg</file>
         <file>images/preferences/light/ic_mixxx_symbolic.svg</file>
         <file>images/preferences/light/ic_none.svg</file>
       <!-- magnifier for the Search button in Search related tracks menu -->

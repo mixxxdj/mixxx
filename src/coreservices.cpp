@@ -33,6 +33,9 @@
 #include "moc_coreservices.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"
+#if defined(MIXXX_HAS_HTTP_SERVER)
+#include "network/rest/restservercontroller.h"
+#endif
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
@@ -763,6 +766,18 @@ void CoreServices::initialize(QApplication* pApp) {
         }
     }
 
+#if defined(MIXXX_HAS_HTTP_SERVER)
+    m_pRestServerController = std::make_unique<mixxx::network::rest::RestServerController>(
+            pConfig,
+            m_pPlayerManager.get(),
+            m_pTrackCollectionManager.get());
+    connect(pApp,
+            &QCoreApplication::aboutToQuit,
+            m_pRestServerController.get(),
+            &mixxx::network::rest::RestServerController::shutdown);
+    m_pRestServerController->start();
+#endif
+
     m_isInitialized = true;
 
     ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
@@ -903,6 +918,13 @@ void CoreServices::finalize() {
 
     Timer t("CoreServices::~CoreServices");
     t.start();
+
+#if defined(MIXXX_HAS_HTTP_SERVER)
+    if (m_pRestServerController) {
+        m_pRestServerController->shutdown();
+        m_pRestServerController.reset();
+    }
+#endif
 
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks

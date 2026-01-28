@@ -10,6 +10,14 @@ fi
 
 set -o pipefail
 
+run_as_root() {
+    if command -v sudo >/dev/null 2>&1; then
+        sudo "$@"
+    else
+        "$@"
+    fi
+}
+
 case "$1" in
     name)
         echo "No build environment name required for Debian based distros." >&2
@@ -24,7 +32,7 @@ case "$1" in
                     libqt6shadertools6-dev
                 )
                 ;;
-            *)
+            questing|*)
                 PACKAGES_EXTRA=(
                     qt6-shadertools-dev
                 )
@@ -34,13 +42,13 @@ case "$1" in
             jammy|noble|oracular|bullseye|bookworm|victoria|vera|vanessa|virginia|wilma|wildflower) # <= Ubuntu 24.10
                 # qt6-svg-plugins not available
                 ;;
-            *)
+            trixie|questing|*)
                 PACKAGES_EXTRA+=(
                     qt6-svg-plugins
                 )
         esac
 
-        sudo apt-get update
+        run_as_root apt-get update
 
         # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
         # This avoids a package deadlock, resulting in jackd2 being removed, and jackd1 being installed,
@@ -48,90 +56,98 @@ case "$1" in
         # jackd dev library, so let's give it one..
         if [ "$(dpkg-query -W -f='${Status}' jackd2 2>/dev/null | grep -c "ok installed")" -eq 1 ];
         then
-            sudo apt-get install libjack-jackd2-dev;
+            run_as_root apt-get install libjack-jackd2-dev;
         fi
 
         # Install a faster linker. Prefer mold, fall back to lld
-        if apt-cache show mold 2>%1 >/dev/null;
+        if apt-cache show mold 2>&1 >/dev/null;
         then
-            sudo apt-get install -y --no-install-recommends mold
+            run_as_root apt-get install -y --no-install-recommends mold
         else
-            if apt-cache show lld 2>%1 >/dev/null;
+            if apt-cache show lld 2>&1 >/dev/null;
             then
-                sudo apt-get install -y --no-install-recommends lld
+                run_as_root apt-get install -y --no-install-recommends lld
             fi
         fi
 
-        sudo apt-get install -y --no-install-recommends -- \
-            ccache \
-            cmake \
-            clazy \
-            clang-tidy \
-            debhelper \
-            devscripts \
-            docbook-to-man \
-            dput \
-            fonts-open-sans \
-            fonts-ubuntu \
-            g++ \
-            lcov \
-            libavformat-dev \
-            libbenchmark-dev \
-            libchromaprint-dev \
-            libdistro-info-perl \
-            libebur128-dev \
-            libfaad-dev \
-            libfftw3-dev \
-            libflac-dev \
-            libgmock-dev \
-            libgtest-dev \
-            libgl1-mesa-dev \
-            libhidapi-dev \
-            libid3tag0-dev \
-            liblilv-dev \
-            libmad0-dev \
-            libmodplug-dev \
-            libmp3lame-dev \
-            libmsgsl-dev \
-            libopus-dev \
-            libopusfile-dev \
-            libportmidi-dev \
-            libprotobuf-dev \
-            libqt6core5compat6-dev \
-            libqt6opengl6-dev \
-            libqt6sql6-sqlite \
-            libqt6svg6-dev \
-            librubberband-dev \
-            libshout-idjc-dev \
-            libsndfile1-dev \
-            libsoundtouch-dev \
-            libsqlite3-dev \
-            libssl-dev \
-            libtag1-dev \
-            libudev-dev \
-            libupower-glib-dev \
-            libusb-1.0-0-dev \
-            libwavpack-dev \
-            lv2-dev \
-            markdown \
-            portaudio19-dev \
-            protobuf-compiler \
-            qtkeychain-qt6-dev \
-            qt6-declarative-private-dev \
-            qt6-base-private-dev \
-            qt6-multimedia-dev \
-            qml6-module-qt5compat-graphicaleffects \
-            qml6-module-qtqml-workerscript \
-            qml6-module-qtquick-controls \
-            qml6-module-qtquick-layouts \
-            qml6-module-qtquick-shapes \
-            qml6-module-qtquick-templates \
-            qml6-module-qtquick-window \
-            qml6-module-qt-labs-qmlmodels \
-            qml6-module-qtquick-dialogs \
-            qml6-module-qt-labs-folderlistmodel \
-            qml6-module-qtmultimedia \
+        PACKAGES=(
+            ccache
+            cmake
+            clazy
+            clang-tidy
+            debhelper
+            devscripts
+            docbook-to-man
+            dput
+            fonts-open-sans
+            g++
+            lcov
+            libavformat-dev
+            libbenchmark-dev
+            libchromaprint-dev
+            libdistro-info-perl
+            libebur128-dev
+            libfaad-dev
+            libfftw3-dev
+            libflac-dev
+            libgmock-dev
+            libgtest-dev
+            libgl1-mesa-dev
+            libhidapi-dev
+            libid3tag0-dev
+            liblilv-dev
+            libmad0-dev
+            libmodplug-dev
+            libmp3lame-dev
+            libmsgsl-dev
+            libopus-dev
+            libopusfile-dev
+            libportmidi-dev
+            libprotobuf-dev
+            libqt6core5compat6-dev
+            libqt6opengl6-dev
+            libqt6sql6-sqlite
+            libqt6svg6-dev
+            librubberband-dev
+            libshout-idjc-dev
+            libsndfile1-dev
+            libsoundtouch-dev
+            libsqlite3-dev
+            libssl-dev
+            libtag1-dev
+            libudev-dev
+            libupower-glib-dev
+            libusb-1.0-0-dev
+            libwavpack-dev
+            lv2-dev
+            markdown
+            portaudio19-dev
+            protobuf-compiler
+            qtkeychain-qt6-dev
+            qt6-declarative-private-dev
+            qt6-base-private-dev
+            qt6-multimedia-dev
+            qt6-httpserver-dev
+            qt6-websockets-dev
+            qml6-module-qt5compat-graphicaleffects
+            qml6-module-qtqml-workerscript
+            qml6-module-qtquick-controls
+            qml6-module-qtquick-layouts
+            qml6-module-qtquick-shapes
+            qml6-module-qtquick-templates
+            qml6-module-qtquick-window
+            qml6-module-qt-labs-qmlmodels
+            qml6-module-qtquick-dialogs
+            qml6-module-qt-labs-folderlistmodel
+            qml6-module-qtmultimedia
             "${PACKAGES_EXTRA[@]}"
+        )
+
+        if apt-cache policy fonts-ubuntu 2>/dev/null | grep 'Candidate:' | grep -qv '(none)'; then
+            PACKAGES+=(fonts-ubuntu)
+        fi
+
+        run_as_root apt-get install -y --no-install-recommends -- "${PACKAGES[@]}"
         ;;
     *)
         echo "Usage: $0 [options]"
