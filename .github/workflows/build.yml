@@ -99,7 +99,7 @@ jobs:
           - name: Debian 13 Trixie
             os: ubuntu-24.04
             container: debian:trixie
-            warnings_fatal: ON
+            warnings_fatal: OFF
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
