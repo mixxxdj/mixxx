@@ -66,3 +66,5 @@ src/mixxx.rc.include
 src/mixxx.res
 src/test/**/*.actual
 res/qrc_mixxx.cc
+tools/cla-check/.terraform/
+tools/cla-check/terraform.tfstate*
