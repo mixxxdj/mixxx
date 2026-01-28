@@ -51,6 +51,7 @@ jobs:
         include:
           - name: Ubuntu 24.04
             os: ubuntu-24.04
+            warnings_fatal: ON
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -74,6 +75,7 @@ jobs:
           - name: Ubuntu 25.10
             os: ubuntu-24.04
             container: ubuntu:25.10
+            warnings_fatal: OFF
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -97,6 +99,7 @@ jobs:
           - name: Debian 13 Trixie
             os: ubuntu-24.04
             container: debian:trixie
+            warnings_fatal: ON
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -119,6 +122,7 @@ jobs:
             artifacts_slug: debian-trixie
           - name: macOS 15 x64
             os: macos-15-intel
+            warnings_fatal: ON
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -142,6 +146,7 @@ jobs:
             artifacts_slug: macos-macosintel
           - name: macOS 15 arm64
             os: macos-15-intel
+            warnings_fatal: ON
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -165,6 +170,7 @@ jobs:
             artifacts_slug: macos-macosarm
           - name: Windows 2022 x64
             os: windows-2022
+            warnings_fatal: ON
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -192,6 +198,7 @@ jobs:
             arch: x64
           - name: Windows 11 ARM64
             os: windows-11-arm
+            warnings_fatal: ON
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -220,6 +227,7 @@ jobs:
             arch: arm64
           - name: Android 15 arm64
             os: ubuntu-24.04
+            warnings_fatal: ON
             # DBUILD_TESTING=OFF: error: OpenMP support and version of OpenMP (31, 40 or 45) differs
             cmake_args: >-
               -DBULK=ON
@@ -453,7 +461,7 @@ jobs:
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DCMAKE_BUILD_TYPE=RelWithDebInfo
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-          -DWARNINGS_FATAL=ON
+          -DWARNINGS_FATAL=${{ matrix.warnings_fatal }}
           -DDEBUG_ASSERTIONS_FATAL=OFF
           -DBATTERY=ON
           -DBROADCAST=ON

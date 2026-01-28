@@ -70,78 +70,84 @@ case "$1" in
             fi
         fi
 
-        run_as_root apt-get install -y --no-install-recommends -- \
-            ccache \
-            cmake \
-            clazy \
-            clang-tidy \
-            debhelper \
-            devscripts \
-            docbook-to-man \
-            dput \
-            fonts-open-sans \
-            fonts-ubuntu \
-            g++ \
-            lcov \
-            libavformat-dev \
-            libbenchmark-dev \
-            libchromaprint-dev \
-            libdistro-info-perl \
-            libebur128-dev \
-            libfaad-dev \
-            libfftw3-dev \
-            libflac-dev \
-            libgmock-dev \
-            libgtest-dev \
-            libgl1-mesa-dev \
-            libhidapi-dev \
-            libid3tag0-dev \
-            liblilv-dev \
-            libmad0-dev \
-            libmodplug-dev \
-            libmp3lame-dev \
-            libmsgsl-dev \
-            libopus-dev \
-            libopusfile-dev \
-            libportmidi-dev \
-            libprotobuf-dev \
-            libqt6core5compat6-dev \
-            libqt6opengl6-dev \
-            libqt6sql6-sqlite \
-            libqt6svg6-dev \
-            librubberband-dev \
-            libshout-idjc-dev \
-            libsndfile1-dev \
-            libsoundtouch-dev \
-            libsqlite3-dev \
-            libssl-dev \
-            libtag1-dev \
-            libudev-dev \
-            libupower-glib-dev \
-            libusb-1.0-0-dev \
-            libwavpack-dev \
-            lv2-dev \
-            markdown \
-            portaudio19-dev \
-            protobuf-compiler \
-            qtkeychain-qt6-dev \
-            qt6-declarative-private-dev \
-            qt6-base-private-dev \
-            qt6-multimedia-dev \
-            qt6-httpserver-dev \
-            qt6-websockets-dev \
-            qml6-module-qt5compat-graphicaleffects \
-            qml6-module-qtqml-workerscript \
-            qml6-module-qtquick-controls \
-            qml6-module-qtquick-layouts \
-            qml6-module-qtquick-shapes \
-            qml6-module-qtquick-templates \
-            qml6-module-qtquick-window \
-            qml6-module-qt-labs-qmlmodels \
-            qml6-module-qtquick-dialogs \
-            qml6-module-qt-labs-folderlistmodel \
-            qml6-module-qtmultimedia \
+        PACKAGES=(
+            ccache
+            cmake
+            clazy
+            clang-tidy
+            debhelper
+            devscripts
+            docbook-to-man
+            dput
+            fonts-open-sans
+            g++
+            lcov
+            libavformat-dev
+            libbenchmark-dev
+            libchromaprint-dev
+            libdistro-info-perl
+            libebur128-dev
+            libfaad-dev
+            libfftw3-dev
+            libflac-dev
+            libgmock-dev
+            libgtest-dev
+            libgl1-mesa-dev
+            libhidapi-dev
+            libid3tag0-dev
+            liblilv-dev
+            libmad0-dev
+            libmodplug-dev
+            libmp3lame-dev
+            libmsgsl-dev
+            libopus-dev
+            libopusfile-dev
+            libportmidi-dev
+            libprotobuf-dev
+            libqt6core5compat6-dev
+            libqt6opengl6-dev
+            libqt6sql6-sqlite
+            libqt6svg6-dev
+            librubberband-dev
+            libshout-idjc-dev
+            libsndfile1-dev
+            libsoundtouch-dev
+            libsqlite3-dev
+            libssl-dev
+            libtag1-dev
+            libudev-dev
+            libupower-glib-dev
+            libusb-1.0-0-dev
+            libwavpack-dev
+            lv2-dev
+            markdown
+            portaudio19-dev
+            protobuf-compiler
+            qtkeychain-qt6-dev
+            qt6-declarative-private-dev
+            qt6-base-private-dev
+            qt6-multimedia-dev
+            qt6-httpserver-dev
+            qt6-websockets-dev
+            qml6-module-qt5compat-graphicaleffects
+            qml6-module-qtqml-workerscript
+            qml6-module-qtquick-controls
+            qml6-module-qtquick-layouts
+            qml6-module-qtquick-shapes
+            qml6-module-qtquick-templates
+            qml6-module-qtquick-window
+            qml6-module-qt-labs-qmlmodels
+            qml6-module-qtquick-dialogs
+            qml6-module-qt-labs-folderlistmodel
+            qml6-module-qtmultimedia
             "${PACKAGES_EXTRA[@]}"
+        )
+
+        if apt-cache show fonts-ubuntu 2>%1 >/dev/null; then
+            PACKAGES+=(fonts-ubuntu)
+        fi
+
+        run_as_root apt-get install -y --no-install-recommends -- "${PACKAGES[@]}"
         ;;
     *)
         echo "Usage: $0 [options]"
