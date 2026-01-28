@@ -7,6 +7,7 @@ Example usage:
   -------
   python3 tools/rest_api_test.py --help
   python3 tools/rest_api_test.py --list-checks
+  python3 tools/rest_api_test.py  # runs default checks (schema, health, ready, status, decks, autodj)
 
   Connection & Basic Checks
   -------------------------
@@ -15,29 +16,24 @@ Example usage:
   python3 tools/rest_api_test.py --scheme https --host localhost \\
     --token <token> --insecure --check schema --show-response
 
-  Deck Control
-  ------------
-  python3 tools/rest_api_test.py --check control --play-deck 1
-  python3 tools/rest_api_test.py --check control --pause-deck 2
-  python3 tools/rest_api_test.py --check control \\
-    --control command=play,group=[Channel1]
-  python3 tools/rest_api_test.py --check control \\
-    --control command=seek,deck=1,position=0.5
-  python3 tools/rest_api_test.py --check control \\
-    --control key=volume,group=[Master],value=0.75
+  Deck Control (--check control is auto-inferred)
+  ------------------------------------------------
+  python3 tools/rest_api_test.py --play-deck 1
+  python3 tools/rest_api_test.py --pause-deck 2
+  python3 tools/rest_api_test.py --control command=play,group=[Channel1]
+  python3 tools/rest_api_test.py --control command=seek,deck=1,position=0.5
+  python3 tools/rest_api_test.py --control key=volume,group=[Master],value=0.75
 
-  Playlists
-  ---------
+  Playlists (--check playlists/playlists_read is auto-inferred)
+  -------------------------------------------------------------
   python3 tools/rest_api_test.py --list-playlists
-  python3 tools/rest_api_test.py --check playlists_read
-  python3 tools/rest_api_test.py --check playlists_read --playlist-read-id 12
-  python3 tools/rest_api_test.py --check playlists \\
-    --playlist-action send_to_autodj --playlist-id 12 \\
-    --playlist-autodj-position top
+  python3 tools/rest_api_test.py --playlist-read-id 12
+  python3 tools/rest_api_test.py --playlist-action send_to_autodj \\
+    --playlist-id 12 --playlist-autodj-position top
 
-  AutoDJ
-  ------
-  python3 tools/rest_api_test.py --check autodj_write --autodj-enable
+  AutoDJ (--check autodj_write is auto-inferred)
+  ----------------------------------------------
+  python3 tools/rest_api_test.py --autodj-enable
 
   Advanced (Payload Overrides)
   ----------------------------
@@ -1219,6 +1215,53 @@ def run_demo(
     return 0 if total_failures == 0 else 1
 
 
+def infer_checks_from_args(args: argparse.Namespace) -> List[str]:
+    """Infer which checks to run based on provided arguments.
+
+    Returns explicit checks if provided, otherwise infers from other arguments,
+    or returns default checks if nothing specific is requested.
+    """
+    inferred: List[str] = []
+
+    # Deck control options imply 'control' check
+    if args.play_deck is not None or args.pause_deck is not None or args.control:
+        inferred.append("control")
+
+    # AutoDJ options imply 'autodj_write' check
+    if args.autodj_enable:
+        inferred.append("autodj_write")
+
+    # Playlist write options imply 'playlists' check
+    if args.playlist_action:
+        inferred.append("playlists")
+
+    # Playlist read options imply 'playlists_read' check
+    if args.playlist_read_id is not None:
+        inferred.append("playlists_read")
+
+    # If explicit checks were provided, merge with inferred
+    if args.check:
+        # Add explicit checks, avoiding duplicates
+        for check in args.check:
+            if check not in inferred:
+                inferred.append(check)
+        return inferred
+
+    # If we inferred any checks, use those
+    if inferred:
+        return inferred
+
+    # Default checks when nothing specific is requested
+    return [
+        "schema",
+        "health",
+        "ready",
+        "status",
+        "decks",
+        "autodj",
+    ]
+
+
 def main() -> int:
     args = parse_args()
     if args.list_checks:
@@ -1240,14 +1283,7 @@ def main() -> int:
         timeout=args.timeout,
         insecure_tls=args.insecure,
     )
-    checks = args.check or [
-        "schema",
-        "health",
-        "ready",
-        "status",
-        "decks",
-        "autodj",
-    ]
+    checks = infer_checks_from_args(args)
     output_dir = Path(args.output_dir) if args.output_dir else None
     query = parse_query(args.query)
     data = parse_json_payload(args.data, args.data_file)
