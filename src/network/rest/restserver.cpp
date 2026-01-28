@@ -55,7 +55,8 @@ const QRegularExpression kUuidRequestIdRegex(
 const QRegularExpression kAllowedRequestIdRegex(QStringLiteral("^[A-Za-z0-9._-]+$"));
 
 bool tokenHasWriteScope(const QStringList& tokenScopes) {
-    for (const auto& scope : scopes::writeScopes()) {
+    const auto writeScopeList = scopes::writeScopes();
+    for (const auto& scope : writeScopeList) {
         if (tokenScopes.contains(scope, Qt::CaseInsensitive)) {
             return true;
         }
@@ -835,7 +836,8 @@ RestServer::AuthorizationResult RestServer::authorize(
 
     const QDateTime nowUtc = QDateTime::currentDateTimeUtc();
 
-    for (const auto& token : m_settings.tokens) {
+    QStringList missingScopes;
+    for (const auto& token : std::as_const(m_settings.tokens)) {
         if (token.value.isEmpty()) {
             continue;
         }
@@ -864,7 +866,7 @@ RestServer::AuthorizationResult RestServer::authorize(
         const QStringList tokenScopes = token.scopes;
         result.usedWriteToken = tokenHasWriteScope(tokenScopes);
         bool hasAllScopes = true;
-        QStringList missingScopes;
+        missingScopes.clear();
         for (const auto& required : requiredScopes) {
             if (!tokenScopes.contains(required, Qt::CaseInsensitive)) {
                 hasAllScopes = false;
