@@ -423,7 +423,7 @@ de,it,ja,nl,pt*,ro	Deck 1
 de,it,ja,nl,pt*,ro	Deck 2
 de,it,ja,nl	Deck 3
 de,it,ja,nl	Deck 4
-de,fr,it,nl,sl	 fps
+de,fr,it,nl,sl,sv	 fps
 de,nl	Decks
 de,nl	Track
 de,nl	Tracks
@@ -441,22 +441,22 @@ nl,de	Release (ms)
 it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
-es,es_419,es_AR,es_CO,es_ES,es_MX	No
-nl,sq_AL,es,es_419,es_AR,es_CO,es_ES,es_MX	VID:
+es*	No
+nl,sq_AL,es*,pl,sv	VID:
 nl	Product ID
-nl,sq_AL,es,es_419,es_AR,es_CO,es_ES,es_MX	PID:
+nl,sq_AL,es*,pl,sv	PID:
 nl	Lossy
 nl	Lossless
 nl	Top
 nl,de	OpenGL Status
 nl	Stem Label
 nl	Stem Mute
-sq_AL	Artist + Album
+sq_AL,sv	Artist + Album
 sq_AL,it	Off
 de	Attack (ms)
 de	Attack
-fr,it	Ctrl+f
-fr	Ctrl+Shift+F
+fr,it,sl	Ctrl+f
+fr,sl	Ctrl+Shift+F
 it	Mixxx %1.%2 Development Team
 it	Okay
 sv	Decay
@@ -465,3 +465,6 @@ sv	Kill Mid
 sv	Kill High
 tr	Mount
 vi	Samplerate
+fr,sl	Stem
+fr	Gain (dB)
+sl,sv	AGC

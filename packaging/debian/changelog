@@ -1,3 +1,9 @@
+mixxx (2.5.3-1~jammy) jammy; urgency=medium
+
+  * Build of 2.5.3
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Tue, 02 Sep 2025 15:57:39 +0000
+
 mixxx (2.5.2-1~jammy) jammy; urgency=medium
 
   * Build of 2.5.2

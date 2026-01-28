@@ -1,11 +1,23 @@
-#include <QtDebug>
-#include <QStringList>
-
 #include "track/keyfactory.h"
+
+#include <QRegularExpression>
+#include <QStringList>
+#include <QtDebug>
+#include <cmath>
+
 #include "track/keys.h"
 #include "track/keyutils.h"
 
 using mixxx::track::io::key::KeyMap;
+
+namespace {
+constexpr double kCentsPerOctave = 1200.0;
+constexpr double kStandardTuningHz = 440.0;
+} // namespace
+
+// Static regex for parsing RapidEvolution tuning offsets (e.g., "A +50")
+// Compiled once for performance during library scans
+static const QRegularExpression s_offsetRegex(QStringLiteral(R"(([+-]\d+)\s*$)"));
 
 // static
 Keys KeyFactory::loadKeysFromByteArray(const QString& keysVersion,
@@ -50,7 +62,30 @@ Keys KeyFactory::makeBasicKeysKeepText(
     key_map.set_source(source);
     key_map.set_global_key_text(global_key_text.toStdString());
     mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(global_key_text);
+
+    // RapidEvolution writes tuning offset in cents after the key text, e.g. "A#m +50".
+    // Preserve that as tuning_frequency_hz if present.
+    const auto offsetMatch = s_offsetRegex.match(global_key_text);
+    if (offsetMatch.hasMatch()) {
+        bool ok = false;
+        int cents = offsetMatch.captured(1).toInt(&ok);
+        if (ok) {
+            // Limit the cents value to ±50 by adjusting the key.
+            // Calculate how many semitones to shift: round to nearest 100.
+            const int keyShift = static_cast<int>(std::round(cents / 100.0));
+            cents -= keyShift * 100;
+
+            if (keyShift != 0 && global_key != mixxx::track::io::key::INVALID) {
+                global_key = KeyUtils::scaleKeySteps(global_key, keyShift);
+            }
+
+            const double tuningHz = kStandardTuningHz * std::pow(2.0, static_cast<double>(cents) / kCentsPerOctave);
+            key_map.set_global_tuning_frequency_hz(tuningHz);
+        }
+    }
+
     key_map.set_global_key(global_key);
+
     return Keys(key_map);
 }
 
@@ -90,7 +125,8 @@ Keys KeyFactory::makePreferredKeys(
         const KeyChangeList& key_changes,
         const QHash<QString, QString>& extraVersionInfo,
         const mixxx::audio::SampleRate sampleRate,
-        SINT totalFrames) {
+        SINT totalFrames,
+        double tuningFrequencyHz) {
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
@@ -115,6 +151,7 @@ Keys KeyFactory::makePreferredKeys(
                 global_key, KeyUtils::KeyNotation::ID3v2);
         key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
+        key_map.set_global_tuning_frequency_hz(tuningFrequencyHz);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
         return keys;
