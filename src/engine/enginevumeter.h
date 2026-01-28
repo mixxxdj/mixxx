@@ -7,14 +7,16 @@
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
   public:
-    EngineVuMeter(const QString& group, const QString& legacyGroup = QString());
+    EngineVuMeter(const QString& group,
+            const QString& legacyGroup = QString(),
+            bool createLegacyAliases = true);
 
     virtual void process(CSAMPLE* pInOut, const std::size_t bufferSize);
 
     void reset();
 
   private:
-    void doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume);
+    void doSmooth(CSAMPLE& currentVolume, CSAMPLE newVolume);
 
     ControlObject m_vuMeter;
     ControlObject m_vuMeterLeft;

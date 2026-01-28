@@ -69,6 +69,8 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     rendergraph::OpacityNode* m_pOpacityNode;
     WaveformRenderMark* m_pWaveformRenderMark;
     WaveformRenderMarkRange* m_pWaveformRenderMarkRange;
+    WaveformRenderMark* m_pWaveformRenderMarkSlip;
+
     WaveformRendererSignalBase* m_pWaveformRendererSignal;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformWidget);

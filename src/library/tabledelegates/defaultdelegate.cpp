@@ -16,14 +16,14 @@ void DefaultDelegate::paint(
     initStyleOption(&opt, index);
 
     if (opt.state & QStyle::State_Selected) {
-        setHighlightedTextColor(opt, index);
+        setTextColor(opt, index);
     }
     // TODO Guarantee font/bg contrast with ALL track colors
 
     QStyledItemDelegate::paint(painter, opt, index);
 }
 
-void DefaultDelegate::setHighlightedTextColor(
+void DefaultDelegate::setTextColor(
         QStyleOptionViewItem& option,
         const QModelIndex& index) const {
     // Get the palette's selected text color

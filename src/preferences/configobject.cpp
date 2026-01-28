@@ -65,7 +65,7 @@ QString computeResourcePathImpl() {
                         "'--resource-path <path>'.");
             }
         }
-#if defined(__UNIX__)
+#if defined(__UNIX__) && !defined(__ANDROID__)
         else if (mixxxDir.cd(QStringLiteral("../share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
@@ -74,6 +74,11 @@ QString computeResourcePathImpl() {
         // of the above fail.
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
+        }
+#elif defined(__ANDROID__)
+        // On Android, use the QRC.
+        else {
+            qResourcePath = "assets:/";
         }
 #elif defined(Q_OS_IOS)
         // On iOS the bundle contains the resources directly.
