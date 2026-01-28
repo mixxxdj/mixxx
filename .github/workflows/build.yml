@@ -51,6 +51,7 @@ jobs:
         include:
           - name: Ubuntu 24.04
             os: ubuntu-24.04
+            warnings_fatal: ON
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -71,8 +72,57 @@ jobs:
             artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
+          - name: Ubuntu 25.10
+            os: ubuntu-24.04
+            container: ubuntu:25.10
+            warnings_fatal: OFF
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv.sh
+            artifacts_name: Ubuntu 25.10 Qt6 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-questing
+          - name: Debian 13 Trixie
+            os: ubuntu-24.04
+            container: debian:trixie
+            warnings_fatal: ON
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv.sh
+            artifacts_name: Debian 13 Trixie Qt6 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: debian-trixie
           - name: macOS 15 x64
             os: macos-15-intel
+            warnings_fatal: ON
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -96,6 +146,7 @@ jobs:
             artifacts_slug: macos-macosintel
           - name: macOS 15 arm64
             os: macos-15-intel
+            warnings_fatal: ON
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -119,6 +170,7 @@ jobs:
             artifacts_slug: macos-macosarm
           - name: Windows 2022 x64
             os: windows-2022
+            warnings_fatal: ON
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -146,6 +198,7 @@ jobs:
             arch: x64
           - name: Windows 11 ARM64
             os: windows-11-arm
+            warnings_fatal: ON
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -174,6 +227,7 @@ jobs:
             arch: arm64
           - name: Android 15 arm64
             os: ubuntu-24.04
+            warnings_fatal: ON
             # DBUILD_TESTING=OFF: error: OpenMP support and version of OpenMP (31, 40 or 45) differs
             cmake_args: >-
               -DBULK=ON
@@ -216,6 +270,19 @@ jobs:
         uses: actions/checkout@v6
         with:
           # This is necessary for making `git describe` work.
+          fetch-depth: 0
+
+      - name: "[Linux containers] Install git"
+        if: matrix.container != null
+        run: |
+          apt-get update
+          apt-get install -y git
+
+      - name: "[Linux containers] Re-checkout repository with git"
+        if: matrix.container != null
+        uses: actions/checkout@v6
+        with:
+          # Ensure .git is available for subsequent git commands
           fetch-depth: 0
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
@@ -394,7 +461,7 @@ jobs:
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DCMAKE_BUILD_TYPE=RelWithDebInfo
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-          -DWARNINGS_FATAL=ON
+          -DWARNINGS_FATAL=${{ matrix.warnings_fatal }}
           -DDEBUG_ASSERTIONS_FATAL=OFF
           -DBATTERY=ON
           -DBROADCAST=ON
@@ -496,14 +563,14 @@ jobs:
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: startsWith(matrix.artifacts_slug, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.name == 'Ubuntu 24.04'
+        if: matrix.artifacts_slug == 'ubuntu-jammy'
         run: |
           if [[ "${{ inputs.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
