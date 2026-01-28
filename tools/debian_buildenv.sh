@@ -60,11 +60,11 @@ case "$1" in
         fi
 
         # Install a faster linker. Prefer mold, fall back to lld
-        if apt-cache show mold 2>%1 >/dev/null;
+        if apt-cache show mold 2>&1 >/dev/null;
         then
             run_as_root apt-get install -y --no-install-recommends mold
         else
-            if apt-cache show lld 2>%1 >/dev/null;
+            if apt-cache show lld 2>&1 >/dev/null;
             then
                 run_as_root apt-get install -y --no-install-recommends lld
             fi
@@ -143,7 +143,7 @@ case "$1" in
             "${PACKAGES_EXTRA[@]}"
         )
 
-        if apt-cache show fonts-ubuntu 2>%1 >/dev/null; then
+        if apt-cache policy fonts-ubuntu 2>/dev/null | grep 'Candidate:' | grep -qv '(none)'; then
             PACKAGES+=(fonts-ubuntu)
         fi
 
