@@ -32,7 +32,7 @@
 
 namespace {
 constexpr auto kApplicationJsonMimeType = "application/json";
-}
+} // namespace
 
 namespace mixxx::network::rest {
 
