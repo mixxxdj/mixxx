@@ -380,9 +380,9 @@ void WMainMenuBar::initialize() {
     QString autoDJTitle = tr("Show Auto DJ");
     QString autoDJText = tr("Switch to the Auto DJ view.");
     auto* pViewAutoDJ = new QAction(autoDJTitle, this);
-    // pViewAutoDJ->setShortcut(QKeySequence(m_pKbdConfig->getValue(
-    //         ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowAutoDJ"),
-    //         tr("Ctrl+9", "Menubar|View|Show Auto DJ"))));
+    pViewAutoDJ->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowAutoDJ"),
+            tr("Ctrl+9", "Menubar|View|Show Auto DJ"))));
     pViewAutoDJ->setStatusTip(autoDJText);
     pViewAutoDJ->setWhatsThis(buildWhatsThis(autoDJTitle, autoDJText));
     pViewAutoDJ->setCheckable(false);

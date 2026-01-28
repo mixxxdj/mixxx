@@ -2,9 +2,5 @@
 
 #include "moc_controllerenumerator.cpp"
 
-ControllerEnumerator::ControllerEnumerator()
-        : QObject() {
-}
-
-ControllerEnumerator::~ControllerEnumerator() {
-}
+ControllerEnumerator::ControllerEnumerator() = default;
+ControllerEnumerator::~ControllerEnumerator() = default;
