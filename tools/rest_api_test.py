@@ -1071,24 +1071,36 @@ def build_demo_steps(playlist_id_1: int, playlist_id_2: int) -> List[DemoStep]:
         ),
         DemoStep(
             number=5,
+            description="Shuffle AutoDJ Queue",
+            check_name="autodj_write",
+            payload={"action": "shuffle"},
+        ),
+        DemoStep(
+            number=6,
             description="Enable AutoDJ",
             check_name="autodj_write",
             payload={"action": "enable"},
         ),
         DemoStep(
-            number=6,
+            number=7,
             description="Pause Deck 1",
             check_name="control",
             payload={"command": "pause", "group": "[Channel1]"},
         ),
         DemoStep(
-            number=7,
+            number=8,
             description="Play Deck 1",
             check_name="control",
             payload={"command": "play", "group": "[Channel1]"},
         ),
         DemoStep(
-            number=8,
+            number=9,
+            description="AutoDJ Fade Now",
+            check_name="autodj_write",
+            payload={"action": "fade"},
+        ),
+        DemoStep(
+            number=10,
             description=f"Load Playlist {playlist_id_2} to AutoDJ Queue (replace)",
             check_name="playlists",
             payload={
@@ -1098,18 +1110,23 @@ def build_demo_steps(playlist_id_1: int, playlist_id_2: int) -> List[DemoStep]:
             },
         ),
          DemoStep(
-            number=9,
+            number=11,
             description="Disable AutoDJ",
             check_name="autodj_write",
             payload={"action": "disable"},
         ),
         DemoStep(
-            number=10,
+            number=12,
             description="Pause Deck 1",
             check_name="control",
             payload={"command": "pause", "group": "[Channel1]"},
         ),
-           
+        DemoStep(
+            number=12,
+            description="Pause Deck 2",
+            check_name="control",
+            payload={"command": "pause", "group": "[Channel2]"},
+        ),
     ]
 
 
@@ -1124,7 +1141,7 @@ def get_available_playlists(
 def run_demo(
     args: argparse.Namespace,
     headers: Mapping[str, str],
-    step_delay: float = 3,
+    step_delay: float = 6,
 ) -> int:
     schemes = ["http", "https"]
     host = args.host
