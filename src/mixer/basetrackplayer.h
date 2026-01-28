@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qtmetamacros.h>
+
 #include <gsl/pointers>
 #include <memory>
 
@@ -32,12 +34,13 @@ constexpr int kUnreplaceDelay = 500;
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
-    enum TrackLoadReset {
+    enum class TrackLoadReset : int {
         RESET_NONE,
         RESET_PITCH,
         RESET_PITCH_AND_SPEED,
         RESET_SPEED
     };
+    Q_ENUM(TrackLoadReset);
 
     BaseTrackPlayer(PlayerManager* pParent, const QString& group);
     ~BaseTrackPlayer() override = default;
