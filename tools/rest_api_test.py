@@ -2,23 +2,52 @@
 """Exercise Mixxx's REST API endpoints.
 
 Example usage:
+
+  General
+  -------
   python3 tools/rest_api_test.py --help
   python3 tools/rest_api_test.py --list-checks
-  python3 tools/rest_api_test.py --scheme http --host localhost --check health --check status --show-response
-  python3 tools/rest_api_test.py --scheme https --host localhost --token <token> --insecure --check schema --show-response
-  python3 tools/rest_api_test.py --check control --control command=play,group=[Channel1]
-  python3 tools/rest_api_test.py --check control --control command=seek,deck=1,position=0.5
-  python3 tools/rest_api_test.py --check control --control key=volume,group=[Master],value=0.75
-  python3 tools/rest_api_test.py --check playlists_read
-  python3 tools/rest_api_test.py --check playlists_read --playlist-read-id 12
-  python3 tools/rest_api_test.py --list-playlists
-  python3 tools/rest_api_test.py --check playlists \\
-    --playlist-action send_to_autodj --playlist-id 12 --playlist-autodj-position top
+
+  Connection & Basic Checks
+  -------------------------
+  python3 tools/rest_api_test.py --scheme http --host localhost \\
+    --check health --check status --show-response
+  python3 tools/rest_api_test.py --scheme https --host localhost \\
+    --token <token> --insecure --check schema --show-response
+
+  Deck Control
+  ------------
   python3 tools/rest_api_test.py --check control --play-deck 1
   python3 tools/rest_api_test.py --check control --pause-deck 2
+  python3 tools/rest_api_test.py --check control \\
+    --control command=play,group=[Channel1]
+  python3 tools/rest_api_test.py --check control \\
+    --control command=seek,deck=1,position=0.5
+  python3 tools/rest_api_test.py --check control \\
+    --control key=volume,group=[Master],value=0.75
+
+  Playlists
+  ---------
+  python3 tools/rest_api_test.py --list-playlists
+  python3 tools/rest_api_test.py --check playlists_read
+  python3 tools/rest_api_test.py --check playlists_read --playlist-read-id 12
+  python3 tools/rest_api_test.py --check playlists \\
+    --playlist-action send_to_autodj --playlist-id 12 \\
+    --playlist-autodj-position top
+
+  AutoDJ
+  ------
   python3 tools/rest_api_test.py --check autodj_write --autodj-enable
+
+  Advanced (Payload Overrides)
+  ----------------------------
   python3 tools/rest_api_test.py --check control --check autodj_write \\
-    --payload control=control.json --payload autodj_write='{"action": "enable"}'
+    --payload control=control.json \\
+    --payload autodj_write='{"action": "enable"}'
+
+  Demo Mode
+  ---------
+  python3 tools/rest_api_test.py --demo --insecure
 """
 
 from __future__ import annotations
@@ -760,37 +789,46 @@ def run_checks(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Exercise Mixxx REST API endpoints.")
-    scheme_group = parser.add_mutually_exclusive_group()
+    parser = argparse.ArgumentParser(
+        description="Exercise Mixxx REST API endpoints.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+
+    # Connection options
+    conn_group = parser.add_argument_group("Connection")
+    scheme_group = conn_group.add_mutually_exclusive_group()
     scheme_group.add_argument("--http", action="store_true", help="Use HTTP")
     scheme_group.add_argument("--https", action="store_true", help="Use HTTPS")
-    parser.add_argument(
+    conn_group.add_argument(
         "--scheme",
         choices=["http", "https"],
         help="Scheme to use (overrides --http/--https)",
     )
-    parser.add_argument("--host", default="localhost", help="API host")
-    parser.add_argument(
+    conn_group.add_argument("--host", default="localhost", help="API host")
+    conn_group.add_argument(
         "--port",
         type=int,
         help="API port (defaults to 8989 for HTTP, 8990 for HTTPS)",
     )
-    parser.add_argument(
+    conn_group.add_argument(
         "--token",
         help="Bearer token for Authorization header",
     )
-    parser.add_argument(
+    conn_group.add_argument(
         "--timeout",
         type=float,
         default=10.0,
         help="Request timeout in seconds",
     )
-    parser.add_argument(
+    conn_group.add_argument(
         "--insecure",
         action="store_true",
         help="Disable TLS certificate verification for HTTPS",
     )
-    parser.add_argument(
+
+    # Check selection
+    check_group = parser.add_argument_group("Check Selection")
+    check_group.add_argument(
         "--check",
         action="append",
         choices=sorted(CHECKS.keys()),
@@ -799,42 +837,52 @@ def parse_args() -> argparse.Namespace:
             "if omitted."
         ),
     )
-    parser.add_argument(
+    check_group.add_argument(
         "--list-checks",
         action="store_true",
         help="List available checks and exit",
     )
-    parser.add_argument(
+    check_group.add_argument(
         "--list-playlists",
         action="store_true",
         help="List available playlists and exit",
     )
-    parser.add_argument(
+    check_group.add_argument(
+        "--demo",
+        action="store_true",
+        help="Run interactive demo with numbered steps for video capture",
+    )
+
+    # Output options
+    output_group = parser.add_argument_group("Output")
+    output_group.add_argument(
         "--show-response",
         action="store_true",
         help="Print formatted JSON responses for each checked endpoint",
     )
-    parser.add_argument(
+    output_group.add_argument(
         "--output-dir",
         help="Write formatted JSON responses to this directory",
     )
-    parser.add_argument(
-        "--data",
-        help="JSON payload for POST checks",
+    output_group.add_argument(
+        "--timing",
+        action="store_true",
+        help="Include request timing in output",
     )
-    parser.add_argument(
-        "--data-file",
-        help="Path to JSON file for POST checks",
+
+    # Deck control
+    control_group = parser.add_argument_group("Deck Control")
+    control_group.add_argument(
+        "--play-deck",
+        type=int,
+        help="Send a play command to /api/v1/control for the given deck number",
     )
-    parser.add_argument(
-        "--payload",
-        action="append",
-        help=(
-            "Override POST payload for a check as name=JSON or name=path.json "
-            "(repeatable)"
-        ),
+    control_group.add_argument(
+        "--pause-deck",
+        type=int,
+        help="Send a pause command to /api/v1/control for the given deck number",
     )
-    parser.add_argument(
+    control_group.add_argument(
         "--control",
         action="append",
         help=(
@@ -842,27 +890,23 @@ def parse_args() -> argparse.Namespace:
             "pairs (repeatable). Example: --control command=play,group=[Channel1]"
         ),
     )
-    parser.add_argument(
-        "--play-deck",
-        type=int,
-        help="Send a play command to /api/v1/control for the given deck number",
-    )
-    parser.add_argument(
-        "--pause-deck",
-        type=int,
-        help="Send a pause command to /api/v1/control for the given deck number",
-    )
-    parser.add_argument(
+
+    # AutoDJ
+    autodj_group = parser.add_argument_group("AutoDJ")
+    autodj_group.add_argument(
         "--autodj-enable",
         action="store_true",
         help="Send an AutoDJ enable action to /api/v1/autodj",
     )
-    parser.add_argument(
+
+    # Playlists
+    playlist_group = parser.add_argument_group("Playlists")
+    playlist_group.add_argument(
         "--playlist-read-id",
         type=int,
         help="Playlist id to fetch tracks for with playlists_read",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-action",
         choices=[
             "create",
@@ -876,61 +920,76 @@ def parse_args() -> argparse.Namespace:
         ],
         help="Playlist action for /api/v1/playlists",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-id",
         type=int,
         help="Playlist id for playlist actions",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-name",
         help="Playlist name for create/rename actions",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-track-id",
         dest="playlist_track_ids",
         action="append",
         help="Track id to add to playlist (repeatable or comma-separated)",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-position",
         type=int,
         help="Position for playlist add action",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-positions",
         action="append",
         help="Comma-separated playlist positions for remove action",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-from",
         type=int,
         help="Source position for playlist reorder action",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-to",
         type=int,
         help="Destination position for playlist reorder action",
     )
-    parser.add_argument(
+    playlist_group.add_argument(
         "--playlist-autodj-position",
         choices=["top", "bottom", "replace"],
         help="AutoDJ queue position for send_to_autodj action",
     )
-    parser.add_argument(
+
+    # Advanced / Payload options
+    advanced_group = parser.add_argument_group("Advanced")
+    advanced_group.add_argument(
+        "--data",
+        help="JSON payload for POST checks",
+    )
+    advanced_group.add_argument(
+        "--data-file",
+        help="Path to JSON file for POST checks",
+    )
+    advanced_group.add_argument(
+        "--payload",
+        action="append",
+        help=(
+            "Override POST payload for a check as name=JSON or name=path.json "
+            "(repeatable)"
+        ),
+    )
+    advanced_group.add_argument(
         "--header",
         action="append",
         help="Additional HTTP header in the form Key:Value (repeatable)",
     )
-    parser.add_argument(
+    advanced_group.add_argument(
         "--query",
         action="append",
         help="Query parameter in the form key=value (repeatable)",
     )
-    parser.add_argument(
-        "--timing",
-        action="store_true",
-        help="Include request timing in output",
-    )
+
     return parser.parse_args()
 
 
@@ -942,11 +1001,234 @@ def resolve_scheme(args: argparse.Namespace) -> str:
     return "http"
 
 
+@dataclass
+class DemoStep:
+    number: int
+    description: str
+    check_name: str
+    payload: Optional[Any] = None
+    query: Optional[Mapping[str, str]] = None
+
+
+def print_demo_header(scheme: str, step_count: int) -> None:
+    protocol = scheme.upper()
+    print()
+    print("=" * 60)
+    print(f"  DEMO: Mixxx REST API ({protocol})")
+    print(f"  {step_count} steps - pausing between each for video capture")
+    print("=" * 60)
+    print()
+
+
+def print_demo_step(step: DemoStep, scheme: str) -> None:
+    print("-" * 60)
+    print(f"  Step {step.number}: {step.description}")
+    print(f"  Endpoint: {CHECKS[step.check_name].method} {CHECKS[step.check_name].path}")
+    print(f"  Protocol: {scheme.upper()}")
+    if step.payload:
+        print(f"  Payload: {json.dumps(step.payload)}")
+    print("-" * 60)
+
+
+def run_demo_step(
+    config: ApiConfig,
+    step: DemoStep,
+    headers: Mapping[str, str],
+) -> ApiResponse:
+    check = CHECKS[step.check_name]
+    return request_json(
+        config,
+        check.method,
+        check.path,
+        step.payload,
+        headers,
+        step.query or {},
+    )
+
+
+def build_demo_steps(playlist_id_1: int, playlist_id_2: int) -> List[DemoStep]:
+    return [
+        DemoStep(
+            number=1,
+            description="Health Check",
+            check_name="health",
+        ),
+        DemoStep(
+            number=2,
+            description="Get Status",
+            check_name="status",
+        ),
+        DemoStep(
+            number=3,
+            description="List Playlists",
+            check_name="playlists_read",
+        ),
+        DemoStep(
+            number=4,
+            description=f"Load Playlist {playlist_id_1} to AutoDJ Queue (top)",
+            check_name="playlists",
+            payload={
+                "action": "send_to_autodj",
+                "playlist_id": playlist_id_1,
+                "position": "top",
+            },
+        ),
+        DemoStep(
+            number=5,
+            description="Enable AutoDJ",
+            check_name="autodj_write",
+            payload={"action": "enable"},
+        ),
+        DemoStep(
+            number=6,
+            description="Play Deck 1",
+            check_name="control",
+            payload={"command": "play", "group": "[Channel1]"},
+        ),
+        DemoStep(
+            number=7,
+            description="Stop Deck 1",
+            check_name="control",
+            payload={"command": "stop", "group": "[Channel1]"},
+        ),
+        DemoStep(
+            number=8,
+            description=f"Load Playlist {playlist_id_2} to AutoDJ Queue (replace)",
+            check_name="playlists",
+            payload={
+                "action": "send_to_autodj",
+                "playlist_id": playlist_id_2,
+                "position": "replace",
+            },
+        ),
+    ]
+
+
+def get_available_playlists(
+    config: ApiConfig, headers: Mapping[str, str]
+) -> List[Mapping[str, Any]]:
+    check = CHECKS["playlists_read"]
+    response = request_json(config, check.method, check.path, None, headers, {})
+    return response.payload.get("playlists", [])
+
+
+def run_demo(
+    args: argparse.Namespace,
+    headers: Mapping[str, str],
+    step_delay: float = 1.5,
+) -> int:
+    schemes = ["http", "https"]
+    host = args.host
+    token = args.token
+    insecure = args.insecure
+
+    print()
+    print("=" * 60)
+    print("  Mixxx REST API Interactive Demo")
+    print("  Designed for video capture")
+    print("=" * 60)
+    print()
+
+    # First, get available playlists using HTTP
+    http_config = ApiConfig(
+        scheme="http",
+        host=host,
+        port=args.port or DEFAULT_HTTP_PORT,
+        token=token,
+        timeout=args.timeout,
+        insecure_tls=insecure,
+    )
+
+    print("Fetching available playlists...")
+    try:
+        playlists = get_available_playlists(http_config, headers)
+    except ApiTestError as exc:
+        print(f"FAIL: Could not fetch playlists: {exc}")
+        return 1
+
+    if len(playlists) < 2:
+        print(f"FAIL: Demo requires at least 2 playlists, found {len(playlists)}")
+        print("Please create playlists in Mixxx before running the demo.")
+        return 1
+
+    playlist_id_1 = playlists[0].get("id", 1)
+    playlist_id_2 = playlists[1].get("id", 2)
+    playlist_name_1 = playlists[0].get("name", "Playlist 1")
+    playlist_name_2 = playlists[1].get("name", "Playlist 2")
+
+    print(f"Using playlists:")
+    print(f"  - Playlist 1: {playlist_id_1} ({playlist_name_1})")
+    print(f"  - Playlist 2: {playlist_id_2} ({playlist_name_2})")
+    print()
+
+    steps = build_demo_steps(playlist_id_1, playlist_id_2)
+    total_failures = 0
+
+    for scheme in schemes:
+        port = args.port or (DEFAULT_HTTPS_PORT if scheme == "https" else DEFAULT_HTTP_PORT)
+        config = ApiConfig(
+            scheme=scheme,
+            host=host,
+            port=port,
+            token=token,
+            timeout=args.timeout,
+            insecure_tls=insecure,
+        )
+
+        print_demo_header(scheme, len(steps))
+        time.sleep(step_delay)
+
+        for step in steps:
+            print_demo_step(step, scheme)
+            print()
+
+            try:
+                response = run_demo_step(config, step, headers)
+                print("Result: SUCCESS")
+                print(f"Response ({response.duration_ms:.1f}ms):")
+                # Print a condensed version of the response
+                payload_str = format_response(response.payload)
+                lines = payload_str.split("\n")
+                if len(lines) > 15:
+                    for line in lines[:12]:
+                        print(f"  {line}")
+                    print(f"  ... ({len(lines) - 12} more lines)")
+                else:
+                    for line in lines:
+                        print(f"  {line}")
+            except ApiTestError as exc:
+                print(f"Result: FAILED")
+                print(f"Error: {exc}")
+                total_failures += 1
+
+            print()
+            time.sleep(step_delay)
+
+        print(f"Completed all {len(steps)} steps for {scheme.upper()}")
+        print()
+        time.sleep(step_delay)
+
+    print("=" * 60)
+    print("  Demo Complete")
+    if total_failures > 0:
+        print(f"  {total_failures} step(s) failed")
+    else:
+        print("  All steps completed successfully")
+    print("=" * 60)
+
+    return 0 if total_failures == 0 else 1
+
+
 def main() -> int:
     args = parse_args()
     if args.list_checks:
         list_checks()
         return 0
+
+    headers = parse_headers(args.header)
+
+    if args.demo:
+        return run_demo(args, headers)
 
     scheme = resolve_scheme(args)
     port = args.port or (DEFAULT_HTTPS_PORT if scheme == "https" else DEFAULT_HTTP_PORT)
@@ -967,7 +1249,6 @@ def main() -> int:
         "autodj",
     ]
     output_dir = Path(args.output_dir) if args.output_dir else None
-    headers = parse_headers(args.header)
     query = parse_query(args.query)
     data = parse_json_payload(args.data, args.data_file)
     payload_overrides = parse_payload_overrides(args.payload)
