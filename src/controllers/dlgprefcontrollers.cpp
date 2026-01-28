@@ -44,6 +44,18 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::rescanControllers);
 
+    // Hide unenabled controllers checkbox
+    checkBox_hideUnenabled->setChecked(
+            m_pConfig->getValue(kHideUnenabledControllersCfgKey, false));
+    connect(checkBox_hideUnenabled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefControllers::slotHideUnenabledChanged);
+
 #ifdef __PORTMIDI__
     checkBox_midithrough->setChecked(m_pConfig->getValue(kMidiThroughCfgKey, false));
     connect(checkBox_midithrough,
@@ -257,6 +269,32 @@ void DlgPrefControllers::setupControllerWidgets() {
         temp.setBold(pController->isOpen());
         pControllerTreeItem->setFont(0, temp);
     }
+
+    // Update visibility based on checkbox state
+    updateControllerVisibility();
+}
+
+void DlgPrefControllers::updateControllerVisibility() {
+    bool hideUnenabled = m_pConfig->getValue(kHideUnenabledControllersCfgKey, false);
+
+    // Use the controller pages to match tree items with controllers
+    // since they are built together and always in sync
+    for (int i = 0; i < m_controllerTreeItems.size() && i < m_controllerPages.size(); ++i) {
+        QTreeWidgetItem* pTreeItem = m_controllerTreeItems.at(i);
+        DlgPrefController* pControllerDlg = m_controllerPages.at(i);
+
+        if (pTreeItem && pControllerDlg && pControllerDlg->controller()) {
+            Controller* pController = pControllerDlg->controller();
+
+            if (!hideUnenabled) {
+                // Show all controllers
+                pTreeItem->setHidden(false);
+            } else {
+                // Hide if controller is not open/enabled
+                pTreeItem->setHidden(!pController->isOpen());
+            }
+        }
+    }
 }
 
 void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, bool enabled) {
@@ -274,7 +312,25 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, 
     QFont temp = pControllerTreeItem->font(0);
     temp.setBold(enabled);
     pControllerTreeItem->setFont(0, temp);
+
+    // Update visibility in case the checkbox is checked and this controller's state changed
+    bool hideUnenabled = m_pConfig->getValue(kHideUnenabledControllersCfgKey, false);
+    if (hideUnenabled) {
+        pControllerTreeItem->setHidden(!enabled);
+    }
 }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefControllers::slotHideUnenabledChanged(Qt::CheckState state) {
+    m_pConfig->setValue(kHideUnenabledControllersCfgKey, state != Qt::Unchecked);
+    updateControllerVisibility();
+}
+#else
+void DlgPrefControllers::slotHideUnenabledChanged(bool checked) {
+    m_pConfig->setValue(kHideUnenabledControllersCfgKey, checked);
+    updateControllerVisibility();
+}
+#endif
 
 #ifdef __PORTMIDI__
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
