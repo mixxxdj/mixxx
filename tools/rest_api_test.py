@@ -1011,7 +1011,7 @@ def print_demo_header(scheme: str, step_count: int) -> None:
     print()
     print("=" * 60)
     print(f"  DEMO: Mixxx REST API ({protocol})")
-    print(f"  {step_count} steps - pausing between each for video capture")
+    print(f"  {step_count} steps")
     print("=" * 60)
     print()
 
@@ -1077,15 +1077,15 @@ def build_demo_steps(playlist_id_1: int, playlist_id_2: int) -> List[DemoStep]:
         ),
         DemoStep(
             number=6,
-            description="Play Deck 1",
+            description="Pause Deck 1",
             check_name="control",
-            payload={"command": "play", "group": "[Channel1]"},
+            payload={"command": "pause", "group": "[Channel1]"},
         ),
         DemoStep(
             number=7,
-            description="Stop Deck 1",
+            description="Play Deck 1",
             check_name="control",
-            payload={"command": "stop", "group": "[Channel1]"},
+            payload={"command": "play", "group": "[Channel1]"},
         ),
         DemoStep(
             number=8,
@@ -1097,6 +1097,19 @@ def build_demo_steps(playlist_id_1: int, playlist_id_2: int) -> List[DemoStep]:
                 "position": "replace",
             },
         ),
+         DemoStep(
+            number=9,
+            description="Disable AutoDJ",
+            check_name="autodj_write",
+            payload={"action": "disable"},
+        ),
+        DemoStep(
+            number=10,
+            description="Pause Deck 1",
+            check_name="control",
+            payload={"command": "pause", "group": "[Channel1]"},
+        ),
+           
     ]
 
 
@@ -1111,7 +1124,7 @@ def get_available_playlists(
 def run_demo(
     args: argparse.Namespace,
     headers: Mapping[str, str],
-    step_delay: float = 1.5,
+    step_delay: float = 3,
 ) -> int:
     schemes = ["http", "https"]
     host = args.host
@@ -1121,7 +1134,6 @@ def run_demo(
     print()
     print("=" * 60)
     print("  Mixxx REST API Interactive Demo")
-    print("  Designed for video capture")
     print("=" * 60)
     print()
 
