@@ -1,0 +1,158 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+name: CLA Check
+description: This action checks whether an other, for a given PR number, has signed the CLA
+
+inputs:
+  pr-number:
+    type: number
+    required: true
+
+outputs:
+  author:
+    description: "The author of the PR, for which we check CLA signing."
+    value: ${{ steps.prepare.outputs.author }}
+  result:
+    description: "Returns true if the author has signed the CLA."
+    value: ${{ steps.check.outputs.found }}
+runs:
+  using: "composite"
+  steps:
+    # Collect the PR author's name
+    - name: Prepare
+      id: prepare
+      shell: bash
+      env:
+        PR_NUMBER: ${{ inputs.pr-number }}
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        author=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28"\
+          "/repos/mixxxdj/mixxx/pulls/${PR_NUMBER}" | jq '.user.login' -r)
+        echo "author=$author" >> $GITHUB_OUTPUT
+        echo "GITHUB_USERNAME=$author" >> $GITHUB_ENV
+        echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+    # Fetch a Google Auth token to check the signing sheet
+    - id: "auth"
+      name: "Authenticate to GCP"
+      uses: "google-github-actions/auth@fc2174804b84f912b1f6d334e9463f484f1c552d"
+      with:
+        project_id: mixxx-485709
+        workload_identity_provider: "projects/763965891340/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider"
+        service_account: cla-check-sa@mixxx-485709.iam.gserviceaccount.com
+        access_token_scopes: https://www.googleapis.com/auth/spreadsheets.readonly
+        token_format: access_token
+        create_credentials_file: false
+    # Iterate over sheet to try and find the author's username
+    - id: "check"
+      name: "Check"
+      env:
+        GOOGLE_TOKEN: ${{steps.auth.outputs.access_token}}
+      shell: bash
+      run: |-
+        set -eo pipefail
+        offset=0
+        while [ "$offset" -lt 10000 ]; do
+          values=$(curl -s --fail -H "Authorization: Bearer $GOOGLE_TOKEN" 'https://sheets.googleapis.com/v4/spreadsheets/1tq0Q8lgH1cR1YB2kphP1NmpO6WMqjhmIqr-z8aYbOVA/values/Sheet1!'"B$(($offset + 1)):B$(($offset + 100))" | jq ".values")
+          echo $values
+          if [ "$(echo $values | jq '. | length')" -eq 0 ]; then
+            break
+          fi
+          if [ -n "$(echo $values | jq ".[] | select(.[0] == \"${GITHUB_USERNAME}\")" -c)" ]; then
+            echo "Found ${GITHUB_USERNAME} in the list of contributor who have signed the CLA"
+            echo "found=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          offset=$(($offset + 100))
+          sleep 0.5
+        done
+        echo "${GITHUB_USERNAME} couldn't be found in the list of contributor who have signed the CLA"
+        echo "found=false" >> $GITHUB_OUTPUT
+    # Check whether we are expecting the user to explicitly acknowledge they have signed the CLA. This is indicated by the label `cla-pending`.
+    - name: Check if PR is pending explicit check
+      id: check-pending-cla
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: |
+        set -eo pipefail
+        echo "result=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28"\
+          "/repos/mixxxdj/mixxx/pulls/${PR_NUMBER}" | jq 'any(.labels[]; .name == "cla-pending")')" >> $GITHUB_OUTPUT
+
+    # Find whether or not we already have a notice comment to request them to sign the CLA and provide an ack
+    - name: Find Comment
+      uses: peter-evans/find-comment@v3
+      id: fc
+      with:
+        issue-number: ${{ inputs.pr-number }}
+        comment-author: "github-actions[bot]"
+        body-includes: CLA check
+
+    # Check if we have an ack. Ack can either be a thumb up or a comment.
+    # NOTE: There is a risk that the following comment could not be an ACK (e.g contesting the CLA or asking further question about it). We require core member to be careful about this edge case!
+    - name: Check explicit acknowledgement
+      id: check-acknowledgement
+      if: steps.check-pending-cla.outputs.result == 'true' && steps.check.outputs.found == 'true' && steps.fc.outputs.comment-id != null
+      env:
+        COMMENT_ID: ${{ steps.fc.outputs.comment-id }}
+        NOTICE_DATE: ${{ steps.fc.outputs.comment-created-at }}
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: |
+        set -eo pipefail
+        hasThumbedUpNotice=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "/repos/mixxxdj/mixxx/issues/comments/${COMMENT_ID}/reactions" | jq 'any(.[]; .user.login == "'"${GITHUB_USERNAME}"'" and .content == "+1")')
+        hasCommentedAfterNotice=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "/repos/mixxxdj/mixxx/issues/${PR_NUMBER}/comments?per_page=100&since=${NOTICE_DATE}" | jq 'any(.[]; .user.login == "'"${GITHUB_USERNAME}"'")')
+        if [ $hasThumbedUpNotice = true ] || [ $hasCommentedAfterNotice = true ]; then
+          echo "result=true" >> $GITHUB_OUTPUT
+        else
+          echo "result=false" >> $GITHUB_OUTPUT
+        fi
+
+    # Add or remove the label depending if the CLA is still remaining to sign or requiring ACK
+    - name: Add or remove label
+      env:
+        ACTION: ${{ steps.check.outputs.found == 'true' && '--remove-label' || '--add-label' }}
+        GH_TOKEN: ${{ github.token }}
+      if: steps.check-pending-cla.outputs.result != 'true' || steps.check-acknowledgement.outputs.result == 'true'
+      shell: bash
+      run: |
+        gh pr --repo mixxxdj/mixxx edit "${PR_NUMBER}" "${ACTION}" cla-pending
+
+    # Post a notice to the PR to request the author to sign the CLA. Note that it will emphasis the call to action in case the signing has been made but no ACK was given
+    - name: Create a comment for new contributor
+      uses: peter-evans/create-or-update-comment@v5
+      if: steps.check.outputs.found != 'true' || (steps.check-pending-cla.outputs.result == 'true' && steps.check-acknowledgement.outputs.result != 'true')
+      id: notice_needed
+      with:
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        issue-number: ${{ inputs.pr-number }}
+        body: |
+          ## CLA check
+
+          Welcome at Mixxx!
+
+          As a first-time contributor we need you to sign the [Mixxx Contributor Agreement](https://docs.google.com/forms/d/e/1FAIpQLScC9QG327sjLL0eWftmfGUasxFFLxg6LCXJ2xHDYRzFIRqyiw/viewform?formkey=dEpYN2NkVEFnWWQzbkFfM0ZYYUZ5X2c6MQ) and comment here when you have done so. It gives us permission to distribute your contribution under the GPL v2 or later license and the Apple Mac App Store. It is also helpful for us to have contact information for contributors in case we may need it in the future.
+
+          ${{ steps.check.outputs.found == 'true' && '**' || '' }}Don't forget to :+1: this message or comment when you've done so!${{ steps.check.outputs.found == 'true' && '**' || '' }}
+        edit-mode: replace
+
+    # Edit the notice to thank them for signing the CLA AND providing an ACK
+    - name: Update the comment after signing and acknowledgement
+      if: steps.notice_needed.outcome == 'skipped'
+      uses: peter-evans/create-or-update-comment@v5
+      with:
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        issue-number: ${{ inputs.pr-number }}
+        body: |
+          ## CLA check
+
+          Thank you for signing the CLA!
+        edit-mode: replace
