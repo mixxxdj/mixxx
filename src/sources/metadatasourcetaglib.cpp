@@ -8,6 +8,7 @@
 
 #include "track/taglib/trackmetadata.h"
 #include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_mp4.h"
 #include "util/logger.h"
 #include "util/safelywritablefile.h"
 
@@ -156,6 +157,9 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             const TagLib::MP4::Tag* pTag = file.tag();
             DEBUG_ASSERT(pTag);
             taglib::mp4::importTrackMetadataFromTag(pTrackMetadata, *pTag, resetMissingTagMetadata);
+#ifdef __STEM__
+            taglib::mp4::importStemInfo(pTrackMetadata, *pTag);
+#endif
             taglib::mp4::importCoverImageFromTag(pCoverImage, *pTag);
             return afterImport(ImportResult::Succeeded);
         }
@@ -395,7 +399,14 @@ class Mp4TagSaver : public TagSaver {
 
   private:
     static bool exportTrackMetadata(TagLib::MP4::File* pFile, const TrackMetadata& trackMetadata) {
-        return pFile->isOpen() && taglib::mp4::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
+        return pFile->isOpen() &&
+                taglib::mp4::exportTrackMetadataIntoTag(
+                        pFile->tag(), trackMetadata)
+#ifdef __STEM__
+                && taglib::mp4::exportStemInfo(pFile->tag(), trackMetadata);
+#else
+                ;
+#endif
     }
 
     TagLib::MP4::File m_file;
