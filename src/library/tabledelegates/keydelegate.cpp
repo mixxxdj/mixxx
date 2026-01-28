@@ -34,10 +34,9 @@ void KeyDelegate::paintItem(
     int leftMargin = 0;
 
     const QColor colorTop = colorRect["top"].value<QColor>();
-    const QColor colorBottom = colorRect["bottom"].value<QColor>();
     const double splitPoint = colorRect["splitPoint"].value<double>();
 
-    if (colorTop.isValid() && colorBottom.isValid()) {
+    if (colorTop.isValid()) {
         // Draw the colored rectangle next to the key label
         constexpr int width = 4;
         leftMargin = width + 4; // 4px right padding
@@ -55,12 +54,17 @@ void KeyDelegate::paintItem(
                 width,
                 splitHeight,
                 colorTop);
-        painter->fillRect(
-                x,
-                padTop + splitHeight,
-                width,
-                padHeight - splitHeight,
-                colorBottom);
+
+        // if this track has a tuning, draw the second color
+        if (splitPoint < 1) {
+            const QColor colorBottom = colorRect["bottom"].value<QColor>();
+            painter->fillRect(
+                    x,
+                    padTop + splitHeight,
+                    width,
+                    padHeight - splitHeight,
+                    colorBottom);
+        }
     }
 
     // Determine which tuning symbol to show (if any)
