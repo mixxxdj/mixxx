@@ -7,6 +7,9 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/bufferscalers/enginebufferscalelinear.h"
+#ifdef __SIGNALSMITH__
+#include "engine/bufferscalers/enginebufferscalesignalsmith.h"
+#endif
 #include "engine/bufferscalers/enginebufferscalest.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/channels/enginechannel.h"
@@ -18,6 +21,7 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/engine.h"
 #include "engine/enginemixer.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
@@ -52,6 +56,28 @@ constexpr double kLinearScalerElipsis =
 constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
 const QString kAppGroup = QStringLiteral("[App]");
+
+#ifdef __SIGNALSMITH__
+EngineBufferScaleSignalSmith::Preset keylockSignalSmithEngineToPreset(
+        EngineBuffer::KeylockEngine engine) {
+    switch (engine) {
+    case EngineBuffer::KeylockEngine::SignalSmithCheaper:
+        return EngineBufferScaleSignalSmith::Preset::Cheaper;
+    case EngineBuffer::KeylockEngine::SoundTouch:
+    case EngineBuffer::KeylockEngine::RubberBandFaster:
+    case EngineBuffer::KeylockEngine::RubberBandFiner:
+        DEBUG_ASSERT(!"SignalSmith helper called with another type of engine!");
+
+        [[fallthrough]];
+    default:
+        qWarning() << engine << "has no matching SignalSmith preset so fall back to default.";
+        [[fallthrough]];
+    case EngineBuffer::KeylockEngine::SignalSmithDefault:
+        break;
+    }
+    return EngineBufferScaleSignalSmith::Preset::Default;
+}
+#endif
 
 } // anonymous namespace
 
@@ -279,6 +305,9 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
 #ifdef __RUBBERBAND__
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
+#endif
+#ifdef __SIGNALSMITH__
+    m_pScaleSignalSmith = new EngineBufferScaleSignalSmith(m_pReadAheadManager);
 #endif
     slotKeylockEngineChanged(m_pKeylockEngine->get());
     m_pScaleVinyl = m_pScaleLinear;
@@ -880,6 +909,13 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         m_pScaleKeylock = m_pScaleRB;
         break;
 #endif
+#ifdef __SIGNALSMITH__
+    case KeylockEngine::SignalSmithDefault:
+    case KeylockEngine::SignalSmithCheaper:
+        m_pScaleSignalSmith->setPreset(keylockSignalSmithEngineToPreset(engine));
+        m_pScaleKeylock = m_pScaleSignalSmith;
+        break;
+#endif
     default:
         slotKeylockEngineChanged(static_cast<double>(defaultKeylockEngine()));
         break;
@@ -946,24 +982,45 @@ void EngineBuffer::processTrackLocked(
 
     bool useIndependentPitchAndTempoScaling = false;
 
-    // TODO(owen): Maybe change this so that rubberband doesn't disable
-    // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
-    if (is_scratching || fabs(speed) > 1.9) {
+    if (is_scratching ||
+#ifdef __SIGNALSMITH__
+            (fabs(speed) > 1.9 && m_pScale != m_pScaleSignalSmith) || fabs(speed) > 4
+#else
+            fabs(speed) > 1.9
+#endif
+    ) {
         // Scratching and high speeds with always disables keylock
         // because Soundtouch sounds terrible in these conditions.  Rubberband
         // sounds better, but still has some problems (it may reallocate in
         // a party-crashing manner at extremely slow speeds).
+        // However, SignalSmith sounds fairly good up to about 4x, before you
+        // start hearing artifacts. Memory impact is limited as it will only
+        // required to use an input buffer 4 times bigger than the output, and
+        // input buffer is always allocated with MAX_BUFFER_LEN due to latency
+        // adjustments needs, which allows plenty of
+        // room. For safety, the following assert ensures this would get caught
+        // in case the constant was getting updated, we ensure that this remains
+        // the case for a 8192 channel buffer size, which is currently the max possible at
+        // 96kHz@85.3 ms
+        static_assert(MAX_BUFFER_LEN > mixxx::kMaxSupportedStems * 8192 * 4);
         // High seek speeds also disables keylock.  Our pitch slider could go
         // to 90%, so that's the cutoff point.
 
         // Force pitchRatio to the linear pitch set by speed
         pitchRatio = speed;
         // This is for the natural speed pitch found on turn tables
-    } else if (fabs(speed) < 0.1) {
+    } else if (fabs(speed) < 0.1
+#ifdef __SIGNALSMITH__
+            && m_pScale != m_pScaleSignalSmith
+
+#endif
+    ) {
         // We have pre-allocated big buffers in Rubberband and Soundtouch for
         // a minimum speed of 0.1. Slower speeds will re-allocate much bigger
-        // buffers which may cause underruns.
-        // Disable keylock under these conditions.
+        // However, SignalSmith has no impact on buffer size, since the driving
+        // factor is the input buffer (lower rate means lower input buffer,
+        // whilst always keeping a steady output buffer) buffers which may cause
+        // underruns. Disable keylock under these conditions.
 
         // Force pitchRatio to the linear pitch set by speed
         pitchRatio = speed;
@@ -995,7 +1052,11 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    if (speed != 0.0) {
+    if (speed != 0.0
+#ifdef __SIGNALSMITH__
+            || m_pScale == m_pScaleSignalSmith
+#endif
+    ) {
         // Do not switch scaler when we have no transport
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                 bufferSize);
@@ -1107,7 +1168,11 @@ void EngineBuffer::processTrackLocked(
         if (atEnd && !backwards) {
             // do not play past end
             bCurBufferPaused = true;
-        } else if (rate == 0 && !is_scratching) {
+        } else if (rate == 0 && !is_scratching
+#ifdef __SIGNALSMITH__
+                && m_pScale != m_pScaleSignalSmith
+#endif
+        ) {
             // do not process samples if have no transport
             // the linear scaler supports ramping down to 0
             // this is used for pause by scratching only
@@ -1231,6 +1296,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     m_pScaleST->setSignal(m_sampleRate, m_channelCount);
 #ifdef __RUBBERBAND__
     m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
+#endif
+#ifdef __SIGNALSMITH__
+    m_pScaleSignalSmith->setSignal(m_sampleRate, m_channelCount);
 #endif
 
     bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
