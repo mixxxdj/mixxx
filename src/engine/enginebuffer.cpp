@@ -951,11 +951,11 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    if (speed != 0.0) {
-        // Do not switch scaler when we have no transport
+    if (speed != 0.0 || is_scratching) {
+        // Do not switch scaler when we have no transport, except when we start scratching.
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                 iBufferSize);
-    } else if (m_speed_old != 0 && !is_scratching) {
+    } else if (m_speed_old != 0) {
         // we are stopping, collect samples for fade out
         readToCrossfadeBuffer(iBufferSize);
         // Clear the scaler information
