@@ -111,9 +111,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
                     pControl->setValueFromMidi(MidiOpCode::NoteOn, 1);
                     result = true;
                 } else {
-                    qWarning() << "Key" << keyId
-                               << "is configured for nonexistent control:"
-                               << configKey.group << configKey.item;
+                    kLogger.warning() << "Key" << keyId
+                                      << "is configured for nonexistent control:"
+                                      << configKey.group << configKey.item;
                 }
             }
             return result;
@@ -233,9 +233,9 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
 void KeyboardEventFilter::setEnabled(bool enabled) {
     if (enabled) {
-        qDebug() << "Enable keyboard shortcuts/mappings";
+        kLogger.debug() << "Enable keyboard shortcuts/mappings";
     } else {
-        qDebug() << "Disable keyboard shortcuts/mappings";
+        kLogger.debug() << "Disable keyboard shortcuts/mappings";
     }
     m_enabled = enabled;
     m_pConfig->setValue(ConfigKey("[Keyboard]", "Enabled"), enabled);
