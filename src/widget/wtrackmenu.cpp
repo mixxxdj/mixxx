@@ -3,6 +3,7 @@
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QInputDialog>
+#include <QKeyEvent>
 #include <QList>
 #include <QListWidget>
 #include <QModelIndex>
@@ -108,6 +109,7 @@ WTrackMenu::WTrackMenu(
           m_pNumSamplers(kAppGroup, QStringLiteral("num_samplers")),
           m_pNumDecks(kAppGroup, QStringLiteral("num_decks")),
           m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
+          m_bSearchRelatedMenuLoaded(false),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
@@ -151,6 +153,32 @@ void WTrackMenu::closeEvent(QCloseEvent* event) {
     // If it's not accepted the menu remains open and entire GUI will be blocked!
     event->accept();
     emit trackMenuVisible(false);
+}
+
+bool WTrackMenu::eventFilter(QObject* pObj, QEvent* e) {
+    // If a checkbox in a QWidgetAction is focused, Left/Right keys are translated
+    // to Up/Down which prevents closing the submenus with Left key like in other
+    // submenus.
+    // We simply call hide() of the submenu if Left is pressed.
+    // We ignore Right.
+    // Don't continue (close track menu) if the checkbox is at the top level.
+    if (pObj->parent() && pObj->parent() != this && e->type() == QEvent::KeyPress) {
+        QCheckBox* pCB = qobject_cast<QCheckBox*>(pObj);
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
+        if (!pCB || !pKE) {
+            return QObject::eventFilter(pObj, e);
+        }
+        if (pKE->key() == Qt::Key_Left) {
+            VERIFY_OR_DEBUG_ASSERT(pCB->parentWidget()) {
+                return QObject::eventFilter(pObj, e);
+            }
+            pCB->parentWidget()->hide();
+            return true;
+        } else if (pKE->key() == Qt::Key_Right) {
+            return true;
+        }
+    }
+    return QObject::eventFilter(pObj, e);
 }
 
 void WTrackMenu::popup(const QPoint& pos, QAction* at) {
@@ -226,28 +254,11 @@ void WTrackMenu::createMenus() {
 
     if (featureIsEnabled(Feature::SearchRelated)) {
         DEBUG_ASSERT(!m_pSearchRelatedMenu);
-        m_pSearchRelatedMenu =
-                make_parented<WSearchRelatedTracksMenu>(this);
+        m_pSearchRelatedMenu = make_parented<WSearchRelatedTracksMenu>(this);
         connect(m_pSearchRelatedMenu,
                 &QMenu::aboutToShow,
                 this,
-                [this] {
-                    // TODO When accidentally leaving the menu and reopening it,
-                    // the previous check states are cleared.
-                    // Clear in closeEvent() only? And create actions on aboutToShow
-                    // only if it's empty?
-                    m_pSearchRelatedMenu->clear();
-                    const auto pTrack = getFirstTrackPointer();
-                    if (pTrack) {
-                        // Ensure it's enabled, else we can't add actions.
-                        VERIFY_OR_DEBUG_ASSERT(m_pSearchRelatedMenu->isEnabled()) {
-                            m_pSearchRelatedMenu->setEnabled(true);
-                        }
-                        m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
-                    }
-                    m_pSearchRelatedMenu->setEnabled(
-                            !m_pSearchRelatedMenu->isEmpty());
-                });
+                &WTrackMenu::slotPopulateSearchRelatedMenu);
         connect(m_pSearchRelatedMenu,
                 &WSearchRelatedTracksMenu::triggerSearch,
                 this,
@@ -1003,6 +1014,11 @@ void WTrackMenu::updateMenus() {
         }
     }
 
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        // Search menu is lazy loaded on hover by slotPopulateSearchRelatedMenu
+        m_bSearchRelatedMenuLoaded = false;
+    }
+
     if (featureIsEnabled(Feature::Playlist)) {
         // Playlist menu is lazy loaded on hover by slotPopulatePlaylistMenu
         // to avoid unnecessary database queries
@@ -1440,6 +1456,31 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     externalTrackCollection->updateTracks(getTrackRefs());
 }
 
+void WTrackMenu::slotPopulateSearchRelatedMenu() {
+    if (m_bSearchRelatedMenuLoaded) {
+        return;
+    }
+    m_pSearchRelatedMenu->clear();
+    const auto pTrack = getFirstTrackPointer();
+    if (pTrack) {
+        // Ensure it's enabled, else we can't add actions.
+        m_pSearchRelatedMenu->setEnabled(true);
+        m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
+    }
+    if (!m_pSearchRelatedMenu->isEmpty()) {
+        // We're interested in keypress Qt::Key_Left, so use our
+        // event filter like we do for the crate checkboxes.
+        for (auto* pObj : m_pSearchRelatedMenu->children()) {
+            QCheckBox* pCB = qobject_cast<QCheckBox*>(pObj);
+            if (pCB) {
+                pCB->installEventFilter(this);
+            }
+        }
+    }
+    m_pSearchRelatedMenu->setEnabled(!m_pSearchRelatedMenu->isEmpty());
+    m_bSearchRelatedMenuLoaded = true;
+}
+
 void WTrackMenu::slotPopulatePlaylistMenu() {
     // The user may open the Playlist submenu, move their cursor away, then
     // return to the Playlist submenu before exiting the track context menu.
@@ -1557,6 +1598,8 @@ void WTrackMenu::slotPopulateCrateMenu() {
                 m_pCrateMenu);
         pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
+        // We're interested in keypress Qt::Key_Left
+        pCheckBox->installEventFilter(this);
         // Strangely, the normal styling of QActions does not automatically
         // apply to QWidgetActions. The :selected pseudo-state unfortunately
         // does not work with QWidgetAction. :hover works for selecting items
