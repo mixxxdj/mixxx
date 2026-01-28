@@ -3831,7 +3831,6 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
         return 0;
       }
     "
-
     )
     check_cxx_source_compiles(
       "${_mixxx_httpserver_tls_api_test}"
@@ -3849,7 +3848,6 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
           return 0;
         }
       "
-
       )
       check_cxx_source_compiles(
         "${_mixxx_httpserver_tls_setup_test}"
@@ -3876,7 +3874,6 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
           return 0;
         }
       "
-
       )
       check_cxx_source_compiles(
         "${_mixxx_httpserver_tls_bind_test}"
