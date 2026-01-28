@@ -16,5 +16,7 @@ class BulkEnumerator : public ControllerEnumerator {
 
   private:
     QList<Controller*> m_devices;
+#ifndef __ANDROID__
     libusb_context* m_context;
+#endif
 };

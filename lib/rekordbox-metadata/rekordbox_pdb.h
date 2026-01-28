@@ -1,14 +1,17 @@
-#pragma once
+#ifndef REKORDBOX_PDB_H_
+#define REKORDBOX_PDB_H_
 
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
+class rekordbox_pdb_t;
+
 #include "kaitai/kaitaistruct.h"
 #include <stdint.h>
-#include <memory>
+#include <set>
 #include <vector>
 
-#if KAITAI_STRUCT_VERSION < 9000L
-#error "Incompatible Kaitai Struct C++/STL API: version 0.9 or later is required"
+#if KAITAI_STRUCT_VERSION < 11000L
+#error "Incompatible Kaitai Struct C++/STL API: version 0.11 or later is required"
 #endif
 
 /**
@@ -18,18 +21,18 @@
  * the Pioneer Professional DJ ecosystem, because it is the format that
  * their rekordbox software uses to write USB and SD media which can be
  * mounted in DJ controllers and used to play and mix music.
- * 
+ *
  * It has been reverse-engineered to facilitate sophisticated
  * integrations with light and laser shows, videos, and other musical
  * instruments, by supporting deep knowledge of what is playing and
  * what is coming next through monitoring the network communications of
  * the players.
- * 
+ *
  * The file is divided into fixed-size blocks. The first block has a
  * header that establishes the block size, and lists the tables
  * available in the database, identifying their types and the index of
  * the first of the series of linked pages that make up that table.
- * 
+ *
  * Each table is made up of a series of rows which may be spread across
  * any number of pages. The pages start with a header describing the
  * page and linking to the next page. The rest of the page is used as a
@@ -37,14 +40,14 @@
  * structure that builds backwards from the end of the page. Each row
  * of a given type has a fixed size structure which links to any
  * variable-sized strings by their offsets within the page.
- * 
+ *
  * As changes are made to the table, some records may become unused,
  * and there may be gaps within the heap that are too small to be used
  * by other data. There is a bit map in the row index that identifies
  * which rows are actually present. Rows that are not present must be
  * ignored: they do not contain valid (or even necessarily well-formed)
  * data.
- * 
+ *
  * The majority of the work in reverse-engineering this format was
  * performed by @henrybetts and @flesniak, for which I am hugely
  * grateful. @GreyCat helped me learn the intricacies (and best
@@ -55,27 +58,27 @@
 class rekordbox_pdb_t : public kaitai::kstruct {
 
 public:
-    class device_sql_string_t;
-    class history_playlist_row_t;
-    class playlist_tree_row_t;
-    class color_row_t;
-    class device_sql_short_ascii_t;
     class album_row_t;
-    class page_t;
-    class row_group_t;
+    class artist_row_t;
+    class artwork_row_t;
+    class color_row_t;
+    class device_sql_long_ascii_t;
+    class device_sql_long_utf16le_t;
+    class device_sql_short_ascii_t;
+    class device_sql_string_t;
     class genre_row_t;
     class history_entry_row_t;
-    class artwork_row_t;
-    class device_sql_long_ascii_t;
-    class artist_row_t;
-    class page_ref_t;
-    class track_row_t;
+    class history_playlist_row_t;
     class key_row_t;
-    class playlist_entry_row_t;
     class label_row_t;
-    class device_sql_long_utf16le_t;
-    class table_t;
+    class page_t;
+    class page_ref_t;
+    class playlist_entry_row_t;
+    class playlist_tree_row_t;
+    class row_group_t;
     class row_ref_t;
+    class table_t;
+    class track_row_t;
 
     enum page_type_t {
         PAGE_TYPE_TRACKS = 0,
@@ -99,8 +102,15 @@ public:
         PAGE_TYPE_UNKNOWN_18 = 18,
         PAGE_TYPE_HISTORY = 19
     };
+    static bool _is_defined_page_type_t(page_type_t v);
 
-    rekordbox_pdb_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
+private:
+    static const std::set<page_type_t> _values_page_type_t;
+    static std::set<page_type_t> _build_values_page_type_t();
+
+public:
+
+    rekordbox_pdb_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = 0, rekordbox_pdb_t* p__root = 0);
 
 private:
     void _read();
@@ -110,246 +120,6 @@ public:
     ~rekordbox_pdb_t();
 
     /**
-     * A variable length string which can be stored in a variety of
-     * different encodings.
-     */
-
-    class device_sql_string_t : public kaitai::kstruct {
-
-    public:
-
-        device_sql_string_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~device_sql_string_t();
-
-    private:
-        uint8_t m_length_and_kind;
-        std::unique_ptr<kaitai::kstruct> m_body;
-        rekordbox_pdb_t* m__root;
-        kaitai::kstruct* m__parent;
-
-    public:
-
-        /**
-         * Mangled length of an ordinary ASCII string if odd, or a flag
-         * indicating another encoding with a longer length value to
-         * follow.
-         */
-        uint8_t length_and_kind() const { return m_length_and_kind; }
-        kaitai::kstruct* body() const { return m_body.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        kaitai::kstruct* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that holds a history playlist ID and name, linking to
-     * the track IDs captured during a performance on the player.
-     */
-
-    class history_playlist_row_t : public kaitai::kstruct {
-
-    public:
-
-        history_playlist_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~history_playlist_row_t();
-
-    private:
-        uint32_t m_id;
-        std::unique_ptr<device_sql_string_t> m_name;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The unique identifier by which this history playlist can
-         * be requested.
-         */
-        uint32_t id() const { return m_id; }
-
-        /**
-         * The variable-length string naming the playlist.
-         */
-        device_sql_string_t* name() const { return m_name.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that holds a playlist name, ID, indication of whether it
-     * is an ordinary playlist or a folder of other playlists, a link
-     * to its parent folder, and its sort order.
-     */
-
-    class playlist_tree_row_t : public kaitai::kstruct {
-
-    public:
-
-        playlist_tree_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~playlist_tree_row_t();
-
-    private:
-        bool f_is_folder;
-        bool m_is_folder;
-
-    public:
-        bool is_folder();
-
-    private:
-        uint32_t m_parent_id;
-        std::string m__unnamed1;
-        uint32_t m_sort_order;
-        uint32_t m_id;
-        uint32_t m_raw_is_folder;
-        std::unique_ptr<device_sql_string_t> m_name;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The ID of the `playlist_tree_row` in which this one can be
-         * found, or `0` if this playlist exists at the root level.
-         */
-        uint32_t parent_id() const { return m_parent_id; }
-        std::string _unnamed1() const { return m__unnamed1; }
-
-        /**
-         * The order in which the entries of this playlist are sorted.
-         */
-        uint32_t sort_order() const { return m_sort_order; }
-
-        /**
-         * The unique identifier by which this playlist or folder can
-         * be requested and linked from other rows.
-         */
-        uint32_t id() const { return m_id; }
-
-        /**
-         * Has a non-zero value if this is actually a folder rather
-         * than a playlist.
-         */
-        uint32_t raw_is_folder() const { return m_raw_is_folder; }
-
-        /**
-         * The variable-length string naming the playlist.
-         */
-        device_sql_string_t* name() const { return m_name.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that holds a color name and the associated ID.
-     */
-
-    class color_row_t : public kaitai::kstruct {
-
-    public:
-
-        color_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~color_row_t();
-
-    private:
-        std::string m__unnamed0;
-        uint16_t m_id;
-        uint8_t m__unnamed2;
-        std::unique_ptr<device_sql_string_t> m_name;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-        std::string _unnamed0() const { return m__unnamed0; }
-
-        /**
-         * The unique identifier by which this color can be requested
-         * and linked from other rows (such as tracks).
-         */
-        uint16_t id() const { return m_id; }
-        uint8_t _unnamed2() const { return m__unnamed2; }
-
-        /**
-         * The variable-length string naming the color.
-         */
-        device_sql_string_t* name() const { return m_name.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * An ASCII-encoded string up to 127 bytes long.
-     */
-
-    class device_sql_short_ascii_t : public kaitai::kstruct {
-
-    public:
-
-        device_sql_short_ascii_t(uint8_t p_length_and_kind, kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~device_sql_short_ascii_t();
-
-    private:
-        bool f_length;
-        int32_t m_length;
-
-    public:
-
-        /**
-         * the length extracted of the entire device_sql_short_ascii type
-         */
-        int32_t length();
-
-    private:
-        std::string m_text;
-        uint8_t m_length_and_kind;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::device_sql_string_t* m__parent;
-
-    public:
-
-        /**
-         * The content of the string.
-         */
-        std::string text() const { return m_text; }
-
-        /**
-         * Contains the actual length, incremented, doubled, and
-         * incremented again. Go figure.
-         */
-        uint8_t length_and_kind() const { return m_length_and_kind; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::device_sql_string_t* _parent() const { return m__parent; }
-    };
-
-    /**
      * A row that holds an album name and ID.
      */
 
@@ -357,7 +127,7 @@ public:
 
     public:
 
-        album_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
+        album_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
 
     private:
         void _read();
@@ -368,7 +138,7 @@ public:
 
     private:
         bool f_name;
-        std::unique_ptr<device_sql_string_t> m_name;
+        device_sql_string_t* m_name;
 
     public:
 
@@ -429,450 +199,6 @@ public:
     };
 
     /**
-     * A table page, consisting of a short header describing the
-     * content of the page and linking to the next page, followed by a
-     * heap in which row data is found. At the end of the page there is
-     * an index which locates all rows present in the heap via their
-     * offsets past the end of the page header.
-     */
-
-    class page_t : public kaitai::kstruct {
-
-    public:
-
-        page_t(kaitai::kstream* p__io, rekordbox_pdb_t::page_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~page_t();
-
-    private:
-        bool f_num_rows;
-        uint16_t m_num_rows;
-
-    public:
-
-        /**
-         * The number of rows on this page (controls the number of row
-         * index entries there are, but some of those may not be marked
-         * as present in the table due to deletion).
-         */
-        uint16_t num_rows();
-
-    private:
-        bool f_num_row_groups;
-        int32_t m_num_row_groups;
-
-    public:
-
-        /**
-         * The number of row groups that are present in the index. Each
-         * group can hold up to sixteen rows. All but the final one
-         * will hold sixteen rows.
-         */
-        int32_t num_row_groups();
-
-    private:
-        bool f_row_groups;
-        std::unique_ptr<std::vector<std::unique_ptr<row_group_t>>> m_row_groups;
-        bool n_row_groups;
-
-    public:
-        bool _is_null_row_groups() { row_groups(); return n_row_groups; };
-
-    private:
-
-    public:
-
-        /**
-         * The actual row groups making up the row index. Each group
-         * can hold up to sixteen rows. Non-data pages do not have
-         * actual rows, and attempting to parse them can crash.
-         */
-        std::vector<std::unique_ptr<row_group_t>>* row_groups();
-
-    private:
-        bool f_heap_pos;
-        int32_t m_heap_pos;
-
-    public:
-        int32_t heap_pos();
-
-    private:
-        bool f_is_data_page;
-        bool m_is_data_page;
-
-    public:
-        bool is_data_page();
-
-    private:
-        std::string m_gap;
-        uint32_t m_page_index;
-        page_type_t m_type;
-        std::unique_ptr<page_ref_t> m_next_page;
-        uint32_t m__unnamed4;
-        std::string m__unnamed5;
-        uint8_t m_num_rows_small;
-        uint8_t m__unnamed7;
-        uint8_t m__unnamed8;
-        uint8_t m_page_flags;
-        uint16_t m_free_size;
-        uint16_t m_used_size;
-        uint16_t m__unnamed12;
-        uint16_t m_num_rows_large;
-        uint16_t m__unnamed14;
-        uint16_t m__unnamed15;
-        std::string m_heap;
-        bool n_heap;
-
-    public:
-        bool _is_null_heap() { heap(); return n_heap; };
-
-    private:
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::page_ref_t* m__parent;
-
-    public:
-
-        /**
-         * Only exposed until
-         * https://github.com/kaitai-io/kaitai_struct/issues/825 can be
-         * fixed.
-         */
-        std::string gap() const { return m_gap; }
-
-        /**
-         * Matches the index we used to look up the page, sanity check?
-         */
-        uint32_t page_index() const { return m_page_index; }
-
-        /**
-         * Identifies the type of information stored in the rows of this page.
-         */
-        page_type_t type() const { return m_type; }
-
-        /**
-         * Index of the next page containing this type of rows. Points past
-         * the end of the file if there are no more.
-         */
-        page_ref_t* next_page() const { return m_next_page.get(); }
-
-        /**
-         * @flesniak said: "sequence number (0->1: 8->13, 1->2: 22, 2->3: 27)"
-         */
-        uint32_t _unnamed4() const { return m__unnamed4; }
-        std::string _unnamed5() const { return m__unnamed5; }
-
-        /**
-         * Holds the value used for `num_rows` (see below) unless
-         * `num_rows_large` is larger (but not equal to `0x1fff`). This
-         * seems like some strange mechanism to deal with the fact that
-         * lots of tiny entries, such as are found in the
-         * `playlist_entries` table, are too big to count with a single
-         * byte. But why not just always use `num_rows_large`, then?
-         */
-        uint8_t num_rows_small() const { return m_num_rows_small; }
-
-        /**
-         * @flesniak said: "a bitmask (1st track: 32)"
-         */
-        uint8_t _unnamed7() const { return m__unnamed7; }
-
-        /**
-         * @flesniak said: "often 0, sometimes larger, esp. for pages
-         * with high real_entry_count (e.g. 12 for 101 entries)"
-         */
-        uint8_t _unnamed8() const { return m__unnamed8; }
-
-        /**
-         * @flesniak said: "strange pages: 0x44, 0x64; otherwise seen: 0x24, 0x34"
-         */
-        uint8_t page_flags() const { return m_page_flags; }
-
-        /**
-         * Unused space (in bytes) in the page heap, excluding the row
-         * index at end of page.
-         */
-        uint16_t free_size() const { return m_free_size; }
-
-        /**
-         * The number of bytes that are in use in the page heap.
-         */
-        uint16_t used_size() const { return m_used_size; }
-
-        /**
-         * @flesniak said: "(0->1: 2)"
-         */
-        uint16_t _unnamed12() const { return m__unnamed12; }
-
-        /**
-         * Holds the value used for `num_rows` (as described above)
-         * when that is too large to fit into `num_rows_small`, and
-         * that situation seems to be indicated when this value is
-         * larger than `num_rows_small`, but not equal to `0x1fff`.
-         * This seems like some strange mechanism to deal with the fact
-         * that lots of tiny entries, such as are found in the
-         * `playlist_entries` table, are too big to count with a single
-         * byte. But why not just always use this value, then?
-         */
-        uint16_t num_rows_large() const { return m_num_rows_large; }
-
-        /**
-         * @flesniak said: "1004 for strange blocks, 0 otherwise"
-         */
-        uint16_t _unnamed14() const { return m__unnamed14; }
-
-        /**
-         * @flesniak said: "always 0 except 1 for history pages, num
-         * entries for strange pages?"
-         */
-        uint16_t _unnamed15() const { return m__unnamed15; }
-        std::string heap() const { return m_heap; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::page_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A group of row indices, which are built backwards from the end
-     * of the page. Holds up to sixteen row offsets, along with a bit
-     * mask that indicates whether each row is actually present in the
-     * table.
-     */
-
-    class row_group_t : public kaitai::kstruct {
-
-    public:
-
-        row_group_t(uint16_t p_group_index, kaitai::kstream* p__io, rekordbox_pdb_t::page_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~row_group_t();
-
-    private:
-        bool f_base;
-        int32_t m_base;
-
-    public:
-
-        /**
-         * The starting point of this group of row indices.
-         */
-        int32_t base();
-
-    private:
-        bool f_row_present_flags;
-        uint16_t m_row_present_flags;
-
-    public:
-
-        /**
-         * Each bit specifies whether a particular row is present. The
-         * low order bit corresponds to the first row in this index,
-         * whose offset immediately precedes these flag bits. The
-         * second bit corresponds to the row whose offset precedes
-         * that, and so on.
-         */
-        uint16_t row_present_flags();
-
-    private:
-        bool f_rows;
-        std::unique_ptr<std::vector<std::unique_ptr<row_ref_t>>> m_rows;
-
-    public:
-
-        /**
-         * The row offsets in this group.
-         */
-        std::vector<std::unique_ptr<row_ref_t>>* rows();
-
-    private:
-        uint16_t m_group_index;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::page_t* m__parent;
-
-    public:
-
-        /**
-         * Identifies which group is being generated. They build backwards
-         * from the end of the page.
-         */
-        uint16_t group_index() const { return m_group_index; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::page_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that holds a genre name and the associated ID.
-     */
-
-    class genre_row_t : public kaitai::kstruct {
-
-    public:
-
-        genre_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~genre_row_t();
-
-    private:
-        uint32_t m_id;
-        std::unique_ptr<device_sql_string_t> m_name;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The unique identifier by which this genre can be requested
-         * and linked from other rows (such as tracks).
-         */
-        uint32_t id() const { return m_id; }
-
-        /**
-         * The variable-length string naming the genre.
-         */
-        device_sql_string_t* name() const { return m_name.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that associates a track with a position in a history playlist.
-     */
-
-    class history_entry_row_t : public kaitai::kstruct {
-
-    public:
-
-        history_entry_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~history_entry_row_t();
-
-    private:
-        uint32_t m_track_id;
-        uint32_t m_playlist_id;
-        uint32_t m_entry_index;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The track found at this position in the playlist.
-         */
-        uint32_t track_id() const { return m_track_id; }
-
-        /**
-         * The history playlist to which this entry belongs.
-         */
-        uint32_t playlist_id() const { return m_playlist_id; }
-
-        /**
-         * The position within the playlist represented by this entry.
-         */
-        uint32_t entry_index() const { return m_entry_index; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that holds the path to an album art image file and the
-     * associated artwork ID.
-     */
-
-    class artwork_row_t : public kaitai::kstruct {
-
-    public:
-
-        artwork_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~artwork_row_t();
-
-    private:
-        uint32_t m_id;
-        std::unique_ptr<device_sql_string_t> m_path;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The unique identifier by which this art can be requested
-         * and linked from other rows (such as tracks).
-         */
-        uint32_t id() const { return m_id; }
-
-        /**
-         * The variable-length file path string at which the art file
-         * can be found.
-         */
-        device_sql_string_t* path() const { return m_path.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * An ASCII-encoded string preceded by a two-byte length field in a four-byte header.
-     */
-
-    class device_sql_long_ascii_t : public kaitai::kstruct {
-
-    public:
-
-        device_sql_long_ascii_t(kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~device_sql_long_ascii_t();
-
-    private:
-        uint16_t m_length;
-        uint8_t m__unnamed1;
-        std::string m_text;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::device_sql_string_t* m__parent;
-
-    public:
-
-        /**
-         * Contains the length of the string in bytes.
-         */
-        uint16_t length() const { return m_length; }
-        uint8_t _unnamed1() const { return m__unnamed1; }
-
-        /**
-         * The content of the string.
-         */
-        std::string text() const { return m_text; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::device_sql_string_t* _parent() const { return m__parent; }
-    };
-
-    /**
      * A row that holds an artist name and ID.
      */
 
@@ -880,7 +206,7 @@ public:
 
     public:
 
-        artist_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
+        artist_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
 
     private:
         void _read();
@@ -888,6 +214,17 @@ public:
 
     public:
         ~artist_row_t();
+
+    private:
+        bool f_name;
+        device_sql_string_t* m_name;
+
+    public:
+
+        /**
+         * The name of this artist.
+         */
+        device_sql_string_t* name();
 
     private:
         bool f_ofs_name_far;
@@ -907,17 +244,6 @@ public:
          * signalled by the subtype value.
          */
         uint16_t ofs_name_far();
-
-    private:
-        bool f_name;
-        std::unique_ptr<device_sql_string_t> m_name;
-
-    public:
-
-        /**
-         * The name of this artist.
-         */
-        device_sql_string_t* name();
 
     private:
         uint16_t m_subtype;
@@ -962,6 +288,638 @@ public:
     };
 
     /**
+     * A row that holds the path to an album art image file and the
+     * associated artwork ID.
+     */
+
+    class artwork_row_t : public kaitai::kstruct {
+
+    public:
+
+        artwork_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~artwork_row_t();
+
+    private:
+        uint32_t m_id;
+        device_sql_string_t* m_path;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The unique identifier by which this art can be requested
+         * and linked from other rows (such as tracks).
+         */
+        uint32_t id() const { return m_id; }
+
+        /**
+         * The variable-length file path string at which the art file
+         * can be found.
+         */
+        device_sql_string_t* path() const { return m_path; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A row that holds a color name and the associated ID.
+     */
+
+    class color_row_t : public kaitai::kstruct {
+
+    public:
+
+        color_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~color_row_t();
+
+    private:
+        std::string m__unnamed0;
+        uint16_t m_id;
+        uint8_t m__unnamed2;
+        device_sql_string_t* m_name;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+        std::string _unnamed0() const { return m__unnamed0; }
+
+        /**
+         * The unique identifier by which this color can be requested
+         * and linked from other rows (such as tracks).
+         */
+        uint16_t id() const { return m_id; }
+        uint8_t _unnamed2() const { return m__unnamed2; }
+
+        /**
+         * The variable-length string naming the color.
+         */
+        device_sql_string_t* name() const { return m_name; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * An ASCII-encoded string preceded by a two-byte length field in a four-byte header.
+     */
+
+    class device_sql_long_ascii_t : public kaitai::kstruct {
+
+    public:
+
+        device_sql_long_ascii_t(kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~device_sql_long_ascii_t();
+
+    private:
+        uint16_t m_length;
+        uint8_t m__unnamed1;
+        std::string m_text;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::device_sql_string_t* m__parent;
+
+    public:
+
+        /**
+         * Contains the length of the string in bytes.
+         */
+        uint16_t length() const { return m_length; }
+        uint8_t _unnamed1() const { return m__unnamed1; }
+
+        /**
+         * The content of the string.
+         */
+        std::string text() const { return m_text; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::device_sql_string_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A UTF-16LE-encoded string preceded by a two-byte length field in a four-byte header.
+     */
+
+    class device_sql_long_utf16le_t : public kaitai::kstruct {
+
+    public:
+
+        device_sql_long_utf16le_t(kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~device_sql_long_utf16le_t();
+
+    private:
+        uint16_t m_length;
+        uint8_t m__unnamed1;
+        std::string m_text;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::device_sql_string_t* m__parent;
+
+    public:
+
+        /**
+         * Contains the length of the string in bytes, plus four trailing bytes that must be ignored.
+         */
+        uint16_t length() const { return m_length; }
+        uint8_t _unnamed1() const { return m__unnamed1; }
+
+        /**
+         * The content of the string.
+         */
+        std::string text() const { return m_text; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::device_sql_string_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * An ASCII-encoded string up to 127 bytes long.
+     */
+
+    class device_sql_short_ascii_t : public kaitai::kstruct {
+
+    public:
+
+        device_sql_short_ascii_t(uint8_t p_length_and_kind, kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~device_sql_short_ascii_t();
+
+    private:
+        bool f_length;
+        int32_t m_length;
+
+    public:
+
+        /**
+         * the length extracted of the entire device_sql_short_ascii type
+         */
+        int32_t length();
+
+    private:
+        std::string m_text;
+        uint8_t m_length_and_kind;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::device_sql_string_t* m__parent;
+
+    public:
+
+        /**
+         * The content of the string.
+         */
+        std::string text() const { return m_text; }
+
+        /**
+         * Contains the actual length, incremented, doubled, and
+         * incremented again. Go figure.
+         */
+        uint8_t length_and_kind() const { return m_length_and_kind; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::device_sql_string_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A variable length string which can be stored in a variety of
+     * different encodings.
+     */
+
+    class device_sql_string_t : public kaitai::kstruct {
+
+    public:
+
+        device_sql_string_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~device_sql_string_t();
+
+    private:
+        uint8_t m_length_and_kind;
+        kaitai::kstruct* m_body;
+        rekordbox_pdb_t* m__root;
+        kaitai::kstruct* m__parent;
+
+    public:
+
+        /**
+         * Mangled length of an ordinary ASCII string if odd, or a flag
+         * indicating another encoding with a longer length value to
+         * follow.
+         */
+        uint8_t length_and_kind() const { return m_length_and_kind; }
+        kaitai::kstruct* body() const { return m_body; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        kaitai::kstruct* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A row that holds a genre name and the associated ID.
+     */
+
+    class genre_row_t : public kaitai::kstruct {
+
+    public:
+
+        genre_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~genre_row_t();
+
+    private:
+        uint32_t m_id;
+        device_sql_string_t* m_name;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The unique identifier by which this genre can be requested
+         * and linked from other rows (such as tracks).
+         */
+        uint32_t id() const { return m_id; }
+
+        /**
+         * The variable-length string naming the genre.
+         */
+        device_sql_string_t* name() const { return m_name; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A row that associates a track with a position in a history playlist.
+     */
+
+    class history_entry_row_t : public kaitai::kstruct {
+
+    public:
+
+        history_entry_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~history_entry_row_t();
+
+    private:
+        uint32_t m_track_id;
+        uint32_t m_playlist_id;
+        uint32_t m_entry_index;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The track found at this position in the playlist.
+         */
+        uint32_t track_id() const { return m_track_id; }
+
+        /**
+         * The history playlist to which this entry belongs.
+         */
+        uint32_t playlist_id() const { return m_playlist_id; }
+
+        /**
+         * The position within the playlist represented by this entry.
+         */
+        uint32_t entry_index() const { return m_entry_index; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A row that holds a history playlist ID and name, linking to
+     * the track IDs captured during a performance on the player.
+     */
+
+    class history_playlist_row_t : public kaitai::kstruct {
+
+    public:
+
+        history_playlist_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~history_playlist_row_t();
+
+    private:
+        uint32_t m_id;
+        device_sql_string_t* m_name;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The unique identifier by which this history playlist can
+         * be requested.
+         */
+        uint32_t id() const { return m_id; }
+
+        /**
+         * The variable-length string naming the playlist.
+         */
+        device_sql_string_t* name() const { return m_name; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A row that holds a musical key and the associated ID.
+     */
+
+    class key_row_t : public kaitai::kstruct {
+
+    public:
+
+        key_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~key_row_t();
+
+    private:
+        uint32_t m_id;
+        uint32_t m_id2;
+        device_sql_string_t* m_name;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The unique identifier by which this key can be requested
+         * and linked from other rows (such as tracks).
+         */
+        uint32_t id() const { return m_id; }
+
+        /**
+         * Seems to be a second copy of the ID?
+         */
+        uint32_t id2() const { return m_id2; }
+
+        /**
+         * The variable-length string naming the key.
+         */
+        device_sql_string_t* name() const { return m_name; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A row that holds a label name and the associated ID.
+     */
+
+    class label_row_t : public kaitai::kstruct {
+
+    public:
+
+        label_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~label_row_t();
+
+    private:
+        uint32_t m_id;
+        device_sql_string_t* m_name;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The unique identifier by which this label can be requested
+         * and linked from other rows (such as tracks).
+         */
+        uint32_t id() const { return m_id; }
+
+        /**
+         * The variable-length string naming the label.
+         */
+        device_sql_string_t* name() const { return m_name; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A table page, consisting of a short header describing the
+     * content of the page and linking to the next page, followed by a
+     * heap in which row data is found. At the end of the page there is
+     * an index which locates all rows present in the heap via their
+     * offsets past the end of the page header.
+     */
+
+    class page_t : public kaitai::kstruct {
+
+    public:
+
+        page_t(kaitai::kstream* p__io, rekordbox_pdb_t::page_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~page_t();
+
+    private:
+        bool f_heap_pos;
+        int32_t m_heap_pos;
+
+    public:
+        int32_t heap_pos();
+
+    private:
+        bool f_is_data_page;
+        bool m_is_data_page;
+
+    public:
+        bool is_data_page();
+
+    private:
+        bool f_num_row_groups;
+        int32_t m_num_row_groups;
+
+    public:
+
+        /**
+         * The number of row groups that are present in the index. Each
+         * group can hold up to sixteen rows. All but the final one
+         * will hold sixteen rows.
+         */
+        int32_t num_row_groups();
+
+    private:
+        bool f_row_groups;
+        std::vector<row_group_t*>* m_row_groups;
+        bool n_row_groups;
+
+    public:
+        bool _is_null_row_groups() { row_groups(); return n_row_groups; };
+
+    private:
+
+    public:
+
+        /**
+         * The actual row groups making up the row index. Each group
+         * can hold up to sixteen rows. Non-data pages do not have
+         * actual rows, and attempting to parse them can crash.
+         */
+        std::vector<row_group_t*>* row_groups();
+
+    private:
+        std::string m_gap;
+        uint32_t m_page_index;
+        page_type_t m_type;
+        page_ref_t* m_next_page;
+        uint32_t m__unnamed4;
+        std::string m__unnamed5;
+        uint64_t m_num_rows;
+        uint64_t m_num_rows_valid;
+        uint8_t m_page_flags;
+        uint16_t m_free_size;
+        uint16_t m_used_size;
+        uint16_t m__unnamed11;
+        uint16_t m_unknown_not_num_rows_large;
+        uint16_t m__unnamed13;
+        uint16_t m__unnamed14;
+        std::string m_heap;
+        bool n_heap;
+
+    public:
+        bool _is_null_heap() { heap(); return n_heap; };
+
+    private:
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::page_ref_t* m__parent;
+
+    public:
+
+        /**
+         * Only exposed until
+         * https://github.com/kaitai-io/kaitai_struct/issues/825 can be
+         * fixed.
+         */
+        std::string gap() const { return m_gap; }
+
+        /**
+         * Matches the index we used to look up the page, sanity check?
+         */
+        uint32_t page_index() const { return m_page_index; }
+
+        /**
+         * Identifies the type of information stored in the rows of this page.
+         */
+        page_type_t type() const { return m_type; }
+
+        /**
+         * Index of the next page containing this type of rows. Points past
+         * the end of the file if there are no more.
+         */
+        page_ref_t* next_page() const { return m_next_page; }
+
+        /**
+         * @flesniak said: "sequence number (0->1: 8->13, 1->2: 22, 2->3: 27)"
+         */
+        uint32_t _unnamed4() const { return m__unnamed4; }
+        std::string _unnamed5() const { return m__unnamed5; }
+        uint64_t num_rows() const { return m_num_rows; }
+        uint64_t num_rows_valid() const { return m_num_rows_valid; }
+
+        /**
+         * @flesniak said: "strange pages: 0x44, 0x64; otherwise seen: 0x24, 0x34"
+         */
+        uint8_t page_flags() const { return m_page_flags; }
+
+        /**
+         * Unused space (in bytes) in the page heap, excluding the row
+         * index at end of page.
+         */
+        uint16_t free_size() const { return m_free_size; }
+
+        /**
+         * The number of bytes that are in use in the page heap.
+         */
+        uint16_t used_size() const { return m_used_size; }
+
+        /**
+         * @flesniak said: "(0->1: 2)"
+         */
+        uint16_t _unnamed11() const { return m__unnamed11; }
+
+        /**
+         * Holds the value used for `num_rows` (as described above)
+         * when that is too large to fit into `num_rows_small`, and
+         * that situation seems to be indicated when this value is
+         * larger than `num_rows_small`, but not equal to `0x1fff`.
+         * This seems like some strange mechanism to deal with the fact
+         * that lots of tiny entries, such as are found in the
+         * `playlist_entries` table, are too big to count with a single
+         * byte. But why not just always use this value, then?
+         */
+        uint16_t unknown_not_num_rows_large() const { return m_unknown_not_num_rows_large; }
+
+        /**
+         * @flesniak said: "1004 for strange blocks, 0 otherwise"
+         */
+        uint16_t _unnamed13() const { return m__unnamed13; }
+
+        /**
+         * @flesniak said: "always 0 except 1 for history pages, num
+         * entries for strange pages?"
+         */
+        uint16_t _unnamed14() const { return m__unnamed14; }
+        std::string heap() const { return m_heap; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::page_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
      * An index which points to a table page (its offset can be found
      * by multiplying the index by the `page_len` value in the file
      * header). This type allows the linked page to be lazy loaded.
@@ -971,7 +929,7 @@ public:
 
     public:
 
-        page_ref_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
+        page_ref_t(kaitai::kstream* p__io, kaitai::kstruct* p__parent = 0, rekordbox_pdb_t* p__root = 0);
 
     private:
         void _read();
@@ -982,7 +940,7 @@ public:
 
     private:
         bool f_body;
-        std::unique_ptr<page_t> m_body;
+        page_t* m_body;
 
     public:
 
@@ -997,7 +955,7 @@ public:
         rekordbox_pdb_t* m__root;
         kaitai::kstruct* m__parent;
         std::string m__raw_body;
-        std::unique_ptr<kaitai::kstream> m__io__raw_body;
+        kaitai::kstream* m__io__raw_body;
 
     public:
 
@@ -1008,7 +966,342 @@ public:
         rekordbox_pdb_t* _root() const { return m__root; }
         kaitai::kstruct* _parent() const { return m__parent; }
         std::string _raw_body() const { return m__raw_body; }
-        kaitai::kstream* _io__raw_body() const { return m__io__raw_body.get(); }
+        kaitai::kstream* _io__raw_body() const { return m__io__raw_body; }
+    };
+
+    /**
+     * A row that associates a track with a position in a playlist.
+     */
+
+    class playlist_entry_row_t : public kaitai::kstruct {
+
+    public:
+
+        playlist_entry_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~playlist_entry_row_t();
+
+    private:
+        uint32_t m_entry_index;
+        uint32_t m_track_id;
+        uint32_t m_playlist_id;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The position within the playlist represented by this entry.
+         */
+        uint32_t entry_index() const { return m_entry_index; }
+
+        /**
+         * The track found at this position in the playlist.
+         */
+        uint32_t track_id() const { return m_track_id; }
+
+        /**
+         * The playlist to which this entry belongs.
+         */
+        uint32_t playlist_id() const { return m_playlist_id; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A row that holds a playlist name, ID, indication of whether it
+     * is an ordinary playlist or a folder of other playlists, a link
+     * to its parent folder, and its sort order.
+     */
+
+    class playlist_tree_row_t : public kaitai::kstruct {
+
+    public:
+
+        playlist_tree_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~playlist_tree_row_t();
+
+    private:
+        bool f_is_folder;
+        bool m_is_folder;
+
+    public:
+        bool is_folder();
+
+    private:
+        uint32_t m_parent_id;
+        std::string m__unnamed1;
+        uint32_t m_sort_order;
+        uint32_t m_id;
+        uint32_t m_raw_is_folder;
+        device_sql_string_t* m_name;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_ref_t* m__parent;
+
+    public:
+
+        /**
+         * The ID of the `playlist_tree_row` in which this one can be
+         * found, or `0` if this playlist exists at the root level.
+         */
+        uint32_t parent_id() const { return m_parent_id; }
+        std::string _unnamed1() const { return m__unnamed1; }
+
+        /**
+         * The order in which the entries of this playlist are sorted.
+         */
+        uint32_t sort_order() const { return m_sort_order; }
+
+        /**
+         * The unique identifier by which this playlist or folder can
+         * be requested and linked from other rows.
+         */
+        uint32_t id() const { return m_id; }
+
+        /**
+         * Has a non-zero value if this is actually a folder rather
+         * than a playlist.
+         */
+        uint32_t raw_is_folder() const { return m_raw_is_folder; }
+
+        /**
+         * The variable-length string naming the playlist.
+         */
+        device_sql_string_t* name() const { return m_name; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * A group of row indices, which are built backwards from the end
+     * of the page. Holds up to sixteen row offsets, along with a bit
+     * mask that indicates whether each row is actually present in the
+     * table.
+     */
+
+    class row_group_t : public kaitai::kstruct {
+
+    public:
+
+        row_group_t(uint16_t p_group_index, kaitai::kstream* p__io, rekordbox_pdb_t::page_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~row_group_t();
+
+    private:
+        bool f_base;
+        int32_t m_base;
+
+    public:
+
+        /**
+         * The starting point of this group of row indices.
+         */
+        int32_t base();
+
+    private:
+        bool f_row_present_flags;
+        uint16_t m_row_present_flags;
+
+    public:
+
+        /**
+         * Each bit specifies whether a particular row is present. The
+         * low order bit corresponds to the first row in this index,
+         * whose offset immediately precedes these flag bits. The
+         * second bit corresponds to the row whose offset precedes
+         * that, and so on.
+         */
+        uint16_t row_present_flags();
+
+    private:
+        bool f_rows;
+        std::vector<row_ref_t*>* m_rows;
+
+    public:
+
+        /**
+         * The row offsets in this group.
+         */
+        std::vector<row_ref_t*>* rows();
+
+    private:
+        uint16_t m_group_index;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::page_t* m__parent;
+
+    public:
+
+        /**
+         * Identifies which group is being generated. They build backwards
+         * from the end of the page.
+         */
+        uint16_t group_index() const { return m_group_index; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::page_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * An offset which points to a row in the table, whose actual
+     * presence is controlled by one of the bits in
+     * `row_present_flags`. This instance allows the row itself to be
+     * lazily loaded, unless it is not present, in which case there is
+     * no content to be loaded.
+     */
+
+    class row_ref_t : public kaitai::kstruct {
+
+    public:
+
+        row_ref_t(uint16_t p_row_index, kaitai::kstream* p__io, rekordbox_pdb_t::row_group_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~row_ref_t();
+
+    private:
+        bool f_body;
+        kaitai::kstruct* m_body;
+        bool n_body;
+
+    public:
+        bool _is_null_body() { body(); return n_body; };
+
+    private:
+
+    public:
+
+        /**
+         * The actual content of the row, as long as it is present.
+         */
+        kaitai::kstruct* body();
+
+    private:
+        bool f_ofs_row;
+        uint16_t m_ofs_row;
+
+    public:
+
+        /**
+         * The offset of the start of the row (in bytes past the end of
+         * the page header).
+         */
+        uint16_t ofs_row();
+
+    private:
+        bool f_present;
+        bool m_present;
+
+    public:
+
+        /**
+         * Indicates whether the row index considers this row to be
+         * present in the table. Will be `false` if the row has been
+         * deleted.
+         */
+        bool present();
+
+    private:
+        bool f_row_base;
+        int32_t m_row_base;
+
+    public:
+
+        /**
+         * The location of this row relative to the start of the page.
+         * A variety of pointers (such as all device_sql_string values)
+         * are calculated with respect to this position.
+         */
+        int32_t row_base();
+
+    private:
+        uint16_t m_row_index;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t::row_group_t* m__parent;
+
+    public:
+
+        /**
+         * Identifies which row within the row index this reference
+         * came from, so the correct flag can be checked for the row
+         * presence and the correct row offset can be found.
+         */
+        uint16_t row_index() const { return m_row_index; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t::row_group_t* _parent() const { return m__parent; }
+    };
+
+    /**
+     * Each table is a linked list of pages containing rows of a single
+     * type. This header describes the nature of the table and links to
+     * its pages by index.
+     */
+
+    class table_t : public kaitai::kstruct {
+
+    public:
+
+        table_t(kaitai::kstream* p__io, rekordbox_pdb_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
+
+    private:
+        void _read();
+        void _clean_up();
+
+    public:
+        ~table_t();
+
+    private:
+        page_type_t m_type;
+        uint32_t m_empty_candidate;
+        page_ref_t* m_first_page;
+        page_ref_t* m_last_page;
+        rekordbox_pdb_t* m__root;
+        rekordbox_pdb_t* m__parent;
+
+    public:
+
+        /**
+         * Identifies the kind of rows that are found in this table.
+         */
+        page_type_t type() const { return m_type; }
+        uint32_t empty_candidate() const { return m_empty_candidate; }
+
+        /**
+         * Links to the chain of pages making up that table. The first
+         * page seems to always contain similar garbage patterns and
+         * zero rows, but the next page it links to contains the start
+         * of the meaningful data rows.
+         */
+        page_ref_t* first_page() const { return m_first_page; }
+
+        /**
+         * Holds the index of the last page that makes up this table.
+         * When following the linked list of pages of the table, you
+         * either need to stop when you reach this page, or when you
+         * notice that the `next_page` link you followed took you to a
+         * page of a different `type`.
+         */
+        page_ref_t* last_page() const { return m_last_page; }
+        rekordbox_pdb_t* _root() const { return m__root; }
+        rekordbox_pdb_t* _parent() const { return m__parent; }
     };
 
     /**
@@ -1021,7 +1314,7 @@ public:
 
     public:
 
-        track_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
+        track_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = 0, rekordbox_pdb_t* p__root = 0);
 
     private:
         void _read();
@@ -1031,30 +1324,8 @@ public:
         ~track_row_t();
 
     private:
-        bool f_unknown_string_8;
-        std::unique_ptr<device_sql_string_t> m_unknown_string_8;
-
-    public:
-
-        /**
-         * A string of unknown purpose, usually empty.
-         */
-        device_sql_string_t* unknown_string_8();
-
-    private:
-        bool f_unknown_string_6;
-        std::unique_ptr<device_sql_string_t> m_unknown_string_6;
-
-    public:
-
-        /**
-         * A string of unknown purpose, usually empty.
-         */
-        device_sql_string_t* unknown_string_6();
-
-    private:
         bool f_analyze_date;
-        std::unique_ptr<device_sql_string_t> m_analyze_date;
+        device_sql_string_t* m_analyze_date;
 
     public:
 
@@ -1064,160 +1335,8 @@ public:
         device_sql_string_t* analyze_date();
 
     private:
-        bool f_file_path;
-        std::unique_ptr<device_sql_string_t> m_file_path;
-
-    public:
-
-        /**
-         * The file path of the track audio file.
-         */
-        device_sql_string_t* file_path();
-
-    private:
-        bool f_date_added;
-        std::unique_ptr<device_sql_string_t> m_date_added;
-
-    public:
-
-        /**
-         * A string containing the date this track was added to the collection.
-         */
-        device_sql_string_t* date_added();
-
-    private:
-        bool f_unknown_string_3;
-        std::unique_ptr<device_sql_string_t> m_unknown_string_3;
-
-    public:
-
-        /**
-         * A string of unknown purpose; @flesniak said "strange
-         * strings, often zero length, sometimes low binary values
-         * 0x01/0x02 as content"
-         */
-        device_sql_string_t* unknown_string_3();
-
-    private:
-        bool f_texter;
-        std::unique_ptr<device_sql_string_t> m_texter;
-
-    public:
-
-        /**
-         * A string of unknown purpose, which @flesniak named.
-         */
-        device_sql_string_t* texter();
-
-    private:
-        bool f_kuvo_public;
-        std::unique_ptr<device_sql_string_t> m_kuvo_public;
-
-    public:
-
-        /**
-         * A string whose value is always either empty or "ON", and
-         * which apparently for some insane reason is used, rather than
-         * a single bit somewhere, to control whether the track
-         * information is visible on Kuvo.
-         */
-        device_sql_string_t* kuvo_public();
-
-    private:
-        bool f_mix_name;
-        std::unique_ptr<device_sql_string_t> m_mix_name;
-
-    public:
-
-        /**
-         * A string naming the remix of the track, if known.
-         */
-        device_sql_string_t* mix_name();
-
-    private:
-        bool f_unknown_string_5;
-        std::unique_ptr<device_sql_string_t> m_unknown_string_5;
-
-    public:
-
-        /**
-         * A string of unknown purpose.
-         */
-        device_sql_string_t* unknown_string_5();
-
-    private:
-        bool f_unknown_string_4;
-        std::unique_ptr<device_sql_string_t> m_unknown_string_4;
-
-    public:
-
-        /**
-         * A string of unknown purpose; @flesniak said "strange
-         * strings, often zero length, sometimes low binary values
-         * 0x01/0x02 as content"
-         */
-        device_sql_string_t* unknown_string_4();
-
-    private:
-        bool f_message;
-        std::unique_ptr<device_sql_string_t> m_message;
-
-    public:
-
-        /**
-         * A string of unknown purpose, which @flesniak named.
-         */
-        device_sql_string_t* message();
-
-    private:
-        bool f_unknown_string_2;
-        std::unique_ptr<device_sql_string_t> m_unknown_string_2;
-
-    public:
-
-        /**
-         * A string of unknown purpose; @flesniak said "thought
-         * track number -> wrong!"
-         */
-        device_sql_string_t* unknown_string_2();
-
-    private:
-        bool f_isrc;
-        std::unique_ptr<device_sql_string_t> m_isrc;
-
-    public:
-
-        /**
-         * International Standard Recording Code of track
-         * when known (in mangled format).
-         */
-        device_sql_string_t* isrc();
-
-    private:
-        bool f_unknown_string_7;
-        std::unique_ptr<device_sql_string_t> m_unknown_string_7;
-
-    public:
-
-        /**
-         * A string of unknown purpose, usually empty.
-         */
-        device_sql_string_t* unknown_string_7();
-
-    private:
-        bool f_filename;
-        std::unique_ptr<device_sql_string_t> m_filename;
-
-    public:
-
-        /**
-         * The file name of the track audio file.
-         */
-        device_sql_string_t* filename();
-
-    private:
         bool f_analyze_path;
-        std::unique_ptr<device_sql_string_t> m_analyze_path;
+        device_sql_string_t* m_analyze_path;
 
     public:
 
@@ -1230,30 +1349,8 @@ public:
         device_sql_string_t* analyze_path();
 
     private:
-        bool f_comment;
-        std::unique_ptr<device_sql_string_t> m_comment;
-
-    public:
-
-        /**
-         * The comment assigned to the track by the DJ, if any.
-         */
-        device_sql_string_t* comment();
-
-    private:
-        bool f_release_date;
-        std::unique_ptr<device_sql_string_t> m_release_date;
-
-    public:
-
-        /**
-         * A string containing the date this track was released, if known.
-         */
-        device_sql_string_t* release_date();
-
-    private:
         bool f_autoload_hot_cues;
-        std::unique_ptr<device_sql_string_t> m_autoload_hot_cues;
+        device_sql_string_t* m_autoload_hot_cues;
 
     public:
 
@@ -1266,8 +1363,122 @@ public:
         device_sql_string_t* autoload_hot_cues();
 
     private:
+        bool f_comment;
+        device_sql_string_t* m_comment;
+
+    public:
+
+        /**
+         * The comment assigned to the track by the DJ, if any.
+         */
+        device_sql_string_t* comment();
+
+    private:
+        bool f_date_added;
+        device_sql_string_t* m_date_added;
+
+    public:
+
+        /**
+         * A string containing the date this track was added to the collection.
+         */
+        device_sql_string_t* date_added();
+
+    private:
+        bool f_file_path;
+        device_sql_string_t* m_file_path;
+
+    public:
+
+        /**
+         * The file path of the track audio file.
+         */
+        device_sql_string_t* file_path();
+
+    private:
+        bool f_filename;
+        device_sql_string_t* m_filename;
+
+    public:
+
+        /**
+         * The file name of the track audio file.
+         */
+        device_sql_string_t* filename();
+
+    private:
+        bool f_isrc;
+        device_sql_string_t* m_isrc;
+
+    public:
+
+        /**
+         * International Standard Recording Code of track
+         * when known (in mangled format).
+         */
+        device_sql_string_t* isrc();
+
+    private:
+        bool f_kuvo_public;
+        device_sql_string_t* m_kuvo_public;
+
+    public:
+
+        /**
+         * A string whose value is always either empty or "ON", and
+         * which apparently for some insane reason is used, rather than
+         * a single bit somewhere, to control whether the track
+         * information is visible on Kuvo.
+         */
+        device_sql_string_t* kuvo_public();
+
+    private:
+        bool f_message;
+        device_sql_string_t* m_message;
+
+    public:
+
+        /**
+         * A string of unknown purpose, which @flesniak named.
+         */
+        device_sql_string_t* message();
+
+    private:
+        bool f_mix_name;
+        device_sql_string_t* m_mix_name;
+
+    public:
+
+        /**
+         * A string naming the remix of the track, if known.
+         */
+        device_sql_string_t* mix_name();
+
+    private:
+        bool f_release_date;
+        device_sql_string_t* m_release_date;
+
+    public:
+
+        /**
+         * A string containing the date this track was released, if known.
+         */
+        device_sql_string_t* release_date();
+
+    private:
+        bool f_texter;
+        device_sql_string_t* m_texter;
+
+    public:
+
+        /**
+         * A string of unknown purpose, which @flesniak named.
+         */
+        device_sql_string_t* texter();
+
+    private:
         bool f_title;
-        std::unique_ptr<device_sql_string_t> m_title;
+        device_sql_string_t* m_title;
 
     public:
 
@@ -1275,6 +1486,88 @@ public:
          * The title of the track.
          */
         device_sql_string_t* title();
+
+    private:
+        bool f_unknown_string_2;
+        device_sql_string_t* m_unknown_string_2;
+
+    public:
+
+        /**
+         * A string of unknown purpose; @flesniak said "thought
+         * track number -> wrong!"
+         */
+        device_sql_string_t* unknown_string_2();
+
+    private:
+        bool f_unknown_string_3;
+        device_sql_string_t* m_unknown_string_3;
+
+    public:
+
+        /**
+         * A string of unknown purpose; @flesniak said "strange
+         * strings, often zero length, sometimes low binary values
+         * 0x01/0x02 as content"
+         */
+        device_sql_string_t* unknown_string_3();
+
+    private:
+        bool f_unknown_string_4;
+        device_sql_string_t* m_unknown_string_4;
+
+    public:
+
+        /**
+         * A string of unknown purpose; @flesniak said "strange
+         * strings, often zero length, sometimes low binary values
+         * 0x01/0x02 as content"
+         */
+        device_sql_string_t* unknown_string_4();
+
+    private:
+        bool f_unknown_string_5;
+        device_sql_string_t* m_unknown_string_5;
+
+    public:
+
+        /**
+         * A string of unknown purpose.
+         */
+        device_sql_string_t* unknown_string_5();
+
+    private:
+        bool f_unknown_string_6;
+        device_sql_string_t* m_unknown_string_6;
+
+    public:
+
+        /**
+         * A string of unknown purpose, usually empty.
+         */
+        device_sql_string_t* unknown_string_6();
+
+    private:
+        bool f_unknown_string_7;
+        device_sql_string_t* m_unknown_string_7;
+
+    public:
+
+        /**
+         * A string of unknown purpose, usually empty.
+         */
+        device_sql_string_t* unknown_string_7();
+
+    private:
+        bool f_unknown_string_8;
+        device_sql_string_t* m_unknown_string_8;
+
+    public:
+
+        /**
+         * A string of unknown purpose, usually empty.
+         */
+        device_sql_string_t* unknown_string_8();
 
     private:
         uint16_t m__unnamed0;
@@ -1308,7 +1601,7 @@ public:
         uint8_t m_rating;
         uint16_t m__unnamed29;
         uint16_t m__unnamed30;
-        std::unique_ptr<std::vector<uint16_t>> m_ofs_strings;
+        std::vector<uint16_t>* m_ofs_strings;
         rekordbox_pdb_t* m__root;
         rekordbox_pdb_t::row_ref_t* m__parent;
 
@@ -1487,325 +1780,9 @@ public:
          * The location, relative to the start of this row, of a
          * variety of variable-length strings.
          */
-        std::vector<uint16_t>* ofs_strings() const { return m_ofs_strings.get(); }
+        std::vector<uint16_t>* ofs_strings() const { return m_ofs_strings; }
         rekordbox_pdb_t* _root() const { return m__root; }
         rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that holds a musical key and the associated ID.
-     */
-
-    class key_row_t : public kaitai::kstruct {
-
-    public:
-
-        key_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~key_row_t();
-
-    private:
-        uint32_t m_id;
-        uint32_t m_id2;
-        std::unique_ptr<device_sql_string_t> m_name;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The unique identifier by which this key can be requested
-         * and linked from other rows (such as tracks).
-         */
-        uint32_t id() const { return m_id; }
-
-        /**
-         * Seems to be a second copy of the ID?
-         */
-        uint32_t id2() const { return m_id2; }
-
-        /**
-         * The variable-length string naming the key.
-         */
-        device_sql_string_t* name() const { return m_name.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that associates a track with a position in a playlist.
-     */
-
-    class playlist_entry_row_t : public kaitai::kstruct {
-
-    public:
-
-        playlist_entry_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~playlist_entry_row_t();
-
-    private:
-        uint32_t m_entry_index;
-        uint32_t m_track_id;
-        uint32_t m_playlist_id;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The position within the playlist represented by this entry.
-         */
-        uint32_t entry_index() const { return m_entry_index; }
-
-        /**
-         * The track found at this position in the playlist.
-         */
-        uint32_t track_id() const { return m_track_id; }
-
-        /**
-         * The playlist to which this entry belongs.
-         */
-        uint32_t playlist_id() const { return m_playlist_id; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A row that holds a label name and the associated ID.
-     */
-
-    class label_row_t : public kaitai::kstruct {
-
-    public:
-
-        label_row_t(kaitai::kstream* p__io, rekordbox_pdb_t::row_ref_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~label_row_t();
-
-    private:
-        uint32_t m_id;
-        std::unique_ptr<device_sql_string_t> m_name;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_ref_t* m__parent;
-
-    public:
-
-        /**
-         * The unique identifier by which this label can be requested
-         * and linked from other rows (such as tracks).
-         */
-        uint32_t id() const { return m_id; }
-
-        /**
-         * The variable-length string naming the label.
-         */
-        device_sql_string_t* name() const { return m_name.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_ref_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * A UTF-16LE-encoded string preceded by a two-byte length field in a four-byte header.
-     */
-
-    class device_sql_long_utf16le_t : public kaitai::kstruct {
-
-    public:
-
-        device_sql_long_utf16le_t(kaitai::kstream* p__io, rekordbox_pdb_t::device_sql_string_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~device_sql_long_utf16le_t();
-
-    private:
-        uint16_t m_length;
-        uint8_t m__unnamed1;
-        std::string m_text;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::device_sql_string_t* m__parent;
-
-    public:
-
-        /**
-         * Contains the length of the string in bytes, plus four trailing bytes that must be ignored.
-         */
-        uint16_t length() const { return m_length; }
-        uint8_t _unnamed1() const { return m__unnamed1; }
-
-        /**
-         * The content of the string.
-         */
-        std::string text() const { return m_text; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::device_sql_string_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * Each table is a linked list of pages containing rows of a single
-     * type. This header describes the nature of the table and links to
-     * its pages by index.
-     */
-
-    class table_t : public kaitai::kstruct {
-
-    public:
-
-        table_t(kaitai::kstream* p__io, rekordbox_pdb_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~table_t();
-
-    private:
-        page_type_t m_type;
-        uint32_t m_empty_candidate;
-        std::unique_ptr<page_ref_t> m_first_page;
-        std::unique_ptr<page_ref_t> m_last_page;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t* m__parent;
-
-    public:
-
-        /**
-         * Identifies the kind of rows that are found in this table.
-         */
-        page_type_t type() const { return m_type; }
-        uint32_t empty_candidate() const { return m_empty_candidate; }
-
-        /**
-         * Links to the chain of pages making up that table. The first
-         * page seems to always contain similar garbage patterns and
-         * zero rows, but the next page it links to contains the start
-         * of the meaningful data rows.
-         */
-        page_ref_t* first_page() const { return m_first_page.get(); }
-
-        /**
-         * Holds the index of the last page that makes up this table.
-         * When following the linked list of pages of the table, you
-         * either need to stop when you reach this page, or when you
-         * notice that the `next_page` link you followed took you to a
-         * page of a different `type`.
-         */
-        page_ref_t* last_page() const { return m_last_page.get(); }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t* _parent() const { return m__parent; }
-    };
-
-    /**
-     * An offset which points to a row in the table, whose actual
-     * presence is controlled by one of the bits in
-     * `row_present_flags`. This instance allows the row itself to be
-     * lazily loaded, unless it is not present, in which case there is
-     * no content to be loaded.
-     */
-
-    class row_ref_t : public kaitai::kstruct {
-
-    public:
-
-        row_ref_t(uint16_t p_row_index, kaitai::kstream* p__io, rekordbox_pdb_t::row_group_t* p__parent = nullptr, rekordbox_pdb_t* p__root = nullptr);
-
-    private:
-        void _read();
-        void _clean_up();
-
-    public:
-        ~row_ref_t();
-
-    private:
-        bool f_ofs_row;
-        uint16_t m_ofs_row;
-
-    public:
-
-        /**
-         * The offset of the start of the row (in bytes past the end of
-         * the page header).
-         */
-        uint16_t ofs_row();
-
-    private:
-        bool f_row_base;
-        int32_t m_row_base;
-
-    public:
-
-        /**
-         * The location of this row relative to the start of the page.
-         * A variety of pointers (such as all device_sql_string values)
-         * are calculated with respect to this position.
-         */
-        int32_t row_base();
-
-    private:
-        bool f_present;
-        bool m_present;
-
-    public:
-
-        /**
-         * Indicates whether the row index considers this row to be
-         * present in the table. Will be `false` if the row has been
-         * deleted.
-         */
-        bool present();
-
-    private:
-        bool f_body;
-        std::unique_ptr<kaitai::kstruct> m_body;
-        bool n_body;
-
-    public:
-        bool _is_null_body() { body(); return n_body; };
-
-    private:
-
-    public:
-
-        /**
-         * The actual content of the row, as long as it is present.
-         */
-        kaitai::kstruct* body();
-
-    private:
-        uint16_t m_row_index;
-        rekordbox_pdb_t* m__root;
-        rekordbox_pdb_t::row_group_t* m__parent;
-
-    public:
-
-        /**
-         * Identifies which row within the row index this reference
-         * came from, so the correct flag can be checked for the row
-         * presence and the correct row offset can be found.
-         */
-        uint16_t row_index() const { return m_row_index; }
-        rekordbox_pdb_t* _root() const { return m__root; }
-        rekordbox_pdb_t::row_group_t* _parent() const { return m__parent; }
     };
 
 private:
@@ -1816,7 +1793,7 @@ private:
     uint32_t m__unnamed4;
     uint32_t m_sequence;
     std::string m_gap;
-    std::unique_ptr<std::vector<std::unique_ptr<table_t>>> m_tables;
+    std::vector<table_t*>* m_tables;
     rekordbox_pdb_t* m__root;
     kaitai::kstruct* m__parent;
 
@@ -1867,7 +1844,9 @@ public:
     /**
      * Describes and links to the tables present in the database.
      */
-    std::vector<std::unique_ptr<table_t>>* tables() const { return m_tables.get(); }
+    std::vector<table_t*>* tables() const { return m_tables; }
     rekordbox_pdb_t* _root() const { return m__root; }
     kaitai::kstruct* _parent() const { return m__parent; }
 };
+
+#endif  // REKORDBOX_PDB_H_

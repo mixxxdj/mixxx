@@ -80,6 +80,8 @@ types:
             'section_tags::wave_scroll': wave_scroll_tag                # PWV3, seen in .EXT
             'section_tags::wave_color_preview': wave_color_preview_tag  # PWV4, in .EXT
             'section_tags::wave_color_scroll': wave_color_scroll_tag    # PWV5, in .EXT
+            'section_tags::wave_3band_preview': wave_3band_preview_tag  # P@V6, in .2EX
+            'section_tags::wave_3band_scroll': wave_3band_scroll_tag    # PWV7, in .2EX
             'section_tags::song_structure': song_structure_tag          # PSSI, in .EXT
             _: unknown_tag
     -webide-representation: '{fourcc}'
@@ -398,6 +400,41 @@ types:
       - id: entries
         size: len_entries * len_entry_bytes
 
+  wave_3band_preview_tag:
+    doc: |
+      The minimalist CDJ-3000 waveform preview image suitable for display
+      above the touch strip for jumping to a track position.
+    seq:
+      - id: len_entry_bytes
+        type: u4
+        doc: |
+          The size of each entry, in bytes. Seems to always be 3.
+      - id: len_entries
+        type: u4
+        doc: |
+          The number of waveform data points, each of which takes one
+          byte for each of six channels of information.
+      - id: entries
+        size: len_entries * len_entry_bytes
+
+  wave_3band_scroll_tag:
+    doc: |
+      The minimalist CDJ-3000 waveform image suitable for scrolling along
+      as a track plays on newer high-resolution hardware.
+    seq:
+      - id: len_entry_bytes
+        type: u4
+        doc: |
+          The size of each entry, in bytes. Seems to always be 3.
+      - id: len_entries
+        type: u4
+        doc: |
+          The number of columns of waveform data (this matches the
+          non-color waveform length.
+      - type: u4
+      - id: entries
+        size: len_entries * len_entry_bytes
+
   song_structure_tag:
     doc: |
       Stores the song structure, also known as phrases (intro, verse,
@@ -417,19 +454,17 @@ types:
           The rest of the tag, which needs to be unmasked before it
           can be parsed.
         size-eos: true
-        # NOTE: unmasking is disabled because the C++ backend of kaitai_struct
-        # doesn't seem to support typecasting as of kaitai version 0.10?
-        # process:  'xor(is_masked ? mask : [0])'
+        process:  'xor(is_masked ? mask : [0])'
     instances:
       c:
         value: len_entries
-      # mask:
-      #   value: |
-      #     [
-      #       (0xCB+c).as<u1>, (0xE1+c).as<u1>, (0xEE+c).as<u1>, (0xFA+c).as<s1>, (0xE5+c).as<s1>, (0xEE+c).as<s1>, (0xAD+c).as<s1>, (0xEE+c).as<s1>,
-      #       (0xE9+c).as<u1>, (0xD2+c).as<u1>, (0xE9+c).as<u1>, (0xEB+c).as<s1>, (0xE1+c).as<s1>, (0xE9+c).as<s1>, (0xF3+c).as<s1>, (0xE8+c).as<s1>,
-      #       (0xE9+c).as<u1>, (0xF4+c).as<u1>, (0xE1+c).as<u1>
-      #     ].as<bytes>
+      mask:
+        value: |
+          [
+            (0xCB+c).as<s1>, (0xE1+c).as<s1>, (0xEE+c).as<s1>, (0xFA+c).as<s1>, (0xE5+c).as<s1>, (0xEE+c).as<s1>, (0xAD+c).as<s1>, (0xEE+c).as<s1>,
+            (0xE9+c).as<s1>, (0xD2+c).as<s1>, (0xE9+c).as<s1>, (0xEB+c).as<s1>, (0xE1+c).as<s1>, (0xE9+c).as<s1>, (0xF3+c).as<s1>, (0xE8+c).as<s1>,
+            (0xE9+c).as<s1>, (0xF4+c).as<s1>, (0xE1+c).as<s1>
+          ].as<bytes>
       raw_mood:
         type: u2
         pos: 6
@@ -459,16 +494,23 @@ types:
           continue after the last phrase ends. If this is the case, it will
           mostly be silence.
       - size: 2
-      - id: bank
+      - id: raw_bank
         type: u1
-        enum: track_bank
         doc: |
-          The stylistic bank which can be assigned to the track in rekordbox Lighting mode.
+          Number identifying a stylistic bank which can be assigned to the track in rekordbox Lighting mode.
       - size: 1
       - id: entries
         type: song_structure_entry
         repeat: expr
         repeat-expr: _parent.len_entries
+    instances:
+      bank:
+        value: raw_bank
+        enum: track_bank
+        doc: |
+          The stylistic bank which can be assigned to the track in rekordbox Lighting mode, if raw_bank has a legal value.
+        if: 'raw_bank < 9'
+
 
   song_structure_entry:
     doc: |
@@ -567,6 +609,8 @@ enums:
     0x50575634: wave_color_preview  # PWV4 (seen in .EXT)
     0x50575635: wave_color_scroll   # PWV5 (seen in .EXT)
     0x50535349: song_structure      # PSSI (seen in .EXT)
+    0x50575636: wave_3band_preview  # PWV6 (seen in .2EX)
+    0x50575637: wave_3band_scroll   # PWV7 (seen in .2EX)
 
   cue_list_type:
     0: memory_cues
