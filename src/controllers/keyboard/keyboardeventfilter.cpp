@@ -31,12 +31,11 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
           m_enabled(false),
           m_autoReloader(RuntimeLoggingCategory(QStringLiteral("kbd_auto_reload"))) {
     // Get the enabled state.
-    // Set the default if the key/value doesn't exist so that the shortcuts action
-    // in WMainMenuBar is also enabled by default.
-    if (!pConfig->exists(ConfigKey("[Keyboard]", "Enabled"))) {
-        pConfig->setValue(ConfigKey("[Keyboard]", "Enabled"), true);
-    }
-    m_enabled = pConfig->getValue<bool>(ConfigKey("[Keyboard]", "Enabled"), true);
+    // Note: use the same default value in WMainMenuBar so that the action and
+    // our bool are in sync.
+    m_enabled = m_pConfig->getValue(ConfigKey(QStringLiteral("[Keyboard]"),
+                                            QStringLiteral("Enabled")),
+            true);
 
     mixxx::preferences::Tooltips cfgOnlyKbdShortcts =
             pConfig->getValue(
