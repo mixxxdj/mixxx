@@ -13,7 +13,7 @@
 class QWidget;
 class ControlProxy;
 
-class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
+class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg {
     Q_OBJECT
   public:
     enum class TrackDoubleClickAction : int {
@@ -67,6 +67,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotBpmRangeSelected(int index);
     void slotBpmColumnPrecisionChanged(int bpmPrecision);
     void slotSeratoMetadataExportClicked(bool);
+    void slotDateFormatChanged(const QString& text);
 
   private:
     void populateDirList();

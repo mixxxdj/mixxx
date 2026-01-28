@@ -9,6 +9,7 @@
 #include "library/trackmodel.h"
 #include "track/track_decl.h"
 #include "util/color/colorpalette.h"
+#include "util/datetime.h"
 
 class TrackCollectionManager;
 
@@ -131,6 +132,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
+
+    static const QString kDateFormatDefault;
+    static void setDateFormat(const QString& format);
 
   protected:
     // Build a map from the column names to their indices
@@ -307,4 +311,5 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static std::optional<ColorPalette> s_keyColorPalette;
 
     static bool s_bApplyPlayedTrackColor;
+    static QString s_dateFormat;
 };
