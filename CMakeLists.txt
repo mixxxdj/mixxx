@@ -1519,7 +1519,6 @@ add_library(
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
   src/preferences/restserversettings.cpp
-  src/preferences/webserversettings.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -1552,8 +1551,6 @@ add_library(
   src/preferences/dialog/dlgprefsounditem.cpp
   src/preferences/dialog/dlgprefsounditem.ui
   src/preferences/dialog/dlgprefvinyldlg.ui
-  src/preferences/dialog/dlgprefwebserver.cpp
-  src/preferences/dialog/dlgprefwebserverdlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/effectchainpresetlistmodel.cpp
