@@ -23,9 +23,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
     QVariant title() override;
 
-    bool dropAcceptChild(const QModelIndex& index,
-            const QList<QUrl>& urls,
-            QObject* pSource) override;
+    bool dropAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
     bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
 
   public slots:
