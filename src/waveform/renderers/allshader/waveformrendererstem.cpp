@@ -161,8 +161,7 @@ bool WaveformRendererStem::preprocessInner() {
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0);
-    // applyCompensation = false, as we scale to match filtered.all
-    getGains(&allGain, false, nullptr, nullptr, nullptr);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float stemBreadth = m_splitStemTracks ? breadth / 4.0f : 0;

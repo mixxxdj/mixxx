@@ -4,9 +4,12 @@
 #include <QDomDocument>
 #include <QTest>
 
+#include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
+#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "helpers/log_test.h"
 #include "test/mixxxtest.h"
 #include "util/time.h"
@@ -15,6 +18,12 @@ using ::testing::_;
 using ::testing::FieldsAre;
 using namespace std::chrono_literals;
 
+#ifndef MIXXX_USE_QML
+namespace {
+const int numQMLMappings = 2;
+}
+#endif
+
 class LegacyControllerMappingFileHandlerTest
         : public LegacyControllerMappingFileHandler,
           public MixxxTest {
@@ -22,6 +31,9 @@ class LegacyControllerMappingFileHandlerTest
     void SetUp() override {
         mixxx::Time::setTestMode(true);
         mixxx::Time::addTestTime(10ms);
+        m_mappingPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
+        m_pEnumerator.reset(new MappingInfoEnumerator(
+                QList<QString>{m_mappingPath.absolutePath()}));
     }
 
     void TearDown() override {
@@ -43,8 +55,96 @@ class LegacyControllerMappingFileHandlerTest
         return QFileInfo(QDir("/dummy/path/").absoluteFilePath(filename));
     }
 
+    void assertMappings(LegacyControllerMapping* pOriginalMapping,
+            LegacyControllerMapping* pSerializedMapping) {
+        EXPECT_EQ(pOriginalMapping->m_productInfo,
+                pSerializedMapping
+                        ->m_productInfo); // << "Mismatch between origin
+                                          // ("+pOriginalMapping->m_productInfo.toStdString()+")
+                                          // and serialized
+                                          // ("+pSerializedMapping->m_productInfo.toStdString()+")";
+        // device_id is truncated - see
+        // src/controllers/legacycontrollermappingfilehandler.cpp:597
+        // EXPECT_EQ(pOriginalMapping->m_deviceId,
+        // pSerializedMapping->m_deviceId) << "Mismatch between origin
+        // ("+pOriginalMapping->m_deviceId.toStdString()+") and serialized
+        // ("+pSerializedMapping->m_deviceId.toStdString()+")";
+        EXPECT_EQ(pOriginalMapping->m_filePath, pSerializedMapping->m_filePath)
+                << "Mismatch between origin (" +
+                        pOriginalMapping->m_filePath.toStdString() +
+                        ") and serialized (" +
+                        pSerializedMapping->m_filePath.toStdString() + ")";
+        EXPECT_EQ(pOriginalMapping->m_name, pSerializedMapping->m_name)
+                << "Mismatch between origin (" +
+                        pOriginalMapping->m_name.toStdString() +
+                        ") and serialized (" +
+                        pSerializedMapping->m_name.toStdString() + ")";
+        EXPECT_EQ(pOriginalMapping->m_author, pSerializedMapping->m_author)
+                << "Mismatch between origin (" +
+                        pOriginalMapping->m_author.toStdString() +
+                        ") and serialized (" +
+                        pSerializedMapping->m_author.toStdString() + ")";
+        EXPECT_EQ(pOriginalMapping->m_description,
+                pSerializedMapping->m_description)
+                << "Mismatch between origin (" +
+                        pOriginalMapping->m_description.toStdString() +
+                        ") and serialized (" +
+                        pSerializedMapping->m_description.toStdString() + ")";
+        EXPECT_EQ(
+                pOriginalMapping->m_forumlink, pSerializedMapping->m_forumlink)
+                << "Mismatch between origin (" +
+                        pOriginalMapping->m_forumlink.toStdString() +
+                        ") and serialized (" +
+                        pSerializedMapping->m_forumlink.toStdString() + ")";
+        EXPECT_EQ(pOriginalMapping->m_manualPage,
+                pSerializedMapping->m_manualPage)
+                << "Mismatch between origin (" +
+                        pOriginalMapping->m_manualPage.toStdString() +
+                        ") and serialized (" +
+                        pSerializedMapping->m_manualPage.toStdString() + ")";
+        EXPECT_EQ(pOriginalMapping->m_wikilink, pSerializedMapping->m_wikilink)
+                << "Mismatch between origin (" +
+                        pOriginalMapping->m_wikilink.toStdString() +
+                        ") and serialized (" +
+                        pSerializedMapping->m_wikilink.toStdString() + ")";
+        EXPECT_EQ(pOriginalMapping->m_mixxxVersion,
+                pSerializedMapping
+                        ->m_mixxxVersion); // << "Mismatch between origin
+                                           // ("+pOriginalMapping->m_mixxxVersion.toStdString()+")
+                                           // and serialized
+                                           // ("+pSerializedMapping->m_mixxxVersion.toStdString()+")";
+        EXPECT_EQ(pOriginalMapping->m_settings.size(), pSerializedMapping->m_settings.size());
+        if (!pOriginalMapping->m_settingsLayout) {
+            EXPECT_EQ(pSerializedMapping->m_settingsLayout, nullptr)
+                    << "Mismatch between origin (nullptr) and serialized (is "
+                       "set)";
+        } else {
+            EXPECT_EQ(pOriginalMapping->m_settingsLayout->children().size(),
+                    pSerializedMapping->m_settingsLayout->children().size())
+                    << "Mismatch between origin (" +
+                            std::to_string(pOriginalMapping->m_settingsLayout
+                                            ->children()
+                                            .size()) +
+                            ") and serialized (" +
+                            std::to_string(pSerializedMapping->m_settingsLayout
+                                            ->children()
+                                            .size()) +
+                            ")";
+        }
+#ifdef MIXXX_USE_QML
+        EXPECT_EQ(pOriginalMapping->m_modules, pSerializedMapping->m_modules);
+        EXPECT_EQ(pOriginalMapping->m_screens, pSerializedMapping->m_screens);
+#endif
+        EXPECT_EQ(pOriginalMapping->m_scripts, pSerializedMapping->m_scripts);
+        EXPECT_EQ(pOriginalMapping->m_deviceDirection, pSerializedMapping->m_deviceDirection);
+    };
+
   private:
     LogCaptureGuard m_logCaptureGuard;
+
+  protected:
+    QDir m_mappingPath;
+    QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
 };
 
 class MockLegacyControllerMapping : public LegacyControllerMapping {
@@ -53,11 +153,13 @@ class MockLegacyControllerMapping : public LegacyControllerMapping {
             addScriptFile,
             (LegacyControllerMapping::ScriptFileInfo info),
             (override));
+#ifdef MIXXX_USE_QML
     MOCK_METHOD(void,
             addScreenInfo,
             (LegacyControllerMapping::ScreenInfo info),
             (override));
     MOCK_METHOD(void, addModule, (const QFileInfo& dirinfo, bool builtin), (override));
+#endif
 
     bool saveMapping(const QString&) const override {
         throw std::runtime_error("not implemented");
@@ -93,8 +195,10 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseSimpleMapping) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::Javascript,
                     false)));
+#ifdef MIXXX_USE_QML
     EXPECT_CALL(*mapping, addScreenInfo(_)).Times(0);
     EXPECT_CALL(*mapping, addModule(_, _)).Times(0);
+#endif
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -102,6 +206,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseSimpleMapping) {
             QDir());
 }
 
+#ifdef MIXXX_USE_QML
 TEST_F(LegacyControllerMappingFileHandlerTest, canParseScreenMapping) {
     QDomDocument doc;
     doc.setContent(QByteArray(R"EOF(
@@ -1002,4 +1107,75 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseHybridMapping) {
             doc.documentElement(),
             mapping,
             QDir());
+}
+#endif
+
+TEST_F(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile) {
+#ifndef MIXXX_USE_QML
+    for (int i = 0; i < numQMLMappings; i++) {
+        EXPECT_LOG_MSG(QtWarningMsg,
+                QStringLiteral("LegacyControllerMappingFileHandler - Unsupported "
+                               "render scene for file \"[^\"]+\" . Mixxx isn't "
+                               "built with QML support"));
+    }
+#endif
+    foreach (const MappingInfo& mapping,
+            m_pEnumerator->getMappingsByExtension(MIDI_MAPPING_EXTENSION)) {
+        qDebug() << "Validating " << mapping.getPath();
+        EXPECT_TRUE(mapping.isValid());
+        auto pMapping = LegacyControllerMappingFileHandler::loadMapping(
+                QFileInfo(mapping.getPath()), m_mappingPath);
+
+        QDomDocument serializedDoc = buildRootWithScripts(*pMapping);
+        auto pHandler = std::make_unique<LegacyMidiControllerMappingFileHandler>();
+        auto pSerializedMapping =
+                pHandler->load(serializedDoc.documentElement(),
+                        QFileInfo(mapping.getPath()).absoluteFilePath(),
+                        m_mappingPath);
+        qDebug() << "Initial: " << *pMapping << ", serialized: " << *pSerializedMapping;
+        EXPECT_TRUE(mapping.isValid());
+
+        assertMappings(pMapping.get(), pSerializedMapping.get());
+    }
+#ifdef __BULK__
+    foreach (const MappingInfo& mapping,
+            m_pEnumerator->getMappingsByExtension(BULK_MAPPING_EXTENSION)) {
+        qDebug() << "Validating " << mapping.getPath();
+        EXPECT_TRUE(mapping.isValid());
+        auto pMapping = LegacyControllerMappingFileHandler::loadMapping(
+                QFileInfo(mapping.getPath()), m_mappingPath);
+
+        QDomDocument serializedDoc = buildRootWithScripts(*pMapping);
+        auto pHandler = std::make_unique<LegacyHidControllerMappingFileHandler>();
+        auto pSerializedMapping =
+                pHandler->load(serializedDoc.documentElement(),
+                        QFileInfo(mapping.getPath()).absoluteFilePath(),
+                        m_mappingPath);
+        qDebug() << "Initial: " << *pMapping << ", serialized: " << *pSerializedMapping;
+        EXPECT_TRUE(mapping.isValid());
+
+        assertMappings(pMapping.get(), pSerializedMapping.get());
+    }
+#endif
+
+#ifdef __HID__
+    foreach (const MappingInfo& mapping,
+            m_pEnumerator->getMappingsByExtension(HID_MAPPING_EXTENSION)) {
+        qDebug() << "Validating " << mapping.getPath();
+        EXPECT_TRUE(mapping.isValid());
+        auto pMapping = LegacyControllerMappingFileHandler::loadMapping(
+                QFileInfo(mapping.getPath()), m_mappingPath);
+
+        QDomDocument serializedDoc = buildRootWithScripts(*pMapping);
+        auto pHandler = std::make_unique<LegacyHidControllerMappingFileHandler>();
+        auto pSerializedMapping =
+                pHandler->load(serializedDoc.documentElement(),
+                        QFileInfo(mapping.getPath()).absoluteFilePath(),
+                        m_mappingPath);
+        qDebug() << "Initial: " << *pMapping << ", serialized: " << *pSerializedMapping;
+        EXPECT_TRUE(mapping.isValid());
+
+        assertMappings(pMapping.get(), pSerializedMapping.get());
+    }
+#endif
 }

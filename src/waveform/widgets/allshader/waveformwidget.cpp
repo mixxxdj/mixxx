@@ -29,6 +29,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         : WGLWidget(parent),
           WaveformWidgetAbstract(group),
           m_type(type),
+          m_pWaveformRenderMarkSlip(nullptr),
           m_pWaveformRendererSignal(nullptr) {
     auto pTopNode = std::make_unique<rendergraph::Node>();
     auto pOpacityNode = std::make_unique<rendergraph::OpacityNode>();
@@ -80,7 +81,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         pOpacityNode->appendChildNode(
                 addRendererNode<WaveformRenderBeat>(
                         ::WaveformRendererAbstract::Slip));
-        pOpacityNode->appendChildNode(
+        m_pWaveformRenderMarkSlip = pOpacityNode->appendChildNode(
                 addRendererNode<WaveformRenderMark>(
                         ::WaveformRendererAbstract::Slip));
     }
@@ -153,6 +154,9 @@ void WaveformWidget::paintGL() {
 
     m_pWaveformRenderMark->update();
     m_pWaveformRenderMarkRange->update();
+    if (m_pWaveformRenderMarkSlip) {
+        m_pWaveformRenderMarkSlip->update();
+    }
 
     m_pEngine->preprocess();
     m_pEngine->render();
