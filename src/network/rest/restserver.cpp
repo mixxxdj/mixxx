@@ -1217,7 +1217,11 @@ void RestServer::registerRoutes() {
     const auto statusStreamRoute =
             [this, authorizeRequest, forbiddenMessage](
         const QHttpServerRequest& request,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        QHttpServerResponder& responder) {
+#else
         QHttpServerResponder&& responder) {
+#endif
         if (!m_settings.streamEnabled) {
             RestHeaders headers;
             auto response = serviceUnavailableResponse(&request, &headers);
