@@ -32,7 +32,7 @@ case "$1" in
                     libqt6shadertools6-dev
                 )
                 ;;
-            *)
+            questing|*)
                 PACKAGES_EXTRA=(
                     qt6-shadertools-dev
                 )
@@ -42,7 +42,7 @@ case "$1" in
             jammy|noble|oracular|bullseye|bookworm|victoria|vera|vanessa|virginia|wilma|wildflower) # <= Ubuntu 24.10
                 # qt6-svg-plugins not available
                 ;;
-            *)
+            trixie|questing|*)
                 PACKAGES_EXTRA+=(
                     qt6-svg-plugins
                 )
