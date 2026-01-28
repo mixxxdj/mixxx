@@ -1555,6 +1555,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Reset the waveform zoom level to the default value selected in "
                "Preferences -> Waveforms"),
             pGuiMenu);
+    addControl("[Waveform]",
+            "play_marker_position",
+            tr("Playback Marker Position"),
+            tr("Adjust the horizontal position of the playback marker on the waveforms"),
+            pGuiMenu);
 
     pGuiMenu->addSeparator();
 
