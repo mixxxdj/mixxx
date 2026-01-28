@@ -239,6 +239,17 @@ QList<TrackId> TrackCollection::resolveTrackIds(
     return trackIds;
 }
 
+QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<mixxx::FileInfo>& trackFiles,
+        QObject* pSource) {
+    TrackDAO::ResolveTrackIdFlags flags =
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden;
+    if (!pSource) {
+        flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
+    }
+    return resolveTrackIds(trackFiles, flags);
+}
+
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls,
         bool addMissing) {

@@ -33,7 +33,7 @@ class CrateFeature : public BaseTrackSetFeature {
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
             QObject* pSource) override;
-    bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;

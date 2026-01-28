@@ -11,7 +11,7 @@
 #include <QGLFormat>
 #endif
 
-#ifdef __LINUX__
+#if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #endif
