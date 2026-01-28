@@ -206,6 +206,9 @@ class RestServer : public QObject {
             bool includeAllowHeaders) const;
     QString allowedCorsOrigin(const QHttpServerRequest& request) const;
     bool startOnThread();
+#if defined(MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+    bool startWithSslServerBind();
+#endif
     void stopOnThread();
 
     struct StreamClient {

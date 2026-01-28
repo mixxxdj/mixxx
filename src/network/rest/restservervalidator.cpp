@@ -29,7 +29,7 @@ struct HasHttpServerSslSetup<T,
         std::void_t<decltype(std::declval<T&>().sslSetup(
                 std::declval<const QSslConfiguration&>()))>> : std::true_type { };
 
-#if defined(MIXXX_HAS_HTTP_SERVER_TLS_API)
+#if defined(MIXXX_HAS_HTTP_SERVER_TLS_API) || defined(MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
 constexpr bool kHttpServerHasTlsSupport = true;
 #else
 constexpr bool kHttpServerHasTlsSupport =
