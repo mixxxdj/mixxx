@@ -3783,7 +3783,17 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
     include(CheckCXXSourceCompiles)
     get_target_property(_qt_httpserver_includes Qt6::HttpServer INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(_qt_network_includes Qt6::Network INTERFACE_INCLUDE_DIRECTORIES)
-    set(CMAKE_REQUIRED_INCLUDES ${_qt_httpserver_includes} ${_qt_network_includes})
+    # Filter include directories: remove NOTFOUND values and unresolved generator
+    # expressions that cannot be used as literal paths. The imported targets in
+    # CMAKE_REQUIRED_LIBRARIES propagate their own include directories via
+    # try_compile, so this filtering is a safety measure.
+    set(_qt_tls_check_includes "")
+    foreach(_inc IN LISTS _qt_httpserver_includes _qt_network_includes)
+      if(_inc AND NOT _inc MATCHES "-NOTFOUND$" AND NOT _inc MATCHES "^\\$<")
+        list(APPEND _qt_tls_check_includes "${_inc}")
+      endif()
+    endforeach()
+    set(CMAKE_REQUIRED_INCLUDES ${_qt_tls_check_includes})
     set(CMAKE_REQUIRED_LIBRARIES Qt6::HttpServer Qt6::Network)
     set(_mixxx_httpserver_tls_api_test "
       #include <QHttpServer>
@@ -3810,14 +3820,39 @@ if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
         set(MIXXX_HAS_HTTP_SERVER_TLS_API ON)
       endif()
     endif()
+    # Qt 6.8+ removed sslSetup()/setSslConfiguration() from QAbstractHttpServer.
+    # TLS is now configured by binding a QSslServer to the HTTP server.
+    if(NOT MIXXX_HAS_HTTP_SERVER_TLS_API)
+      set(_mixxx_httpserver_tls_bind_test "
+        #include <QHttpServer>
+        #include <QSslServer>
+        #include <QSslConfiguration>
+        int main() {
+          QSslServer sslServer;
+          sslServer.setSslConfiguration(QSslConfiguration());
+          QHttpServer httpServer;
+          httpServer.bind(&sslServer);
+          return 0;
+        }
+      ")
+      check_cxx_source_compiles("${_mixxx_httpserver_tls_bind_test}" MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+      if(MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+        set(MIXXX_HAS_HTTP_SERVER_TLS_API ON)
+      endif()
+    endif()
     unset(_mixxx_httpserver_tls_api_test)
     unset(_mixxx_httpserver_tls_setup_test)
+    unset(_mixxx_httpserver_tls_bind_test)
     unset(_qt_httpserver_includes)
     unset(_qt_network_includes)
+    unset(_qt_tls_check_includes)
     unset(CMAKE_REQUIRED_INCLUDES)
     unset(CMAKE_REQUIRED_LIBRARIES)
     if(MIXXX_HAS_HTTP_SERVER_TLS_API)
       target_compile_definitions(mixxx-lib PUBLIC MIXXX_HAS_HTTP_SERVER_TLS_API)
+      if(MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+        target_compile_definitions(mixxx-lib PUBLIC MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+      endif()
       message(STATUS "Qt HttpServer TLS APIs available")
     else()
       message(STATUS "Qt HttpServer TLS APIs unavailable; REST API HTTPS disabled")
