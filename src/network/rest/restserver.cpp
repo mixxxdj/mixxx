@@ -789,6 +789,9 @@ RestServer::AuthorizationResult RestServer::authorize(
 
     if (m_settings.tokens.isEmpty()) {
         result.authorized = m_settings.allowUnauthenticated;
+        // When unauthenticated access is allowed with no tokens configured,
+        // the user effectively has write capabilities.
+        result.usedWriteToken = m_settings.allowUnauthenticated;
         return result;
     }
 
