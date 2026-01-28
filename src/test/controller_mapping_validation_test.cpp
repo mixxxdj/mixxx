@@ -6,8 +6,8 @@
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
-#include "track/track.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/enginemixer.h"
@@ -15,6 +15,7 @@
 #include "library/library.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #ifdef MIXXX_USE_QML
 #include "qml/qmlplayermanagerproxy.h"
 #endif
@@ -104,8 +105,12 @@ void FakeBulkControllerJSProxy::send(const QList<int>& data, unsigned int length
 
 FakeController::FakeController()
         : Controller("Test Controller"),
-          m_bMidiMapping(false),
-          m_bHidMapping(false) {
+          m_bMidiMapping(false)
+#ifdef __HID
+          ,
+          m_bHidMapping(false)
+#endif
+{
     startEngine();
     getScriptEngine()->setTesting(true);
 }
@@ -116,8 +121,10 @@ FakeController::~FakeController() {
 bool FakeController::isMappable() const {
     if (m_bMidiMapping) {
         return m_pMidiMapping->isMappable();
+#ifdef __HID
     } else if (m_bHidMapping) {
         return m_pHidMapping->isMappable();
+#endif
     }
     return false;
 }

@@ -78,13 +78,14 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             "in the \"Load Mapping\" menu when you click on your controller on the "
             "left sidebar, you may be able to download one online from the %1. "
             "Place the XML (.xml) and Javascript (.js) file(s) in the \"User Mapping "
-            "Folder\" then restart Mixxx. If you download a mapping in a ZIP file, "
+            "Folder\" then click the Reload button next to the mapping selector to "
+            "reload all available mappings. If you download a mapping in a ZIP file, "
             "extract the XML and Javascript file(s) from the ZIP file to your "
-            "\"User Mapping Folder\" then restart Mixxx.")
-                                         .arg(coloredLinkString(
-                                                 m_pLinkColor,
-                                                 QStringLiteral("Mixxx Controller Forums"),
-                                                 MIXXX_CONTROLLER_FORUMS_URL)));
+            "\"User Mapping Folder\" then click the Reload button.")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            QStringLiteral("Mixxx Controller Forums"),
+                            MIXXX_CONTROLLER_FORUMS_URL)));
 
     txtHardwareCompatibility->setText(coloredLinkString(
             m_pLinkColor,

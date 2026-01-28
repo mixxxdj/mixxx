@@ -730,7 +730,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
 #ifdef __STEM__
         const auto& stemInfo = pNewTrack->getStemInfo();
-        DEBUG_ASSERT(stemInfo.empty() ||
+        DEBUG_ASSERT(!m_pChannel->isPrimaryDeck() || stemInfo.empty() ||
                 static_cast<size_t>(stemInfo.size()) == m_pStemColors.size());
 
         for (size_t stemIdx = 0; stemIdx < m_pStemColors.size(); stemIdx++) {

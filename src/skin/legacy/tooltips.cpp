@@ -965,7 +965,11 @@ void Tooltips::addStandardTooltips() {
             //: The musical key of a track
             << tr("Track Key")
             << tr("Displays the musical key of the loaded track.")
-            << trackTags;
+            << trackTags
+            << tr("Tuning indicators (if detected):")
+            << tr("✧ (sparkle) = 432Hz tuning")
+            << tr("↓ (arrow down) = tuning below 440Hz")
+            << tr("↑ (arrow up) = tuning above 440Hz");
 
     add("track_comment")
             << tr("Track Comment")

@@ -6,6 +6,7 @@
 #include <QScreen>
 #include <QtGlobal>
 
+#include "base/Pitch.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
@@ -461,6 +462,17 @@ QVariant BaseTrackTableModel::data(
         }
     }
 
+    // Handle tuning frequency role for key column
+    if (role == kTuningFrequencyRole) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+            return rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY);
+        }
+        return QVariant();
+    }
+
     // Only retrieve a value for supported roles
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
@@ -762,6 +774,22 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
         }
+        case ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            bool ok = false;
+            const double freq = rawValue.toDouble(&ok);
+            if (!ok || freq <= 0.0) {
+                return QVariant();
+            }
+            if (role == Qt::DisplayRole) {
+                return QString::number(freq, 'f', 0);
+            } else if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return QStringLiteral("%1 Hz").arg(freq, 0, 'f', 4);
+            }
+            return freq;
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
             // The Key value is determined by either the KEY_ID or KEY column
             return KeyUtils::keyFromKeyTextAndIdFields(
@@ -871,7 +899,8 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE:
         case ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER:
-        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY: {
             // We need to cast to int due to a bug similar to
             // https://bugreports.qt.io/browse/QTBUG-67582
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
@@ -907,7 +936,28 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID || !s_keyColorPalette.has_value()) {
                 return QVariant();
             }
-            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette.value()));
+
+            const float tuningHz = (float)rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
+                                           .value<double>();
+            float cents = 0;
+            Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
+            cents /= 100.0f; // normalize between -1 and 1
+            QVariantMap colorRect;
+            if (cents < 0) {
+                colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                colorRect["bottom"] =
+                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, -1),
+                                s_keyColorPalette.value());
+                colorRect["splitPoint"] = cents + 1;
+            } else {
+                colorRect["top"] =
+                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, 1),
+                                s_keyColorPalette.value());
+                colorRect["bottom"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                colorRect["splitPoint"] = cents;
+            }
+            return colorRect;
         }
         default:
             return QVariant();
