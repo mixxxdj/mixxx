@@ -4,7 +4,6 @@ import QtQuick 2.12
 import "Theme"
 
 Column {
-
     enum DuckingMode {
         Off,
         Auto,
@@ -12,41 +11,41 @@ Column {
         NumModes // This always needs to be the last value
     }
 
-    Skin.ControlSlider {
-        width: 50
-        height: 26
-        orientation: Qt.Horizontal
-        group: "[Master]"
-        key: "duckStrength"
+    Skin.ControlFader {
         barColor: Theme.crossfaderBarColor
         barStart: 1
-        fg: Theme.imgMicDuckingSliderHandle
         bg: Theme.imgMicDuckingSlider
+        fg: Theme.imgMicDuckingSliderHandle
+        group: "[Master]"
+        height: 26
+        key: "duckStrength"
+        orientation: Qt.Horizontal
+        width: 50
     }
-
     Skin.Button {
         id: pflButton
 
-        text: duckingControl.duckingModeName
         activeColor: Theme.pflActiveButtonColor
         highlight: duckingControl.duckingEnabled
+        text: duckingControl.duckingModeName
+
         onClicked: duckingControl.nextMode()
 
         Mixxx.ControlProxy {
             id: duckingControl
 
-            property string duckingModeName: {
-                switch (this.value) {
-                    case MicrophoneDuckingPanel.DuckingMode.Auto:
-                        return "Auto";
-                    case MicrophoneDuckingPanel.DuckingMode.Manual:
-                        return "Manual";
-                    default:
-                        return "Off";
-                }
-            }
             property bool duckingEnabled: {
                 return (this.value == MicrophoneDuckingPanel.DuckingMode.Auto || this.value == MicrophoneDuckingPanel.DuckingMode.Manual);
+            }
+            property string duckingModeName: {
+                switch (this.value) {
+                case MicrophoneDuckingPanel.DuckingMode.Auto:
+                    return "Auto";
+                case MicrophoneDuckingPanel.DuckingMode.Manual:
+                    return "Manual";
+                default:
+                    return "Off";
+                }
             }
 
             function nextMode() {

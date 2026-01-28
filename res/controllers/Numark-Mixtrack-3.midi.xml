@@ -8,6 +8,76 @@
         <forums>https://mixxx.discourse.group/t/mixtrack-pro-3/15165</forums>
         <wiki>http://www.mixxx.org/wiki/doku.php/numark_mixtrack_pro_3</wiki>
     </info>
+    <settings>
+        <option
+            variable="libraryMode"
+            label="Navigation mode"
+            type="enum">
+            <value label="Focus" default="true">focus</value>
+            <value label="Classic">classic</value>
+            <description>
+                In Focus mode the Browse encoder affects the library widget which currently has keyboard focus.
+                This requires the Mixxx window to have focus and allows to control the searchbar, too.
+
+                In Classic mode the Browse encoder can select items in the sidebar and tracks table only, but independent
+                of keyboard focus.
+            </description>
+        </option>
+        <option
+            variable="TrackEndWarning"
+            label="Track End Warning"
+            type="boolean"
+            default="true">
+            <description>
+                The jog wheel button flashes near the end of a track.
+            </description>
+        </option>
+        <option
+            variable="iCutEnabled"
+            label="Enable iCut Mode"
+            type="boolean"
+            default="true">
+            <description>
+                When enabled, scratching with SHIFT automatically cuts the track using the crossfader.
+            </description>
+        </option>
+        <option
+            variable="smartPFL"
+            label="Smart PFL on Track Load"
+            type="boolean"
+            default="true">
+            <description>
+                Automatically activates the deck’s PFL (headphone cue) when a track is loaded.
+            </description>
+        </option>
+        <option
+            variable="noPlayOnSyncDoublePress"
+            label="Disable Play on Sync Double-Press"
+            type="boolean"
+            default="false">
+            <description>
+                Prevents the Sync button from triggering Play when double-pressed.
+            </description>
+        </option>
+        <option
+            variable="ShiftFilterFX4"
+            label="Shift + Filter Controls FX4 (not Gain)"
+            type="boolean"
+            default="true">
+            <description>
+                When true, Shift + Filter adjusts FX parameter 4. When false, it controls channel gain.
+            </description>
+        </option>
+        <option
+            variable="PitchBendOnWheelOff"
+            label="Pitch-bend with Wheel when Scratch is Off"
+            type="boolean"
+            default="true">
+            <description>
+                Allows pitch-bend using the jog wheel even when scratch mode is disabled.
+            </description>
+        </option>
+    </settings>
     <controller id="Mixtrack3">
         <scriptfiles>
             <file functionprefix="NumarkMixtrack3" filename="Numark-Mixtrack-3-scripts.js" />

@@ -11,8 +11,8 @@
 #include "widget/wlibrary.h"
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
-                       UserSettingsPointer pConfig,
-                       Library* pLibrary)
+        UserSettingsPointer pConfig,
+        Library* pLibrary)
         : QWidget(parent),
           m_pConfig(pConfig),
           m_bAnalysisActive(false) {
@@ -41,7 +41,8 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
-    } else {
+    }
+    else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pAnalysisLibraryTableView);
@@ -117,10 +118,8 @@ void DlgAnalysis::onSearch(const QString& text) {
             text, radioButtonRecentlyAdded->isChecked());
 }
 
-void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,
-                                       const QItemSelection& deselected) {
-    Q_UNUSED(selected);
-    Q_UNUSED(deselected);
+void DlgAnalysis::tableSelectionChanged(const QItemSelection&,
+        const QItemSelection&) {
     bool tracksSelected = m_pAnalysisLibraryTableView->selectionModel()->hasSelection();
     pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
 }
@@ -130,14 +129,14 @@ void DlgAnalysis::selectAll() {
 }
 
 void DlgAnalysis::analyze() {
-    //qDebug() << this << "analyze()";
+    // qDebug() << this << "analyze()";
     if (m_bAnalysisActive) {
         emit stopAnalysis();
     } else {
         QList<AnalyzerScheduledTrack> tracks;
 
         QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
-        foreach(QModelIndex selectedIndex, selectedIndexes) {
+        for (const auto& selectedIndex : std::as_const(selectedIndexes)) {
             TrackId trackId(m_pAnalysisLibraryTableModel->getFieldVariant(
                     selectedIndex, ColumnCache::COLUMN_LIBRARYTABLE_ID));
             if (trackId.isValid()) {
@@ -149,7 +148,7 @@ void DlgAnalysis::analyze() {
 }
 
 void DlgAnalysis::slotAnalysisActive(bool bActive) {
-    //qDebug() << this << "slotAnalysisActive" << bActive;
+    // qDebug() << this << "slotAnalysisActive" << bActive;
     m_bAnalysisActive = bActive;
     if (bActive) {
         pushButtonAnalyze->setChecked(true);
@@ -165,24 +164,23 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
 }
 
 void DlgAnalysis::onTrackAnalysisSchedulerProgress(
-        AnalyzerProgress analyzerProgress, int finishedCount, int totalCount) {
-    //qDebug() << this << "onTrackAnalysisSchedulerProgress" << analyzerProgress << finishedCount << totalCount;
+        AnalyzerProgress, int finishedCount, int totalCount) {
+    // qDebug() << this << "onTrackAnalysisSchedulerProgress" <<
+    // analyzerProgress << finishedCount << totalCount;
     if (labelProgress->isEnabled()) {
-        QString progressText;
-        if (analyzerProgress >= kAnalyzerProgressNone) {
-            QString progressPercent = QString::number(
-                    analyzerProgressPercent(analyzerProgress));
-            progressText = tr("Analyzing %1% %2/%3").arg(
-                    progressPercent,
-                    QString::number(finishedCount),
-                    QString::number(totalCount));
-        } else {
-            // Omit to display any percentage
-            progressText = tr("Analyzing %1/%2").arg(
-                    QString::number(finishedCount),
-                    QString::number(totalCount));
+        int totalProgressPercent = 0;
+        if (totalCount > 0) {
+            totalProgressPercent = (finishedCount * 100) / totalCount;
+            if (totalProgressPercent > 100) {
+                totalProgressPercent = 100;
+            }
         }
-        labelProgress->setText(progressText);
+
+        labelProgress->setText(tr("Analyzing %1/%2")
+                                       .arg(QString::number(finishedCount),
+                                               QString::number(totalCount)) +
+                QStringLiteral(" (%3%)").arg(
+                        QString::number(totalProgressPercent)));
     }
 }
 
