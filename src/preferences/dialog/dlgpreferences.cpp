@@ -29,7 +29,6 @@
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefrestserver.h"
-#include "preferences/dialog/dlgprefwebserver.h"
 #include "preferences/dialog/dlgprefwaveform.h"
 #include "preferences/restserversettings.h"
 #include "preferences/webserversettings.h"
@@ -209,14 +208,6 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("REST API"),
             "ic_preferences_rest_api.svg");
-
-    addPageWidget(PreferencesPage(
-                          new DlgPrefWebServer(
-                                  this,
-                                  std::make_shared<WebServerSettings>(m_pConfig)),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Web Server"),
-            "ic_custom.svg");
 
 #ifdef __BROADCAST__
     addPageWidget(PreferencesPage(

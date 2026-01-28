@@ -1552,8 +1552,6 @@ add_library(
   src/preferences/dialog/dlgprefsounditem.cpp
   src/preferences/dialog/dlgprefsounditem.ui
   src/preferences/dialog/dlgprefvinyldlg.ui
-  src/preferences/dialog/dlgprefwebserver.cpp
-  src/preferences/dialog/dlgprefwebserverdlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/effectchainpresetlistmodel.cpp
