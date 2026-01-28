@@ -282,10 +282,9 @@ void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
 
 void KeyboardEventFilter::updateWidgetShortcuts() {
     kLogger.debug() << "updateWidgetShortcuts";
-    QStringList shortcutHints;
     for (auto* pWidget : std::as_const(m_widgets)) {
         QString keyString;
-        shortcutHints.clear();
+        QStringList shortcutHints;
         const QList<std::pair<ConfigKey, QString>> controlsCommands =
                 pWidget->getShortcutControlsAndCommands();
         for (const auto& [control, command] : controlsCommands) {
