@@ -16,12 +16,16 @@ class RecordingManager;
 #ifdef __BROADCAST__
 class BroadcastManager;
 #endif
+#ifdef __MACOS_MEDIAPLAYER__
+class MacOSMediaPlayerService;
+#endif
 class ControllerManager;
 class VinylControlManager;
 class TrackCollectionManager;
 class Library;
 class SkinControls;
 class ControlPushButton;
+class ScrobblingManager;
 struct LibraryScanResultSummary;
 
 namespace mixxx {
@@ -58,6 +62,10 @@ class CoreServices : public QObject {
 
     std::shared_ptr<PlayerManager> getPlayerManager() const {
         return m_pPlayerManager;
+    }
+
+    std::shared_ptr<ScrobblingManager> getScrobblingManager() const {
+        return m_pScrobblingManager;
     }
 
     std::shared_ptr<RecordingManager> getRecordingManager() const {
@@ -130,6 +138,7 @@ class CoreServices : public QObject {
     std::shared_ptr<EngineMixer> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
+    std::shared_ptr<ScrobblingManager> m_pScrobblingManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;
 #ifdef __BROADCAST__
     std::shared_ptr<BroadcastManager> m_pBroadcastManager;

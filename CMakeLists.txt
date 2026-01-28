@@ -1177,6 +1177,8 @@ add_library(
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
   src/audio/types.cpp
+  src/broadcast/metadatabroadcast.cpp
+  src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
@@ -1537,6 +1539,8 @@ add_library(
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
+  src/preferences/dialog/dlgprefmetadata.cpp
+  src/preferences/dialog/dlgprefmetadatadlg.ui
   src/preferences/dialog/dlgprefmixer.cpp
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
@@ -1618,9 +1622,11 @@ add_library(
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
   src/track/tracknumbers.cpp
+  src/track/trackplaytimers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
   src/util/autofilereloader.cpp
+  src/track/tracktiminginfo.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/clipboard.cpp
@@ -2104,6 +2110,16 @@ if(APPLE)
       )
       target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
       target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
+    endif()
+
+    option(MACOS_MEDIAPLAYER "macOS media player integration" ON)
+    if(MACOS_MEDIAPLAYER)
+      target_sources(
+        mixxx-lib
+        PRIVATE src/broadcast/macos/macosmediaplayerservice.mm
+      )
+      target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
+      target_compile_definitions(mixxx-lib PUBLIC __MACOS_MEDIAPLAYER__)
     endif()
   endif()
 
@@ -3678,6 +3694,7 @@ set(
   QT_COMPONENTS
   Concurrent
   Core
+  DBus
   Gui
   Network
   OpenGL
@@ -4923,6 +4940,25 @@ if(BROADCAST)
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __BROADCAST__)
+  endif()
+endif()
+
+if(UNIX AND NOT APPLE)
+  # MPRIS implementation using QtDbus
+  option(MPRIS "MPRIS implementation using QtDbus" ON)
+  if(MPRIS)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/broadcast/mpris/mediaplayer2.cpp
+        src/broadcast/mpris/mediaplayer2player.cpp
+        src/broadcast/mpris/mediaplayer2playlists.cpp
+        src/broadcast/mpris/mediaplayer2tracklist.cpp
+        src/broadcast/mpris/mpris.cpp
+        src/broadcast/mpris/mprisplayer.cpp
+        src/broadcast/mpris/mprisservice.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __MPRIS__)
   endif()
 endif()
 
