@@ -31,7 +31,6 @@
 #include "preferences/dialog/dlgprefrestserver.h"
 #include "preferences/dialog/dlgprefwaveform.h"
 #include "preferences/restserversettings.h"
-#include "preferences/webserversettings.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
