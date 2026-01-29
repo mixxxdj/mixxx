@@ -16,11 +16,15 @@ class TraktorZ1Class {
         this.vuLeftConnection = {};
         this.vuRightConnection = {};
         this.vuMeterThresholds = {"vu-30": (1 / 7), "vu-15": (2 / 7), "vu-6": (3 / 7), "vu-3": (4 / 7), "vu0": (5 / 7), "vu3": (6 / 7), "vu6": (7 / 7)};
+
+        this.rawCalibration = {};
+        this.calibration = null;
     }
 
     init(_id) {
         this.id = _id;
 
+        this.calibrate();
         this.registerInputPackets();
         this.registerOutputPackets();
         this.readCurrentPosition();
@@ -116,6 +120,32 @@ class TraktorZ1Class {
         this.lightDeck(false);
     }
 
+    calibrate() {
+        this.rawCalibration.faders = new Uint8Array(0x20 * 3);
+        this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD1)), 0x00);
+        this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD2)), 0x20);
+        this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD3)), 0x40);
+        this.calibration = this.parseRawCalibration();
+    }
+
+    parseRawCalibration() {
+        return {
+            crossfader: this.parseCrossfaderCalibration(0x3C),
+        };
+    }
+
+    parseCrossfaderCalibration(index) {
+        const data = this.rawCalibration.faders;
+        return {
+            min: this.parseUint16Le(data, index),
+            max: this.parseUint16Le(data, index+2),
+        };
+    }
+
+    parseUint16Le(data, index) {
+        return data[index] + (data[index+1]<<8);
+    }
+
     readCurrentPosition() {
         // Sync on-screen controls with controller knob positions
         const report0x01 = new Uint8Array(controller.getInputReport(0x01));
@@ -207,10 +237,13 @@ class TraktorZ1Class {
 
     parameterHandler(field) {
         let value = field.value / 4095;
-        // Crossfader value don't reach boundaries and need safe margins
-        // min: 36 - max: 4083
+        // Crossfader value don't reach boundaries and need to use calibration values
+        // Also apply extra safe margins
+        const safeMargins = 5;
         if (field.name === "crossfader") {
-            value = (field.value - 36) / 4047;
+            const min = this.calibration.crossfader.min;
+            const max = this.calibration.crossfader.max;
+            value = script.absoluteLin(field.value, 0, 1, min + safeMargins, max - safeMargins);
         }
         engine.setParameter(field.group, field.name, value);
     }
