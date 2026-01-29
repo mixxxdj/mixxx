@@ -440,9 +440,19 @@
         <!-- minimal decks, visible with maximized library -->
         <Template src="skin:decks_row_small.xml"/>
 
-        <SingletonContainer>
-          <ObjectName>Library</ObjectName>
-        </SingletonContainer>
+        <WidgetGroup>
+          <SizePolicy>me,me</SizePolicy>
+        </WidgetGroup>
+
+        <Window>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <SingletonContainer>
+              <ObjectName>Library</ObjectName>
+            </SingletonContainer>
+          </Children>
+        </Window>
       </Children>
     </WidgetGroup>
   </Children>
