@@ -5049,6 +5049,12 @@ if(QTKEYCHAIN)
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
 endif()
 
+# Track Similarity
+option(TRACKSIMILARITY "Display harmonic similarity of tracks in the Library" OFF)
+if(TRACKSIMILARITY)
+  target_compile_definitions(mixxx-lib PUBLIC __TRACKSIMILARITY__)
+endif()
+
 # USB HID or/and Bulk controller support
 find_package(LibUSB)
 
