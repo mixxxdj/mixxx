@@ -1,17 +1,18 @@
 name: Pull request or branch build
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - edited
+  # pull_request:
+  #   types:
+  #     - opened
+  #     - synchronize
+  #     - reopened
+  #     - edited
   push:
     branches:
-      - "*"
-      - "!main"
-      - "![0-9].[0-9]"
+      # - "*"
+      # - "!main"
+      # - "![0-9].[0-9]"
+      - disabled
   workflow_dispatch:
 
 permissions:

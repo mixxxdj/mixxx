@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+name: CLA Check
+on:
+  push:
+    branches:
+      - chore/add-cla-check
+
+permissions:
+  id-token: write
+  pull-requests: write
+
+jobs:
+  check-cla:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_USERNAME: acolombier
+      PR_NUMBER: 15917
+    steps:
+      - id: "auth"
+        name: "Authenticate to GCP"
+        uses: "google-github-actions/auth@fc2174804b84f912b1f6d334e9463f484f1c552d"
+        with:
+          project_id: mixxx-485709
+          workload_identity_provider: "projects/763965891340/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider"
+          service_account: cla-check-sa@mixxx-485709.iam.gserviceaccount.com
+          access_token_scopes: https://www.googleapis.com/auth/spreadsheets.readonly
+          token_format: access_token
+      - id: "check"
+        name: "Check"
+        run: |-
+          set -veo pipefail
+          echo "::add-mask::${{steps.auth.outputs.access_token}}"
+          offset=0
+          while [ "$offset" -lt 10000 ]; do
+            values=$(curl --fail -H "Authorization: Bearer ${{steps.auth.outputs.access_token}}" 'https://sheets.googleapis.com/v4/spreadsheets/1tq0Q8lgH1cR1YB2kphP1NmpO6WMqjhmIqr-z8aYbOVA/values/Sheet1!'"B$(($offset + 1)):B$(($offset + 100))" | jq ".values")
+            echo $values
+            if [ "$(echo $values | jq '. | length')" -eq 0 ]; then
+              break
+            fi
+            if [ -n "$(echo $values |  jq ".[] | select(.[0] == \"${GITHUB_USERNAME}\")" -c)" ]; then
+              echo "Found ${GITHUB_USERNAME} in the list of contributor who have signed the CLA"
+              echo "found=true" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+            offset=$(($offset + 100))
+            sleep 0.5
+          done
+          echo "${GITHUB_USERNAME} couldn't be found in the list of contributor who have signed the CLA"
+          echo "found=false" >> $GITHUB_OUTPUT
+
+      - name: Prepare
+        env:
+          LABEL_TO_ADD: ${{ steps.check.outputs.found == 'true' && 'cla-checked' || 'cla-pending' }}
+          LABEL_TO_REMOVE: ${{ steps.check.outputs.found == 'true' && 'cla-pending' || 'cla-checked' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr --repo mixxxdj/mixxx edit "${PR_NUMBER}" --add-label "${LABEL_TO_ADD}"
+          gh pr --repo mixxxdj/mixxx edit "${PR_NUMBER}" --remove-label "${LABEL_TO_REMOVE}"
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ env.PR_NUMBER }}
+          comment-author: "github-actions[bot]"
+          body-includes: CLA check
+
+      - name: Create a comment for new contributor
+        uses: peter-evans/create-or-update-comment@v5
+        if: steps.check.outputs.found != 'true'
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ env.PR_NUMBER }}
+          body: |
+            ## CLA check
+
+            Welcome at Mixxx!
+
+            As a first-time contributor we need you to sign the [Mixxx Contributor Agreement](https://docs.google.com/forms/d/e/1FAIpQLScC9QG327sjLL0eWftmfGUasxFFLxg6LCXJ2xHDYRzFIRqyiw/viewform?formkey=dEpYN2NkVEFnWWQzbkFfM0ZYYUZ5X2c6MQ) and comment here when you have done so. It gives us permission to distribute your contribution under the GPL v2 or later license and the Apple Mac App Store. It is also helpful for us to have contact information for contributors in case we may need it in the future.
+          edit-mode: replace
+
+      - name: Create a comment for returning contributor
+        if: steps.check.outputs.found == 'true' && steps.fc.outputs.comment-id != null
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ env.PR_NUMBER }}
+          body: |
+            ## CLA check
+
+            Thank you for signing the CLA!
+          edit-mode: replace
