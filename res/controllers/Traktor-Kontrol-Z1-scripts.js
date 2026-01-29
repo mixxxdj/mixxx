@@ -5,6 +5,8 @@
 // Author: djantti
 //
 
+// eslint definitions
+/* global controller, HIDController, HIDPacket */
 class TraktorZ1Class {
     constructor() {
         this.controller = new HIDController();
