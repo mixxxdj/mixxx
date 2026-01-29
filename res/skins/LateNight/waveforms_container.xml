@@ -67,6 +67,7 @@
                     <SetVariable name="ChanNum">4</SetVariable>
                     <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
                     <SetVariable name="BgColorWaveform"><Variable name="BgColorWaveform_34"/></SetVariable>
+                    <SetVariable name="Highlight">[Skin],show_4decks</SetVariable>
                   </Template>
                 </Children>
                 <Connection>
