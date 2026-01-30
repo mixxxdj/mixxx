@@ -19,6 +19,7 @@ class TraktorZ1Class {
         this.vuRightConnection = {};
         this.vuMeterThresholds = {"vu-30": (1 / 7), "vu-15": (2 / 7), "vu-6": (3 / 7), "vu-3": (4 / 7), "vu0": (5 / 7), "vu3": (6 / 7), "vu6": (7 / 7)};
 
+        // Calibration data
         this.rawCalibration = {};
         this.calibration = null;
     }
@@ -73,7 +74,7 @@ class TraktorZ1Class {
         this.registerInputScaler(InputReport0x01, "[Channel2]", "volume", 0x19, 0xFFFF, this.parameterHandler.bind(this));
 
         // Crossfader
-        this.registerInputScaler(InputReport0x01, "[Master]", "crossfader", 0x1B, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(InputReport0x01, "[Master]", "crossfader", 0x1B, 0xFFFF, this.crossfaderHandler.bind(this));
 
         this.controller.registerInputPacket(InputReport0x01);
     }
@@ -238,15 +239,16 @@ class TraktorZ1Class {
     }
 
     parameterHandler(field) {
-        let value = field.value / 4095;
+        engine.setParameter(field.group, field.name, field.value / 4095);
+    }
+
+    crossfaderHandler(field) {
         // Crossfader value don't reach boundaries and need to use calibration values
         // Also apply extra safe margins
         const safeMargins = 5;
-        if (field.name === "crossfader") {
-            const min = this.calibration.crossfader.min;
-            const max = this.calibration.crossfader.max;
-            value = script.absoluteLin(field.value, 0, 1, min + safeMargins, max - safeMargins);
-        }
+        const min = this.calibration.crossfader.min;
+        const max = this.calibration.crossfader.max;
+        const value = script.absoluteLin(field.value, 0, 1, min + safeMargins, max - safeMargins);
         engine.setParameter(field.group, field.name, value);
     }
 
