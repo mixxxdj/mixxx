@@ -1,10 +1,18 @@
 # Mixxx Flatpak instructions
 
-This document provides instructions for building, packaging and installing Mixxx as a Flatpak application using the **tools/flatpak_buildenv.sh** and **packaging/flatpak/flatpak_build.sh** Bash scripts.
+This document provides instructions for building, packaging and installing Mixxx as a Flatpak application using the **tools/flatpak_buildenv.sh** and **packaging/flatpak/flatpak_build.sh** Bash scripts. The scripts provide several options for configuring the build, so please read the documentation before using them.
+
+If you already have Flatpak set up, you can simply use the recommended build options. These commands will install a system-wide build environment, compile a Mixxx Flatpak bundle and install it for the current user. The process requires 15 GB of disk space and usually takes about 20 minutes.
+
+`tools/flatpak_buildenv.sh setup --system`
+
+`packaging/flatpak/flatpak_build.sh bundle`
+
+`flatpak install --user Mixxx.Flatpak`
 
 ## Requirements
 
-To build Mixxx as a Flatpak, you need to have **flatpak** and **flatpak-builder** installed on your system. Most Linux distributions publish these as official packages that can be installed using the system package manager.
+To build Mixxx as a Flatpak, you need to have **flatpak** and **flatpak-builder** installed on your system. Most Linux distributions publish these as official packages that can be installed using the system package manager. Installing **ccache** is also recommended as it makes rebuilds much faster.
 
 If you're using an immutable distribution (e.g. Silverblue, Kinoite, Bazzite), you can install the packages within a Toolbx or a Distrobox container and build from there.
 
@@ -28,7 +36,9 @@ The build environment setup script performs the following actions:
 
 ### Setup script options
 
-The `--system` option configures Flathub as a system repository and installs packages system-wide. The `--user` option configures Flathub as a user repository and installs packages for the current user only. Choosing one of these options is required.
+The `--system` option configures Flathub as a system repository and installs packages system-wide, making them available to all users. This is the recommended option for build environment setup.
+
+The `--user` option configures Flathub as a user repository and installs packages only for the current user. Using either this or the system-wide install option above is required.
 
 The `--builder` option installs the optional **org.flatpak.Builder** package. This package is maintained by Flathub and provides a Flatpak version of the build tools. It's especially useful with immutable distributions as it can build Mixxx directly on the host system.
 
