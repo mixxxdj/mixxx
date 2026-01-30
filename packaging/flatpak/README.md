@@ -8,7 +8,7 @@ If you already have Flatpak set up, you can simply use the recommended build opt
 
 `packaging/flatpak/flatpak_build.sh bundle`
 
-`flatpak install --user Mixxx.Flatpak`
+`flatpak install --user Mixxx.flatpak`
 
 ## Requirements
 
@@ -60,7 +60,7 @@ The `--manifest <file>` option accepts a custom Flatpak build manifest file as a
 
 `packaging/flatpak/flatpak_build.sh bundle [--builder] [--manifest <file>]`
 
-`flatpak install [--system | --user] Mixxx.Flatpak`
+`flatpak install [--system | --user] Mixxx.flatpak`
 
 The **bundle** command builds Mixxx as a single-file Flatpak user bundle that can be easily installed to multiple systems. This build method is recommended for all Mixxx users.
 
@@ -70,7 +70,7 @@ The **bundle** command builds Mixxx as a single-file Flatpak user bundle that ca
 
 `flatpak install [--system | --user] Mixxx.flatpak`
 
-`flatpak install [--system | --user] Mixxx.Debug.Flatpak`
+`flatpak install [--system | --user] Mixxx.Debug.flatpak`
 
 The **debug** command builds the same single-file user bundle as above, but also creates an additional debug extension. This extension contains debug symbols and is intended for development purposes. It's not needed for running Mixxx.
 
