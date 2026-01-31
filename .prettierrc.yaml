@@ -10,4 +10,4 @@ overrides:
       singleQuote: true
       trailingComma: all
       bracketSpacing: true
-      useTab: true
+      useTabs: false
