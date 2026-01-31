@@ -1142,9 +1142,9 @@ void TrackDAO::afterPurgingTracks(
 #else
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
 #endif
+    // Notify BaseTrackCache it should remove tracks and track models
+    // that they should update their cache as well.
     emit tracksRemoved(tracksRemovedSet);
-    // notify trackmodels that they should update their cache as well.
-    emit forceModelUpdate();
 }
 
 namespace {
