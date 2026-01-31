@@ -103,38 +103,48 @@ void WBattery::slotStateChanged() {
         setBaseTooltip(formatTooltip(dPercentage));
     }
 
+    QString state;
     m_pCurrentPixmap.clear();
     switch (chargingState) {
-        case Battery::CHARGING:
-            if (!m_chargingPixmaps.isEmpty()) {
-                m_pCurrentPixmap = m_chargingPixmaps[
-                    pixmapIndexFromPercentage(dPercentage,
-                                              m_chargingPixmaps.size())];
-            }
-            if (minutesLeft != Battery::TIME_UNKNOWN) {
-                appendBaseTooltip("\n" + tr("Time until charged: %1")
-                               .arg(formatMinutes(minutesLeft)));
-            }
-            break;
-        case Battery::DISCHARGING:
-            if (!m_dischargingPixmaps.isEmpty()) {
-                m_pCurrentPixmap = m_dischargingPixmaps[
-                    pixmapIndexFromPercentage(dPercentage,
-                                              m_dischargingPixmaps.size())];
-            }
-            if (minutesLeft != Battery::TIME_UNKNOWN) {
-                appendBaseTooltip("\n" + tr("Time left: %1")
-                               .arg(formatMinutes(minutesLeft)));
-            }
-            break;
-        case Battery::CHARGED:
-            m_pCurrentPixmap = m_pPixmapCharged;
-            appendBaseTooltip("\n" + tr("Battery fully charged."));
-            break;
-        default:
-            break;
+    case Battery::CHARGING: {
+        state = "charging";
+        if (!m_chargingPixmaps.isEmpty()) {
+            m_pCurrentPixmap = m_chargingPixmaps[pixmapIndexFromPercentage(dPercentage,
+                    m_chargingPixmaps.size())];
+        }
+        if (minutesLeft != Battery::TIME_UNKNOWN) {
+            appendBaseTooltip("\n" + tr("Time until charged: %1").arg(formatMinutes(minutesLeft)));
+        }
+        break;
+    }
+    case Battery::DISCHARGING: {
+        state = "discharging";
+        if (!m_dischargingPixmaps.isEmpty()) {
+            m_pCurrentPixmap = m_dischargingPixmaps[pixmapIndexFromPercentage(dPercentage,
+                    m_dischargingPixmaps.size())];
+        }
+        if (minutesLeft != Battery::TIME_UNKNOWN) {
+            appendBaseTooltip("\n" + tr("Time left: %1").arg(formatMinutes(minutesLeft)));
+        }
+        break;
+    }
+    case Battery::CHARGED: {
+        state = "charged";
+        m_pCurrentPixmap = m_pPixmapCharged;
+        appendBaseTooltip("\n" + tr("Battery fully charged."));
+        break;
+    }
+    default: {
+        state = "unknown";
+        break;
+    }
     }
     setVisible(chargingState != Battery::UNKNOWN);
+
+    qWarning() << ".";
+    qWarning() << "Battery state changed:" << state;
+    qWarning() << "           percentage:" << dPercentage << "%";
+    qWarning() << ".";
 
     // call parent's update() to show changes, this should call
     // QWidget::update()
