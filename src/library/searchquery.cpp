@@ -224,7 +224,7 @@ QString TextFilterNode::toSql() const {
     }
     QStringList searchClauses;
     for (const auto& sqlColumn : m_sqlColumns) {
-        searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
+        searchClauses << QString("%1 IS NOT NULL AND %1 LIKE %2").arg(sqlColumn, escapedArgument);
     }
     return concatSqlClauses(searchClauses, "OR");
 }
