@@ -124,7 +124,7 @@ repos:
     rev: ffb6a759a979008c0e6dff86e39f4745a2d9eac4 # frozen: 3.1.0
     hooks:
       - id: prettier
-        files: \.(d\.ts|ts|tsx|js|yaml)$
+        files: \.(d\.ts|ya?ml)$
   - repo: https://github.com/qarmin/qml_formatter.git
     rev: 37c2513b1b8275a475a160ed2f5b044910335d5f # No release tag yet including #6 fix
     hooks:
