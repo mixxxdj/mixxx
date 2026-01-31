@@ -455,7 +455,7 @@ void ShoutConnection::updateFromPreferences() {
     QString userErrorMsg;
     int ret = -1;
     if (m_encoder) {
-        ret = m_encoder->initEncoder(mainSamplerate, &userErrorMsg);
+        ret = m_encoder->initEncoder(mainSamplerate, ChannelCount, &userErrorMsg);
     }
 
     // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder

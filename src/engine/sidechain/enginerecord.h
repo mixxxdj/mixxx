@@ -7,6 +7,7 @@
 #include "control/pollingcontrolproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
+#include "encoder/encodersettings.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -86,4 +87,5 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
     bool m_bCueUsesFileAnnotation;
+    bool m_bRecordMono = false;
 };

@@ -136,8 +136,11 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate,
+        int channels,
+        QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
+    m_channels = channels;
 
     if (sampleRate != kMainSampleRate) {
             kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";

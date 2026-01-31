@@ -193,12 +193,14 @@ void EncoderWave::initStream() {
     }
 }
 
-int EncoderWave::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+int EncoderWave::initEncoder(mixxx::audio::SampleRate sampleRate,
+        int channels,
+        QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = sampleRate;
-    m_sfInfo.channels = 2;
+    m_sfInfo.channels = channels;
     m_sfInfo.frames = 0;
     m_sfInfo.sections = 0;
     m_sfInfo.seekable = 0;

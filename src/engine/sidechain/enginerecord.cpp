@@ -55,7 +55,7 @@ int EngineRecord::updateFromPreferences() {
     int ret = -1;
     if (m_pEncoder) {
         m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
-        ret = m_pEncoder->initEncoder(m_sampleRate, &userErrorMsg);
+        ret = m_pEncoder->initEncoder(m_sampleRate, m_bRecordMono ? 1 : 2, &userErrorMsg);
     }
 
     if (ret < 0) {

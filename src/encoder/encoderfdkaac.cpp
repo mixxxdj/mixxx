@@ -247,8 +247,11 @@ void EncoderFdkAac::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate,
+        int channels,
+        QString* pUserErrorMessage) {
     m_sampleRate = sampleRate;
+    m_channels = channels;
 
     if (!m_pLibrary) {
         kLogger.warning() << "initEncoder failed: fdk-aac library not loaded";
