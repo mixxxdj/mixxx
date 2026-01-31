@@ -937,26 +937,38 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
 
-            const float tuningHz = (float)rawSiblingValue(
+            const float tuningHz = static_cast<float>(rawSiblingValue(
                     index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
-                                           .value<double>();
-            float cents = 0;
-            Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
-            cents /= 100.0f; // normalize between -1 and 1
+                            .value<double>());
             QVariantMap colorRect;
-            if (cents < 0) {
-                colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
-                colorRect["bottom"] =
-                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, -1),
-                                s_keyColorPalette.value());
-                colorRect["splitPoint"] = cents + 1;
+            if (tuningHz > 220 && tuningHz < 880) { // is the tuning valid?
+                float cents = 0;
+                int midiPitch = Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
+                int keyOffset = midiPitch - 69; // Middle A is note 69
+                cents /= 100.0f;                // normalize for >= -0.5 and < 0.5
+                if (cents < 0) {
+                    colorRect["top"] = KeyUtils::keyToColor(
+                            KeyUtils::scaleKeySteps(key, keyOffset),
+                            s_keyColorPalette.value());
+                    colorRect["bottom"] =
+                            KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, keyOffset - 1),
+                                    s_keyColorPalette.value());
+                    colorRect["splitPoint"] = cents + 1;
+                } else {
+                    colorRect["top"] =
+                            KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, keyOffset + 1),
+                                    s_keyColorPalette.value());
+                    colorRect["bottom"] = KeyUtils::keyToColor(
+                            KeyUtils::scaleKeySteps(key, keyOffset),
+                            s_keyColorPalette.value());
+                    colorRect["splitPoint"] = cents;
+                }
             } else {
-                colorRect["top"] =
-                        KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, 1),
-                                s_keyColorPalette.value());
-                colorRect["bottom"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
-                colorRect["splitPoint"] = cents;
+                colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                // KeyDelegate will not read a bottom color if splitPoint is 1
+                colorRect["splitPoint"] = 1;
             }
+
             return colorRect;
         }
         default:
