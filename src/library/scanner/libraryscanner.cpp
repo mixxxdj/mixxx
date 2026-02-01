@@ -103,6 +103,7 @@ LibraryScanner::LibraryScanner(
           m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
+          m_numRelocatedTracks(0),
           m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
