@@ -32,13 +32,15 @@ class LibraryScanner : public QThread {
             const UserSettingsPointer& pConfig);
     ~LibraryScanner() override;
 
-  public slots:
     // Call from any thread to start a scan. Does nothing if a scan is already
     // in progress.
     // The autoscan flag is used for the summary report. Receivers of scanSummary()
     // can use this to decide whether to show the summary dialog, for example hide
     // it for the automatic scan during startup.
     void scan(bool autoscan = false);
+
+    // Call from any thread to start a scan for a certain directory
+    void scanDir(const QString& dir);
 
     // Call from any thread to cancel the scan.
     void slotCancel();
@@ -59,6 +61,7 @@ class LibraryScanner : public QThread {
     // Emitted by scan() to invoke slotStartScan in the scanner thread's event
     // loop.
     void startScan();
+    void startDirScan(QString dir);
 
   protected:
     void run() override;
@@ -68,6 +71,7 @@ class LibraryScanner : public QThread {
 
   private slots:
     void slotStartScan();
+    void slotStartDirScan(const QString& dir);
     void slotFinishHashedScan();
     void slotFinishUnhashedScan();
 
@@ -86,6 +90,8 @@ class LibraryScanner : public QThread {
         CANCELING,
         FINISHED
     };
+
+    void startScanInner();
 
     void cancelAndQuit();
     void cancel();
