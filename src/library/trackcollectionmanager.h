@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDir>
+#include <QFileSystemWatcher>
 #include <QList>
 #include <QSet>
 #include <memory>
@@ -106,6 +107,7 @@ class TrackCollectionManager: public QObject,
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
+    void slotIncomingDirectoryChanged(const QString& path);
 
   private:
     void afterTrackAdded(const TrackPointer& pTrack) const;
@@ -135,4 +137,6 @@ class TrackCollectionManager: public QObject,
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
+
+    QFileSystemWatcher m_incomingDirWatcher;
 };
