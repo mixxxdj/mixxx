@@ -670,5 +670,7 @@ void TrackCollectionManager::slotIncomingDirectoryChanged(const QString& path) {
     auto fi = QFileInfo(path);
     const QString absPath = fi.absoluteFilePath();
 
-    kLogger.info() << "Incoming tracks directory changed:" << absPath;
+    kLogger.info() << "Incoming directory changed, starting scan for:" << absPath;
+
+    m_pScanner->scanDir(path);
 }

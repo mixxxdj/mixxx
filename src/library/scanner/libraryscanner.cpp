@@ -121,6 +121,7 @@ LibraryScanner::LibraryScanner(
     // Listen to signals from our public methods (invoked by other threads) and
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
+    connect(this, &LibraryScanner::startDirScan, this, &LibraryScanner::slotStartDirScan);
 
     connect(this,
             &LibraryScanner::progressLoading,
@@ -186,6 +187,16 @@ void LibraryScanner::run() {
     kLogger.debug() << "Exiting thread";
 }
 
+void LibraryScanner::slotStartDirScan(const QString& dir) {
+    kLogger.debug() << "slotStartDirScan()";
+    DEBUG_ASSERT(m_state == STARTING);
+
+    cleanUpDatabase(m_libraryHashDao.database());
+
+    m_libraryRootDirs = {mixxx::FileInfo(dir)};
+    startScanInner();
+}
+
 void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
@@ -195,6 +206,11 @@ void LibraryScanner::slotStartScan() {
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.loadAllDirectories();
+
+    startScanInner();
+}
+
+void LibraryScanner::startScanInner() {
     // If there are no directories then we still have to scan independently added tracks.
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
 
@@ -510,6 +526,13 @@ void LibraryScanner::scan(bool autoscan) {
     if (changeScannerState(STARTING)) {
         m_manualScan = autoscan;
         emit startScan();
+    }
+}
+
+void LibraryScanner::scanDir(const QString& dir) {
+    if (changeScannerState(STARTING)) {
+        m_manualScan = true;
+        emit startDirScan(dir);
     }
 }
 
