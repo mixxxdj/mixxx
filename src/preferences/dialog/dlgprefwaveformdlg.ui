@@ -118,7 +118,7 @@ Select from different types of displays for the waveform, which differ primarily
         <number>10</number>
        </property>
        <property name="maximum">
-        <number>60</number>
+        <number>240</number>
        </property>
        <property name="value">
         <number>30</number>
@@ -140,7 +140,7 @@ Select from different types of displays for the waveform, which differ primarily
         <number>10</number>
        </property>
        <property name="maximum">
-        <number>60</number>
+        <number>240</number>
        </property>
        <property name="value">
         <number>30</number>
