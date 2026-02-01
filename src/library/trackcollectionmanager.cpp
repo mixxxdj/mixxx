@@ -136,26 +136,7 @@ TrackCollectionManager::TrackCollectionManager(
                 m_pConfig->getValue(
                         mixxx::library::prefs::kIncomingTracksDir,
                         QString());
-        if (!incomingTracksDir.isEmpty()) {
-            auto fi = QFileInfo(incomingTracksDir);
-            if (fi.exists() && fi.isDir()) {
-                QString incomingDirPath = fi.absoluteFilePath();
-                if (!m_incomingDirWatcher.addPath(incomingDirPath)) {
-                    kLogger.warning() << "Failed to watch incoming tracks directory"
-                                      << incomingDirPath;
-                } else {
-                    kLogger.info() << "Watching incoming tracks directory" << incomingDirPath;
-                    connect(&m_incomingDirWatcher,
-                            &QFileSystemWatcher::directoryChanged,
-                            this,
-                            &TrackCollectionManager::slotIncomingDirectoryChanged);
-                }
-            } else {
-                kLogger.warning()
-                        << "Configured incoming tracks directory is invalid:"
-                        << incomingTracksDir;
-            }
-        }
+        initIncomingDirWatcher(incomingTracksDir);
     }
 }
 
@@ -673,4 +654,30 @@ void TrackCollectionManager::slotIncomingDirectoryChanged(const QString& path) {
     kLogger.info() << "Incoming directory changed, starting scan for:" << absPath;
 
     m_pScanner->scanDir(path);
+}
+
+void TrackCollectionManager::initIncomingDirWatcher(const QString& incomingTracksDir) {
+    if (incomingTracksDir.isEmpty()) {
+        return;
+    }
+
+    auto fi = QFileInfo(incomingTracksDir);
+    if (!fi.exists() || !fi.isDir()) {
+        kLogger.warning()
+                << "Configured incoming tracks directory is invalid:"
+                << incomingTracksDir;
+        return;
+    }
+
+    QString incomingDirPath = fi.absoluteFilePath();
+    if (!m_incomingDirWatcher.addPath(incomingDirPath)) {
+        kLogger.warning() << "Failed to watch incoming tracks directory"
+                          << incomingDirPath;
+    } else {
+        kLogger.info() << "Watching incoming tracks directory" << incomingDirPath;
+        connect(&m_incomingDirWatcher,
+                &QFileSystemWatcher::directoryChanged,
+                this,
+                &TrackCollectionManager::slotIncomingDirectoryChanged);
+    }
 }
