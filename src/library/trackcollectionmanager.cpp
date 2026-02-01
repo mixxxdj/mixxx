@@ -691,7 +691,7 @@ void TrackCollectionManager::slotIncomingDirectoryChanged(const QString& path) {
         return;
     }
 
-    if (path.isEmpty()) {
+    if (path.isEmpty() || !m_pScanner->isIdle()) {
         return;
     }
 
