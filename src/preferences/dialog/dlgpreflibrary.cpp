@@ -55,6 +55,10 @@ DlgPrefLibrary::DlgPrefLibrary(
             &QPushButton::clicked,
             this,
             &DlgPrefLibrary::slotRelocateDir);
+    connect(pushButton_incoming,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefLibrary::slotIncomingDir);
     connect(checkBox_serato_metadata_export,
             &QAbstractButton::clicked,
             this,
@@ -272,6 +276,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+
+    lineEdit_incoming->setText({});
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -387,9 +393,15 @@ void DlgPrefLibrary::slotUpdate() {
 
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
-                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    kApplyPlayedTrackColorConfigKey,
                     BaseTrackTableModel::kApplyPlayedTrackColorDefault);
     checkbox_played_track_color->setChecked(applyPlayedTrackColor);
+
+    const QString incomingTracksDir =
+            m_pConfig->getValue(
+                    kIncomingTracksDir,
+                    QString());
+    lineEdit_incoming->setText(incomingTracksDir);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -492,6 +504,19 @@ void DlgPrefLibrary::slotRelocateDir() {
     if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
         populateDirList();
     }
+}
+
+void DlgPrefLibrary::slotIncomingDir() {
+    QString startDir = lineEdit_incoming->text();
+    QDir dir = startDir;
+    if (startDir.isEmpty() || !dir.exists()) {
+        startDir = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    }
+
+    QString fd = QFileDialog::getExistingDirectory(
+            this, tr("Incoming tracks directory"), startDir);
+
+    lineEdit_incoming->setText(fd);
 }
 
 void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
@@ -601,8 +626,10 @@ void DlgPrefLibrary::slotApply() {
     BaseTrackTableModel::setApplyPlayedTrackColor(
             checkbox_played_track_color->isChecked());
     m_pConfig->set(
-            mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+            kApplyPlayedTrackColorConfigKey,
             ConfigValue(checkbox_played_track_color->isChecked()));
+
+    m_pConfig->set(kIncomingTracksDir, lineEdit_incoming->text());
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();

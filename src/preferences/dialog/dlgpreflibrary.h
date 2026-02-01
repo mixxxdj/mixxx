@@ -51,6 +51,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
+    void slotIncomingDir();
 
   signals:
     void apply();
