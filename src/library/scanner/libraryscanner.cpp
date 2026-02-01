@@ -722,3 +722,7 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         return false;
     }
 }
+
+bool LibraryScanner::isIdle() {
+    return m_state == IDLE;
+}
