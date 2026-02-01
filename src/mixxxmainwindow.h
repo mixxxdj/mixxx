@@ -117,6 +117,9 @@ class MixxxMainWindow : public QMainWindow {
     void alwaysHideMenuBarDlg();
 #endif
 
+    void showMassScanSummaryDlg(const LibraryScanResultSummary& result);
+    void showSingleScanSummaryDlg(const LibraryScanResultSummary& result);
+
     QDialog::DialogCode soundDeviceErrorDlg(
             const QString &title, const QString &text, bool* retryClicked);
     QDialog::DialogCode soundDeviceBusyDlg(bool* retryClicked);
