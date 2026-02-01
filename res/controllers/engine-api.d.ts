@@ -1,4 +1,3 @@
-
 /** ScriptConnectionJSProxy */
 
 declare interface ScriptConnection {
@@ -30,7 +29,6 @@ declare interface ScriptConnection {
      */
     readonly isConnected: boolean;
 }
-
 
 /** ControllerScriptInterfaceLegacy */
 
@@ -122,7 +120,7 @@ declare namespace engine {
      */
     function getDefaultParameter(group: string, name: string): number;
 
-    type CoCallback = (value: number, group: string, name: string) => void
+    type CoCallback = (value: number, group: string, name: string) => void;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -162,7 +160,6 @@ declare namespace engine {
      * @deprecated Use {@link engine.makeConnection} instead
      */
     function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
-
 
     /**
      * Triggers the execution of all connected callback functions, with the actual value of a control.
@@ -332,6 +329,7 @@ declare namespace engine {
      */
     function isSoftStartActive(deck: number): bool;
 
+    // prettier-ignore
     enum Charset {
         ASCII,          // American Standard Code for Information Interchange (7-Bit)
         UTF_8,          // Unicode Transformation Format (8-Bit)
@@ -368,5 +366,5 @@ declare namespace engine {
      * @param targetCharset The charset to encode the string into.
      * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
      */
-    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer
+    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer;
 }
