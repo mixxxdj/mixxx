@@ -22,8 +22,7 @@
  *
  * Modes:
  *   stable  : Low Q and high R for stable playback
- *   adjust  : Medium values for slight pitch changes
- *   reactive: High Q and low R for high reactivity (scratching)
+ *   scratch : High Q and low R for high reactivity (scratching)
  */
 
 #ifndef PITCH_KALMAN_H
@@ -57,25 +56,22 @@ struct pitch_kalman_filter {
 
     double P[2][2];
 
-    /* Thresholds of the innovation quantity for the mode switches */
+    /* Thresholds of the innovation quantity for the mode switch */
 
-    double scratch_threshold, reactive_threshold, adjust_threshold;
+    double scratch_threshold;
 
     /* Currently used coefficients*/
 
     struct kalman_coeffs* coeffs;
 
-    /* Stable, adjust reactive coefficients for the mode switch */
+    /* Stable and scratch coefficients for the mode switch */
 
     struct kalman_coeffs stable;
-    struct kalman_coeffs adjust;
-    struct kalman_coeffs reactive;
     struct kalman_coeffs scratch;
 };
 
 void pitch_kalman_init(struct pitch_kalman_filter *p, double dt, struct kalman_coeffs stable,
-                       struct kalman_coeffs adjust, struct kalman_coeffs reactive, struct kalman_coeffs scratch,
-                       double adjust_threshold, double reactive_threshold, double scratch_threshold, bool debug);
+                       struct kalman_coeffs scratch, double scratch_threshold, bool debug);
 void pitch_kalman_update(struct pitch_kalman_filter *p, double dx);
 
 /*
