@@ -93,22 +93,4 @@ static inline void kalman_tune_sensitivity(struct pitch_kalman_filter* p, struct
     p->coeffs = coeffs;
 }
 
-
-/*
- * Get the current pitch (velocity estimate)
- */
-
-static inline double pitch_kalman_current(const struct pitch_kalman_filter* p)
-{
-    if (!p) {
-        errno = EINVAL;
-        perror(__func__);
-        return 0.0;
-    }
-
-    /* Return the velocity Xk[v] relative to carrier frequency of the timecode (normalized) */
-
-    return p->Xk[1];
-}
-
 #endif /* PITCH_KALMAN_H */
