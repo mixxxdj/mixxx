@@ -32,7 +32,7 @@ static inline double pow3(double val)
  * r: variance of dx measurement (tune up if observations are noisier)
  */
 
-void pitch_kalman_init(struct pitch_kalman *p, double dt, struct kalman_coeffs stable,
+void pitch_kalman_init(struct pitch_kalman_filter *p, double dt, struct kalman_coeffs stable,
                        struct kalman_coeffs adjust, struct kalman_coeffs reactive,
                        struct kalman_coeffs scratch, double adjust_threshold,
                        double reactive_threshold, double scratch_threshold, bool debug)
@@ -87,7 +87,7 @@ void pitch_kalman_init(struct pitch_kalman *p, double dt, struct kalman_coeffs s
  * Feed one observation: in the last dt seconds, position moved by dx
  */
 
-void pitch_kalman_update(struct pitch_kalman* p, double dx)
+void pitch_kalman_update(struct pitch_kalman_filter* p, double dx)
 {
     if (!p) {
         errno = EINVAL;

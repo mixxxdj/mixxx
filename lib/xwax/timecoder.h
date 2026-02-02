@@ -101,8 +101,8 @@ struct timecoder {
     struct timecoder_channel primary, secondary;
 
     bool use_legacy_pitch_filter;
-    struct pitch pitch;
-    struct pitch_kalman pitch_kalman;
+    struct pitch_filter pitch_filter;
+    struct pitch_kalman_filter pitch_kalman_filter;
     unsigned quadrant, last_quadrant;
     bool direction_changed;
 
@@ -156,9 +156,9 @@ static inline struct timecode_def* timecoder_get_definition(struct timecoder *tc
 static inline double timecoder_get_pitch(struct timecoder *tc)
 {
     if (tc->use_legacy_pitch_filter)
-        return pitch_current(&tc->pitch) / tc->speed;
+        return pitch_current(&tc->pitch_filter) / tc->speed;
     else
-        return pitch_kalman_current(&tc->pitch_kalman) / tc->speed;
+        return pitch_kalman_current(&tc->pitch_kalman_filter) / tc->speed;
 }
 
 /*
