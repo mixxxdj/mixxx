@@ -821,13 +821,13 @@ void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
 
-    const int numColumns = columnCount();
+    const int lastColumn = columnCount() - 1;
     for (const auto& trackId : trackIds) {
         const auto rows = getTrackRows(trackId);
         for (int row : rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
-            QModelIndex bottomRight = index(row, numColumns);
+            QModelIndex bottomRight = index(row, lastColumn);
             emit dataChanged(topLeft, bottomRight);
         }
     }
