@@ -30,6 +30,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include "complex.h"
 #include "debug.h"
 #include "filters.h"
 #include "timecoder.h"
@@ -710,6 +711,22 @@ static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
     bool add = tc->secondary.swapped ? 0b1 : 0b0;
 
     tc->quadrant = (!pos << 1) | add;
+}
+
+/*
+ * Computes the phase difference of a given sine-cosine pair using
+ * complex number theory in Q0.31 for max efficiency.
+ */
+
+static inline double phase_difference(const int *cos0, const int *sin0,
+                                      const int *cos1, const int *sin1)
+{
+    struct complex_q31 z0 = { .re = *cos0, .im = *sin0 };
+    struct complex_q31 z1 = { .re = *cos1, .im = *sin1 };
+    struct complex_q31 z1_conj = complex_q31_conj(z1);
+    struct complex_q62 product = complex_q31_mul(z0, z1_conj);
+
+    return atan2((double)product.im, (double)product.re);
 }
 
 /*
