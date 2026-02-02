@@ -393,11 +393,14 @@ void mk2_subcode_init(struct mk2_subcode *sc)
 }
 
 /*
- * Initialise filter values for the MK2 demodulation
+ * Initialise filter values for one channel
  */
 
-static void init_mk2_channel(struct timecoder_channel *ch)
+static void init_channel(struct timecode_def *def, struct timecoder_channel *ch)
 {
+    ch->positive = false;
+    ch->zero = 0;
+
     ch->deriv_scaled = INT_MAX/2;
     ch->rms = INT_MAX/2;
     ch->rms_deriv = 0;
@@ -408,24 +411,17 @@ static void init_mk2_channel(struct timecoder_channel *ch)
         return;
     }
 
+    ch->delayline_deriv = rb_alloc(5, sizeof(int));
+    if (!ch->delayline_deriv) {
+        perror(__func__);
+        return;
+    }
+
     ewma_init(&ch->ewma_filter, 3e-1);
     derivative_init(&ch->differentiator);
+
     rms_init(&ch->rms_filter, 1e-3);
     rms_init(&ch->rms_deriv_filter, 1e-3);
-}
-
-
-/*
- * Initialise filter values for one channel
- */
-
-static void init_channel(struct timecode_def *def, struct timecoder_channel *ch)
-{
-    ch->positive = false;
-    ch->zero = 0;
-
-    if (def->flags & TRAKTOR_MK2)
-        init_mk2_channel(ch);
 }
 
 /*
@@ -460,10 +456,6 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     init_channel(tc->def, &tc->secondary);
 
     tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
-
-    tc->quadrant = 0;
-    tc->last_quadrant = 0;
-    tc->direction_changed = false;
 
     tc->dphi = 0.0;
     tc->freq = 0.0;
@@ -666,59 +658,6 @@ static void process_bitstream(struct timecoder *tc, signed int m)
 }
 
 /*
- * Compare the last quadrant we were in to the new one and return the
- * correct displacement for the pitch filter model.
- *
- * A full revolution of the carrier has the length of 1.0 / tc->def->resolution,
- * which is also the sample rate of the timecode (not the audio). One quadrant
- * corresponds to 1/4 * revolution, which is the time between two zero
- * crossings. Hence we multiply this quantity by displacement in quadrants.
- */
-
-static double quantize_phase(struct timecoder *tc)
-{
-    unsigned diff = ((tc->quadrant - tc->last_quadrant) % 4);
-    static unsigned long long direction_change_counter = 0;
-    const unsigned int forwards_diff = (tc->def->flags & SWITCH_PHASE) ? 1 : 3;
-    const unsigned int backwards_diff = (tc->def->flags & SWITCH_PHASE) ? 3 : 1;
-
-    /* Check for a displacement of four quadrants */
-    if (diff == 0 && !tc->direction_changed) {
-        return 1.0 / tc->def->resolution;
-    }
-    
-    /* Check for a displacement of three quadrants */
-    if ((tc->forwards && diff == forwards_diff) || (!tc->forwards && diff == backwards_diff)) {
-        return (3.0 / tc->def->resolution) / 4.0;
-    }
-    
-    /* Check for a displacement of two quadrants  */
-    if (diff == 2) {
-        return (1.0 / tc->def->resolution) / 2.0;
-    }
-    
-    return (1.0 / tc->def->resolution) / 4.0;
-}
-
-/*
- * Track the quadrature phase of the pitch counter on the unit circle
- *
- * There are four zero crossings in a whole cycle. In between are the four
- * quadrants of the sine and cosine, which are in quadrature.
- */
-
-static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
-{
-    tc->last_quadrant = tc->quadrant;
-    tc->direction_changed = direction_changed;
-
-    bool pos = tc->primary.swapped ? tc->primary.positive : tc->secondary.positive;
-    bool add = tc->secondary.swapped ? 0b1 : 0b0;
-
-    tc->quadrant = (!pos << 1) | add;
-}
-
-/*
  * Computes the phase difference of a given sine-cosine pair using
  * complex number theory in Q0.31 for max efficiency.
  */
@@ -792,6 +731,10 @@ void process_carrier(struct timecoder *tc, signed int primary,
     /* Compute the scaled derivative */
     tc->primary.deriv_scaled = tc->primary.deriv * tc->gain_compensation;
     tc->secondary.deriv_scaled = tc->secondary.deriv * tc->gain_compensation;
+
+    /* Push the derivative samples into the ringbuffer */
+    rb_push(tc->primary.delayline_deriv, &tc->primary.deriv_scaled);
+    rb_push(tc->secondary.delayline_deriv, &tc->secondary.deriv_scaled);
 }
 
 /*
@@ -805,68 +748,51 @@ static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
-        process_carrier(tc, primary, secondary);
-
         detect_zero_crossing(&tc->primary, tc->primary.deriv_scaled, tc->zero_alpha,
                 tc->threshold);
         detect_zero_crossing(&tc->secondary, tc->secondary.deriv_scaled, tc->zero_alpha,
                 tc->threshold);
-
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
     }
 
-    /* If an axis has been crossed, use the direction of the crossing
-     * to work out the direction of the vinyl */
+    if (tc->dB > -40.0) {
+        tc->dphi =
+            phase_difference((int*)rb_at(tc->primary.delayline_deriv, 0),
+                             (int*)rb_at(tc->secondary.delayline_deriv, 0),
+                             (int*)rb_at(tc->primary.delayline_deriv, 1),
+                             (int*)rb_at(tc->secondary.delayline_deriv, 1));
 
-    if (tc->primary.swapped || tc->secondary.swapped) {
-        bool forwards;
+        double ddphi = 0.0; /* Derivative of the phase difference */
 
-        if (tc->primary.swapped) {
-            forwards = (tc->primary.positive != tc->secondary.positive);
+        if (tc->use_legacy_pitch_filter) {
+            pitch_dt_observation(&tc->pitch_filter, tc->dphi);
+            ddphi = tc->pitch_filter.v;
         } else {
-            forwards = (tc->primary.positive == tc->secondary.positive);
+            pitch_kalman_update(&tc->pitch_kalman_filter, tc->dphi);
+            ddphi = tc->pitch_kalman_filter.Xk[1];
         }
 
-        if (tc->def->flags & SWITCH_PHASE)
-	    forwards = !forwards;
-
-        track_quadrature_phase(tc, forwards != tc->forwards);
-
-        if (forwards != tc->forwards) { /* direction has changed */
-            tc->forwards = forwards;
-            tc->valid_counter = 0;
-        }
+        tc->freq = ddphi / (2.0 * M_PI);
+        tc->pitch = (tc->freq / tc->def->resolution);
+    } else {
+        tc->freq = 0.0;
+        tc->pitch = 0.0;
     }
 
-    /*
-     * If any axis has been crossed, register movement using the pitch
-     * counters. This occurs four time per cycle of the sinusoid.
-     */
+    bool forwards;
+    if (tc->freq >= 0.0)
+        forwards = true;
+    else
+        forwards = false;
 
-    if (!tc->primary.swapped && !tc->secondary.swapped) {
-        if (tc->use_legacy_pitch_filter)
-            pitch_dt_observation(&tc->pitch_filter, 0.0);
-        else
-            pitch_kalman_update(&tc->pitch_kalman_filter, 0.0);
-    } else {
-        double dx;
+    if (tc->def->flags & SWITCH_PHASE)
+        forwards = !forwards;
 
-        /*
-         * Assumption: We usually advance by a quarter rotation,
-         * unless we skip zero crossings. In this case the new quadrature
-         * tracker calculates the correct displacement for the pitch filter.
-         */
-
-        dx = quantize_phase(tc);
-        if (!tc->forwards)
-            dx = -dx;
-
-        if (tc->use_legacy_pitch_filter)
-            pitch_dt_observation(&tc->pitch_filter, dx);
-        else
-            pitch_kalman_update(&tc->pitch_kalman_filter, dx);
+    if (forwards != tc->forwards) { /* direction has changed */
+        tc->forwards = forwards;
+        tc->valid_counter = 0;
     }
 
     /* If we have crossed the primary channel in the right polarity,
@@ -946,6 +872,8 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
             primary = right;
             secondary = left;
         }
+
+        process_carrier(tc, primary, secondary);
 
         if (tc->def->flags & TRAKTOR_MK2) {
             process_sample(tc, primary, secondary);
