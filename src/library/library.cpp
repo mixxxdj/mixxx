@@ -72,6 +72,13 @@ Library::Library(
           m_pSidebarModel(make_parented<SidebarModel>(this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
           m_pLibraryWidget(nullptr),
+          m_trackTableFont(pConfig->getValue(ConfigKey("[Library]", "Font"),
+                  QApplication::font().toString())),
+          m_iTrackTableRowHeight(pConfig->getValue(ConfigKey("[Library]", "RowHeight"),
+                  kDefaultRowHeightPx)),
+          m_editMetadataSelectedClick(pConfig->getValue(kEditMetadataSelectedClickConfigKey,
+                  kEditMetadataSelectedClickDefault)),
+          m_isRestoringViewState(false),
           m_pKeyNotation(std::make_unique<ControlObject>(
                   mixxx::library::prefs::kKeyNotationConfigKey)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
@@ -80,6 +87,11 @@ Library::Library(
             &TrackCollectionManager::libraryScanFinished,
             this,
             &Library::slotRefreshLibraryModels);
+
+    connect(m_pSidebarModel,
+            &SidebarModel::sidebarItemActivated,
+            this,
+            &Library::slotSidebarItemActivated);
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -601,8 +613,91 @@ void Library::slotCreateCrate() {
 }
 
 void Library::onSkinLoadFinished() {
+    if (m_pConfig->getValue(kOpenLastUsedLibraryViewConfigKey, false)) {
+        QString featureId = m_pConfig->getValueString(kLastUsedLibraryFeatureConfigKey);
+        QString itemDataString = m_pConfig->getValueString(kLastUsedLibraryItemDataConfigKey);
+
+        qDebug() << "Library::onSkinLoadFinished: Attempting to restore view."
+                 << "FeatureID:" << featureId << "ItemData:" << itemDataString;
+
+        if (!featureId.isEmpty()) {
+            m_isRestoringViewState = true;
+            for (LibraryFeature* pFeature : std::as_const(m_features)) {
+                if (pFeature->iconName() == featureId) {
+                    qDebug() << "Library::onSkinLoadFinished: Found matching "
+                                "feature:"
+                             << pFeature->title().toString();
+                    QModelIndex featureRoot = m_pSidebarModel->getFeatureRootIndex(pFeature);
+                    if (itemDataString.isEmpty()) {
+                        qDebug() << "Library::onSkinLoadFinished: Activating feature root.";
+                        pFeature->selectAndActivate();
+                        m_isRestoringViewState = false;
+                        return;
+                    } else {
+                        // Search children
+                        int rows = m_pSidebarModel->rowCount(featureRoot);
+                        qDebug() << "Library::onSkinLoadFinished: Searching "
+                                    "children, rowCount:"
+                                 << rows;
+                        for (int i = 0; i < rows; ++i) {
+                            QModelIndex child = m_pSidebarModel->index(i, 0, featureRoot);
+                            QString childData = child.data(SidebarModel::DataRole).toString();
+                            if (childData == itemDataString) {
+                                qDebug()
+                                        << "Library::onSkinLoadFinished: Found "
+                                           "matching child index. Activating.";
+                                m_pSidebarModel->slotFeatureSelect(pFeature, child);
+                                pFeature->activateChild(child);
+                                m_isRestoringViewState = false;
+                                return;
+                            }
+                        }
+                        qDebug() << "Library::onSkinLoadFinished: Child data"
+                                 << itemDataString << "not found.";
+                    }
+                    // If child not found, at least activate the feature
+                    qDebug() << "Library::onSkinLoadFinished: Fallback to feature root.";
+                    pFeature->selectAndActivate();
+                    m_isRestoringViewState = false;
+                    return;
+                }
+            }
+            m_isRestoringViewState = false;
+            qDebug() << "Library::onSkinLoadFinished: featureId" << featureId
+                     << "not found in m_features.";
+        }
+    }
+
+    qDebug() << "Library::onSkinLoadFinished: No saved view restored. "
+                "Activating default selection.";
     // Enable the default selection when a new skin is loaded.
     m_pSidebarModel->activateDefaultSelection();
+}
+
+void Library::slotSidebarItemActivated(LibraryFeature* pFeature, const QModelIndex& index) {
+    if (!pFeature) {
+        return;
+    }
+
+    if (m_isRestoringViewState) {
+        qDebug() << "Library::slotSidebarItemActivated: Restoration in progress, ignoring signal.";
+        return;
+    }
+
+    QString featureId = pFeature->iconName();
+    QVariant data = index.data(SidebarModel::DataRole);
+    QString itemData = data.isValid() ? data.toString() : QString();
+
+    qDebug() << "Library::slotSidebarItemActivated: Saving view."
+             << "FeatureID:" << featureId << "ItemData:" << itemData;
+
+    m_pConfig->set(kLastUsedLibraryFeatureConfigKey, featureId);
+    m_pConfig->set(kLastUsedLibraryItemDataConfigKey, itemData);
+
+    // Force save the configuration to disk to ensure the view state is persisted
+    // immediately. This handles cases where the application might crash or
+    // exit without cleanly saving the configuration.
+    m_pConfig->save();
 }
 
 bool Library::requestAddDir(const QString& dir) {

@@ -100,6 +100,14 @@
        </widget>
       </item>
 
+      <item row="5" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_open_last_used_library_view">
+        <property name="text">
+         <string>Open library at the last used view</string>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item>
@@ -683,6 +691,8 @@
   <tabstop>pushButton_remove_dir</tabstop>
   <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkBox_library_scan_summary</tabstop>
+  <tabstop>checkBox_open_last_used_library_view</tabstop>
+
   <tabstop>checkBox_sync_track_metadata</tabstop>
   <tabstop>checkBox_serato_metadata_export</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
