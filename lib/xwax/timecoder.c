@@ -587,6 +587,13 @@ static inline void update_monitor(struct timecoder *tc, signed int x, signed int
     if (!tc->mon)
         return;
 
+    /* Only draw the monitor if the signal level is greater -40 dB */
+
+    if (tc->dB < -40.0) {
+        x = 0.0;
+        y = 0.0;
+    }
+
     size = tc->mon_size;
     ref = tc->ref_level;
 
@@ -886,7 +893,7 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
         if (tc->def->flags & TRAKTOR_MK2) {
             process_sample(tc, primary, secondary);
 
-            /* 
+            /*
              * Display the derivative in the monitor. Since the signal is not
              * a perfect ring on the x-y-plane, but jumps up and down a bit,
              * it looks to small in the scope. Therefore a multiplication by
