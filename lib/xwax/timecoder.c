@@ -398,20 +398,20 @@ void mk2_subcode_init(struct mk2_subcode *sc)
 
 static void init_mk2_channel(struct timecoder_channel *ch)
 {
-    ch->mk2.deriv_scaled = INT_MAX/2;
-    ch->mk2.rms = INT_MAX/2;
-    ch->mk2.rms_deriv = 0;
+    ch->deriv_scaled = INT_MAX/2;
+    ch->rms = INT_MAX/2;
+    ch->rms_deriv = 0;
 
-    ch->mk2.delayline = rb_alloc(5, sizeof(int));
-    if (!ch->mk2.delayline) {
+    ch->delayline = rb_alloc(5, sizeof(int));
+    if (!ch->delayline) {
         perror(__func__);
         return;
     }
 
-    ewma_init(&ch->mk2.ewma_filter, 3e-1);
-    derivative_init(&ch->mk2.differentiator);
-    rms_init(&ch->mk2.rms_filter, 1e-3);
-    rms_init(&ch->mk2.rms_deriv_filter, 1e-3);
+    ewma_init(&ch->ewma_filter, 3e-1);
+    derivative_init(&ch->differentiator);
+    rms_init(&ch->rms_filter, 1e-3);
+    rms_init(&ch->rms_deriv_filter, 1e-3);
 }
 
 
@@ -505,9 +505,10 @@ void timecoder_clear(struct timecoder *tc)
 {
     assert(tc->mon == NULL);
 
+    rb_free(tc->primary.delayline);
+    rb_free(tc->secondary.delayline);
+
     if (tc->def->flags & TRAKTOR_MK2) {
-        rb_free(tc->primary.mk2.delayline);
-        rb_free(tc->secondary.mk2.delayline);
         rb_free(tc->upper_bitstream.readings);
         rb_free(tc->lower_bitstream.readings);
     }
@@ -730,6 +731,66 @@ static inline double phase_difference(const int *cos0, const int *sin0,
 }
 
 /*
+ * Various processing of the carrier wave needed for pitch detection.
+ *
+ * Pushes samples into a delayline, computes the derivative, computes RMS
+ * values and scales the derivative back up to the original signal's level.
+ * Afterards the upscaled derivative can by processed by the pitch detection
+ * algorithm.
+ *
+ * NOTE: Ideally the gain compensation should be done in the derivative and lowpass
+ * filter structures by determining the amplitude response. I had this
+ * implemented previously, but chose gain compensation by using the RMS value,
+ * since it is easier to understand for developers not trained in signal
+ * processing. Additionally it's nice to have the dB level at hand.
+ *
+ */
+
+void process_carrier(struct timecoder *tc, signed int primary,
+    signed int secondary)
+{
+    if (!tc) {
+        errno = -EINVAL;
+        perror(__func__);
+        return;
+    }
+
+    /* Push the samples into the ringbuffer */
+
+    rb_push(tc->primary.delayline, &primary);
+    rb_push(tc->secondary.delayline, &secondary);
+
+    /* Compute the discrete derivative */
+    tc->primary.deriv = derivative(&tc->primary.differentiator,
+        ewma(&tc->primary.ewma_filter, primary));
+    tc->secondary.deriv = derivative(&tc->secondary.differentiator,
+        ewma(&tc->secondary.ewma_filter, secondary));
+
+    /* Compute the smoothed RMS value */
+    tc->primary.rms = rms(&tc->primary.rms_filter, primary);
+    tc->secondary.rms = rms(&tc->secondary.rms_filter, secondary);
+
+    /* Compute the smoothed RMS value for the derivative */
+    tc->primary.rms_deriv =
+        rms(&tc->primary.rms_deriv_filter, tc->primary.deriv);
+    tc->secondary.rms_deriv =
+        rms(&tc->secondary.rms_deriv_filter, tc->secondary.deriv);
+
+    /* Compute the gain compensation for the derivative*/
+    tc->gain_compensation = (double)tc->secondary.rms / tc->secondary.rms_deriv;
+
+    /* Without this limit pitch becomes too sensitive */
+    if (tc->gain_compensation > 25.0)
+        tc->gain_compensation = 25.0;
+
+    tc->dB = 20 * log10((double)tc->secondary.rms / INT_MAX);
+
+    /* Compute the scaled derivative */
+    tc->primary.deriv_scaled = tc->primary.deriv * tc->gain_compensation;
+    tc->secondary.deriv_scaled = tc->secondary.deriv * tc->gain_compensation;
+}
+
+/*
  * Process a single sample from the incoming audio
  *
  * The two input signals (primary and secondary) are in the full range
@@ -740,11 +801,11 @@ static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
-        mk2_process_carrier(tc, primary, secondary);
+        process_carrier(tc, primary, secondary);
 
-        detect_zero_crossing(&tc->primary, tc->primary.mk2.deriv_scaled, tc->zero_alpha,
+        detect_zero_crossing(&tc->primary, tc->primary.deriv_scaled, tc->zero_alpha,
                 tc->threshold);
-        detect_zero_crossing(&tc->secondary, tc->secondary.mk2.deriv_scaled, tc->zero_alpha,
+        detect_zero_crossing(&tc->secondary, tc->secondary.deriv_scaled, tc->zero_alpha,
                 tc->threshold);
 
     } else {
@@ -810,7 +871,7 @@ static void process_sample(struct timecoder *tc,
     if (tc->def->flags & TRAKTOR_MK2) {
         if (tc->secondary.swapped)
         {
-            int reading = *(int*)rb_at(tc->secondary.mk2.delayline, 3);
+            int reading = *(int*)rb_at(tc->secondary.delayline, 3);
             mk2_process_timecode(tc, reading);
         }
     } else {
@@ -892,8 +953,8 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
              * two is necessary.
              */
 
-            update_monitor(tc, tc->primary.mk2.deriv_scaled * 2,
-                    tc->secondary.mk2.deriv_scaled * 2);
+            update_monitor(tc, tc->primary.deriv_scaled * 2,
+                    tc->secondary.deriv_scaled * 2);
         } else {
             process_sample(tc, primary, secondary);
             update_monitor(tc, left, right);
