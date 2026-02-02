@@ -43,7 +43,7 @@ struct kalman_coeffs {
 #define KALMAN_COEFFS(q_arg, r_arg) \
     (struct kalman_coeffs) {.Q = (q_arg), .R = (r_arg)}
 
-struct pitch_kalman {
+struct pitch_kalman_filter {
     /*
      * NOTE: In discrete time dt is usually denoted as Ts = 1/Fs,
      * but xwax uses the continuous notation.
@@ -73,16 +73,16 @@ struct pitch_kalman {
     struct kalman_coeffs scratch;
 };
 
-void pitch_kalman_init(struct pitch_kalman *p, double dt, struct kalman_coeffs stable,
+void pitch_kalman_init(struct pitch_kalman_filter *p, double dt, struct kalman_coeffs stable,
                        struct kalman_coeffs adjust, struct kalman_coeffs reactive, struct kalman_coeffs scratch,
                        double adjust_threshold, double reactive_threshold, double scratch_threshold, bool debug);
-void pitch_kalman_update(struct pitch_kalman *p, double dx);
+void pitch_kalman_update(struct pitch_kalman_filter *p, double dx);
 
 /*
  * Retune noise sensitivity without resetting state
  */
 
-static inline void kalman_tune_sensitivity(struct pitch_kalman* p, struct kalman_coeffs* coeffs)
+static inline void kalman_tune_sensitivity(struct pitch_kalman_filter* p, struct kalman_coeffs* coeffs)
 {
     if (!p || !coeffs) {
         errno = EINVAL;
@@ -98,7 +98,7 @@ static inline void kalman_tune_sensitivity(struct pitch_kalman* p, struct kalman
  * Get the current pitch (velocity estimate)
  */
 
-static inline double pitch_kalman_current(const struct pitch_kalman* p)
+static inline double pitch_kalman_current(const struct pitch_kalman_filter* p)
 {
     if (!p) {
         errno = EINVAL;
