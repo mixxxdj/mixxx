@@ -388,8 +388,8 @@ void mk2_subcode_init(struct mk2_subcode *sc)
     }
 
     /* Initialise smoothing filters */
-    ema_init(&sc->ema_reading, 0.01);
-    ema_init(&sc->ema_slope, 0.01);
+    ewma_init(&sc->ewma_reading, 0.01);
+    ewma_init(&sc->ewma_slope, 0.01);
 }
 
 /*
@@ -408,7 +408,7 @@ static void init_mk2_channel(struct timecoder_channel *ch)
         return;
     }
 
-    ema_init(&ch->mk2.ema_filter, 3e-1);
+    ewma_init(&ch->mk2.ewma_filter, 3e-1);
     derivative_init(&ch->mk2.differentiator);
     rms_init(&ch->mk2.rms_filter, 1e-3);
     rms_init(&ch->mk2.rms_deriv_filter, 1e-3);

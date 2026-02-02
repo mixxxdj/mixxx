@@ -2,13 +2,13 @@
 
 #define FILTERS_H
 
-struct ema_filter {
+struct ewma_filter {
     double alpha;
     int y_old;
 };
 
-void ema_init(struct ema_filter *, const double alpha);
-int ema(struct ema_filter *, const int x);
+void ewma_init(struct ewma_filter *, const double alpha);
+int ewma(struct ewma_filter *, const int x);
 
 struct differentiator {
     int x_old;
