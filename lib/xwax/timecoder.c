@@ -464,17 +464,25 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     if (tc->use_legacy_pitch_filter) {
         pitch_init(&tc->pitch_filter, tc->dt);
     } else {
-        pitch_kalman_init(&tc->pitch_kalman_filter,
-                          tc->dt,
-                          KALMAN_COEFFS(1e-8, 10.0), /* stable mode */
-                          KALMAN_COEFFS(1e-4, 1e-1), /* adjust mode */
-                          KALMAN_COEFFS(1e-3, 1e-2), /* reactive mode */
-                          KALMAN_COEFFS(1e-1, 1e-4), /* scratch mode */
-                          6e-4, /* adjust threshold */
-                          25e-4, /* reactive threshold */
-                          40e-4, /* scratch threshold */
-                          false);
+        if (tc->def->flags & TRAKTOR_MK2) {
+            pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
+                              KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
+                              KALMAN_COEFFS(0.0135, 8e-6), /* scratch mode */
+                              15, /* threshold */
+                              false);
+        } else {
+            pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
+                              KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
+                              KALMAN_COEFFS(0.0235, 1e-5), /* scratch mode */
+                              5, /* threshold */
+                              false);
+        }
     }
+
+    tc->ref_level = INT_MAX;
+    tc->bitstream = 0;
+    tc->timecode = 0;
+    tc->valid_counter = 0;
 
     tc->ref_level = INT_MAX;
     tc->bitstream = 0;

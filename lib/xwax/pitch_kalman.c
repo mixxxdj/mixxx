@@ -33,17 +33,8 @@ static inline double pow3(double val)
  */
 
 void pitch_kalman_init(struct pitch_kalman_filter *p, double dt, struct kalman_coeffs stable,
-                       struct kalman_coeffs adjust, struct kalman_coeffs reactive,
-                       struct kalman_coeffs scratch, double adjust_threshold,
-                       double reactive_threshold, double scratch_threshold, bool debug)
+                       struct kalman_coeffs scratch, double scratch_threshold, bool debug)
 {
-    const bool thresholds_well_ordered = scratch_threshold > reactive_threshold && reactive_threshold > adjust_threshold;
-    if (!p || !thresholds_well_ordered) {
-        errno = EINVAL;
-        perror(__func__);
-        return;
-    }
-
     kalman_debug_state = debug;
 
     /* Sampling interval */
@@ -68,19 +59,15 @@ void pitch_kalman_init(struct pitch_kalman_filter *p, double dt, struct kalman_c
     /* Fixed thresholds for the mode switches */
 
     p->scratch_threshold = scratch_threshold;
-    p->reactive_threshold = reactive_threshold;
-    p->adjust_threshold = adjust_threshold;
 
     /* Q and R for the different modes */
 
     p->stable = stable;
-    p->adjust = adjust;
-    p->reactive = reactive;
     p->scratch = scratch;
 
     /* Initialize as reactive */
 
-    kalman_tune_sensitivity(p, &p->reactive);
+    kalman_tune_sensitivity(p, &p->scratch);
 }
 
 /*
@@ -185,23 +172,11 @@ void pitch_kalman_update(struct pitch_kalman_filter* p, double dx)
 
     kalman_debug("innovation: %+f, ", y);
     if (y_abs > p->scratch_threshold) {
-        kalman_debug("                                                SCRATCH MODE\n");
+        kalman_debug("                  SCRATCH MODE\n");
         kalman_tune_sensitivity(p, &p->scratch);
-    } else if (y_abs > p->reactive_threshold) {
-        kalman_debug("                               REACTIVE MODE\n");
-        kalman_tune_sensitivity(p, &p->reactive);
-    } else if (y_abs > p->adjust_threshold) {
-        kalman_debug("                ADJUST MODE\n");
-        kalman_tune_sensitivity(p, &p->adjust);
     } else {
         kalman_debug("STABLE MODE\n");
         kalman_tune_sensitivity(p, &p->stable);
-    }
-
-    /* Ensure reactivity and quick decay after standstill */
-
-    if (fabs(p->Xk[v]) < 5e-2) {
-        kalman_tune_sensitivity(p, &p->scratch);
     }
 
     /*
