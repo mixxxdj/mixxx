@@ -86,8 +86,10 @@ struct mk2_subcode {
 };
 
 struct timecoder {
+    struct timecoder_channel primary, secondary;
     struct timecode_def *def;
-    double speed;
+
+    double speed; /* 33 or 45 rpm */
 
     /* Precomputed values */
 
@@ -97,14 +99,18 @@ struct timecoder {
 
     /* Pitch information */
 
-    bool forwards;
-    struct timecoder_channel primary, secondary;
+    double dphi; /* Phase difference */
+    double freq; /* Current carrier frequency */
+    double pitch; /* Current pitch */
 
+    unsigned quadrant, last_quadrant;
+
+    bool forwards;
     bool use_legacy_pitch_filter;
+    bool direction_changed;
+
     struct pitch_filter pitch_filter;
     struct pitch_kalman_filter pitch_kalman_filter;
-    unsigned quadrant, last_quadrant;
-    bool direction_changed;
 
     /* Numerical timecode */
 

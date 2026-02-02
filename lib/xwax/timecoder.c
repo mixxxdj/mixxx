@@ -465,6 +465,10 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->last_quadrant = 0;
     tc->direction_changed = false;
 
+    tc->dphi = 0.0;
+    tc->freq = 0.0;
+    tc->pitch = 0.0;
+
     if (tc->use_legacy_pitch_filter) {
         pitch_init(&tc->pitch_filter, tc->dt);
     } else {
