@@ -59,7 +59,7 @@ struct timecoder_channel_mk2 {
     signed int deriv, deriv_scaled; /* Derivative and its scaled version */
 
     struct ringbuffer *delayline; /* needed for the Traktor MK2 demodulation */
-    struct ema_filter ema_filter;
+    struct ewma_filter ema_filter;
     struct differentiator differentiator;
     struct root_mean_square rms_filter, rms_deriv_filter;
 };
@@ -84,8 +84,8 @@ struct mk2_subcode {
     bool recent_bit_flip;
 
     struct ringbuffer *readings;
-    struct ema_filter ema_reading;
-    struct ema_filter ema_slope;
+    struct ewma_filter ewma_reading;
+    struct ewma_filter ewma_slope;
 };
 
 struct timecoder {

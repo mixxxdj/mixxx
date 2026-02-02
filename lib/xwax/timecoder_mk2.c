@@ -382,9 +382,9 @@ void mk2_process_carrier(struct timecoder *tc, signed int primary, signed int se
 
     /* Compute the discrete derivative */
     tc->primary.mk2.deriv = derivative(&tc->primary.mk2.differentiator,
-            ema(&tc->primary.mk2.ema_filter, primary));
+            ewma(&tc->primary.mk2.ewma_filter, primary));
     tc->secondary.mk2.deriv = derivative(&tc->secondary.mk2.differentiator,
-            ema(&tc->secondary.mk2.ema_filter, secondary));
+            ewma(&tc->secondary.mk2.ewma_filter, secondary));
 
     /* Compute the smoothed RMS value */
     tc->primary.mk2.rms = rms(&tc->primary.mk2.rms_filter, primary);
@@ -473,10 +473,10 @@ inline static void mk2_process_bitstream(struct timecoder *tc, struct mk2_subcod
 
     rb_push(sc->readings, &reading);
 
-    sc->avg_reading = ema(&sc->ema_reading, reading);
+    sc->avg_reading = ewma(&sc->ewma_reading, reading);
 
     /* Calculate absolute of average slope */
-    sc->avg_slope = ema(&sc->ema_slope, abs(reading - *(int*)rb_at(sc->readings, 1)));
+    sc->avg_slope = ewma(&sc->ewma_slope, abs(reading - *(int*)rb_at(sc->readings, 1)));
 
     /* Calculate current and last slope */
     current_slope[0] =  (reading - *(int*)rb_at(sc->readings, 1));
