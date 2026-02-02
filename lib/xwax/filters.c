@@ -7,10 +7,10 @@
 #include "filters.h"
 
 /*
- * Initializes the exponential moving average filter.
+ * Initializes the exponential weighted moving average filter.
  */
 
-void ema_init(struct ema_filter *filter, const double alpha)
+void ewma_init(struct ewma_filter *filter, const double alpha)
 {
     if (!filter) {
         errno = EINVAL;
@@ -23,11 +23,11 @@ void ema_init(struct ema_filter *filter, const double alpha)
 }
 
 /*
- * Computes an exponential moving average with the possibility to weight newly added
+ * Computes an exponential weighted moving average with the possibility to weight newly added
  * values with a factor alpha.
  */
 
-int ema(struct ema_filter *filter, const int x)
+int ewma(struct ewma_filter *filter, const int x)
 {
     if (!filter) {
         errno = EINVAL;
