@@ -211,6 +211,10 @@ void pitch_kalman_update(struct pitch_kalman* p, double dx)
 
     const double S = P_pred[x][x] + p->coeffs->R;
 
+    /* Check for division by zero */
+    if (S == 0.0)
+        return;
+
     /*
      * Kalman gain: K = P_pred * H^T * S^-1
      *
