@@ -3288,6 +3288,10 @@ if(ENGINEPRIME)
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
   set(LIBDJINTEROP_VERSION 0.27.1)
   # Look whether an existing installation of libdjinterop matches the required version.
+  if(DEFINED ENV{MIXXX_VCPKG_ROOT} OR DEFINED MIXXX_VCPKG_ROOT)
+    # On the VCPKG version, DjInterop has devendored dependencies, see https://github.com/microsoft/vcpkg/pull/50062
+    find_package(date CONFIG REQUIRED)
+  endif()
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
     find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT MODULE)
