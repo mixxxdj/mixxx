@@ -40,12 +40,15 @@ WEffectSelector::indicator:unchecked,
 WBeatSpinBox,
 #spinBoxTransition::up-button,
 #spinBoxTransition::down-button,
+#spinBoxRecentDays::up-button,
+#spinBoxRecentDays::down-arrow,
 #fadeModeCombobox,
 #fadeModeCombobox::down-arrow {
   color: #060613;
   background-color: #998A3C;
 }
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   background-color: #7b6f38;
 }
   #MainMenu QMenu::separator,

@@ -314,6 +314,10 @@ WTrackPropertyEditor,
   border: 1px solid #006596;
 }
 
+#spinBoxRecentDays {
+  min-width: 55px;
+}
+
 /* checkbox in library "Played" column */
 #LibraryPlayedCheckbox::indicator:unchecked {
   image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
@@ -546,7 +550,6 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
   /* same as QTreeview */
   color: #d2d2d2;
   margin: 9px 5px 6px 0px;
-  font-size: 12px;
 }
 
 #LibraryFeatureControls QRadioButton::indicator {
@@ -603,7 +606,8 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
 
 #LibraryFeatureControls QPushButton:focus,
 #fadeModeCombobox:focus,
-#spinBoxTransition:focus {
+#spinBoxTransition:focus
+#spinBoxRecentDays:focus {
   outline: none;
 }
 
@@ -910,7 +914,8 @@ WSearchLineEdit QAbstractScrollArea,
 }
 
 WLabel, #LibraryFeatureControls QLabel,
-WPushButton, #LibraryFeatureControls QPushButton {
+WPushButton, #LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QRadioButton {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
@@ -988,7 +993,8 @@ WOverview #PassthroughLabel {
 }
 
 WBeatSpinBox,
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   color: #c1cabe;
   background-color: #1f1e1e;
   border: 1px solid #444342;
@@ -998,18 +1004,26 @@ WBeatSpinBox,
   WBeatSpinBox {
     padding: 2px;
   }
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     padding: 0px 2px 0px 2px;
     margin: 3px 0px 0px 2px;
   }
   WBeatSpinBox:hover,
   #spinBoxTransition:hover,
+  #spinBoxRecentDays:hover,
   WBeatSpinBox:focus,
-  #spinBoxTransition:focus {
+  #spinBoxTransition:focus,
+  #spinBoxRecentDays:focus {
     border: 1px ridge #015d8d;
   }
+  #spinBoxRecentDays:disabled {
+    color: #555;
+    border-color: #333;
+  }
   WBeatSpinBox::down-button,
-  #spinBoxTransition::down-button {
+  #spinBoxTransition::down-button,
+  #spinBoxRecentDays::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
@@ -1017,17 +1031,20 @@ WBeatSpinBox,
     border: 0;
   }
   WBeatSpinBox::down-arrow,
-  #spinBoxTransition::down-arrow {
+  #spinBoxTransition::down-arrow,
+  #spinBoxRecentDays::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/../Deere/icon/ic_chevron_down_selector.svg);
   }
   WBeatSpinBox::down-arrow:hover,
-  #spinBoxTransition::down-arrow:hover {
+  #spinBoxTransition::down-arrow:hover,
+  #spinBoxRecentDays::down-arrow:hover {
     image: url(skin:/../Deere/icon/ic_chevron_down_selector_hover.svg);
   }
   WBeatSpinBox::up-button,
-  #spinBoxTransition::up-button {
+  #spinBoxTransition::up-button,
+  #spinBoxRecentDays::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
@@ -1035,13 +1052,15 @@ WBeatSpinBox,
     border: 0;
   }
   WBeatSpinBox::up-arrow,
-  #spinBoxTransition::up-arrow {
+  #spinBoxTransition::up-arrow,
+  #spinBoxRecentDays::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/../Deere/icon/ic_chevron_up_selector.svg);
   }
   WBeatSpinBox::up-arrow:hover,
-  #spinBoxTransition::up-arrow:hover {
+  #spinBoxTransition::up-arrow:hover,
+  #spinBoxRecentDays::up-arrow:hover {
     image: url(skin:/../Deere/icon/ic_chevron_up_selector_hover.svg);
   }
 

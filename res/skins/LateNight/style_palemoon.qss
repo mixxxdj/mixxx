@@ -673,13 +673,15 @@ WTrackProperty[selected="true"],
 /********************** Loop Controls / AutoDJ spinbox ************************/
 WBeatSpinBox,
 WBpmEditor QDoubleSpinBox,
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   selection-color: #a7998b;
   selection-background-color: #111;
   }
   WBeatSpinBox:focus,
   WBpmEditor QDoubleSpinBox:focus,
   #spinBoxTransition:focus,
+  #spinBoxRecentDays:focus,
   #LibraryBPMSpinBox:focus  {
     selection-color: #000;
     selection-background-color: #d2d2d2;
@@ -691,23 +693,35 @@ WBeatSpinBox {
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
 }
 
-#spinBoxTransition {
-  width: 24px;
+#spinBoxTransition,
+#spinBoxRecentDays {
   height: 19px;
   padding: 0px -15px 0px 0px;
   margin: 0px 2px 3px 5px;
   border-width: 3px 19px 2px 3px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
 }
+#spinBoxTransition {
+  width: 24px;
+}
+#spinBoxRecentDays {
+  width: 45px;
+}
 WBeatSpinBox:focus,
-#spinBoxTransition:focus {
+#spinBoxTransition:focus,
+#spinBoxRecentDays:focus {
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
+}
+#spinBoxRecentDays:disabled {
+  color: #494949;
 }
 
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 #spinBoxTransition::up-button,
-#spinBoxTransition::down-button {
+#spinBoxTransition::down-button,
+#spinBoxRecentDays::up-button,
+#spinBoxRecentDays::down-button {
   subcontrol-origin: content;
   position: relative;
   padding: 0px;
@@ -715,7 +729,8 @@ WBeatSpinBox::down-button,
   }
 
   WBeatSpinBox::up-button,
-  #spinBoxTransition::up-button {
+  #spinBoxTransition::up-button,
+  #spinBoxRecentDays::up-button {
     subcontrol-position: top right;
     image: url(skins:LateNight/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
     height: 11px;
@@ -723,18 +738,21 @@ WBeatSpinBox::down-button,
     WBeatSpinBox::up-button {
       margin: -2px -1px 0px 0px;
     }
-    #spinBoxTransition::up-button {
+    #spinBoxTransition::up-button,
+    #spinBoxRecentDays::up-button {
       margin: -2px -3px 0px 0px;
     }
 
   WBeatSpinBox::down-button,
-  #spinBoxTransition::down-button {
+  #spinBoxTransition::down-button,
+  #spinBoxRecentDays::down-button {
     subcontrol-position: bottom right;
     image: url(skins:LateNight/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
     height: 11px;
     margin: 0px -1px -3px 0px;
     }
-    #spinBoxTransition::down-button {
+    #spinBoxTransition::down-button,
+    #spinBoxRecentDays::down-button {
       margin: 0px -3px -1px 0px;
     }
 
@@ -1360,7 +1378,8 @@ WEffectChainPresetSelector:!editable:on,
 
   WBeatSpinBox,
   WBpmEditor QDoubleSpinBox,
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     color: #a7998b;
   }
 
@@ -1729,6 +1748,8 @@ WBpmEditor QDoubleSpinBox {
   /* library controls */
   #spinBoxTransition::up-button,
   #spinBoxTransition::down-button,
+  #spinBoxRecentDays::up-button,
+  #spinBoxRecentDays::down-button,
   QPushButton#pushButtonAutoDJ:enabled:!checked,
   #LibraryFeatureControls QPushButton:enabled {
     background-color: #222;
@@ -1816,7 +1837,9 @@ WBpmEditor QDoubleSpinBox::down-button:pressed,
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
-#spinBoxTransition::down-button:pressed {
+#spinBoxTransition::down-button:pressed,
+#spinBoxRecentDays::up-button:pressed,
+#spinBoxRecentDays::down-button:pressed {
   background-color: #257b82;
   }
   /* Dim blue for assign buttons Fx34 */
@@ -2954,6 +2977,7 @@ WTrackPropertyEditor,
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 #spinBoxTransition,
+#spinBoxRecentDays,
 #LibraryBPMSpinBox {
   background-color: #0f0f0f;
 }
@@ -3321,7 +3345,8 @@ WSearchLineEdit {
 /* add margin to compensate for frameless library table */
 #LibraryFeatureControls QPushButton,
 /* #fadeModeCombobox set below */
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   margin-top: 4px;
 }
 QLabel#labelProgress, /* Analysis progress */
