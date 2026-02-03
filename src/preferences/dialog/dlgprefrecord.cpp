@@ -35,11 +35,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
           m_oldRecSampleRate(m_recSampleRate.get()) {
     setupUi(this); // uses the .ui file to generate qt gui elements.
 
-    // This is a hack to set the correct positioning.
-    // Values found by trial-and-error
-    RadioButtonUseCustomSampleRate->setMaximumWidth(80);
-    RadioButtonUseDefaultSampleRate->setMaximumWidth(234);
-
     // Setting recordings path.
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     if (recordingsPath.isEmpty()) {
@@ -73,18 +68,21 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         if (prefformat == format.internalName) {
             m_selFormat = format;
             button->setChecked(true);
-            found=true;
+            found = true;
         }
         m_formatButtons.append(button);
     }
     if (!found) {
         // If no format was available, set to WAVE as default.
         if (!prefformat.isEmpty()) {
-            qWarning() << prefformat <<" format was set in the configuration, but it is not recognized!";
+            qWarning() << prefformat
+                       << " format was set in the configuration, but it is not "
+                          "recognized!";
         }
         m_selFormat = EncoderFactory::getFactory().getFormats().first();
         m_formatButtons.first()->setChecked(true);
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),  ConfigValue(m_selFormat.internalName));
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),
+                ConfigValue(m_selFormat.internalName));
     }
 
     setupEncoderUI();
@@ -98,12 +96,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Restore previous sample-rate
     if (m_useEngineSampleRate.toBool()) {
         // engine sample rate was used in the previous session
-        qDebug() << "Engine Samplerate was used in previous session: " << m_oldRecSampleRate;
         // select the default radiobutton
         RadioButtonUseDefaultSampleRate->setChecked(true);
     } else {
         // select the combo-box item
-        qDebug() << "Custom Samplerate was used in the old session: " << m_oldRecSampleRate;
+        // custom samplerate was used in the old session.
         int idx = comboBoxRecSampleRate->findData(QVariant::fromValue(m_oldRecSampleRate));
         comboBoxRecSampleRate->setCurrentIndex(idx);
         RadioButtonUseCustomSampleRate->setChecked(true);
@@ -137,7 +134,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
     } else {
-        //Use max RIFF size (4GB) as default index, since usually people don't want to split.
+        // Use max RIFF size (4GB) as default index, since usually people don't want to split.
         comboBoxSplitting->setCurrentIndex(4);
         saveSplitSize();
     }
@@ -264,8 +261,8 @@ void DlgPrefRecord::slotUpdate() {
     // Find out the max width of the labels. This is needed to keep the
     // UI fixed in size when hiding or showing elements.
     // It is not perfect, but it didn't get better than this.
-    int max=0;
-    if (LabelQuality->size().width()> max) {
+    int max = 0;
+    if (LabelQuality->size().width() > max) {
         max = LabelQuality->size().width() + 10; // quick fix for gui bug
     }
     LabelLossless->setMaximumWidth(max);
@@ -330,10 +327,10 @@ void DlgPrefRecord::slotResetToDefaults() {
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
-    QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Choose recordings directory"),
+    QString fd = QFileDialog::getExistingDirectory(this,
+            tr("Choose recordings directory"),
             m_pConfig->getValueString(
-                    ConfigKey(RECORDING_PREF_KEY,"Directory")));
+                    ConfigKey(RECORDING_PREF_KEY, "Directory")));
 
     if (fd != "") {
         // The user has picked a new directory via a file dialog. This means the
@@ -348,7 +345,7 @@ void DlgPrefRecord::slotBrowseRecordingsDir() {
 }
 
 void DlgPrefRecord::slotFormatChanged() {
-    QObject *senderObj = sender();
+    QObject* senderObj = sender();
     m_selFormat = EncoderFactory::getFactory().getFormatFor(senderObj->objectName());
     // Recreate the available custom samplerates GUI according to the
     // newly chosen format
@@ -378,8 +375,9 @@ void DlgPrefRecord::slotFormatChanged() {
     int recSampleRateIdx = comboBoxRecSampleRate->findData(
             QVariant::fromValue(m_oldRecSampleRate));
     if (!m_useEngineSampleRate.toBool() && (recSampleRateIdx != -1)) { // found in the combobox
-        RadioButtonUseDefaultSampleRate->setChecked(false);       // calls slot ignore
-        comboBoxRecSampleRate->setCurrentIndex(recSampleRateIdx); // calls slot sampleratechanged
+        RadioButtonUseDefaultSampleRate->setChecked(false);            // calls slot ignore
+        comboBoxRecSampleRate->setCurrentIndex(
+                recSampleRateIdx); // calls slot sampleratechanged
         RadioButtonUseCustomSampleRate->setChecked(true);
     } else {
         // If the updated GUI list is missing the old rec samplerate,
@@ -425,13 +423,14 @@ void DlgPrefRecord::updateSampleRates(
 }
 
 void DlgPrefRecord::setupEncoderUI() {
+    RadioButtonUseDefaultSampleRate->setMinimumWidth(0);
     EncoderRecordingSettingsPointer settings =
             EncoderFactory::getFactory().getEncoderRecordingSettings(
                     m_selFormat, m_pConfig);
     if (settings->usesQualitySlider()) {
         qualityGroup->setVisible(true);
         SliderQuality->setMinimum(0);
-        SliderQuality->setMaximum(settings->getQualityValues().size()-1);
+        SliderQuality->setMaximum(settings->getQualityValues().size() - 1);
         SliderQuality->setValue(settings->getQualityIndex());
         updateTextQuality();
     } else {
@@ -440,7 +439,7 @@ void DlgPrefRecord::setupEncoderUI() {
     if (settings->usesCompressionSlider()) {
         compressionGroup->setVisible(true);
         SliderCompression->setMinimum(0);
-        SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
+        SliderCompression->setMaximum(settings->getCompressionValues().size() - 1);
         SliderCompression->setValue(settings->getCompression());
         updateTextCompression();
     } else {
@@ -480,15 +479,31 @@ void DlgPrefRecord::setupEncoderUI() {
             OptionGroupsLayout->addWidget(widget);
             optionsgroup.addButton(widget);
             m_optionWidgets.append(widget);
-            if (controlIdx == 0 ) {
+            if (controlIdx == 0) {
                 widget->setChecked(true);
             }
             controlIdx--;
         }
+        if (!m_optionWidgets.isEmpty()) {
+            QWidget* firstOption = m_optionWidgets.first();
+
+            // Ensure sizes are calculated based on current content/font
+            firstOption->adjustSize();
+            RadioButtonUseDefaultSampleRate->adjustSize();
+
+            int optWidth = firstOption->sizeHint().width();
+            int defWidth = RadioButtonUseDefaultSampleRate->sizeHint().width();
+
+            // Use the wider of the two to prevent cutting off text
+            int maxWidth = std::max(optWidth, defWidth);
+
+            firstOption->setMinimumWidth(maxWidth);
+            RadioButtonUseDefaultSampleRate->setMinimumWidth(maxWidth);
+        }
     } else {
         labelOptionGroup->setVisible(false);
     }
-        // small hack for VBR
+    // small hack for VBR
     if (m_selFormat.internalName == ENCODING_MP3) {
         updateTextQuality();
     }
@@ -540,8 +555,7 @@ void DlgPrefRecord::updateTextCompression() {
     TextCompression->setText(QString::number(quality));
 }
 
-void DlgPrefRecord::slotGroupChanged()
-{
+void DlgPrefRecord::slotGroupChanged() {
     // On complex scenarios, one could want to enable or disable some controls when changing
     // these, but we don't have these needs now.
     EncoderRecordingSettingsPointer settings =
@@ -599,7 +613,7 @@ void DlgPrefRecord::saveEncoding() {
             EncoderFactory::getFactory().getEncoderRecordingSettings(
                     m_selFormat, m_pConfig);
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),
-        ConfigValue(m_selFormat.internalName));
+            ConfigValue(m_selFormat.internalName));
 
     if (settings->usesQualitySlider()) {
         settings->setQualityByIndex(SliderQuality->value());
@@ -612,7 +626,7 @@ void DlgPrefRecord::saveEncoding() {
         // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
-        int i=0;
+        int i = 0;
         for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked) {
@@ -634,7 +648,7 @@ void DlgPrefRecord::slotToggleCueEnabled() {
 
 void DlgPrefRecord::saveUseCueFile() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"),
-                   ConfigValue(CheckBoxRecordCueFile->isChecked()));
+            ConfigValue(CheckBoxRecordCueFile->isChecked()));
 }
 
 void DlgPrefRecord::saveUseCueFileAnnotation() {
@@ -644,7 +658,7 @@ void DlgPrefRecord::saveUseCueFileAnnotation() {
 
 void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
-                   ConfigValue(comboBoxSplitting->currentText()));
+            ConfigValue(comboBoxSplitting->currentText()));
 }
 
 // only when recsamplerate combobox is chosen, i.e.
@@ -692,7 +706,7 @@ void DlgPrefRecord::slotDefaultSampleRateUpdated(mixxx::audio::SampleRate newRat
     // even if the engine samplerate has changed.
     int recSampleRateIdx = comboBoxRecSampleRate->findData(
             QVariant::fromValue(oldSampleRate));
-    if (recSampleRateIdx != -1) { // found in the combobox
+    if (recSampleRateIdx != -1) {                           // found in the combobox
         RadioButtonUseDefaultSampleRate->setChecked(false); // calls slot ignore
         comboBoxRecSampleRate->setCurrentIndex(recSampleRateIdx);
     } else {
