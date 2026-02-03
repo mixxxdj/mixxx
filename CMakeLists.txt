@@ -53,6 +53,11 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+# Normalized DESTINATION paths in install()
+if(POLICY CMP0177)
+  cmake_policy(SET CMP0177 NEW)
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
   if(NOT DEFINED ENV{JAVA_HOME})
     message(FATAL_ERROR "JAVA_HOME is not set. Did you source the setup file?")
@@ -3207,6 +3212,10 @@ if(ENGINEPRIME)
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
   set(LIBDJINTEROP_VERSION 0.27.0)
   # Look whether an existing installation of libdjinterop matches the required version.
+  if(DEFINED ENV{MIXXX_VCPKG_ROOT} OR DEFINED MIXXX_VCPKG_ROOT)
+    # On the VCPKG version, DjInterop has devendored dependencies, see https://github.com/microsoft/vcpkg/pull/50062
+    find_package(date CONFIG REQUIRED)
+  endif()
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
     find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT MODULE)
@@ -3724,6 +3733,10 @@ if(QML)
     list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   endif()
 endif()
+# Move custom module path at the end, so system and VCPKG ones take precedence (particularly findFFmpeg)
+list(POP_FRONT CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+
 find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS ${QT_COMPONENTS} ${QT_EXTRA_COMPONENTS}

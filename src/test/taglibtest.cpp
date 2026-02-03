@@ -91,7 +91,9 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
     auto linkFileInfoBefore = QFileInfo(linkFileName);
     EXPECT_TRUE(linkFileInfoBefore.exists());
     EXPECT_TRUE(linkFileInfoBefore.isSymLink());
-    EXPECT_EQ(linkFileInfoBefore.canonicalFilePath().toStdString(), tmpFileName.toStdString());
+    auto canonicalTmpFileName = QFileInfo(tmpFileName).canonicalFilePath();
+    EXPECT_EQ(linkFileInfoBefore.canonicalFilePath().toStdString(),
+            canonicalTmpFileName.toStdString());
 
     // Verify that the file has no tags
     {
@@ -127,7 +129,8 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
     auto linkFileInfoAfter = QFileInfo(linkFileName);
 
     EXPECT_TRUE(linkFileInfoAfter.exists());
-    EXPECT_EQ(linkFileInfoAfter.canonicalFilePath().toStdString(), tmpFileName.toStdString());
+    EXPECT_EQ(linkFileInfoAfter.canonicalFilePath().toStdString(),
+            canonicalTmpFileName.toStdString());
     EXPECT_TRUE(linkFileInfoAfter.isSymLink());
 }
 #endif
