@@ -1229,7 +1229,10 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
 
     QString summary =
             tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
-    if (result.numNewTracks == 0 && result.numMovedTracks == 0 && result.numNewMissingTracks == 0) {
+    if (result.numNewTracks == 0 &&
+            result.numMovedTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
         summary += tr("No changes detected.") +
                 QStringLiteral("<br><b>") +
                 tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
