@@ -1,5 +1,6 @@
 #include "engine/enginemixer.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "audio/types.h"
@@ -46,8 +47,6 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           // processing the main mix is necessary.
           m_pMainEnabled(std::make_unique<ControlObject>(
                   ConfigKey(group, "enabled"), true, false, true)),
-          m_pHeadphoneEnabled(std::make_unique<ControlObject>(
-                  ConfigKey(group, "headEnabled"))),
           m_pBoothEnabled(std::make_unique<ControlObject>(
                   ConfigKey(group, "booth_enabled"))),
           m_pChannelHandleFactory(pChannelHandleFactory),
@@ -56,7 +55,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   mixxx::SampleBuffer(kMaxEngineSamples),
                   mixxx::SampleBuffer(kMaxEngineSamples)}),
           m_booth(kMaxEngineSamples),
-          m_head(kMaxEngineSamples),
+          m_head({mixxx::SampleBuffer(kMaxEngineSamples),
+                  mixxx::SampleBuffer(kMaxEngineSamples)}),
           m_talkover(kMaxEngineSamples),
           m_talkoverHeadphones(kMaxEngineSamples),
           m_sidechainMix(kMaxEngineSamples),
@@ -66,8 +66,6 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(group, "gain"), -14, 14, 0.5)),
           m_pBoothGain(std::make_unique<ControlAudioTaperPot>(
                   ConfigKey(group, "booth_gain"), -14, 14, 0.5)),
-          m_pHeadGain(std::make_unique<ControlAudioTaperPot>(
-                  ConfigKey(group, "headGain"), -14, 14, 0.5)),
           m_pSampleRate(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("samplerate")),
                   true,
@@ -87,8 +85,6 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   std::make_unique<EngineTalkoverDucking>(pConfig, group)),
           m_pMainDelay(
                   std::make_unique<EngineDelay>(ConfigKey(group, "delay"))),
-          m_pHeadDelay(
-                  std::make_unique<EngineDelay>(ConfigKey(group, "headDelay"))),
           m_pBoothDelay(std::make_unique<EngineDelay>(
                   ConfigKey(group, "boothDelay"))),
           m_pLatencyCompensationDelay(std::make_unique<EngineDelay>(
@@ -101,8 +97,6 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                           : nullptr),
           m_pCrossfader(std::make_unique<ControlPotmeter>(
                   ConfigKey(group, "crossfader"), -1., 1.)),
-          m_pHeadMix(std::make_unique<ControlPotmeter>(
-                  ConfigKey(group, "headMix"), -1., 1.)),
           m_pBalance(std::make_unique<ControlPotmeter>(
                   ConfigKey(group, "balance"), -1., 1.)),
           m_pXFaderMode(std::make_unique<ControlPushButton>(
@@ -119,9 +113,6 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   true)),
           m_pXFaderReverse(std::make_unique<ControlPushButton>(
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))),
-          m_pHeadSplitEnabled(std::make_unique<ControlPushButton>(
-                  ConfigKey(group, "headSplit"), true, 0.0)),
-
           m_pKeylockEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                   false,
@@ -131,14 +122,15 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                           EngineBuffer::defaultKeylockEngine())))),
           m_mainGainOld(0.0),
           m_boothGainOld(0.0),
-          m_headphoneMainGainOld(0.0),
-          m_headphoneGainOld(1.0),
+          m_headphoneMainGainOld({0.0, 0.0}),
+          m_headphoneGainOld({1.0, 1.0}),
           m_duckingGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
           m_numMicsConfigured(0),
           m_mainHandle(registerChannelGroup(group)),
-          m_headphoneHandle(registerChannelGroup("[Headphone]")),
+          m_headphoneHandle({registerChannelGroup("[Headphone1]"),
+                             registerChannelGroup("[Headphone2]")}),
           m_mainOutputHandle(registerChannelGroup("[MasterOutput]")),
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
@@ -148,10 +140,44 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(group, "mono_mixdown"), true, false, true)),
           m_pMicMonitorMode(std::make_unique<ControlObject>(
                   ConfigKey(group, "talkover_mix"), true, false, true)) {
+    // Initialize headphone-related controls for each headphone output
+    for (unsigned int i = 0; i < kNumHeadphoneOutputs; ++i) {
+        QString headGroup = QStringLiteral("[Headphone%1]").arg(i + 1);
+
+        m_pHeadphoneEnabled[i] = std::make_unique<ControlObject>(
+                ConfigKey(headGroup, "enabled"));
+        m_pHeadGain[i] = std::make_unique<ControlAudioTaperPot>(
+                ConfigKey(headGroup, "gain"), -14, 14, 0.5);
+        m_pHeadMix[i] = std::make_unique<ControlPotmeter>(
+                ConfigKey(headGroup, "mix"), -1., 1.);
+        m_pHeadSplitEnabled[i] = std::make_unique<ControlPushButton>(
+                ConfigKey(headGroup, "split"), true, 0.0);
+        m_pHeadDelay[i] = std::make_unique<EngineDelay>(
+                ConfigKey(headGroup, "delay"));
+
+        m_pHeadMix[i]->setDefaultValue(-1.);
+        m_pHeadMix[i]->set(-1.);
+        m_pHeadSplitEnabled[i]->setButtonMode(mixxx::control::ButtonMode::Toggle);
+        m_pHeadSplitEnabled[i]->set(0.0);
+        m_pHeadphoneEnabled[i]->setReadOnly();
+
+        // Clear headphone buffers
+        m_head[i].clear();
+    }
+
+    // Legacy aliases for backward compatibility with first headphone output
+    m_pHeadphoneEnabled[0]->addAlias(ConfigKey(group, "headEnabled"));
+    m_pHeadGain[0]->addAlias(ConfigKey(group, "headGain"));
+    m_pHeadGain[0]->addAlias(ConfigKey(group, "headVolume"));
+    m_pHeadMix[0]->addAlias(ConfigKey(group, "headMix"));
+    m_pHeadSplitEnabled[0]->addAlias(ConfigKey(group, "headSplit"));
+
     pEffectsManager->registerInputChannel(m_mainHandle);
-    pEffectsManager->registerInputChannel(m_headphoneHandle);
+    for (unsigned int i = 0; i < kNumHeadphoneOutputs; ++i) {
+        pEffectsManager->registerInputChannel(m_headphoneHandle[i]);
+        pEffectsManager->registerOutputChannel(m_headphoneHandle[i]);
+    }
     pEffectsManager->registerOutputChannel(m_mainHandle);
-    pEffectsManager->registerOutputChannel(m_headphoneHandle);
 
     pEffectsManager->registerInputChannel(m_mainOutputHandle);
     pEffectsManager->registerInputChannel(m_busTalkoverHandle);
@@ -181,18 +207,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     // 1.11.0 and earlier. See issue #7413.
     m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
 
-    // Legacy: the headphone "headGain" control used to be named "headVolume" in
-    // Mixxx 1.11.0 and earlier. See issue #7413.
-    m_pHeadGain->addAlias(ConfigKey(group, QStringLiteral("headVolume")));
-
-    m_pHeadMix->setDefaultValue(-1.);
-    m_pHeadMix->set(-1.);
-
-    m_pHeadSplitEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
-    m_pHeadSplitEnabled->set(0.0);
-
     // zero out otherwise uninitialized buffers
-    m_head.clear();
     m_main.clear();
     m_booth.clear();
     m_talkover.clear();
@@ -207,7 +222,6 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_pXFaderReverse->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_pBoothEnabled->setReadOnly();
-    m_pHeadphoneEnabled->setReadOnly();
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
@@ -222,12 +236,38 @@ std::span<const CSAMPLE> EngineMixer::getBoothBuffer() const {
     return m_booth.span();
 }
 
-std::span<const CSAMPLE> EngineMixer::getHeadphoneBuffer() const {
-    return m_head.span();
+std::span<const CSAMPLE> EngineMixer::getHeadphoneBuffer(unsigned int index) const {
+    if (index < kNumHeadphoneOutputs) {
+        return m_head[index].span();
+    }
+    return {};
 }
 
 std::span<const CSAMPLE> EngineMixer::getSidechainBuffer() const {
     return m_sidechainMix.span();
+}
+
+unsigned int EngineMixer::getHeadphoneOutputForChannel(ChannelInfo* pChannelInfo) const {
+    // Route channels to headphone outputs based on deck numbering:
+    // - Decks 1-2 (index 0-1) -> Headphones 1 (index 0)
+    // - Decks 3-4 (index 2-3) -> Headphones 2 (index 1)
+    // - etc.
+    // Non-deck channels (microphones, auxiliaries) go to the first headphone output
+    const QString& group = pChannelInfo->m_pChannel->getGroup();
+
+    // Check if this is a deck channel (e.g., "[Channel1]", "[Channel2]")
+    if (group.startsWith(QStringLiteral("[Channel"))) {
+        // Extract the deck number
+        int deckNumber = group.mid(8, group.length() - 9).toInt();
+        if (deckNumber > 0) {
+            // Map deck number to headphone output: 1-2 -> 0, 3-4 -> 1, etc.
+            unsigned int headphoneIndex = static_cast<unsigned int>((deckNumber - 1) / 2);
+            return std::min(headphoneIndex, static_cast<unsigned int>(kNumHeadphoneOutputs - 1));
+        }
+    }
+
+    // Default: route to first headphone output
+    return 0;
 }
 
 void EngineMixer::processChannels(std::size_t bufferSize) {
@@ -237,7 +277,9 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
     m_activeBusChannels[EngineChannel::RIGHT].clear();
-    m_activeHeadphoneChannels.clear();
+    for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+        m_activeHeadphoneChannels[h].clear();
+    }
     m_activeTalkoverChannels.clear();
     m_activeChannels.clear();
 
@@ -296,15 +338,18 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
         }
 
         // If the channel is enabled for previewing in headphones, copy it
-        // over to the headphone buffer
+        // over to the appropriate headphone buffer based on deck assignment
         if (pChannel->isPflEnabled()) {
-            m_activeHeadphoneChannels.append(pChannelInfo);
+            unsigned int headphoneIndex = getHeadphoneOutputForChannel(pChannelInfo);
+            m_activeHeadphoneChannels[headphoneIndex].append(pChannelInfo);
         } else {
-            // Check if we need to fade out the channel
-            GainCache& gainCache = m_channelHeadphoneGainCache[i];
-            if (gainCache.m_gain != 0) {
-                m_channelHeadphoneGainCache[i].m_fadeout = true;
-                m_activeHeadphoneChannels.append(pChannelInfo);
+            // Check if we need to fade out the channel on each headphone output
+            for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+                GainCache& gainCache = m_channelHeadphoneGainCache[h][i];
+                if (gainCache.m_gain != 0) {
+                    m_channelHeadphoneGainCache[h][i].m_fadeout = true;
+                    m_activeHeadphoneChannels[h].append(pChannelInfo);
+                }
             }
         }
 
@@ -370,7 +415,10 @@ void EngineMixer::process(const std::size_t bufferSize) {
 
     bool mainEnabled = m_pMainEnabled->toBool();
     bool boothEnabled = m_pBoothEnabled->toBool();
-    bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
+    std::array<bool, kNumHeadphoneOutputs> headphoneEnabled;
+    for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+        headphoneEnabled[h] = m_pHeadphoneEnabled[h]->toBool();
+    }
 
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
     // TODO: remove assumption of stereo buffer
@@ -384,54 +432,55 @@ void EngineMixer::process(const std::size_t bufferSize) {
     // Prepare all channels for output
     processChannels(bufferSize);
 
-    // Compute headphone mix
-    // Head phone left/right mix
-    CSAMPLE pflMixGainInHeadphones = 1;
-    CSAMPLE mainMixGainInHeadphones = 0;
-    if (mainEnabled) {
-        const auto cf_val = static_cast<CSAMPLE_GAIN>(m_pHeadMix->get());
-        pflMixGainInHeadphones = 0.5f * (-cf_val + 1.0f);
-        mainMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
-        // qDebug() << "head val " << cf_val << ", head " << chead_gain
-        //          << ", main " << mainGain;
-    }
+    // Compute headphone mix for each headphone output
+    std::array<CSAMPLE, kNumHeadphoneOutputs> pflMixGainInHeadphones;
+    std::array<CSAMPLE, kNumHeadphoneOutputs> mainMixGainInHeadphones;
+    for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+        pflMixGainInHeadphones[h] = 1;
+        mainMixGainInHeadphones[h] = 0;
+        if (mainEnabled) {
+            const auto cf_val = static_cast<CSAMPLE_GAIN>(m_pHeadMix[h]->get());
+            pflMixGainInHeadphones[h] = 0.5f * (-cf_val + 1.0f);
+            mainMixGainInHeadphones[h] = 0.5f * (cf_val + 1.0f);
+        }
 
-    // Mix all the PFL enabled channels together.
-    m_headphoneGain.setGain(pflMixGainInHeadphones);
+        // Mix all the PFL enabled channels together for this headphone output
+        m_headphoneGain[h].setGain(pflMixGainInHeadphones[h]);
 
-    if (headphoneEnabled) {
-        // Process effects and mix PFL channels together for the headphones.
-        // Effects will be reprocessed post-fader for the crossfader buses
-        // and main mix, so the channel input buffers cannot be modified here.
-        ChannelMixer::applyEffectsAndMixChannels(
-                m_headphoneGain,
-                m_activeHeadphoneChannels,
-                &m_channelHeadphoneGainCache,
-                m_head.data(),
-                m_headphoneHandle.handle(),
-                bufferSize,
-                m_sampleRate,
-                m_pEngineEffectsManager);
-
-        // Process headphone channel effects
-        if (m_pEngineEffectsManager) {
-            GroupFeatureState headphoneFeatures;
-            // If there is only one channel in the headphone mix, use its features
-            // for effects processing. This allows for previewing how an effect will
-            // sound on a playing deck before turning up the dry/wet knob to make it
-            // audible on the main mix. Without this, the effect would sound different
-            // in headphones than how it would sound if it was enabled on the deck,
-            // for example with tempo synced effects.
-            if (m_activeHeadphoneChannels.size() == 1) {
-                headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
-            }
-            m_pEngineEffectsManager->processPostFaderInPlace(
-                    m_headphoneHandle.handle(),
-                    m_headphoneHandle.handle(),
-                    m_head.data(),
+        if (headphoneEnabled[h]) {
+            // Process effects and mix PFL channels together for the headphones.
+            // Effects will be reprocessed post-fader for the crossfader buses
+            // and main mix, so the channel input buffers cannot be modified here.
+            ChannelMixer::applyEffectsAndMixChannels(
+                    m_headphoneGain[h],
+                    m_activeHeadphoneChannels[h],
+                    &m_channelHeadphoneGainCache[h],
+                    m_head[h].data(),
+                    m_headphoneHandle[h].handle(),
                     bufferSize,
                     m_sampleRate,
-                    headphoneFeatures);
+                    m_pEngineEffectsManager);
+
+            // Process headphone channel effects
+            if (m_pEngineEffectsManager) {
+                GroupFeatureState headphoneFeatures;
+                // If there is only one channel in the headphone mix, use its features
+                // for effects processing. This allows for previewing how an effect will
+                // sound on a playing deck before turning up the dry/wet knob to make it
+                // audible on the main mix. Without this, the effect would sound different
+                // in headphones than how it would sound if it was enabled on the deck,
+                // for example with tempo synced effects.
+                if (m_activeHeadphoneChannels[h].size() == 1) {
+                    headphoneFeatures = m_activeHeadphoneChannels[h].at(0)->m_features;
+                }
+                m_pEngineEffectsManager->processPostFaderInPlace(
+                        m_headphoneHandle[h].handle(),
+                        m_headphoneHandle[h].handle(),
+                        m_head[h].data(),
+                        bufferSize,
+                        m_sampleRate,
+                        headphoneFeatures);
+            }
         }
     }
 
@@ -570,8 +619,10 @@ void EngineMixer::process(const std::size_t bufferSize) {
             SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
             m_duckingGainOld = duckingGain;
 
-            if (headphoneEnabled) {
-                processHeadphones(mainMixGainInHeadphones, bufferSize);
+            for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+                if (headphoneEnabled[h]) {
+                    processHeadphones(h, mainMixGainInHeadphones[h], bufferSize);
+                }
             }
 
             // Copy main mix to booth output with booth gain before mixing
@@ -617,8 +668,10 @@ void EngineMixer::process(const std::size_t bufferSize) {
             SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
             m_duckingGainOld = duckingGain;
 
-            if (headphoneEnabled) {
-                processHeadphones(mainMixGainInHeadphones, bufferSize);
+            for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+                if (headphoneEnabled[h]) {
+                    processHeadphones(h, mainMixGainInHeadphones[h], bufferSize);
+                }
             }
 
             // Mix talkover with main
@@ -682,8 +735,10 @@ void EngineMixer::process(const std::size_t bufferSize) {
             SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
             m_duckingGainOld = duckingGain;
 
-            if (headphoneEnabled) {
-                processHeadphones(mainMixGainInHeadphones, bufferSize);
+            for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+                if (headphoneEnabled[h]) {
+                    processHeadphones(h, mainMixGainInHeadphones[h], bufferSize);
+                }
             }
 
             // Apply main gain
@@ -784,8 +839,10 @@ void EngineMixer::process(const std::size_t bufferSize) {
     } else {
         m_main.clear(bufferSize);
     }
-    if (headphoneEnabled) {
-        m_pHeadDelay->process(m_head.data(), bufferSize);
+    for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+        if (headphoneEnabled[h]) {
+            m_pHeadDelay[h]->process(m_head[h].data(), bufferSize);
+        }
     }
     if (boothEnabled) {
         m_pBoothDelay->process(m_booth.data(), bufferSize);
@@ -814,24 +871,27 @@ void EngineMixer::applyMainEffects(std::size_t bufferSize) {
 }
 
 void EngineMixer::processHeadphones(
+        unsigned int headphoneIndex,
         const CSAMPLE_GAIN mainMixGainInHeadphones,
         std::size_t bufferSize) {
+    DEBUG_ASSERT(headphoneIndex < kNumHeadphoneOutputs);
+
     // Add main mix to headphones
     SampleUtil::addWithRampingGain(
-            m_head.data(),
+            m_head[headphoneIndex].data(),
             m_main.data(),
-            m_headphoneMainGainOld,
+            m_headphoneMainGainOld[headphoneIndex],
             mainMixGainInHeadphones,
             bufferSize);
-    m_headphoneMainGainOld = mainMixGainInHeadphones;
+    m_headphoneMainGainOld[headphoneIndex] = mainMixGainInHeadphones;
 
     // If Head Split is enabled, replace the left channel of the pfl buffer
     // with a mono mix of the headphone buffer, and the right channel of the pfl
     // buffer with a mono mix of the main output buffer.
-    if (m_pHeadSplitEnabled->toBool()) {
+    if (m_pHeadSplitEnabled[headphoneIndex]->toBool()) {
         // note: NOT VECTORIZED because of in place copy
         // with all compilers, except clang >= 14.
-        auto* const ph = m_head.data();
+        auto* const ph = m_head[headphoneIndex].data();
         auto* const pm = m_main.data();
         for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
             ph[i] = (ph[i] + ph[i + 1]) / 2;
@@ -840,13 +900,13 @@ void EngineMixer::processHeadphones(
     }
 
     // Apply headphone gain
-    CSAMPLE_GAIN headphoneGain = static_cast<CSAMPLE_GAIN>(m_pHeadGain->get());
+    CSAMPLE_GAIN headphoneGain = static_cast<CSAMPLE_GAIN>(m_pHeadGain[headphoneIndex]->get());
     SampleUtil::applyRampingGain(
-            m_head.data(),
-            m_headphoneGainOld,
+            m_head[headphoneIndex].data(),
+            m_headphoneGainOld[headphoneIndex],
             headphoneGain,
             bufferSize);
-    m_headphoneGainOld = headphoneGain;
+    m_headphoneGainOld[headphoneIndex] = headphoneGain;
 }
 
 void EngineMixer::addChannel(std::unique_ptr<EngineChannel> pChannel) {
@@ -868,7 +928,9 @@ void EngineMixer::addChannel(std::unique_ptr<EngineChannel> pChannel) {
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     m_channels.append(std::move(pChannelInfo));
     constexpr GainCache gainCacheDefault = {0, false};
-    m_channelHeadphoneGainCache.append(gainCacheDefault);
+    for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+        m_channelHeadphoneGainCache[h].append(gainCacheDefault);
+    }
     m_channelTalkoverGainCache.append(gainCacheDefault);
     m_channelMainGainCache.append(gainCacheDefault);
 
@@ -879,7 +941,9 @@ void EngineMixer::addChannel(std::unique_ptr<EngineChannel> pChannel) {
     m_activeBusChannels[EngineChannel::LEFT].reserve(m_channels.size());
     m_activeBusChannels[EngineChannel::CENTER].reserve(m_channels.size());
     m_activeBusChannels[EngineChannel::RIGHT].reserve(m_channels.size());
-    m_activeHeadphoneChannels.reserve(m_channels.size());
+    for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+        m_activeHeadphoneChannels[h].reserve(m_channels.size());
+    }
     m_activeTalkoverChannels.reserve(m_channels.size());
 
     if (pBuffer != nullptr) {
@@ -933,7 +997,7 @@ std::span<const CSAMPLE> EngineMixer::buffer(const AudioOutput& output) const {
         return getBoothBuffer();
         break;
     case AudioPathType::Headphones:
-        return getHeadphoneBuffer();
+        return getHeadphoneBuffer(output.getIndex());
         break;
     case AudioPathType::Bus:
         return getOutputBusBuffer(output.getIndex());
@@ -957,7 +1021,9 @@ void EngineMixer::onOutputConnected(const AudioOutput& output) {
         break;
     case AudioPathType::Headphones:
         m_pMainEnabled->forceSet(1.0);
-        m_pHeadphoneEnabled->forceSet(1.0);
+        if (output.getIndex() < kNumHeadphoneOutputs) {
+            m_pHeadphoneEnabled[output.getIndex()]->forceSet(1.0);
+        }
         break;
     case AudioPathType::Booth:
         m_pMainEnabled->forceSet(1.0);
@@ -987,7 +1053,9 @@ void EngineMixer::onOutputDisconnected(const AudioOutput& output) {
         m_pBoothEnabled->forceSet(0.0);
         break;
     case AudioPathType::Headphones:
-        m_pHeadphoneEnabled->forceSet(0.0);
+        if (output.getIndex() < kNumHeadphoneOutputs) {
+            m_pHeadphoneEnabled[output.getIndex()]->forceSet(0.0);
+        }
         break;
     case AudioPathType::Bus:
         m_bBusOutputConnected[output.getIndex()] = false;
@@ -1051,10 +1119,14 @@ void EngineMixer::registerNonEngineChannelSoundIO(gsl::not_null<SoundManager*> p
                                           0,
                                           mixxx::audio::ChannelCount::stereo()),
             this);
-    pSoundManager->registerOutput(AudioOutput(AudioPathType::Headphones,
-                                          0,
-                                          mixxx::audio::ChannelCount::stereo()),
-            this);
+    // Register multiple headphone outputs
+    for (unsigned int h = 0; h < kNumHeadphoneOutputs; ++h) {
+        pSoundManager->registerOutput(AudioOutput(AudioPathType::Headphones,
+                                              0,
+                                              mixxx::audio::ChannelCount::stereo(),
+                                              h),
+                this);
+    }
     pSoundManager->registerOutput(AudioOutput(AudioPathType::Booth,
                                           0,
                                           mixxx::audio::ChannelCount::stereo()),

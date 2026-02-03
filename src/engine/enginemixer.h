@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QVarLengthArray>
+#include <array>
 #include <atomic>
 #include <gsl/pointers>
 #include <memory>
@@ -35,6 +36,10 @@ class EngineDelay;
 // The number of channels to pre-allocate in various structures in the
 // engine. Prevents memory allocation in EngineMixer::addChannel.
 static constexpr int kPreallocatedChannels = 64;
+
+// The number of headphone outputs supported. This allows multiple DJs
+// to use separate headphone outputs with independent PFL routing.
+static constexpr int kNumHeadphoneOutputs = 2;
 
 class EngineMixer : public QObject, public AudioSource {
     Q_OBJECT
@@ -102,7 +107,7 @@ class EngineMixer : public QObject, public AudioSource {
     // These are really only exposed for tests to use.
     std::span<const CSAMPLE> getMainBuffer() const;
     std::span<const CSAMPLE> getBoothBuffer() const;
-    std::span<const CSAMPLE> getHeadphoneBuffer() const;
+    std::span<const CSAMPLE> getHeadphoneBuffer(unsigned int index = 0) const;
     std::span<const CSAMPLE> getOutputBusBuffer(unsigned int i) const;
     std::span<const CSAMPLE> getDeckBuffer(unsigned int i) const;
     std::span<const CSAMPLE> getChannelBuffer(const QString& name) const;
@@ -249,7 +254,7 @@ class EngineMixer : public QObject, public AudioSource {
     // ControlObjects for switching off unnecessary processing
     // These are protected so tests can set them
     std::unique_ptr<ControlObject> m_pMainEnabled;
-    std::unique_ptr<ControlObject> m_pHeadphoneEnabled;
+    std::array<std::unique_ptr<ControlObject>, kNumHeadphoneOutputs> m_pHeadphoneEnabled;
     std::unique_ptr<ControlObject> m_pBoothEnabled;
 
   private:
@@ -263,8 +268,12 @@ class EngineMixer : public QObject, public AudioSource {
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMainEffects(std::size_t bufferSize);
     void processHeadphones(
+            unsigned int headphoneIndex,
             const CSAMPLE_GAIN mainMixGainInHeadphones,
             std::size_t bufferSize);
+
+    // Helper to determine which headphone output a channel should be routed to
+    unsigned int getHeadphoneOutputForChannel(ChannelInfo* pChannelInfo) const;
     bool sidechainMixRequired() const;
 
     // non-owning. lifetime bound to EffectsManager
@@ -276,13 +285,13 @@ class EngineMixer : public QObject, public AudioSource {
     // The previous gain of each channel for each mixing output (main,
     // headphone, talkover).
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMainGainCache;
-    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelHeadphoneGainCache;
+    std::array<QVarLengthArray<GainCache, kPreallocatedChannels>, kNumHeadphoneOutputs> m_channelHeadphoneGainCache;
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelTalkoverGainCache;
 
     // Pre-allocated buffers for performing channel mixing in the callback.
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeBusChannels[3];
-    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
+    std::array<QVarLengthArray<ChannelInfo*, kPreallocatedChannels>, kNumHeadphoneOutputs> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
 
     mixxx::audio::SampleRate m_sampleRate;
@@ -290,7 +299,7 @@ class EngineMixer : public QObject, public AudioSource {
     // Mixing buffers for each output.
     std::array<mixxx::SampleBuffer, 3> m_outputBusBuffers;
     mixxx::SampleBuffer m_booth;
-    mixxx::SampleBuffer m_head;
+    std::array<mixxx::SampleBuffer, kNumHeadphoneOutputs> m_head;
     mixxx::SampleBuffer m_talkover;
     mixxx::SampleBuffer m_talkoverHeadphones;
     mixxx::SampleBuffer m_sidechainMix;
@@ -300,7 +309,7 @@ class EngineMixer : public QObject, public AudioSource {
 
     std::unique_ptr<ControlObject> m_pMainGain;
     std::unique_ptr<ControlObject> m_pBoothGain;
-    std::unique_ptr<ControlObject> m_pHeadGain;
+    std::array<std::unique_ptr<ControlObject>, kNumHeadphoneOutputs> m_pHeadGain;
     std::unique_ptr<ControlObject> m_pSampleRate;
     std::unique_ptr<ControlObject> m_pOutputLatencyMs;
     std::unique_ptr<ControlObject> m_pAudioLatencyOverloadCount;
@@ -308,7 +317,7 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<ControlObject> m_pAudioLatencyOverload;
     std::unique_ptr<EngineTalkoverDucking> m_pTalkoverDucking;
     std::unique_ptr<EngineDelay> m_pMainDelay;
-    std::unique_ptr<EngineDelay> m_pHeadDelay;
+    std::array<std::unique_ptr<EngineDelay>, kNumHeadphoneOutputs> m_pHeadDelay;
     std::unique_ptr<EngineDelay> m_pBoothDelay;
     std::unique_ptr<EngineDelay> m_pLatencyCompensationDelay;
 
@@ -316,28 +325,28 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<EngineSideChain> m_pEngineSideChain;
 
     std::unique_ptr<ControlPotmeter> m_pCrossfader;
-    std::unique_ptr<ControlPotmeter> m_pHeadMix;
+    std::array<std::unique_ptr<ControlPotmeter>, kNumHeadphoneOutputs> m_pHeadMix;
     std::unique_ptr<ControlPotmeter> m_pBalance;
     std::unique_ptr<ControlPushButton> m_pXFaderMode;
     std::unique_ptr<ControlPotmeter> m_pXFaderCurve;
     std::unique_ptr<ControlPotmeter> m_pXFaderCalibration;
     std::unique_ptr<ControlPushButton> m_pXFaderReverse;
-    std::unique_ptr<ControlPushButton> m_pHeadSplitEnabled;
+    std::array<std::unique_ptr<ControlPushButton>, kNumHeadphoneOutputs> m_pHeadSplitEnabled;
     std::unique_ptr<ControlObject> m_pKeylockEngine;
 
-    PflGainCalculator m_headphoneGain;
+    std::array<PflGainCalculator, kNumHeadphoneOutputs> m_headphoneGain;
     TalkoverGainCalculator m_talkoverGain;
     OrientationVolumeGainCalculator m_mainGain;
     CSAMPLE_GAIN m_mainGainOld;
     CSAMPLE_GAIN m_boothGainOld;
-    CSAMPLE_GAIN m_headphoneMainGainOld;
-    CSAMPLE_GAIN m_headphoneGainOld;
+    std::array<CSAMPLE_GAIN, kNumHeadphoneOutputs> m_headphoneMainGainOld;
+    std::array<CSAMPLE_GAIN, kNumHeadphoneOutputs> m_headphoneGainOld;
     CSAMPLE_GAIN m_duckingGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;
     std::atomic<unsigned int> m_numMicsConfigured;
     const ChannelHandleAndGroup m_mainHandle;
-    const ChannelHandleAndGroup m_headphoneHandle;
+    std::array<ChannelHandleAndGroup, kNumHeadphoneOutputs> m_headphoneHandle;
     const ChannelHandleAndGroup m_mainOutputHandle;
     const ChannelHandleAndGroup m_busTalkoverHandle;
     const ChannelHandleAndGroup m_busCrossfaderLeftHandle;
