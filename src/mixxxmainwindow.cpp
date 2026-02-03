@@ -1265,13 +1265,13 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                     QStringLiteral("<br>");
         }
         if (result.numNewMissingTracks != 0) {
-            summary += tr("%n track(s) are missing (%1 total)",
+            summary += tr("%n track(s) missing (%1 total)",
                     nullptr,
                     result.numNewMissingTracks);
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
-                    tr("%n track(s) have been rediscovered",
+                    tr("%n track(s) rediscovered",
                             nullptr,
                             result.numRediscoveredTracks);
         }
