@@ -7,12 +7,12 @@
 
 namespace {
 
-inline QString recentFilter() {
+inline QString recentFilter(unsigned int days) {
     // Create a user-formatted query equal to SQL query
-    // datetime_added > datetime('now', '-7 days')
+    // datetime_added > datetime('now', '-<days> days')
     QDateTime dt(QDateTime::currentDateTimeUtc());
-    dt = dt.addDays(-7);
-    const QString dateStr = QLocale::system().toString(dt.date(), QLocale::ShortFormat);
+    dt = dt.addDays(-static_cast<qint64>(days));
+    const QString dateStr = dt.date().toString(Qt::ISODate);
 
     // FIXME alternatively, use "added:-days" and add the respective
     // literal parser to DateAddedFilterNode
@@ -21,27 +21,34 @@ inline QString recentFilter() {
 
 } // anonymous namespace
 
-AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
-                                                   TrackCollectionManager* pTrackCollectionManager)
-        : LibraryTableModel(parent, pTrackCollectionManager,
-                            "mixxx.db.model.prepare") {
+AnalysisLibraryTableModel::AnalysisLibraryTableModel(
+        QObject* parent,
+        TrackCollectionManager* pTrackCollectionManager)
+        : LibraryTableModel(parent, pTrackCollectionManager, "mixxx.db.model.prepare"),
+          m_recentDays(kDefaultRecentDays) {
     // Default to showing recent tracks.
-    setExtraFilter(recentFilter());
+    setExtraFilter(recentFilter(m_recentDays));
+}
+
+void AnalysisLibraryTableModel::setRecentDays(unsigned int days) {
+    m_recentDays = days;
 }
 
 void AnalysisLibraryTableModel::showRecentSongs() {
-    // Search with the recent filter.
-    setExtraFilter(recentFilter());
-    select();
+    // Search with the recent filter using internal days value.
+    setExtraFilter(recentFilter(m_recentDays));
+    search(currentSearch());
 }
 
 void AnalysisLibraryTableModel::showAllSongs() {
     // Clear the recent filter.
     setExtraFilter({});
-    select();
+    search(currentSearch());
 }
 
-void AnalysisLibraryTableModel::searchCurrentTrackSet(const QString& text, bool useRecentFilter) {
-    setExtraFilter(useRecentFilter ? recentFilter() : QString{});
+void AnalysisLibraryTableModel::searchCurrentTrackSet(
+        const QString& text,
+        bool useRecentFilter) {
+    setExtraFilter(useRecentFilter ? recentFilter(m_recentDays) : QString{});
     search(text);
 }
