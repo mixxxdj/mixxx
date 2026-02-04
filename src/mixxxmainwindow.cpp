@@ -1253,29 +1253,30 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
     if (result.numNewTracks == 0 && result.numMovedTracks == 0 && result.numNewMissingTracks == 0) {
         summary += tr("No changes detected.") +
                 QStringLiteral("<br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     } else {
         if (result.numNewTracks != 0) {
-            summary += tr("%1 new tracks found").arg(QString::number(result.numNewTracks)) +
+            summary += tr("%n new track(s) found", nullptr, result.numNewTracks) +
                     QStringLiteral("<br>");
         }
         if (result.numMovedTracks != 0) {
-            summary += tr("%1 moved tracks detected").arg(QString::number(result.numMovedTracks)) +
+            summary += tr("%n moved track(s) detected", nullptr, result.numMovedTracks) +
                     QStringLiteral("<br>");
         }
         if (result.numNewMissingTracks != 0) {
-            summary += tr("%1 tracks are missing (%2 total)")
-                               .arg(QString::number(result.numNewMissingTracks),
-                                       QString::number(result.numMissingTracks));
+            summary += tr("%n track(s) missing (%1 total)",
+                    nullptr,
+                    result.numNewMissingTracks);
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
-                    tr("%1 tracks have been rediscovered")
-                            .arg(QString::number(result.numRediscoveredTracks));
+                    tr("%n track(s) rediscovered",
+                            nullptr,
+                            result.numRediscoveredTracks);
         }
         summary += QStringLiteral("<br><br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     }
     QMessageBox* pMsg = new QMessageBox();
