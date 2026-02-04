@@ -26,6 +26,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetracktablemodel.cpp"
+#include "proto/keys.pb.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
@@ -610,6 +611,41 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+#ifdef __TRACKSIMILARITY__
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
+            const QVariant keyCodeValue = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+            if (keyCodeValue.isNull()) {
+                return QVariant();
+            }
+            bool ok;
+            const auto keyCode = keyCodeValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+            const auto key = KeyUtils::keyFromNumericValue(keyCode);
+            const auto trackKey = KeyUtils::keyToScalePitch(key);
+
+            const QVariant rawBpm = rawSiblingValue(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+            if (rawBpm.isNull()) {
+                return QVariant();
+            }
+
+            // reuse ok variable from key
+            const auto trackBpm = rawBpm.toDouble(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+
+            const auto targetKey = KeyUtils::keyToScalePitch(mixxx::track::io::key::C_MAJOR);
+            const auto targetBpm = 100.0;
+
+            const auto similarity = KeyUtils::trackSimilarity(
+                    targetKey, targetBpm, trackKey, trackBpm);
+            return QVariant(similarity);
+        }
+#endif
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;

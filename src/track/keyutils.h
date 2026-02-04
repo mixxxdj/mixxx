@@ -58,6 +58,42 @@ class KeyUtils {
             tonic + (major ? 1 : 13));
     }
 
+    // Converts a minor key to its relative major. This will change the tonic.
+    static inline mixxx::track::io::key::ChromaticKey minorToRelativeMajor(
+            mixxx::track::io::key::ChromaticKey key) {
+        return openKeyNumberToKey(keyToOpenKeyNumber(key), true);
+    }
+
+    // Key to 0-based Major scale value. Converts Minor keys to relative majors.
+    // eg. C and Am will be 0.0
+    static inline double keyToScalePitch(mixxx::track::io::key::ChromaticKey key) {
+        return keyToNumericValue(minorToRelativeMajor(key)) - 1;
+    }
+
+    // Ensure pitch is in the [0-12) range
+    static inline double normalizePitch(double pitch) {
+        double normPitch = fmod(pitch, 12.0);
+        if (normPitch < 0) {
+            normPitch += 12.0;
+        }
+        return normPitch;
+    }
+
+    // Given pitch difference of 2 keys, returns their distance on the keywheel
+    static inline int pitchDiffToKeywheelSteps(int pitchDiff) {
+        // Open Key number also conveniently gives us the clockwise index in the Keywheel
+        // Keys use 1-based indexing (0 is INVALID)
+        const int CWSteps = keyToOpenKeyNumber(keyFromNumericValue(pitchDiff + 1)) - 1;
+        // it's a wheel, so check if counter-clockwise direction has fewer steps
+        return std::min(CWSteps, 12 - CWSteps);
+    }
+
+    // returns the shortest pitch difference up or down, handling octaves
+    static inline double shortestPitchDiff(double pitch1, double pitch2) {
+        const double normPitchDiff = normalizePitch(pitch1 - pitch2);
+        return std::min(normPitchDiff, 12.0 - normPitchDiff);
+    }
+
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
             KeyNotation notation = KeyNotation::Custom);
 
@@ -135,6 +171,10 @@ class KeyUtils {
 
     static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                         KeyNotation notation);
+
+    static double trackSyncPitchDifference(double key1, double bpm1, double key2, double bpm2);
+
+    static double trackSimilarity(double key1, double bpm1, double key2, double bpm2);
 
     static QVariant keyFromKeyTextAndIdFields(
             const QVariant& keyTextField, const QVariant& keyIdField);
