@@ -500,8 +500,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
-                CSAMPLE_GAIN_ONE,
-                false);
+                CSAMPLE_GAIN_ONE);
     }
 
     switch (m_pTalkoverDucking->getMode()) {
@@ -555,8 +554,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
-                CSAMPLE_GAIN_ONE,
-                false);
+                CSAMPLE_GAIN_ONE);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderCenterHandle.handle(),
                 m_mainHandle.handle(),
@@ -565,8 +563,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
-                CSAMPLE_GAIN_ONE,
-                false);
+                CSAMPLE_GAIN_ONE);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderRightHandle.handle(),
                 m_mainHandle.handle(),
@@ -575,8 +572,7 @@ void EngineMixer::process(const int iBufferSize) {
                 m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
-                CSAMPLE_GAIN_ONE,
-                false);
+                CSAMPLE_GAIN_ONE);
     }
 
     if (mainEnabled) {
@@ -849,8 +845,7 @@ void EngineMixer::applyMainEffects(int bufferSize) {
                 m_sampleRate,
                 mainFeatures,
                 CSAMPLE_GAIN_ONE,
-                CSAMPLE_GAIN_ONE,
-                false);
+                CSAMPLE_GAIN_ONE);
     }
 }
 

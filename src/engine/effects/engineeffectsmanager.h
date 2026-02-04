@@ -65,7 +65,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             bool fadeout = false);
 
     bool processEffectsRequest(
-            EffectsRequest& message,
+            const EffectsRequest& message,
             EffectsResponsePipe* pResponsePipe) override;
 
   private:
