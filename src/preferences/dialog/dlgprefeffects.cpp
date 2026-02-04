@@ -132,18 +132,45 @@ void DlgPrefEffects::slotUpdate() {
 
     loadChainPresetLists();
 
-    bool effectAdoptMetaknobValue = m_pConfig->getValue(
-            ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
-    radioButtonKeepMetaknobPosition->setChecked(effectAdoptMetaknobValue);
-    radioButtonMetaknobLoadDefault->setChecked(!effectAdoptMetaknobValue);
+    // This config value was previously a bool, but now there are three options, so first check for
+    // the enum config value and fall back to the bool if necessary.
+    AdoptMetaknobValue adoptValue = defaultAdoptMetaknobValue;
+    if (m_pConfig->exists(ConfigKey("[Effects]", "AdoptMetaknobEnum"))) {
+        QString configVal = m_pConfig->getValue(
+                ConfigKey("[Effects]", "AdoptMetaknobEnum"), "KEEP_TOP");
+        if (configVal == "KEEP_ALL") {
+            adoptValue = AdoptMetaknobValue::KEEP_ALL;
+        } else if (configVal == "KEEP_TOP") {
+            adoptValue = AdoptMetaknobValue::KEEP_TOP;
+        } else {
+            adoptValue = AdoptMetaknobValue::LOAD_DEFAULT;
+        }
+    } else if (m_pConfig->exists(ConfigKey("[Effects]", "AdoptMetaknobValue"))) {
+        if (m_pConfig->getValue(
+                    ConfigKey("[Effects]", "AdoptMetaknobValue"), true)) {
+            adoptValue = AdoptMetaknobValue::KEEP_TOP;
+        } else {
+            adoptValue = AdoptMetaknobValue::LOAD_DEFAULT;
+        }
+    }
+    radioButtonKeepAllMetaknobPositions->setChecked(adoptValue == AdoptMetaknobValue::KEEP_ALL);
+    radioButtonKeepTopMetaknobPosition->setChecked(adoptValue == AdoptMetaknobValue::KEEP_TOP);
+    radioButtonMetaknobLoadDefault->setChecked(adoptValue == AdoptMetaknobValue::LOAD_DEFAULT);
 }
 
 void DlgPrefEffects::slotApply() {
     m_pVisibleEffectsList->setList(m_pVisibleEffectsModel->getList());
     saveChainPresetLists();
 
-    m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobValue"),
-            ConfigValue(radioButtonKeepMetaknobPosition->isChecked()));
+    AdoptMetaknobValue val;
+    if (radioButtonKeepAllMetaknobPositions->isChecked()) {
+        val = AdoptMetaknobValue::KEEP_ALL;
+    } else if (radioButtonKeepTopMetaknobPosition->isChecked()) {
+        val = AdoptMetaknobValue::KEEP_TOP;
+    } else {
+        val = AdoptMetaknobValue::LOAD_DEFAULT;
+    }
+    m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobEnum"), ConfigValue(toQString(val)));
 }
 
 void DlgPrefEffects::saveChainPresetLists() {
@@ -155,7 +182,12 @@ void DlgPrefEffects::saveChainPresetLists() {
 }
 
 void DlgPrefEffects::slotResetToDefaults() {
-    radioButtonKeepMetaknobPosition->setChecked(true);
+    radioButtonKeepAllMetaknobPositions->setChecked(
+            defaultAdoptMetaknobValue == AdoptMetaknobValue::KEEP_ALL);
+    radioButtonKeepTopMetaknobPosition->setChecked(
+            defaultAdoptMetaknobValue == AdoptMetaknobValue::KEEP_TOP);
+    radioButtonMetaknobLoadDefault->setChecked(
+            defaultAdoptMetaknobValue == AdoptMetaknobValue::LOAD_DEFAULT);
     m_pChainPresetManager->resetToDefaults();
 
     slotUpdate();
