@@ -44,6 +44,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
     void updatingAPI();
     void updatedAPI();
+    void updateDefaultRecordingSampleRate(mixxx::audio::SampleRate newRate);
 
   public slots:
     void slotUpdate() override; // called on show

@@ -41,6 +41,20 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEn
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
 
+    m_pRecSampleRate = std::make_unique<ControlObject>(
+            ConfigKey(RECORDING_PREF_KEY, QStringLiteral("rec_samplerate")),
+            true,     // ignore no-ops
+            false,    // track
+            true,     // persist, will try to read value from config
+            48000.0); // default value
+
+    m_pUseEngineSampleRate = std::make_unique<ControlObject>(
+            ConfigKey(RECORDING_PREF_KEY, QStringLiteral("use_engine_samplerate")),
+            true,
+            true,
+            true,  // persist, will try to read value from config
+            true); // default value
+
     // Register EngineRecord with the engine sidechain.
     EngineSideChain* pSidechain = pEngine->getSideChain();
     if (pSidechain) {
