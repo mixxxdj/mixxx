@@ -20,8 +20,13 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_recordedDuration(0),
           m_iMetaDataLife(0),
           m_cueTrack(0),
+<<<<<<< HEAD
           m_recordChannels(2), // defaulting to stereo but not picking from
                                // config in case config is not yet loaded
+=======
+          m_recordChannels(2), // defaulting to stereo but not picking from
+                               // config in case config is not yet loaded
+>>>>>>> 131d637bc2 (Apply clang-format)
           m_bCueIsEnabled(false),
           m_bCueUsesFileAnnotation(false) {
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
