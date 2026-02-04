@@ -21,6 +21,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
           m_selFormat({QString(), QString(), false, QString()}) {
     setupUi(this);
 
+    // Recording audio output mode
+    recordingMainOutputModeComboBox->addItem(tr("Stereo"), 0);
+    recordingMainOutputModeComboBox->addItem(tr("Mono"), 1);
+    loadChannelMode();
+
     // Setting recordings path.
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     if (recordingsPath.isEmpty()) {
@@ -160,6 +165,16 @@ void DlgPrefRecord::slotApply() {
     saveUseCueFile();
     saveUseCueFileAnnotation();
     saveSplitSize();
+    saveChannelMode(); // saving channel preference (Mono/Stereo) to the config
+}
+// This function is saving the channel mode selection to the config
+void DlgPrefRecord::saveChannelMode() {
+    const int mode =
+            recordingMainOutputModeComboBox->currentData().toInt();
+
+    m_pConfig->set(
+            ConfigKey(RECORDING_PREF_KEY, "channel_mode"),
+            ConfigValue(mode));
 }
 
 // This function updates/refreshes the contents of this dialog.
@@ -195,6 +210,7 @@ void DlgPrefRecord::slotUpdate() {
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     slotToggleCueEnabled();
+    loadChannelMode(); // Load recording channel mode (Mono/Stereo) to keep the ui updated if reopening preferences
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -318,6 +334,19 @@ void DlgPrefRecord::setupEncoderUI() {
     if (m_selFormat.internalName == ENCODING_MP3) {
         updateTextQuality();
     }
+}
+
+// This is to load the recording channel mode (Mono/Stereo) from config
+void DlgPrefRecord::loadChannelMode() {
+    const int mode = m_pConfig->getValue<int>(
+            ConfigKey(RECORDING_PREF_KEY, "channel_mode"),
+            0); // default = Stereo
+
+    const int index =
+            recordingMainOutputModeComboBox->findData(mode);
+
+    recordingMainOutputModeComboBox->setCurrentIndex(
+            index >= 0 ? index : 0);
 }
 
 void DlgPrefRecord::slotSliderQuality() {

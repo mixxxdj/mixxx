@@ -18,6 +18,7 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_recordedDuration(0),
           m_iMetaDataLife(0),
           m_cueTrack(0),
+          m_recordChannels(1),
           m_bCueIsEnabled(false),
           m_bCueUsesFileAnnotation(false) {
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
@@ -55,7 +56,7 @@ int EngineRecord::updateFromPreferences() {
     int ret = -1;
     if (m_pEncoder) {
         m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
-        ret = m_pEncoder->initEncoder(m_sampleRate, m_bRecordMono ? 1 : 2, &userErrorMsg);
+        ret = m_pEncoder->initEncoder(m_sampleRate, m_recordChannels, &userErrorMsg);
     }
 
     if (ret < 0) {

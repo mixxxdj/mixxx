@@ -88,4 +88,5 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     bool m_bCueIsEnabled;
     bool m_bCueUsesFileAnnotation;
     bool m_bRecordMono = false;
+    int m_recordChannels;
 };
