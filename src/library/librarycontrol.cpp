@@ -1,6 +1,7 @@
 #include "library/librarycontrol.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QWindow>
@@ -18,6 +19,7 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
+#include "widget/wsearchrelatedtracksmenu.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
@@ -719,7 +721,8 @@ void LibraryControl::slotMoveVertical(double v) {
                 QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
         return;
     }
-    case FocusWidget::ContextMenu: {
+    case FocusWidget::ContextMenu:
+    case FocusWidget::SearchRelatedMenu: {
         // To navigate menus (and activate menus that were just opened) send the
         // keyEvent to focusWindow() (not focusWidget() like emitKeyEvent() does)
         const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
@@ -866,6 +869,9 @@ FocusWidget LibraryControl::getFocusedWidget() {
         return FocusWidget::None;
     }
 
+    qWarning() << "     .";
+    qWarning() << "     focWin:" << focusWindow;
+    qWarning() << "       name:" << focusWindow->objectName();
     // Any QMenu is focusWindow() but NOT focusWidget() before any menu item
     // is highlighted, though it can already receive keypress events.
     // Thus, test for focus window type first to catch open popups.
@@ -876,7 +882,18 @@ FocusWidget LibraryControl::getFocusedWidget() {
         // qt_edit_menuWindow    = QLineEdit/QCombobox context menu
         // QComboBoxPrivateContainerClassWindow
         //    = QComboBoxListView of WEffectSelector, WSearchLineEdit, ...
-        return FocusWidget::ContextMenu;
+        auto* focWid = QApplication::focusWidget();
+        qWarning() << "     popup, foc.wid:" << focWid;
+        if (focWid &&
+                qobject_cast<QCheckBox*>(focWid) &&
+                qobject_cast<WSearchRelatedTracksMenu*>(focWid->parent())) {
+            qWarning() << "     WSRT menu";
+            // TODO Also use this for the Crates menu?
+            return FocusWidget::SearchRelatedMenu;
+        } else {
+            qWarning() << "     context menu";
+            return FocusWidget::ContextMenu;
+        }
     } else if (focusWindow->type() == Qt::Dialog) {
         // DlgPreferencesDlgWindow
         // DlgDeveloperToolsWindow
@@ -1061,6 +1078,13 @@ void LibraryControl::slotGoToItem(double v) {
         if (pWindow) {
             QApplication::sendEvent(pWindow, &event);
         }
+        return;
+    }
+    case FocusWidget::SearchRelatedMenu: {
+        // press Space to check individual search actions without triggering
+        // the search. Space also triggers the Search Selected action.
+        QKeyEvent event = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
+        QApplication::sendEvent(QApplication::focusWindow(), &event);
         return;
     }
     case FocusWidget::Searchbar:
