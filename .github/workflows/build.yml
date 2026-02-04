@@ -549,10 +549,29 @@ jobs:
       - name: "Build Flatpak"
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: Mixxx_${{ matrix.variant.arch }}.flatpak
+          bundle: Mixxx-${{ matrix.variant.arch }}.flatpak
           manifest-path: packaging/flatpak/org.mixxx.Mixxx.yaml
           arch: ${{ matrix.variant.arch }}
-          upload-artifact: true
+          upload-artifact: false
+
+      - name: "Create Flatpak Debug extension"
+        run: |
+          /app/bin/flatpak build-bundle repo \
+            --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo \
+            --arch=${{ matrix.variant.arch }} \
+            --runtime Mixxx-${{ matrix.variant.arch }}.Debug.flatpak org.mixxx.Mixxx.Debug
+
+      - name: "Upload Flatpak"
+        uses: actions/upload-artifact@v6
+        with:
+          name: Flatpak ${{ matrix.variant.arch }}
+          path: Mixxx-${{ matrix.variant.arch }}.flatpak
+
+      - name: "Upload Flatpak Debug extension"
+        uses: actions/upload-artifact@v6
+        with:
+          name: Flatpak Debug ${{ matrix.variant.arch }}
+          path: Mixxx-${{ matrix.variant.arch }}.Debug.flatpak
 
   update_manifest:
     name: "Update manifest file on download server"
