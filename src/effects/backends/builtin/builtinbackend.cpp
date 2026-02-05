@@ -28,6 +28,7 @@
 #ifdef __RUBBERBAND__
 #include "effects/backends/builtin/pitchshifteffect.h"
 #endif
+#include "effects/backends/builtin/gaineffect.h"
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
@@ -66,6 +67,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<GlitchEffect>();
     registerEffect<CompressorEffect>();
     registerEffect<AutoGainControlEffect>();
+    registerEffect<GainEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
