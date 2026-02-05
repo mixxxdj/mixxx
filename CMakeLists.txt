@@ -1518,6 +1518,7 @@ add_library(
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
+  src/preferences/restserversettings.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -1541,6 +1542,8 @@ add_library(
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
+  src/preferences/dialog/dlgprefrestserver.cpp
+  src/preferences/dialog/dlgprefrestserverdlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
   src/preferences/dialog/dlgprefreplaygaindlg.ui
   src/preferences/dialog/dlgprefsound.cpp
@@ -1654,6 +1657,7 @@ add_library(
   src/util/imageutils.cpp
   src/util/indexrange.cpp
   src/util/logger.cpp
+  src/util/ratelimitedlogger.cpp
   src/util/logging.cpp
   src/util/mac.cpp
   src/util/moc_included_test.cpp
@@ -2915,6 +2919,7 @@ if(BUILD_TESTING)
     src/test/rangelist_test.cpp
     src/test/readaheadmanager_test.cpp
     src/test/replaygaintest.cpp
+    src/test/restserver_test.cpp
     src/test/rescalertest.cpp
     src/test/rgbcolor_test.cpp
     src/test/rotary_test.cpp
@@ -3737,6 +3742,183 @@ if(QT_EXTRA_COMPONENTS)
   foreach(component ${QT_EXTRA_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${component})
   endforeach()
+endif()
+
+set(MIXXX_HAS_HTTP_SERVER OFF)
+if(QT6 AND QT_VERSION VERSION_GREATER_EQUAL 6.4)
+  find_package(Qt6 COMPONENTS HttpServer QUIET)
+  if(Qt6HttpServer_FOUND)
+    set(MIXXX_HAS_HTTP_SERVER ON)
+    set(_qt_httpserver_dependencies "")
+    if(DEFINED Qt6HttpServer_VERSION)
+      message(
+        STATUS
+        "Qt HttpServer module found (version: ${Qt6HttpServer_VERSION})"
+      )
+    else()
+      message(STATUS "Qt HttpServer module found")
+    endif()
+    if(
+      DEFINED Qt6HttpServer_DIR
+      AND EXISTS "${Qt6HttpServer_DIR}/Qt6HttpServerDependencies.cmake"
+    )
+      message(
+        STATUS
+        "Loading Qt HttpServer dependencies from ${Qt6HttpServer_DIR}/Qt6HttpServerDependencies.cmake"
+      )
+      include("${Qt6HttpServer_DIR}/Qt6HttpServerDependencies.cmake")
+      if(DEFINED Qt6HttpServer_MODULE_DEPENDENCIES)
+        set(_qt_httpserver_dependencies ${Qt6HttpServer_MODULE_DEPENDENCIES})
+      endif()
+    elseif(DEFINED Qt6HttpServer_DIR)
+      message(
+        STATUS
+        "Qt HttpServer dependencies file missing in ${Qt6HttpServer_DIR}; using fallback dependencies"
+      )
+    else()
+      message(
+        STATUS
+        "Qt HttpServer directory not provided; using fallback dependencies"
+      )
+    endif()
+    if(NOT _qt_httpserver_dependencies)
+      set(_qt_httpserver_dependencies Core Network WebSockets)
+      message(
+        STATUS
+        "Qt HttpServer dependencies not reported; using fallback: ${_qt_httpserver_dependencies}"
+      )
+    else()
+      message(
+        STATUS
+        "Qt HttpServer dependencies: ${_qt_httpserver_dependencies}"
+      )
+    endif()
+    foreach(component ${_qt_httpserver_dependencies})
+      target_link_libraries(mixxx-lib PUBLIC Qt6::${component})
+    endforeach()
+    target_link_libraries(mixxx-lib PUBLIC Qt6::HttpServer)
+    include(CheckCXXSourceCompiles)
+    get_target_property(
+      _qt_httpserver_includes
+      Qt6::HttpServer
+      INTERFACE_INCLUDE_DIRECTORIES
+    )
+    get_target_property(
+      _qt_network_includes
+      Qt6::Network
+      INTERFACE_INCLUDE_DIRECTORIES
+    )
+    # Filter include directories: remove NOTFOUND values and unresolved generator
+    # expressions that cannot be used as literal paths. The imported targets in
+    # CMAKE_REQUIRED_LIBRARIES propagate their own include directories via
+    # try_compile, so this filtering is a safety measure.
+    set(_qt_tls_check_includes "")
+    foreach(_inc IN LISTS _qt_httpserver_includes _qt_network_includes)
+      if(_inc AND NOT _inc MATCHES "-NOTFOUND$" AND NOT _inc MATCHES "^\\$<")
+        list(APPEND _qt_tls_check_includes "${_inc}")
+      endif()
+    endforeach()
+    set(CMAKE_REQUIRED_INCLUDES ${_qt_tls_check_includes})
+    set(CMAKE_REQUIRED_LIBRARIES Qt6::HttpServer Qt6::Network)
+    set(
+      _mixxx_httpserver_tls_api_test
+      "
+      #include <QHttpServer>
+      #include <QSslConfiguration>
+      int main() {
+        QHttpServer server;
+        server.setSslConfiguration(QSslConfiguration());
+        return 0;
+      }
+    "
+    )
+    check_cxx_source_compiles(
+      "${_mixxx_httpserver_tls_api_test}"
+      MIXXX_HAS_HTTP_SERVER_TLS_API
+    )
+    if(NOT MIXXX_HAS_HTTP_SERVER_TLS_API)
+      set(
+        _mixxx_httpserver_tls_setup_test
+        "
+        #include <QHttpServer>
+        #include <QSslConfiguration>
+        int main() {
+          QHttpServer server;
+          server.sslSetup(QSslConfiguration());
+          return 0;
+        }
+      "
+      )
+      check_cxx_source_compiles(
+        "${_mixxx_httpserver_tls_setup_test}"
+        MIXXX_HAS_HTTP_SERVER_TLS_SETUP_API
+      )
+      if(MIXXX_HAS_HTTP_SERVER_TLS_SETUP_API)
+        set(MIXXX_HAS_HTTP_SERVER_TLS_API ON)
+      endif()
+    endif()
+    # Qt 6.8+ removed sslSetup()/setSslConfiguration() from QAbstractHttpServer.
+    # TLS is now configured by binding a QSslServer to the HTTP server.
+    if(NOT MIXXX_HAS_HTTP_SERVER_TLS_API)
+      set(
+        _mixxx_httpserver_tls_bind_test
+        "
+        #include <QHttpServer>
+        #include <QSslServer>
+        #include <QSslConfiguration>
+        int main() {
+          QSslServer sslServer;
+          sslServer.setSslConfiguration(QSslConfiguration());
+          QHttpServer httpServer;
+          httpServer.bind(&sslServer);
+          return 0;
+        }
+      "
+      )
+      check_cxx_source_compiles(
+        "${_mixxx_httpserver_tls_bind_test}"
+        MIXXX_HAS_HTTP_SERVER_TLS_BIND_API
+      )
+      if(MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+        set(MIXXX_HAS_HTTP_SERVER_TLS_API ON)
+      endif()
+    endif()
+    unset(_mixxx_httpserver_tls_api_test)
+    unset(_mixxx_httpserver_tls_setup_test)
+    unset(_mixxx_httpserver_tls_bind_test)
+    unset(_qt_httpserver_includes)
+    unset(_qt_network_includes)
+    unset(_qt_tls_check_includes)
+    unset(CMAKE_REQUIRED_INCLUDES)
+    unset(CMAKE_REQUIRED_LIBRARIES)
+    if(MIXXX_HAS_HTTP_SERVER_TLS_API)
+      target_compile_definitions(mixxx-lib PUBLIC MIXXX_HAS_HTTP_SERVER_TLS_API)
+      if(MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+        target_compile_definitions(
+          mixxx-lib
+          PUBLIC MIXXX_HAS_HTTP_SERVER_TLS_BIND_API
+        )
+      endif()
+      message(STATUS "Qt HttpServer TLS APIs available")
+    else()
+      message(
+        STATUS
+        "Qt HttpServer TLS APIs unavailable; REST API HTTPS disabled"
+      )
+    endif()
+    target_compile_definitions(mixxx-lib PUBLIC MIXXX_HAS_HTTP_SERVER)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/network/rest/restapigateway.cpp
+        src/network/rest/certificategenerator.cpp
+        src/network/rest/restserver.cpp
+        src/network/rest/restservercontroller.cpp
+        src/network/rest/restservervalidator.cpp
+    )
+  else()
+    message(STATUS "Qt HttpServer module not found; REST API server disabled")
+  endif()
 endif()
 
 if(QT_KNOWN_POLICY_QTP0002 AND ANDROID)
@@ -5267,7 +5449,18 @@ set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-open-sans")
-list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-ubuntu")
+set(DEBIAN_DERIVATIVE_IS_UBUNTU FALSE)
+if(EXISTS "/etc/os-release")
+  file(READ "/etc/os-release" OS_RELEASE_CONTENTS)
+  if(OS_RELEASE_CONTENTS MATCHES "\nID=ubuntu\n")
+    set(DEBIAN_DERIVATIVE_IS_UBUNTU TRUE)
+  elseif(OS_RELEASE_CONTENTS MATCHES "\nID_LIKE=.*ubuntu")
+    set(DEBIAN_DERIVATIVE_IS_UBUNTU TRUE)
+  endif()
+endif()
+if(DEBIAN_DERIVATIVE_IS_UBUNTU)
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-ubuntu")
+endif()
 if(QT6)
   list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite")
   list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-qpa-plugins")

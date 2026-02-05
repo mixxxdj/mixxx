@@ -28,7 +28,9 @@
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
+#include "preferences/dialog/dlgprefrestserver.h"
 #include "preferences/dialog/dlgprefwaveform.h"
+#include "preferences/restserversettings.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -197,6 +199,14 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Auto DJ"),
             "ic_preferences_autodj.svg");
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefRestServer(
+                                  this,
+                                  std::make_shared<RestServerSettings>(m_pConfig)),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("REST API"),
+            "ic_preferences_rest_api.svg");
 
 #ifdef __BROADCAST__
     addPageWidget(PreferencesPage(

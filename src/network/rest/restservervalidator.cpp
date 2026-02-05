@@ -1,0 +1,143 @@
+#include "network/rest/restservervalidator.h"
+
+#ifdef MIXXX_HAS_HTTP_SERVER
+
+#include <QTcpServer>
+#include <QSslSocket>
+#include <QStringList>
+#include <QtGlobal>
+#include <limits>
+#include <type_traits>
+#include <utility>
+
+namespace mixxx::network::rest {
+
+namespace {
+template<typename T, typename = void>
+struct HasHttpServerSslConfiguration : std::false_type { };
+
+template<typename T>
+struct HasHttpServerSslConfiguration<T,
+        std::void_t<decltype(std::declval<T&>().setSslConfiguration(
+                std::declval<const QSslConfiguration&>()))>> : std::true_type { };
+
+template<typename T, typename = void>
+struct HasHttpServerSslSetup : std::false_type { };
+
+template<typename T>
+struct HasHttpServerSslSetup<T,
+        std::void_t<decltype(std::declval<T&>().sslSetup(
+                std::declval<const QSslConfiguration&>()))>> : std::true_type { };
+
+#if defined(MIXXX_HAS_HTTP_SERVER_TLS_API) || defined(MIXXX_HAS_HTTP_SERVER_TLS_BIND_API)
+constexpr bool kHttpServerHasTlsSupport = true;
+#else
+constexpr bool kHttpServerHasTlsSupport =
+        HasHttpServerSslConfiguration<QHttpServer>::value ||
+        HasHttpServerSslSetup<QHttpServer>::value;
+#endif
+
+QString tlsSupportDetails() {
+    QStringList details;
+    details << QStringLiteral("Qt build: %1").arg(QString::fromLatin1(QT_VERSION_STR))
+            << QStringLiteral("Qt runtime: %1").arg(QString::fromLatin1(qVersion()));
+    details << QStringLiteral("HttpServer TLS API: %1")
+                       .arg(kHttpServerHasTlsSupport ? QStringLiteral("available")
+                                                     : QStringLiteral("missing"));
+#if QT_CONFIG(ssl)
+    details << QStringLiteral("SSL build: %1").arg(QSslSocket::sslLibraryBuildVersionString())
+            << QStringLiteral("SSL runtime: %1").arg(QSslSocket::sslLibraryVersionString())
+            << QStringLiteral("supports SSL: %1")
+                       .arg(QSslSocket::supportsSsl() ? QStringLiteral("yes")
+                                                      : QStringLiteral("no"));
+#else
+    details << QStringLiteral("SSL support: disabled");
+#endif
+    return details.join(QStringLiteral(", "));
+}
+} // namespace
+
+bool httpServerHasTlsSupport() {
+    return kHttpServerHasTlsSupport;
+}
+
+RestServerValidator::RestServerValidator(
+        RestServer::Settings activeSettings,
+        bool serverRunning,
+        CertificateGenerator* certificateGenerator)
+        : m_activeSettings(std::move(activeSettings)),
+          m_serverRunning(serverRunning),
+          m_certificateGenerator(certificateGenerator) {
+}
+
+RestServerValidationResult RestServerValidator::validate(
+        const RestServer::Settings& settings) const {
+    RestServerValidationResult result;
+    result.settings = settings;
+
+    if (!settings.enabled) {
+        result.success = true;
+        return result;
+    }
+
+    if (!settings.hostValid) {
+        result.error = QObject::tr("Invalid REST API host address");
+        return result;
+    }
+
+    if (!settings.portValid) {
+        result.error = QObject::tr("REST API port must be between %1 and %2")
+                               .arg(1)
+                               .arg(std::numeric_limits<quint16>::max());
+        return result;
+    }
+
+    if (!isPortAvailable(settings)) {
+        result.error = QObject::tr("REST API port %1 is unavailable").arg(settings.port);
+        return result;
+    }
+
+    if (settings.useHttps) {
+        if (!kHttpServerHasTlsSupport) {
+            const QString baseError = QObject::tr(
+                    "HTTPS is not supported because the Qt HttpServer module lacks TLS APIs");
+            result.error = baseError;
+            result.tlsError = baseError;
+            result.tlsErrorDetails = tlsSupportDetails();
+            return result;
+        }
+        const RestServer::TlsResult tlsResult = RestServer::prepareTlsConfiguration(
+                settings, m_certificateGenerator);
+        if (!tlsResult.success) {
+            result.error = QObject::tr("TLS configuration failed");
+            result.tlsError = tlsResult.error;
+            return result;
+        }
+
+        result.tlsConfiguration = tlsResult;
+        result.settings.certificatePath = tlsResult.certificatePath;
+        result.settings.privateKeyPath = tlsResult.privateKeyPath;
+    }
+
+    result.success = true;
+    return result;
+}
+
+bool RestServerValidator::isPortAvailable(const RestServer::Settings& settings) const {
+    if (m_serverRunning &&
+            settings.address == m_activeSettings.address &&
+            settings.port == m_activeSettings.port) {
+        return true;
+    }
+
+    QTcpServer probe;
+    if (!probe.listen(settings.address, static_cast<quint16>(settings.port))) {
+        return false;
+    }
+    probe.close();
+    return true;
+}
+
+} // namespace mixxx::network::rest
+
+#endif // MIXXX_HAS_HTTP_SERVER

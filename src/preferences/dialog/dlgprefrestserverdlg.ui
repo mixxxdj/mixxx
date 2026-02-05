@@ -1,0 +1,1092 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefRestServerDlg</class>
+ <widget class="QWidget" name="DlgPrefRestServerDlg">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+   <widget class="QCheckBox" name="checkBoxEnableRestServer">
+     <property name="toolTip">
+      <string>Enable the built-in REST API server.</string>
+     </property>
+     <property name="text">
+      <string>Enable REST API</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+   <widget class="QFrame" name="frameWarningsPane">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="visible">
+      <bool>false</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutWarnings">
+      <item>
+       <widget class="QFrame" name="frameNetworkWarning">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayoutNetworkWarning">
+         <property name="alignment">
+          <set>Qt::AlignHCenter</set>
+         </property>
+         <item>
+          <widget class="QLabel" name="labelNetworkWarningIcon">
+           <property name="visible">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+         <widget class="QLabel" name="labelNetworkWarning">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;REST API is enabled, but no listener is active. Enable HTTP or HTTPS.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutUnauthWarning">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelUnauthWarningIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelUnauthWarning">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Unauthenticated access lets anyone on the network control Mixxx. Enable only if you understand the risks.</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutAuthWarning">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelAuthWarningIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelAuthWarning">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;Access tokens sent without HTTPS can be intercepted. Enable HTTPS to protect the REST API.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutTlsStatus">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelTlsStatusIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTlsStatus">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutStatus">
+        <property name="alignment">
+         <set>Qt::AlignHCenter</set>
+        </property>
+        <item>
+         <widget class="QLabel" name="labelStatusIcon">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelStatus">
+          <property name="visible">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>360</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelRestApiUnavailable">
+     <property name="visible">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>REST API support is unavailable in this build. Install Qt 6.4+ with the Qt HttpServer module to enable it.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+   </widget>
+  </item>
+  <item>
+   <widget class="QGroupBox" name="groupBoxPreset">
+    <property name="title">
+     <string>Preset</string>
+    </property>
+    <layout class="QFormLayout" name="formLayoutPreset">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelPreset">
+       <property name="toolTip">
+        <string>Choose a preset configuration for REST API network settings.</string>
+       </property>
+       <property name="text">
+        <string>Preset:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+     <widget class="QComboBox" name="comboBoxPreset">
+      <property name="toolTip">
+       <string>Choose a preset configuration for REST API network settings.</string>
+      </property>
+     </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="labelPresetWarning">
+       <property name="visible">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Network preset exposes the API on all interfaces. Populate allowed origins so browsers can connect, and use only on trusted networks.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </item>
+  <item>
+   <widget class="QGroupBox" name="groupBoxNetwork">
+     <property name="title">
+     <string>Network</string>
+    </property>
+    <layout class="QFormLayout" name="formLayoutNetwork">
+      <item row="0" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBoxEnableHttp">
+        <property name="toolTip">
+         <string>Allow REST API connections over HTTP.</string>
+        </property>
+        <property name="text">
+         <string>Enable HTTP</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelHost">
+        <property name="toolTip">
+         <string>Host/interface to bind the REST API listener.</string>
+        </property>
+        <property name="text">
+         <string>Host:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEditHost">
+        <property name="toolTip">
+         <string>Host/interface to bind the REST API listener.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelPort">
+        <property name="toolTip">
+         <string>Port for the HTTP listener.</string>
+        </property>
+        <property name="text">
+         <string>HTTP port:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="spinBoxHttpPort">
+        <property name="toolTip">
+         <string>Port for the HTTP listener.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelHttpUrl">
+        <property name="toolTip">
+         <string>Current HTTP base URL.</string>
+        </property>
+        <property name="text">
+         <string>HTTP URL:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayoutHttpUrl">
+        <item>
+         <widget class="QLabel" name="labelHttpUrlValue">
+          <property name="toolTip">
+           <string>Current HTTP base URL.</string>
+          </property>
+          <property name="text">
+           <string>Disabled</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonCopyHttpUrl">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Copy the HTTP URL to the clipboard.</string>
+          </property>
+          <property name="text">
+           <string>Copy</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelCorsAllowlist">
+        <property name="toolTip">
+         <string>CORS allowed origins control which browser origins can access the REST API.
+Enter a comma-separated list of origins (scheme + host + optional port).
+Examples: https://example.com, http://localhost:3000, * (allow any origin).
+Leave blank to disable CORS allowlisting.</string>
+        </property>
+        <property name="text">
+         <string>CORS Allowed Origins:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="lineEditCorsAllowlist">
+        <property name="placeholderText">
+         <string>https://example.com, http://localhost:3000</string>
+        </property>
+        <property name="toolTip">
+         <string>CORS allowed origins control which browser origins can access the REST API.
+Enter a comma-separated list of origins (scheme + host + optional port).
+Examples: https://example.com, http://localhost:3000, * (allow any origin).
+Leave blank to disable CORS allowlisting.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QLabel" name="labelCorsAllowlistWarning">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Invalid origins:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="labelMaxRequestSize">
+        <property name="toolTip">
+         <string>Maximum request body size for REST API requests.</string>
+        </property>
+        <property name="text">
+         <string>Max request size:</string>
+        </property>
+      </widget>
+     </item>
+      <item row="6" column="1">
+       <widget class="QSpinBox" name="spinBoxMaxRequestSize">
+        <property name="toolTip">
+         <string>Maximum request body size for REST API requests.</string>
+        </property>
+        <property name="suffix">
+         <string> KiB</string>
+        </property>
+       </widget>
+      </item>
+    </layout>
+   </widget>
+  </item>
+  <item>
+   <widget class="QGroupBox" name="groupBoxTls">
+    <property name="title">
+     <string>TLS</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayoutTls">
+     <item>
+      <widget class="QCheckBox" name="checkBoxUseHttps">
+       <property name="toolTip">
+        <string>Allow REST API connections over HTTPS.</string>
+       </property>
+       <property name="text">
+        <string>Enable HTTPS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+     <widget class="QCheckBox" name="checkBoxAutoGenerateCertificate">
+      <property name="toolTip">
+       <string>Generate a self-signed certificate for HTTPS.</string>
+      </property>
+      <property name="text">
+       <string>Automatically generate self-signed certificate</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     </item>
+     <item>
+      <layout class="QFormLayout" name="formLayoutTls">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelHttpsPort">
+         <property name="toolTip">
+          <string>Port for the HTTPS listener.</string>
+         </property>
+         <property name="text">
+          <string>HTTPS port:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="spinBoxHttpsPort">
+         <property name="toolTip">
+          <string>Port for the HTTPS listener.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelHttpsUrl">
+         <property name="toolTip">
+          <string>Current HTTPS base URL.</string>
+         </property>
+         <property name="text">
+          <string>HTTPS URL:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayoutHttpsUrl">
+         <item>
+          <widget class="QLabel" name="labelHttpsUrlValue">
+           <property name="toolTip">
+            <string>Current HTTPS base URL.</string>
+           </property>
+           <property name="text">
+            <string>Disabled</string>
+           </property>
+          </widget>
+         </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonCopyHttpsUrl">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Copy the HTTPS URL to the clipboard.</string>
+          </property>
+          <property name="text">
+           <string>Copy</string>
+          </property>
+         </widget>
+        </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelCertPath">
+         <property name="toolTip">
+          <string>Path to the TLS certificate file.</string>
+         </property>
+         <property name="text">
+          <string>Certificate path:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayoutCert">
+         <item>
+          <widget class="QLineEdit" name="lineEditCertPath">
+           <property name="toolTip">
+            <string>Path to the TLS certificate file.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonBrowseCert">
+           <property name="toolTip">
+            <string>Choose a certificate file.</string>
+           </property>
+           <property name="text">
+            <string>Browse...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelKeyPath">
+         <property name="toolTip">
+          <string>Path to the TLS private key file.</string>
+         </property>
+         <property name="text">
+          <string>Private key path:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="horizontalLayoutKey">
+         <item>
+          <widget class="QLineEdit" name="lineEditKeyPath">
+           <property name="toolTip">
+            <string>Path to the TLS private key file.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonBrowseKey">
+           <property name="toolTip">
+            <string>Choose a private key file.</string>
+           </property>
+           <property name="text">
+            <string>Browse...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxRequireTls">
+       <property name="toolTip">
+        <string>Require HTTPS for write tokens.</string>
+       </property>
+       <property name="text">
+        <string>Require TLS for write tokens</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+     <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateStatus">
+      <property name="alignment">
+       <set>Qt::AlignHCenter</set>
+      </property>
+      <property name="topMargin">
+       <number>8</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="labelTlsCertificateIcon">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelTlsCertificateStatus">
+         <property name="visible">
+          <bool>false</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>360</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutTlsCertificateDetails">
+       <property name="alignment">
+        <set>Qt::AlignHCenter</set>
+       </property>
+       <item>
+        <widget class="QPushButton" name="pushButtonCertificateDetails">
+         <property name="toolTip">
+          <string>Show full certificate details.</string>
+         </property>
+         <property name="text">
+          <string>Certificate details...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayoutTlsRegenerate">
+       <property name="alignment">
+        <set>Qt::AlignHCenter</set>
+       </property>
+       <item>
+        <widget class="QPushButton" name="pushButtonRegenerateCertificate">
+         <property name="toolTip">
+          <string>Generate a new self-signed certificate and key.</string>
+         </property>
+         <property name="text">
+          <string>Regenerate self-signed certificate</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+  </item>
+  <item>
+   <widget class="QGroupBox" name="groupBoxAuthentication">
+    <property name="title">
+     <string>Authentication</string>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayoutAuth">
+     <item>
+      <widget class="QCheckBox" name="checkBoxAllowUnauthenticated">
+       <property name="toolTip">
+        <string>Allow unauthenticated requests.</string>
+       </property>
+       <property name="text">
+        <string>Allow unauthenticated requests</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutTokens">
+        <item>
+         <widget class="QTableWidget" name="tableTokens">
+          <property name="toolTip">
+           <string>Access tokens for authenticated requests.</string>
+          </property>
+          <property name="columnCount">
+           <number>6</number>
+          </property>
+          <column>
+           <property name="text">
+            <string>Token</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Description</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Scopes</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Expires</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Created</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Last used</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayoutTokenButtons">
+          <item>
+          <widget class="QPushButton" name="pushButtonAddToken">
+           <property name="toolTip">
+            <string>Create a new access token.</string>
+           </property>
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
+          </item>
+          <item>
+          <widget class="QPushButton" name="pushButtonRemoveToken">
+           <property name="toolTip">
+            <string>Remove the selected access token.</string>
+           </property>
+           <property name="text">
+            <string>Remove</string>
+           </property>
+          </widget>
+          </item>
+          <item>
+          <widget class="QPushButton" name="pushButtonRegenerateToken">
+           <property name="toolTip">
+            <string>Regenerate the selected access token.</string>
+           </property>
+           <property name="text">
+            <string>Regenerate</string>
+           </property>
+          </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacerTokens">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="formLayoutTokenDetails">
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelTokenValue">
+          <property name="toolTip">
+           <string>Selected token value.</string>
+          </property>
+          <property name="text">
+           <string>Token:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QWidget" name="widgetTokenValue" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayoutTokenValue">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="lineEditTokenValue">
+             <property name="toolTip">
+              <string>Selected token value (read-only).</string>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonCopyToken">
+             <property name="toolTip">
+              <string>Copy the token to the clipboard.</string>
+             </property>
+             <property name="text">
+              <string>Copy token</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonToggleToken">
+             <property name="toolTip">
+              <string>Show or hide the token value.</string>
+             </property>
+             <property name="text">
+              <string>Show</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="labelTokenDescription">
+          <property name="toolTip">
+           <string>Optional description for the selected token.</string>
+          </property>
+          <property name="text">
+           <string>Description:</string>
+          </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEditTokenDescription">
+          <property name="toolTip">
+           <string>Optional description for the selected token.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelTokenScopes">
+          <property name="toolTip">
+           <string>Select scopes to grant with this token.</string>
+          </property>
+          <property name="text">
+           <string>Scopes:</string>
+          </property>
+        </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QWidget" name="widgetTokenScopes" native="true">
+          <property name="toolTip">
+           <string>Select scopes to grant with this token.</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayoutTokenScopes">
+           <item row="0" column="0">
+           <widget class="QCheckBox" name="checkScopeStatusRead">
+            <property name="toolTip">
+             <string>Allows access to health, ready, and status endpoints.</string>
+            </property>
+             <property name="text">
+              <string>status:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+           <widget class="QCheckBox" name="checkScopeDecksRead">
+            <property name="toolTip">
+             <string>Allows access to deck status endpoints.</string>
+            </property>
+             <property name="text">
+              <string>decks:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+           <widget class="QCheckBox" name="checkScopeAutoDjRead">
+            <property name="toolTip">
+             <string>Allows access to AutoDJ status endpoints.</string>
+            </property>
+             <property name="text">
+              <string>autodj:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+           <widget class="QCheckBox" name="checkScopeAutoDjWrite">
+            <property name="toolTip">
+             <string>Allows control of AutoDJ endpoints.</string>
+            </property>
+             <property name="text">
+              <string>autodj:write</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+           <widget class="QCheckBox" name="checkScopePlaylistsRead">
+            <property name="toolTip">
+             <string>Allows access to playlist listing endpoints.</string>
+            </property>
+             <property name="text">
+              <string>playlists:read</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+           <widget class="QCheckBox" name="checkScopePlaylistsWrite">
+            <property name="toolTip">
+             <string>Allows access to playlist mutation endpoints.</string>
+            </property>
+             <property name="text">
+              <string>playlists:write</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+           <widget class="QCheckBox" name="checkScopeControlWrite">
+            <property name="toolTip">
+             <string>Allows access to the control endpoint (POST /api/v1/control).</string>
+            </property>
+             <property name="text">
+              <string>control:write</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="labelTokenExpiresCurrent">
+          <property name="toolTip">
+           <string>Current expiration for the selected token.</string>
+          </property>
+          <property name="text">
+           <string>Current expiration:</string>
+          </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="labelTokenExpiresValue">
+         <property name="toolTip">
+          <string>Current expiration for the selected token.</string>
+         </property>
+         <property name="text">
+          <string>Never</string>
+         </property>
+        </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="labelTokenExpiresSet">
+          <property name="toolTip">
+           <string>Choose or set a new expiration for the selected token.</string>
+          </property>
+          <property name="text">
+           <string>Set expiration:</string>
+          </property>
+        </widget>
+        </item>
+        <item row="4" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayoutTokenExpiration">
+         <item>
+           <widget class="QComboBox" name="comboBoxTokenExpiresPreset">
+            <property name="toolTip">
+             <string>Quick expiration presets for the selected token.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDateTimeEdit" name="dateTimeEditTokenExpires">
+            <property name="toolTip">
+             <string>Custom expiration date and time for the selected token.</string>
+            </property>
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+            <property name="specialValueText">
+             <string>Never</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+    </layout>
+   </widget>
+  </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
