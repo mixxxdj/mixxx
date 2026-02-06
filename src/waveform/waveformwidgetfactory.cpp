@@ -891,11 +891,11 @@ void WaveformWidgetFactory::swapSelf() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                WGLWidget* glw = pWaveformWidget->getGLWidget();
-                if (glw != nullptr) {
-                    glw->makeCurrentIfNeeded();
-                    glw->swapBuffers();
-                    glw->doneCurrent();
+                WGLWidget* pGlw = pWaveformWidget->getGLWidget();
+                if (pGlw != nullptr) {
+                    pGlw->makeCurrentIfNeeded();
+                    pGlw->swapBuffers();
+                    pGlw->doneCurrent();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
@@ -1172,50 +1172,50 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createVSyncTestWaveformWidget(
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
-        WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    WaveformWidgetAbstract* widget = nullptr;
-    if (viewer) {
+        WaveformWidgetType::Type type, WWaveformViewer* pViewer) {
+    WaveformWidgetAbstract* pWidget = nullptr;
+    if (pViewer) {
         if (CmdlineArgs::Instance().getSafeMode()) {
             type = WaveformWidgetType::Empty;
         }
 
         switch (type) {
         case WaveformWidgetType::Simple:
-            widget = createSimpleWaveformWidget(viewer);
+            pWidget = createSimpleWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::Filtered:
-            widget = createFilteredWaveformWidget(viewer);
+            pWidget = createFilteredWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::HSV:
-            widget = createHSVWaveformWidget(viewer);
+            pWidget = createHSVWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::VSyncTest:
-            widget = createVSyncTestWaveformWidget(viewer);
+            pWidget = createVSyncTestWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::RGB:
-            widget = createRGBWaveformWidget(viewer);
+            pWidget = createRGBWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::Stacked:
-            widget = createStackedWaveformWidget(viewer);
+            pWidget = createStackedWaveformWidget(pViewer);
             break;
         default:
-            widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
+            pWidget = new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
             break;
         }
-        widget->castToQWidget();
-        if (!widget->isValid()) {
+        pWidget->castToQWidget();
+        if (!pWidget->isValid()) {
             qWarning() << "failed to init WaveformWidget" << type << "fall back to \"Empty\"";
-            delete widget;
-            widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
-            widget->castToQWidget();
-            if (!widget->isValid()) {
+            delete pWidget;
+            pWidget = new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
+            pWidget->castToQWidget();
+            if (!pWidget->isValid()) {
                 qWarning() << "failed to init EmptyWaveformWidget";
-                delete widget;
-                widget = nullptr;
+                delete pWidget;
+                pWidget = nullptr;
             }
         }
     }
-    return widget;
+    return pWidget;
 }
 
 int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {

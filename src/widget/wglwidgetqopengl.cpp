@@ -94,6 +94,11 @@ bool WGLWidget::shouldRender() const {
     if (!m_pOpenGLWindow) {
         return false;
     }
+
+    if (!m_pOpenGLWindow->isValid()) {
+        return false;
+    }
+
     // Prefer isExposed() but fall back to isVisible() if the window
     // is not exposed but the widget is visible. This works around a Qt bug
     // where isExposed() incorrectly returns false during certain UI updates.

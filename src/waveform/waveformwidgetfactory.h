@@ -299,7 +299,8 @@ class WaveformWidgetFactory : public QObject,
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
             WaveformWidgetType::Type type, WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createWaveformWidget(
+            WaveformWidgetType::Type type, WWaveformViewer* pViewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
     WaveformWidgetType::Type findTypeFromHandleIndex(int index);
