@@ -1,6 +1,6 @@
 
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 
@@ -10,16 +10,16 @@
  * Initializes the exponential weighted moving average filter.
  */
 
-void ewma_init(struct ewma_filter *filter, const double alpha)
+void ewma_init(struct ewma_filter *f, const double alpha)
 {
-    if (!filter) {
+    if (!f) {
         errno = EINVAL;
         perror(__func__);
         return;
     }
 
-    filter->alpha = alpha;
-    filter->y_old = 0;
+    f->alpha = alpha;
+    f->y_old = 0;
 }
 
 /*
@@ -27,16 +27,16 @@ void ewma_init(struct ewma_filter *filter, const double alpha)
  * values with a factor alpha.
  */
 
-int ewma(struct ewma_filter *filter, const int x)
+int ewma(struct ewma_filter *f, const int x)
 {
-    if (!filter) {
+    if (!f) {
         errno = EINVAL;
         perror(__func__);
         return -EINVAL;
     }
 
-    int y = filter->alpha * x + (1 - filter->alpha) * filter->y_old;
-    filter->y_old = y;
+    int y = f->alpha * x + (1 - f->alpha) * f->y_old;
+    f->y_old = y;
 
     return y;
 }
@@ -45,25 +45,25 @@ int ewma(struct ewma_filter *filter, const int x)
  * Initializes the derivative filter.
  */
 
-void derivative_init(struct differentiator *filter)
+void derivative_init(struct differentiator *f)
 {
-    if (!filter) {
+    if (!f) {
         errno = EINVAL;
         perror(__func__);
         return;
     }
 
-    filter->x_old = 0;
+    f->x_old = 0;
 }
 
 /*
  * Computes a simple derivative, i.e. the slope of the input signal without gain compensation.
  */
 
-int derivative(struct differentiator *filter, const int x)
+int derivative(struct differentiator *f, const int x)
 {
-    int y = x - filter->x_old;
-    filter->x_old = x;
+    int y = x - f->x_old;
+    f->x_old = x;
 
     return y;
 }
@@ -72,16 +72,16 @@ int derivative(struct differentiator *filter, const int x)
  * Initializes the RMS filter
  */
 
-void rms_init(struct root_mean_square *filter, const float alpha)
+void rms_init(struct root_mean_square *f, const float alpha)
 {
-    if (!filter) {
+    if (!f) {
         errno = EINVAL;
         perror(__func__);
         return;
     }
 
-    filter->squared_old = 0;
-    filter->alpha = alpha;
+    f->squared_old = 0;
+    f->alpha = alpha;
 }
 
 /*
@@ -89,9 +89,9 @@ void rms_init(struct root_mean_square *filter, const float alpha)
  * The 1.0 > alpha > 0 determines the smoothness of the result:
  */
 
-int rms(struct root_mean_square *filter, const int x)
+int rms(struct root_mean_square *f, const int x)
 {
-    if (!filter) {
+    if (!f) {
         errno = EINVAL;
         perror(__func__);
         return -EINVAL;
@@ -101,8 +101,8 @@ int rms(struct root_mean_square *filter, const int x)
     unsigned long long squared = (unsigned long long)x * (unsigned long long)x;
 
     /* Apply EMA filter to squared values */
-    filter->squared_old = (1.0 - filter->alpha) * filter->squared_old + filter->alpha * squared;
+    f->squared_old = (1.0 - f->alpha) * f->squared_old + f->alpha * squared;
 
     /* Take square root at the end */
-    return (int)sqrt(filter->squared_old);
+    return (int)sqrt(f->squared_old);
 }
