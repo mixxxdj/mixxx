@@ -2,6 +2,8 @@
 
 #include "sources/metadatasource.h"
 
+#include <optional>
+
 namespace mixxx {
 
 // Universal default implementation of IMetadataSource using TagLib.
@@ -21,6 +23,14 @@ class MetadataSourceTagLib : public MetadataSource {
 
     std::pair<ExportResult, QDateTime> exportTrackMetadata(
             const TrackMetadata& trackMetadata) const override;
+
+    /// Import rating from file tags using FMPS_Rating standard
+    /// Returns the rating (0-5) if found, nullopt otherwise
+    std::optional<int> importRating() const override;
+
+    /// Export rating to file tags using FMPS_Rating standard
+    /// Returns true if export succeeded, false otherwise
+    bool exportRating(int rating) const override;
 
   private:
     std::pair<ImportResult, QDateTime> afterImport(ImportResult importResult) const;

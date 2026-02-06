@@ -95,6 +95,17 @@ const ConfigKey mixxx::library::prefs::kSyncSeratoMetadataConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SeratoMetadataExport")};
 
+// Rating import/export using FMPS_Rating standard
+const ConfigKey mixxx::library::prefs::kExportRatingToFileTagsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("ExportRatingToFileTags")};
+
+const ConfigKey mixxx::library::prefs::kImportRatingFromFileTagsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("ImportRatingFromFileTags")};
+
 const ConfigKey mixxx::library::prefs::kUseRelativePathOnExportConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,

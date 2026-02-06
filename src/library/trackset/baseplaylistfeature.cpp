@@ -13,6 +13,7 @@
 #include "library/parser.h"
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
+#include "library/ratingsyncworker.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
@@ -50,11 +51,21 @@ BasePlaylistFeature::BasePlaylistFeature(
                                 ->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel),
           m_countsDurationTableName(countsDurationTableName),
+          m_pRatingSyncWorker(nullptr),
           m_keepHiddenTracks(keepHiddenTracks) {
     pModel->setParent(this);
 
     initActions();
     connectPlaylistDAO();
+
+    // Create rating sync worker if preference is enabled
+    if (pConfig->getValue<bool>(kImportRatingFromFileTagsConfigKey)) {
+        m_pRatingSyncWorker = new mixxx::RatingSyncWorker(
+                pLibrary->trackCollectionManager(),
+                pConfig,
+                this);
+        m_pRatingSyncWorker->start();
+    }
     connect(m_pLibrary,
             &Library::trackSelected,
             this,
@@ -231,6 +242,9 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
+
+    // Sync ratings from file tags if enabled
+    syncRatingsForPlaylist(playlistId);
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
@@ -905,4 +919,19 @@ QString BasePlaylistFeature::createPlaylistLabel(const QString& name,
 
 void BasePlaylistFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
+}
+
+void BasePlaylistFeature::syncRatingsForPlaylist(int playlistId) {
+    if (!m_pRatingSyncWorker) {
+        return;
+    }
+
+    // Get track IDs for this playlist
+    const QList<TrackId> trackIds = m_playlistDao.getTrackIds(playlistId);
+    if (trackIds.isEmpty()) {
+        return;
+    }
+
+    // Queue for async rating sync
+    m_pRatingSyncWorker->syncRatingsForTracks(trackIds);
 }

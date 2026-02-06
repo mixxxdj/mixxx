@@ -13,6 +13,10 @@
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 
+namespace mixxx {
+class RatingSyncWorker;
+} // namespace mixxx
+
 // forward declaration(s)
 class Library;
 class WLibrarySidebar;
@@ -132,4 +136,8 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+
+    /// Sync ratings from file tags for all tracks in the crate
+    void syncRatingsForCrate(CrateId crateId);
+    mixxx::RatingSyncWorker* m_pRatingSyncWorker;
 };
