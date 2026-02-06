@@ -1,7 +1,11 @@
 #include "library/analysis/dlganalysis.h"
 
+#include <QKeyEvent>
+#include <QLineEdit>
+
 #include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzerscheduledtrack.h"
+#include "control/controlobject.h"
 #include "library/analysis/ui_dlganalysis.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
@@ -9,6 +13,11 @@
 #include "util/assert.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "widget/wlibrary.h"
+
+namespace {
+const char* kPreferenceGroup = "[Analysis]";
+const char* kRecentDaysConfigKey = "RecentDays";
+} // anonymous namespace
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
         UserSettingsPointer pConfig,
@@ -19,6 +28,19 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
+
+    // Load the recent days value from config
+    const unsigned int recentDays = m_pConfig->getValue<unsigned int>(
+            ConfigKey(kPreferenceGroup, kRecentDaysConfigKey),
+            AnalysisLibraryTableModel::kDefaultRecentDays);
+    spinBoxRecentDays->setValue(static_cast<int>(recentDays));
+    spinBoxRecentDays->setFocusPolicy(Qt::ClickFocus);
+
+    // work around QLineEdit being protected
+    QLineEdit* lineEditRecentDays(spinBoxRecentDays->findChild<QLineEdit*>());
+    if (lineEditRecentDays) {
+        lineEditRecentDays->setFocusPolicy(Qt::ClickFocus);
+    }
 
     m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(
             this,
@@ -50,6 +72,8 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
 
     m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(
             this, pLibrary->trackCollectionManager());
+    // Initialize model with the configured days value
+    m_pAnalysisLibraryTableModel->setRecentDays(recentDays);
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded,
@@ -60,6 +84,11 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
             &QRadioButton::clicked,
             this,
             &DlgAnalysis::slotShowAllSongs);
+
+    connect(spinBoxRecentDays,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgAnalysis::slotRecentDaysChanged);
     // Don't click those radio buttons now reduce skin loading time.
     // 'RecentlyAdded' is clicked in onShow()
 
@@ -189,11 +218,43 @@ void DlgAnalysis::onTrackAnalysisSchedulerFinished() {
 }
 
 void DlgAnalysis::slotShowRecentSongs() {
+    spinBoxRecentDays->setEnabled(true);
+    labelRecentDaysAppendix->setEnabled(true);
     m_pAnalysisLibraryTableModel->showRecentSongs();
 }
 
+void DlgAnalysis::slotRecentDaysChanged(int days) {
+    // Update the model's days value
+    m_pAnalysisLibraryTableModel->setRecentDays(static_cast<unsigned int>(days));
+
+    // Save to config
+    m_pConfig->setValue(
+            ConfigKey(kPreferenceGroup, kRecentDaysConfigKey),
+            static_cast<unsigned int>(days));
+
+    // If "Recently Added" is selected, refresh the view
+    if (radioButtonRecentlyAdded->isChecked()) {
+        m_pAnalysisLibraryTableModel->showRecentSongs();
+    }
+}
+
 void DlgAnalysis::slotShowAllSongs() {
+    spinBoxRecentDays->setEnabled(false);
+    labelRecentDaysAppendix->setEnabled(false);
     m_pAnalysisLibraryTableModel->showAllSongs();
+}
+
+void DlgAnalysis::keyPressEvent(QKeyEvent* pEvent) {
+    // If we receive key events the spinbox is focused.
+    // Return, Enter and Escape move focus back to the previously focused
+    // library widget in order to immediately allow keyboard shortcuts again.
+    if (pEvent->key() == Qt::Key_Return ||
+            pEvent->key() == Qt::Key_Enter ||
+            pEvent->key() == Qt::Key_Escape) {
+        ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
+        return;
+    }
+    QWidget::keyPressEvent(pEvent);
 }
 
 void DlgAnalysis::installEventFilter(QObject* pFilter) {
