@@ -8,6 +8,7 @@ const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 const defaultPadMode = engine.getSetting("defaultPadMode");
 const useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
+const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratching");
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -1906,6 +1907,9 @@ NS4FX.scratchTimerCallback = function(deck) {
 };
 
 NS4FX.scratchDisable = function(deck) {
+    if (exitSlipmodeAfterScratching && engine.getValue(`[Channel${deck}]`, "slip_enabled")) {
+        engine.setValue(`[Channel${deck}]`, "slip_enabled", 0);
+    }
     NS4FX.searching[deck] = false;
     NS4FX.stopScratchTimer(deck);
     engine.scratchDisable(deck, false);
