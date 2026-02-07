@@ -108,6 +108,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
         return getTrackByRef(TrackRef::fromUrl(url));
     }
 
+    TrackId getTrackIdByLocation(const QString& location) const;
+
   signals:
     // Forwarded from Track object
     void trackDirty(TrackId trackId);
@@ -141,8 +143,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const QStringList& pathList,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
-    TrackId getTrackIdByLocation(
-            const QString& location) const;
     TrackPointer getTrackById(
             TrackId trackId) const;
 
