@@ -956,4 +956,3 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
 void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
 }
-

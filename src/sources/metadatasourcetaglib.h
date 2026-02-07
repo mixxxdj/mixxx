@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sources/metadatasource.h"
-
 #include <optional>
+
+#include "sources/metadatasource.h"
 
 namespace mixxx {
 

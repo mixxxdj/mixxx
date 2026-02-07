@@ -51,7 +51,8 @@ void writeItem(
 
 // FMPS Rating - APE item for cross-application rating compatibility
 // https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
-const TagLib::String kItemKeyFMPSRating = "FMPS_Rating";
+// APE keys must be uppercase to match TagLib's case normalization on save/reload
+const TagLib::String kItemKeyFMPSRating = "FMPS_RATING";
 
 // Rating conversion functions
 // FMPS uses 0.0-1.0 scale, Mixxx uses 0-5 (with 0 meaning unrated)

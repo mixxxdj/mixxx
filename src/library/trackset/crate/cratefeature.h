@@ -132,5 +132,4 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
-
 };

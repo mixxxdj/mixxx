@@ -907,4 +907,3 @@ QString BasePlaylistFeature::createPlaylistLabel(const QString& name,
 void BasePlaylistFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
 }
-

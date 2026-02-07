@@ -76,7 +76,6 @@ int fmpsRatingToMixxx(double fmps) {
     }
 }
 
-
 bool readAtom(
         const TagLib::MP4::Tag& tag,
         const TagLib::String& key,
