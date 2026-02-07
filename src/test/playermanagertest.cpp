@@ -129,7 +129,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
 
 TEST_F(PlayerManagerTest, UnEjectTest) {
     // Ejecting an empty deck with no previously-recorded ejected track has no effect.
-    auto deck1 = m_pPlayerManager->getDeck(1);
+    auto deck1 = m_pPlayerManager->getDeck(0);
     deck1->slotEjectTrack(1.0);
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
 
@@ -154,7 +154,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
     deck1->slotLoadTrack(pTrack2, false);
 
     // Ejecting in an empty deck loads the last-ejected track.
-    auto deck2 = m_pPlayerManager->getDeck(2);
+    auto deck2 = m_pPlayerManager->getDeck(1);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
     // make sure eject does not trigger 'unreplace'
     QTest::qSleep(kUnreplaceDelay); // millis
@@ -166,7 +166,7 @@ TEST_F(PlayerManagerTest, UnEjectTest) {
 // Loading a new track in a deck causes the old one to be ejected.
 // That old track can be unejected into a different deck.
 TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
-    auto deck1 = m_pPlayerManager->getDeck(1);
+    auto deck1 = m_pPlayerManager->getDeck(0);
     // Load a track and the load another one
     TrackPointer pTrack1 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest1));
     ASSERT_NE(nullptr, pTrack1);
@@ -186,7 +186,7 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
     waitForTrackToBeLoaded(deck1);
 
     // Ejecting in an empty deck loads the last-ejected track.
-    auto deck2 = m_pPlayerManager->getDeck(2);
+    auto deck2 = m_pPlayerManager->getDeck(1);
     ASSERT_EQ(nullptr, deck2->getLoadedTrack());
     // make sure eject does not trigger 'unreplace'
     QTest::qSleep(kUnreplaceDelay);
@@ -201,7 +201,7 @@ TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
             getTestDir().filePath(kTrackLocationTest1), TrackId(QVariant(10)));
     ASSERT_NE(nullptr, pTrack);
     m_pPlayerManager->slotSaveEjectedTrack(pTrack);
-    auto deck1 = m_pPlayerManager->getDeck(1);
+    auto deck1 = m_pPlayerManager->getDeck(0);
     // Does nothing -- no crash.
     // make sure eject does not trigger 'unreplace'
     QTest::qSleep(kUnreplaceDelay);
@@ -211,7 +211,7 @@ TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
 
 TEST_F(PlayerManagerTest, UnReplaceTest) {
     // Trigger eject twice within 500 ms to undo track replacement
-    auto deck1 = m_pPlayerManager->getDeck(1);
+    auto deck1 = m_pPlayerManager->getDeck(0);
     // Load a track
     TrackPointer pTrack1 = getOrAddTrackByLocation(getTestDir().filePath(kTrackLocationTest1));
     ASSERT_NE(nullptr, pTrack1);

@@ -10,6 +10,7 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
 #include "util/make_const_iterator.h"
@@ -154,7 +155,7 @@ void MidiController::createOutputHandlers() {
             if (m_logBase().isDebugEnabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
-                int numDecks = PlayerManager::numDecks();
+                int numDecks = PlayerInfo::instance().numDecks();
                 if (deckNum <= numDecks) {
                     failures.append(errorLog);
                 }
