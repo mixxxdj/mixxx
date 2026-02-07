@@ -621,6 +621,46 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
             qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, NumPlusMinusOperator) {
+    m_parser.setSearchColumns({"artist", "album"});
+
+    // Test the +/- suffix for numerical queries
+    // + means >=
+    // - means <=
+
+    // BPM
+    TrackPointer pTrack = newTestTrack();
+    pTrack->trySetBpm(124);
+    auto pQuery = m_parser.parseQuery("bpm:123+", QString());
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bpm >= 123")),
+            qPrintable(pQuery->toSql()));
+
+    pQuery = m_parser.parseQuery("bpm:125+", QString());
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    pQuery = m_parser.parseQuery("bpm:124-", QString());
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    // Duration
+    pTrack->setDuration(91);
+    pQuery = m_parser.parseQuery("duration:1:30+", QString());
+
+    EXPECT_STREQ(
+            qPrintable(QString("duration >= 90")),
+            qPrintable(pQuery->toSql()));
+
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    pQuery = m_parser.parseQuery("duration:1:25-", QString());
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    pQuery = m_parser.parseQuery("duration:1:31-", QString());
+    EXPECT_TRUE(pQuery->match(pTrack));
+}
+
 TEST_F(SearchQueryParserTest, MultipleFilters) {
     m_parser.setSearchColumns({"artist", "title"});
     auto pQuery(
