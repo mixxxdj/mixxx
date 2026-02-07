@@ -109,6 +109,7 @@
           </WidgetGroup>
 
           <SliderComposed><!-- Volume -->
+            <ObjectName>ChannelVolume</ObjectName>
             <TooltipId>channel_volume</TooltipId>
             <Size>42f,107f</Size>
             <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
@@ -121,6 +122,10 @@
             <BarAxisPos>21.0</BarAxisPos>
             <Connection>
               <ConfigKey><Variable name="Group"/>,volume</ConfigKey>
+            </Connection>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,auto_fade_active</ConfigKey>
+              <BindProperty>highlight</BindProperty>
             </Connection>
           </SliderComposed>
 
