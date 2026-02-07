@@ -75,16 +75,16 @@ TrackCollectionManager::TrackCollectionManager(QObject* parent,
     } else {
         m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
 
+        connect(m_pScanner.get(),
+                &LibraryScanner::scanFinished,
+                this,
+                &TrackCollectionManager::slotScanFinished);
+
         // Forward signals
         connect(m_pScanner.get(),
                 &LibraryScanner::scanStarted,
                 this,
                 &TrackCollectionManager::libraryScanStarted,
-                /*signal-to-signal*/ Qt::DirectConnection);
-        connect(m_pScanner.get(),
-                &LibraryScanner::scanFinished,
-                this,
-                &TrackCollectionManager::libraryScanFinished,
                 /*signal-to-signal*/ Qt::DirectConnection);
         connect(m_pScanner.get(),
                 &LibraryScanner::scanSummary,
@@ -644,21 +644,26 @@ bool TrackCollectionManager::updateTrackMood(
 }
 #endif // __EXTRA_METADATA__
 
-void TrackCollectionManager::slotIncomingDirectoryChanged(const QString& path) {
+void TrackCollectionManager::slotIncomingDirectoryChanged() {
     VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
         return;
     }
 
-    if (path.isEmpty() || !m_pScanner->isIdle()) {
+    QStringList dirs = m_incomingDirWatcher.directories();
+    if (dirs.isEmpty()) {
+        return;
+    }
+    if (!m_pScanner->isIdle()) {
+        m_incomingDirChangePending = true;
         return;
     }
 
-    auto fi = QFileInfo(path);
+    auto fi = QFileInfo(dirs.first());
     const QString absPath = fi.absoluteFilePath();
 
     kLogger.info() << "Incoming directory changed, starting scan for:" << absPath;
 
-    m_pScanner->scanDir(path);
+    m_pScanner->scanDir(absPath);
 }
 
 void TrackCollectionManager::initIncomingDirWatcher(const QString& incomingTracksDir) {
@@ -680,10 +685,17 @@ void TrackCollectionManager::initIncomingDirWatcher(const QString& incomingTrack
                           << incomingDirPath;
     } else {
         kLogger.info() << "Watching incoming tracks directory" << incomingDirPath;
+        m_incomingDirTimer.setSingleShot(true);
+        connect(&m_incomingDirTimer,
+                &QTimer::timeout,
+                this,
+                &TrackCollectionManager::slotIncomingDirectoryChanged);
         connect(&m_incomingDirWatcher,
                 &QFileSystemWatcher::directoryChanged,
                 this,
-                &TrackCollectionManager::slotIncomingDirectoryChanged);
+                [this]() {
+                    m_incomingDirTimer.start(2000);
+                });
     }
 }
 
