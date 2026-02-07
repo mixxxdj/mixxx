@@ -36,7 +36,7 @@ const JOGWHEEL_ALPHA = 0.5;
 // the jogwheel is considered to be stopped, allowing it to change directions or exit scratching mode instantly.
 const JOGWHEEL_EPSILON = 0.001;
 
-var TraktorMX2 = new (function () {
+const TraktorMX2 = new (function() {
     this.controller = new HIDController();
 
     this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
@@ -95,13 +95,13 @@ var TraktorMX2 = new (function () {
     };
 })();
 
-TraktorMX2.init = function (_id) {
+TraktorMX2.init = function(_id) {
     TraktorMX2.registerInputPackets();
     TraktorMX2.registerOutputPackets();
     console.log("TraktorMX2: Init done!");
 };
 
-TraktorMX2.registerInputPackets = function () {
+TraktorMX2.registerInputPackets = function() {
     const messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback);
     const messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback);
     const messageJog = new HIDPacket("reportmessage", 0x03, this.messageCallback);
@@ -314,23 +314,23 @@ TraktorMX2.registerInputPackets = function () {
     TraktorMX2.incomingData(data);
 };
 
-TraktorMX2.registerInputJog = function (message, group, name, offset, bitmask, callback) {
+TraktorMX2.registerInputJog = function(message, group, name, offset, bitmask, callback) {
     // Jog wheels have 4 byte input
     message.addControl(group, name, offset, "I", bitmask);
     message.setCallback(group, name, callback);
 };
 
-TraktorMX2.registerInputScaler = function (message, group, name, offset, bitmask, callback) {
+TraktorMX2.registerInputScaler = function(message, group, name, offset, bitmask, callback) {
     message.addControl(group, name, offset, "H", bitmask);
     message.setCallback(group, name, callback);
 };
 
-TraktorMX2.registerInputButton = function (message, group, name, offset, bitmask, callback) {
+TraktorMX2.registerInputButton = function(message, group, name, offset, bitmask, callback) {
     message.addControl(group, name, offset, "B", bitmask);
     message.setCallback(group, name, callback);
 };
 
-TraktorMX2.playHandler = function (field) {
+TraktorMX2.playHandler = function(field) {
     if (TraktorMX2.shiftPressed[field.group]) {
         engine.setValue(field.group, "start_stop", field.value);
     } else if (field.value === 1) {
@@ -338,7 +338,7 @@ TraktorMX2.playHandler = function (field) {
     }
 };
 
-TraktorMX2.cueHandler = function (field) {
+TraktorMX2.cueHandler = function(field) {
     if (TraktorMX2.shiftPressed[field.group]) {
         engine.setValue(field.group, "cue_gotoandstop", field.value);
     } else {
@@ -346,12 +346,12 @@ TraktorMX2.cueHandler = function (field) {
     }
 };
 
-TraktorMX2.shiftHandler = function (field) {
+TraktorMX2.shiftHandler = function(field) {
     TraktorMX2.shiftPressed[field.group] = field.value;
     engine.setValue("[Controls]", "touch_shift", field.value);
 };
 
-TraktorMX2.keylockHandler = function (field) {
+TraktorMX2.keylockHandler = function(field) {
 
     TraktorMX2.keylockPressed[field.group] = field.value;
 
@@ -366,7 +366,7 @@ TraktorMX2.keylockHandler = function (field) {
     }
 };
 
-TraktorMX2.masterHandler = function (field) {
+TraktorMX2.masterHandler = function(field) {
     if (field.value === 0) {
         return;
     }
@@ -374,7 +374,7 @@ TraktorMX2.masterHandler = function (field) {
     script.toggleControl(field.group, "sync_leader");
 };
 
-TraktorMX2.syncHandler = function (field) {
+TraktorMX2.syncHandler = function(field) {
     if (TraktorMX2.shiftPressed[field.group]) {
         engine.setValue(field.group, "beatsync_phase", field.value);
         // Light LED while pressed
@@ -409,7 +409,7 @@ TraktorMX2.syncHandler = function (field) {
     }
 };
 
-TraktorMX2.padModeHandler = function (field) {
+TraktorMX2.padModeHandler = function(field) {
 
     if (field.value === 0) {
         return;
@@ -417,128 +417,128 @@ TraktorMX2.padModeHandler = function (field) {
 
     switch (field.name) {
 
-        case "!hotcues":
-            TraktorMX2.padModeState[field.group] = 0;
-            TraktorMX2.outputHandler(1, field.group, "hotcues");
-            TraktorMX2.outputHandler(0, field.group, "stems");
-            TraktorMX2.outputHandler(0, field.group, "patterns");
-            TraktorMX2.outputHandler(0, field.group, "loops");
+    case "!hotcues":
+        TraktorMX2.padModeState[field.group] = 0;
+        TraktorMX2.outputHandler(1, field.group, "hotcues");
+        TraktorMX2.outputHandler(0, field.group, "stems");
+        TraktorMX2.outputHandler(0, field.group, "patterns");
+        TraktorMX2.outputHandler(0, field.group, "loops");
         // Light LEDs (blue for all enabled hotcues, dimmed white for disabled)
-            for (let i = 1; i <= 8; ++i) {
-                const active = engine.getValue(field.group, `hotcue_${i}_status`);
-                if (active) {
-                    const color = engine.getValue(field.group, `hotcue_${i}_color`);
-                    const colorValue = TraktorMX2.PadColorMap.getValueForNearestColor(color);
-                    TraktorMX2.outputHandler(colorValue, field.group, "pad_" + i);
-                } else {
-                    TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedWhite, field.group, `pad_${i}`);
-                }
+        for (let i = 1; i <= 8; ++i) {
+            const active = engine.getValue(field.group, `hotcue_${i}_status`);
+            if (active) {
+                const color = engine.getValue(field.group, `hotcue_${i}_color`);
+                const colorValue = TraktorMX2.PadColorMap.getValueForNearestColor(color);
+                TraktorMX2.outputHandler(colorValue, field.group, `pad_${  i}`);
+            } else {
+                TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedWhite, field.group, `pad_${i}`);
             }
-            break;
+        }
+        break;
 
-        case "!stems":
-            TraktorMX2.padModeState[field.group] = 1;
-            TraktorMX2.outputHandler(0, field.group, "hotcues");
-            TraktorMX2.outputHandler(1, field.group, "stems");
-            TraktorMX2.outputHandler(0, field.group, "patterns");
-            TraktorMX2.outputHandler(0, field.group, "loops");
+    case "!stems":
+        TraktorMX2.padModeState[field.group] = 1;
+        TraktorMX2.outputHandler(0, field.group, "hotcues");
+        TraktorMX2.outputHandler(1, field.group, "stems");
+        TraktorMX2.outputHandler(0, field.group, "patterns");
+        TraktorMX2.outputHandler(0, field.group, "loops");
         // Light LEDs (stem color for all unmuted stems, dimmed red for muted)
-            for (let i = 1; i <= engine.getValue(field.group, "stem_count"); i++) {
-                const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
-                const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
-                const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
-                TraktorMX2.outputHandler(colorValue, field.group, "pad_" + i);
-            }
-            break;
+        for (let i = 1; i <= engine.getValue(field.group, "stem_count"); i++) {
+            const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
+            const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
+            const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
+            TraktorMX2.outputHandler(colorValue, field.group, `pad_${  i}`);
+        }
+        break;
 
-        case "!patterns":
+    case "!patterns":
         // Patterns mode not implemented yet -> does nothing except lighting
-            TraktorMX2.padModeState[field.group] = 2;
-            TraktorMX2.outputHandler(0, field.group, "hotcues");
-            TraktorMX2.outputHandler(0, field.group, "stems");
-            TraktorMX2.outputHandler(1, field.group, "patterns");
-            TraktorMX2.outputHandler(0, field.group, "loops");
-            // Turn off LEDs
-            for (let i = 1; i <= 8; ++i) {
-                TraktorMX2.outputHandler(0x00, field.group, "pad_" + i);
-            }
-            break;
+        TraktorMX2.padModeState[field.group] = 2;
+        TraktorMX2.outputHandler(0, field.group, "hotcues");
+        TraktorMX2.outputHandler(0, field.group, "stems");
+        TraktorMX2.outputHandler(1, field.group, "patterns");
+        TraktorMX2.outputHandler(0, field.group, "loops");
+        // Turn off LEDs
+        for (let i = 1; i <= 8; ++i) {
+            TraktorMX2.outputHandler(0x00, field.group, `pad_${  i}`);
+        }
+        break;
 
-        case "!loops":
-            TraktorMX2.padModeState[field.group] = 3;
-            TraktorMX2.outputHandler(0, field.group, "hotcues");
-            TraktorMX2.outputHandler(0, field.group, "stems");
-            TraktorMX2.outputHandler(0, field.group, "patterns");
-            TraktorMX2.outputHandler(1, field.group, "loops");
+    case "!loops":
+        TraktorMX2.padModeState[field.group] = 3;
+        TraktorMX2.outputHandler(0, field.group, "hotcues");
+        TraktorMX2.outputHandler(0, field.group, "stems");
+        TraktorMX2.outputHandler(0, field.group, "patterns");
+        TraktorMX2.outputHandler(1, field.group, "loops");
         // Turn LEDs green
-            for (let i = 1; i <= 8; ++i) {
+        for (let i = 1; i <= 8; ++i) {
             TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedGreen, field.group, `pad_${  i}`);
-            }
-            break;
+        }
+        break;
     }
 
 };
 
-TraktorMX2.padHandler = function (field) {
+TraktorMX2.padHandler = function(field) {
     const padNumber = parseInt(field.id[field.id.length - 1]);
     switch (TraktorMX2.padModeState[field.group]) {
-        case 0:
-            // Hotcues mode
-            if (TraktorMX2.shiftPressed[field.group]) {
-                engine.setValue(field.group, `hotcue_${padNumber}_clear`, field.value);
-            } else {
-                engine.setValue(field.group, `hotcue_${padNumber}_activate`, field.value);
-            }
+    case 0:
+        // Hotcues mode
+        if (TraktorMX2.shiftPressed[field.group]) {
+            engine.setValue(field.group, `hotcue_${padNumber}_clear`, field.value);
+        } else {
+            engine.setValue(field.group, `hotcue_${padNumber}_activate`, field.value);
+        }
 
-            break;
+        break;
 
-        case 1:
-            // Stems Mode
-            // ignore if no stemfile is loaded
-            if (engine.getValue(field.group, "stem_count") === 0) {
+    case 1:
+        // Stems Mode
+        // ignore if no stemfile is loaded
+        if (engine.getValue(field.group, "stem_count") === 0) {
+            return;
+        }
+
+        // only first 4 pads are used for stem mute/unmute
+        if (padNumber <= Math.min(4, engine.getValue(field.group, "stem_count"))) {
+            if (field.value === 0) {
                 return;
             }
+            script.toggleControl(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "mute");
 
-            // only first 4 pads are used for stem mute/unmute
-            if (padNumber <= Math.min(4, engine.getValue(field.group, "stem_count"))) {
-                if (field.value === 0) {
-                    return;
-                }
-                script.toggleControl(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "mute");
+            const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "color");
+            const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "mute");
+            const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
+            TraktorMX2.outputHandler(colorValue, field.group, `pad_${  padNumber}`);
 
-                const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "color");
-                const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "mute");
-                const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
-                TraktorMX2.outputHandler(colorValue, field.group, "pad_" + padNumber);
+        } else {
+            // pads 5-8 are used for volume and filter control of the stems
+            TraktorMX2.padPressed[field.group][padNumber] = field.value;
+        }
+        break;
 
-            } else {
-                // pads 5-8 are used for volume and filter control of the stems
-                TraktorMX2.padPressed[field.group][padNumber] = field.value;
-            }
-            break;
+    case 2:
+        // Patterns Mode
+        break;
 
-        case 2:
-            // Patterns Mode
-            break;
-
-        case 3:
-            // Loops Mode
+    case 3:
+        // Loops Mode
 
         if (!TraktorMX2.shiftPressed[field.group]) {
-                engine.setValue(field.group, "beatlooproll_" + (2 ** (padNumber - 5)) + "_activate", field.value);
-            } else {
-                engine.setValue(field.group, "beatloop_" + 2 ** ((padNumber - 5)) + "_toggle", 1);
-            }
+            engine.setValue(field.group, `beatlooproll_${  2 ** (padNumber - 5)  }_activate`, field.value);
+        } else {
+            engine.setValue(field.group, `beatloop_${  2 ** ((padNumber - 5))  }_toggle`, 1);
+        }
         if (field.value === 1) {
             TraktorMX2.outputHandler(TraktorMX2.baseColors.green, field.group, `pad_${padNumber}`);
         } else {
             TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedGreen, field.group, `pad_${padNumber}`);
         }
-            break;
+        break;
     }
 };
 
-TraktorMX2.headphoneHandler = function (field) {
+TraktorMX2.headphoneHandler = function(field) {
     if (field.value === 0) {
         return;
     }
@@ -547,7 +547,7 @@ TraktorMX2.headphoneHandler = function (field) {
     TraktorMX2.outputHandler(engine.getValue(field.group, "pfl"), field.group, "pfl");
 };
 
-TraktorMX2.selectTrackHandler = function (field) {
+TraktorMX2.selectTrackHandler = function(field) {
     let delta = 1;
     if ((field.value + 1) % 16 === TraktorMX2.browseKnobEncoderState[field.group]) {
         delta = -1;
@@ -564,7 +564,7 @@ TraktorMX2.selectTrackHandler = function (field) {
     TraktorMX2.browseKnobEncoderState[field.group] = field.value;
 };
 
-TraktorMX2.loadTrackHandler = function (field) {
+TraktorMX2.loadTrackHandler = function(field) {
     if (TraktorMX2.shiftPressed[field.group]) {
         engine.setValue("[Library]", "GoToItem", field.value);
     } else {
@@ -572,7 +572,7 @@ TraktorMX2.loadTrackHandler = function (field) {
     }
 };
 
-TraktorMX2.addTrackHandler = function (field) {
+TraktorMX2.addTrackHandler = function(field) {
     TraktorMX2.outputHandler(field.value, field.group, "addTrack");
 
     if (TraktorMX2.shiftPressed[field.group]) {
@@ -582,7 +582,7 @@ TraktorMX2.addTrackHandler = function (field) {
     }
 };
 
-TraktorMX2.previewHandler = function (field) {
+TraktorMX2.previewHandler = function(field) {
     if (field.value === 0) {
         return;
     }
@@ -590,26 +590,26 @@ TraktorMX2.previewHandler = function (field) {
     engine.setValue(field.group, "LoadSelectedTrackAndPlay", field.value);
 };
 
-TraktorMX2.favListHandler = function (field) {
+TraktorMX2.favListHandler = function(field) {
     if (field.value === 0) {
-        return;
+
     }
 };
 
-TraktorMX2.maximizeLibraryHandler = function (field) {
+TraktorMX2.maximizeLibraryHandler = function(field) {
     if (field.value === 0) {
         return;
     }
 
-    let group = "[Skin]"
-    let control = "show_maximized_library"
+    const group = "[Skin]";
+    const control = "show_maximized_library";
 
     script.toggleControl(group, control);
     TraktorMX2.outputHandler(engine.getValue(group, control), "[Channel1]", "maximizeLibrary");
     TraktorMX2.outputHandler(engine.getValue(group, control), "[Channel2]", "maximizeLibrary");
 };
 
-TraktorMX2.selectLoopHandler = function (field) {
+TraktorMX2.selectLoopHandler = function(field) {
 
     let delta = 1;
     if ((field.value + 1) % 16 === TraktorMX2.loopKnobEncoderState[field.group]) {
@@ -623,15 +623,15 @@ TraktorMX2.selectLoopHandler = function (field) {
 
                 if (!TraktorMX2.shiftPressed[field.group]) {
                     if (delta > 0) {
-                        script.triggerControl("[QuickEffectRack1_[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]]", "super1_up");
+                        script.triggerControl(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "super1_up");
                     } else {
-                        script.triggerControl("[QuickEffectRack1_[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]]", "super1_down");
+                        script.triggerControl(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "super1_down");
                     }
                 } else {
                     if (delta > 0) {
-                        engine.setValue("[QuickEffectRack1_[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]]", "next_chain_preset", 1);
+                        engine.setValue(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "next_chain_preset", 1);
                     } else {
-                        engine.setValue("[QuickEffectRack1_[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]]", "prev_chain_preset", 1);
+                        engine.setValue(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "prev_chain_preset", 1);
                     }
                 }
 
@@ -659,7 +659,7 @@ TraktorMX2.selectLoopHandler = function (field) {
     TraktorMX2.loopKnobEncoderState[field.group] = field.value;
 };
 
-TraktorMX2.activateLoopHandler = function (field) {
+TraktorMX2.activateLoopHandler = function(field) {
     if (field.value === 0) {
         return;
     }
@@ -668,7 +668,7 @@ TraktorMX2.activateLoopHandler = function (field) {
         // Change Functionality in Stems Mode with pressed any of Pad 5-8
         for (const padNum in TraktorMX2.padPressed[field.group]) {
             if (TraktorMX2.padPressed[field.group][padNum]) {
-                script.toggleControl("[QuickEffectRack1_[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]]", "enabled");
+                script.toggleControl(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "enabled");
             }
         }
     } else {
@@ -681,7 +681,7 @@ TraktorMX2.activateLoopHandler = function (field) {
     }
 };
 
-TraktorMX2.selectBeatjumpHandler = function (field) {
+TraktorMX2.selectBeatjumpHandler = function(field) {
     let delta = 1;
     if ((field.value + 1) % 16 === TraktorMX2.moveKnobEncoderState[field.group]) {
         delta = -1;
@@ -692,9 +692,9 @@ TraktorMX2.selectBeatjumpHandler = function (field) {
         for (const padNum in TraktorMX2.padPressed[field.group]) {
             if (TraktorMX2.padPressed[field.group][padNum]) {
                 if (delta > 0) {
-                    script.triggerControl("[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]", "volume_up");
+                    script.triggerControl(`[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]`, "volume_up");
                 } else {
-                    script.triggerControl("[Channel" + field.group[field.group.length - 2] + "_Stem" + (padNum - 4) + "]", "volume_down");
+                    script.triggerControl(`[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]`, "volume_down");
                 }
 
             }
@@ -721,7 +721,7 @@ TraktorMX2.selectBeatjumpHandler = function (field) {
     TraktorMX2.moveKnobEncoderState[field.group] = field.value;
 };
 
-TraktorMX2.activateBeatjumpHandler = function (field) {
+TraktorMX2.activateBeatjumpHandler = function(field) {
     if (TraktorMX2.shiftPressed[field.group]) {
         engine.setValue(field.group, "reloop_andstop", field.value);
     } else {
@@ -729,7 +729,7 @@ TraktorMX2.activateBeatjumpHandler = function (field) {
     }
 };
 
-TraktorMX2.microphoneHandler = function (field) {
+TraktorMX2.microphoneHandler = function(field) {
     if (field.value) {
         if (TraktorMX2.microphonePressedTimer === 0) {
             // Start timer to measure how long button is pressed
@@ -753,11 +753,11 @@ TraktorMX2.microphoneHandler = function (field) {
     }
 };
 
-TraktorMX2.parameterHandler = function (field) {
+TraktorMX2.parameterHandler = function(field) {
     engine.setParameter(field.group, field.name, field.value / 4095);
 };
 
-TraktorMX2.jogModeHandler = function (field) {
+TraktorMX2.jogModeHandler = function(field) {
     if (field.value === 0) {
         return;
     }
@@ -781,7 +781,7 @@ TraktorMX2.jogModeHandler = function (field) {
     }
 };
 
-TraktorMX2.jogTouchHandler = function (field) {
+TraktorMX2.jogTouchHandler = function(field) {
     const deckNumber = TraktorMX2.controller.resolveDeck(field.group);
     if (TraktorMX2.jogModeState[field.group] === 0) {
         // Turntable mode
@@ -814,7 +814,7 @@ TraktorMX2.jogStopper = function(field) {
     }
 };
 
-TraktorMX2.jogHandler = function (field) {
+TraktorMX2.jogHandler = function(field) {
 
     if (field.name === "jog_timer") {
         // Update internal timer value
@@ -936,12 +936,12 @@ TraktorMX2.wheelVelocity = function(deckNumber, value) {
 };
 
 
-TraktorMX2.fxHandler = function (field) {
+TraktorMX2.fxHandler = function(field) {
     if (field.value === 0 || field.name === "misc") {
         return;
     }
 
-    let group = `[EffectRack1_${field.group}_${field.name}]`
+    const group = `[EffectRack1_${field.group}_${field.name}]`;
     if (!TraktorMX2.shiftPressed[`[Channel${field.group[field.group.length - 1]}]`]) {
         script.toggleControl(group, "enabled");
     } else {
@@ -951,28 +951,28 @@ TraktorMX2.fxHandler = function (field) {
 
 };
 
-TraktorMX2.fxSelectHandler = function (field) {
+TraktorMX2.fxSelectHandler = function(field) {
     if (field.value === 0) {
         return;
     }
 
-    let group = "[EffectRack1_" + field.name + "]"
-    let control = "group_" + field.group + "_enable"
+    const group = `[EffectRack1_${  field.name  }]`;
+    const control = `group_${  field.group  }_enable`;
 
     script.toggleControl(group, control);
 };
 
-TraktorMX2.gfxToggleHandler = function (field) {
+TraktorMX2.gfxToggleHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    let group = "[QuickEffectRack1_" + field.group + "]"
-    let control = "enabled"
+    const group = `[QuickEffectRack1_${  field.group  }]`;
+    const control = "enabled";
 
     script.toggleControl(group, control);
 };
 
-TraktorMX2.globalfxHandler = function (field) {
+TraktorMX2.globalfxHandler = function(field) {
     /* We support 8 effects in total by having 2 effects per fx button. *
      * First press of the button will load the preset at the index of the quick effect preset list *
      * Second press will load the preset index + 4 *
@@ -1023,7 +1023,7 @@ TraktorMX2.globalfxHandler = function (field) {
     }
 };
 
-TraktorMX2.reverseHandler = function (field) {
+TraktorMX2.reverseHandler = function(field) {
     if (TraktorMX2.shiftPressed[field.group]) {
         engine.setValue(field.group, "reverseroll", field.value);
     } else {
@@ -1033,14 +1033,14 @@ TraktorMX2.reverseHandler = function (field) {
     TraktorMX2.outputHandler(field.value, field.group, "reverse");
 };
 
-TraktorMX2.fluxHandler = function (field) {
+TraktorMX2.fluxHandler = function(field) {
     if (field.value === 0) {
         return;
     }
     script.toggleControl(field.group, "slip_enabled");
 };
 
-TraktorMX2.registerOutputPackets = function () {
+TraktorMX2.registerOutputPackets = function() {
     const output = new HIDPacket("output", 0x80);
 
     // Channel 1
@@ -1221,7 +1221,7 @@ TraktorMX2.registerOutputPackets = function () {
     // Same as Channel 1: engine.makeConnection("[PreviewDeck1]", "play_indicator", this.previewOutputHandler)
     // Maximize Library
 
-    this.linkOutput("[Channel2]", "slip_enabled", this.outputHandler)
+    this.linkOutput("[Channel2]", "slip_enabled", this.outputHandler);
     // Reverse
 
     // Shift
@@ -1263,8 +1263,8 @@ TraktorMX2.registerOutputPackets = function () {
         engine.makeConnection("[Channel2]", `hotcue_${i}_color`, this.hotcueColorHandler);
     }
 
-    engine.makeConnection("[Channel1]", `stem_count`, this.patternOutputHandler);
-    engine.makeConnection("[Channel2]", `stem_count`, this.patternOutputHandler);
+    engine.makeConnection("[Channel1]", "stem_count", this.patternOutputHandler);
+    engine.makeConnection("[Channel2]", "stem_count", this.patternOutputHandler);
 
     // Bottom LEDs
 
@@ -1284,11 +1284,11 @@ TraktorMX2.registerOutputPackets = function () {
 };
 
 /* Helper function to link output in a short form */
-TraktorMX2.linkOutput = function (group, name, callback) {
+TraktorMX2.linkOutput = function(group, name, callback) {
     TraktorMX2.controller.linkOutput(group, name, group, name, callback);
 };
 
-TraktorMX2.outputHandler = function (value, group, key) {
+TraktorMX2.outputHandler = function(value, group, key) {
     // Custom value for multi-colored LEDs
 
     let ledValue = value;
@@ -1307,13 +1307,13 @@ TraktorMX2.outputHandler = function (value, group, key) {
     TraktorMX2.controller.setOutput(group, key, ledValue, true);
 };
 
-TraktorMX2.colorOutputHandler = function (value, group, key) {
+TraktorMX2.colorOutputHandler = function(value, group, key) {
     // Custom value for multi-colored LEDs
     const colorValue = TraktorMX2.PadColorMap.getValueForNearestColor(value);
     TraktorMX2.controller.setOutput(group, key, colorValue, true);
 };
 
-TraktorMX2.vuMeterOutputHandler = function (value, group, _key) {
+TraktorMX2.vuMeterOutputHandler = function(value, group, _key) {
     const vuKeys = Object.keys(TraktorMX2.vuMeterThresholds);
     for (let i = 0; i < vuKeys.length; ++i) {
         // Avoid spamming HID by only sending last LED update
@@ -1326,7 +1326,7 @@ TraktorMX2.vuMeterOutputHandler = function (value, group, _key) {
     }
 };
 
-TraktorMX2.peakOutputHandler = function (value, group, key) {
+TraktorMX2.peakOutputHandler = function(value, group, key) {
     let ledValue = 0x00;
 
     if (value) {
@@ -1339,36 +1339,36 @@ TraktorMX2.peakOutputHandler = function (value, group, key) {
     TraktorMX2.controller.setOutput(group, key, ledValue, true);
 };
 
-TraktorMX2.previewOutputHandler = function (_value, group, name) {
+TraktorMX2.previewOutputHandler = function(_value, group, name) {
     const value = engine.getValue(group, name);
-    TraktorMX2.outputHandler(value, `[PreviewDeck1]`, "play_indicator");
-    TraktorMX2.outputHandler(value, `[PreviewDeck2]`, "play_indicator");
-}
+    TraktorMX2.outputHandler(value, "[PreviewDeck1]", "play_indicator");
+    TraktorMX2.outputHandler(value, "[PreviewDeck2]", "play_indicator");
+};
 
-TraktorMX2.gfxToggleOutputHandler = function (_value, group, name) {
+TraktorMX2.gfxToggleOutputHandler = function(_value, group, name) {
     TraktorMX2.outputHandler(engine.getValue(group, name), `[Channel${group[group.length - 3]}]`, "gfx_toggle");
-}
+};
 
-TraktorMX2.fxSelectOutputHandler = function (_value, group, name) {
+TraktorMX2.fxSelectOutputHandler = function(_value, group, name) {
     TraktorMX2.outputHandler(engine.getValue(group, name), `[Channel${name[name.length - 9]}]`, `fx_select_${group[group.length - 2]}`);
-}
+};
 
-TraktorMX2.fxOutputHandler = function (_value, group, name) {
+TraktorMX2.fxOutputHandler = function(_value, group, name) {
     TraktorMX2.outputHandler(engine.getValue(group, name), `[Channel${group[group.length - 10]}]`, `fx_${group[group.length - 2]}`);
-}
+};
 
-TraktorMX2.gfxOutputHandler = function () {
+TraktorMX2.gfxOutputHandler = function() {
     const fxButtonCount = 4;
 
-    let presetNum = engine.getValue(`[QuickEffectRack1_[Channel1]]`, "loaded_chain_preset") - 1;
+    const presetNum = engine.getValue("[QuickEffectRack1_[Channel1]]", "loaded_chain_preset") - 1;
 
     for (let fxButton = 0; fxButton <= fxButtonCount; fxButton++) {
-        let active = (presetNum === fxButton || (fxButton !== 0 && (fxButton === presetNum - fxButtonCount)));
-        TraktorMX2.outputHandler(active, "[ChannelX]", "gfx_" + fxButton);
+        const active = (presetNum === fxButton || (fxButton !== 0 && (fxButton === presetNum - fxButtonCount)));
+        TraktorMX2.outputHandler(active, "[ChannelX]", `gfx_${  fxButton}`);
     }
 };
 
-TraktorMX2.hotcueOutputHandler = function (value, group, name) {
+TraktorMX2.hotcueOutputHandler = function(value, group, name) {
     // Light button LED only when we are in hotcue mode
     if (TraktorMX2.padModeState[group] === 0) {
         const colorKey = name.replace("_status", "_color");
@@ -1382,7 +1382,7 @@ TraktorMX2.hotcueOutputHandler = function (value, group, name) {
     }
 };
 
-TraktorMX2.hotcueColorHandler = function (value, group, name) {
+TraktorMX2.hotcueColorHandler = function(value, group, name) {
     // Light button LED only when we are in hotcue mode
     const padNum = name[7];
     if (TraktorMX2.padModeState[group] === 0) {
@@ -1390,7 +1390,7 @@ TraktorMX2.hotcueColorHandler = function (value, group, name) {
     }
 };
 
-TraktorMX2.patternOutputHandler = function (value, group, name) {
+TraktorMX2.patternOutputHandler = function(value, group, name) {
     if (TraktorMX2.padModeState[group] === 1) {
         for (let i = 1; i <= engine.getValue(group, name); i++) {
             const color = engine.getValue(`[Channel${group[group.length - 2]}_Stem${i}]`, "color");
@@ -1401,12 +1401,12 @@ TraktorMX2.patternOutputHandler = function (value, group, name) {
     }
 };
 
-TraktorMX2.bottomLedOutputHandler = function () {
+TraktorMX2.bottomLedOutputHandler = function() {
 
     for (const channel of ["[Channel1]", "[Channel2]"]) {
-        let eot = engine.getValue(channel, "end_of_track")
-        let loop = engine.getValue(channel, "loop_enabled")
-        let playing = engine.getValue(channel, "play")
+        const eot = engine.getValue(channel, "end_of_track");
+        const loop = engine.getValue(channel, "loop_enabled");
+        const playing = engine.getValue(channel, "play");
         for (let i = 1; i <= 6; i++) {
             if (eot) {
                 if (TraktorMX2.bottomLedState[channel][i] === TraktorMX2.baseColors.red) {
@@ -1424,12 +1424,12 @@ TraktorMX2.bottomLedOutputHandler = function () {
         for (let i = 1; i <= 5; i++) {
             TraktorMX2.controller.setOutput(channel, `bottom_led_${i}`, TraktorMX2.bottomLedState[channel][i], false);
         }
-        TraktorMX2.controller.setOutput(channel, "bottom_led_" + 6, TraktorMX2.bottomLedState[channel][6], true);
+        TraktorMX2.controller.setOutput(channel, `bottom_led_${  6}`, TraktorMX2.bottomLedState[channel][6], true);
     }
 
-}
+};
 
-TraktorMX2.lightDeck = function (switchOff) {
+TraktorMX2.lightDeck = function(switchOff) {
 
     const getColorValue = (group, key, active) => {
         if (switchOff) {
@@ -1487,8 +1487,8 @@ TraktorMX2.lightDeck = function (switchOff) {
     for (let i = 1; i <= 8; ++i) {
         if (switchOff) {
             // do not dim but turn completely off
-            TraktorMX2.outputHandler(0x00, "[Channel1]", "pad_" + i);
-            TraktorMX2.outputHandler(0x00, "[Channel2]", "pad_" + i);
+            TraktorMX2.outputHandler(0x00, "[Channel1]", `pad_${  i}`);
+            TraktorMX2.outputHandler(0x00, "[Channel2]", `pad_${  i}`);
         } else {
             current = engine.getValue("[Channel1]", `hotcue_${i}_status`) ? TraktorMX2.baseColors.blue : TraktorMX2.baseColors.dimmed;
             TraktorMX2.outputHandler(current, "[Channel1]", `pad_${i}`);
@@ -1570,7 +1570,7 @@ TraktorMX2.lightDeck = function (switchOff) {
     TraktorMX2.controller.setOutput("[Microphone]", "talkover", getColorValue("[Microphone]", "talkover", current), true);
 };
 
-TraktorMX2.messageCallback = function (packet, data) {
+TraktorMX2.messageCallback = function(packet, data) {
     for (const name in data) {
         if (Object.hasOwnProperty.call(data, name)) {
             TraktorMX2.controller.processButton(data[name]);
@@ -1578,14 +1578,14 @@ TraktorMX2.messageCallback = function (packet, data) {
     }
 };
 
-TraktorMX2.shutdown = function () {
+TraktorMX2.shutdown = function() {
     // Deactivate all LEDs
     TraktorMX2.lightDeck(true);
 
     console.log("HID: TraktorMX2: Shutdown done!");
 };
 
-TraktorMX2.incomingData = function (data, length) {
+TraktorMX2.incomingData = function(data, length) {
     TraktorMX2.controller.parsePacket(data, length);
 };
 
@@ -1607,7 +1607,7 @@ TraktorMX2.baseColors = {
     dimmedYellow: 0x14, yellow: 0x16,
 
     dimmedOrange: 0x0c, orange: 0x0e,
-}
+};
 
 TraktorMX2.OutputColorMap = {
     // Channel 1
