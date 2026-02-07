@@ -108,6 +108,7 @@ class TrackCollectionManager: public QObject,
     void startLibraryScan();
     void stopLibraryScan();
     void slotIncomingDirectoryChanged(const QString& path);
+    void slotScanFinished();
 
   private:
     void afterTrackAdded(const TrackPointer& pTrack) const;
@@ -141,4 +142,5 @@ class TrackCollectionManager: public QObject,
     std::unique_ptr<LibraryScanner> m_pScanner;
 
     QFileSystemWatcher m_incomingDirWatcher;
+    bool m_incomingDirChangePending;
 };

@@ -35,14 +35,15 @@ parented_ptr<TrackCollection> createInternalTrackCollection(
 
 } // anonymous namespace
 
-TrackCollectionManager::TrackCollectionManager(
-        QObject* parent,
+TrackCollectionManager::TrackCollectionManager(QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
-    : QObject(parent),
-      m_pConfig(pConfig),
-      m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
+        : QObject(parent),
+          m_pConfig(pConfig),
+          m_pInternalCollection(createInternalTrackCollection(
+                  this, pConfig, deleteTrackForTestingFn)),
+          m_incomingDirChangePending(false) {
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
@@ -684,4 +685,24 @@ void TrackCollectionManager::initIncomingDirWatcher(const QString& incomingTrack
                 this,
                 &TrackCollectionManager::slotIncomingDirectoryChanged);
     }
+}
+
+void TrackCollectionManager::slotScanFinished() {
+    emit libraryScanFinished();
+
+    if (!m_incomingDirChangePending) {
+        return;
+    }
+    m_incomingDirChangePending = false;
+
+    VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
+        return;
+    }
+
+    QStringList dirs = m_incomingDirWatcher.directories();
+    if (dirs.isEmpty()) {
+        return;
+    }
+
+    m_pScanner->scanDir(dirs.first());
 }
