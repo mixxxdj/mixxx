@@ -239,23 +239,27 @@ void LibraryScanner::startScanInner() {
 
     emit scanStarted();
 
-    // First, we're going to mark all the directories that we've previously
-    // hashed as needing verification. As we search through the directory tree
-    // when we rescan, we'll mark any directory that does still exist as
-    // verified.
-    m_libraryHashDao.invalidateAllDirectories();
+    if (m_recursive) {
+        // First, we're going to mark all the directories that we've previously
+        // hashed as needing verification. As we search through the directory tree
+        // when we rescan, we'll mark any directory that does still exist as
+        // verified.
+        m_libraryHashDao.invalidateAllDirectories();
 
-    // Make sure that `directory` in in track_locations table is indeed a
-    // directory path. This works around / removes residues of a bug where tracks
-    // are falsely marked missing because `directory` == `location`.
-    m_trackDao.cleanupTrackLocationsDirectory();
+        // Make sure that `directory` in in track_locations table is indeed a
+        // directory path. This works around / removes residues of a bug where tracks
+        // are falsely marked missing because `directory` == `location`.
+        m_trackDao.cleanupTrackLocationsDirectory();
 
-    // Mark all the tracks in the library as needing verification of their
-    // existence. (ie. we want to check they're still on your hard drive where
-    // we think they are)
-    m_trackDao.invalidateTrackLocationsInLibrary();
+        // Mark all the tracks in the library as needing verification of their
+        // existence. (ie. we want to check they're still on your hard drive where
+        // we think they are)
+        m_trackDao.invalidateTrackLocationsInLibrary();
 
-    kLogger.debug() << "Recursively scanning library.";
+        kLogger.debug() << "Recursively scanning library.";
+    } else {
+        kLogger.debug() << "Scanning single directory.";
+    }
 
     // Start scanning the library. This prepares insertion queries in TrackDAO
     // (must be called before calling addTracksAdd) and begins a transaction.
@@ -335,6 +339,23 @@ void LibraryScanner::slotFinishHashedScan() {
 
 // Quick hack: return number of relocated tracks
 void LibraryScanner::cleanUpScan() {
+    if (!m_recursive) {
+        // no clean up required in case of single directory scan
+        // only update BaseTrackCache via signals connected to the main TrackDAO.
+        QSet<TrackId> addedTrackIds;
+        for (const QString& trackLocation : m_scannerGlobal->addedTracks()) {
+            TrackId id = m_trackDao.getTrackIdByLocation(trackLocation);
+            VERIFY_OR_DEBUG_ASSERT(id.isValid()) {
+                continue;
+            }
+            addedTrackIds.insert(std::move(id));
+        }
+        if (!addedTrackIds.isEmpty()) {
+            emit tracksChanged(addedTrackIds);
+        }
+        return;
+    }
+
     // At the end of a scan, mark all tracks and directories that weren't
     // "verified" as "deleted" (as long as the scan wasn't canceled half way
     // through). This condition is important because our rescanning algorithm
@@ -351,10 +372,12 @@ void LibraryScanner::cleanUpScan() {
     m_trackDao.markTrackLocationsAsVerified(m_scannerGlobal->verifiedTracks());
 
     kLogger.debug() << "Marking unchanged directories and tracks as verified";
+    const bool deleted = false;
+    const bool verified = true;
     m_libraryHashDao.updateDirectoryStatuses(
             m_scannerGlobal->verifiedDirectories(),
-            false,
-            true);
+            deleted,
+            verified);
     m_trackDao.markTracksInDirectoriesAsVerified(
             m_scannerGlobal->verifiedDirectories());
 
