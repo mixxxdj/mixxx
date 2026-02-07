@@ -4,6 +4,7 @@
 #include <QFileSystemWatcher>
 #include <QList>
 #include <QSet>
+#include <QTimer>
 #include <atomic>
 #include <memory>
 #include <mutex>
@@ -119,7 +120,7 @@ class TrackCollectionManager : public QObject,
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
-    void slotIncomingDirectoryChanged(const QString& path);
+    void slotIncomingDirectoryChanged();
     void slotScanFinished();
 
   private:
@@ -157,5 +158,6 @@ class TrackCollectionManager : public QObject,
     std::optional<LibraryScanResultSummary> m_pendingLibraryScanSummary;
 
     QFileSystemWatcher m_incomingDirWatcher;
+    QTimer m_incomingDirTimer;
     bool m_incomingDirChangePending;
 };
