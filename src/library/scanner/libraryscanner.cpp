@@ -106,7 +106,8 @@ LibraryScanner::LibraryScanner(
           m_state(IDLE),
           m_numRelocatedTracks(0),
           m_pProgressDlg(std::make_unique<LibraryScannerDlg>()),
-          m_manualScan(true) {
+          m_manualScan(true),
+          m_recursive(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
     moveToThread(this);
@@ -193,6 +194,7 @@ void LibraryScanner::slotStartDirScan(const QString& dir) {
     cleanUpDatabase(m_libraryHashDao.database());
 
     m_libraryRootDirs = {mixxx::FileInfo(dir)};
+    m_recursive = false;
     startScanInner();
 }
 
@@ -204,7 +206,7 @@ void LibraryScanner::slotStartScan() {
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.loadAllDirectories();
-
+    m_recursive = true;
     startScanInner();
 }
 
@@ -284,8 +286,9 @@ void LibraryScanner::startScanInner() {
         }
         auto dirAccess = mixxx::FileAccess(rootDir);
         if (!m_scannerGlobal->testAndMarkDirectoryScanned(rootDir.toQDir())) {
+            const bool scanUnhashed = false;
             queueTask(new RecursiveScanDirectoryTask(
-                    this, m_scannerGlobal, std::move(dirAccess), false));
+                    this, m_scannerGlobal, std::move(dirAccess), scanUnhashed, m_recursive));
         }
     }
     pWatcher->taskDone();
@@ -323,8 +326,9 @@ void LibraryScanner::slotFinishHashedScan() {
     for (mixxx::FileAccess dirAccess : m_scannerGlobal->unhashedDirs()) {
         // no testAndMarkDirectoryScanned() here, because all unhashedDirs()
         // are already tracked
+        const bool scanUnhashed = true;
         queueTask(new RecursiveScanDirectoryTask(
-                this, m_scannerGlobal, std::move(dirAccess), true));
+                this, m_scannerGlobal, std::move(dirAccess), scanUnhashed, m_recursive));
     }
     pWatcher->taskDone();
 }

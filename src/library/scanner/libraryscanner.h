@@ -138,4 +138,5 @@ class LibraryScanner : public QThread {
     std::unique_ptr<LibraryScannerDlg> m_pProgressDlg;
 
     bool m_manualScan;
+    bool m_recursive;
 };
