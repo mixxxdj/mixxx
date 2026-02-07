@@ -455,7 +455,6 @@ Category {
                                         readonly property bool enabled: selected == "on"
 
                                         Layout.fillWidth: true
-                                        inactiveColor: Theme.darkGray4
                                         options: ["on", "off"]
 
                                         onSelectedChanged: themeColorTab.dirty = true
@@ -487,7 +486,6 @@ Category {
                                         readonly property bool enabled: selected == "on"
 
                                         Layout.fillWidth: true
-                                        inactiveColor: Theme.darkGray4
                                         options: ["on", "off"]
 
                                         onSelectedChanged: themeColorTab.dirty = true
@@ -758,7 +756,7 @@ Category {
                                         id: keyPaletteComboBox
 
                                         enabled: keyPaletteInput.enabled
-                                        model: Mixxx.Config.paletteNames().filter(palette => Mixxx.Config.colorPalette(palette).length == 12)
+                                        // model: Mixxx.Config.paletteNames.filter(palette => Mixxx.Config.colorPalette(palette).length == 12)
                                         opacity: enabled ? 1 : 0.4
 
                                         onCurrentIndexChanged: themeColorTab.dirty = true
@@ -1057,7 +1055,9 @@ Category {
                         RatioChoice {
                             id: trackTimeDisplayInput
 
+                            maxWidth: deckPane.width * 0.28
                             options: ["elapsed", "remaining", "both"]
+                            normalizedWidth: false
 
                             onSelectedChanged: decksTab.dirty = true
                         }
@@ -1136,8 +1136,10 @@ Category {
                         }
                         RatioChoice {
                             id: loadingTrackWhenPlayingInput
+                            maxWidth: deckPane.width * 0.28
 
                             options: ["reject", "allow", "when stopped",]
+                            normalizedWidth: false
 
                             onSelectedChanged: decksTab.dirty = true
                         }
@@ -1215,7 +1217,6 @@ Category {
                                     RatioChoice {
                                         id: resetOnTrackLoadInput
 
-                                        inactiveColor: Theme.darkGray4
                                         options: ["none", "key", "both", "tempo",]
 
                                         onSelectedChanged: decksTab.dirty = true
@@ -1268,8 +1269,9 @@ Category {
                                     RatioChoice {
                                         id: syncModeInput
 
-                                        inactiveColor: Theme.darkGray4
+                                        maxWidth: deckPane.width * 0.38
                                         options: ["follow soft leader", "use steady"]
+                                        normalizedWidth: false
 
                                         onSelectedChanged: decksTab.dirty = true
                                     }
@@ -1303,7 +1305,6 @@ Category {
                                     RatioChoice {
                                         id: sliderOrientationInput
 
-                                        inactiveColor: Theme.darkGray4
                                         options: ["down", "up"]
 
                                         onSelectedChanged: decksTab.dirty = true
@@ -1329,8 +1330,9 @@ Category {
                                     RatioChoice {
                                         id: keylockModeInput
 
-                                        inactiveColor: Theme.darkGray4
+                                        maxWidth: deckPane.width * 0.34
                                         options: ["original key", "current key"]
+                                        normalizedWidth: false
 
                                         onSelectedChanged: decksTab.dirty = true
                                     }
@@ -1355,7 +1357,7 @@ Category {
                                     RatioChoice {
                                         id: keyunlockModeInput
 
-                                        inactiveColor: Theme.darkGray4
+                                        maxWidth: deckPane.width * 0.3
                                         options: ["reset key", "keep key"]
 
                                         onSelectedChanged: decksTab.dirty = true
@@ -1381,7 +1383,6 @@ Category {
                                     RatioChoice {
                                         id: pitchBendBehaviourInput
 
-                                        inactiveColor: Theme.darkGray4
                                         options: ["abrupt jump", "smooth ramping",]
 
                                         onSelectedChanged: decksTab.dirty = true
