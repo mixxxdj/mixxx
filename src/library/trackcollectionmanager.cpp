@@ -139,6 +139,10 @@ TrackCollectionManager::TrackCollectionManager(
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
+    QStringList dirs = m_incomingDirWatcher.directories();
+    if (!dirs.isEmpty()) {
+        m_incomingDirWatcher.removePaths(dirs);
+    }
     if (m_pScanner) {
         while (m_pScanner->isRunning()) {
             kLogger.info() << "Stopping library scanner thread";
