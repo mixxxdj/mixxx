@@ -4,6 +4,7 @@
 #include <QFileSystemWatcher>
 #include <QList>
 #include <QSet>
+#include <QTimer>
 #include <memory>
 
 #include "library/dao/directorydao.h"
@@ -111,7 +112,7 @@ class TrackCollectionManager: public QObject,
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
-    void slotIncomingDirectoryChanged(const QString& path);
+    void slotIncomingDirectoryChanged();
     void slotScanFinished();
 
   private:
@@ -146,5 +147,6 @@ class TrackCollectionManager: public QObject,
     std::unique_ptr<LibraryScanner> m_pScanner;
 
     QFileSystemWatcher m_incomingDirWatcher;
+    QTimer m_incomingDirTimer;
     bool m_incomingDirChangePending;
 };
