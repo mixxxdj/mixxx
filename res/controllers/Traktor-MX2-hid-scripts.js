@@ -36,7 +36,7 @@ const JOGWHEEL_ALPHA = 0.5;
 // the jogwheel is considered to be stopped, allowing it to change directions or exit scratching mode instantly.
 const JOGWHEEL_EPSILON = 0.001;
 
-const TraktorMX2 = new (function() {
+var TraktorMX2 = new (function() {
     this.controller = new HIDController();
 
     this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
