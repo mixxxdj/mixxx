@@ -1419,7 +1419,6 @@ add_library(
   src/library/trackloader.cpp
   src/library/trackmodeliterator.cpp
   src/library/trackprocessing.cpp
-  src/library/ratingsyncworker.cpp
   src/library/trackset/baseplaylistfeature.cpp
   src/library/trackset/basetracksetfeature.cpp
   src/library/trackset/crate/cratefeature.cpp
@@ -2765,6 +2764,7 @@ if(BUILD_TESTING)
     src/test/portmidienumeratortest.cpp
     src/test/queryutiltest.cpp
     src/test/rangelist_test.cpp
+    src/test/ratingexportimport_test.cpp
     src/test/readaheadmanager_test.cpp
     src/test/replaygaintest.cpp
     src/test/rescalertest.cpp

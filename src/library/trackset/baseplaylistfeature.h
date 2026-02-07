@@ -10,10 +10,6 @@
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 
-namespace mixxx {
-class RatingSyncWorker;
-} // namespace mixxx
-
 class WLibrary;
 class KeyboardEventFilter;
 class PlaylistTableModel;
@@ -134,10 +130,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QSet<int> m_playlistIdsOfSelectedTrack;
     const QString m_countsDurationTableName;
     TrackId m_selectedTrackId;
-
-    /// Sync ratings from file tags for all tracks in the playlist
-    void syncRatingsForPlaylist(int playlistId);
-    mixxx::RatingSyncWorker* m_pRatingSyncWorker;
 
   private slots:
     void slotTrackSelected(TrackId trackId);

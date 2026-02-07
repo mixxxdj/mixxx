@@ -13,7 +13,6 @@
 #include "library/library_prefs.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
-#include "library/ratingsyncworker.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
@@ -52,8 +51,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
         : BaseTrackSetFeature(pLibrary, pConfig, "CRATEHOME", QStringLiteral("crates")),
           m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
-          m_crateTableModel(this, pLibrary->trackCollectionManager()),
-          m_pRatingSyncWorker(nullptr) {
+          m_crateTableModel(this, pLibrary->trackCollectionManager()) {
     initActions();
 
     // construct child model
@@ -62,15 +60,6 @@ CrateFeature::CrateFeature(Library* pLibrary,
 
     connectLibrary(pLibrary);
     connectTrackCollection();
-
-    // Create rating sync worker if preference is enabled
-    if (pConfig->getValue<bool>(kImportRatingFromFileTagsConfigKey)) {
-        m_pRatingSyncWorker = new mixxx::RatingSyncWorker(
-                pLibrary->trackCollectionManager(),
-                pConfig,
-                this);
-        m_pRatingSyncWorker->start();
-    }
 }
 
 void CrateFeature::initActions() {
@@ -324,9 +313,6 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     m_crateTableModel.selectCrate(crateId);
     emit showTrackModel(&m_crateTableModel);
     emit enableCoverArtDisplay(true);
-
-    // Sync ratings from file tags if enabled
-    syncRatingsForCrate(crateId);
 }
 
 bool CrateFeature::activateCrate(CrateId crateId) {
@@ -971,23 +957,3 @@ void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
 }
 
-void CrateFeature::syncRatingsForCrate(CrateId crateId) {
-    if (!m_pRatingSyncWorker) {
-        return;
-    }
-
-    // Get track IDs for this crate
-    QList<TrackId> trackIds;
-    CrateTrackSelectResult crateTracks(
-            m_pTrackCollection->crates().selectCrateTracksSorted(crateId));
-    while (crateTracks.next()) {
-        trackIds.append(crateTracks.trackId());
-    }
-
-    if (trackIds.isEmpty()) {
-        return;
-    }
-
-    // Queue for async rating sync
-    m_pRatingSyncWorker->syncRatingsForTracks(trackIds);
-}

@@ -99,12 +99,12 @@ const ConfigKey mixxx::library::prefs::kSyncSeratoMetadataConfigKey =
 const ConfigKey mixxx::library::prefs::kExportRatingToFileTagsConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
-                QStringLiteral("ExportRatingToFileTags")};
+                QStringLiteral("export_rating_to_file_tags")};
 
 const ConfigKey mixxx::library::prefs::kImportRatingFromFileTagsConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
-                QStringLiteral("ImportRatingFromFileTags")};
+                QStringLiteral("import_rating_from_file_tags")};
 
 const ConfigKey mixxx::library::prefs::kUseRelativePathOnExportConfigKey =
         ConfigKey{
