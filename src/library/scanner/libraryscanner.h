@@ -140,4 +140,5 @@ class LibraryScanner : public QThread {
 
     bool m_canceled;
     bool m_manualScan;
+    bool m_recursive;
 };
