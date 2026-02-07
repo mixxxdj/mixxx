@@ -17,9 +17,15 @@
 
 */
 
+/* Label for empty stems */
+#StemLabelEmpty {
+  color: #FFFFFF;
+}
+
 /*******************************************************************************
  ** BORDER *********************************************************************
  *******************************************************************************/
+
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
 #DeckControls {
