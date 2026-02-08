@@ -56,6 +56,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   signals:
     void apply();
     void scanLibrary();
+    void incomingTracksDirChanged();
+
     void requestAddDir(const QString& dir);
     void requestRemoveDir(const QString& dir, LibraryRemovalType removalType);
     void requestRelocateDir(const QString& currentDir, const QString& newDir);
