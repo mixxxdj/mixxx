@@ -201,6 +201,7 @@ Item {
                             states: [
                                 State {
                                     name: "idle"
+                                    when: !edge.connecting && !edge.connection
                                 },
                                 State {
                                     name: "warning"
@@ -221,7 +222,16 @@ Item {
                                 },
                                 State {
                                     name: "setting"
-                                    when: edge.connection && !edge.connection.existing || edge.connecting
+                                    when: edge.connection && !edge.connection.existing
+
+                                    PropertyChanges {
+                                        edge.color: Theme.accentColor
+                                        edge.width: 15
+                                    }
+                                },
+                                State {
+                                    name: "creating"
+                                    when: edge.connecting
 
                                     PropertyChanges {
                                         edge.color: Theme.accentColor
@@ -258,6 +268,24 @@ Item {
                                 }
 
                                 target: channel
+                            }
+                            SequentialAnimation {
+                                alwaysRunToEnd: true
+                                loops: Animation.Infinite
+                                running: edge.state == "creating"
+
+                                OpacityAnimator {
+                                    duration: 500
+                                    from: 1
+                                    target: edge
+                                    to: 0.2
+                                }
+                                OpacityAnimator {
+                                    duration: 500
+                                    from: 0.2
+                                    target: edge
+                                    to: 1
+                                }
                             }
                             MouseArea {
                                 id: edgeMouseArea

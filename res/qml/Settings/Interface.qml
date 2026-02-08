@@ -24,6 +24,7 @@ Category {
         cueModeInput.currentIndex = Mixxx.Config.controlCueDefault;
         setIntroStartToMainCueInput.selected = Mixxx.Config.controlSetIntroStartAtMainCue ? "on" : "off";
         trackTimeDisplayInput.selected = trackTimeDisplayInput.options[Mixxx.Config.controlPositionDisplay];
+        timeMode.currentIndex = Mixxx.Config.controlTimeFormat;
         doublePressLoadToCloneInput.selected = Mixxx.Config.controlCloneDeckOnLoadDoubleTap ? "on" : "off";
         trackLoadPointInput.currentIndex = Mixxx.Config.controlCueRecall;
         loadingTrackWhenPlayingInput.selected = loadingTrackWhenPlayingInput.options[Mixxx.Config.controlLoadWhenDeckPlaying];
@@ -89,6 +90,7 @@ Category {
         Mixxx.Config.controlCueDefault = cueModeInput.currentIndex;
         Mixxx.Config.controlSetIntroStartAtMainCue = setIntroStartToMainCueInput.enabled;
         Mixxx.Config.controlPositionDisplay = trackTimeDisplayInput.options.indexOf(trackTimeDisplayInput.selected);
+        Mixxx.Config.controlTimeFormat = timeMode.currentIndex;
         Mixxx.Config.controlCloneDeckOnLoadDoubleTap = doublePressLoadToCloneInput.enabled;
         Mixxx.Config.controlCueRecall = trackLoadPointInput.currentIndex;
         Mixxx.Config.controlLoadWhenDeckPlaying = loadingTrackWhenPlayingInput.options.indexOf(loadingTrackWhenPlayingInput.selected);
