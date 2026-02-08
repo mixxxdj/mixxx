@@ -156,7 +156,7 @@ bool LegacyControllerMappingValidationTest::testLoadMapping(
 
     FakeController controller;
     controller.setMapping(pMapping);
-    bool result = controller.applyMapping("./res");
+    bool result = controller.applyMapping(getTestDir().filePath(QStringLiteral("../../res")));
     controller.stopEngine();
     return result;
 }
@@ -232,19 +232,23 @@ INSTANTIATE_TEST_SUITE_P(MidiMappingsValid,
                         MIDI_MAPPING_EXTENSION)),
         PrintMappingName());
 
+#ifdef __HID__
 INSTANTIATE_TEST_SUITE_P(HidMappingsValid,
         LegacyControllerMappingValidationTest,
         ::testing::ValuesIn(
                 pEnumerator->getMappingEnumerator()->getMappingsByExtension(
                         HID_MAPPING_EXTENSION)),
         PrintMappingName());
+#endif
 
+#ifdef __BULK__
 INSTANTIATE_TEST_SUITE_P(BulkMappingsValid,
         LegacyControllerMappingValidationTest,
         ::testing::ValuesIn(
                 pEnumerator->getMappingEnumerator()->getMappingsByExtension(
                         BULK_MAPPING_EXTENSION)),
         PrintMappingName());
+#endif
 
 TEST_P(LegacyControllerMappingValidationTest, ValidateMappingXML) {
     const MappingInfo& mapping = GetParam();

@@ -145,8 +145,6 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
         }
     }
 
-    m_iPlaylistId = playlistId;
-
     if (!m_keepHiddenTracks) {
         // From Mixxx 2.1 we drop tracks that have been explicitly deleted
         // in the library (mixxx_deleted = 0) from playlists.
@@ -154,6 +152,12 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
         // a source user of confusion in the past.
         m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }
+
+    // Note: don't set m_iPlaylistId = playlistId before removing hidden tracks,
+    // else (if tracks are removed) PlaylistDAO::tracksRemoved would trigger
+    // playlistsChanged() which would call select() -- which is simply not required
+    // because we'll trigger that ourselves later on.
+    m_iPlaylistId = playlistId;
 
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
     QSqlQuery query(m_database);
@@ -401,8 +405,9 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getPlaylistIdFromName(AUTODJ_TABLE)) {
-        // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist;
+        // Only allow Add to AutoDJ and sorting if we aren't currently showing
+        // the AutoDJ queue.
+        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist | Capability::Sorting;
     } else {
         caps |= Capability::Remove;
     }

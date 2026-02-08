@@ -30,6 +30,8 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
                     kDefaultTrackTableBackgroundColorOpacity),
             kMinTrackTableBackgroundColorOpacity,
             kMaxTrackTableBackgroundColorOpacity);
+
+    m_overviewSignalColors.setup(node, context);
 }
 
 bool WLibrary::registerView(const QString& name, QWidget* pView) {
@@ -127,7 +129,7 @@ bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
 }
 
 void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
-    //qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
+    // qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
     if (!trackId.isValid()) {
         return;
     }
@@ -135,7 +137,10 @@ void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
     if (!pTracksView) {
         return;
     }
-    pTracksView->selectTrack(trackId);
+    if (pTracksView->isTrackInCurrentView(trackId)) {
+        pTracksView->selectTrack(trackId);
+        pTracksView->setFocus();
+    }
 }
 
 void WLibrary::saveCurrentViewState() const {

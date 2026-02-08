@@ -7,6 +7,7 @@
 
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class TreeItem;
 class QPoint;
@@ -25,7 +26,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
             QObject* pSource) override;
-    bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
@@ -36,6 +37,8 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
     void slotShufflePlaylist();
+    void slotUnlockAllPlaylists();
+    void slotDeleteAllUnlockedPlaylists();
 
   protected:
     void decorateChild(TreeItem* pChild, int playlistId) override;
@@ -45,5 +48,7 @@ class PlaylistFeature : public BasePlaylistFeature {
   private:
     QString getRootViewHtml() const override;
 
-    QAction* m_pShufflePlaylistAction;
+    parented_ptr<QAction> m_pShufflePlaylistAction;
+    parented_ptr<QAction> m_pUnlockPlaylistsAction;
+    parented_ptr<QAction> m_pDeleteAllUnlockedPlaylistsAction;
 };

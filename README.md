@@ -30,23 +30,24 @@ Read [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Building Mixxx
 
-First, open a terminal (on Windows, use "x64 Native Tools Command Prompt for
-[VS 2019][visualstudio2019]"), download the mixxx
+First, open a terminal (on Windows, use "**x64 Native Tools Command Prompt for
+[VS 2022][visualstudio2022]**"), download the mixxx
 source code and navigate to it:
 
     $ git clone https://github.com/mixxxdj/mixxx.git
     $ cd mixxx
 
-Fetch the required dependencies and set up the build environment by running the
+Download the required dependencies and set up the build environment by running the
 corresponding command for your operating system:
 
-| OS | Command |
-| -- | ------- |
-| Windows | `tools\windows_buildenv.bat` |
-| macOS | `source tools/macos_buildenv.sh setup` |
-| Debian/Ubuntu | `tools/debian_buildenv.sh setup` |
-| Fedora | `tools/rpm_buildenv.sh setup` |
-| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) |
+| Platform | Command | Requirements |
+| -- | ------- | ------------ |
+| Windows | `tools\windows_buildenv.bat` | ~2.5 GB download, ~9 GB disk space |
+| macOS | `source tools/macos_buildenv.sh setup` | ~1.5 GB download, ~3 GB disk space |
+| Debian/Ubuntu | `tools/debian_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
+| Fedora | `tools/rpm_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
+| Flatpak | `tools/flatpak_buildenv.sh setup` | ~2.6 GB download, ~5 GB disk space |
+| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) | |
 
 To build Mixxx, run
 
@@ -57,6 +58,10 @@ To build Mixxx, run
 
 There should now be a `mixxx` executable in the current directory that you can
 run. Alternatively, can generate a package using `cpack`.
+
+For building and installing Mixxx as a Flatpak, check the documentation in [packaging/flatpak/README.md](packaging/flatpak/README.md).
+
+Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
 
 ## Documentation
 
@@ -82,7 +87,7 @@ Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
 - Chat with us on [Zulip][zulip].
-- Follow us on [Mastodon], [Twitter] and [Facebook].
+- Follow us on [Mastodon], [Bluesky] and [Facebook].
 - Subscribe to the [Mixxx Blog][blog].
 - Post on the [Mixxx forums][discourse].
 
@@ -97,12 +102,12 @@ license.
 [issues]: https://github.com/mixxxdj/mixxx/issues
 [fileabug]: https://github.com/mixxxdj/mixxx/issues/new/choose
 [mastodon]: https://floss.social/@mixxx
-[twitter]: https://twitter.com/mixxxdj
+[Bluesky]: https://bsky.app/profile/mixxx.bsky.social
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
 [blog]: https://mixxx.org/news/
 [manual]: https://manual.mixxx.org/
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
-[visualstudio2019]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2019
+[visualstudio2022]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2022
 [easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj

@@ -1,0 +1,244 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        required: true
+
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu 24.04
+            os: ubuntu-24.04
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv.sh
+          - name: macOS 15 x64
+            os: macos-15-intel
+            cmake_args: >-
+              -DBULK=ON
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=OFF
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
+            # TODO: Fix this broken test on macOS
+            compiler_cache: ccache
+            compiler_cache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache_id: x64
+            buildenv_basepath: /Users/runner/buildenv
+            buildenv_script: tools/macos_release_buildenv.sh
+          # FIXME: The benchmark are currently broken on Windows and not really used anyway, so we are disabling them
+          # - name: Windows 2022 x64
+          #   os: windows-2022
+          #   # Attention: If you change the cmake_args for the Windows CI build,
+          #   #            also adjust the for the local Windows build setup in
+          #   #            ./tools/windows_buildenv.bat
+          #   cmake_args: >-
+          #     -DBULK=ON
+          #     -DHSS1394=ON
+          #     -DLOCALECOMPARE=ON
+          #     -DMAD=ON
+          #     -DMEDIAFOUNDATION=ON
+          #     -DMODPLUG=ON
+          #     -DQT6=ON
+          #     -DQML=ON
+          #     -DWAVPACK=ON
+          #     -DVCPKG_TARGET_TRIPLET=x64-windows-release
+          #   cc: cl
+          #   cxx: cl
+          #   buildenv_basepath: C:\buildenv
+          #   buildenv_script: tools/windows_buildenv.bat
+          #   arch: x64
+          # - name: Windows 11 ARM64
+          #   os: windows-11-arm
+          #   # Attention: If you change the cmake_args for the Windows CI build,
+          #   #            also adjust the for the local Windows build setup in
+          #   #            ./tools/windows_buildenv.bat
+          #   cmake_args: >-
+          #     -DBULK=ON
+          #     -DHSS1394=ON
+          #     -DLOCALECOMPARE=ON
+          #     -DMAD=ON
+          #     -DMEDIAFOUNDATION=ON
+          #     -DMODPLUG=ON
+          #     -DQT6=ON
+          #     -DQML=ON
+          #     -DWAVPACK=ON
+          #     -DVCPKG_TARGET_TRIPLET=arm64-windows-release
+          #     -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
+          #   cc: cl
+          #   cxx: cl
+          #   buildenv_basepath: C:\buildenv
+          #   buildenv_script: tools/windows_buildenv.bat
+          #   arch: arm64
+
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v5
+        with:
+          # This is necessary for making `git describe` work.
+          fetch-depth: 0
+
+      - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
+        if: matrix.container != null
+        # See https://github.com/actions/checkout/issues/760 for details
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: "Ensure that all tags are fetched"
+        # Works around an issue where not the latest tag is not fetched when the
+        # workflow is triggered by a tag push event.
+        # Possibly related: actions/checkout#290
+        run: git fetch origin --force --tags
+
+      - name: "[macOS] Set up cmake"
+        uses: jwlawson/actions-setup-cmake@v2.0
+        # Ubuntu 24.04 should use the CMake version from the repos.
+        if: runner.os == 'macOS'
+        with:
+          # This should always match the minimum required version in
+          # our CMakeLists.txt
+          cmake-version: "3.21.x"
+
+      - name: "[Windows] Set up cmake"
+        uses: jwlawson/actions-setup-cmake@v2.0
+        # Ubuntu 24.04 should use the CMake version from the repos.
+        # On windows-11-arm this action installs the x64 version which has unwanted side effects
+        if: matrix.os == 'windows-2022'
+        with:
+          # This is a workaround for a SSL false positive in cmake 3.26.4
+          # When downloading the manual. 3.21 is required for installing the
+          # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
+          cmake-version: "3.21.x"
+
+      - name: "[Windows] Set up MSVC Developer Command Prompt"
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: "[Windows 11 ARM64] Install ARM64 CMake"
+        if: matrix.os == 'windows-11-arm'
+        run: |
+          Invoke-WebRequest -Uri https://github.com/Kitware/CMake/releases/download/v3.30.1/cmake-3.30.1-windows-arm64.zip -OutFile cmake-arm64.zip
+          Expand-Archive cmake-arm64.zip -DestinationPath $env:USERPROFILE\cmake
+          $cmakePath = "$env:USERPROFILE\cmake\cmake-3.30.1-windows-arm64\bin"
+          $cmakePath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          $env:Path += ";$cmakePath"
+          cmake --version
+
+      - name: "[macOS] install ccache and make"
+        if: runner.os == 'macOS'
+        run: |
+          brew install ccache
+
+      - name: "[macOS/Windows] Get build environment name"
+        if: runner.os != 'Linux'
+        run: ${{ matrix.buildenv_script }} name
+
+      - name: "[macOS/Windows] Set up build environment cache"
+        if: runner.os != 'Linux'
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.buildenv_basepath }}
+          key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
+
+      - name: "[macOS/Linux] Set up build environment"
+        if: matrix.buildenv_script != null && runner.os != 'Windows'
+        run: ${{ matrix.buildenv_script }} setup
+        env:
+          BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+
+      - name: "[Windows] Set up build environment"
+        if: matrix.buildenv_script != null && runner.os == 'Windows'
+        # With the cmd shell the ERRORLEVEL is checked
+        shell: cmd
+        run: ${{ matrix.buildenv_script }} setup
+        env:
+          BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+          BUILDENV_RELEASE: TRUE
+
+      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
+        if: runner.os != 'windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.compiler_cache_path }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
+
+      - name: "[Ubuntu/macOS] Set up ccache"
+        # GitHub Actions gives us 10 GB of cache.
+        # 4 runs * 2 GB = 8 GB
+        run: |
+          ${{ matrix.compiler_cache }} --zero-stats
+          ${{ matrix.compiler_cache }} --max-size=2G
+        if: runner.os != 'windows'
+
+      - name: "Create build directory"
+        run: mkdir build
+
+      - name: "Configure"
+        run: >-
+          cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DWARNINGS_FATAL=ON
+          -DDEBUG_ASSERTIONS_FATAL=OFF
+          -DBATTERY=ON
+          -DBROADCAST=ON
+          -DDOWNLOAD_MANUAL=ON
+          -DHID=ON
+          -DKEYFINDER=ON
+          -DLILV=ON
+          -DOPUS=ON
+          -DQTKEYCHAIN=ON
+          -DVINYLCONTROL=ON
+          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -L
+          ..
+        working-directory: build
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+
+      - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
+        if: runner.os != 'Windows'
+        uses: ammaraskar/gcc-problem-matcher@0.3.0
+
+      - name: "[Windows] Set up MSVC problem matcher"
+        if: runner.os == 'Windows'
+        uses: ammaraskar/msvc-problem-matcher@0.3.0
+
+      - name: Benchmark
+        run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
+        working-directory: build

@@ -1,0 +1,14 @@
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+struct buf
+{
+    highp mat4 matrix;
+    highp vec4 color;
+};
+
+uniform buf ubuf;
+
+void main()
+{
+    gl_FragData[0] = vec4(ubuf.color.xyz * ubuf.color.w, ubuf.color.w);
+}

@@ -14,6 +14,7 @@
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
+#include "util/dnd.h"
 #include "util/duration.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -33,11 +34,25 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     m_pSidebarModel->setRootItem(std::move(pRootItem));
     constructChildModel(kInvalidPlaylistId);
 
-    m_pShufflePlaylistAction = new QAction(tr("Shuffle Playlist"), this);
+    m_pShufflePlaylistAction = make_parented<QAction>(tr("Shuffle Playlist"), this);
     connect(m_pShufflePlaylistAction,
             &QAction::triggered,
             this,
             &PlaylistFeature::slotShufflePlaylist);
+
+    m_pUnlockPlaylistsAction =
+            make_parented<QAction>(tr("Unlock all playlists"), this);
+    connect(m_pUnlockPlaylistsAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotUnlockAllPlaylists);
+
+    m_pDeleteAllUnlockedPlaylistsAction =
+            make_parented<QAction>(tr("Delete all unlocked playlists"), this);
+    connect(m_pDeleteAllUnlockedPlaylistsAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotDeleteAllUnlockedPlaylists);
 }
 
 QVariant PlaylistFeature::title() {
@@ -49,7 +64,14 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pUnlockPlaylistsAction);
+    menu.addAction(m_pDeleteAllUnlockedPlaylistsAction);
+    menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
+#ifdef __ENGINEPRIME__
+    menu.addSeparator();
+    menu.addAction(m_pExportAllPlaylistsToEngineAction);
+#endif
     menu.exec(globalPos);
 }
 
@@ -62,6 +84,8 @@ void PlaylistFeature::onRightClickChild(
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
+    m_pShufflePlaylistAction->setEnabled(!locked);
+    m_pImportPlaylistAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
@@ -86,13 +110,19 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.addAction(m_pExportTrackFilesAction);
+#ifdef __ENGINEPRIME__
+    menu.addAction(m_pExportPlaylistToEngineAction);
+#endif
     menu.exec(globalPos);
 }
 
 bool PlaylistFeature::dropAcceptChild(
         const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
-    VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_playlistDao.isPlaylistLocked(playlistId)) {
         return false;
     }
     // If a track is dropped onto a playlist's name, but the track isn't in the
@@ -100,8 +130,11 @@ bool PlaylistFeature::dropAcceptChild(
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
-                                      ->resolveTrackIdsFromUrls(urls, !pSource);
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
     if (trackIds.isEmpty()) {
         return false;
     }
@@ -110,13 +143,16 @@ bool PlaylistFeature::dropAcceptChild(
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     int playlistId = playlistIdFromIndex(index);
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    if (playlistId == kInvalidPlaylistId) {
+        return false;
+    }
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        return false;
+    }
 
-    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
-    return !locked && formatSupported;
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
@@ -231,6 +267,46 @@ void PlaylistFeature::slotShufflePlaylist() {
 
         pPlaylistTableModel->shuffleTracks(selection, QModelIndex());
     }
+}
+
+void PlaylistFeature::slotUnlockAllPlaylists() {
+    m_playlistDao.setPlaylistsLockedByType(PlaylistDAO::PLHT_NOT_HIDDEN, false);
+}
+
+void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
+    // Collect playlists to display the count
+    const QList<QPair<int, QString>> playlists =
+            m_playlistDao.getUnlockedPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
+    if (playlists.size() <= 0) {
+        return;
+    }
+
+    QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            tr("Do you really want to delete all unlocked playlists?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    btn = QMessageBox::question(nullptr,
+            tr("Confirm Deletion"),
+            tr("Deleting %1 unlocked playlists.<br>"
+               "This operation can not be undone!")
+                    .arg(playlists.size()),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn != QMessageBox::Yes) {
+        return;
+    }
+
+    QStringList ids;
+    for (const auto& playlist : std::as_const(playlists)) {
+        ids << QString::number(playlist.first);
+    }
+
+    m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
 }
 
 /// Purpose: When inserting or removing playlists,

@@ -29,7 +29,11 @@
 Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
 #elif defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+Q_IMPORT_PLUGIN(QModernWindowsStylePlugin)
+#else
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+#endif
 #elif defined(Q_OS_IOS)
 Q_IMPORT_PLUGIN(QIOSIntegrationPlugin)
 #elif defined(Q_OS_MACOS)
@@ -46,10 +50,14 @@ Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
 #endif
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
+#if !defined(Q_OS_IOS)
+Q_IMPORT_PLUGIN(QTlsBackendOpenSSL)
+#endif
 Q_IMPORT_PLUGIN(QSvgPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
 Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)
+
 #endif // QT_STATIC
 
 namespace {
@@ -81,7 +89,7 @@ class QMouseEventEditable : public QMouseEvent {
 // processed through the event queue every 16.6ms, to ensure smooth rendering.
 // Exceeding this processing time can lead to visible delays, therefore 10ms is a
 // reasonable threshold.
-constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(10);
+constexpr int kDefaultEventNotifyExecTimeWarningThreshold = 10;
 
 } // anonymous namespace
 
@@ -89,7 +97,9 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
           m_rightPressedButtons(0),
           m_pTouchShift(nullptr),
-          m_isDeveloper(CmdlineArgs::Instance().getDeveloper()) {
+          m_isDeveloper(CmdlineArgs::Instance().getDeveloper()),
+          m_eventNotifyExecTimeWarningThreshold(
+                  mixxx::Duration::fromMillis(kDefaultEventNotifyExecTimeWarningThreshold)) {
     registerMetaTypes();
 
     // Increase the size of the global thread pool to at least
@@ -139,6 +149,12 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::audio::FramePos>("mixxx::audio::FramePos");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
     qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
+}
+
+void MixxxApplication::setNotifyWarningThreshold(int threshold) {
+    if (threshold > kDefaultEventNotifyExecTimeWarningThreshold) {
+        m_eventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(threshold);
+    }
 }
 
 bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
@@ -206,7 +222,7 @@ bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
     }
 
     if (m_isDeveloper &&
-            time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
+            time.elapsed() > m_eventNotifyExecTimeWarningThreshold) {
         QDebug debug = qDebug();
         debug << "Processing"
               << pEvent->type()

@@ -102,9 +102,9 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
         return false;
     }
 
-    QDomDocument doc("SamplerBank");
+    QDomDocument doc(QStringLiteral("SamplerBank"));
 
-    QDomElement root = doc.createElement("samplerbank");
+    QDomElement root = doc.createElement(QStringLiteral("samplerbank"));
     doc.appendChild(root);
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
@@ -112,14 +112,14 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
         if (!pSampler) {
             continue;
         }
-        QDomElement samplerNode = doc.createElement(QString("sampler"));
+        QDomElement samplerNode = doc.createElement(QStringLiteral("sampler"));
 
-        samplerNode.setAttribute("group", pSampler->getGroup());
+        samplerNode.setAttribute(QStringLiteral("group"), pSampler->getGroup());
 
         TrackPointer pTrack = pSampler->getLoadedTrack();
         if (pTrack) {
             QString samplerLocation = pTrack->getLocation();
-            samplerNode.setAttribute("location", samplerLocation);
+            samplerNode.setAttribute(QStringLiteral("location"), samplerLocation);
         }
         root.appendChild(samplerNode);
     }

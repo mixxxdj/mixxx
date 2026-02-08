@@ -32,7 +32,7 @@ EngineSync::~EngineSync() {
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
+        kLogger.trace() << "requestSyncMode" << pSyncable->getGroup() << mode;
     }
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     VERIFY_OR_DEBUG_ASSERT(pSyncable) {
@@ -116,7 +116,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     if (pParamsSyncable) {
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "EngineSync::requestSyncMode setting leader params from "
+                    << "requestSyncMode setting leader params from "
                     << pParamsSyncable->getGroup();
         }
         reinitLeaderParams(pParamsSyncable);
@@ -133,7 +133,7 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
         return;
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::activateFollower: "
+        kLogger.trace() << "activateFollower: "
                         << pSyncable->getGroup();
     }
 
@@ -154,7 +154,7 @@ void EngineSync::activateLeader(Syncable* pSyncable, SyncMode leaderType) {
         qWarning() << "WARNING: Logic Error: Called activateLeader with non-leader mode";
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::activateLeader: "
+        kLogger.trace() << "activateLeader: "
                         << pSyncable->getGroup() << "type: "
                         << leaderType;
     }
@@ -190,7 +190,7 @@ void EngineSync::activateLeader(Syncable* pSyncable, SyncMode leaderType) {
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::deactivateSync" << pSyncable->getGroup();
+        kLogger.trace() << "deactivateSync" << pSyncable->getGroup();
     }
     bool wasLeader = isSyncLeader(pSyncable);
     if (wasLeader) {
@@ -218,13 +218,13 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 
 Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::pickLeader";
+        kLogger.trace() << "pickLeader";
     }
     if (m_pLeaderSyncable &&
             m_pLeaderSyncable->getSyncMode() == SyncMode::LeaderExplicit &&
             m_pLeaderSyncable->getBaseBpm().isValid()) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineSync::pickLeader(): explicit leader found ";
+            kLogger.trace() << "pickLeader(): explicit leader found ";
         }
         return m_pLeaderSyncable;
     }
@@ -237,12 +237,13 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
             && (m_pLeaderSyncable != triggering_syncable || newStatus) &&
             m_pLeaderSyncable->isPlaying() &&
             m_pLeaderSyncable->getBaseBpm().isValid());
+    Syncable* first_inaudible_playing_deck = nullptr;
     Syncable* first_other_playing_deck = nullptr;
     Syncable* first_playing_deck = nullptr;
     Syncable* first_stopped_deck = nullptr;
 
     int stopped_deck_count = 0;
-    int playing_deck_count = 0;
+    int audible_playing_deck_count = 0;
 
     for (const auto& pSyncable : std::as_const(m_syncables)) {
         if (!pSyncable->getBaseBpm().isValid()) {
@@ -258,14 +259,18 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
             }
         }
 
-        if (pSyncable->isPlaying() && pSyncable->isAudible()) {
-            if (playing_deck_count == 0) {
-                first_playing_deck = pSyncable;
+        if (pSyncable->isPlaying()) {
+            if (pSyncable->isAudible()) {
+                if (audible_playing_deck_count == 0) {
+                    first_playing_deck = pSyncable;
+                }
+                if (!first_other_playing_deck && pSyncable != triggering_syncable) {
+                    first_other_playing_deck = pSyncable;
+                }
+                audible_playing_deck_count++;
+            } else if (!first_inaudible_playing_deck) {
+                first_inaudible_playing_deck = pSyncable;
             }
-            if (!first_other_playing_deck && pSyncable != triggering_syncable) {
-                first_other_playing_deck = pSyncable;
-            }
-            playing_deck_count++;
         } else {
             if (stopped_deck_count == 0) {
                 first_stopped_deck = pSyncable;
@@ -280,9 +285,9 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
     switch (picker) {
     case PREFER_SOFT_LEADER:
         // Always pick a deck for a new leader.
-        if (playing_deck_count == 1) {
+        if (audible_playing_deck_count == 1) {
             return first_playing_deck;
-        } else if (playing_deck_count > 1) {
+        } else if (audible_playing_deck_count > 1) {
             // Prefer keeping the current leader rather than switching it with the first playing
             // deck.
             if (leaderIsValid) {
@@ -290,6 +295,8 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
             } else {
                 return first_other_playing_deck;
             }
+        } else if (first_inaudible_playing_deck) {
+            return first_inaudible_playing_deck;
         }
 
         if (stopped_deck_count >= 1) {
@@ -299,10 +306,12 @@ Syncable* EngineSync::pickLeader(Syncable* triggering_syncable, bool newStatus) 
     case PREFER_LOCK_BPM:
         // Old 2.3 behavior:
         // Lock the bpm if there is more than one playing sync deck
-        if (playing_deck_count == 1) {
+        if (audible_playing_deck_count == 1) {
             return first_playing_deck;
-        } else if (playing_deck_count > 1) {
+        } else if (audible_playing_deck_count > 1) {
             return m_pInternalClock;
+        } else if (first_inaudible_playing_deck) {
+            return first_inaudible_playing_deck;
         }
 
         if (stopped_deck_count >= 1) {
@@ -319,11 +328,13 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     // First preference: playing synced deck
     // Second preferene: stopped synced deck
     // Third preference: playing nonsync deck
-    // Fourth preference: stopped nonsync deck
+    // Fourth preference: playing inaudible deck
+    // Fifth preference: stopped nonsync deck
     // This could probably be rewritten with a nicer algorithm.
 
     Syncable* pStoppedSyncTarget = nullptr;
     Syncable* pPlayingNonSyncTarget = nullptr;
+    Syncable* pPlayingInaudibleTarget = nullptr;
     Syncable* pStoppedNonSyncTarget = nullptr;
 
     for (const auto& pOtherSyncable : std::as_const(m_syncables)) {
@@ -343,12 +354,16 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 
         // If the other deck is playing we stop looking immediately. Otherwise continue looking
         // for a playing deck with bpm > 0.0.
-        if (pOtherSyncable->isPlaying() && pOtherSyncable->isAudible()) {
-            if (pOtherSyncable->isSynchronized()) {
-                return pOtherSyncable;
-            }
-            if (!pPlayingNonSyncTarget) {
-                pPlayingNonSyncTarget = pOtherSyncable;
+        if (pOtherSyncable->isPlaying()) {
+            if (pOtherSyncable->isAudible()) {
+                if (pOtherSyncable->isSynchronized()) {
+                    return pOtherSyncable;
+                }
+                if (!pPlayingNonSyncTarget) {
+                    pPlayingNonSyncTarget = pOtherSyncable;
+                }
+            } else {
+                pPlayingInaudibleTarget = pOtherSyncable;
             }
         }
 
@@ -374,12 +389,16 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         return pPlayingNonSyncTarget;
     }
 
+    if (pPlayingInaudibleTarget) {
+        return pPlayingInaudibleTarget;
+    }
+
     return pStoppedNonSyncTarget;
 }
 
 void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyPlayingAudible"
+        kLogger.trace() << "notifyPlayingAudible"
                         << pSyncable->getGroup() << playingAudible;
     }
     // For now we don't care if the deck is now playing or stopping.
@@ -443,7 +462,7 @@ void EngineSync::notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position
 
 void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
     }
 
     if (isSyncLeader(pSyncable)) {
@@ -453,7 +472,7 @@ void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyRateChanged" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "notifyRateChanged" << pSyncable->getGroup() << bpm;
     }
 
     updateLeaderBpm(pSyncable, bpm);
@@ -461,7 +480,7 @@ void EngineSync::notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "requestBpmUpdate" << pSyncable->getGroup() << bpm;
     }
 
     mixxx::Bpm leaderBaseBpm;
@@ -486,7 +505,7 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) {
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged"
+        kLogger.trace() << "notifyInstantaneousBpmChanged"
                         << pSyncable->getGroup() << bpm;
     }
     if (pSyncable != m_pInternalClock) {
@@ -500,7 +519,7 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm b
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyBeatDistanceChanged"
+        kLogger.trace() << "notifyBeatDistanceChanged"
                         << pSyncable->getGroup() << beatDistance;
     }
     if (pSyncable != m_pInternalClock) {
@@ -664,7 +683,7 @@ void EngineSync::updateLeaderInstantaneousBpm(Syncable* pSource, mixxx::Bpm bpm)
 
 void EngineSync::updateLeaderBeatDistance(Syncable* pSource, double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::updateLeaderBeatDistance"
+        kLogger.trace() << "updateLeaderBeatDistance"
                         << (pSource ? pSource->getGroup() : "null")
                         << beatDistance;
     }
@@ -720,7 +739,7 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
         }
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "BaseSyncableListener::reinitLeaderParams, source is"
+        kLogger.trace() << "reinitLeaderParams, source is"
                         << pSource->getGroup() << beatDistance << baseBpm << bpm;
     }
     if (pSource != m_pInternalClock) {

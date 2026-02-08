@@ -106,6 +106,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         EngineMixer* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
+          m_pLibrary(nullptr),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
@@ -714,6 +715,21 @@ void PlayerManager::slotLoadTrackToPlayer(
             // so clone another playing deck instead of loading the selected track
             clone = true;
         }
+
+#ifdef __STEM__
+        // Reset the QuickFx of stem to their default value
+        if (m_pConfig->getValue(
+                    ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
+            ChannelHandleAndGroup handleGroup =
+                    m_pEngine->getChannelGroup(groupForDeck(m_decks.count()));
+            // Setup stem QuickEffect chain for this deck
+            for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+                ChannelHandleAndGroup stemHandleGroup =
+                        m_pEngine->registerChannelGroup(groupForDeckStem(group, stemIdx));
+                m_pEffectsManager->resetStemQuickFxKnob(stemHandleGroup);
+            }
+        }
+#endif
     } else if (isPreviewDeckGroup(group) && play) {
         // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
         // if the track is already loaded, toggle play/pause.
@@ -784,6 +800,20 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
         qDebug() << "PlayerManager: No stopped deck found, not loading track!";
         return;
     }
+#ifdef __STEM__
+    // Reset the QuickFx of stem to their default value
+    if (m_pConfig->getValue(
+                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
+        ChannelHandleAndGroup handleGroup =
+                m_pEngine->getChannelGroup(groupForDeck(m_decks.count()));
+        // Setup stem QuickEffect chain for this deck
+        for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+            ChannelHandleAndGroup stemHandleGroup =
+                    m_pEngine->registerChannelGroup(groupForDeckStem(pDeck->getGroup(), stemIdx));
+            m_pEffectsManager->resetStemQuickFxKnob(stemHandleGroup);
+        }
+    }
+#endif
 
     pDeck->slotLoadTrack(pTrack,
 #ifdef __STEM__

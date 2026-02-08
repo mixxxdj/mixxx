@@ -1,0 +1,18 @@
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+struct buf
+{
+    highp mat4 matrix;
+};
+
+uniform buf ubuf;
+
+varying highp vec3 vColor;
+attribute highp vec3 color;
+attribute highp vec4 position;
+
+void main()
+{
+    vColor = color;
+    gl_Position = ubuf.matrix * position;
+}

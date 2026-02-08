@@ -9,6 +9,7 @@
 #include "audio/frame.h"
 #include "audio/types.h"
 #include "control/controlvalue.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/slipmodestate.h"
@@ -220,6 +221,10 @@ class EngineBuffer : public EngineObject {
             mixxx::StemChannelSelection stemMask,
             bool play,
             EngineChannel* pChannelToCloneFrom);
+
+    mixxx::StemChannelSelection getStemMask() const {
+        return m_stemMask;
+    }
 #else
     void loadTrack(TrackPointer pTrack,
             bool play,
@@ -232,6 +237,8 @@ class EngineBuffer : public EngineObject {
 
     void seekAbs(mixxx::audio::FramePos);
     void seekExact(mixxx::audio::FramePos);
+
+    void verifyPlay();
 
   public slots:
     void slotControlPlayRequest(double);
@@ -246,6 +253,7 @@ class EngineBuffer : public EngineObject {
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
+    void noVinylControlInputConfigured();
 
   private slots:
     void slotTrackLoading();
@@ -298,7 +306,6 @@ class EngineBuffer : public EngineObject {
         return m_previousBufferSeek;
     }
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
-    void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void processTrackLocked(CSAMPLE* pOutput,
             const std::size_t bufferSize,
@@ -410,7 +417,7 @@ class EngineBuffer : public EngineObject {
 
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_pQuantize;
+    PollingControlProxy m_quantize;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
@@ -493,6 +500,10 @@ class EngineBuffer : public EngineObject {
     std::size_t m_lastBufferSize;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
+
+#ifdef __STEM__
+    mixxx::StemChannelSelection m_stemMask;
+#endif
 };
 
 Q_DECLARE_METATYPE(EngineBuffer::KeylockEngine)

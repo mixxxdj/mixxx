@@ -2,35 +2,50 @@
 
 #include <QDomNode>
 
+#include "moc_waveformrenderbeat.cpp"
+#include "rendergraph/geometry.h"
+#include "rendergraph/material/unicolormaterial.h"
+#include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
+
+using namespace rendergraph;
 
 namespace allshader {
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRenderer(waveformWidget),
+        : ::WaveformRendererAbstract(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+    initForRectangles<UniColorMaterial>(0);
+    setUsePreprocess(true);
 }
 
-void WaveformRenderBeat::initializeGL() {
-    WaveformRenderer::initializeGL();
-    m_shader.init();
-}
-
-void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_color = QColor(context.selectString(node, "BeatColor"));
+void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinContext) {
+    m_color = QColor(skinContext.selectString(node, QStringLiteral("BeatColor")));
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
-void WaveformRenderBeat::paintGL() {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
+    DEBUG_ASSERT(false);
+}
+
+void WaveformRenderBeat::preprocess() {
+    if (!preprocessInner()) {
+        geometry().allocate(0);
+        markDirtyGeometry();
+    }
+}
+
+bool WaveformRenderBeat::preprocessInner() {
+    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
-        return;
+        return false;
     }
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
@@ -38,24 +53,21 @@ void WaveformRenderBeat::paintGL() {
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
-        return;
+        return false;
     }
 
     int alpha = m_waveformRenderer->getBeatGridAlpha();
     if (alpha == 0) {
-        return;
+        return false;
     }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     m_color.setAlphaF(alpha / 100.0f);
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
-    if (trackSamples <= 0) {
-        return;
+    if (trackSamples <= 0.0) {
+        return false;
     }
 
     const double firstDisplayedPosition =
@@ -69,7 +81,7 @@ void WaveformRenderBeat::paintGL() {
             lastDisplayedPosition * trackSamples);
 
     if (!startPosition.isValid() || !endPosition.isValid()) {
-        return;
+        return false;
     }
 
     const float rendererBreadth = m_waveformRenderer->getBreadth();
@@ -88,8 +100,9 @@ void WaveformRenderBeat::paintGL() {
     }
 
     const int reserved = numBeatsInRange * numVerticesPerLine;
-    m_vertices.clear();
-    m_vertices.reserve(reserved);
+    geometry().allocate(reserved);
+
+    VertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::Point2D>()};
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -104,33 +117,17 @@ void WaveformRenderBeat::paintGL() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_vertices.addRectangle(x1,
-                0.f,
-                x2,
-                m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth);
+        vertexUpdater.addRectangle({x1, 0.f},
+                {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth});
     }
+    markDirtyGeometry();
 
-    DEBUG_ASSERT(reserved == m_vertices.size());
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    const int positionLocation = m_shader.positionLocation();
-    const int matrixLocation = m_shader.matrixLocation();
-    const int colorLocation = m_shader.colorLocation();
+    material().setUniform(1, m_color);
+    markDirtyMaterial();
 
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
-
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
-
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-    m_shader.setUniformValue(colorLocation, m_color);
-
-    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.release();
+    return true;
 }
 
 } // namespace allshader

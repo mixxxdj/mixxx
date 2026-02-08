@@ -21,6 +21,30 @@ const LedColors = {
     white: 68,
 };
 
+const LedColorMap = {
+    0xCC0000: LedColors.red,
+    0xCC5E00: LedColors.carrot,
+    0xCC7800: LedColors.orange,
+    0xCC9200: LedColors.honey,
+
+    0xCCCC00: LedColors.yellow,
+    0x81CC00: LedColors.lime,
+    0x00CC00: LedColors.green,
+    0x00CC49: LedColors.aqua,
+
+    0x00CCCC: LedColors.celeste,
+    0x0091CC: LedColors.sky,
+    0x0000CC: LedColors.blue,
+    0xCC00CC: LedColors.purple,
+
+    0xAD65FF: LedColors.fuscia,
+    0xCC0079: LedColors.magenta,
+    0xCC477E: LedColors.azalea,
+    0xCC4761: LedColors.salmon,
+
+    0xCCCCCC: LedColors.white,
+};
+
 
 // This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
 const KeyboardColors = [
@@ -71,6 +95,24 @@ const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor
 const TempoFaderSoftTakeoverColorLow = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorLow")] || LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorHigh")] || LedColors.green;
 
+// Tempo fader center snap range
+// Transform user value (mm) into upper/lower values
+const TempoCenterRangeMm = engine.getSetting("tempoCenterRangeMm") || 1.0;
+// In theory we have an 80 mm fader. Though, the usable range appears to be only ~77 mm.
+// Value range is 0..4096, but we only get 510 steps with 8/9 ticks resolution
+// and therefore need to make sure the center zone can actually be reached.
+// A diff of 15 should be safe, this corresponds to .3 mm.
+const TempoFaderTicksPerMm = 4096 / 77; // 53.1948..
+const TempoCenterRangeTicks = TempoFaderTicksPerMm * TempoCenterRangeMm;
+// Value center may be off the labeled center.
+// Use this setting to compensate per device.
+const TempoCenterValueOffsetLeft = (engine.getSetting("tempoCenterOffsetMmLeft") || 0.0) * TempoFaderTicksPerMm;
+const TempoCenterValueOffsetRright = (engine.getSetting("tempoCenterOffsetMmRight") || 0.0) * TempoFaderTicksPerMm;
+const TempoCenterUpperLeft = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetLeft;
+const TempoCenterLowerLeft = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetLeft;
+const TempoCenterUpperRight = (4096 / 2) + (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetRright;
+const TempoCenterLowerRight = (4096 / 2) - (TempoCenterRangeTicks / 2) + TempoCenterValueOffsetRright;
+
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
 const InactiveLightsAlwaysBacklit = !!engine.getSetting("inactiveLightsAlwaysBacklit");
@@ -99,8 +141,7 @@ const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMicAuxOnShi
 // Default: false
 const UseBeatloopRollInsteadOfSampler = !!engine.getSetting("useBeatloopRollInsteadOfSampler");
 
-// Predefined beatlooproll sizes. Note that if you use AddLoopHalveAndDoubleOnBeatloopRollTab, the first and
-// last size will be ignored
+// Predefined beatlooproll sizes.
 const BeatLoopRolls = [
     engine.getSetting("beatLoopRollsSize1") || 1/8,
     engine.getSetting("beatLoopRollsSize2") || 1/4,
@@ -110,6 +151,18 @@ const BeatLoopRolls = [
     engine.getSetting("beatLoopRollsSize6") || 4,
     engine.getSetting("beatLoopRollsSize7") || "half",
     engine.getSetting("beatLoopRollsSize8") || "double"
+];
+
+// Predefined beatjump.
+const BeatJumps = [
+    engine.getSetting("beatJumpSize1"), // Default to 1
+    engine.getSetting("beatJumpSize2"), // Default to 2
+    engine.getSetting("beatJumpSize3"), // Default to 4
+    engine.getSetting("beatJumpSize4"), // Default to 8
+    engine.getSetting("beatJumpSize5"), // Default to 16
+    engine.getSetting("beatJumpSize6"), // Default to 32
+    engine.getSetting("beatJumpSize7"), // Default to 64
+    engine.getSetting("beatJumpSize8"), // Default to "beatjump"
 ];
 
 
@@ -144,7 +197,6 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
-
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
@@ -188,6 +240,106 @@ const SamplerCrossfaderAssign = true;
 
 const MotorWindUpMilliseconds = 1200;
 const MotorWindDownMilliseconds = 900;
+
+/*
+ * Kontrol S4 Mk3 hardware-specific constants
+ */
+const wheelRelativeMax = 2 ** 32 - 1;
+const wheelAbsoluteMax = 2879;
+
+const wheelTimerMax = 2 ** 32 - 1;
+
+const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
+
+// The active tab ID. This is used when SharedDataAPI is active, to communicate with the screens which tab is currently selected.
+const ActiveTabPadID = {
+    jump: 1,
+    hotcue: 2,
+    roll: 3,
+    samples: 4,
+    loop: 5,
+    mute: 7,
+    record: 8,
+    tone: 11,
+    fxbank1: 12,
+    fxbank2: 13,
+};
+
+const wheelLEDmodes = {
+    off: 0,
+    dimFlash: 1,
+    spot: 2,
+    ringFlash: 3,
+    dimSpot: 4,
+    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
+};
+
+// The mode available, which the wheel can be used for.
+const wheelModes = {
+    jog: 0,
+    vinyl: 1,
+    motor: 2,
+    loopIn: 3,
+    loopOut: 4,
+};
+
+const moveModes = {
+    beat: 0,
+    bpm: 1,
+    grid: 2,
+    keyboard: 3,
+    hotcueColor: 4,
+};
+
+// tracks state across input reports
+let wheelTimer = null;
+// This is a global variable so the S4Mk3Deck Components have access
+// to it and it is guaranteed to be calculated before processing
+// input for the Components.
+let wheelTimerDelta = 0;
+
+/*
+ * helper function
+ */
+
+const quickFxChannel = (group) => {
+    return `[QuickEffectRack1_${group}]`;
+};
+
+const stemChannel = (group, idx) => {
+    return `${group.substr(0, group.length - 1)}_Stem${idx + 1}]`;
+};
+
+const isObject = (item) => {
+    return (item && typeof item === "object" && !Array.isArray(item));
+};
+
+const mergeDeep = (target, ...sources) => {
+    if (!sources.length) { return target; }
+    const source = sources.shift();
+
+    if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+            if (isObject(source[key])) {
+                if (!target[key]) { Object.assign(target, {[key]: {}}); }
+                mergeDeep(target[key], source[key]);
+            } else {
+                Object.assign(target, {[key]: source[key]});
+            }
+        }
+    }
+
+    return mergeDeep(target, ...sources);
+};
+
+const hasRuntimeDataAPI = () => typeof engine.getSharedData === "function";
+
+const updateRuntimeData = (patch) => {
+    if (!hasRuntimeDataAPI()) {
+        return;
+    }
+    engine.setSharedData(mergeDeep(engine.getSharedData() || {}, patch));
+};
 
 /*
  * HID report parsing library
@@ -328,13 +480,13 @@ class Component {
         this.send(value);
     }
     outConnect() {
-        if (this.outKey !== undefined && this.group !== undefined) {
+        if (this.outKey !== undefined && this.group !== undefined && this.outConnections.length === 0) {
             const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
             if (connection) {
-                this.outConnections[0] = connection;
+                this.outConnections.push(connection);
             } else {
-                console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
+                console.warn(`Unable to connect '${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -346,6 +498,7 @@ class Component {
     }
     outTrigger() {
         for (const connection of this.outConnections) {
+            if (!connection) { continue; }
             connection.trigger();
         }
     }
@@ -373,6 +526,9 @@ class ComponentContainer extends Component {
     }
     reconnectComponents(callback) {
         for (const component of this) {
+            if (typeof component.unshift === "function" && component.unshift.length === 0) {
+                component.unshift();
+            }
             if (typeof component.outDisconnect === "function" && component.outDisconnect.length === 0) {
                 component.outDisconnect();
             }
@@ -410,7 +566,7 @@ class ComponentContainer extends Component {
 
 /* eslint no-redeclare: "off" */
 class Deck extends ComponentContainer {
-    constructor(decks, colors) {
+    constructor(decks, colors, settings) {
         super();
         if (typeof decks === "number") {
             this.group = Deck.groupForNumber(decks);
@@ -428,7 +584,15 @@ class Deck extends ComponentContainer {
             }
             this.color = colors[0];
         }
+        this.settings = settings;
         this.secondDeckModes = null;
+        this.selectedHotcue = null;
+
+        updateRuntimeData({
+            selectedHotcue: {
+                [this.group]: this.selectedHotcue
+            }
+        });
     }
     toggleDeck() {
         if (this.decks === undefined) {
@@ -441,13 +605,34 @@ class Deck extends ComponentContainer {
             newDeckIndex = 0;
         }
 
-        this.switchDeck(Deck.groupForNumber(this.decks[newDeckIndex]));
+        this.switchDeck(this.decks[newDeckIndex]);
     }
-    switchDeck(newGroup) {
+    switchDeck(newDeck) {
+        const newGroup = Deck.groupForNumber(newDeck);
+
+        switch (this.moveMode) {
+        case moveModes.beat:
+        case moveModes.bpm:
+        case moveModes.grid:
+        case moveModes.hotcueColor:
+            this.moveMode = null;
+            this.selectedHotcue = null;
+
+
+            updateRuntimeData({
+                selectedHotcue: {
+                    [this.group]: this.selectedHotcue
+                }
+            });
+            break;
+        }
+
         const currentModes = {
             wheelMode: this.wheelMode,
             moveMode: this.moveMode,
         };
+
+        this.selectedStem.fill(false);
 
         engine.setValue(this.group, "scratch2_enable", false);
         this.group = newGroup;
@@ -470,12 +655,19 @@ class Deck extends ComponentContainer {
             } else if (component.group.search(script.eqRegEx) !== -1) {
                 component.group = `[EqualizerRack1_${newGroup}_Effect1]`;
             } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                component.group = `[QuickEffectRack1_${newGroup}]`;
+                component.group = quickFxChannel(newGroup);
             }
 
             component.color = this.groupsToColors[newGroup];
         });
         this.secondDeckModes = currentModes;
+        this.currentDeckNumber = newDeck;
+
+        updateRuntimeData({
+            group: {
+                [this.decks[0] === 1 ? "leftdeck":"rightdeck"]: this.group
+            }
+        });
     }
     static groupForNumber(deckNumber) {
         return `[Channel${deckNumber}]`;
@@ -488,13 +680,19 @@ class Button extends Component {
 
         super(options);
 
-        if (this.input === undefined) {
+        if (this.input === undefined
+                || (typeof this.onLongPress === "function" && this.onLongPress.length === 0)
+                || (typeof this.onLongRelease === "function" && this.onLongRelease.length === 0)
+                || (typeof this.onShortPress === "function" && this.onShortPress.length === 0)
+                || (typeof this.onShortRelease === "function" && this.onShortRelease.length === 0)
+                || (typeof this.onPress === "function" && this.onPress.length === 0)
+                || (typeof this.onRelease === "function" && this.onRelease.length === 0)) {
             this.input = this.defaultInput;
-            if (typeof this.input === "function"
-                && this.inReport instanceof HIDInputReport
-                && this.input.length === 0) {
-                this.inConnect();
-            }
+        }
+        if (typeof this.input === "function"
+            && this.inReport instanceof HIDInputReport
+            && this.input.length === 0) {
+            this.inConnect();
         }
 
         if (this.longPressTimeOutMillis === undefined) {
@@ -539,7 +737,7 @@ class Button extends Component {
     }
     indicatorCallback() {
         this.indicatorState = !this.indicatorState;
-        this.send((this.indicatorColor || this.color || LedColors.white) + (this.indicatorState ? this.brightnessOn : this.brightnessOff));
+        this.send((this.indicatorColor ?? this.color ?? LedColors.white) + (this.indicatorState ? this.brightnessOn : this.brightnessOff));
     }
     indicator(on) {
         if (on && this.indicatorTimer === 0) {
@@ -554,24 +752,32 @@ class Button extends Component {
         }
     }
     defaultInput(pressed) {
+        this.pressed = pressed;
         if (pressed) {
+            this.isShortPress = true;
             this.isLongPress = false;
+            if (typeof this.onPress === "function" && this.onPress.length === 0) { this.onPress(); }
             if (typeof this.onShortPress === "function" && this.onShortPress.length === 0) { this.onShortPress(); }
             if ((typeof this.onLongPress === "function" && this.onLongPress.length === 0) || (typeof this.onLongRelease === "function" && this.onLongRelease.length === 0)) {
                 this.longPressTimer = engine.beginTimer(this.longPressTimeOutMillis, () => {
                     this.isLongPress = true;
+                    this.isShortPress = false;
                     this.longPressTimer = 0;
                     if (typeof this.onLongPress !== "function") { return; }
                     this.onLongPress(this);
                 }, true);
             }
         } else if (this.isLongPress) {
+            this.isLongPress = false;
+            if (typeof this.onRelease === "function" && this.onRelease.length === 0) { this.onRelease(); }
             if (typeof this.onLongRelease === "function" && this.onLongRelease.length === 0) { this.onLongRelease(); }
         } else {
+            this.isShortPress = false;
             if (this.longPressTimer !== 0) {
                 engine.stopTimer(this.longPressTimer);
                 this.longPressTimer = 0;
             }
+            if (typeof this.onRelease === "function" && this.onRelease.length === 0) { this.onRelease(); }
             if (typeof this.onShortRelease === "function" && this.onShortRelease.length === 0) { this.onShortRelease(); }
         }
     }
@@ -610,8 +816,6 @@ class TriggerButton extends Button {
 class PowerWindowButton extends Button {
     constructor(options) {
         super(options);
-        this.isLongPressed = false;
-        this.longPressTimer = 0;
     }
     onShortPress() {
         script.toggleControl(this.group, this.inKey);
@@ -708,30 +912,53 @@ class HotcueButton extends PushButton {
         }
         this.outKey = `hotcue_${this.number}_status`;
         this.colorKey = `hotcue_${this.number}_color`;
+        this.indicatorColor = LedColors.off;
         this.outConnect();
     }
     unshift() {
         this.inKey = `hotcue_${this.number}_activate`;
+        this.indicator(false);
     }
     shift() {
         this.inKey = `hotcue_${this.number}_clear`;
+        this.indicator(true);
     }
     input(pressed) {
-        engine.setValue(this.group, "scratch2_enable", false);
-        engine.setValue(this.group, this.inKey, pressed);
+        if (this.deck.moveMode === moveModes.hotcueColor) {
+            this.deck.selectedHotcue = pressed ? this.number : null;
+
+            updateRuntimeData({
+                selectedHotcue: {
+                    [this.group]: this.deck.selectedHotcue
+                }
+            });
+        } else if (this.deck.libraryPlayButton.pressed) {
+            engine.setValue(this.deck.libraryPlayButton.group, this.inKey, pressed);
+        } else {
+            if (this.deck.wheelMode === wheelModes.vinyl && !this.deck.wheelTouch.touched) {
+                engine.setValue(this.group, "scratch2_enable", false);
+            }
+            engine.setValue(this.group, this.inKey, pressed);
+            if (this.shifted) {
+                this.indicatorColor = LedColors.off;
+            }
+        }
+
     }
     output(value) {
         if (value) {
+            this.indicatorColor = LedColors.red;
             this.send(this.color + this.brightnessOn);
         } else {
+            this.indicatorColor = LedColors.off;
             this.send(LedColors.off);
         }
     }
     outConnect() {
-        if (undefined !== this.group) {
+        if (undefined !== this.group && this.outConnections.length === 0) {
             const connection0 = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             if (connection0) {
-                this.outConnections[0] = connection0;
+                this.outConnections.push(connection0);
             } else {
                 console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
             }
@@ -740,11 +967,15 @@ class HotcueButton extends PushButton {
                 this.output(engine.getValue(this.group, this.outKey));
             });
             if (connection1) {
-                this.outConnections[1] = connection1;
+                this.outConnections.push(connection1);
             } else {
                 console.warn(`Unable to connect ${this.group}.${this.colorKey}' to the controller output. The control appears to be unavailable.`);
             }
         }
+    }
+    outDisconnect() {
+        this.indicator(false);
+        super.outDisconnect();
     }
 }
 
@@ -796,19 +1027,159 @@ class KeyboardButton extends PushButton {
         if (this.number + offset < 1 || this.number + offset > 24) {
             this.send(0);
         } else {
-            this.send(color + (value ? this.brightnessOn : this.brightnessOff));
+            this.send(value ? LedColors.yellow : color);
         }
     }
     outConnect() {
-        if (undefined !== this.group) {
+        if (undefined !== this.group && this.outConnections.length === 0) {
             const connection = engine.makeConnection(this.group, "key", (key) => {
                 const offset = this.deck.keyboardOffset - (this.shifted ? 8 : 0);
                 this.output(key === this.number + offset);
             });
             if (connection) {
-                this.outConnections[0] = connection;
+                this.outConnections.push(connection);
             } else {
                 console.warn(`Unable to connect ${this.group}.key' to the controller output. The control appears to be unavailable.`);
+            }
+        }
+    }
+}
+
+/*
+ * Represent a pad button that acts as a stem controller. It will be used to mute or unmute a stem or select it for other operation such as volume or quick effect control
+ */
+class StemButton extends PushButton {
+    constructor(options) {
+        super(options);
+        if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 4) {
+            throw Error("StemButton must have a number property of an integer between 1 and 4");
+        }
+        if (this.deck === undefined) {
+            throw Error("StemButton must have a deck attached to it");
+        }
+        if (this.deck.mixer === undefined) {
+            throw Error("StemButton must have a deck with a mixer attached to it");
+        }
+        this.color = 0;
+        this.muted = 0;
+        this.outConnect();
+    }
+    unshift() {
+        this.outTrigger();
+    }
+    shift() {
+        this.outTrigger();
+    }
+    input(pressed) {
+        if (!this.enabled) {
+            return;
+        }
+        if (this.shifted && pressed) {
+            script.toggleControl(stemChannel(this.group, this.number - 1), "mute");
+        }
+        if (!this.shifted) {
+            this.deck.selectedStem[this.number - 1] = pressed;
+            updateRuntimeData({
+                selectedStems: {
+                    [this.group]: this.deck.selectedStem
+                }
+            });
+        }
+        if (!this.shifted && pressed && this.deck.mixer.firstPressedFxSelector !== null) {
+            const presetNumber = this.deck.mixer.calculatePresetNumber();
+            this.color = QuickEffectPresetColors[presetNumber - 1];
+            engine.setValue(quickFxChannel(stemChannel(this.group, this.number - 1)), "loaded_chain_preset", presetNumber);
+            this.deck.mixer.firstPressedFxSelector = null;
+            this.deck.mixer.secondPressedFxSelector = null;
+            this.deck.mixer.resetFxSelectorColors();
+
+
+            updateRuntimeData({
+                selectedQuickFX: null
+            });
+        }
+    }
+    output() {
+        if (!this.color || !this.enabled) {
+            this.send(0);
+        } else {
+            this.send(this.color + (this.muted ? this.brightnessOff : this.brightnessOn));
+        }
+    }
+    outConnect() {
+        if (undefined !== this.group) {
+            const muteConnection = engine.makeConnection(stemChannel(this.group, this.number - 1), "mute", (mute) => {
+                this.muted = mute;
+                this.output();
+            });
+            if (muteConnection) {
+                this.outConnections[0] = muteConnection;
+            } else {
+                console.warn(`Unable to connect '${stemChannel(this.group, this.number)}.mute' to the controller output. The control appears to be unavailable.`);
+            }
+            const colorConnection = engine.makeConnection(stemChannel(this.group, this.number - 1), "color", (color) => {
+                this.color = this.colorMap.getValueForNearestColor(color);
+                this.output();
+            });
+            if (colorConnection) {
+                this.outConnections[1] = colorConnection;
+            } else {
+                console.warn(`Unable to connect '${stemChannel(this.group, this.number)}.color' to the controller output. The control appears to be unavailable.`);
+            }
+            const enabledConnection = engine.makeConnection(this.group, "stem_count", (count) => {
+                this.enabled = count >= this.number;
+                this.output();
+            });
+            if (enabledConnection) {
+                this.outConnections[2] = enabledConnection;
+            } else {
+                console.warn(`Unable to connect '${this.group}.stem_count' to the controller output. The control appears to be unavailable.`);
+            }
+        }
+    }
+}
+
+class StemMuteButton extends PushButton {
+    constructor(options) {
+        if (options.number === undefined || !Number.isInteger(options.number) || options.number < 1 || options.number > 4) {
+            throw Error("StemMuteButton must have a number property of an integer between 1 and 4");
+        }
+        super(options);
+        this.color = 0;
+        this.muted = 0;
+        this.outConnect();
+    }
+    output() {
+        if (!this.enabled) {
+            this.send(0);
+        } else {
+            this.send(LedColors.white + (this.muted ? this.brightnessOff : this.brightnessOn));
+        }
+    }
+    input(pressed) {
+        if (pressed) {
+            script.toggleControl(stemChannel(this.group, this.number - 1), "mute");
+        }
+    }
+    outConnect() {
+        if (undefined !== this.group) {
+            const muteConnection = engine.makeConnection(stemChannel(this.group, this.number - 1), "mute", (mute) => {
+                this.muted = mute;
+                this.output();
+            });
+            if (muteConnection) {
+                this.outConnections[0] = muteConnection;
+            } else {
+                console.warn(`Unable to connect '${stemChannel(this.group, this.number)}.mute' to the controller output. The control appears to be unavailable.`);
+            }
+            const enabledConnection = engine.makeConnection(this.group, "stem_count", (count) => {
+                this.enabled = count >= this.number;
+                this.output();
+            });
+            if (enabledConnection) {
+                this.outConnections[1] = enabledConnection;
+            } else {
+                console.warn(`Unable to connect '${this.group}.stem_count' to the controller output. The control appears to be unavailable.`);
             }
         }
     }
@@ -833,16 +1204,24 @@ class BeatLoopRollButton extends TriggerButton {
             }
             options.key = `beatlooproll_${size}_activate`;
             options.onShortPress = function() {
-                if (!this.deck.beatloopSize) {
-                    this.deck.beatloopSize = engine.getValue(this.group, "beatloop_size");
+                if (!this.deck.beatloop) {
+                    this.deck.beatloop = {
+                        size: engine.getValue(this.group, "beatloop_size"),
+                        start: engine.getValue(this.group, "loop_start_position"),
+                        end: engine.getValue(this.group, "loop_end_position"),
+                        enabled: engine.getValue(this.group, "loop_enabled"),
+                    };
                 }
                 engine.setValue(this.group, this.inKey, true);
             };
             options.onShortRelease = function() {
                 engine.setValue(this.group, this.inKey, false);
-                if (this.deck.beatloopSize) {
-                    engine.setValue(this.group, "beatloop_size", this.deck.beatloopSize);
-                    this.deck.beatloopSize = undefined;
+                if (this.deck.beatloop) {
+                    engine.setValue(this.group, "loop_start_position", this.deck.beatloop.start);
+                    engine.setValue(this.group, "loop_end_position", this.deck.beatloop.end);
+                    engine.setValue(this.group, "beatloop_size", this.deck.beatloop.size);
+                    engine.setValue(this.group, "loop_enabled", this.deck.beatloop.enabled);
+                    this.deck.beatloop = undefined;
                 }
             };
         }
@@ -863,6 +1242,61 @@ class BeatLoopRollButton extends TriggerButton {
 }
 
 /*
+ * Represent a pad button that will trigger a pre-defined beatjump as set in BeatJumps.
+ */
+class BeatJumpButton extends TriggerButton {
+    constructor(options) {
+        if (options.number === undefined || !Number.isInteger(options.number) || options.number < 0 || options.number > 7) {
+            throw Error("BeatJumpButton must have a number property of an integer between 0 and 7");
+        }
+        if (BeatJumps[options.number] === "beatjump") {
+            options.key = "beatjump_forward";
+        } else if (BeatJumps[options.number] === "half") {
+            options.key = "beatjump_size_halve";
+        } else if (BeatJumps[options.number] === "double") {
+            options.key = "beatjump_size_double";
+        } else {
+            const size = parseFloat(BeatJumps[options.number]);
+            if (isNaN(size)) {
+                throw Error(`BeatJumpButton ${options.number}'s size "${BeatJumps[options.number]}" is invalid. Must be a float, or the literal 'beatjump', 'half' or 'double'`);
+            }
+            options.key = `beatjump_${size}_forward`;
+        }
+        super(options);
+        if (this.deck === undefined) {
+            throw Error("BeatJumpButton must have a deck attached to it");
+        }
+
+        this.outConnect();
+    }
+    shift() {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.setKey("beatjump_backward");
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            const size = parseFloat(BeatJumps[this.number]);
+            this.setKey(`beatjump_${size}_backward`);
+        }
+    }
+    unshift() {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.setKey("beatjump_forward");
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            const size = parseFloat(BeatJumps[this.number]);
+            this.setKey(`beatjump_${size}_forward`);
+        }
+    }
+    output(value) {
+        if (BeatJumps[this.number] === "beatjump") {
+            this.send(LedColors.salmon);
+        } else if (!isNaN(parseFloat(BeatJumps[this.number]))) {
+            this.send(this.color + (value ? this.brightnessOn : this.brightnessOff));
+        } else {
+            this.send(LedColors.white);
+        }
+    }
+}
+
+/*
  * Represent a pad button that interact with a sampler (load, play/pause, cue, eject)
  */
 class SamplerButton extends Button {
@@ -877,7 +1311,12 @@ class SamplerButton extends Button {
     onShortPress() {
         if (!this.shifted) {
             if (engine.getValue(this.group, "track_loaded") === 0) {
-                engine.setValue(this.group, "LoadSelectedTrack", 1);
+                if (this.deck.samplerStemSelection !== null) {
+                    engine.setValue(this.group, "load_selected_track_stems", this.deck.samplerStemSelection);
+                    this.deck.samplerStemSelection = null;
+                } else {
+                    engine.setValue(this.group, "LoadSelectedTrack", 1);
+                }
             } else {
                 engine.setValue(this.group, "cue_gotoandplay", 1);
             }
@@ -909,16 +1348,16 @@ class SamplerButton extends Button {
         }
     }
     outConnect() {
-        if (undefined !== this.group) {
+        if (undefined !== this.group && this.outConnections.length === 0) {
             const connection0 = engine.makeConnection(this.group, "play", this.output.bind(this));
             if (connection0) {
-                this.outConnections[0] = connection0;
+                this.outConnections.push(connection0);
             } else {
                 console.warn(`Unable to connect ${this.group}.play' to the controller output. The control appears to be unavailable.`);
             }
             const connection1 = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
             if (connection1) {
-                this.outConnections[1] = connection1;
+                this.outConnections.push(connection1);
             } else {
                 console.warn(`Unable to connect ${this.group}.track_loaded' to the controller output. The control appears to be unavailable.`);
             }
@@ -1099,14 +1538,12 @@ class Mixer extends ComponentContainer {
         this.resetFxSelectorColors();
 
         this.quantizeButton = new Button({
-            input: function(pressed) {
-                if (pressed) {
-                    this.globalQuantizeOn = !this.globalQuantizeOn;
-                    for (let deckIdx = 1; deckIdx <= 4; deckIdx++) {
-                        engine.setValue(`[Channel${deckIdx}]`, "quantize", this.globalQuantizeOn);
-                    }
-                    this.send(this.globalQuantizeOn ? 127 : 0);
+            onPress: function() {
+                this.globalQuantizeOn = !this.globalQuantizeOn;
+                for (let deckIdx = 1; deckIdx <= 4; deckIdx++) {
+                    engine.setValue(`[Channel${deckIdx}]`, "quantize", this.globalQuantizeOn);
                 }
+                this.send(this.globalQuantizeOn ? 127 : 0);
             },
             globalQuantizeOn: false,
             inByte: 11,
@@ -1128,17 +1565,19 @@ class Mixer extends ComponentContainer {
                 switch (value) {
                 case 0x00:  // Picnic Bench / Fast Cut
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
                     break;
                 case 0x01:  // Constant Power
                     engine.setValue("[Mixer Profile]", "xFaderMode", 1);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.3);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.6);
+                    // Constant power requires to set an appropriate calibration value
+                    // in order to get a smooth curve.
+                    // This is the output of EngineXfader::getPowerCalibration() for
+                    // the "xFaderCurve" 0.6 (pow(0.5, 1.0 / 0.6))
+                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.31498);
                     break;
                 case 0x02: // Additive
                     engine.setValue("[Mixer Profile]", "xFaderMode", 0);
-                    engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
                     engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
                 }
             },
@@ -1241,8 +1680,16 @@ class FXSelect extends Button {
                 }
             }
             this.outReport.send();
+
+            updateRuntimeData({
+                selectedQuickFX: this.mixer.calculatePresetNumber()
+            });
         } else {
             this.mixer.secondPressedFxSelector = this.number;
+
+            updateRuntimeData({
+                selectedQuickFX: this.mixer.calculatePresetNumber()
+            });
         }
 
     }
@@ -1262,7 +1709,7 @@ class FXSelect extends Button {
         if (this.mixer.firstPressedFxSelector !== null) {
             for (const deck of [1, 2, 3, 4]) {
                 const presetNumber = this.mixer.calculatePresetNumber();
-                engine.setValue(`[QuickEffectRack1_[Channel${deck}]]`, "loaded_chain_preset", presetNumber);
+                engine.setValue(quickFxChannel(`[Channel${deck}]`), "loaded_chain_preset", presetNumber);
             }
         }
         if (this.mixer.firstPressedFxSelector === this.number) {
@@ -1273,6 +1720,10 @@ class FXSelect extends Button {
             this.mixer.comboSelected = true;
         }
         this.mixer.secondPressedFxSelector = null;
+
+        updateRuntimeData({
+            selectedQuickFX: null
+        });
     }
 
 }
@@ -1287,7 +1738,7 @@ class QuickEffectButton extends Button {
         if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1) {
             throw Error("number attribute must be an integer >= 1");
         }
-        this.group = `[QuickEffectRack1_[Channel${this.number}]]`;
+        this.group = quickFxChannel(`[Channel${this.number}]`);
         this.outConnect();
     }
     onShortPress() {
@@ -1321,16 +1772,16 @@ class QuickEffectButton extends Button {
         this.outConnections[1].trigger();
     }
     outConnect() {
-        if (this.group !== undefined) {
+        if (this.group !== undefined && this.outConnections.length === 0) {
             const connection0 = engine.makeConnection(this.group, "loaded_chain_preset", this.presetLoaded.bind(this));
             if (connection0) {
-                this.outConnections[0] = connection0;
+                this.outConnections.push(connection0);
             } else {
                 console.warn(`Unable to connect ${this.group}.loaded_chain_preset' to the controller output. The control appears to be unavailable.`);
             }
             const connection1 = engine.makeConnection(this.group, "enabled", this.output.bind(this));
             if (connection1) {
-                this.outConnections[1] = connection1;
+                this.outConnections.push(connection1);
             } else {
                 console.warn(`Unable to connect ${this.group}.enabled' to the controller output. The control appears to be unavailable.`);
             }
@@ -1339,7 +1790,7 @@ class QuickEffectButton extends Button {
 }
 
 /*
- * Kontrol S4 Mk3 hardware-specific constants
+ * Kontrol S4 Mk3 hardware-specific member constants
  */
 
 Pot.prototype.max = 2 ** 12 - 1;
@@ -1347,6 +1798,7 @@ Pot.prototype.inBit = 0;
 Pot.prototype.inBitLength = 16;
 
 Encoder.prototype.inBitLength = 4;
+Encoder.prototype.tickDelta = 1 / (2 << Encoder.prototype.inBitLength);
 
 // valid range 0 - 3, but 3 makes some colors appear whitish
 Button.prototype.brightnessOff = 0;
@@ -1358,70 +1810,7 @@ Button.prototype.uncoloredOutput = function(value) {
     const color = (value > 0) ? (this.color || LedColors.white) + this.brightnessOn : LedColors.off;
     this.send(color);
 };
-Button.prototype.colorMap = new ColorMapper({
-    0xCC0000: LedColors.red,
-    0xCC5E00: LedColors.carrot,
-    0xCC7800: LedColors.orange,
-    0xCC9200: LedColors.honey,
-
-    0xCCCC00: LedColors.yellow,
-    0x81CC00: LedColors.lime,
-    0x00CC00: LedColors.green,
-    0x00CC49: LedColors.aqua,
-
-    0x00CCCC: LedColors.celeste,
-    0x0091CC: LedColors.sky,
-    0x0000CC: LedColors.blue,
-    0xCC00CC: LedColors.purple,
-
-    0xCC0091: LedColors.fuscia,
-    0xCC0079: LedColors.magenta,
-    0xCC477E: LedColors.azalea,
-    0xCC4761: LedColors.salmon,
-
-    0xCCCCCC: LedColors.white,
-});
-
-const wheelRelativeMax = 2 ** 32 - 1;
-const wheelAbsoluteMax = 2879;
-
-const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
-
-const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
-const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
-
-const wheelLEDmodes = {
-    off: 0,
-    dimFlash: 1,
-    spot: 2,
-    ringFlash: 3,
-    dimSpot: 4,
-    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
-};
-
-// The mode available, which the wheel can be used for.
-const wheelModes = {
-    jog: 0,
-    vinyl: 1,
-    motor: 2,
-    loopIn: 3,
-    loopOut: 4,
-};
-
-const moveModes = {
-    beat: 0,
-    bpm: 1,
-    grid: 2,
-    keyboard: 3,
-};
-
-// tracks state across input reports
-let wheelTimer = null;
-// This is a global variable so the S4Mk3Deck Components have access
-// to it and it is guaranteed to be calculated before processing
-// input for the Components.
-let wheelTimerDelta = 0;
+Button.prototype.colorMap = new ColorMapper(LedColorMap);
 
 /*
  * Kontrol S4 Mk3 hardware specific mapping logic
@@ -1460,20 +1849,29 @@ class S4Mk3EffectUnit extends ComponentContainer {
                 this.group = undefined;
                 this.output(false);
             },
-            input: function(pressed) {
+            onPress: function() {
                 if (!this.shifted) {
                     for (const index of [0, 1, 2]) {
                         const effectGroup = `[EffectRack1_EffectUnit${unitNumber}_Effect${index + 1}]`;
-                        engine.setValue(effectGroup, "enabled", pressed);
+                        engine.setValue(effectGroup, "enabled", true);
                     }
-                    this.output(pressed);
-                } else if (pressed) {
+                    this.output(true);
+                } else {
                     if (this.unit.focusedEffect !== null) {
                         this.unit.setFocusedEffect(null);
                     } else {
                         script.toggleControl(this.unit.group, "group_[Master]_enable");
                         this.shift();
                     }
+                }
+            },
+            onRelease: function() {
+                if (!this.shifted) {
+                    for (const index of [0, 1, 2]) {
+                        const effectGroup = `[EffectRack1_EffectUnit${unitNumber}_Effect${index + 1}]`;
+                        engine.setValue(effectGroup, "enabled", false);
+                    }
+                    this.output(false);
                 }
             }
         });
@@ -1565,8 +1963,8 @@ class S4Mk3EffectUnit extends ComponentContainer {
 }
 
 class S4Mk3Deck extends Deck {
-    constructor(decks, colors, effectUnit, mixer, inReports, outReport, io) {
-        super(decks, colors);
+    constructor(decks, colors, settings, effectUnit, mixer, inReports, outReport, io) {
+        super(decks, colors, settings);
 
         this.playButton = new PlayButton({
             output: InactiveLightsAlwaysBacklit ? undefined : Button.prototype.uncoloredOutput
@@ -1626,33 +2024,53 @@ class S4Mk3Deck extends Deck {
             } : undefined,
         });
         this.tempoFader = new Pot({
+            deck: this,
             inKey: "rate",
-        });
-        this.tempoFaderLED = new Component({
             outKey: "rate",
-            centered: false,
-            toleranceWindow: 0.001,
-            tempoFader: this.tempoFader,
+            appliedValue: null,
+            tempoCenterUpper: this.settings.tempoCenterUpper,
+            tempoCenterLower: this.settings.tempoCenterLower,
+            input: function(value) {
+                const receivingFirstValue = this.appliedValue === null;
+
+                if (value < this.tempoCenterLower) {
+                    // scale input for lower range
+                    this.appliedValue = script.absoluteLin(value, -1, 0, 0, this.tempoCenterLower);
+                } else if (value > this.tempoCenterUpper) {
+                    // scale input for upper range
+                    this.appliedValue = script.absoluteLin(value, 0, 1, this.tempoCenterUpper, 4096);
+                } else {
+                    // reset rate in center region
+                    this.appliedValue = 0;
+                }
+                engine.setValue(this.group, this.inKey, this.appliedValue);
+
+                if (receivingFirstValue) {
+                    engine.softTakeover(this.group, this.inKey, true);
+                    // Forec-update LED.
+                    // Output connection is made and updated before input() can set this.appliedValue
+                    // (doesn't happen until getInputReport())
+                    this.outTrigger();
+                }
+            },
             output: function(value) {
-                if (this.tempoFader.hardwarePosition === null) {
+                if (this.appliedValue === null) {
                     return;
                 }
 
-                const parameterValue = engine.getParameter(this.group, this.outKey);
-                const diffFromHardware = parameterValue - this.tempoFader.hardwarePosition;
-                if (diffFromHardware > this.toleranceWindow) {
-                    this.send(TempoFaderSoftTakeoverColorHigh + Button.prototype.brightnessOn);
-                    return;
-                } else if (diffFromHardware < (-1 * this.toleranceWindow)) {
+                const hardwareOffset = this.appliedValue - value;
+                // Use LED to indicate softTakeover pickup position
+                if (hardwareOffset > 0) { // engine is faster
                     this.send(TempoFaderSoftTakeoverColorLow + Button.prototype.brightnessOn);
                     return;
+                } else if (hardwareOffset < 0) { // engine is slower
+                    this.send(TempoFaderSoftTakeoverColorHigh + Button.prototype.brightnessOn);
+                    return;
                 }
 
-                const oldCentered = this.centered;
-                if (Math.abs(value) < 0.001) {
+                // Fader is in sync with engine, set center LED on/off
+                if (value === 0) {
                     this.send(this.color + Button.prototype.brightnessOn);
-                    // round to precisely 0
-                    engine.setValue(this.group, "rate", 0);
                 } else {
                     this.send(0);
                 }
@@ -1746,10 +2164,10 @@ class S4Mk3Deck extends Deck {
                 this.setKey("loop_enabled");
             },
             outConnect: function() {
-                if (this.outKey !== undefined && this.group !== undefined) {
+                if (this.outKey !== undefined && this.group !== undefined && this.outConnections.length === 0) {
                     const connection = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
                     if (connection) {
-                        this.outConnections[0] = connection;
+                        this.outConnections.push(connection);
                     } else {
                         console.warn(`Unable to connect ${this.group}.${this.outKey}' to the controller output. The control appears to be unavailable.`);
                     }
@@ -1767,7 +2185,7 @@ class S4Mk3Deck extends Deck {
                     this.indicator(false);
                     const wheelOutput = new Uint8Array(40).fill(0);
                     wheelOutput[0] = decks[0] - 1;
-                    controller.sendOutputReport(wheelOutput.buffer, null, 50, true);
+                    controller.sendOutputReport(50, wheelOutput.buffer, true);
                     if (!skipRestore) {
                         this.deck.wheelMode = this.previousWheelMode;
                     }
@@ -1824,14 +2242,11 @@ class S4Mk3Deck extends Deck {
                 this.output(false);
             } : undefined,
             onShortPress: function() {
-                this.deck.libraryEncoder.gridButtonPressed = true;
-
                 if (this.shift) {
                     engine.setValue(this.group, "bpm_tap", true);
                 }
             },
             onLongPress: function() {
-                this.deck.libraryEncoder.gridButtonPressed = true;
                 this.previousMoveMode = this.deck.moveMode;
 
                 if (this.shifted) {
@@ -1843,7 +2258,6 @@ class S4Mk3Deck extends Deck {
                 this.indicator(true);
             },
             onLongRelease: function() {
-                this.deck.libraryEncoder.gridButtonPressed = false;
                 if (this.previousMoveMode !== null) {
                     this.deck.moveMode = this.previousMoveMode;
                     this.previousMoveMode = null;
@@ -1851,7 +2265,6 @@ class S4Mk3Deck extends Deck {
                 this.indicator(false);
             },
             onShortRelease: function() {
-                this.deck.libraryEncoder.gridButtonPressed = false;
                 script.triggerControl(this.group, "beats_translate_curpos");
 
                 if (this.shift) {
@@ -1864,7 +2277,7 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(value) {
                 if (value) {
-                    this.deck.switchDeck(Deck.groupForNumber(decks[0]));
+                    this.deck.switchDeck(decks[0]);
                     this.outReport.data[io.deckButtonOutputByteOffset] = colors[0] + this.brightnessOn;
                     // turn off the other deck selection button's LED
                     this.outReport.data[io.deckButtonOutputByteOffset + 1] = DeckSelectAlwaysBacklit ? colors[1] + this.brightnessOff : 0;
@@ -1876,7 +2289,7 @@ class S4Mk3Deck extends Deck {
             deck: this,
             input: function(value) {
                 if (value) {
-                    this.deck.switchDeck(Deck.groupForNumber(decks[1]));
+                    this.deck.switchDeck(decks[1]);
                     // turn off the other deck selection button's LED
                     this.outReport.data[io.deckButtonOutputByteOffset] = DeckSelectAlwaysBacklit ? colors[0] + this.brightnessOff : 0;
                     this.outReport.data[io.deckButtonOutputByteOffset + 1] = colors[1] + this.brightnessOn;
@@ -1899,18 +2312,37 @@ class S4Mk3Deck extends Deck {
             shift: function() {
                 this.output(true);
             },
-            input: function(pressed) {
-                if (pressed) {
-                    this.deck.shift();
-                } else {
-                    this.deck.unshift();
-                }
-            }
+            onPress: function() {
+                this.deck.shift();
+
+                updateRuntimeData({
+                    shift: {
+                        [decks[0] === 1 ? "leftdeck":"rightdeck"]: true
+                    }
+                });
+            },
+            onRelease: function() {
+                this.deck.unshift();
+
+                updateRuntimeData({
+                    shift: {
+                        [decks[0] === 1 ? "leftdeck":"rightdeck"]: false
+                    }
+                });
+            },
         });
 
         this.leftEncoder = new Encoder({
             deck: this,
             onChange: function(right) {
+                if (this.deck.hasSelectedStem()) {
+                    this.deck.selectedStem.forEach((selected, stemIdx) => {
+                        if (!selected) { return; }
+
+                        engine.setValue(stemChannel(this.group, stemIdx), "volume", engine.getValue(stemChannel(this.group, stemIdx), "volume") + (right ? this.tickDelta : -this.tickDelta));
+                    });
+                    return;
+                }
 
                 switch (this.deck.moveMode) {
                 case moveModes.grid:
@@ -1918,18 +2350,34 @@ class S4Mk3Deck extends Deck {
                     break;
                 case moveModes.keyboard:
                     if (
-                        this.deck.keyboard[0].offset === (right ? 16 : 0)
+                        this.deck.pads[0].offset === (right ? 16 : 0)
                     ) {
                         return;
                     }
                     this.deck.keyboardOffset += (right ? 1 : -1);
-                    this.deck.keyboard.forEach(function(pad) {
+                    this.deck.pads.forEach(function(pad) {
                         pad.outTrigger();
                     });
                     break;
                 case moveModes.bpm:
                     script.triggerControl(this.group, right ? "beats_translate_later" : "beats_translate_earlier");
                     break;
+                case moveModes.hotcueColor:{
+                    if (this.deck.selectedHotcue === null) {
+                        return;
+                    }
+                    const currentColor = Button.prototype.colorMap.getValueForNearestColor(engine.getValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`));
+                    let currentColorIdx = Object.keys(LedColorMap).indexOf(Object.keys(LedColorMap).find(key => LedColorMap[key] === currentColor));
+                    currentColorIdx = Math.max(
+                        Math.min(
+                            Object.keys(LedColorMap).length - 2, // Last color is reserved for loop hotcue
+                            currentColorIdx + (right ? 1:-1)
+                        ),
+                        0
+                    );
+                    engine.setValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`, Object.keys(LedColorMap)[currentColorIdx]);
+                    break;
+                }
                 default:
                     if (!this.shifted) {
                         if (!this.deck.leftEncoderPress.pressed) {
@@ -1959,18 +2407,45 @@ class S4Mk3Deck extends Deck {
             }
         });
         this.leftEncoderPress = new PushButton({
-            input: function(pressed) {
-                this.pressed = pressed;
-                if (pressed) {
+            deck: this,
+            onPress: function() {
+                if (this.deck.hasSelectedStem()) {
+                    this.deck.selectedStem.forEach((selected, stemIdx) => {
+                        if (!selected) { return; }
+
+                        engine.setValue(stemChannel(this.group, stemIdx), "volume", engine.getValue(stemChannel(this.group, stemIdx), "volume") === 1.0 ? 0 : 1);
+                    });
+                    return;
+                }
+                if (this.shifted) {
                     script.toggleControl(this.group, "pitch_adjust_set_default");
                 }
+
+                updateRuntimeData({
+                    displayBeatloopSize: {
+                        [this.group]: true
+                    }
+                });
             },
+            onRelease: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    displayBeatloopSize: {
+                        [this.group]: false
+                    }
+                });
+            } : undefined
         });
 
         this.rightEncoder = new Encoder({
             deck: this,
             onChange: function(right) {
-                if (this.deck.wheelMode === wheelModes.loopIn || this.deck.wheelMode === wheelModes.loopOut) {
+                if (this.deck.hasSelectedStem()) {
+                    this.deck.selectedStem.forEach((selected, stemIdx) => {
+                        if (!selected) { return; }
+
+                        engine.setValue(quickFxChannel(stemChannel(this.group, stemIdx)), "super1", engine.getValue(quickFxChannel(stemChannel(this.group, stemIdx)), "super1") + (right ? this.tickDelta : -this.tickDelta));
+                    });
+                } else if (this.deck.wheelMode === wheelModes.loopIn || this.deck.wheelMode === wheelModes.loopOut) {
                     const moveFactor = this.shifted ? LoopEncoderShiftMoveFactor : LoopEncoderMoveFactor;
                     const valueIn = engine.getValue(this.group, "loop_start_position") + (right ? moveFactor : -moveFactor);
                     const valueOut = engine.getValue(this.group, "loop_end_position") + (right ? moveFactor : -moveFactor);
@@ -1984,12 +2459,15 @@ class S4Mk3Deck extends Deck {
             }
         });
         this.rightEncoderPress = new PushButton({
-            input: function(pressed) {
-                if (!pressed) {
-                    return;
-                }
-                const loopEnabled = engine.getValue(this.group, "loop_enabled");
-                if (!this.shifted) {
+            deck: this,
+            onPress: function() {
+                if (this.deck.hasSelectedStem()) {
+                    this.deck.selectedStem.forEach((selected, stemIdx) => {
+                        if (!selected) { return; }
+
+                        script.toggleControl(quickFxChannel(stemChannel(this.group, stemIdx)), "enabled");
+                    });
+                } else if (!this.shifted) {
                     script.triggerControl(this.group, "beatloop_activate");
                 } else {
                     script.triggerControl(this.group, "reloop_toggle");
@@ -1998,26 +2476,34 @@ class S4Mk3Deck extends Deck {
         });
 
         this.libraryEncoder = new Encoder({
-            libraryPlayButtonPressed: false,
-            gridButtonPressed: false,
-            starButtonPressed: false,
-            libraryViewButtonPressed: false,
-            libraryPlaylistButtonPressed: false,
+            deck: this,
             currentSortedColumnIdx: -1,
             onChange: function(right) {
-                if (this.libraryViewButtonPressed) {
+                let fxChanged = false;
+                for (const fxButton of this.deck.effectUnit.buttons) {
+                    if (fxButton.pressed) {
+                        script.triggerControl(fxButton.group, right ? "next_effect" : "prev_effect");
+                        fxChanged = true;
+                    }
+                }
+
+                if (fxChanged) {
+                    return;
+                }
+
+                if (this.deck.libraryViewButton.pressed) {
                     this.currentSortedColumnIdx = (LibrarySortableColumns.length + this.currentSortedColumnIdx + (right ? 1 : -1)) % LibrarySortableColumns.length;
                     engine.setValue("[Library]", "sort_column", LibrarySortableColumns[this.currentSortedColumnIdx]);
-                } else if (this.starButtonPressed) {
+                } else if (this.deck.libraryStarButton.pressed) {
                     if (this.shifted) {
                         // FIXME doesn't exist, feature request needed
                         script.triggerControl(this.group, right ? "track_color_prev" : "track_color_next");
                     } else {
                         script.triggerControl(this.group, right ? "stars_up" : "stars_down");
                     }
-                } else if (this.gridButtonPressed) {
+                } else if (this.deck.gridButton.pressed) {
                     script.triggerControl(this.group, right ? "waveform_zoom_up" : "waveform_zoom_down");
-                } else if (this.libraryPlayButtonPressed) {
+                } else if (this.deck.libraryPlayButton.pressed) {
                     script.triggerControl("[PreviewDeck1]", right ? "beatjump_16_forward" : "beatjump_16_backward");
                 } else {
                     // FIXME there is a bug where this action has no effect when the Mixxx window has no focused. https://github.com/mixxxdj/mixxx/issues/11285
@@ -2031,15 +2517,15 @@ class S4Mk3Deck extends Deck {
                         }
                     } else {
                         engine.setValue("[Library]", "focused_widget", this.shifted ? 2 : 3);
-                        engine.setValue("[Library]", "MoveVertical", right ? 1 : -1);
+                        engine.setValue("[Library]", this.deck.turntableButton.pressed ? "ScrollVertical" : "MoveVertical", right ? 1 : -1);
                     }
                 }
             }
         });
         this.libraryEncoderPress = new Button({
-            libraryViewButtonPressed: false,
+            deck: this,
             onShortPress: function() {
-                if (this.libraryViewButtonPressed) {
+                if (this.deck.libraryViewButton.pressed) {
                     script.toggleControl("[Library]", "sort_order");
                 } else {
                     const currentlyFocusWidget = engine.getValue("[Library]", "focused_widget");
@@ -2047,7 +2533,11 @@ class S4Mk3Deck extends Deck {
                     if (this.shifted && currentlyFocusWidget === 0) {
                         script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
                     } else if (currentlyFocusWidget === 3 || currentlyFocusWidget === 0) {
-                        script.triggerControl(this.group, "LoadSelectedTrack");
+                        if (this.deck.hasSelectedStem()) {
+                            engine.setValue(this.group, "load_selected_track_stems", this.deck.stemSelection());
+                        } else {
+                            script.triggerControl(this.group, "LoadSelectedTrack");
+                        }
                     } else {
                         script.triggerControl("[Library]", "GoToItem");
                     }
@@ -2060,15 +2550,17 @@ class S4Mk3Deck extends Deck {
         });
         this.libraryPlayButton = new PushButton({
             group: "[PreviewDeck1]",
-            libraryEncoder: this.libraryEncoder,
-            input: function(pressed) {
-                if (pressed) {
-                    script.triggerControl(this.group, "LoadSelectedTrackAndPlay");
+            deck: this,
+            onPress: function() {
+                if (this.shifted) {
+                    engine.setValue(this.group, "CloneFromDeck", this.deck.currentDeckNumber);
                 } else {
-                    engine.setValue(this.group, "play", 0);
-                    script.triggerControl(this.group, "eject");
+                    script.triggerControl(this.group, "LoadSelectedTrackAndPlay");
                 }
-                this.libraryEncoder.libraryPlayButtonPressed = pressed;
+            },
+            onRelease: function() {
+                engine.setValue(this.group, "play", 0);
+                script.triggerControl(this.group, "eject");
             },
             outKey: "play",
         });
@@ -2077,12 +2569,6 @@ class S4Mk3Deck extends Deck {
             libraryEncoder: this.libraryEncoder,
             onShortRelease: function() {
                 script.triggerControl(this.group, this.shifted ? "track_color_prev" : "track_color_next");
-            },
-            onLongPress: function() {
-                this.libraryEncoder.starButtonPressed = true;
-            },
-            onLongRelease: function() {
-                this.libraryEncoder.starButtonPressed = false;
             },
         });
         // FIXME there is no feature about playlist at the moment, so we use this button to control the context menu, which has playlist control
@@ -2096,7 +2582,7 @@ class S4Mk3Deck extends Deck {
                 });
                 // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
                 if (connection) {
-                    this.outConnections[0] = connection;
+                    this.outConnections.push(connection);
                 } else {
                     console.warn(`Unable to connect ${this.group}.focused_widget' to the controller output. The control appears to be unavailable.`);
                 }
@@ -2109,17 +2595,10 @@ class S4Mk3Deck extends Deck {
                     return;
                 }
                 script.toggleControl("[Library]", "show_track_menu");
-                this.libraryEncoder.libraryPlayButtonPressed = false;
 
                 if (currentlyFocusWidget === 4) {
                     engine.setValue("[Library]", "focused_widget", 3);
                 }
-            },
-            onShortPress: function() {
-                this.libraryEncoder.libraryPlayButtonPressed = true;
-            },
-            onLongRelease: function() {
-                this.libraryEncoder.libraryPlayButtonPressed = false;
             },
             onLongPress: function() {
                 engine.setValue("[Library]", "clear_search", 1);
@@ -2133,14 +2612,7 @@ class S4Mk3Deck extends Deck {
             onShortRelease: function() {
                 script.toggleControl(this.group, this.inKey, true);
             },
-            onLongPress: function() {
-                this.libraryEncoder.libraryViewButtonPressed = true;
-                this.libraryEncoderPress.libraryViewButtonPressed = true;
-            },
-            onLongRelease: function() {
-                this.libraryEncoder.libraryViewButtonPressed = false;
-                this.libraryEncoderPress.libraryViewButtonPressed = false;
-            }
+            onLongPress: function() {}, // This is needed to make difference between a shot and long press
         });
 
         this.keyboardPlayMode = null;
@@ -2161,28 +2633,63 @@ class S4Mk3Deck extends Deck {
                 cueBaseName: "outro_end",
             }),
             new HotcueButton({
-                number: 1
+                number: 1, deck: this
             }),
             new HotcueButton({
-                number: 2
+                number: 2, deck: this
             }),
             new HotcueButton({
-                number: 3
+                number: 3, deck: this
             }),
             new HotcueButton({
-                number: 4
+                number: 4, deck: this
             })
         ];
         const hotcuePage2 = Array(8).fill({});
         const hotcuePage3 = Array(8).fill({});
+        const beatJumpPage = Array(8).fill({});
         const samplerOrBeatloopRollPage = Array(8).fill({});
-        this.keyboard = Array(8).fill({});
+        const keyboard = Array(8).fill({});
+        const stem = [
+            new StemButton({
+                number: 1,
+                deck: this,
+            }),
+            new StemButton({
+                number: 2,
+                deck: this,
+            }),
+            new StemButton({
+                number: 3,
+                deck: this,
+            }),
+            new StemButton({
+                number: 4,
+                deck: this,
+            }),
+            new StemMuteButton({
+                number: 1,
+            }),
+            new StemMuteButton({
+                number: 2,
+            }),
+            new StemMuteButton({
+                number: 3,
+            }),
+            new StemMuteButton({
+                number: 4,
+            }),
+        ];
         let i = 0;
         /* eslint no-unused-vars: "off" */
         for (const pad of hotcuePage2) {
             // start with hotcue 5; hotcues 1-4 are in defaultPadLayer
-            hotcuePage2[i] = new HotcueButton({number: i + 1});
-            hotcuePage3[i] = new HotcueButton({number: i + 13});
+            hotcuePage2[i] = new HotcueButton({number: i + 1, deck: this});
+            hotcuePage3[i] = new HotcueButton({number: i + 13, deck: this});
+            beatJumpPage[i] = new BeatJumpButton({
+                number: i,
+                deck: this,
+            });
             if (UseBeatloopRollInsteadOfSampler) {
                 samplerOrBeatloopRollPage[i] = new BeatLoopRollButton({
                     number: i,
@@ -2199,6 +2706,7 @@ class S4Mk3Deck extends Deck {
                 }
                 samplerOrBeatloopRollPage[i] = new SamplerButton({
                     number: samplerNumber,
+                    deck: this,
                 });
                 if (SamplerCrossfaderAssign) {
                     engine.setValue(
@@ -2208,7 +2716,7 @@ class S4Mk3Deck extends Deck {
                     );
                 }
             }
-            this.keyboard[i] = new KeyboardButton({
+            keyboard[i] = new KeyboardButton({
                 number: i + 1,
                 deck: this,
             });
@@ -2217,9 +2725,13 @@ class S4Mk3Deck extends Deck {
 
         const switchPadLayer = (deck, newLayer) => {
             let index = 0;
+            if (newLayer === samplerOrBeatloopRollPage && deck.hasSelectedStem()) {
+                deck.samplerStemSelection = deck.stemSelection();
+            }
             for (let pad of deck.pads) {
                 pad.outDisconnect();
                 pad.inDisconnect();
+                const shifted = pad.shifted;
 
                 pad = newLayer[index];
                 Object.assign(pad, io.pads[index]);
@@ -2232,6 +2744,11 @@ class S4Mk3Deck extends Deck {
                 }
                 if (pad.inReport === undefined) {
                     pad.inReport = inReports[1];
+                }
+                if (shifted && typeof pad.shift === "function" && pad.shift.length === 0) {
+                    pad.shift();
+                } else if (typeof pad.unshift === "function" && pad.unshift.length === 0) {
+                    pad.unshift();
                 }
                 pad.outReport = outReport;
                 pad.inConnect();
@@ -2248,6 +2765,8 @@ class S4Mk3Deck extends Deck {
             hotcuePage3: 2,
             samplerPage: 3,
             keyboard: 5,
+            stem: 6,
+            beatJump: 6,
         };
         switch (DefaultPadLayout) {
         case DefaultPadLayoutHotcue:
@@ -2255,11 +2774,15 @@ class S4Mk3Deck extends Deck {
             this.currentPadLayer = this.padLayers.hotcuePage2;
             break;
         case DefaultPadLayoutSamplerBeatloop:
+            switchPadLayer(this, beatJumpPage);
+            this.currentPadLayer = this.padLayers.beatJump;
+            break;
+        case DefaultPadLayoutSamplerBeatloop:
             switchPadLayer(this, samplerOrBeatloopRollPage);
             this.currentPadLayer = this.padLayers.samplerPage;
             break;
         case DefaultPadLayoutKeyboard:
-            switchPadLayer(this, this.keyboard);
+            switchPadLayer(this, keyboard);
             this.currentPadLayer = this.padLayers.keyboard;
             break;
         default:
@@ -2270,7 +2793,7 @@ class S4Mk3Deck extends Deck {
 
         this.hotcuePadModeButton = new Button({
             deck: this,
-            onShortPress: function() {
+            onShortRelease: function() {
                 if (!this.shifted) {
                     if (this.deck.currentPadLayer !== this.deck.padLayers.hotcuePage2) {
                         switchPadLayer(this.deck, hotcuePage2);
@@ -2287,34 +2810,87 @@ class S4Mk3Deck extends Deck {
                 }
 
             },
+            onShortPress: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    padsMode: {
+                        [this.group]: ActiveTabPadID.hotcue
+                    }
+                });
+            } : undefined,
+            onLongPress: function() {
+                this.previousMoveMode = this.deck.moveMode;
+                this.deck.moveMode = moveModes.hotcueColor;
+
+            },
+            onLongRelease: function() {
+                this.deck.moveMode = this.previousMoveMode;
+                this.previousMoveMode = null;
+            },
             // hack to switch the LED color when changing decks
             outTrigger: function() {
                 this.deck.lightPadMode();
             }
         });
-        // The record button doesn't have a mapping by default, but you can add yours here
-        // this.recordPadModeButton = new Button({
-        //     ...
-        // });
+        this.recordPadModeButton = new Button({
+            deck: this,
+            onShortPress: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: ActiveTabPadID.jump
+                    }
+                });
+                switchPadLayer(this.deck, beatJumpPage);
+                this.deck.lightPadMode();
+            } : undefined,
+            // hack to switch the LED color when changing decks
+            outTrigger: function() {
+                this.deck.lightPadMode();
+            }
+        });
         this.samplesPadModeButton = new Button({
+            pressed: false,
             deck: this,
             onShortPress: function() {
+                engine.setValue(this.deck.group, "loop_anchor", 1);
+
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: UseBeatloopRollInsteadOfSampler ? ActiveTabPadID.roll : ActiveTabPadID.samples
+                    }
+                });
+            },
+            onShortRelease: function() {
                 if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage) {
                     switchPadLayer(this.deck, samplerOrBeatloopRollPage);
-                    engine.setValue("[Samplers]", "show_samplers", true);
+                    engine.setValue("[Skin]", "show_samplers", true);
                     this.deck.currentPadLayer = this.deck.padLayers.samplerPage;
                 } else {
                     switchPadLayer(this.deck, defaultPadLayer);
-                    engine.setValue("[Samplers]", "show_samplers", false);
+                    engine.setValue("[Skin]", "show_samplers", false);
                     this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
                 }
                 this.deck.lightPadMode();
+                engine.setValue(this.deck.group, "loop_anchor", 0);
             },
+            onLongRelease: function() {
+                engine.setValue(this.deck.group, "loop_anchor", 0);
+            }
         });
         // The mute button doesn't have a mapping by default, but you can add yours here
-        // this.mutePadModeButton = new Button({
-        //    ...
-        // });
+        this.mutePadModeButton = new Button({
+            deck: this,
+            onShortPress: hasRuntimeDataAPI() ? function() {
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: ActiveTabPadID.mute
+                    }
+                });
+            } : undefined,
+            // hack to switch the LED color when changing decks
+            outTrigger: function() {
+                this.deck.lightPadMode();
+            }
+        });
 
         this.stemsPadModeButton = new Button({
             deck: this,
@@ -2326,6 +2902,11 @@ class S4Mk3Deck extends Deck {
                 }
             },
             onShortPress: function() {
+                updateRuntimeData({
+                    padsMode: {
+                        [this.deck.group]: ActiveTabPadID.stems
+                    }
+                });
                 if (this.previousMoveMode === null) {
                     this.previousMoveMode = this.deck.moveMode;
                     this.deck.moveMode = moveModes.keyboard;
@@ -2336,12 +2917,19 @@ class S4Mk3Deck extends Deck {
                     this.deck.moveMode = this.previousMoveMode;
                     this.previousMoveMode = null;
                 }
-                if (this.deck.currentPadLayer === this.deck.padLayers.keyboard) {
+                let targetLayer = this.deck.padLayers.stem;
+                if (this.shifted) {
+                    targetLayer = this.deck.padLayers.keyboard;
+                }
+                if (this.deck.currentPadLayer === targetLayer) {
                     switchPadLayer(this.deck, defaultPadLayer);
                     this.deck.currentPadLayer = this.deck.padLayers.defaultLayer;
-                } else if (this.deck.currentPadLayer !== this.deck.padLayers.keyboard) {
-                    switchPadLayer(this.deck, this.deck.keyboard);
-                    this.deck.currentPadLayer = this.deck.padLayers.keyboard;
+                } else if (targetLayer === this.deck.padLayers.stem) {
+                    switchPadLayer(this.deck, stem);
+                    this.deck.currentPadLayer = targetLayer;
+                } else if (targetLayer === this.deck.padLayers.keyboard) {
+                    switchPadLayer(this.deck, keyboard);
+                    this.deck.currentPadLayer = targetLayer;
                 }
                 this.deck.lightPadMode();
             },
@@ -2358,43 +2946,46 @@ class S4Mk3Deck extends Deck {
         });
 
         this.wheelMode = wheelModes.vinyl;
-        this.turntableButton = UseMotors ? new Button({
+        this.turntableButton = new Button({
             deck: this,
-            input: function(press) {
-                if (press) {
-                    this.deck.reverseButton.loopModeOff(true);
-                    this.deck.fluxButton.loopModeOff(true);
-                    if (this.deck.wheelMode === wheelModes.motor) {
-                        this.deck.wheelMode = wheelModes.vinyl;
-                        engine.setValue(this.group, "scratch2_enable", false);
-                    } else {
-                        this.deck.wheelMode = wheelModes.motor;
-                        const group = this.group;
-                    }
-                    this.outTrigger();
-                }
+            onShortPress: function() {
             },
-            outTrigger: function() {
+            onLongRelease: function() {
+            },
+            onShortRelease: UseMotors ? function() {
+                this.deck.reverseButton.loopModeOff(true);
+                this.deck.fluxButton.loopModeOff(true);
+                if (this.deck.wheelMode === wheelModes.motor) {
+                    this.deck.wheelMode = wheelModes.vinyl;
+                    engine.setValue(this.group, "scratch2_enable", false);
+                } else {
+                    this.deck.wheelMode = wheelModes.motor;
+                    const group = this.group;
+                    engine.beginTimer(MotorWindUpMilliseconds, () => {
+                        engine.setValue(group, "scratch2_enable", true);
+                    }, true);
+                }
+                this.outTrigger();
+            } : undefined,
+            outTrigger: UseMotors ? function() {
                 const motorOn = this.deck.wheelMode === wheelModes.motor;
                 this.send(this.color + (motorOn ? this.brightnessOn : this.brightnessOff));
                 const vinylModeOn = this.deck.wheelMode === wheelModes.vinyl;
                 this.deck.jogButton.send(this.color + (vinylModeOn ? this.brightnessOn : this.brightnessOff));
-            },
-        }) : undefined;
+            } : undefined,
+        });
         this.jogButton = new Button({
             deck: this,
-            input: function(press) {
-                if (press) {
-                    this.deck.reverseButton.loopModeOff(true);
-                    this.deck.fluxButton.loopModeOff(true);
-                    if (this.deck.wheelMode === wheelModes.vinyl) {
-                        this.deck.wheelMode = wheelModes.jog;
-                    } else {
-                        this.deck.wheelMode = wheelModes.vinyl;
-                    }
-                    engine.setValue(this.group, "scratch2_enable", false);
-                    this.outTrigger();
+            onPress: function() {
+                this.deck.reverseButton.loopModeOff(true);
+                this.deck.fluxButton.loopModeOff(true);
+                if (this.deck.wheelMode === wheelModes.vinyl) {
+                    this.deck.wheelMode = wheelModes.jog;
+                } else {
+                    this.deck.wheelMode = wheelModes.vinyl;
                 }
+                engine.setValue(this.group, "scratch2_enable", false);
+                this.outTrigger();
             },
             outTrigger: function() {
                 const vinylOn = this.deck.wheelMode === wheelModes.vinyl;
@@ -2523,8 +3114,33 @@ class S4Mk3Deck extends Deck {
         this.wheelLED = new Component({
             deck: this,
             lastPos: 0,
-            outKey: "playposition",
-            output: function(fractionOfTrack) {
+            lastMode: null,
+            outConnect: function() {
+                if (this.group !== undefined) {
+                    const connection0 = engine.makeConnection(this.group, "playposition", (position) => this.output.bind(this)(position, true, true));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection0) {
+                        this.outConnections[0] = connection0;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.playposition' to the controller output. The control appears to be unavailable.`);
+                    }
+                    const connection1 = engine.makeConnection(this.group, "play", (play) => this.output.bind(this)(engine.getValue(this.group, "playposition"), play, play || engine.getValue(this.group, "track_loaded")));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection1) {
+                        this.outConnections[1] = connection1;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.play' to the controller output. The control appears to be unavailable.`);
+                    }
+                    const connection2 = engine.makeConnection(this.group, "track_loaded", (trackLoaded) => this.output.bind(this)(engine.getValue(this.group, "playposition"), !trackLoaded ? false : engine.getValue(this.group, "play"), trackLoaded));
+                    // This is useful for case where effect would have been fully disabled in Mixxx. This appears to be the case during unit tests.
+                    if (connection2) {
+                        this.outConnections[2] = connection2;
+                    } else {
+                        console.warn(`Unable to connect ${this.group}.track_loaded' to the controller output. The control appears to be unavailable.`);
+                    }
+                }
+            },
+            output: function(fractionOfTrack, playstate, trackLoaded) {
                 if (this.deck.wheelMode > wheelModes.motor) {
                     return;
                 }
@@ -2567,20 +3183,29 @@ class S4Mk3Deck extends Deck {
 
                 const wheelOutput = new Uint8Array(40).fill(0);
                 wheelOutput[0] = decks[0] - 1;
+                wheelOutput[4] = this.color + Button.prototype.brightnessOn;
 
-                if (engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd) {
+                if (!trackLoaded) {
+                    wheelOutput[1] = wheelLEDmodes.off;
+                } else if (playstate && fractionOfTrack < 1 && engine.getValue(this.group, "end_of_track") && WheelLedBlinkOnTrackEnd && !this.deck.wheelTouch.touched) {
                     wheelOutput[1] = wheelLEDmodes.ringFlash;
                 } else {
                     wheelOutput[1] = wheelLEDmodes.spot;
                     wheelOutput[2] = LEDposition & 0xff;
                     wheelOutput[3] = LEDposition >> 8;
+                    if (this.lastMode === wheelLEDmodes.ringFlash) {
+                        wheelOutput[4] = Button.prototype.brightnessOff;
+                        engine.beginTimer(200, () => this.output(fractionOfTrack, playstate, trackLoaded), true);
+                    }
                 }
-                wheelOutput[4] = this.color + Button.prototype.brightnessOn;
+                this.lastMode = wheelOutput[1];
 
                 controller.sendOutputReport(50, wheelOutput.buffer, true);
-
             }
         });
+
+        this.selectedStem = new Array(4).fill(false);
+        this.samplerStemSelection = null;
 
         for (const property in this) {
             if (Object.prototype.hasOwnProperty.call(this, property)) {
@@ -2611,6 +3236,17 @@ class S4Mk3Deck extends Deck {
         }
     }
 
+    hasSelectedStem() {
+        return this.selectedStem.some((stemSelected) => stemSelected);
+    }
+
+    stemSelection() {
+        return [...this.selectedStem].reverse().reduce(
+            (acc, curr) => (curr + acc * 2),
+            0,
+        );
+    }
+
     assignKeyboardPlayMode(group, action) {
         this.keyboardPlayMode = {
             group: group,
@@ -2628,21 +3264,26 @@ class S4Mk3Deck extends Deck {
             this.hotcuePadModeButton.send(this.hotcuePadModeButton.color + this.hotcuePadModeButton.brightnessOff);
         }
 
+        const data = (hasRuntimeDataAPI() ? engine.getSharedData() : false) || {};
+
         // unfortunately the other pad mode buttons only have one LED color
         // const recordPadModeLEDOn = this.currentPadLayer === this.padLayers.hotcuePage3;
-        // this.recordPadModeButton.send(recordPadModeLEDOn ? 127 : 0);
+        this.recordPadModeButton.output(data.padsMode && data.padsMode[this.group] === ActiveTabPadID.jump);
 
         const samplesPadModeLEDOn = this.currentPadLayer === this.padLayers.samplerPage;
         this.samplesPadModeButton.send(samplesPadModeLEDOn ? 127 : 0);
 
         // this.mutePadModeButtonLEDOn = this.currentPadLayer === this.padLayers.samplerPage2;
-        // const mutedModeButton.send(mutePadModeButtonLEDOn ? 127 : 0);
+        this.mutePadModeButton.output(data.viewArtwork && data.viewArtwork[this.group]);
         if (this.keyboardPlayMode !== null) {
             this.stemsPadModeButton.send(LedColors.green + this.stemsPadModeButton.brightnessOn);
         } else {
-            const keyboardPadModeLEDOn = this.currentPadLayer === this.padLayers.keyboard;
+            const keyboardPadModeLEDOn = this.currentPadLayer === this.padLayers.keyboard || this.currentPadLayer === this.padLayers.stem;
             this.stemsPadModeButton.send(this.stemsPadModeButton.color + (keyboardPadModeLEDOn ? this.stemsPadModeButton.brightnessOn : this.stemsPadModeButton.brightnessOff));
         }
+        if (!hasRuntimeDataAPI() || !data.keyboardMode) { return; }
+        data.keyboardMode[this.group] = this.currentPadLayer === this.padLayers.keyboard;
+        engine.setSharedData(data);
     }
 }
 
@@ -2750,7 +3391,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
             inKey: "parameter1",
         });
         this.quickEffectKnob = new Pot({
-            group: `[QuickEffectRack1_${this.group}]`,
+            group: quickFxChannel(this.group),
             inKey: "super1",
         });
         this.volume = new Pot({
@@ -2877,6 +3518,9 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
 class S4MK3 {
     constructor() {
+        if (engine.getValue("[App]", "num_decks") < 4) {
+            engine.setValue("[App]", "num_decks", 4);
+        }
         if (engine.getValue("[App]", "num_samplers") < 16) {
             engine.setValue("[App]", "num_samplers", 16);
         }
@@ -2937,7 +3581,10 @@ class S4MK3 {
         // so every single components' IO needs to be specified individually
         // for both decks.
         this.leftDeck = new S4Mk3Deck(
-            [1, 3], [DeckColors[0], DeckColors[2]], this.effectUnit1, this.mixer,
+            [1, 3], [DeckColors[0], DeckColors[2]], {
+                tempoCenterLower: TempoCenterLowerLeft,
+                tempoCenterUpper: TempoCenterUpperLeft,
+            }, this.effectUnit1, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 4, inBit: 0, outByte: 55},
@@ -2952,7 +3599,6 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 5, inBit: 2},
                 deckButtonRight: {inByte: 5, inBit: 3},
                 deckButtonOutputByteOffset: 12,
-                tempoFaderLED: {outByte: 11},
                 shiftButton: {inByte: 5, inBit: 1, outByte: 59},
                 leftEncoder: {inByte: 19, inBit: 0},
                 leftEncoderPress: {inByte: 6, inBit: 2},
@@ -2980,7 +3626,7 @@ class S4MK3 {
                     {inByte: 3, inBit: 1, outByte: 6},
                     {inByte: 3, inBit: 0, outByte: 7},
                 ],
-                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 12, inBit: 0, inBitLength: 16, inReport: this.inReports[2], outByte: 11},
                 wheelRelative: {inByte: 11, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 15, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 4},
@@ -2988,7 +3634,10 @@ class S4MK3 {
         );
 
         this.rightDeck = new S4Mk3Deck(
-            [2, 4], [DeckColors[1], DeckColors[3]], this.effectUnit2, this.mixer,
+            [2, 4], [DeckColors[1], DeckColors[3]], {
+                tempoCenterLower: TempoCenterLowerRight,
+                tempoCenterUpper: TempoCenterUpperRight,
+            }, this.effectUnit2, this.mixer,
             this.inReports, this.outReports[128],
             {
                 playButton: {inByte: 12, inBit: 0, outByte: 66},
@@ -3003,7 +3652,6 @@ class S4MK3 {
                 deckButtonLeft: {inByte: 14, inBit: 2},
                 deckButtonRight: {inByte: 14, inBit: 3},
                 deckButtonOutputByteOffset: 35,
-                tempoFaderLED: {outByte: 34},
                 shiftButton: {inByte: 14, inBit: 1, outByte: 70},
                 leftEncoder: {inByte: 20, inBit: 4},
                 leftEncoderPress: {inByte: 15, inBit: 5},
@@ -3031,7 +3679,7 @@ class S4MK3 {
                     {inByte: 13, inBit: 1, outByte: 29},
                     {inByte: 13, inBit: 0, outByte: 30},
                 ],
-                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2]},
+                tempoFader: {inByte: 10, inBit: 0, inBitLength: 16, inReport: this.inReports[2], outByte: 34},
                 wheelRelative: {inByte: 39, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelAbsolute: {inByte: 43, inBit: 0, inBitLength: 16, inReport: this.inReports[3]},
                 wheelTouch: {inByte: 16, inBit: 5},
@@ -3121,6 +3769,14 @@ class S4MK3 {
         wheelLEDinitReport[0] = 1;
         controller.sendOutputReport(48, wheelLEDinitReport.buffer);
 
+        // Reset the motor's torque to a nil value
+        const motorData = new Uint8Array([
+            1, 0x20, 1, 0, 0,
+            1, 0x20, 1, 0, 0,
+
+        ]);
+        controller.sendOutputReport(49, motorData.buffer);
+
         // Init wheel timer data
         wheelTimer = null;
         wheelTimerDelta = 0;
@@ -3129,6 +3785,68 @@ class S4MK3 {
         for (const repordId of [0x01, 0x02]) {
             this.inReports[repordId].handleInput(controller.getInputReport(repordId));
         }
+
+        updateRuntimeData({
+            group: {
+                "leftdeck": "[Channel1]",
+                "rightdeck": "[Channel2]",
+            },
+            shift: {
+                "leftdeck": false,
+                "rightdeck": false,
+            },
+            scrollingWavefom: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+            deckColor: {
+                "[Channel1]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[0])) - 1,
+                "[Channel2]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[1])) - 1,
+                "[Channel3]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[2])) - 1,
+                "[Channel4]": Object.keys(LedColors).indexOf(Object.keys(LedColors).find(key => LedColors[key] === DeckColors[3])) - 1,
+            },
+            rollpadSize: BeatLoopRolls,
+            beatjumpSize: BeatJumps,
+            selectedQuickFX: null,
+            selectedHotcue: {
+                "[Channel1]": null,
+                "[Channel2]": null,
+                "[Channel3]": null,
+                "[Channel4]": null,
+            },
+            selectedStems: {
+                "[Channel1]": [0, 0, 0, 0],
+                "[Channel2]": [0, 0, 0, 0],
+                "[Channel3]": [0, 0, 0, 0],
+                "[Channel4]": [0, 0, 0, 0],
+            },
+            viewArtwork: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+            keyboardMode: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+            displayBeatloopSize: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+            padsMode: {
+                "[Channel1]": 0,
+                "[Channel2]": 0,
+                "[Channel3]": 0,
+                "[Channel4]": 0,
+            },
+        });
     }
     shutdown() {
         // button LEDs

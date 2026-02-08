@@ -47,7 +47,11 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
 #ifdef __PORTMIDI__
     checkBox_midithrough->setChecked(m_pConfig->getValue(kMidiThroughCfgKey, false));
     connect(checkBox_midithrough,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefControllers::slotMidiThroughChanged);
     txt_midithrough->setTextFormat(Qt::RichText);
@@ -74,13 +78,14 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             "in the \"Load Mapping\" menu when you click on your controller on the "
             "left sidebar, you may be able to download one online from the %1. "
             "Place the XML (.xml) and Javascript (.js) file(s) in the \"User Mapping "
-            "Folder\" then restart Mixxx. If you download a mapping in a ZIP file, "
+            "Folder\" then click the Reload button next to the mapping selector to "
+            "reload all available mappings. If you download a mapping in a ZIP file, "
             "extract the XML and Javascript file(s) from the ZIP file to your "
-            "\"User Mapping Folder\" then restart Mixxx.")
-                                         .arg(coloredLinkString(
-                                                 m_pLinkColor,
-                                                 QStringLiteral("Mixxx Controller Forums"),
-                                                 MIXXX_CONTROLLER_FORUMS_URL)));
+            "\"User Mapping Folder\" then click the Reload button.")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            QStringLiteral("Mixxx Controller Forums"),
+                            MIXXX_CONTROLLER_FORUMS_URL)));
 
     txtHardwareCompatibility->setText(coloredLinkString(
             m_pLinkColor,
@@ -198,7 +203,7 @@ void DlgPrefControllers::setupControllerWidgets() {
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     for (auto* pController : std::as_const(controllerList)) {
-        DlgPrefController* pControllerDlg = new DlgPrefController(
+        auto pControllerDlg = make_parented<DlgPrefController>(
                 this, pController, m_pControllerManager, m_pConfig);
         connect(pControllerDlg,
                 &DlgPrefController::mappingStarted,
@@ -209,9 +214,9 @@ void DlgPrefControllers::setupControllerWidgets() {
                 m_pDlgPreferences,
                 &DlgPreferences::show);
         // Recreate the control picker menus when decks or samplers are added
-        m_pNumDecks->connectValueChanged(pControllerDlg,
+        m_pNumDecks->connectValueChanged(pControllerDlg.get(),
                 &DlgPrefController::slotRecreateControlPickerMenu);
-        m_pNumSamplers->connectValueChanged(pControllerDlg,
+        m_pNumSamplers->connectValueChanged(pControllerDlg.get(),
                 &DlgPrefController::slotRecreateControlPickerMenu);
 
         m_controllerPages.append(pControllerDlg);
@@ -219,8 +224,8 @@ void DlgPrefControllers::setupControllerWidgets() {
         connect(pController,
                 &Controller::openChanged,
                 this,
-                [this, pControllerDlg](bool bOpen) {
-                    slotHighlightDevice(pControllerDlg, bOpen);
+                [this, pDlg = pControllerDlg.get()](bool bOpen) {
+                    slotHighlightDevice(pDlg, bOpen);
                 });
 
         QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
@@ -272,7 +277,13 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, 
 }
 
 #ifdef __PORTMIDI__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefControllers::slotMidiThroughChanged(Qt::CheckState state) {
+    m_pConfig->setValue(kMidiThroughCfgKey, state != Qt::Unchecked);
+}
+#else
 void DlgPrefControllers::slotMidiThroughChanged(bool checked) {
     m_pConfig->setValue(kMidiThroughCfgKey, checked);
 }
+#endif
 #endif

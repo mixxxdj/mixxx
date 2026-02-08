@@ -1,5 +1,7 @@
 #include "engine/channels/enginedeck.h"
 
+#include <QStringView>
+
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/controls/bpmcontrol.h"
@@ -7,22 +9,10 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
-#include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/sample.h"
-
-#ifdef __STEM__
-namespace {
-QString getGroupForStem(const QString& deckGroup, int stemIdx) {
-    DEBUG_ASSERT(deckGroup.endsWith("]"));
-    return QStringLiteral("%1Stem%2]")
-            .arg(deckGroup.left(deckGroup.size() - 1),
-                    QString::number(stemIdx));
-}
-} // anonymous namespace
-#endif
 
 EngineDeck::EngineDeck(
         const ChannelHandleAndGroup& handleGroup,
@@ -35,6 +25,9 @@ EngineDeck::EngineDeck(
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),
+#ifdef __STEM__
+          m_stemClonedState(false),
+#endif
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
@@ -77,14 +70,14 @@ EngineDeck::EngineDeck(
     m_stemMute.reserve(mixxx::kMaxSupportedStems);
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("volume"))));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
         // The default value is ignored and override with the medium value by
         // ControlPotmeter. This is likely a bug but fixing might have a
         // disruptive impact, so setting the default explicitly
         m_stemGain.back()->set(1.0);
         m_stemGain.back()->setDefaultValue(1.0);
         auto pMuteButton = std::make_unique<ControlPushButton>(
-                ConfigKey(getGroupForStem(getGroup(), stemIdx + 1), QStringLiteral("mute")));
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute")));
         pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
         m_stemMute.push_back(std::move(pMuteButton));
     }
@@ -98,13 +91,14 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
         return;
     }
     if (m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
+                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true) &&
+            !m_stemClonedState) {
         for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
-            ;
         }
     }
+    m_stemClonedState = false;
     if (pNewTrack) {
         int stemCount = pNewTrack->getStemInfo().size();
         m_pStemCount->forceSet(stemCount);
@@ -162,7 +156,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     // effect manager so we can also apply the individual stem quick FX
     GroupFeatureState featureState;
     collectFeatures(&featureState);
-    for (std::size_t stemIdx = 0; stemIdx < stemCount;
+    for (unsigned int stemIdx = 0; stemIdx < stemCount;
             stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
         float stemGain = m_stemMute[stemIdx]->toBool()
@@ -221,6 +215,7 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
     }
+    m_stemClonedState = true;
 }
 #endif
 
@@ -363,3 +358,11 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
         emit noPassthroughInputConfigured();
     }
 }
+
+#ifdef __STEM__
+// static
+QString EngineDeck::getGroupForStem(QStringView deckGroup, int stemIdx) {
+    DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemIdx < 4);
+    return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
+}
+#endif

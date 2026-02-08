@@ -83,7 +83,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
-          m_loading(false) {
+          m_loading(false),
+          m_configValid(true) {
     setupUi(this);
     // Create text color for the wiki links
     createLinkColor();
@@ -101,6 +102,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::apiChanged);
+    apiLabel->setText(apiLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SOUND_API_URL));
 
     sampleRateComboBox->clear();
     const auto sampleRates = m_pSoundManager->getSampleRates();
@@ -302,6 +308,18 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     setScrollSafeGuardForAllInputWidgets(this);
 
+    micMonitorModeLabel->setText(micMonitorModeLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_MONITOR_MODES_URL));
+
+    latencyCompensationLabel->setText(latencyCompensationLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_LATENCY_URL));
+
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
                "consider for using Mixxx.")
@@ -309,6 +327,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             m_pLinkColor,
                             tr("Mixxx DJ Hardware Guide"),
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
+
+    QString deckBusHintStr = deckBusHint->text();
+    deckBusHintStr += " " +
+            coloredLinkString(m_pLinkColor,
+                    tr("Find details in the Mixxx user manual"),
+                    MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES);
+    deckBusHint->setText(deckBusHintStr);
 }
 
 /// Slot called when the preferences dialog is opened.
@@ -362,6 +387,7 @@ void DlgPrefSound::slotApply() {
         }
 #endif
         status = m_pSoundManager->setConfig(m_config);
+        m_configValid = (status == SoundDeviceStatus::Ok);
     }
     if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
@@ -383,6 +409,16 @@ QUrl DlgPrefSound::helpUrl() const {
     return QUrl(MIXXX_MANUAL_SOUND_URL);
 }
 
+void DlgPrefSound::selectIOTab(mixxx::preferences::SoundHardwareTab tab) {
+    switch (tab) {
+    case mixxx::preferences::SoundHardwareTab::Input:
+        ioTabs->setCurrentWidget(inputTab);
+        return;
+    case mixxx::preferences::SoundHardwareTab::Output:
+        ioTabs->setCurrentWidget(outputTab);
+        return;
+    }
+}
 /// Initializes (and creates) all the path items. Each path item widget allows
 /// the user to input a sound device name and channel number given a description
 /// of what will be done with that info. Inputs and outputs are grouped by tab,
@@ -1000,7 +1036,9 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString lineBreak("<br/>");
+            const QString lineBreak("<br/>");
+            const QString kMicMonitorHintTrString =
+                    tr("Refer to the Mixxx User Manual for details.");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation.get() == 0.0) {
                 latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
@@ -1011,7 +1049,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else if (m_bLatencyChanged) {
@@ -1021,7 +1062,10 @@ void DlgPrefSound::checkLatencyCompensation() {
                            "for Microphone Latency Compensation to align "
                            "microphone timing.") +
                         lineBreak +
-                        tr("Refer to the Mixxx User Manual for details.") +
+                        coloredLinkString(
+                                m_pLinkColor,
+                                kMicMonitorHintTrString,
+                                MIXXX_MANUAL_MIC_MONITOR_MODES_URL) +
                         "</html>");
                 latencyCompensationWarningLabel->show();
             } else {
@@ -1036,4 +1080,8 @@ void DlgPrefSound::checkLatencyCompensation() {
         latencyCompensationSpinBox->setEnabled(false);
         latencyCompensationWarningLabel->hide();
     }
+}
+
+bool DlgPrefSound::okayToClose() const {
+    return m_configValid;
 }

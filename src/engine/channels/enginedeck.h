@@ -71,6 +71,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // of stem track
     void cloneStemState(const EngineDeck* deckToClone);
     void addStemHandle(const ChannelHandleAndGroup& stemHandleGroup);
+    static QString getGroupForStem(QStringView deckGroup, int stemIdx);
 #endif
 
   signals:
@@ -102,6 +103,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     std::unique_ptr<ControlObject> m_pStemCount;
     std::vector<std::unique_ptr<ControlPotmeter>> m_stemGain;
     std::vector<std::unique_ptr<ControlPushButton>> m_stemMute;
+    bool m_stemClonedState;
 #endif
 
     // Begin vinyl passthrough fields

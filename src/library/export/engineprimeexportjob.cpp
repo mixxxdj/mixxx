@@ -22,7 +22,8 @@ namespace mixxx {
 
 namespace {
 
-const std::string kMixxxRootCrateName = "Mixxx";
+const std::string kMixxxRootCrateName = "Mixxx Crates";
+const std::string kMixxxRootPlaylistName = "Mixxx Playlists";
 
 constexpr int kMaxHotCues = 8;
 
@@ -167,8 +168,8 @@ bool tryGetBeatgrid(BeatsPointer pBeats,
 
 void exportMetadata(
         djinterop::database* pDatabase,
-        const e::engine_version& dbVersion,
-        QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
+        const e::engine_schema& dbSchemaVersion,
+        QHash<TrackId, std::optional<djinterop::track>>* pMixxxToExtTrackMap,
         TrackPointer pTrack,
         const Waveform* pWaveform,
         const QString& relativePath) {
@@ -246,7 +247,7 @@ void exportMetadata(
         int hotCueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
         if (hotCueIndex < 0 || hotCueIndex >= kMaxHotCues) {
             qInfo() << "Skipping hot cue" << hotCueIndex
-                    << "as the Engine Prime format only supports at most"
+                    << "as the Engine DJ format only supports at most"
                     << kMaxHotCues << "hot cues.";
             continue;
         }
@@ -280,7 +281,8 @@ void exportMetadata(
 
     // Write waveform.
     if (pWaveform) {
-        djinterop::waveform_extents extents = dbVersion.is_v2_schema()
+        djinterop::waveform_extents extents = dbSchemaVersion >=
+                        djinterop::engine::engine_schema::schema_2_18_0
                 ? e::calculate_overview_waveform_extents(
                           frameCount, pTrack->getSampleRate())
                 : e::calculate_high_resolution_waveform_extents(
@@ -299,24 +301,21 @@ void exportMetadata(
                 << "(" << pTrack->getFileInfo().fileName() << ")";
     }
 
-    int externalTrackId;
+    // Commit changes, and record the mapping from Mixxx track id to exported track.
     if (externalTrack) {
         externalTrack->update(snapshot);
-        externalTrackId = externalTrack->id();
+        pMixxxToExtTrackMap->insert(pTrack->getId(), *externalTrack);
     } else {
         auto newTrack = pDatabase->create_track(snapshot);
-        externalTrackId = newTrack.id();
+        pMixxxToExtTrackMap->insert(pTrack->getId(), newTrack);
     }
-
-    // Record the mapping from Mixxx track id to exported track id.
-    pMixxxToEnginePrimeTrackIdMap->insert(pTrack->getId(), externalTrackId);
 }
 
 void exportTrack(
         const QSharedPointer<EnginePrimeExportRequest> pRequest,
         djinterop::database* pDatabase,
-        const e::engine_version& dbVersion,
-        QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
+        const e::engine_schema& dbSchemaVersion,
+        QHash<TrackId, std::optional<djinterop::track>>* pMixxxToExtTrackMap,
         const TrackPointer pTrack,
         const Waveform* pWaveform) {
     // Only export supported file types.
@@ -332,30 +331,76 @@ void exportTrack(
 
     // Export meta-data.
     exportMetadata(pDatabase,
-            dbVersion,
-            pMixxxToEnginePrimeTrackIdMap,
+            dbSchemaVersion,
+            pMixxxToExtTrackMap,
             pTrack,
             pWaveform,
             musicFileRelativePath);
 }
 
 void exportCrate(
-        djinterop::crate* pExtRootCrate,
-        const QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
+        djinterop::database* pDb,
+        djinterop::crate* pExtRootCrate, // May be nullptr
+        const QHash<TrackId, std::optional<djinterop::track>>& mixxxToExtTrackMap,
         const Crate& crate,
         const QList<TrackId>& trackIds) {
-    // Create a new crate as a sub-crate of the top-level Mixxx crate, if one
-    // does not already exist.
     auto crateName = crate.getName().toStdString();
-    const auto optionalExtCrate = pExtRootCrate->sub_crate_by_name(crateName);
+    const auto optionalExtCrate = pExtRootCrate != nullptr
+            ? pExtRootCrate->sub_crate_by_name(crateName)
+            : pDb->root_crate_by_name(crateName);
+
+    // Create a new crate if one does not already exist.
     auto extCrate = optionalExtCrate
             ? *optionalExtCrate
-            : pExtRootCrate->create_sub_crate(crateName);
+            : pExtRootCrate != nullptr
+            ? pExtRootCrate->create_sub_crate(crateName)
+            : pDb->create_root_crate(crateName);
 
     // Loop through all track ids in this crate and add.
+    // Adding to a crate is idempotent, i.e. it doesn't matter if the track is
+    // already in the crate.
     for (const auto& trackId : trackIds) {
-        const auto extTrackId = mixxxToEnginePrimeTrackIdMap[trackId];
-        extCrate.add_track(extTrackId);
+        const auto extTrack = *mixxxToExtTrackMap[trackId];
+        extCrate.add_track(extTrack);
+    }
+}
+
+void exportPlaylist(
+        djinterop::database* pDb,
+        djinterop::playlist* pExtRootPlaylist, // May be nullptr
+        const QHash<TrackId, std::optional<djinterop::track>>& mixxxToExtTrackMap,
+        const QString& playlistName,
+        const QList<TrackId>& trackIds) {
+    auto optionalExtPlaylist = pExtRootPlaylist != nullptr
+            ? pExtRootPlaylist->sub_playlist_by_name(playlistName.toStdString())
+            : pDb->root_playlist_by_name(playlistName.toStdString());
+
+    // Create a new playlist if one does not already exist.
+    auto extPlaylist = optionalExtPlaylist
+            ? *optionalExtPlaylist
+            : pExtRootPlaylist != nullptr
+            ? pExtRootPlaylist->create_sub_playlist(playlistName.toStdString())
+            : pDb->create_root_playlist(playlistName.toStdString());
+
+    // Loop through all track ids and add.  If the playlist already existed,
+    // clear out all prior entries.
+    extPlaylist.clear_tracks();
+    if (pDb->supports_feature(djinterop::feature::playlists_support_duplicate_tracks)) {
+        for (const auto& trackId : trackIds) {
+            const auto extTrack = *mixxxToExtTrackMap[trackId];
+            extPlaylist.add_track_back(extTrack);
+        }
+    } else {
+        // The database doesn't support the same track being added multiple
+        // times to the playlist, so (silently) omit duplicates.
+        QSet<TrackId> trackIdsAdded;
+        for (const auto& trackId : trackIds) {
+            if (!trackIdsAdded.contains(trackId)) {
+                const auto extTrack = *mixxxToExtTrackMap[trackId];
+                extPlaylist.add_track_back(extTrack);
+                trackIdsAdded.insert(trackId);
+            }
+        }
     }
 }
 
@@ -381,13 +426,14 @@ EnginePrimeExportJob::EnginePrimeExportJob(
 // header with unique_ptr's of incomplete types.
 EnginePrimeExportJob::~EnginePrimeExportJob() = default;
 
-void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
+void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int>& playlistIds) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
-    if (crateIds.isEmpty()) {
-        // No explicit crate ids specified, meaning we want to export the
-        // whole library, plus all non-empty crates.  Start by building a list
-        // of unique track refs from all directories in the library.
+    if (crateIds.isEmpty() && playlistIds.isEmpty()) {
+        // No explicit crate or playlist ids specified, meaning we want to
+        // export the whole library, plus all non-empty crates.  Start by
+        // building a list of unique track refs from all directories in the
+        // library.
         qDebug() << "Loading all track refs and crate ids...";
         QSet<TrackRef> trackRefs;
         const auto dirInfos = m_pTrackCollectionManager->internalCollection()
@@ -408,6 +454,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
 #else
         m_trackRefs = trackRefs.toList();
 #endif
+        qDebug() << "Identified" << m_trackRefs.size() << " tracks to export";
 
         // Convert a list of track refs to a list of track ids, and use that
         // to identify all crates that contain those tracks.
@@ -423,17 +470,36 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
 #else
         m_crateIds = crateIdsOfTracks.toList();
 #endif
+        qDebug() << "Identified" << m_crateIds.size() << " crates to export";
+
+        // Just export all playlists.
+        m_playlistIdsAndNames = m_pTrackCollectionManager->internalCollection()
+                                        ->getPlaylistDAO()
+                                        .getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN);
+        qDebug() << "Identified" << m_playlistIdsAndNames.size() << " playlists to export";
     } else {
-        // Explicit crates have been specified to export.
-        qDebug() << "Loading track refs from" << crateIds.size() << "crate(s)";
+        // Explicit crates/playlists have been specified to export.
+        qDebug() << "Loading track refs from" << crateIds.size()
+                 << "crate(s) and" << playlistIds.size() << "playlist(s)";
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_crateIds = QList<CrateId>{crateIds.begin(), crateIds.end()};
 #else
         m_crateIds = crateIds.toList();
 #endif
+        qDebug() << "Identified" << m_crateIds.size() << " crates to export";
 
-        // Identify track refs from the specified crates.
-        m_trackRefs.clear();
+        for (auto&& playlistIdAndName : m_pTrackCollectionManager
+                        ->internalCollection()
+                        ->getPlaylistDAO()
+                        .getPlaylists(PlaylistDAO::PLHT_NOT_HIDDEN)) {
+            if (playlistIds.contains(playlistIdAndName.first)) {
+                m_playlistIdsAndNames.append(playlistIdAndName);
+            }
+        }
+        qDebug() << "Identified" << m_playlistIdsAndNames.size() << " playlists to export";
+
+        // Identify track refs from the specified crates and playlists.
+        QSet<TrackRef> trackRefs;
         for (const auto& crateId : crateIds) {
             auto result = m_pTrackCollectionManager->internalCollection()
                                   ->crates()
@@ -443,9 +509,29 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
                 const auto location = m_pTrackCollectionManager->internalCollection()
                                               ->getTrackDAO()
                                               .getTrackLocation(trackId);
-                m_trackRefs.append(TrackRef::fromFilePath(location, trackId));
+                trackRefs.insert(TrackRef::fromFilePath(location, trackId));
             }
         }
+
+        for (const auto& playlistId : playlistIds) {
+            const auto trackIds =
+                    m_pTrackCollectionManager->internalCollection()
+                            ->getPlaylistDAO()
+                            .getTrackIds(playlistId);
+            for (auto&& trackId : trackIds) {
+                const auto location = m_pTrackCollectionManager->internalCollection()
+                                              ->getTrackDAO()
+                                              .getTrackLocation(trackId);
+                trackRefs.insert(TrackRef::fromFilePath(location, trackId));
+            }
+        }
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        m_trackRefs = QList<TrackRef>{trackRefs.begin(), trackRefs.end()};
+#else
+        m_trackRefs = trackRefs.toList();
+#endif
+        qDebug() << "Identified" << m_trackRefs.size() << " tracks to export";
     }
 }
 
@@ -453,7 +539,8 @@ void EnginePrimeExportJob::loadTrack(const TrackRef& trackRef) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     // Load the track.
-    m_pLastLoadedTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
+    qDebug() << "Loading track" << trackRef << "...";
+    m_pLastLoadedTrack = m_pTrackCollectionManager->getTrackByRef(trackRef);
 
     // Load high-resolution waveform from analysis info.
     auto& analysisDao = m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
@@ -472,6 +559,7 @@ void EnginePrimeExportJob::loadCrate(const CrateId& crateId) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     // Load crate details.
+    qDebug() << "Loading crate" << crateId << "...";
     m_pTrackCollectionManager->internalCollection()->crates().readCrateById(
             crateId, &m_lastLoadedCrate);
 
@@ -485,39 +573,55 @@ void EnginePrimeExportJob::loadCrate(const CrateId& crateId) {
     }
 }
 
+void EnginePrimeExportJob::loadPlaylist(int playlistId, const QString& playlistName) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
+
+    // Load playlist details.
+    qDebug() << "Loading playlist" << playlistId << "(" << playlistName << ")" << "...";
+    m_lastLoadedPlaylistId = playlistId;
+    m_lastLoadedPlaylistName = playlistName;
+    m_lastLoadedPlaylistTrackIds =
+            m_pTrackCollectionManager->internalCollection()
+                    ->getPlaylistDAO()
+                    .getTrackIdsInPlaylistOrder(playlistId);
+}
+
 void EnginePrimeExportJob::run() {
     // Crate music directory if it doesn't already exist.
     QDir().mkpath(m_pRequest->musicFilesDir.path());
 
-    // Load ids of tracks and crates to export.
+    // Load ids of tracks, crates, and playlists to export.
     // Note that loading must happen on the same thread as the track collection
     // manager, which is not the same as this method's worker thread.
     QMetaObject::invokeMethod(
             this,
             "loadIds",
             Qt::BlockingQueuedConnection,
-            Q_ARG(QSet<CrateId>, m_pRequest->crateIdsToExport));
+            Q_ARG(QSet<CrateId>, m_pRequest->crateIdsToExport),
+            Q_ARG(QSet<int>, m_pRequest->playlistIdsToExport));
 
     // Measure progress as one 'count' for each track, each crate, plus some
     // additional counts for various other operations.
-    int maxProgress = m_trackRefs.size() + m_crateIds.size() + 2;
+    int maxProgress = m_trackRefs.size() + m_crateIds.size() + m_playlistIdsAndNames.size() + 2;
     int currProgress = 0;
     emit jobMaximum(maxProgress);
     emit jobProgress(currProgress);
 
     // Ensure that the database exists, creating an empty one if not.
     std::unique_ptr<djinterop::database> pDb;
-    e::engine_version dbVersion;
+    e::engine_schema dbSchemaVersion;
+    qDebug() << "Creating/loading Engine database at"
+             << m_pRequest->engineLibraryDbDir.path() << "...";
     try {
         bool created;
         pDb = std::make_unique<djinterop::database>(e::create_or_load_database(
                 m_pRequest->engineLibraryDbDir.path().toStdString(),
-                m_pRequest->exportVersion,
+                m_pRequest->exportSchemaVersion,
                 created,
-                dbVersion));
+                dbSchemaVersion));
 
         if (!created) {
-            dbVersion = m_pRequest->exportVersion;
+            dbSchemaVersion = m_pRequest->exportSchemaVersion;
         }
     } catch (std::exception& e) {
         qWarning() << "Failed to create/load database:" << e.what();
@@ -529,8 +633,10 @@ void EnginePrimeExportJob::run() {
     ++currProgress;
     emit jobProgress(currProgress);
 
-    // We will build up a map from Mixxx track id to EL track id during export.
-    QHash<TrackId, int64_t> mixxxToEnginePrimeTrackIdMap;
+    // We will build up a map from Mixxx track id to external track during export.
+    // QHash<Key, T> requires that T is default-constructible, but this is not true for
+    // djinterop::track, so we wrap it in std::optional and ensure it is always set.
+    QHash<TrackId, std::optional<djinterop::track>> mixxxToExtTrackMap;
 
     for (const auto& trackRef : std::as_const(m_trackRefs)) {
         // Load each track.
@@ -554,8 +660,8 @@ void EnginePrimeExportJob::run() {
         try {
             exportTrack(m_pRequest,
                     pDb.get(),
-                    dbVersion,
-                    &mixxxToEnginePrimeTrackIdMap,
+                    dbSchemaVersion,
+                    &mixxxToExtTrackMap,
                     m_pLastLoadedTrack,
                     m_pLastLoadedWaveform.get());
         } catch (std::exception& e) {
@@ -577,37 +683,58 @@ void EnginePrimeExportJob::run() {
         emit jobProgress(currProgress);
     }
 
-    // We will ensure that there is a special top-level crate representing the
-    // root of all Mixxx-exported items.  Mixxx tracks and crates will exist
-    // underneath this crate.
-    std::unique_ptr<djinterop::crate> pExtRootCrate;
-    try {
-        const auto optionalExtRootCrate = pDb->root_crate_by_name(kMixxxRootCrateName);
-        pExtRootCrate = std::make_unique<djinterop::crate>(optionalExtRootCrate
-                        ? *optionalExtRootCrate
-                        : pDb->create_root_crate(kMixxxRootCrateName));
-    } catch (std::exception& e) {
-        qWarning() << "Failed to create/identify root crate:" << e.what();
-        m_lastErrorMessage = e.what();
-        emit failed(m_lastErrorMessage);
-        return;
-    }
-
-    // Add each track to the root crate, even if it also belongs to others.
-    for (const TrackRef& trackRef : std::as_const(m_trackRefs)) {
-        if (!mixxxToEnginePrimeTrackIdMap.contains(trackRef.getId())) {
-            qInfo() << "Not adding track" << trackRef.getId()
-                    << "to any crates, as it was not exported";
-            continue;
+    // If the database type supports it, ensure that there is a special
+    // top-level crate representing the root of all Mixxx-exported items.
+    // Mixxx tracks and crates will exist underneath this crate.
+    //
+    // If the database type does not support nested crates, export
+    // everything at top level.
+    std::unique_ptr<djinterop::crate> pExtRootCrate{};
+    if (pDb->supports_feature(djinterop::feature::supports_nested_crates)) {
+        try {
+            const auto optionalExtRootCrate = pDb->root_crate_by_name(kMixxxRootCrateName);
+            pExtRootCrate = std::make_unique<djinterop::crate>(optionalExtRootCrate
+                            ? *optionalExtRootCrate
+                            : pDb->create_root_crate(kMixxxRootCrateName));
+        } catch (std::exception& e) {
+            qWarning() << "Failed to create/identify root crate:" << e.what();
+            m_lastErrorMessage = e.what();
+            emit failed(m_lastErrorMessage);
+            return;
         }
 
-        const auto extTrackId = mixxxToEnginePrimeTrackIdMap.value(
-                trackRef.getId());
+        // Add each track to the root crate, even if it also belongs to others.
+        // This allows someone browsing crates to see all Mixxx-exported tracks
+        // under the top-level Mixxx crate.
+        for (const TrackRef& trackRef : std::as_const(m_trackRefs)) {
+            if (!mixxxToExtTrackMap.contains(trackRef.getId())) {
+                qInfo() << "Not adding track" << trackRef.getId()
+                        << "to any crates, as it was not exported";
+                continue;
+            }
+
+            const auto extTrack = *mixxxToExtTrackMap.value(trackRef.getId());
+            try {
+                pExtRootCrate->add_track(extTrack);
+            } catch (std::exception& e) {
+                qWarning() << "Failed to add track" << trackRef.getId()
+                           << "to root crate:" << e.what();
+                m_lastErrorMessage = e.what();
+                emit failed(m_lastErrorMessage);
+                return;
+            }
+        }
+    }
+
+    std::unique_ptr<djinterop::playlist> pExtRootPlaylist{};
+    if (pDb->supports_feature(djinterop::feature::supports_nested_playlists)) {
         try {
-            pExtRootCrate->add_track(extTrackId);
+            const auto optionalExtRootPlaylist = pDb->root_playlist_by_name(kMixxxRootPlaylistName);
+            pExtRootPlaylist = std::make_unique<djinterop::playlist>(optionalExtRootPlaylist
+                            ? *optionalExtRootPlaylist
+                            : pDb->create_root_playlist(kMixxxRootPlaylistName));
         } catch (std::exception& e) {
-            qWarning() << "Failed to add track" << trackRef.getId()
-                       << "to root crate:" << e.what();
+            qWarning() << "Failed to create/identify root playlist:" << e.what();
             m_lastErrorMessage = e.what();
             emit failed(m_lastErrorMessage);
             return;
@@ -636,8 +763,9 @@ void EnginePrimeExportJob::run() {
         qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().toString() << "...";
         try {
             exportCrate(
-                    pExtRootCrate.get(),
-                    mixxxToEnginePrimeTrackIdMap,
+                    pDb.get(),
+                    pExtRootCrate.get(), // May be nullptr
+                    mixxxToExtTrackMap,
                     m_lastLoadedCrate,
                     m_lastLoadedCrateTrackIds);
         } catch (std::exception& e) {
@@ -652,8 +780,48 @@ void EnginePrimeExportJob::run() {
         emit jobProgress(currProgress);
     }
 
-    qInfo() << "Engine Prime Export Job completed successfully";
-    emit completed(m_trackRefs.size(), m_crateIds.size());
+    // Export all Mixxx playlists
+    for (const auto& idAndName : std::as_const(m_playlistIdsAndNames)) {
+        // Load the current crate.
+        // Note that loading must happen on the same thread as the track collection
+        // manager, which is not the same as this method's worker thread.
+        QMetaObject::invokeMethod(
+                this,
+                "loadPlaylist",
+                Qt::BlockingQueuedConnection,
+                Q_ARG(int, idAndName.first),
+                Q_ARG(QString, idAndName.second));
+
+        if (m_cancellationRequested.loadAcquire() != 0) {
+            qInfo() << "Cancelling export";
+            return;
+        }
+
+        qInfo() << "Exporting playlist" << m_lastLoadedPlaylistId << "/"
+                << m_lastLoadedPlaylistName << "...";
+        try {
+            exportPlaylist(
+                    pDb.get(),
+                    pExtRootPlaylist.get(), // May be nullptr
+                    mixxxToExtTrackMap,
+                    m_lastLoadedPlaylistName,
+                    m_lastLoadedPlaylistTrackIds);
+        } catch (std::exception& e) {
+            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().toString()
+                       << ":" << e.what();
+            m_lastErrorMessage = e.what();
+            emit failed(m_lastErrorMessage);
+            return;
+        }
+
+        ++currProgress;
+        emit jobProgress(currProgress);
+    }
+
+    qInfo() << "Engine DJ Export Job completed successfully - Num tracks ="
+            << m_trackRefs.size() << ", num crates =" << m_crateIds.size()
+            << ", num playlists =" << m_playlistIdsAndNames.size();
+    emit completed(m_trackRefs.size(), m_crateIds.size(), m_playlistIdsAndNames.size());
 }
 
 void EnginePrimeExportJob::slotCancel() {

@@ -172,10 +172,7 @@ ReloopBeatmix24.connectControls = function() {
             ReloopBeatmix24.loopDefined);
         engine.trigger(group, "loop_end_position");
         engine.softTakeover(group, "rate", true);
-        engine.setValue("[EffectRack1_EffectUnit1]",
-            "group_" + group + "_enable", 0);
-        engine.setValue("[EffectRack1_EffectUnit2]",
-            "group_" + group + "_enable", 0);
+        // Update Fx controls from the state that is restored from fx config
         engine.trigger("[EffectRack1_EffectUnit1]", `group_${ group }_enable`);
         engine.trigger("[EffectRack1_EffectUnit2]", `group_${ group }_enable`);
         channelPlaying[group] = !!engine.getValue(group, "play");
@@ -192,10 +189,6 @@ ReloopBeatmix24.connectControls = function() {
             ReloopBeatmix24.SamplerPlay);
         engine.trigger(group, "play");
     }
-
-    // Effects reset
-    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Master]_enable", 0);
-    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Master]_enable", 0);
 };
 
 ReloopBeatmix24.init = function(id, _debug) {

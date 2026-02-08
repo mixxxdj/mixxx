@@ -9,21 +9,25 @@
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
+namespace {
+const QString kPaththroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
+} // namespace
+
 namespace allshader {
 
 // static
 QString WaveformRendererTextured::fragShaderForType(::WaveformWidgetType::Type t) {
     switch (t) {
     case ::WaveformWidgetType::Filtered:
-        return QLatin1String(":/shaders/filteredsignal.frag");
+        return QStringLiteral(":/shaders/filteredsignal.frag");
     case ::WaveformWidgetType::RGB:
-        return QLatin1String(":/shaders/rgbsignal.frag");
+        return QStringLiteral(":/shaders/rgbsignal.frag");
     case ::WaveformWidgetType::Stacked:
-        return QLatin1String(":/shaders/stackedsignal.frag");
+        return QStringLiteral(":/shaders/stackedsignal.frag");
     default:
         break;
     }
-    assert(false);
+    DEBUG_ASSERT(!"unsupported WaveformWidgetType");
     return QString();
 }
 
@@ -40,7 +44,7 @@ WaveformRendererTextured::WaveformRendererTextured(
           m_options(options),
           m_shadersValid(false),
           m_type(t),
-          m_pFragShader(fragShaderForType(t)) {
+          m_fragShader(fragShaderForType(t)) {
 }
 
 WaveformRendererTextured::~WaveformRendererTextured() {
@@ -65,28 +69,29 @@ bool WaveformRendererTextured::loadShaders() {
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 QOpenGLShader::Vertex,
-                ":/shaders/passthrough.vert")) {
-        qDebug() << "WaveformRendererTextured::loadShaders - "
-                 << m_frameShaderProgram->log();
+                kPaththroughShaderPath)) {
+        qWarning()
+                << "WaveformRendererTextured::loadShaders - compilation failed:"
+                << kPaththroughShaderPath;
+        qDebug() << m_frameShaderProgram->log();
         return false;
     }
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 QOpenGLShader::Fragment,
-                m_pFragShader)) {
-        qDebug() << "WaveformRendererTextured::loadShaders - "
-                 << m_frameShaderProgram->log();
+                m_fragShader)) {
+        qWarning() << "WaveformRendererTextured::loadShaders - compilation failed:" << m_fragShader;
         return false;
     }
 
     if (!m_frameShaderProgram->link()) {
-        qDebug() << "WaveformRendererTextured::loadShaders - "
+        qDebug() << "WaveformRendererTextured::loadShaders - linking failed."
                  << m_frameShaderProgram->log();
         return false;
     }
 
     if (!m_frameShaderProgram->bind()) {
-        qDebug() << "WaveformRendererTextured::loadShaders - shaders binding failed";
+        qDebug() << "WaveformRendererTextured::loadShaders - binding failed";
         return false;
     }
 
@@ -153,8 +158,8 @@ bool WaveformRendererTextured::loadTexture() {
                 GL_UNSIGNED_BYTE,
                 m_data.data());
         int error = glGetError();
-        if (error) {
-            qDebug() << "WaveformRendererTextured::loadTexture - glTexImage2D error" << error;
+        VERIFY_OR_DEBUG_ASSERT(!error) {
+            qWarning() << "WaveformRendererTextured::loadTexture - glTexImage2D error" << error;
         }
     } else {
         glDeleteTextures(1, &m_textureId);
@@ -219,8 +224,6 @@ void WaveformRendererTextured::createFrameBuffers() {
 }
 
 void WaveformRendererTextured::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
-
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
@@ -237,8 +240,7 @@ void WaveformRendererTextured::initializeGL() {
     }
 }
 
-void WaveformRendererTextured::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererTextured::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererTextured::onSetTrack() {
@@ -330,7 +332,7 @@ void WaveformRendererTextured::paintGL() {
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
-    getGains(&allGain, true, &lowGain, &midGain, &highGain);
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const auto firstVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getFirstDisplayedPosition(positionType) * trackSamples /
@@ -455,11 +457,19 @@ void WaveformRendererTextured::paintGL() {
 
         glBegin(GL_QUADS);
         {
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(firstVisualIndex, -1.0f, 0.0f);
+            if (m_isSlipRenderer && m_waveformRenderer->isSlipActive()) {
+                glTexCoord2f(0.0, 0.5);
+                glVertex3f(firstVisualIndex, 0.0f, 0.0f);
 
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(lastVisualIndex, -1.0f, 0.0f);
+                glTexCoord2f(1.0, 0.5);
+                glVertex3f(lastVisualIndex, 0.0f, 0.0f);
+            } else {
+                glTexCoord2f(0.0, 0.0);
+                glVertex3f(firstVisualIndex, -1.0f, 0.0f);
+
+                glTexCoord2f(1.0, 0.0);
+                glVertex3f(lastVisualIndex, -1.0f, 0.0f);
+            }
 
             glTexCoord2f(1.0, 1.0);
             glVertex3f(lastVisualIndex, 1.0f, 0.0f);

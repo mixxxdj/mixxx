@@ -18,11 +18,11 @@
 #include "library/treeitem.h"
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #ifdef __ENGINEPRIME__
 #include "widget/wlibrarysidebar.h"
 #endif
-
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
@@ -55,12 +55,14 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             LIBRARYTABLE_KEY_ID,
             LIBRARYTABLE_BPM,
             LIBRARYTABLE_BPM_LOCK,
+            LIBRARYTABLE_BEATS_VERSION,
             LIBRARYTABLE_DURATION,
             LIBRARYTABLE_BITRATE,
             LIBRARYTABLE_REPLAYGAIN,
             LIBRARYTABLE_FILETYPE,
             LIBRARYTABLE_DATETIMEADDED,
             TRACKLOCATIONSTABLE_LOCATION,
+            TRACKLOCATIONSTABLE_DIRECTORY,
             TRACKLOCATIONSTABLE_FSDELETED,
             LIBRARYTABLE_COMMENT,
             LIBRARYTABLE_MIXXXDELETED,
@@ -70,7 +72,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             LIBRARYTABLE_COVERART_LOCATION,
             LIBRARYTABLE_COVERART_COLOR,
             LIBRARYTABLE_COVERART_DIGEST,
-            LIBRARYTABLE_COVERART_HASH};
+            LIBRARYTABLE_COVERART_HASH,
+            LIBRARYTABLE_WAVESUMMARYHEX};
     QStringList searchColumns = {
             LIBRARYTABLE_ARTIST,
             LIBRARYTABLE_ALBUM,
@@ -121,7 +124,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_pSidebarModel->setRootItem(std::move(pRootItem));
 
 #ifdef __ENGINEPRIME__
-    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
     connect(m_pExportLibraryAction.get(),
             &QAction::triggered,
             this,
@@ -204,17 +207,21 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
 
 bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     if (pSource) {
+        // We don't accept internal drags onto Tracks as all tracks with a
+        // source are already in the library.
         return false;
-    } else {
-        QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
-                urls, true);
-        return trackIds.size() > 0;
     }
+
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, nullptr);
+    return trackIds.size() > 0;
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool MixxxLibraryFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 #ifdef __ENGINEPRIME__

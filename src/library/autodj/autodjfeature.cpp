@@ -121,9 +121,11 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &QAction::triggered,
             this,
             &AutoDJFeature::slotClearQueue);
-
-    // Create context-menu items to allow crates to be added to, and removed
-    // from, the auto-DJ queue.
+    // Create context menu item to allow crates to be removed from AutoDJ sources.
+    // onRightClickChild() gets the clicked crate's id form the sidebar model and
+    // assigns it to this action's data.
+    // In slotRemoveCrateFromAutoDj() we retrieve the CrateId data and finally
+    // remove the crate from sources in removeCrateFromAutoDj().
     m_pRemoveCrateFromAutoDjAction =
             make_parented<QAction>(tr("Remove Crate as Track Source"), this);
     m_pRemoveCrateFromAutoDjAction->setShortcut(removeKeySequence);
@@ -238,8 +240,11 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // Auto DJ playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls,
-            !pSource);
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
     if (trackIds.isEmpty()) {
         return false;
     }
@@ -248,9 +253,8 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
-bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool AutoDJFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 void AutoDJFeature::slotEnableAutoDJ() {
@@ -265,13 +269,13 @@ void AutoDJFeature::slotClearQueue() {
     clear();
 }
 
-// Add a crate to the auto-DJ queue.
+// Add a crate to the AutoDJ sources
 void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
     m_pTrackCollection->updateAutoDjCrate(crateId, true);
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
-    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data().value<CrateId>());
+    CrateId crateId(m_pRemoveCrateFromAutoDjAction->data());
     removeCrateFromAutoDj(crateId);
 }
 

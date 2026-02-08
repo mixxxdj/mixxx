@@ -1,4 +1,3 @@
-
 /** ScriptConnectionJSProxy */
 
 declare interface ScriptConnection {
@@ -30,7 +29,6 @@ declare interface ScriptConnection {
      */
     readonly isConnected: boolean;
 }
-
 
 /** ControllerScriptInterfaceLegacy */
 
@@ -122,7 +120,7 @@ declare namespace engine {
      */
     function getDefaultParameter(group: string, name: string): number;
 
-    type CoCallback = (value: number, group: string, name: string) => void
+    type CoCallback = (value: number, group: string, name: string) => void;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -134,7 +132,7 @@ declare namespace engine {
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
-    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection |undefined;
+    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -162,7 +160,6 @@ declare namespace engine {
      * @deprecated Use {@link engine.makeConnection} instead
      */
     function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
-
 
     /**
      * Triggers the execution of all connected callback functions, with the actual value of a control.
@@ -264,7 +261,7 @@ declare namespace engine {
     function softTakeoverIgnoreNextValue(group: string, name: string): void;
 
     /**
-     * To achieve a brake effect of the playback speed
+     * To achieve a brake effect of the playback speed.
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
      *
      * @param deck The deck number to use, e.g: 1
@@ -272,24 +269,30 @@ declare namespace engine {
      * @param factor Defines how quickly the deck should come to a stop.
      *               Start with a value of 1 and increase to increase the acceleration.
      *               Be aware that brake called with low factors (about 0.5 and lower),
-     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.0]
-     * @param rate The initial speed of the deck when enabled. "1" (default) means 10x speed in forward.
+     *               would keep the deck running although the resulting very low sounds are not audible anymore.
+     *               Calling it with negative factor and negative rate will cause an infinite, accelerating spinback. [default = 1.0]
+     * @param rate The initial speed of the deck when enabled. Only values  smaller than "1" (default) are considered.
+     *             Value "1" and higher means the current tempo (rate) is used.
      *             Negative values like "-1" also work, though then it's spinning reverse obviously. [default = 1.0]
      */
     function brake(deck: number, activate: boolean, factor?: number, rate?: number): void;
 
     /**
-     * To achieve a spinback effect of the playback speed
+     * To achieve a spinback effect of the playback speed.
+     * This is a wrapper for brake(), which is called with 'factor' with reversed sign.
      * Both engine.softStart() and engine.brake()/engine.spinback() can interrupt each other.
      *
      * @param deck The deck number to use, e.g: 1
      * @param activate Set true to activate, or false to disable
      * @param factor Defines how quickly the deck should come to normal playback rate.
      *               Start with a value of 1 and increase to increase the acceleration.
-     *               Be aware that spinback called with low factors (about 0.5 and lower),
-     *               would keep the deck running although the resulting very low sounds are not audible anymore. [default = 1.8]
-     * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x speed in reverse.
-     *             Positive values like "10" also work, though then it's spinning forward obviously. [default = -10.0]
+     *               Be aware that spinback called with low (positive) factors (about 0.5 and lower),
+     *               would keep the deck running although the resulting very low sounds are not audible anymore.
+     *               Be also aware that calling it with negative factor and negative rate will cause an infinite,
+     *               accelerating spinback that can only be stopped with brake()/spinback() (activate = false) or
+     *               softStart() (activate = true). [default = 1.8]
+     * @param rate The initial speed of the deck when enabled. "-10" (default) means 10x the current speed in reverse.
+     *             With positive values lower than "1" and higher also work, though then it's spinning forward obviously. [default = -10.0]
      */
     function spinback(deck: number, activate: boolean, factor?: number, rate?: number): void;
 
@@ -305,6 +308,28 @@ declare namespace engine {
      */
     function softStart(deck: number, activate: boolean, factor?: number): void;
 
+    /**
+     * Returns true if the deck is currently braking.
+     * @param deck The deck number to use, e.g: 1
+     * @returns Returns true if the deck is currently braking.
+     */
+    function isBrakeActive(deck: number): bool;
+
+    /**
+     * Returns true if the deck is currently performing a spinback.
+     * @param deck The deck number to use, e.g: 1
+     * @returns Returns true if the deck is currently performing a spinback.
+     */
+    function isSpinbackActive(deck: number): bool;
+
+    /**
+     * Returns true if the deck is currently soft-starting.
+     * @param deck The deck number to use, e.g: 1
+     * @returns Returns true if the deck is currently soft-starting.
+     */
+    function isSoftStartActive(deck: number): bool;
+
+    // prettier-ignore
     enum Charset {
         ASCII,          // American Standard Code for Information Interchange (7-Bit)
         UTF_8,          // Unicode Transformation Format (8-Bit)
@@ -314,7 +339,7 @@ declare namespace engine {
         UTF_32BE,       // UTF-32 for Big-Endian devices (MIPS, PPC)
         CentralEurope,  // Windows_1250 which includes all characters of ISO_8859_2
         Cyrillic,       // Windows_1251 which includes all characters of ISO_8859_5
-        Latin1,         // Windows_1252 which includes all characters of ISO_8859_1
+        WesternEurope,  // Windows_1252 which includes all characters of ISO_8859_1
         Greek,          // Windows_1253 which includes all characters of ISO_8859_7
         Turkish,        // Windows_1254 which includes all characters of ISO_8859_9
         Hebrew,         // Windows_1255 which includes all characters of ISO_8859_8
@@ -330,15 +355,16 @@ declare namespace engine {
         UCS2,           // Universal Character Set (2-Byte) ISO_10646
         SCSU,           // Standard Compression Scheme for Unicode
         BOCU_1,         // Binary Ordered Compression for Unicode
-        CESU_8          // Compatibility Encoding Scheme for UTF-16 (8-Bit)
+        CESU_8,         // Compatibility Encoding Scheme for UTF-16 (8-Bit)
+        Latin1          // ISO_8859_1, available on Qt < 6.5
     }
 
     /**
      * Converts a string into another charset.
-     * 
+     *
      * @param value The string to encode
      * @param targetCharset The charset to encode the string into.
      * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
      */
-    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer
+    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer;
 }

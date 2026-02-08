@@ -4,13 +4,30 @@
 #include <QImage>
 #include <QOpenGLTexture>
 
+#include "control/controlproxy.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/engine.h"
+#include "rendergraph/material/rgbamaterial.h"
+#include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/math.h"
-#include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
-#include "waveform/renderers/allshader/rgbdata.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+
+namespace {
+#ifdef __SCENEGRAPH__
+// FIXME this is a workaround an issue with waveform only drawing partially in
+// SG. The workaround is to reduce the the number of vertices, by reducing the
+// precision of waveform strips.
+const float kPixelPerStrip = 2;
+#else
+const float kPixelPerStrip = 1;
+#endif
+} // namespace
+
+using namespace rendergraph;
 
 namespace allshader {
 
@@ -18,68 +35,112 @@ WaveformRendererStem::WaveformRendererStem(
         WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
         : WaveformRendererSignalBase(waveformWidget),
-          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
+          m_splitStemTracks(false),
+          m_outlineOpacity(0.15f),
+          m_opacity(0.75f) {
+    initForRectangles<RGBAMaterial>(0);
+    setUsePreprocess(true);
 }
 
-void WaveformRendererStem::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
-void WaveformRendererStem::initializeGL() {
-    WaveformRendererSignalBase::initializeGL();
-    m_shader.init();
-    m_textureShader.init();
-    auto group = m_pEQEnabled->getKey().group;
-    for (int stemIdx = 1; stemIdx <= mixxx::kMaxSupportedStems; stemIdx++) {
-        DEBUG_ASSERT(group.endsWith("]"));
-        QString stemGroup = QStringLiteral("%1Stem%2]")
-                                    .arg(group.left(group.size() - 1),
-                                            QString::number(stemIdx));
+bool WaveformRendererStem::init() {
+    for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+        QString stemGroup = EngineDeck::getGroupForStem(m_waveformRenderer->getGroup(), stemIdx);
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(stemGroup,
                         QStringLiteral("volume")));
-        m_pStemMute.emplace_back(std::make_unique<ControlProxy>(
-                stemGroup, QStringLiteral("mute")));
+        m_pStemMute.emplace_back(
+                std::make_unique<ControlProxy>(stemGroup,
+                        QStringLiteral("mute")));
+        auto bringToForeground = [this, stemIdx](double) {
+            if (!m_reorderOnChange) {
+                return;
+            }
+            m_stackOrder.removeAll(stemIdx);
+            m_stackOrder.append(stemIdx);
+        };
+        m_pStemGain.back()->connectValueChanged(this, bringToForeground);
+        m_pStemMute.back()->connectValueChanged(this, bringToForeground);
+    }
+
+    m_stackOrder.resize(mixxx::kMaxSupportedStems);
+    std::iota(m_stackOrder.begin(), m_stackOrder.end(), 0);
+
+#ifndef __SCENEGRAPH__
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    setReorderOnChange(pWaveformWidgetFactory->isStemReorderOnChange());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemReorderOnChangeChanged,
+            this,
+            &WaveformRendererStem::setReorderOnChange);
+    setOutlineOpacity(pWaveformWidgetFactory->getStemOutlineOpacity());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemOutlineOpacityChanged,
+            this,
+            &WaveformRendererStem::setOutlineOpacity);
+    setOpacity(pWaveformWidgetFactory->getStemOpacity());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemOpacityChanged,
+            this,
+            &WaveformRendererStem::setOpacity);
+#endif
+    return true;
+}
+
+void WaveformRendererStem::preprocess() {
+    if (!preprocessInner()) {
+        if (geometry().vertexCount() != 0) {
+            geometry().allocate(0);
+            markDirtyGeometry();
+        }
     }
 }
 
-void WaveformRendererStem::paintGL() {
+bool WaveformRendererStem::preprocessInner() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+
     if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
-        return;
+        return false;
     }
 
     auto stemInfo = pTrack->getStemInfo();
     // If this track isn't a stem track, skip the rendering
     if (stemInfo.isEmpty()) {
-        return;
+        return false;
     }
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
                                          : ::WaveformRendererAbstract::Play;
 
     ConstWaveformPointer waveform = pTrack->getWaveform();
     if (waveform.isNull()) {
-        return;
+        return false;
     }
 
     const int dataSize = waveform->getDataSize();
     if (dataSize <= 1) {
-        return;
+        return false;
     }
 
     const WaveformData* data = waveform->data();
     if (data == nullptr) {
-        return;
+        return false;
     }
     // If this waveform doesn't contain stem data, skip the rendering
     if (!waveform->hasStem()) {
-        return;
+        return false;
     }
 
     uint selectedStems = m_waveformRenderer->getSelectedStems();
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const int length = static_cast<int>(m_waveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const int stripLength = static_cast<int>(static_cast<float>(pixelLength) / kPixelPerStrip);
+    const float invDevicePixelRatio = kPixelPerStrip / devicePixelRatio;
+    const float halfStripSize = kPixelPerStrip / 2.0f / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -90,15 +151,15 @@ void WaveformRendererStem::paintGL() {
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
-            (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(stripLength);
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0);
-    // applyCompensation = true, as we scale to match filtered.all
-    getGains(&allGain, false, nullptr, nullptr, nullptr);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
-    const float halfBreadth = breadth / 2.0f;
+    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float stemBreadth = m_splitStemTracks ? breadth / 4.0f : 0;
+    const float halfBreadth = (m_splitStemTracks ? stemBreadth : breadth) / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;
 
@@ -108,23 +169,25 @@ void WaveformRendererStem::paintGL() {
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    const int reserved = numVerticesPerLine * (8 * length + 1);
+    const int reserved = numVerticesPerLine *
+            (mixxx::audio::ChannelCount::stem() * stripLength + 1);
 
-    m_vertices.clear();
-    m_vertices.reserve(reserved);
-    m_colors.clear();
-    m_colors.reserve(reserved);
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+    geometry().allocate(reserved);
+    markDirtyGeometry();
 
-    m_vertices.addRectangle(0.f,
-            halfBreadth - 0.5f * devicePixelRatio,
-            static_cast<float>(length),
-            m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f * devicePixelRatio);
-    m_colors.addForRectangle(0.f, 0.f, 0.f, 0.f);
+    RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
+    vertexUpdater.addRectangle({0.f,
+                                       halfBreadth - 0.5f},
+            {static_cast<float>(length),
+                    m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f},
+            {0.f, 0.f, 0.f, 0.f});
 
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
-    for (int visualIdx = 0; visualIdx < length; ++visualIdx) {
-        for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
+    for (int visualIdx = 0; visualIdx < stripLength; visualIdx++) {
+        int stemLayer = 0;
+        for (int stemIdx : std::as_const(m_stackOrder)) {
             // Stem is drawn twice with different opacity level, this allow to
             // see the maximum signal by transparency
             for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
@@ -132,7 +195,7 @@ void WaveformRendererStem::paintGL() {
                 float color_r = stemColor.redF(),
                       color_g = stemColor.greenF(),
                       color_b = stemColor.blueF(),
-                      color_a = stemColor.alphaF() * (layerIdx ? 0.75f : 0.15f);
+                      color_a = stemColor.alphaF() * (layerIdx ? m_opacity : m_outlineOpacity);
                 const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
                 const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
@@ -140,7 +203,7 @@ void WaveformRendererStem::paintGL() {
                 const int visualIndexStop =
                         std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-                const float fVisualIdx = static_cast<float>(visualIdx);
+                const float fVisualIdx = static_cast<float>(visualIdx) * invDevicePixelRatio;
 
                 // Find the max values for current eq in the waveform data.
                 // - Max of left and right
@@ -159,51 +222,44 @@ void WaveformRendererStem::paintGL() {
 
                 // Apply the gains
                 if (layerIdx) {
-                    max *= m_pStemMute[stemIdx]->toBool() ||
-                                    (selectedStems &&
-                                            !(selectedStems & 1 << stemIdx))
-                            ? 0.f
-                            : static_cast<float>(m_pStemGain[stemIdx]->get());
+                    if (selectedStems) {
+                        max *= !(selectedStems & 1 << stemIdx)
+                                ? 0.f
+                                : 1.f;
+                    } else if (!m_pStemMute.empty() && m_pStemMute[stemIdx]->toBool()) {
+                        max = 0;
+                    } else {
+                        float volume = m_pStemGain.empty()
+                                ? 1.f
+                                : static_cast<float>(m_pStemGain[stemIdx]->get());
+                        max *= volume;
+                    }
                 }
 
                 // Lines are thin rectangles
-                // shawdow
-                m_vertices.addRectangle(fVisualIdx - 0.5f,
-                        halfBreadth - heightFactor * max,
-                        fVisualIdx + 0.5f,
-                        m_isSlipRenderer ? halfBreadth : halfBreadth + heightFactor * max);
-
-                m_colors.addForRectangle(color_r, color_g, color_b, color_a);
+                // shadow
+                vertexUpdater.addRectangle(
+                        {fVisualIdx - halfStripSize,
+                                stemLayer * stemBreadth + halfBreadth -
+                                        heightFactor * max},
+                        {fVisualIdx + halfStripSize,
+                                m_isSlipRenderer
+                                        ? stemLayer * stemBreadth + halfBreadth
+                                        : stemLayer * stemBreadth + halfBreadth +
+                                                heightFactor * max},
+                        {color_r, color_g, color_b, color_a});
             }
+            stemLayer++;
         }
+
         xVisualFrame += visualIncrementPerPixel;
     }
 
-    DEBUG_ASSERT(reserved == m_vertices.size());
-    DEBUG_ASSERT(reserved == m_colors.size());
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
+    markDirtyMaterial();
 
-    const int matrixLocation = m_shader.matrixLocation();
-    const int positionLocation = m_shader.positionLocation();
-    const int colorLocation = m_shader.colorLocation();
-
-    m_shader.bind();
-    m_shader.enableAttributeArray(positionLocation);
-    m_shader.enableAttributeArray(colorLocation);
-
-    m_shader.setUniformValue(matrixLocation, matrix);
-
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
-    m_shader.setAttributeArray(
-            colorLocation, GL_FLOAT, m_colors.constData(), 4);
-
-    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
-
-    m_shader.disableAttributeArray(positionLocation);
-    m_shader.disableAttributeArray(colorLocation);
-    m_shader.release();
+    return true;
 }
 
 } // namespace allshader

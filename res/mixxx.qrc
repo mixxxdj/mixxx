@@ -36,6 +36,7 @@
         <file>images/heart_icon_dark.svg</file>
         <file>images/heart_icon_rainbow.svg</file>
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
+        <file>images/mixxx-icon-logo-christmas.svg</file> <!-- christmas launch image -->
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
         <file>images/ic_delete.svg</file>
@@ -48,6 +49,7 @@
         <file>images/preferences/dark/ic_preferences_bulk.svg</file>
         <file>images/preferences/dark/ic_preferences_colors.svg</file>
         <file>images/preferences/dark/ic_preferences_controllers.svg</file>
+        <file>images/preferences/dark/ic_preferences_controllers_reload.svg</file>
         <file>images/preferences/dark/ic_preferences_crossfader.svg</file>
         <file>images/preferences/dark/ic_preferences_decks.svg</file>
         <file>images/preferences/dark/ic_preferences_effects.svg</file>
@@ -74,6 +76,7 @@
         <file>images/preferences/light/ic_preferences_bulk.svg</file>
         <file>images/preferences/light/ic_preferences_colors.svg</file>
         <file>images/preferences/light/ic_preferences_controllers.svg</file>
+        <file>images/preferences/light/ic_preferences_controllers_reload.svg</file>
         <file>images/preferences/light/ic_preferences_crossfader.svg</file>
         <file>images/preferences/light/ic_preferences_decks.svg</file>
         <file>images/preferences/light/ic_preferences_effects.svg</file>

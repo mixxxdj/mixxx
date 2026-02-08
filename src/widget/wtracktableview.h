@@ -26,12 +26,14 @@ class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
   public:
     WTrackTableView(
-            QWidget* parent,
+            QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            double backgroundColorOpacity,
-            bool sorting);
+            double backgroundColorOpacity);
     ~WTrackTableView() override;
+#ifdef __LINUX__
+    void currentChanged(const QModelIndex& current, const QModelIndex& previous) override;
+#endif
     void contextMenuEvent(QContextMenuEvent * event) override;
     QString columnNameOfIndex(const QModelIndex& index) const;
     void onSearch(const QString& text) override;
@@ -41,6 +43,7 @@ class WTrackTableView : public WLibraryTableView {
     void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void editSelectedItem();
     void activateSelectedTrack();
 #ifdef __STEM__
     void loadSelectedTrackToGroup(const QString& group,
@@ -79,6 +82,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_backgroundColorOpacity;
     }
 
+    // Color for the table items' focus border. Default: white
+    // Used by table delegates.
+    static constexpr QColor kDefaultFocusBorderColor = QColor(0xff, 0xff, 0xff);
     Q_PROPERTY(QColor focusBorderColor
                     MEMBER m_focusBorderColor
                             NOTIFY focusBorderColorChanged
@@ -87,9 +93,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_focusBorderColor;
     }
 
-    // Default color for played tracks' text color. #555555, bit darker than Qt::darkgray.
+    // Color for played tracks' text color. Default: a bit darker than Qt::darkgray
     // BaseTrackTableModel uses this for the ForegroundRole of played tracks.
-    static constexpr const char* kDefaultTrackPlayedColor = "#555555";
+    static constexpr QColor kDefaultTrackPlayedColor = QColor(0x55, 0x55, 0x55);
     Q_PROPERTY(QColor trackPlayedColor
                     MEMBER m_trackPlayedColor
                             NOTIFY trackPlayedColorChanged
@@ -97,9 +103,9 @@ class WTrackTableView : public WLibraryTableView {
     QColor getTrackPlayedColor() const {
         return m_trackPlayedColor;
     }
-    // Default color for missing tracks' text color. #ee0000, bit darker than Qt::red.
+    // Color for missing tracks' text color.  Default: red
     // BaseTrackTableModel uses this for the ForegroundRole of missing tracks.
-    static constexpr const char* kDefaultTrackMissingColor = "#ff0000";
+    static constexpr QColor kDefaultTrackMissingColor = QColor(0xff, 0x00, 0x00);
     Q_PROPERTY(QColor trackMissingColor
                     MEMBER m_trackMissingColor
                             NOTIFY trackMissingColorChanged
@@ -107,12 +113,19 @@ class WTrackTableView : public WLibraryTableView {
     QColor getTrackMissingColor() const {
         return m_trackMissingColor;
     }
+    // Color for the track drop indicator line. Default: red
+    static constexpr QColor kDefaultDropIndicatorColor = QColor(0xff, 0x00, 0x00);
+    Q_PROPERTY(QColor dropIndicatorColor
+                    MEMBER m_dropIndicatorColor
+                            NOTIFY dropIndicatorColorChanged
+                                    DESIGNABLE true);
 
   signals:
     void trackMenuVisible(bool visible);
     void focusBorderColorChanged(QColor col);
     void trackPlayedColorChanged(QColor col);
     void trackMissingColorChanged(QColor col);
+    void dropIndicatorColorChanged(QColor col);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
@@ -142,6 +155,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotScrollValueChanged(int);
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
+    void slotRandomSorting();
     void keyNotationChanged();
 
   protected:
@@ -149,9 +163,12 @@ class WTrackTableView : public WLibraryTableView {
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
-    void dragMoveEvent(QDragMoveEvent * event) override;
-    void dragEnterEvent(QDragEnterEvent * event) override;
-    void dropEvent(QDropEvent * event) override;
+    void dragMoveEvent(QDragMoveEvent* event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+
+    void paintEvent(QPaintEvent* e) override;
 
     void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
@@ -171,6 +188,7 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
 
     void initTrackMenu();
+    void showTrackMenu(const QPoint pos, const QModelIndex& index);
 
     void hideOrRemoveSelectedTracks();
 
@@ -184,6 +202,7 @@ class WTrackTableView : public WLibraryTableView {
     QColor m_focusBorderColor;
     QColor m_trackPlayedColor;
     QColor m_trackMissingColor;
+    QColor m_dropIndicatorColor;
     bool m_sorting;
 
     // Control the delay to load a cover art.
@@ -195,4 +214,6 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pKeyNotation;
     ControlProxy* m_pSortColumn;
     ControlProxy* m_pSortOrder;
+
+    int m_dropRow;
 };

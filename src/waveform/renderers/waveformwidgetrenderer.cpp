@@ -5,9 +5,12 @@
 
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "util/assert.h"
 #include "util/math.h"
+#include "waveform/isynctimeprovider.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/waveform.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
@@ -39,13 +42,11 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           // Really create some to manage those;
           m_visualPlayPosition(nullptr),
           m_totalVSamples(0),
-          m_pRateRatioCO(nullptr),
-          m_pGainControlObject(nullptr),
           m_gain(1.0),
-          m_pTrackSamplesControlObject(nullptr),
-          m_trackSamples(0),
+          m_trackSamples(0.0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
+          m_pContext(nullptr),
           m_passthroughEnabled(false) {
     //qDebug() << "WaveformWidgetRenderer";
     for (int type = ::WaveformRendererAbstract::Play;
@@ -79,26 +80,41 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
         delete m_rendererStack[i];
     }
 
-    delete m_pRateRatioCO;
-    delete m_pGainControlObject;
-    delete m_pTrackSamplesControlObject;
-
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     delete m_timer;
 #endif
 }
 
 bool WaveformWidgetRenderer::init() {
-    //qDebug() << "WaveformWidgetRenderer::init, m_group=" << m_group;
+    m_trackPixelCount = 0.0;
+    m_visualSamplePerPixel = 1.0;
+    m_audioSamplePerPixel = 1.0;
+    m_totalVSamples = 0;
+    m_gain = 1.0;
+    m_trackSamples = 0.0;
+
+    for (int type = ::WaveformRendererAbstract::Play;
+            type <= ::WaveformRendererAbstract::Slip;
+            type++) {
+        m_firstDisplayedPosition[type] = 0.0;
+        m_lastDisplayedPosition[type] = 0.0;
+        m_posVSample[type] = 0.0;
+        m_pos[type] = -1.0; // disable renderers
+        m_truePosSample[type] = -1.0;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(!m_group.isEmpty()) {
+        return false;
+    }
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pRateRatioCO = new ControlProxy(
-            m_group, "rate_ratio");
-    m_pGainControlObject = new ControlProxy(
-            m_group, "total_gain");
-    m_pTrackSamplesControlObject = new ControlProxy(
-            m_group, "track_samples");
+    m_pRateRatioCO = std::make_unique<ControlProxy>(
+            m_group, QStringLiteral("rate_ratio"));
+    m_pGainControlObject = std::make_unique<ControlProxy>(
+            m_group, QStringLiteral("total_gain"));
+    m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
+            m_group, QStringLiteral("track_samples"));
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
@@ -108,7 +124,7 @@ bool WaveformWidgetRenderer::init() {
     return true;
 }
 
-void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
+void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
     if (m_passthroughEnabled) {
         // disables renderers in draw()
         for (int type = ::WaveformRendererAbstract::Play;
@@ -367,10 +383,10 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     if (!enabled) {
         return;
     }
-    // If passthrough is activated while no track has been loaded previously mark
-    // the renderer state dirty in order trigger the render process. This is only
-    // required for the background renderer since that's the only one that'll
-    // be processed if passtrhough is active.
+    // If passthrough is activated while no track has been loaded previously,
+    // mark the renderer state dirty in order trigger the render process.
+    // This is only required for the background renderer since that's the only
+    // one that'll be processed if passthrough is active.
     if (!m_rendererStack.isEmpty()) {
         m_rendererStack[0]->setDirty(true);
     }
@@ -428,7 +444,7 @@ void WaveformWidgetRenderer::selectStem(mixxx::StemChannelSelection stemMask) {
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
     m_pTrack = track;
     //used to postpone first display until track sample is actually available
-    m_trackSamples = -1;
+    m_trackSamples = -1.0;
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->onSetTrack();

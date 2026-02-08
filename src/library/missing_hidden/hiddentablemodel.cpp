@@ -13,7 +13,7 @@ const QString kModelName = "hidden:";
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager)
-        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.missing") {
+        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.hidden") {
     setTableModel();
 }
 
@@ -49,7 +49,7 @@ void HiddenTableModel::setTableModel() {
             LIBRARYTABLE_ID,
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
     setSearch("");
 }
 
@@ -78,8 +78,10 @@ bool HiddenTableModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BEATS_VERSION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_DIRECTORY) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
@@ -99,7 +101,14 @@ TrackModel::Capabilities HiddenTableModel::getCapabilities() const {
             Capability::Unhide |
             Capability::RemoveFromDisk |
             Capability::EditMetadata |
-            Capability::Properties;
+            Capability::AddToAutoDJ |
+            Capability::LoadToDeck |
+            Capability::LoadToSampler |
+            Capability::LoadToPreviewDeck |
+            Capability::ResetPlayed |
+            Capability::Analyze |
+            Capability::Properties |
+            Capability::Sorting;
 }
 
 QString HiddenTableModel::modelKey(bool noSearch) const {

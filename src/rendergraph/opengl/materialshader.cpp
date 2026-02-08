@@ -5,6 +5,8 @@
 #include <rhi/qshader.h>
 #endif
 
+#include "../../util/assert.h"
+
 using namespace rendergraph;
 
 namespace {
@@ -15,7 +17,10 @@ QString resource(const QString& filename) {
 
 QByteArray loadShaderCodeFromFile(const QString& path) {
     QFile file(path);
-    file.open(QIODeviceBase::ReadOnly);
+    if (!file.open(QIODeviceBase::ReadOnly)) {
+        qWarning() << "Failed to open the shader file:" << path;
+        return QByteArray();
+    }
     QShader qsbShader = QShader::fromSerialized(file.readAll());
     QShaderKey key(QShader::GlslShader, 120);
     return qsbShader.shader(key).shader();
@@ -27,7 +32,10 @@ QString resource(const QString& filename) {
 
 QByteArray loadShaderCodeFromFile(const QString& path) {
     QFile file(path);
-    file.open(QIODeviceBase::ReadOnly);
+    if (!file.open(QIODeviceBase::ReadOnly)) {
+        qWarning() << "Failed to open shader file:" << path;
+        return QByteArray();
+    }
     return file.readAll();
 }
 #endif
@@ -40,12 +48,30 @@ MaterialShader::MaterialShader(const char* vertexShaderFilename,
     const QString vertexShaderFileFullPath = resource(vertexShaderFilename);
     const QString fragmentShaderFileFullPath = resource(fragmentShaderFilename);
 
-    addShaderFromSourceCode(QOpenGLShader::Vertex,
-            loadShaderCodeFromFile(vertexShaderFileFullPath));
-    addShaderFromSourceCode(QOpenGLShader::Fragment,
-            loadShaderCodeFromFile(fragmentShaderFileFullPath));
+    QByteArray vertexCode = loadShaderCodeFromFile(vertexShaderFileFullPath);
+    QByteArray fragmentCode = loadShaderCodeFromFile(fragmentShaderFileFullPath);
+    VERIFY_OR_DEBUG_ASSERT(!vertexCode.isEmpty() && !fragmentCode.isEmpty()) {
+        return;
+    }
+    if (!addShaderFromSourceCode(QOpenGLShader::Vertex, vertexCode)) {
+        qWarning() << "MaterialShader - compilation failed:"
+                   << vertexShaderFileFullPath;
+        qDebug() << log();
+        return;
+    }
 
-    link();
+    if (!addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentCode)) {
+        qWarning() << "MaterialShader - compilation failed:"
+                   << fragmentShaderFileFullPath;
+        qDebug() << log();
+        return;
+    }
+
+    if (!link()) {
+        qDebug() << "MaterialShader - linking failed."
+                 << log();
+        return;
+    }
 
     for (const auto& attribute : attributeSet.attributes()) {
         int location = QOpenGLShaderProgram::attributeLocation(attribute.m_name);

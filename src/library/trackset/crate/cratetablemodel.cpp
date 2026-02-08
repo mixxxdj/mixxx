@@ -78,7 +78,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
 
     // Restore search text
     setSearch(m_searchTexts.value(m_selectedCrate));
-    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, const QString& location) {
@@ -134,7 +134,8 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::Hide |
             Capability::RemoveFromDisk |
             Capability::Analyze |
-            Capability::Properties;
+            Capability::Properties |
+            Capability::Sorting;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -217,7 +218,9 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
         return;
     }
 
-    select();
+    // Now remove the track rows
+    QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
+    removeTrackRows(tracksRemovedSet);
 }
 
 QString CrateTableModel::modelKey(bool noSearch) const {

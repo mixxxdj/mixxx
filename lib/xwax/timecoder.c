@@ -19,6 +19,8 @@
 
 #include <assert.h>
 #include <limits.h>
+#include <pitch.h>
+#include <pitch_kalman.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,8 +30,6 @@
 
 #include "debug.h"
 #include "timecoder.h"
-
-#define ZERO_THRESHOLD (128 << 16)
 
 #define ZERO_RC 0.001 /* time constant for zero/rumble filter */
 
@@ -54,101 +54,110 @@
 
 static struct timecode_def timecodes[] = {
     {
-        .name = "serato_2a",
-        .desc = "Serato 2nd Ed., side A",
-        .resolution = 1000,
-        .bits = 20,
-        .seed = 0x59017,
-        .taps = 0x361e4,
-        .length = 712000,
-        .safe = 625000,
-    },
+     .name = "serato_2a",
+     .desc = "Serato 2nd Ed., side A",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0x59017,
+     .taps = 0x361e4,
+     .length = 712000,
+     .safe = 625000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "serato_2b",
-        .desc = "Serato 2nd Ed., side B",
-        .resolution = 1000,
-        .bits = 20,
-        .seed = 0x8f3c6,
-        .taps = 0x4f0d8, /* reverse of side A */
-        .length = 922000,
-        .safe = 908000,
-    },
+     .name = "serato_2b",
+     .desc = "Serato 2nd Ed., side B",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0x8f3c6,
+     .taps = 0x4f0d8,
+     .length = 922000,
+     .safe = 908000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "serato_cd",
-        .desc = "Serato CD",
-        .resolution = 1000,
-        .bits = 20,
-        .seed = 0xd8b40,
-        .taps = 0x34d54,
-        .length = 950000,
-        .safe = 890000,
-    },
+     .name = "serato_cd",
+     .desc = "Serato CD",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0xd8b40,
+     .taps = 0x34d54,
+     .length = 950000,
+     .safe = 890000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "traktor_a",
-        .desc = "Traktor Scratch, side A",
-        .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        .bits = 23,
-        .seed = 0x134503,
-        .taps = 0x041040,
-        .length = 1500000,
-        .safe = 605000,
-    },
+     .name = "traktor_a",
+     .desc = "Traktor Scratch, side A",
+     .resolution = 2000,
+     .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+     .bits = 23,
+     .seed = 0x134503,
+     .taps = 0x041040,
+     .length = 1500000,
+     .safe = 605000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "traktor_b",
-        .desc = "Traktor Scratch, side B",
-        .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        .bits = 23,
-        .seed = 0x32066c,
-        .taps = 0x041040, /* same as side A */
-        .length = 2110000,
-        .safe = 907000,
-    },
+     .name = "traktor_b",
+     .desc = "Traktor Scratch, side B",
+     .resolution = 2000,
+     .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+     .bits = 23,
+     .seed = 0x32066c,
+     .taps = 0x041040,
+     .length = 2110000,
+     .safe = 907000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "mixvibes_v2",
-        .desc = "MixVibes V2",
-        .resolution = 1300,
-        .flags = SWITCH_PHASE,
-        .bits = 20,
-        .seed = 0x22c90,
-        .taps = 0x00008,
-        .length = 950000,
-        .safe = 655000,
-    },
+     .name = "mixvibes_v2",
+     .desc = "MixVibes V2",
+     .resolution = 1300,
+     .flags = SWITCH_PHASE,
+     .bits = 20,
+     .seed = 0x22c90,
+     .taps = 0x00008,
+     .length = 950000,
+     .safe = 655000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "mixvibes_7inch",
-        .desc = "MixVibes 7\"",
-        .resolution = 1300,
-        .flags = SWITCH_PHASE,
-        .bits = 20,
-        .seed = 0x22c90,
-        .taps = 0x00008,
-        .length = 312000,
-        .safe = 238000,
-    },
+     .name = "mixvibes_7inch",
+     .desc = "MixVibes 7\"",
+     .resolution = 1300,
+     .flags = SWITCH_PHASE,
+     .bits = 20,
+     .seed = 0x22c90,
+     .taps = 0x00008,
+     .length = 312000,
+     .safe = 238000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "pioneer_a",
-        .desc = "Pioneer RekordBox DVS Control Vinyl, side A",
-        .resolution = 1000,
-        .flags = SWITCH_POLARITY,
-        .bits = 20,
-        .seed = 0x78370,
-        .taps = 0x7933a,
-        .length = 635000,
-        .safe = 614000,
-    },
+     .name = "pioneer_a",
+     .desc = "Pioneer RekordBox DVS Control Vinyl, side A",
+     .resolution = 1000,
+     .flags = SWITCH_POLARITY,
+     .bits = 20,
+     .seed = 0x78370,
+     .taps = 0x7933a,
+     .length = 635000,
+     .safe = 614000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "pioneer_b",
-        .desc = "Pioneer RekordBox DVS Control Vinyl, side B",
-        .resolution = 1000,
-        .flags = SWITCH_POLARITY,
-        .bits = 20,
-        .seed = 0xf7012,
-        .taps = 0x2ef1c,
-        .length = 918500,
-        .safe = 913000,
-    },
+     .name = "pioneer_b",
+     .desc = "Pioneer RekordBox DVS Control Vinyl, side B",
+     .resolution = 1000,
+     .flags = SWITCH_POLARITY,
+     .bits = 20,
+     .seed = 0xf7012,
+     .taps = 0x2ef1c,
+     .length = 918500,
+     .safe = 913000,
+     .threshold = (128 << 16),
+     },
 };
 
 /*
@@ -298,7 +307,7 @@ static void init_channel(struct timecoder_channel *ch)
  */
 
 void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono)
+                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator)
 {
     assert(def != NULL);
 
@@ -311,14 +320,36 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
 
     tc->dt = 1.0 / sample_rate;
     tc->zero_alpha = tc->dt / (ZERO_RC + tc->dt);
-    tc->threshold = ZERO_THRESHOLD;
+
+    tc->threshold = tc->def->threshold;
+
     if (phono)
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
     init_channel(&tc->primary);
     init_channel(&tc->secondary);
-    pitch_init(&tc->pitch, tc->dt);
+
+    tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
+
+    tc->quadrant = 0;
+    tc->last_quadrant = 0;
+    tc->direction_changed = false;
+
+    if (tc->use_legacy_pitch_filter) {
+        pitch_init(&tc->pitch, tc->dt);
+    } else {
+        pitch_kalman_init(&tc->pitch_kalman,
+                          tc->dt,
+                          KALMAN_COEFFS(1e-8, 10.0), /* stable mode */
+                          KALMAN_COEFFS(1e-4, 1e-1), /* adjust mode */
+                          KALMAN_COEFFS(1e-3, 1e-2), /* reactive mode */
+                          KALMAN_COEFFS(1e-1, 1e-4), /* scratch mode */
+                          6e-4, /* adjust threshold */
+                          25e-4, /* reactive threshold */
+                          40e-4, /* scratch threshold */
+                          false);
+    }
 
     tc->ref_level = INT_MAX;
     tc->bitstream = 0;
@@ -486,6 +517,59 @@ static void process_bitstream(struct timecoder *tc, signed int m)
 }
 
 /*
+ * Compare the last quadrant we were in to the new one and return the
+ * correct displacement for the pitch filter model.
+ *
+ * A full revolution of the carrier has the length of 1.0 / tc->def->resolution,
+ * which is also the sample rate of the timecode (not the audio). One quadrant
+ * corresponds to 1/4 * revolution, which is the time between two zero
+ * crossings. Hence we multiply this quantity by displacement in quadrants.
+ */
+
+static double quantize_phase(struct timecoder *tc)
+{
+    unsigned diff = ((tc->quadrant - tc->last_quadrant) % 4);
+    static unsigned long long direction_change_counter = 0;
+    const unsigned int forwards_diff = (tc->def->flags & SWITCH_PHASE) ? 1 : 3;
+    const unsigned int backwards_diff = (tc->def->flags & SWITCH_PHASE) ? 3 : 1;
+
+    /* Check for a displacement of four quadrants */
+    if (diff == 0 && !tc->direction_changed) {
+        return 1.0 / tc->def->resolution;
+    }
+    
+    /* Check for a displacement of three quadrants */
+    if ((tc->forwards && diff == forwards_diff) || (!tc->forwards && diff == backwards_diff)) {
+        return (3.0 / tc->def->resolution) / 4.0;
+    }
+    
+    /* Check for a displacement of two quadrants  */
+    if (diff == 2) {
+        return (1.0 / tc->def->resolution) / 2.0;
+    }
+    
+    return (1.0 / tc->def->resolution) / 4.0;
+}
+
+/*
+ * Track the quadrature phase of the pitch counter on the unit circle
+ *
+ * There are four zero crossings in a whole cycle. In between are the four
+ * quadrants of the sine and cosine, which are in quadrature.
+ */
+
+static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
+{
+    tc->last_quadrant = tc->quadrant;
+    tc->direction_changed = direction_changed;
+
+    bool pos = tc->primary.swapped ? tc->primary.positive : tc->secondary.positive;
+    bool add = tc->secondary.swapped ? 0b1 : 0b0;
+
+    tc->quadrant = (!pos << 1) | add;
+}
+
+/*
  * Process a single sample from the incoming audio
  *
  * The two input signals (primary and secondary) are in the full range
@@ -513,24 +597,41 @@ static void process_sample(struct timecoder *tc,
         if (tc->def->flags & SWITCH_PHASE)
 	    forwards = !forwards;
 
+        track_quadrature_phase(tc, forwards != tc->forwards);
+
         if (forwards != tc->forwards) { /* direction has changed */
             tc->forwards = forwards;
             tc->valid_counter = 0;
         }
     }
 
-    /* If any axis has been crossed, register movement using the pitch
-     * counters */
+    /*
+     * If any axis has been crossed, register movement using the pitch
+     * counters. This occurs four time per cycle of the sinusoid.
+     */
 
-    if (!tc->primary.swapped && !tc->secondary.swapped)
-	pitch_dt_observation(&tc->pitch, 0.0);
-    else {
-	double dx;
+    if (!tc->primary.swapped && !tc->secondary.swapped) {
+        if (tc->use_legacy_pitch_filter)
+            pitch_dt_observation(&tc->pitch, 0.0);
+        else
+            pitch_kalman_update(&tc->pitch_kalman, 0.0);
+    } else {
+        double dx;
 
-	dx = 1.0 / tc->def->resolution / 4;
-	if (!tc->forwards)
-	    dx = -dx;
-	pitch_dt_observation(&tc->pitch, dx);
+        /*
+         * Assumption: We usually advance by a quarter rotation,
+         * unless we skip zero crossings. In this case the new quadrature
+         * tracker calculates the correct displacement for the pitch filter.
+         */
+
+        dx = quantize_phase(tc);
+        if (!tc->forwards)
+            dx = -dx;
+
+        if (tc->use_legacy_pitch_filter)
+            pitch_dt_observation(&tc->pitch, dx);
+        else
+            pitch_kalman_update(&tc->pitch_kalman, dx);
     }
 
     /* If we have crossed the primary channel in the right polarity,
