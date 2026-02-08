@@ -23,6 +23,10 @@
 #endif
 #include "moc_controller_mapping_validation_test.cpp"
 
+namespace {
+const QRegularExpression kNonWordPattern(QStringLiteral("[^\\w]+"));
+}
+
 FakeMidiControllerJSProxy::FakeMidiControllerJSProxy()
         : ControllerJSProxy(nullptr) {
 }
@@ -248,7 +252,7 @@ bool lintMappingInfo(const MappingInfo& mapping) {
 
 std::string PrintMappingName(const ::testing::TestParamInfo<std::string>& info) {
     auto name = QFileInfo(QString::fromStdString(info.param));
-    return name.fileName().replace(QRegularExpression("[^\\w]+"), "_").toStdString();
+    return name.fileName().replace(kNonWordPattern, "_").toStdString();
 }
 
 // Inhibit the output of the mapping info to avoid spamming the console
