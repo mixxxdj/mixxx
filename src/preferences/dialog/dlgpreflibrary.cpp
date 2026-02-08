@@ -516,6 +516,21 @@ void DlgPrefLibrary::slotIncomingDir() {
     QString fd = QFileDialog::getExistingDirectory(
             this, tr("Incoming tracks directory"), startDir);
 
+    if (!fd.isEmpty()) {
+        // Create a security bookmark while we have permission so that we can
+        // access the folder on future runs.
+        QDir directory(fd);
+        Sandbox::createSecurityTokenForDir(directory);
+
+        if (!directory.isReadable()) {
+            QMessageBox::information(nullptr,
+                    tr("Incoming tracks directory"),
+                    tr("Could read: <b>%1</b>.").arg(fd));
+            return;
+        }
+    }
+
+    // Note: Cancel disables the Incoming
     lineEdit_incoming->setText(fd);
 }
 
