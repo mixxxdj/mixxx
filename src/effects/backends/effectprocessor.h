@@ -155,8 +155,13 @@ class EffectProcessorImpl : public EffectProcessor {
             const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) final {
-        EffectSpecificState* pState =
-                m_channelStateMatrix[inputHandle][outputHandle].get();
+        EffectSpecificState* pState = nullptr;
+        if (inputHandle < m_channelStateMatrix.size()) {
+            const auto& outputChannelStates = m_channelStateMatrix[inputHandle];
+            if (outputHandle < outputChannelStates.size()) {
+                pState = outputChannelStates[outputHandle].get();
+            }
+        }
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
                 qWarning() << "EffectProcessorImpl::process could not retrieve"
@@ -167,6 +172,7 @@ class EffectProcessorImpl : public EffectProcessor {
                               "main thread.";
             }
             SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
+            return;
         }
         processChannel(pState, pInput, pOutput, engineParameters, enableState, groupFeatures);
     }

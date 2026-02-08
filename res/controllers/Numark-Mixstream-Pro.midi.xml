@@ -1,0 +1,922 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4+" schemaVersion="1">
+    <info>
+        <name>Numark Mixstream Pro</name>
+        <author>danielkinahan and ptrex (aka audministrator)</author>
+        <forums>https://mixxx.discourse.group/t/numark-mixstream-pro-mapping/24858</forums>
+    </info>
+    <settings>
+        <group label="Buttons">
+            <option
+                variable="shiftPlayBehaviour"
+                type="enum"
+                label=":hwbtn:`Shift` + Play Behaviour"
+                description="Select which behaviour to have when pressing :hwbtn:`Shift` + Play">
+                <value label="Stutter-play (play from cue)" default="true">stutter</value>
+                <value label="Slow start/stop">slow</value>
+            </option>
+            <option
+                variable="hotCueWhilePlaying"
+                type="boolean"
+                label="HotCue while playing"
+                description="Enable hotcue usage and assignment while track is playing"
+                default="true">
+            </option>
+            <option
+                variable="defaultPadMode"
+                type="enum"
+                label="Default Pad Mode on Load"
+                description="Select which pad mode to load by default on loading a new track. The default will use the previously selected mode.">
+                <value label="Default" default="true"></value>
+                <value label="Hot Cue">hotcue</value>
+                <value label="Saved Loop">savedloop</value>
+                <value label="Auto Loop">autoloop</value>
+                <value label="Roll">roll</value>
+            </option>
+        </group>
+        <group label="Jog Wheels">
+            <option
+                variable="jogWheelBufferSize"
+                type="integer"
+                label="Jog Wheel Buffer Size"
+                description="The jog wheel uses a buffer to smooth the speed it turns. Raising this too high makes it lag behind your movement and lowering it makes it sound warbly"
+                default="4"
+                min="1">
+            </option>
+            <option
+                variable="jogWheelLoopTrackEnd"
+                type="boolean"
+                label="Jog Wheel Loop on Track End"
+                description="Enable looping the track when the jog wheel scrubs past the end or beginning of the track."
+                default="false">
+            </option>
+            <option
+                variable="backspin"
+                type="boolean"
+                label="Enable Backspin (Only in Mixxx 2.6+)"
+                description="Enable backspinning (or forward spinning) when you lift your finger off the platter. Not compatible with Mixxx versions below 2.6"
+                default="false">
+            </option>
+            <option
+                variable="jogWheelThreshold"
+                type="real"
+                label="Backspin Speed Threshold"
+                description="The speed at which the scratching will turn off. This can make the track stuck in a speed if too low"
+                default="0.5"
+                min="0.1"
+                step="0.1">
+            </option>
+            <option
+                variable="jogWheelStuckTimeout"
+                type="integer"
+                label="Backspin Timeout"
+                description="If the jog wheel speed gets stuck, this will reset it every n milliseconds"
+                default="500"
+                min="100"
+                step="100">
+            </option>
+        </group>
+    </settings>
+    <controller id="MixstreamPro">
+        <scriptfiles>
+            <file filename="midi-components-0.0.js"/>
+            <file functionprefix="MixstreamPro" filename="Numark-Mixstream-Pro.scripts.js"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>Master Volume</description>
+                <status>0xBF</status>
+                <midino>0x0F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>booth_gain</key>
+                <description>Booth Volume</description>
+                <status>0xBF</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>Head Mix</description>
+                <status>0xBF</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>Head Mix Volume</description>
+                <status>0xBF</status>
+                <midino>0x0A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MixstreamPro.effectButton</key>
+                <description>Effectbutton 1</description>
+                <status>0x94</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MixstreamPro.effectButton</key>
+                <description>Effectbutton 2</description>
+                <status>0x94</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MixstreamPro.effectButton</key>
+                <description>Effectbutton 3</description>
+                <status>0x94</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>MixstreamPro.effectButton</key>
+                <description>Effectbutton 4</description>
+                <status>0x94</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Auxiliary1]</group>
+                <key>pregain</key>
+                <description>Auxiliary 1 Volume - LSB</description>
+                <status>0xBF</status>
+                <midino>0x00</midino>
+                <options>
+                    <selectknob/>
+                    <fourteen-bit-lsb/>
+                </options>
+            </control>
+            <control>
+                <group>[Auxiliary1]</group>
+                <key>MixstreamPro.playAux1</key>
+                <description>Auxiliary 1 Play Button</description>
+                <status>0x9F</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Auxiliary1]</group>
+                <key>pregain</key>
+                <description>Auxiliary 1 Volume - MSB</description>
+                <status>0xBF</status>
+                <midino>0x12</midino>
+                <options>
+                    <selectknob/>
+                    <fourteen-bit-msb/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <description>EqualizerRack1 Deck1 Effect1 Param3</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <description>EqualizerRack1 Deck2 Effect1 Param3</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <description>EqualizerRack1 Deck1 Effect1 Param2</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <description>EqualizerRack1 Deck2 Effect1 Param2</description>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <description>EqualizerRack1 Deck1 Effect1 Param1</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <description>EqualizerRack1 Deck2 Effect1 Param1</description>
+                <status>0xB1</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.loadTrack</key>
+                <description>Deck1 Load Selected Track</description>
+                <status>0x9F</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.loadTrack</key>
+                <description>Deck2 Load Selected Track</description>
+                <status>0x9F</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <description>Deck1 Volume</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description>Deck2 Volume</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.effectToggleSwitch</key>
+                <description>Deck1 Effect Toggle Switch</description>
+                <status>0x94</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.effectToggleSwitch</key>
+                <description>Deck2 Effect Toggle Switch</description>
+                <status>0x95</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveVertical</key>
+                <description>Library Browse</description>
+                <status>0xBF</status>
+                <midino>0x05</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>GoToItem</key>
+                <description>Library GoToItem</description>
+                <status>0x9F</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Deck1 Sync Enabled</description>
+                <status>0x92</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Deck2 Sync Enabled</description>
+                <status>0x93</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.cue</key>
+                <description>Deck1 Cue Button</description>
+                <status>0x92</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.cue</key>
+                <description>Deck2 Cue Button</description>
+                <status>0x93</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.play</key>
+                <description>Deck1 Play/Pause Button</description>
+                <status>0x92</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.play</key>
+                <description>Deck2 Play/Pause Button</description>
+                <status>0x93</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.toggleHotCueOrStems</key>
+                <description>Deck1 Hotcue Toggle Button</description>
+                <status>0x92</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.toggleHotCueOrStems</key>
+                <description>Deck2 Hotcue Toggle Button</description>
+                <status>0x93</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>Deck1 Super FX Filter Button</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>Deck2 Super FX Filter Button</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.toggleSavedLoop</key>
+                <description>Deck1 Saved Loop Toggle</description>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.toggleSavedLoop</key>
+                <description>Deck2 Saved Loop Toggle</description>
+                <status>0x93</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>Deck1 Pre-Fader Listen</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>Deck2 Pre-Fader Listen</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.toggleRollOrSampler</key>
+                <description>Deck1 Roll Toggle Button</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.toggleRollOrSampler</key>
+                <description>Deck2 Roll Toggle Button</description>
+                <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.toggleAutoloop</key>
+                <description>Deck1 Autoloop Toggle Button</description>
+                <status>0x92</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.toggleAutoloop</key>
+                <description>Deck2 Autoloop Toggle Button</description>
+                <status>0x93</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <description>Deck1 Volume</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <description>Deck2 Volume</description>
+                <status>0xB1</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Cross Fader</description>
+                <status>0xBF</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck1 Pad1 Script</description>
+                <status>0x92</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck2 Pad1 Script</description>
+                <status>0x93</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck1 Pad2 Script</description>
+                <status>0x92</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck2 Pad2 Script</description>
+                <status>0x93</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
+                <description>View</description>
+                <status>0x9F</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveFocusForward</key>
+                <description>Back</description>
+                <status>0x9F</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck1 Pad3 Script</description>
+                <status>0x92</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck2 Pad3 Script</description>
+                <status>0x93</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck1 Pad4 Script</description>
+                <status>0x92</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.performancePad</key>
+                <description>Deck2 Pad4 Script</description>
+                <status>0x93</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.shiftButton</key>
+                <description>Deck1 shift Button</description>
+                <status>0x92</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.shiftButton</key>
+                <description>Deck2 shift Button</description>
+                <status>0x93</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.pitchBend</key>
+                <description>Deck1 Pitch Bend Down</description>
+                <status>0x92</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.pitchBend</key>
+                <description>Deck2 Pitch Bend Down</description>
+                <status>0x93</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.pitchBend</key>
+                <description>Deck1 Pitch Bend Up</description>
+                <status>0x92</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.pitchBend</key>
+                <description>Deck2 Pitch Bend Up</description>
+                <status>0x93</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.deck[1].pitchSlider.inputMSB</key>
+                <description>Deck1 Pitch Slider (Coarse)</description>
+                <status>0xB2</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.deck[2].pitchSlider.inputMSB</key>
+                <description>Deck2 Pitch Slide (Coarse)</description>
+                <status>0xB3</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.deck[1].pitchSlider.inputLSB</key>
+                <description>Deck1 Pitch Slider (Fine)</description>
+                <status>0xB2</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.deck[2].pitchSlider.inputLSB</key>
+                <description>Deck2 Slider (Fine)</description>
+                <status>0xB3</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.WheelTouch</key>
+                <description>Deck1 Wheel Touch</description>
+                <status>0x92</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.WheelTouch</key>
+                <description>Deck2 Wheel Touch</description>
+                <status>0x93</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.toggleScratch</key>
+                <description>Deck1 Slip Enabled Toggle</description>
+                <status>0x92</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.toggleScratch</key>
+                <description>Deck2 Slip Enabled Toggle</description>
+                <status>0x93</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.JogMSB</key>
+                <description>Deck1 JogWheel MSB</description>
+                <status>0xB2</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.JogMSB</key>
+                <description>Deck2 JogWheel MSB</description>
+                <status>0xB3</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>MixstreamPro.JogLSB</key>
+                <description>Deck1 JogWheel LSB</description>
+                <status>0xB2</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MixstreamPro.JogLSB</key>
+                <description>Deck2 JogWheel LSB</description>
+                <status>0xB3</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+        </controls>
+        <outputs>
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_gotoandstop</key>
+                <description>Deck1 Cue LED</description>
+                <status>0x92</status>
+                <midino>0x09</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>Deck1 PFL LED</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <description>Deck1 Play LED</description>
+                <status>0x92</status>
+                <midino>0x0A</midino>
+                <off>0x01</off>
+                <minimum>0.2</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>slip_enabled</key>
+                <description>Deck1  Slip Mode LED</description>
+                <status>0x92</status>
+                <midino>0x23</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Deck1 Sync LED</description>
+                <status>0x92</status>
+                <midino>0x08</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_gotoandstop</key>
+                <description>Deck2 Cue LED</description>
+                <status>0x93</status>
+                <midino>0x09</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>Deck2 PFL LED</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>play_indicator</key>
+                <description>Deck2 Play LED</description>
+                <status>0x93</status>
+                <midino>0x0A</midino>
+                <off>0x01</off>
+                <minimum>0.2</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>slip_enabled</key>
+                <description>Deck2 Slip Mode LED</description>
+                <status>0x93</status>
+                <midino>0x23</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Deck2 Sync LED</description>
+                <status>0x93</status>
+                <midino>0x08</midino>
+                <off>0x01</off>
+                <minimum>0.5</minimum>
+            </output>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
