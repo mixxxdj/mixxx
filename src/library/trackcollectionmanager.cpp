@@ -133,19 +133,12 @@ TrackCollectionManager::TrackCollectionManager(QObject* parent,
         kLogger.info() << "Starting library scanner thread";
         m_pScanner->start();
 
-        const QString incomingTracksDir =
-                m_pConfig->getValue(
-                        mixxx::library::prefs::kIncomingTracksDir,
-                        QString());
-        initIncomingDirWatcher(incomingTracksDir);
+        initIncomingDirWatcher();
     }
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
-    QStringList dirs = m_incomingDirWatcher.directories();
-    if (!dirs.isEmpty()) {
-        m_incomingDirWatcher.removePaths(dirs);
-    }
+    updateIncomingDirWatcher({});
     if (m_pScanner) {
         while (m_pScanner->isRunning()) {
             kLogger.info() << "Stopping library scanner thread";
@@ -666,7 +659,26 @@ void TrackCollectionManager::slotIncomingDirectoryChanged() {
     m_pScanner->scanDir(absPath);
 }
 
-void TrackCollectionManager::initIncomingDirWatcher(const QString& incomingTracksDir) {
+void TrackCollectionManager::initIncomingDirWatcher() {
+    m_incomingDirTimer.setSingleShot(true);
+    connect(&m_incomingDirTimer,
+            &QTimer::timeout,
+            this,
+            &TrackCollectionManager::slotIncomingDirectoryChanged);
+    connect(&m_incomingDirWatcher,
+            &QFileSystemWatcher::directoryChanged,
+            this,
+            [this]() {
+                m_incomingDirTimer.start(2000);
+            });
+}
+
+void TrackCollectionManager::updateIncomingDirWatcher(const QString& incomingTracksDir) {
+    QStringList dirs = m_incomingDirWatcher.directories();
+    if (!dirs.isEmpty()) {
+        m_incomingDirWatcher.removePaths(dirs);
+    }
+
     if (incomingTracksDir.isEmpty()) {
         return;
     }
@@ -678,24 +690,12 @@ void TrackCollectionManager::initIncomingDirWatcher(const QString& incomingTrack
                 << incomingTracksDir;
         return;
     }
-
     QString incomingDirPath = fi.absoluteFilePath();
     if (!m_incomingDirWatcher.addPath(incomingDirPath)) {
         kLogger.warning() << "Failed to watch incoming tracks directory"
                           << incomingDirPath;
     } else {
         kLogger.info() << "Watching incoming tracks directory" << incomingDirPath;
-        m_incomingDirTimer.setSingleShot(true);
-        connect(&m_incomingDirTimer,
-                &QTimer::timeout,
-                this,
-                &TrackCollectionManager::slotIncomingDirectoryChanged);
-        connect(&m_incomingDirWatcher,
-                &QFileSystemWatcher::directoryChanged,
-                this,
-                [this]() {
-                    m_incomingDirTimer.start(2000);
-                });
     }
 }
 
@@ -717,4 +717,13 @@ void TrackCollectionManager::slotScanFinished() {
     }
 
     m_pScanner->scanDir(dirs.first());
+}
+
+void TrackCollectionManager::slotInitalIncomingDirScan() {
+    const QString incomingTracksDir =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kIncomingTracksDir,
+                    QString());
+    updateIncomingDirWatcher(incomingTracksDir);
+    slotIncomingDirectoryChanged();
 }

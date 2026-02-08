@@ -713,6 +713,13 @@ void DlgPrefLibrary::slotApply() {
     emit m_pLibrary->setSidebarHoverExpandDelay(sidebarHoverExpandDelay);
 
     m_pConfig->set(kIncomingTracksDir, lineEdit_incoming->text());
+    
+    const QString incomingTracksDir =
+            m_pConfig->getValue(kIncomingTracksDir, QString());
+    if (incomingTracksDir != lineEdit_incoming->text()) {
+        m_pConfig->set(kIncomingTracksDir, lineEdit_incoming->text());
+        emit incomingTracksDirChanged();
+    }
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();
