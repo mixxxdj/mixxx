@@ -223,7 +223,7 @@ ReloopMixtour.Mixer = class extends components.Deck {
 
         this.fxKnob = new components.Pot({
             key: "super1",
-            group: `[QuickEffectRack1_[Channel${midiChannel + 1}]]`,
+            group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
         });
 
         this.fxButton = parseInt(engine.getSetting("fxButton"));
@@ -255,17 +255,17 @@ ReloopMixtour.Mixer = class extends components.Deck {
 
         this.highEq = new components.Pot({
             key: "parameter3",
-            group: `[EqualizerRack1_[Channel${midiChannel + 1}]_Effect1]`,
+            group: `[EqualizerRack1_${theMixer.currentDeck}_Effect1]`,
         });
 
         this.midEq = new components.Pot({
             key: "parameter2",
-            group: `[EqualizerRack1_[Channel${midiChannel + 1}]_Effect1]`,
+            group: `[EqualizerRack1_${theMixer.currentDeck}_Effect1]`,
         });
 
         this.lowEq = new components.Pot({
             key: "parameter1",
-            group: `[EqualizerRack1_[Channel${midiChannel + 1}]_Effect1]`,
+            group: `[EqualizerRack1_${theMixer.currentDeck}_Effect1]`,
         });
 
         this.volumeFader = new components.Pot({
@@ -296,7 +296,7 @@ ReloopMixtour.Mixer = class extends components.Deck {
         this.fxIndicator = new components.Component({
             midi: [0x90 + midiChannel, 0x00],
             key: "super1",
-            group: `[QuickEffectRack1_[Channel${midiChannel + 1}]]`,
+            group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
             outValueScale(value) {
                 return (Math.abs(0.5 - value) > 0.01)?0x7F:0x00;
             }
