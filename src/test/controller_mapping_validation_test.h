@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtest/gtest.h>
+#include <qglobal.h>
 
 #include <QObject>
 
@@ -214,22 +214,22 @@ class RecordingManager;
 class Library;
 class PlayerManager;
 
-// Custom test fixture class
-class LegacyControllerMappingValidationTest
-        : public ::testing::TestWithParam<MappingInfo>,
-          public SoundSourceProviderRegistration {
+// We can't inherit from LibraryTest because that creates a key_notation control object that is also
+// created by the Library object itself. The duplicated CO creation causes a debug assert.
+class MappingTestFixture
+        : public MixxxDbTest,
+          SoundSourceProviderRegistration,
+          public ::testing::WithParamInterface<std::string> {
   public:
-    LegacyControllerMappingValidationTest() {
+    MappingTestFixture()
+            : MixxxDbTest(true) {
     }
 
   protected:
-    bool testLoadMapping(const MappingInfo& mapping, const QDir& systemMappingsPath);
     void SetUp() override;
     void TearDown() override;
-
 #ifdef MIXXX_USE_QML
 
-    // bool testLoadMapping(const MappingInfo& mapping);
     TrackPointer getOrAddTrackByLocation(
             const QString& trackLocation) const {
         return m_pTrackCollectionManager->getOrAddTrack(
@@ -246,36 +246,5 @@ class LegacyControllerMappingValidationTest
     std::shared_ptr<Library> m_pLibrary;
 #endif
 
-    QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
-};
-
-class LegacyControllerMappingList {
-  public:
-    LegacyControllerMappingList() {
-        QList<QString> possiblePaths = {
-                QDir::currentPath() + "/res/controllers",
-                QDir::currentPath() + "/../res/controllers",
-                QDir::currentPath() + "/../../res/controllers"};
-
-        for (const QString& path : possiblePaths) {
-            if (QDir(path).exists()) {
-                m_mappingPath = QDir(path);
-                break;
-            }
-        }
-
-        m_pEnumerator.reset(new MappingInfoEnumerator(
-                QList<QString>{m_mappingPath.absolutePath()}));
-    };
-    QDir getMappingPath() {
-        return m_mappingPath;
-    }
-
-    MappingInfoEnumerator* getMappingEnumerator() {
-        return m_pEnumerator.data();
-    }
-
-  protected:
-    QDir m_mappingPath;
-    QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
+    bool testLoadMapping(const QString& mapping);
 };

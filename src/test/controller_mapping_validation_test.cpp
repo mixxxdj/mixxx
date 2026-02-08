@@ -2,6 +2,8 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <qapplication.h>
+#include <qglobal.h>
 
 #include <QRegularExpression>
 #include <QUrl>
@@ -116,9 +118,12 @@ FakeController::~FakeController() {
 bool FakeController::isMappable() const {
     if (m_bMidiMapping) {
         return m_pMidiMapping->isMappable();
-    } else if (m_bHidMapping) {
+    }
+#ifdef __HID__
+    else if (m_bHidMapping) {
         return m_pHidMapping->isMappable();
     }
+#endif
     return false;
 }
 
@@ -130,33 +135,34 @@ void deleteTrack(Track* pTrack) {
 };
 #endif
 
-void LegacyControllerMappingValidationTest::SetUp() {
+void MappingTestFixture::SetUp() {
 #ifdef MIXXX_USE_QML
     // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
     // but it does a lot of local disk / settings setup.
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-
 #endif
 }
 
-void LegacyControllerMappingValidationTest::TearDown() {
+void MappingTestFixture::TearDown() {
 #ifdef MIXXX_USE_QML
-
+    PlayerInfo::destroy();
+    CoverArtCache::destroy();
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
+    ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
 }
 
-bool LegacyControllerMappingValidationTest::testLoadMapping(
-        const MappingInfo& mapping, const QDir& systemMappingsPath) {
+bool MappingTestFixture::testLoadMapping(const QString& mappingPath) {
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo(mapping.getPath()), systemMappingsPath);
+                    QFileInfo(mappingPath), QDir(RESOURCE_FOLDER "/controllers"));
     if (!pMapping) {
         return false;
     }
 
     FakeController controller;
     controller.setMapping(pMapping);
-    bool result = controller.applyMapping(getTestDir().filePath(QStringLiteral("../../res")));
+    bool result = controller.applyMapping(getTestDir().filePath(RESOURCE_FOLDER));
     controller.stopEngine();
     return result;
 }
@@ -196,73 +202,47 @@ bool lintMappingInfo(const MappingInfo& mapping) {
     return result;
 }
 
-// Create a mapping enumerator for the test, which will be used to get the mappings
-// for the test cases
-std::shared_ptr<LegacyControllerMappingList> createMappingEnumerator() {
-    return std::make_shared<LegacyControllerMappingList>();
+std::string PrintMappingName(const ::testing::TestParamInfo<std::string>& info) {
+    auto name = QFileInfo(QString::fromStdString(info.param));
+    return name.fileName().replace(QRegularExpression("[^\\w]+"), "_").toStdString();
 }
 
 // Inhibit the output of the mapping info to avoid spamming the console
-std::ostream& operator<<(std::ostream& os, const MappingInfo& mapping) {
-    Q_UNUSED(mapping);
-    os << "<MappingInfo>";
-    return os;
+// std::ostream& operator<<(std::ostream& os, const QString& MappingPath) {
+//     return os << MappingPath.toStdString();
+// }
+
+TEST_P(MappingTestFixture, ValidateMappingXML) {
+    QString mappingPath = QString::fromStdString(GetParam());
+    qDebug() << "ValidateMappingXML" << mappingPath;
+
+    MappingInfo mapping(mappingPath);
+    EXPECT_TRUE(mapping.isValid()) << "Error while validating XML file " << GetParam();
+    EXPECT_TRUE(lintMappingInfo(mapping)) << "Error while validating XML file " << GetParam();
 }
 
-// Print the mapping name instead with underscores instead of spaces and special characters
-class PrintMappingName {
-  public:
-    template<class ParamType>
-    std::string operator()(const ::testing::TestParamInfo<ParamType>& info) const {
-        // ParamType is MappingInfo
-        QString nameCopy = info.param.getName();
-        static const QRegularExpression regex("[^\\w\\s]");
-        nameCopy.replace(regex, "_");
-        std::string testName = nameCopy.replace(" ", "_").toStdString();
-        return testName;
-    }
-};
+TEST_P(MappingTestFixture, LoadMapping) {
+    QString mappingPath = QString::fromStdString(GetParam());
+    qDebug() << "LoadMapping" << mappingPath;
 
-auto pEnumerator = createMappingEnumerator();
-
-INSTANTIATE_TEST_SUITE_P(MidiMappingsValid,
-        LegacyControllerMappingValidationTest,
-        ::testing::ValuesIn(
-                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
-                        MIDI_MAPPING_EXTENSION)),
-        PrintMappingName());
-
-#ifdef __HID__
-INSTANTIATE_TEST_SUITE_P(HidMappingsValid,
-        LegacyControllerMappingValidationTest,
-        ::testing::ValuesIn(
-                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
-                        HID_MAPPING_EXTENSION)),
-        PrintMappingName());
-#endif
+    EXPECT_TRUE(testLoadMapping(mappingPath)) << "Error while loading " << GetParam();
+}
 
 #ifdef __BULK__
-INSTANTIATE_TEST_SUITE_P(BulkMappingsValid,
-        LegacyControllerMappingValidationTest,
-        ::testing::ValuesIn(
-                pEnumerator->getMappingEnumerator()->getMappingsByExtension(
-                        BULK_MAPPING_EXTENSION)),
-        PrintMappingName());
+INSTANTIATE_TEST_SUITE_P(BulkMappings,
+        MappingTestFixture,
+        ::testing::Values(CONTROLLER_BULK_MAPPINGS),
+        PrintMappingName);
 #endif
 
-TEST_P(LegacyControllerMappingValidationTest, ValidateMappingXML) {
-    const MappingInfo& mapping = GetParam();
-    qDebug() << "ValidateMappingXML " << mapping.getPath();
-    std::string errorDescription = "Error while validating XML file " +
-            mapping.getPath().toStdString();
-    EXPECT_TRUE(mapping.isValid()) << errorDescription;
-    EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
-}
+#ifdef __HID__
+INSTANTIATE_TEST_SUITE_P(HidMappings,
+        MappingTestFixture,
+        ::testing::Values(CONTROLLER_HID_MAPPINGS),
+        PrintMappingName);
+#endif
 
-TEST_P(LegacyControllerMappingValidationTest, LoadMapping) {
-    const MappingInfo& mapping = GetParam();
-    qDebug() << "LoadMapping " << mapping.getPath();
-    std::string errorDescription = "Error while loading " + mapping.getPath().toStdString();
-    EXPECT_TRUE(mapping.isValid()) << errorDescription;
-    EXPECT_TRUE(testLoadMapping(mapping, pEnumerator->getMappingPath())) << errorDescription;
-}
+INSTANTIATE_TEST_SUITE_P(MidiMappings,
+        MappingTestFixture,
+        ::testing::Values(CONTROLLER_MIDI_MAPPINGS),
+        PrintMappingName);
