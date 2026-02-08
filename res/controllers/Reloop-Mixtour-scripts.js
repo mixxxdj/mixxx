@@ -231,7 +231,7 @@ ReloopMixtour.Mixer = class extends components.Deck {
             midi: [0x90 + midiChannel, 0x01],
             key: `group_[Channel${midiChannel + 1}]_enable`,
             shiftOffset: 0x40,
-            group: this.fxButton?`[EffectRack1_EffectUnit${this.fxButton}]`:`[EffectRack1_EffectUnit${midiChannel + 1}]`,
+            group: this.fxButton?`[EffectRack1_EffectUnit${this.fxButton}]`:`[EffectRack1_EffectUnit${script.deckFromGroup(theMixer.currentDeck)}]`,
             type: components.Button.prototype.types.toggle,
             input: function(channel, control, value, status, group) {
                 if (value) {
