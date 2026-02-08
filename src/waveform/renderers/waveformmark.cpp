@@ -7,6 +7,8 @@
 #include <QSvgRenderer>
 #include <QtDebug>
 #include <algorithm>
+#include <iterator>
+#include <memory>
 
 #include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -272,6 +274,45 @@ WaveformMark::WaveformMark(const QString& group,
 
     m_enabledOpacity = context.selectDouble(node, "EnabledOpacity", 1);
     m_disabledOpacity = context.selectDouble(node, "DisabledOpacity", 0.5);
+}
+
+std::variant<WaveformMark*, WaveformMark::WaveformMarkConstructionError> WaveformMark::create(
+        const QString& group,
+        const QString& positionControl,
+        const QString& visibilityControl,
+        const QString& textColor,
+        const QString& markAlign,
+        const QString& text,
+        const QString& pixmapPath,
+        const QString& iconPath,
+        QColor color,
+        int priority,
+        int hotCue,
+        const WaveformSignalColors& signalColors,
+        const QString& endPixmapPath,
+        const QString& endIconPath,
+        float disabledOpacity,
+        float enabledOpacity) {
+    std::unique_ptr<WaveformMark> pMark(new WaveformMark(group,
+            positionControl,
+            visibilityControl,
+            textColor,
+            markAlign,
+            text,
+            pixmapPath,
+            iconPath,
+            color,
+            priority,
+            hotCue,
+            signalColors,
+            endPixmapPath,
+            endIconPath,
+            disabledOpacity,
+            enabledOpacity));
+    if (auto err = pMark->validate(); err.has_value()) {
+        return err.value();
+    }
+    return pMark.release();
 }
 
 WaveformMark::~WaveformMark() = default;
@@ -596,21 +637,24 @@ QImage WaveformMark::performImageGeneration(float devicePixelRatio,
     return image;
 }
 
-QString WaveformMark::validate() const {
+std::optional<WaveformMark::WaveformMarkConstructionError> WaveformMark::validate() const {
     auto checkPath = [](const auto& path) {
-        return !path.isEmpty() && !QFileInfo(path).exists();
+        return !std::get<QString>(path).isEmpty() && !QFileInfo(std::get<QString>(path)).exists();
     };
 
-    auto addPaths = [](QStringList* pathList, const QString& pathTemplate) {
-        static const QRegularExpression re("%\\d+");
+    auto addPaths = [](auto* pPathList,
+                            const QString& pathTemplate,
+                            WaveformMark::WaveformMarkConstructionError
+                                    pathErrorType) {
+        static QRegularExpression re("%\\d+");
         auto argCount = pathTemplate.count(re);
         switch (argCount) {
         case 0:
-            pathList->append(pathTemplate);
+            pPathList->emplace_back(pathTemplate, pathErrorType);
             break;
         case 1:
-            pathList->append(pathTemplate.arg(QStringLiteral("forward")));
-            pathList->append(pathTemplate.arg(QStringLiteral("backward")));
+            pPathList->emplace_back(pathTemplate.arg(QStringLiteral("forward")), pathErrorType);
+            pPathList->emplace_back(pathTemplate.arg(QStringLiteral("backward")), pathErrorType);
             break;
         default:
             return false;
@@ -618,17 +662,18 @@ QString WaveformMark::validate() const {
         return true;
     };
 
-    QStringList pathList;
-    pathList.append(m_pixmapPath);
-    pathList.append(m_endPixmapPath);
-    pathList.append(m_iconPath);
-    if (!addPaths(&pathList, m_endIconPath)) {
-        return QStringLiteral("Invalid number or arguments in endIconPath: %1").arg(m_endIconPath);
+    std::vector<std::tuple<QString, WaveformMarkConstructionError>> pathList = {
+            {m_pixmapPath, WaveformMarkConstructionError::PixmapNotFound},
+            {m_endPixmapPath, WaveformMarkConstructionError::EndPixmapNotFound},
+            {m_iconPath, WaveformMarkConstructionError::IconNotFound},
+    };
+    if (!addPaths(&pathList, m_endIconPath, WaveformMarkConstructionError::EndIconNotFound)) {
+        return WaveformMarkConstructionError::EndIconInvalidArgumentCount;
     }
 
-    auto first_missing_path = std::find_if(pathList.constBegin(), pathList.constEnd(), checkPath);
-    if (first_missing_path != pathList.constEnd()) {
-        return QStringLiteral("path for icon or pixmap is not found: %1").arg(*first_missing_path);
+    auto first_missing_path = std::find_if(pathList.cbegin(), pathList.cend(), checkPath);
+    if (first_missing_path != pathList.cend()) {
+        return std::get<WaveformMarkConstructionError>(*first_missing_path);
     }
     return {};
 }

@@ -43,9 +43,19 @@ class WaveformMark {
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
 
-    WaveformMark(
+    enum class WaveformMarkConstructionError {
+        EndIconInvalidArgumentCount,
+        PixmapNotFound,
+        EndPixmapNotFound,
+        IconNotFound,
+        EndIconNotFound,
+    };
+
+    // FIXME we are using `std::variant` instead of `std::expected` as Mixxx
+    // doesn't yet support C++23.
+    static std::variant<WaveformMark*, WaveformMarkConstructionError> create(
             const QString& group,
-            QString positionControl,
+            const QString& positionControl,
             const QString& visibilityControl,
             const QString& textColor,
             const QString& markAlign,
@@ -60,6 +70,7 @@ class WaveformMark {
             const QString& endIconPath = {},
             float disabledOpacity = 1.0f,
             float enabledOpacity = 1.0f);
+
     ~WaveformMark();
 
     // Disable copying
@@ -257,11 +268,29 @@ class WaveformMark {
 
     WaveformMarkLabel m_label;
 
-    // Check whether or not there is issues with this marker definition. Empty
-    // string means no issue.
-    QString validate() const;
-
   private:
+    WaveformMark(
+            const QString& group,
+            QString positionControl,
+            const QString& visibilityControl,
+            const QString& textColor,
+            const QString& markAlign,
+            const QString& text,
+            const QString& pixmapPath,
+            const QString& iconPath,
+            QColor color,
+            int priority,
+            int hotCue = Cue::kNoHotCue,
+            const WaveformSignalColors& signalColors = {},
+            const QString& endPixmapPath = {},
+            const QString& endIconPath = {},
+            float disabledOpacity = 1.0f,
+            float enabledOpacity = 1.0f);
+
+    // Check whether or not there is issues with this marker definition. If
+    // there is issues, the first one is returned
+    std::optional<WaveformMark::WaveformMarkConstructionError> validate() const;
+
     QImage performImageGeneration(float devicePixelRatio,
             const QString& pixmapPath,
             const QString& text,

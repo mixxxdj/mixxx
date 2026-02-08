@@ -28,7 +28,9 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
         m_marks.clear();
     }
 
-    QString setDefaultMark(const QString& group, const WaveformMarkSet::DefaultMarkerStyle& model) {
+    std::optional<WaveformMark::WaveformMarkConstructionError> setDefaultMark(
+            const QString& group,
+            const WaveformMarkSet::DefaultMarkerStyle& model) {
         return m_marks.setDefault(group, model);
     }
 

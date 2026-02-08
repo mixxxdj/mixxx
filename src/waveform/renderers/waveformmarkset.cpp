@@ -1,6 +1,7 @@
 #include "waveformmarkset.h"
 
 #include <QtDebug>
+#include <optional>
 #include <set>
 
 #include "util/defs.h"
@@ -65,10 +66,11 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     }
 }
 
-QString WaveformMarkSet::setDefault(const QString& group,
+std::optional<WaveformMark::WaveformMarkConstructionError>
+WaveformMarkSet::setDefault(const QString& group,
         const DefaultMarkerStyle& model,
         const WaveformSignalColors& signalColors) {
-    m_pDefaultMark = WaveformMarkPointer::create(
+    auto mark = WaveformMark::create(
             group,
             model.positionControl,
             model.visibilityControl,
@@ -81,13 +83,13 @@ QString WaveformMarkSet::setDefault(const QString& group,
             0,
             Cue::kNoHotCue,
             signalColors);
-    auto error = m_pDefaultMark->validate();
-    if (!error.isEmpty()) {
-        return error;
+    if (!std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(mark)) {
+        return std::get<WaveformMark::WaveformMarkConstructionError>(mark);
     }
+
     for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
         if (m_hotCueMarks.value(i).isNull()) {
-            auto pMark = WaveformMarkPointer::create(
+            auto pMaybeMark = WaveformMark::create(
                     group,
                     model.positionControl,
                     model.visibilityControl,
@@ -104,10 +106,10 @@ QString WaveformMarkSet::setDefault(const QString& group,
                     model.endIconPath,
                     model.enabledOpacity,
                     model.disabledOpacity);
-            auto error = pMark->validate();
-            if (!error.isEmpty()) {
-                return error;
+            if (!std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(pMaybeMark)) {
+                return std::get<WaveformMark::WaveformMarkConstructionError>(pMaybeMark);
             }
+            auto pMark = WaveformMarkPointer(std::get<WaveformMark*>(pMaybeMark));
             m_marks.push_front(pMark);
             m_hotCueMarks.insert(pMark->getHotCue(), pMark);
         }
