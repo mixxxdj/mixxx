@@ -140,11 +140,55 @@ void MappingTestFixture::SetUp() {
     // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
     // but it does a lot of local disk / settings setup.
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
+    m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
+    m_pEngine = std::make_shared<EngineMixer>(
+            m_pConfig,
+            "[Master]",
+            m_pEffectsManager.get(),
+            pChannelHandleFactory,
+            true);
+    m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
+    m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
+    m_pEngine->registerNonEngineChannelSoundIO(gsl::make_not_null(m_pSoundManager.get()));
+    m_pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
+            m_pSoundManager.get(),
+            m_pEffectsManager.get(),
+            m_pEngine.get());
+
+    m_pPlayerManager->addConfiguredDecks();
+    m_pPlayerManager->addSampler();
+    PlayerInfo::create();
+    m_pEffectsManager->setup();
+
+    const auto dbConnection = mixxx::DbConnectionPooled(dbConnectionPooler());
+    if (!MixxxDb::initDatabaseSchema(dbConnection)) {
+        exit(1);
+    }
+    m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
+            nullptr,
+            m_pConfig,
+            dbConnectionPooler(),
+            deleteTrack);
+
+    m_pRecordingManager = std::make_shared<RecordingManager>(m_pConfig, m_pEngine.get());
+    CoverArtCache::createInstance();
+    m_pLibrary = std::make_shared<Library>(
+            nullptr,
+            m_pConfig,
+            dbConnectionPooler(),
+            m_pTrackCollectionManager.get(),
+            m_pPlayerManager.get(),
+            m_pRecordingManager.get());
+
+    m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(m_pPlayerManager);
+    ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
 #endif
 }
 
 void MappingTestFixture::TearDown() {
 #ifdef MIXXX_USE_QML
+    // Clean up in reverse order of initialization
     PlayerInfo::destroy();
     CoverArtCache::destroy();
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
