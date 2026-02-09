@@ -205,11 +205,12 @@ void DlgPrefLibrary::slotHide() {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("Music Directory Added"));
-    msgBox.setText(tr("You added one or more music directories. The tracks in "
-                      "these directories won't be available until you rescan "
-                      "your library. Would you like to rescan now?"));
+    msgBox.setText(tr(
+            "You added one or more music directories. The tracks in "
+            "these directories won't be available until you rescan "
+            "your library. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
-        tr("Scan"), QMessageBox::AcceptRole);
+            tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
     msgBox.setDefaultButton(scanButton);
     msgBox.exec();
@@ -368,6 +369,8 @@ void DlgPrefLibrary::slotUpdate() {
     } else {
         comboBox_dateFormat->setEditable(false);
     }
+
+    updateDateFormatPreview(dateFormat);
 
     // Ensure the static member is updated on startup/load
     BaseTrackTableModel::setDateFormat(dateFormat);
@@ -776,4 +779,68 @@ void DlgPrefLibrary::setSeratoMetadataEnabled(bool shouldSyncTrackMetadata) {
     if (!shouldSyncTrackMetadata) {
         checkBox_serato_metadata_export->setChecked(false);
     }
+}
+
+void DlgPrefLibrary::slotDateFormatIndexChanged(int index) {
+    auto type = comboBox_dateFormat->itemData(index)
+                        .value<BaseTrackTableModel::DateFormat>();
+
+    if (type == BaseTrackTableModel::DateFormat::Custom) {
+        // Enable editing for Custom
+        if (!comboBox_dateFormat->isEditable()) {
+            comboBox_dateFormat->setEditable(true);
+            comboBox_dateFormat->setEditText(m_lastCustomDateFormat);
+        }
+    } else {
+        // Disable editing for Presets
+        comboBox_dateFormat->setEditable(false);
+
+        QString format;
+        switch (type) {
+        case BaseTrackTableModel::DateFormat::Native:
+            format = QString();
+            break;
+        case BaseTrackTableModel::DateFormat::ISO8601:
+            format = QStringLiteral("yyyy-MM-dd");
+            break;
+        case BaseTrackTableModel::DateFormat::RegionalShort:
+            format = QStringLiteral("d/M/yy");
+            break;
+        case BaseTrackTableModel::DateFormat::RegionalLong:
+            format = QStringLiteral("dd.MM.yyyy");
+            break;
+        case BaseTrackTableModel::DateFormat::Custom:
+            // Should not happen here given the if/else above
+            break;
+        }
+        slotDateFormatChanged(format);
+    }
+}
+
+void DlgPrefLibrary::slotDateFormatChanged(const QString& text) {
+    QString format = text;
+    // If not editable, we are in a Preset mode, but 'text' might be the Item
+    // Label (e.g. "Native ...") depending on how this was called. However, our
+    // slotDateFormatIndexChanged calls this explicitly with the correct format
+    // string. The editTextChanged signal only fires when editable. So 'text'
+    // should be the correct format string in all valid cases.
+
+    if (comboBox_dateFormat->isEditable()) {
+        int index = comboBox_dateFormat->currentIndex();
+        if (index >= 0) {
+            auto type = comboBox_dateFormat->itemData(index)
+                                .value<BaseTrackTableModel::DateFormat>();
+            if (type == BaseTrackTableModel::DateFormat::Custom) {
+                m_lastCustomDateFormat = format;
+            }
+        }
+    }
+}
+
+void DlgPrefLibrary::updateDateFormatPreview(const QString& format) {
+    const QString previewStr = mixxx::formatDate(QDate::currentDate(), format);
+    label_dateFormatPreview->setText(previewStr);
+
+    m_pConfig->setValue(kDateFormatConfigKey, format);
+    BaseTrackTableModel::setDateFormat(format);
 }
