@@ -255,11 +255,6 @@ std::string PrintMappingName(const ::testing::TestParamInfo<std::string>& info) 
     return name.fileName().replace(kNonWordPattern, "_").toStdString();
 }
 
-// Inhibit the output of the mapping info to avoid spamming the console
-// std::ostream& operator<<(std::ostream& os, const QString& MappingPath) {
-//     return os << MappingPath.toStdString();
-// }
-
 TEST_P(MappingTestFixture, ValidateMappingXML) {
     QString mappingPath = QString::fromStdString(GetParam());
     qDebug() << "ValidateMappingXML" << mappingPath;
