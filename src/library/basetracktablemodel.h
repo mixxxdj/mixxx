@@ -257,6 +257,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     void slotRefreshAllRows();
 
+    void slotTracksRemoved(const QSet<TrackId>& trackIds);
+
     void slotCoverFound(
             const QObject* pRequester,
             const CoverInfo& coverInfo,

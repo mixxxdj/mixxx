@@ -20,9 +20,9 @@ Item {
         id: spinner
 
         color: '#BDBDBD'
-        height: 130
+        height: 140
         radius: width / 2
-        width: 130
+        width: 140
 
         transform: Rotation {
             angle: 45

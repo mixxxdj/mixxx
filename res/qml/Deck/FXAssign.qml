@@ -26,7 +26,7 @@ Item {
             when: holder.index != 0
 
             AnchorChanges {
-                anchors.bottom: parent.bottom
+                // anchors.bottom: parent.bottom
                 anchors.top: undefined
                 target: root
             }

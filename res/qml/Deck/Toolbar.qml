@@ -38,11 +38,11 @@ Item {
                 strokeColor: 'transparent'
 
                 PathLine {
-                    x: 18
+                    x: 20
                     y: 4
                 }
                 PathLine {
-                    x: 18
+                    x: 20
                     y: 18
                 }
                 PathLine {
@@ -55,18 +55,11 @@ Item {
     Skin.Button {
         id: beatgridButton
 
-        anchors.right: keylockButton.left
-        anchors.rightMargin: 5
-        implicitHeight: 22
-        text: "Beatgrid"
-    }
-    Skin.Button {
-        id: keylockButton
-
         anchors.right: ejectButton.left
         anchors.rightMargin: 5
         implicitHeight: 22
-        text: "Keylock"
+        text: "Beatgrid"
+        visible: root.width > 165
     }
     Skin.ControlButton {
         id: ejectButton
