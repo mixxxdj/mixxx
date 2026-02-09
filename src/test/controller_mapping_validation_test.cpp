@@ -2,9 +2,8 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <qapplication.h>
-#include <qglobal.h>
 
+#include <QApplication>
 #include <QRegularExpression>
 #include <QUrl>
 

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <qglobal.h>
-
 #include <QObject>
+#include <QtGlobal>
 
 #include "control/controlindicatortimer.h"
 #include "controllers/controller.h"
