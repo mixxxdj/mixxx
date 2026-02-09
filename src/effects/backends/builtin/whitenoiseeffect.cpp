@@ -54,7 +54,7 @@ void WhiteNoiseEffect::processChannel(
 
     CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());
     RampingValue<CSAMPLE_GAIN> drywet_ramping_value(
-            drywet, gs.previous_drywet, engineParameters.framesPerBuffer());
+            gs.previous_drywet, drywet, engineParameters.samplesPerBuffer());
 
     std::uniform_real_distribution<> r_distributor(0.0, 1.0);
 
