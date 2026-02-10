@@ -44,7 +44,16 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_rgbMidColor_b(0),
           m_rgbHighColor_r(0),
           m_rgbHighColor_g(0),
-          m_rgbHighColor_b(0) {
+          m_rgbHighColor_b(0),
+          m_rgbLowFilteredColor_r(0),
+          m_rgbLowFilteredColor_g(0),
+          m_rgbLowFilteredColor_b(0),
+          m_rgbMidFilteredColor_r(0),
+          m_rgbMidFilteredColor_g(0),
+          m_rgbMidFilteredColor_b(0),
+          m_rgbHighFilteredColor_r(0),
+          m_rgbHighFilteredColor_g(0),
+          m_rgbHighFilteredColor_b(0) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {
