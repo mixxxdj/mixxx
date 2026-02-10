@@ -447,12 +447,13 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
 }
 
 void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
-                                   const QString& searchQuery,
-                                   const QString& extraFilter,
-                                   const QString& orderByClause,
-                                   const QList<SortColumn>& sortColumns,
-                                   const int columnOffset,
-                                   QHash<TrackId, int>* trackToIndex) {
+        const QString& searchQuery,
+        const QString& extraFilter,
+        const QString& orderByClause,
+        const QList<SortColumn>& sortColumns,
+        const int columnOffset,
+        QHash<TrackId, int>* sortedIndexes,
+        QHash<TrackId, int>* trackToIndex) {
     // Skip processing if there are no tracks to filter or sort.
     if (trackIds.size() == 0) {
         return;
@@ -497,8 +498,20 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         filter.prepend("WHERE ");
     }
 
-    QString queryString = QString("SELECT %1 FROM %2 %3 %4")
-            .arg(m_idColumn, m_tableName, filter, orderByClause);
+    QString queryString;
+
+    if (sortedIndexes->isEmpty()) {
+        // Use orderByClause value to sort the query result.
+        queryString = QString("SELECT %1 FROM %2 %3 %4")
+                              .arg(m_idColumn, m_tableName, filter, orderByClause);
+    } else {
+        // Use table order in query result.
+
+        // The query result does not need to be sorted because
+        // the new indexes will be set from the previous sorted order.
+        queryString = QString("SELECT %1 FROM %2 %3")
+                              .arg(m_idColumn, m_tableName, filter);
+    }
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -528,10 +541,22 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         m_trackOrder.reserve(rows);
     }
 
-    while (query.next()) {
-        TrackId trackId(query.value(idColumn));
-        (*trackToIndex)[trackId] = m_trackOrder.size();
-        m_trackOrder.append(trackId);
+    if (sortedIndexes->isEmpty()) {
+        // Loop through tracks and store their indexes
+        // in the query result.
+        while (query.next()) {
+            TrackId trackId(query.value(idColumn));
+            (*trackToIndex)[trackId] = m_trackOrder.size();
+            m_trackOrder.append(trackId);
+        }
+    } else {
+        // Loop through tracks and store their indexes
+        // from the previous sorted order.
+        while (query.next()) {
+            TrackId trackId(query.value(idColumn));
+            (*trackToIndex)[trackId] = sortedIndexes->value(trackId);
+            m_trackOrder.append(trackId);
+        }
     }
 
     // At this point, the original set of tracks have been divided into two
