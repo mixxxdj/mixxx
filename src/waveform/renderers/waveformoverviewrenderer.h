@@ -41,4 +41,25 @@ void drawWaveformPartHSV(
         int end,
         const WaveformSignalColors& signalColors,
         bool mono = false);
+void drawWaveformPartStackedRGB(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono = false);
+void drawWaveformPartStackedLMH(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono = false);
+void drawWaveformPartStackedHSV(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono = false);
 } // namespace waveformOverviewRenderer
