@@ -86,6 +86,14 @@ class BulkController : public Controller {
         return m_interfaceNumber;
     }
 
+    uint8_t getInEndpointAddr() const {
+        return m_inEndpointAddr;
+    }
+
+    uint8_t getOutEndpointAddr() const {
+        return m_outEndpointAddr;
+    }
+
     bool isMappable() const override {
         // On raw USB transfer level, there isn't any information about mappable controls
         return false;

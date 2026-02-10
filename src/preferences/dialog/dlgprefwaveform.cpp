@@ -251,16 +251,27 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 
 void DlgPrefWaveform::slotSetWaveformOptions(
         WaveformRendererSignalBase::Option option, bool enabled) {
+    auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
+    WaveformRendererSignalBase::Options supportedOptions =
+            WaveformRendererSignalBase::Option::None;
+
+#ifdef MIXXX_USE_QOPENGL
+    auto* pFactory = WaveformWidgetFactory::instance();
+    auto backend = m_pConfig->getValue(kHardwareAccelerationKey, pFactory->preferredBackend());
+    int handleIdx = pFactory->findHandleIndexFromType(type);
+    if (handleIdx >= 0 && handleIdx < pFactory->getAvailableTypes().size()) {
+        supportedOptions = pFactory->getAvailableTypes()[handleIdx].supportedOptions(backend);
+    }
+#endif
+
     WaveformRendererSignalBase::Options currentOption = m_pConfig->getValue(
             kWaveformOptionsKey,
             WaveformRendererSignalBase::Option::None);
-    m_pConfig->setValue<int>(ConfigKey("[Waveform]", "waveform_options"),
-            enabled ? currentOption |
-                            option
-                    : currentOption ^
-                            option);
-    auto type = static_cast<WaveformWidgetType::Type>(
-            waveformTypeComboBox->currentData().toInt());
+    currentOption.setFlag(option, enabled);
+    // clear unsupported options
+    currentOption &= supportedOptions;
+    m_pConfig->setValue<int>(kWaveformOptionsKey, currentOption);
+
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(
             factory->findHandleIndexFromType(type), true);
@@ -395,10 +406,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
                     WaveformWidgetFactory::defaultType()),
             true);
 
-    allVisualGain->setValue(1.0);
-    lowVisualGain->setValue(1.0);
-    midVisualGain->setValue(1.0);
-    highVisualGain->setValue(1.0);
+    allVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::AllBand));
+    lowVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::Low));
+    midVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::Mid));
+    highVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::High));
 
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
@@ -413,7 +424,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     overviewMinuteMarkersCheckBox->setChecked(true);
 
     // Use "Global" waveform gain + ReplayGain if enabled
-    overview_scale_allReplayGain->setChecked(true);
+    overview_scale_allReplayGain->setChecked(!WaveformWidgetFactory::isOverviewNormalizedDefault());
 
     // 60FPS is the default
     frameRateSlider->setValue(60);
@@ -553,27 +564,26 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform,
 
 #ifdef MIXXX_USE_QOPENGL
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    WaveformRendererSignalBase::Options supportedOption =
+    WaveformRendererSignalBase::Options supportedOptions =
             WaveformRendererSignalBase::Option::None;
 
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     int handleIdx = factory->findHandleIndexFromType(type);
-
-    if (handleIdx != -1) {
-        supportedOption = factory->getAvailableTypes()[handleIdx].supportedOptions(backend);
+    if (handleIdx >= 0 && handleIdx < factory->getAvailableTypes().size()) {
+        supportedOptions = factory->getAvailableTypes()[handleIdx].supportedOptions(backend);
     }
 
     splitLeftRightCheckBox->setEnabled(useWaveform &&
-            supportedOption &
-                    WaveformRendererSignalBase::Option::SplitStereoSignal);
+            (supportedOptions &
+                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setEnabled(useWaveform &&
-            supportedOption &
-                    WaveformRendererSignalBase::Option::HighDetail);
+            (supportedOptions &
+                    allshader::WaveformRendererSignalBase::Option::HighDetail));
     splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
-            currentOptions &
-                    WaveformRendererSignalBase::Option::SplitStereoSignal);
+            (currentOptions &
+                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
-            currentOptions & WaveformRendererSignalBase::Option::HighDetail);
+            (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
 #else
     splitLeftRightCheckBox->setVisible(false);
     highDetailCheckBox->setVisible(false);

@@ -56,6 +56,8 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
         return pTrack->getTrackNumber();
     } else if (column == TRACKLOCATIONSTABLE_LOCATION) {
         return QDir::toNativeSeparators(pTrack->getLocation());
+    } else if (column == TRACKLOCATIONSTABLE_DIRECTORY) {
+        return QDir::toNativeSeparators(pTrack->getDirectory());
     } else if (column == LIBRARYTABLE_COMMENT) {
         return pTrack->getComment();
     } else if (column == LIBRARYTABLE_DURATION) {
@@ -224,7 +226,7 @@ QString TextFilterNode::toSql() const {
     }
     QStringList searchClauses;
     for (const auto& sqlColumn : m_sqlColumns) {
-        searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
+        searchClauses << QString("%1 IS NOT NULL AND %1 LIKE %2").arg(sqlColumn, escapedArgument);
     }
     return concatSqlClauses(searchClauses, "OR");
 }
@@ -897,14 +899,16 @@ DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
 }
 
 QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
-    // Prior to Qt 6.7 QLocale::toDate() with QLocale::ShortFormat used the
-    // base year 1900. With 6.7+ we can specify the century, ie. 20 for 2000.
-    // Mixxx was created aftre 2000 :)
+    // Try ISO format first (YYYY-MM-DD)
+    QDate date = QDate::fromString(dateStr, Qt::ISODate);
+    if (!date.isValid()) {
+        // Fall back to locale-specific short format
 #if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
-    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat);
+        date = QLocale().toDate(dateStr, QLocale::ShortFormat);
 #else
-    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat, 20);
+        date = QLocale().toDate(dateStr, QLocale::ShortFormat, 20);
 #endif
+    }
     if (!date.isValid()) {
         return {};
     }

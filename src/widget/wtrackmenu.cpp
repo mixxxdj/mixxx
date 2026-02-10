@@ -41,6 +41,7 @@
 #include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "util/widgethelper.h"
+#include "widget/findonweblast.h"
 #include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
@@ -268,21 +269,8 @@ void WTrackMenu::createMenus() {
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
         DEBUG_ASSERT(!m_pFindOnWebMenu);
-        m_pFindOnWebMenu = make_parented<WFindOnWebMenu>(this);
-        connect(m_pFindOnWebMenu,
-                &QMenu::aboutToShow,
-                this,
-                [this] {
-                    m_pFindOnWebMenu->clear();
-                    const auto pTrack = getFirstTrackPointer();
-                    if (pTrack) {
-                        mixxx::library::createFindOnWebSubmenus(
-                                m_pFindOnWebMenu,
-                                *pTrack);
-                    }
-                    m_pFindOnWebMenu->setEnabled(
-                            !m_pFindOnWebMenu->isEmpty());
-                });
+        m_pFindOnWebMenu = make_parented<QMenu>(tr("Find on Web"), this);
+        m_pFindOnWebLastAct = make_parented<FindOnWebLast>(this, m_pConfig);
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
@@ -681,8 +669,10 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
-        m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
+        m_pMetadataMenu->addMenu(m_pCoverMenu);
+
+        m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
 
         for (const auto& updateInExternalTrackCollection :
                 std::as_const(m_updateInExternalTrackCollections)) {
@@ -707,8 +697,8 @@ void WTrackMenu::setupActions() {
                     });
         }
 
-        m_pMetadataMenu->addMenu(m_pCoverMenu);
         if (featureIsEnabled(Feature::FindOnWeb)) {
+            m_pMetadataMenu->addAction(m_pFindOnWebLastAct);
             m_pMetadataMenu->addMenu(m_pFindOnWebMenu);
         }
 
@@ -1115,7 +1105,6 @@ void WTrackMenu::updateMenus() {
         // We use the last selected track for the cover art context to be
         // consistent with selectionChanged above.
         m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
-        m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -1238,9 +1227,18 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
+        // We have a new Track
+        m_pFindOnWebMenu->clear();
+        m_pFindOnWebLastAct->setVisible(false);
         const auto pTrack = getFirstTrackPointer();
         const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
-        m_pFindOnWebMenu->setEnabled(enableMenu);
+        if (enableMenu) {
+            mixxx::library::createFindOnWebSubmenus(
+                    m_pFindOnWebMenu.toWeakRef(),
+                    m_pFindOnWebLastAct.toWeakRef(),
+                    *pTrack);
+        }
+        m_pFindOnWebMenu->setEnabled(!m_pFindOnWebMenu->isEmpty());
     }
 }
 
@@ -1398,6 +1396,25 @@ const QModelIndexList& WTrackMenu::getTrackIndices() const {
 
 void WTrackMenu::slotOpenInFileBrowser() {
     const auto trackRefs = getTrackRefs();
+    // Warn when opening many files to prevent system hangs
+    constexpr int kMaxFilesToOpenInBrowser = 10;
+    if (getTrackCount() > kMaxFilesToOpenInBrowser) {
+        QMessageBox::StandardButton reply = QMessageBox::question(
+                nullptr,
+                tr("Open Many Files in File Browser"),
+                tr("You are about to open %n files in the file browser. "
+                   "This may slow down or hang your system. "
+                   "Are you sure you want to continue?",
+                        "",
+                        getTrackCount()),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
+        if (reply != QMessageBox::Yes) {
+            return;
+        }
+    }
+
     QStringList locations;
     locations.reserve(trackRefs.size());
     for (const auto& trackRef : trackRefs) {

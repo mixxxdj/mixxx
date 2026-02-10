@@ -268,6 +268,24 @@ if(UNIX AND NOT APPLE)
     )
   endif()
 endif()
+if(WIN32)
+  # Check if we are running from "Visual Studio 20XX Developer Command Prompt"
+  if(NOT DEFINED ENV{INCLUDE})
+    message(
+      FATAL_ERROR
+      "The INCLUDE environment variable is not defined. Please ensure you are using the correct shell like 'x64 Native Tools Command Prompt for VS 20XX'"
+    )
+  endif()
+endif()
+if(WIN32)
+  # Check if we are running from "Visual Studio 20XX Developer Command Prompt"
+  if(NOT DEFINED ENV{INCLUDE})
+    message(
+      FATAL_ERROR
+      "The INCLUDE environment variable is not defined. Please ensure you are using the correct shell like 'x64 Native Tools Command Prompt for VS 20XX'"
+    )
+  endif()
+endif()
 
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
@@ -378,7 +396,12 @@ cmake_dependent_option(
   "QT6"
   OFF
 )
-option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+
+if(QT6)
+  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+else()
+  option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+endif()
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
@@ -1678,6 +1701,7 @@ add_library(
   src/waveform/renderers/waveformrendererpreroll.cpp
   src/waveform/renderers/waveformrendererrgb.cpp
   src/waveform/renderers/waveformrenderersignalbase.cpp
+  src/waveform/renderers/waveformrenderersimplesignal.cpp
   src/waveform/renderers/waveformrendermark.cpp
   src/waveform/renderers/waveformrendermarkbase.cpp
   src/waveform/renderers/waveformrendermarkrange.cpp
@@ -1694,12 +1718,14 @@ add_library(
   src/waveform/widgets/emptywaveformwidget.cpp
   src/waveform/widgets/hsvwaveformwidget.cpp
   src/waveform/widgets/rgbwaveformwidget.cpp
+  src/waveform/widgets/simplesignalwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
   src/waveform/widgets/glwaveformwidgetabstract.cpp
   src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
+  src/widget/findonweblast.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
@@ -2707,6 +2733,7 @@ if(BUILD_TESTING)
   else()
     message(FATAL_ERROR "GTest: not found")
   endif()
+  add_compile_definitions(BUILD_TESTING)
 endif()
 
 find_package(benchmark)
@@ -3221,7 +3248,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.26.1)
+  set(LIBDJINTEROP_VERSION 0.27.0)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -3284,7 +3311,7 @@ if(ENGINEPRIME)
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
       URL_HASH
-        SHA256=f4fbe728783c14acdc999b74ce3f03d680f9187e1ff676d6bf1233fdb64ae7b2
+        SHA256=c4e73bf3907fd45be1c9767bcd9f367cbb7c279b4fe047bf2216bc92ae3d1668
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       PREFIX "libdjinterop-${LIBDJINTEROP_VERSION}"
@@ -3719,8 +3746,9 @@ else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
 if(QML)
-  list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "LabsQmlModels")
+  list(APPEND QT_EXTRA_COMPONENTS "Multimedia")
+  list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
@@ -3838,7 +3866,7 @@ if(QML)
     OPTIONAL_IMPORTS Mixxx
     QML_FILES
       res/qml/Mixxx/Controls/Knob.qml
-      res/qml/Mixxx/Controls/Slider.qml
+      res/qml/Mixxx/Controls/Fader.qml
       res/qml/Mixxx/Controls/Spinny.qml
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
@@ -3879,6 +3907,7 @@ if(QML)
       src/qml/qmlsettingparameter.cpp
       src/qml/qmltrackproxy.cpp
       src/qml/qmlsoundmanagerproxy.cpp
+      src/qml/qmlpreferencesproxy.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
@@ -4191,6 +4220,14 @@ else()
         COMPONENT applocal
       )
 
+      # install qml6-module-qtmultimedia
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtMultimedia"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
+        COMPONENT applocal
+      )
+
       # install qml6-module-qtqml-workerscript
       install(
         DIRECTORY
@@ -4251,6 +4288,22 @@ else()
       install(
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt/labs/qmlmodels"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
+        COMPONENT applocal
+      )
+
+      # install qml6-module-qtquick-dialogs
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Dialogs"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # install qml6-module-qt-labs-folderlistmodel
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt/labs/folderlistmodel"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
         COMPONENT applocal
       )
@@ -4562,9 +4615,10 @@ target_link_libraries(mixxx-lib PRIVATE Reverb)
 option(RUBBERBAND "Enable the rubberband engine for pitch-bending" ON)
 if(RUBBERBAND)
   find_package(rubberband REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE rubberband::rubberband)
+  target_link_libraries(mixxx-lib PUBLIC rubberband::rubberband)
   target_compile_definitions(mixxx-lib PUBLIC __RUBBERBAND__)
   if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE rubberband::rubberband)
     target_compile_definitions(mixxx-qml-lib PUBLIC __RUBBERBAND__)
   endif()
   target_sources(
@@ -4959,7 +5013,7 @@ if(MAD)
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcemp3.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __MAD__)
-  target_link_libraries(mixxx-lib PRIVATE MAD::MAD ID3Tag::ID3Tag)
+  target_link_libraries(mixxx-lib PUBLIC MAD::MAD ID3Tag::ID3Tag)
 endif()
 
 # Media Foundation AAC Decoder Plugin
@@ -5267,15 +5321,22 @@ if(QT6)
     list(
       APPEND
       CPACK_DEBIAN_PACKAGE_DEPENDS
+      "qml6-module-qt-labs-folderlistmodel"
+    )
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
+    list(
+      APPEND
+      CPACK_DEBIAN_PACKAGE_DEPENDS
       "qml6-module-qt5compat-graphicaleffects"
     )
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtmultimedia")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-dialogs")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
   endif()
 else()
   list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite")

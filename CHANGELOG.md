@@ -333,7 +333,7 @@
 * Fix: import proper QtQml.Models module instead of qmllabs [#14675](https://github.com/mixxxdj/mixxx/pull/14675)
 * qmlwaveform: Fix moc in Qt 6.9.0 [#14649](https://github.com/mixxxdj/mixxx/pull/14649)
 
-## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (unreleased)
+## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (2025-12-14)
 
 ### Controller Mappings
 
@@ -348,6 +348,7 @@
 * Reloop Beatmix 2/4: fix overriding persisted fx routing
   [#15574](https://github.com/mixxxdj/mixxx/pull/15574)
   [#14917](https://github.com/mixxxdj/mixxx/issues/14917)
+* Traktor S4Mk3: don't stop scratch mode if platter is being held [#15570](https://github.com/mixxxdj/mixxx/pull/15570)
 * Components JogwheelBasic: Disable scratching when leaving `vinylMode` [#15336](https://github.com/mixxxdj/mixxx/pull/15336)
 
 ### Skins
@@ -387,8 +388,16 @@
 * Analyze view: avoid listing tracks that don't match the 'New' filter
   [#15597](https://github.com/mixxxdj/mixxx/pull/15597)
   [#14873](https://github.com/mixxxdj/mixxx/issues/14873)
-* Traktor feature: fixes to Traktor collection importer
+  [#15693](https://github.com/mixxxdj/mixxx/pull/15693)
+* Traktor feature: fixes to Traktor and Rekordbox collection importer
   [#15645](https://github.com/mixxxdj/mixxx/pull/15645)
+  [#15671](https://github.com/mixxxdj/mixxx/pull/15671)
+* Fix possible crash and other issues with Rekordbox USB
+  [#15745](https://github.com/mixxxdj/mixxx/pull/15745)
+  [#13624](https://github.com/mixxxdj/mixxx/issues/13624)
+  [#13309](https://github.com/mixxxdj/mixxx/issues/13309)
+  [#10672](https://github.com/mixxxdj/mixxx/issues/10672)
+  [#11373](https://github.com/mixxxdj/mixxx/issues/11373)
 
 ### Preferences
 
@@ -447,6 +456,12 @@
   [#15619](https://github.com/mixxxdj/mixxx/pull/15619)
   [#15610](https://github.com/mixxxdj/mixxx/pull/15610)
 * Update Keyboard SVG [#15635](https://github.com/mixxxdj/mixxx/pull/15635)
+* SoundSourceFFmpeg: Fix opening files with non ASCII characters
+  [#15700](https://github.com/mixxxdj/mixxx/pull/15700)
+  [#15681](https://github.com/mixxxdj/mixxx/issues/15681)
+* Fix possible crash due to division by zereo in waveform code
+  [#15738](https://github.com/mixxxdj/mixxx/pull/15738)
+  [#15737](https://github.com/mixxxdj/mixxx/issues/15737)
 
 ## [2.5.3](https://github.com/mixxxdj/mixxx/milestone/50) (2025-09-02)
 

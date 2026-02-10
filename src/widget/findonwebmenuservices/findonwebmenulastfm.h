@@ -4,9 +4,12 @@
 
 class QMenu;
 class Track;
+class FindOnWebLast;
 
 class FindOnWebMenuLastfm : public WFindOnWebMenu {
     Q_OBJECT
   public:
-    FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& track);
+    FindOnWebMenuLastfm(const QPointer<QMenu>& pFindOnWebMenu,
+            QPointer<FindOnWebLast> pFindOnWebLast,
+            const Track& track);
 };

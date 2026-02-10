@@ -52,14 +52,32 @@ case "$1" in
         fi
 
         # Install a faster linker. Prefer mold, fall back to lld
-        if apt-cache show mold 2>%1 >/dev/null;
+        if apt-cache show mold 2>/dev/null >/dev/null;
         then
             sudo apt-get install -y --no-install-recommends mold
         else
-            if apt-cache show lld 2>%1 >/dev/null;
+            if apt-cache show lld 2>/dev/null >/dev/null;
             then
                 sudo apt-get install -y --no-install-recommends lld
             fi
+        fi
+
+        # Check if fonts-ubuntu is available (from non-free repository)
+        if ! apt-cache show fonts-ubuntu 2>/dev/null | grep -q "Package: fonts-ubuntu"; then
+            echo ""
+            echo "WARNING: The package 'fonts-ubuntu' is not available."
+            echo "This package is required for Mixxx and is located in the Debian non-free repository."
+            echo ""
+            echo "See also: https://wiki.debian.org/SourcesList"
+            echo ""
+            read -p "Would you like to exit to enable 'non-free' now? (y = Exit / n = Continue without fonts): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo "Please edit your /etc/apt/sources.list, run 'sudo apt update', and restart this script."
+                exit 1
+            fi
+        else
+            FONTS_UBUNTU_AVAILABLE=true
         fi
 
         sudo apt-get install -y --no-install-recommends -- \
@@ -73,7 +91,7 @@ case "$1" in
             docbook-to-man \
             dput \
             fonts-open-sans \
-            fonts-ubuntu \
+            "$([ "$FONTS_UBUNTU_AVAILABLE" = true ] && echo "fonts-ubuntu")" \
             g++ \
             lcov \
             libavformat-dev \
@@ -120,7 +138,7 @@ case "$1" in
             qtkeychain-qt6-dev \
             qt6-declarative-private-dev \
             qt6-base-private-dev \
-            qt6-qpa-plugins \
+            qt6-multimedia-dev \
             qml6-module-qt5compat-graphicaleffects \
             qml6-module-qtqml-workerscript \
             qml6-module-qtquick-controls \
@@ -129,6 +147,9 @@ case "$1" in
             qml6-module-qtquick-templates \
             qml6-module-qtquick-window \
             qml6-module-qt-labs-qmlmodels \
+            qml6-module-qtquick-dialogs \
+            qml6-module-qt-labs-folderlistmodel \
+            qml6-module-qtmultimedia \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)

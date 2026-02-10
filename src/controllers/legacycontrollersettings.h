@@ -1,14 +1,22 @@
 #pragma once
 
 #include <gtest/gtest_prod.h>
+#include <qcolor.h>
+#include <qglobal.h>
+#include <qstringliteral.h>
 
 #include <QColor>
 #include <QFileInfo>
 #include <QJSValue>
+#include <QUrl>
+#include <algorithm>
 
 #include "controllers/legacycontrollersettingsfactory.h"
 #include "controllers/legacycontrollersettingslayout.h"
-#include "util/parented_ptr.h"
+#include "util/assert.h"
+#ifdef MIXXX_USE_QML
+#include <QQmlEngine>
+#endif
 
 namespace {
 template<class T>
@@ -27,6 +35,16 @@ class QDoubleSpinBox;
 /// implement this base class
 class AbstractLegacyControllerSetting : public QObject {
     Q_OBJECT
+#ifdef MIXXX_USE_QML
+    Q_PROPERTY(QJSValue currentValue READ value WRITE setValue NOTIFY changed)
+    Q_PROPERTY(QJSValue savedValue READ savedValue NOTIFY changed)
+    Q_PROPERTY(QJSValue defaultValue READ defaultValue CONSTANT)
+    Q_PROPERTY(QString variableName READ variableName CONSTANT)
+    Q_PROPERTY(QString label READ label CONSTANT)
+    Q_PROPERTY(QString description READ description CONSTANT)
+    Q_PROPERTY(QString type READ getType CONSTANT)
+    QML_ANONYMOUS
+#endif
   public:
     ~AbstractLegacyControllerSetting() override = default;
 
@@ -37,14 +55,16 @@ class AbstractLegacyControllerSetting : public QObject {
     /// @return a new widget
     virtual QWidget* buildWidget(QWidget* parent,
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
-                    LegacyControllerSettingsLayoutContainer::HORIZONTAL);
+                    LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL);
 
     /// @brief Build a JSValue with the current setting value. The JSValue
-    /// variant will use the appropriate type
+    /// variant will use the appropriate type. Current value means that this
+    /// value may be "dirty" and contains ongoing user modification, prior to
+    /// saving this value.
     /// @return A QJSValue with the current value
-    virtual QJSValue value() const = 0;
+    Q_INVOKABLE virtual QJSValue value() const = 0;
 
-    /// @brief Serialize the current value in a string format
+    /// @brief Serialize the saved value in a string format
     /// @return A String with current setting value
     virtual QString stringify() const = 0;
 
@@ -56,7 +76,7 @@ class AbstractLegacyControllerSetting : public QObject {
 
     /// @brief Indicate if the setting is currently not using a user-specified value
     /// @return Whether or not the setting is currently set to its default value
-    virtual bool isDefault() const = 0;
+    Q_INVOKABLE virtual bool isDefault() const = 0;
 
     /// @brief Indicate if the setting is currently being mutated and if the
     /// edited value is different than its its currently known value. This would
@@ -88,19 +108,43 @@ class AbstractLegacyControllerSetting : public QObject {
 
     /// @brief The user-friendly label to be display in the UI
     /// @return a string
-    const QString& label() const {
+    Q_INVOKABLE const QString& label() const {
         return m_label;
     }
 
     /// @brief A description of what this setting does
     /// @return a string
-    const QString& description() const {
+    Q_INVOKABLE const QString& description() const {
         return m_description;
     }
 
     bool operator==(const AbstractLegacyControllerSetting& other) const noexcept {
         return variableName() == other.variableName();
     }
+
+#ifdef MIXXX_USE_QML
+    /// @brief Serialise a JSValue as the new setting value. The JSValue
+    /// variant will use the appropriate type
+    /// @param value A QJSValue with the new value
+    Q_INVOKABLE virtual void setValue(const QJSValue& value) = 0;
+
+    /// @brief Get the value as it is currently persisted and known by the mapping, if enabled.
+    /// @return A QJSValue with the saved value
+    Q_INVOKABLE virtual QJSValue savedValue() const = 0;
+
+    /// @brief Get the default value as it is defined in the mapping setting definition.
+    /// @return A QJSValue with the default value
+    Q_INVOKABLE virtual QJSValue defaultValue() const = 0;
+
+    /// @brief Serialize the setting parameters
+    /// @param doc The DOM document in which the parameter will be serialise
+    /// @param e The DOM element in which to serialise parameter
+    virtual void serialize(QDomDocument* doc, QDomElement* e) const;
+
+    /// @brief The setting type in human readable form.
+    /// @return a string
+    virtual QString getType() const = 0;
+#endif
 
   protected:
     AbstractLegacyControllerSetting(const QString& variableName,
@@ -184,12 +228,38 @@ class LegacyControllerBooleanSetting
 
     QWidget* buildWidget(QWidget* parent,
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
-                    LegacyControllerSettingsLayoutContainer::HORIZONTAL)
+                    LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL)
             override;
 
     QJSValue value() const override {
-        return QJSValue(m_savedValue);
+        return QJSValue(m_editedValue);
     }
+
+#ifdef MIXXX_USE_QML
+    void setValue(const QJSValue& value) override {
+        bool newValue = value.toBool();
+
+        if (newValue == m_editedValue) {
+            return;
+        }
+        m_editedValue = newValue;
+        emit changed();
+    }
+
+    void serialize(QDomDocument* doc, QDomElement* e) const override;
+
+    QString getType() const override {
+        return QStringLiteral("boolean");
+    }
+
+    QJSValue savedValue() const override {
+        return QJSValue(m_editedValue);
+    }
+
+    QJSValue defaultValue() const override {
+        return QJSValue(m_editedValue);
+    }
+#endif
 
     QString stringify() const override {
         return m_savedValue ? "true" : "false";
@@ -274,8 +344,34 @@ class LegacyControllerNumberSetting
     virtual ~LegacyControllerNumberSetting() = default;
 
     QJSValue value() const override {
+        return QJSValue(m_editedValue);
+    }
+
+#ifdef MIXXX_USE_QML
+    void setValue(const QJSValue& value) override {
+        SettingType newValue = static_cast<SettingType>(value.toNumber());
+
+        if (newValue == m_editedValue) {
+            return;
+        }
+        m_editedValue = newValue;
+        emit changed();
+    }
+
+    void serialize(QDomDocument* doc, QDomElement* e) const override;
+
+    QString getType() const override {
+        return QStringLiteral("number");
+    }
+
+    QJSValue savedValue() const override {
         return QJSValue(m_savedValue);
     }
+
+    QJSValue defaultValue() const override {
+        return QJSValue(m_defaultValue);
+    }
+#endif
 
     QString stringify() const override {
         return ValueSerializer(m_savedValue);
@@ -319,7 +415,7 @@ class LegacyControllerNumberSetting
 
     QWidget* buildInputWidget(QWidget* parent) override;
 
-  private:
+  protected:
     SettingType m_minValue;
     SettingType m_maxValue;
     SettingType m_stepValue;
@@ -345,15 +441,38 @@ inline QString packSettingDoubleValue(const double& in) {
     return QString::number(in);
 }
 
-using LegacyControllerIntegerSetting = LegacyControllerNumberSetting<int,
-        packSettingIntegerValue,
-        extractSettingIntegerValue,
-        QSpinBox>;
+class LegacyControllerIntegerSetting : public LegacyControllerNumberSetting<int,
+                                               packSettingIntegerValue,
+                                               extractSettingIntegerValue,
+                                               QSpinBox> {
+    Q_OBJECT
+#ifdef MIXXX_USE_QML
+    Q_PROPERTY(int min MEMBER m_minValue CONSTANT)
+    Q_PROPERTY(int max MEMBER m_maxValue CONSTANT)
+    Q_PROPERTY(int step MEMBER m_stepValue CONSTANT)
+    QML_ANONYMOUS
+#endif
+  public:
+    explicit LegacyControllerIntegerSetting(const QDomElement& element)
+            : LegacyControllerNumberSetting(element) {
+    }
+    static std::shared_ptr<LegacyControllerIntegerSetting> createFrom(const QDomElement& element) {
+        return std::make_shared<LegacyControllerIntegerSetting>(element);
+    }
+};
 
 class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
                                             packSettingDoubleValue,
                                             extractSettingDoubleValue,
                                             QDoubleSpinBox> {
+    Q_OBJECT
+#ifdef MIXXX_USE_QML
+    Q_PROPERTY(double min MEMBER m_minValue CONSTANT)
+    Q_PROPERTY(double max MEMBER m_maxValue CONSTANT)
+    Q_PROPERTY(double step MEMBER m_stepValue CONSTANT)
+    Q_PROPERTY(double precision MEMBER m_precisionValue CONSTANT)
+    QML_ANONYMOUS
+#endif
   public:
     LegacyControllerRealSetting(const QDomElement& element)
             : LegacyControllerNumberSetting(element) {
@@ -368,31 +487,105 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
         return std::make_shared<LegacyControllerRealSetting>(element);
     }
 
+#ifdef MIXXX_USE_QML
+    void serialize(QDomDocument* doc, QDomElement* e) const override;
+#endif
+
     QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
     int m_precisionValue;
 };
 
-class LegacyControllerEnumSetting
-        : public LegacyControllerSettingMixin<size_t>,
-          public LegacyControllerSettingFactory<LegacyControllerEnumSetting> {
+struct LegacyControllerEnumOption {
+#ifdef MIXXX_USE_QML
+    Q_GADGET
+    Q_PROPERTY(QString value MEMBER value CONSTANT)
+    Q_PROPERTY(QString label MEMBER label CONSTANT)
+    Q_PROPERTY(QColor color MEMBER color CONSTANT)
+#endif
   public:
-    struct Item {
-        QString value;
-        QString label;
-        QColor color;
-    };
+    QString value;
+    QString label;
+    QColor color;
+};
+
+class LegacyControllerEnumSetting
+        : public LegacyControllerSettingMixin<qsizetype>,
+          public LegacyControllerSettingFactory<LegacyControllerEnumSetting> {
+#ifdef MIXXX_USE_QML
+    Q_OBJECT
+    Q_PROPERTY(QList<LegacyControllerEnumOption> options MEMBER m_options CONSTANT)
+    Q_PROPERTY(qsizetype currentValueIndex READ currentValueIndex WRITE
+                    setCurrentValueIndex NOTIFY changed)
+    Q_PROPERTY(qsizetype savedValueIndex READ savedValueIndex NOTIFY changed)
+    QML_ANONYMOUS
+#endif
+  public:
 
     LegacyControllerEnumSetting(const QDomElement& element);
 
     virtual ~LegacyControllerEnumSetting() = default;
 
     QJSValue value() const override {
+        return QJSValue(m_options.value(static_cast<int>(m_editedValue)).value);
+    }
+
+#ifdef MIXXX_USE_QML
+    void setValue(const QJSValue& rawValue) override {
+        auto value = rawValue.toString();
+
+        for (int i = 0; i < m_options.size(); i++) {
+            if (m_options[i].value == value) {
+                setCurrentValueIndex(i);
+                return;
+            }
+        }
+        setCurrentValueIndex(0); // misspelled values default to index 0;
+    }
+
+    void serialize(QDomDocument* doc, QDomElement* e) const override;
+
+    QString getType() const override {
+        return QStringLiteral("enum");
+    }
+
+    QJSValue savedValue() const override {
         return QJSValue(stringify());
     }
 
-    const QList<Item>& options() const {
+    QJSValue defaultValue() const override {
+        return QJSValue(m_options.value(static_cast<int>(m_defaultValue)).value);
+    }
+#endif
+
+    Q_INVOKABLE void setCurrentValueIndex(qsizetype index) {
+        VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < m_options.size()) {
+            return;
+        }
+        if (m_editedValue == index) {
+            return;
+        }
+        m_editedValue = index;
+        emit changed();
+    }
+
+    /// @brief Return the index for the saved value.
+    /// @return an option index
+    qsizetype savedValueIndex() const {
+        // the m_savedValue of the base class contains the index of the enum value.
+        return m_savedValue;
+    }
+
+    /// @brief Return the index for the current value. Current value means that
+    /// this value may be "dirty" and contains ongoing user modification, prior
+    /// to saving this value.
+    /// @return an option index
+    qsizetype currentValueIndex() const {
+        return m_editedValue;
+    }
+
+    const QList<LegacyControllerEnumOption>& options() const {
         return m_options;
     }
 
@@ -418,7 +611,7 @@ class LegacyControllerEnumSetting
 
   protected:
     LegacyControllerEnumSetting(const QDomElement& element,
-            const QList<Item>& options,
+            const QList<LegacyControllerEnumOption>& options,
             size_t currentValue,
             size_t defaultValue)
             : LegacyControllerSettingMixin(element, currentValue, defaultValue),
@@ -429,7 +622,7 @@ class LegacyControllerEnumSetting
 
   private:
     // We use a QList instead of QHash here because we want to keep the natural order
-    QList<Item> m_options;
+    QList<LegacyControllerEnumOption> m_options;
 
     FRIEND_TEST(LegacyControllerMappingSettingsTest, enumSettingEditing);
     FRIEND_TEST(ControllerS4MK3SettingTest, ensureLibrarySettingValueAndEnumEquals);
@@ -438,17 +631,54 @@ class LegacyControllerEnumSetting
 class LegacyControllerColorSetting
         : public LegacyControllerSettingMixin<QColor>,
           public LegacyControllerSettingFactory<LegacyControllerColorSetting> {
-    Q_OBJECT
   public:
     LegacyControllerColorSetting(const QDomElement& element);
 
     ~LegacyControllerColorSetting() override;
 
     QJSValue value() const override {
+        if (!m_editedValue.isValid()) {
+            return {};
+        }
+        return QJSValue(m_editedValue.name(QColor::HexRgb));
+    }
+
+#ifdef MIXXX_USE_QML
+    // We expect the JS value to be set to from a QColor-compatible JS value,
+    // which include a QML color, a string with CSS named color or a string with
+    // CXX (A)RGB hex color code See more details in
+    // https://doc.qt.io/qt-6/qml-color.html
+    void setValue(const QJSValue& value) override {
+        QColor color = value.toVariant().value<QColor>();
+        if (color == m_editedValue) {
+            return;
+        }
+        m_editedValue = color;
+        emit changed();
+    }
+
+    void serialize(QDomDocument* doc, QDomElement* e) const override;
+
+    QString getType() const override {
+        return QStringLiteral("color");
+    }
+
+    QJSValue savedValue() const override {
         return QJSValue(stringify());
     }
 
+    QJSValue defaultValue() const override {
+        if (!m_defaultValue.isValid()) {
+            return {};
+        }
+        return QJSValue(m_defaultValue.name(QColor::HexRgb));
+    }
+#endif
+
     QString stringify() const override {
+        if (!m_savedValue.isValid()) {
+            return {};
+        }
         return m_savedValue.name(QColor::HexRgb);
     }
     void parse(const QString& in, bool* ok) override;
@@ -490,15 +720,60 @@ class LegacyControllerColorSetting
 class LegacyControllerFileSetting
         : public LegacyControllerSettingMixin<QFileInfo>,
           public LegacyControllerSettingFactory<LegacyControllerFileSetting> {
+#ifdef MIXXX_USE_QML
     Q_OBJECT
+    Q_PROPERTY(QString fileFilter MEMBER m_fileFilter CONSTANT)
+    QML_ANONYMOUS
+#endif
   public:
     LegacyControllerFileSetting(const QDomElement& element);
 
     virtual ~LegacyControllerFileSetting();
 
     QJSValue value() const override {
-        return QJSValue(stringify());
+        return QJSValue(QUrl::fromLocalFile(m_editedValue.absoluteFilePath()).toString());
     }
+
+#ifdef MIXXX_USE_QML
+    // We expect the JS value to be set to from a QUrl-compatible JS value,
+    // which include a QML url, a URL in a string See more details in
+    // https://doc.qt.io/qt-6/qml-url.html
+    void setValue(const QJSValue& value) override {
+        QUrl path = value.toVariant().value<QUrl>();
+        QFileInfo file;
+        if (!path.isValid()) {
+            file = QFileInfo();
+        } else {
+            file = QFileInfo(path.toLocalFile());
+            DEBUG_ASSERT(file.exists());
+        }
+        if (file == m_editedValue) {
+            return;
+        }
+        m_editedValue = file;
+        emit changed();
+    }
+
+    void serialize(QDomDocument* doc, QDomElement* e) const override;
+
+    QString getType() const override {
+        return QStringLiteral("file");
+    }
+
+    QJSValue savedValue() const override {
+        if (!m_savedValue.isFile()) {
+            return {};
+        }
+        return QJSValue(QUrl::fromLocalFile(m_savedValue.absoluteFilePath()).toString());
+    }
+
+    QJSValue defaultValue() const override {
+        if (!m_defaultValue.isFile()) {
+            return {};
+        }
+        return QJSValue(QUrl::fromLocalFile(m_defaultValue.absoluteFilePath()).toString());
+    }
+#endif
 
     QString stringify() const override {
         return m_savedValue.absoluteFilePath();
