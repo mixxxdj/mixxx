@@ -116,8 +116,8 @@ bool WaveformWidgetRenderer::init() {
     m_pTrackSamplesControlObject = std::make_unique<ControlProxy>(
             m_group, QStringLiteral("track_samples"));
 
-    for (int i = 0; i < m_rendererStack.size(); ++i) {
-        if (!m_rendererStack[i]->init()) {
+    for (auto* pRendered : std::as_const(m_rendererStack)) {
+        VERIFY_OR_DEBUG_ASSERT(pRendered->init()) {
             return false;
         }
     }
