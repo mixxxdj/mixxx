@@ -30,15 +30,6 @@ class WaveformMarkSet {
                const WaveformSignalColors& signalColors);
 
     template<typename Receiver, typename Slot>
-    void connectSamplePositionChanged(Receiver receiver, Slot slot) const {
-        for (const auto& pMark : std::as_const(m_marks)) {
-            if (pMark->isValid()) {
-                pMark->connectSamplePositionChanged(receiver, slot);
-            }
-        }
-    };
-
-    template<typename Receiver, typename Slot>
     void connectSampleEndPositionChanged(Receiver receiver, Slot slot) const {
         for (const auto& pMark : std::as_const(m_marks)) {
             if (pMark->isValid()) {
