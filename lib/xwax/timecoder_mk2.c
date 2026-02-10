@@ -305,8 +305,8 @@ void mk2_process_carrier(struct timecoder *tc, signed int primary, signed int se
     }
 
     /* Push the samples into the ringbuffer */
-    delayline_push(&tc->primary.mk2.delayline, primary);
-    delayline_push(&tc->secondary.mk2.delayline, secondary);
+    rb_push(tc->primary.mk2.delayline, &primary);
+    rb_push(tc->secondary.mk2.delayline, &secondary);
 
     /* Compute the discrete derivative */
     tc->primary.mk2.deriv = derivative(&tc->primary.mk2.differentiator,
@@ -399,15 +399,16 @@ inline static void mk2_process_bitstream(struct timecoder *tc, struct mk2_subcod
 {
     int current_slope[2];
 
-    delayline_push(&sc->readings, reading);
+    rb_push(sc->readings, &reading);
+
     sc->avg_reading = ema(&sc->ema_reading, reading);
 
     /* Calculate absolute of average slope */
-    sc->avg_slope = ema(&sc->ema_slope, abs(reading - *delayline_at(&sc->readings, 1)));
+    sc->avg_slope = ema(&sc->ema_slope, abs(reading - *(int*)rb_at(sc->readings, 1)));
 
     /* Calculate current and last slope */
-    current_slope[0] =  (reading - *delayline_at(&sc->readings, 1));
-    current_slope[1] =  (reading - *delayline_at(&sc->readings, 2));
+    current_slope[0] =  (reading - *(int*)rb_at(sc->readings, 1));
+    current_slope[1] =  (reading - *(int*)rb_at(sc->readings, 2));
 
     /* The bits only change when an offset jump occurs. Else the previous bit is taken  */
     detect_bit_flip(current_slope, tc->secondary.mk2.rms, reading, sc->avg_reading, &sc->bit,
