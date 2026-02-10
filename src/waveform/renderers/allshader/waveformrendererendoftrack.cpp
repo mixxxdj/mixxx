@@ -44,10 +44,10 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
-    m_pEndOfTrackControl.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), "end_of_track"));
-    m_pTimeRemainingControl.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), "time_remaining"));
+    m_pEndOfTrackControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), "end_of_track");
+    m_pTimeRemainingControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), "time_remaining");
 
     return true;
 }

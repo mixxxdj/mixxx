@@ -39,21 +39,19 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
     }
 
   protected:
-    void deleteControls();
-
     void getGains(float* pAllGain,
             float* pLowGain,
             float* pMidGain,
             float* highGain);
 
   protected:
-    ControlProxy* m_pEQEnabled;
-    ControlProxy* m_pLowFilterControlObject;
-    ControlProxy* m_pMidFilterControlObject;
-    ControlProxy* m_pHighFilterControlObject;
-    ControlProxy* m_pLowKillControlObject;
-    ControlProxy* m_pMidKillControlObject;
-    ControlProxy* m_pHighKillControlObject;
+    std::unique_ptr<ControlProxy> m_pEQEnabled;
+    std::unique_ptr<ControlProxy> m_pLowFilterControlObject;
+    std::unique_ptr<ControlProxy> m_pMidFilterControlObject;
+    std::unique_ptr<ControlProxy> m_pHighFilterControlObject;
+    std::unique_ptr<ControlProxy> m_pLowKillControlObject;
+    std::unique_ptr<ControlProxy> m_pMidKillControlObject;
+    std::unique_ptr<ControlProxy> m_pHighKillControlObject;
 
     Qt::Alignment m_alignment;
     Qt::Orientation m_orientation;
