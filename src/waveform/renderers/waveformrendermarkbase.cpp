@@ -17,7 +17,6 @@ void WaveformRenderMarkBase::setup(const QDomNode& node, const SkinContext& cont
 }
 
 bool WaveformRenderMarkBase::init() {
-    m_marks.connectSampleEndPositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WaveformRenderMarkBase::onMarkChanged);
     return true;
 }
