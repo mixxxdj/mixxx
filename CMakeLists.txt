@@ -4591,7 +4591,7 @@ if(RUBBERBAND)
 endif()
 
 # Bungee
-option(BUNGEE "Enable the Bungee engine for pitch-bending" OFF)
+option(BUNGEE "Enable the Bungee engine for pitch-bending" ON)
 if(BUNGEE)
   find_package(Bungee REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC Bungee::Bungee)
