@@ -310,13 +310,14 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
     // last synchronized. Exporting metadata will update this time
     // stamp on the track object!
     if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() &&
-                    m_pConfig &&
+            (pTrack->isDirty() && m_pConfig &&
                     (m_pConfig->getValueString(
-                                      mixxx::library::prefs::kSyncTrackMetadataConfigKey)
+                                     mixxx::library::prefs::
+                                             kSyncTrackMetadataConfigKey)
                                             .toInt() == 1 ||
                             m_pConfig->getValueString(
-                                             mixxx::library::prefs::kExportRatingToFileTagsConfigKey)
+                                             mixxx::library::prefs::
+                                                     kExportRatingToFileTagsConfigKey)
                                             .toInt() == 1))) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate: {
