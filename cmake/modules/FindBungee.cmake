@@ -44,7 +44,10 @@ endif()
 find_path(
   Bungee_INCLUDE_DIR
   NAMES bungee/Bungee.h
-  HINTS ${PC_Bungee_INCLUDE_DIRS}
+  HINTS 
+    ${PC_Bungee_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../bungee
+    ${CMAKE_SOURCE_DIR}/../bungee
   DOC "Bungee include directory"
 )
 mark_as_advanced(Bungee_INCLUDE_DIR)
@@ -52,7 +55,10 @@ mark_as_advanced(Bungee_INCLUDE_DIR)
 find_library(
   Bungee_LIBRARY
   NAMES bungee bungee_library
-  HINTS ${PC_Bungee_LIBRARY_DIRS}
+  HINTS 
+    ${PC_Bungee_LIBRARY_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../bungee/build
+    ${CMAKE_SOURCE_DIR}/../bungee/build
   DOC "Bungee library"
 )
 mark_as_advanced(Bungee_LIBRARY)

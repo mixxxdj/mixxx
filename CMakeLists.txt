@@ -4593,13 +4593,76 @@ endif()
 # Bungee
 option(BUNGEE "Enable the Bungee engine for pitch-bending" ON)
 if(BUNGEE)
-  find_package(Bungee REQUIRED)
-  target_link_libraries(mixxx-lib PUBLIC Bungee::Bungee)
+  # pffft library (dependency of bungee)
+  add_library(bungee-pffft STATIC EXCLUDE_FROM_ALL
+    lib/bungee/submodules/pffft/pffft.c
+    lib/bungee/submodules/pffft/fftpack.c
+  )
+  target_compile_options(bungee-pffft
+    PRIVATE
+      -ffast-math
+      -fno-finite-math-only
+      -fno-exceptions
+  )
+
+  # Bungee library - built from source files in lib/bungee
+  # This allows easy updates: just cd lib/bungee && git pull
+  add_library(bungee STATIC EXCLUDE_FROM_ALL
+    lib/bungee/src/Assert.cpp
+    lib/bungee/src/Fourier.cpp
+    lib/bungee/src/Grain.cpp
+    lib/bungee/src/Grains.cpp
+    lib/bungee/src/Input.cpp
+    lib/bungee/src/Instrumentation.cpp
+    lib/bungee/src/Output.cpp
+    lib/bungee/src/Partials.cpp
+    lib/bungee/src/Stretch.cpp
+    lib/bungee/src/Stretcher.cpp
+    lib/bungee/src/Synthesis.cpp
+    lib/bungee/src/Timing.cpp
+    lib/bungee/src/version.cpp
+    lib/bungee/src/Window.cpp
+  )
+
+  target_compile_features(bungee PUBLIC cxx_std_20)
+
+  target_include_directories(bungee
+    PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee>
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/bungee>
+    PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/submodules/eigen
+  )
+
+  target_compile_definitions(bungee
+    PRIVATE
+      BUNGEE_SELF_TEST=0
+      eigen_assert=BUNGEE_ASSERT1
+      EIGEN_DONT_PARALLELIZE=1
+      $<$<CONFIG:Debug>:EIGEN_RUNTIME_NO_MALLOC=1>
+  )
+
+  # BUNGEE_VISIBILITY needs special handling due to parentheses
+  target_compile_options(bungee
+    PRIVATE
+      $<$<CXX_COMPILER_ID:GNU,Clang>:-fwrapv>
+      "-DBUNGEE_VISIBILITY=__attribute__((visibility(\"default\")))"
+  )
+
+  set_source_files_properties(lib/bungee/src/version.cpp PROPERTIES
+    COMPILE_DEFINITIONS BUNGEE_VERSION=\"0.0.0\"
+  )
+
+  target_link_libraries(bungee PRIVATE bungee-pffft)
+
+  target_link_libraries(mixxx-lib PUBLIC bungee)
   target_compile_definitions(mixxx-lib PUBLIC __BUNGEE__)
+
   if(QML)
-    target_link_libraries(mixxx-qml-lib PRIVATE Bungee::Bungee)
+    target_link_libraries(mixxx-qml-lib PRIVATE bungee)
     target_compile_definitions(mixxx-qml-lib PUBLIC __BUNGEE__)
   endif()
+
   target_sources(
     mixxx-lib
     PRIVATE
