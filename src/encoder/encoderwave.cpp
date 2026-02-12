@@ -62,12 +62,10 @@ static sf_count_t  sf_f_tell (void *user_data)
     return pCallback->tell();
 }
 
-
-
-
 EncoderWave::EncoderWave(EncoderCallback* pCallback)
         : m_pCallback(pCallback),
-          m_pSndfile(nullptr) {
+          m_pSndfile(nullptr),
+          m_channels(2) {
     m_sfInfo.frames = 0;
     m_sfInfo.samplerate = 0;
     m_sfInfo.channels = 0;
@@ -128,6 +126,19 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
             qWarning() << " Unexpected radio index on EncoderWave: "
                     << radio << ". reverting to PCM 16bits";
             break;
+    }
+
+    // Read channel mode from settings
+    switch (settings.getChannelMode()) {
+    case EncoderSettings::ChannelMode::MONO:
+        m_channels = 1;
+        break;
+    case EncoderSettings::ChannelMode::STEREO:
+        m_channels = 2;
+        break;
+    case EncoderSettings::ChannelMode::AUTOMATIC:
+        m_channels = 2;
+        break;
     }
 }
 
@@ -199,7 +210,7 @@ int EncoderWave::initEncoder(mixxx::audio::SampleRate sampleRate,
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = sampleRate;
-    m_sfInfo.channels = 2;
+    m_sfInfo.channels = m_channels;
     m_sfInfo.frames = 0;
     m_sfInfo.sections = 0;
     m_sfInfo.seekable = 0;

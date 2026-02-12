@@ -37,6 +37,6 @@ class EncoderWave : public Encoder {
 
     SNDFILE* m_pSndfile;
     SF_INFO m_sfInfo;
-
     SF_VIRTUAL_IO m_virtualIo;
+    int m_channels;
 };
