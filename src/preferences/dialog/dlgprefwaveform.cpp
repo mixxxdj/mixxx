@@ -80,6 +80,11 @@ DlgPrefWaveform::DlgPrefWaveform(
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
+    m_pOverviewStereoControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup,
+                    QStringLiteral("overview_stereo_mode")));
+    m_pOverviewStereoControl->setReadOnly();
+
     m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")));
     m_pOverviewMinuteMarkersControl->setReadOnly();
@@ -193,6 +198,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
+    connect(overviewStereoCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetOverviewStereoMode);
 
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
@@ -361,6 +370,11 @@ void DlgPrefWaveform::slotUpdate() {
         overview_scale_allReplayGain->setChecked(true);
     }
 
+    bool overviewStereo = m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), true);
+    overviewStereoCheckBox->setChecked(overviewStereo);
+    m_pOverviewStereoControl->forceSet(overviewStereo);
+
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")), true);
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
@@ -419,6 +433,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(
             waveformOverviewComboBox->findData(QVariant::fromValue(OverviewType::RGB)));
+
+    // Default to overview stereo mode
+    overviewStereoCheckBox->setChecked(true);
 
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
@@ -704,6 +721,11 @@ void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
                                 QStringLiteral("draw_overview_minute_markers")),
             draw);
     m_pOverviewMinuteMarkersControl->forceSet(draw);
+}
+
+void DlgPrefWaveform::slotSetOverviewStereoMode(bool stereo) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), stereo);
+    m_pOverviewStereoControl->forceSet(stereo);
 }
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
