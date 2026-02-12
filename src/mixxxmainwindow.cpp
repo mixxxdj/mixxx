@@ -1258,6 +1258,15 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 QStringLiteral("<br><b>") +
                 tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
+
+        if (result.noDirectoriesConfigured) {
+            summary = tr("No music directories configured for scanning.") +
+                    QStringLiteral("<br>") +
+                    tr("Add directories in the library preferences.");
+            // reassign summary to avoid showing "Scan took <Empty String>"
+            // which is not relevant in this case - no scan was actually
+            // performed
+        }
     } else {
         if (result.numNewTracks != 0) {
             summary += tr("%n new track(s) found", nullptr, result.numNewTracks) +
