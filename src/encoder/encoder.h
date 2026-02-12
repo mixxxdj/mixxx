@@ -28,7 +28,6 @@ class Encoder {
     virtual ~Encoder() = default;
 
     virtual int initEncoder(mixxx::audio::SampleRate sampleRate,
-            int channels,
             QString* pUserErrorMessage) = 0;
     // encodes the provided buffer of audio.
     virtual void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) = 0;

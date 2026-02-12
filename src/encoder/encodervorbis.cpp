@@ -205,7 +205,6 @@ void EncoderVorbis::initStream() {
 }
 
 int EncoderVorbis::initEncoder(mixxx::audio::SampleRate sampleRate,
-        int channels,
         QString* pUserErrorMessage) {
     m_channels = channels;
     vorbis_info_init(&m_vinfo);

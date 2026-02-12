@@ -21,9 +21,9 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_iMetaDataLife(0),
           m_cueTrack(0),
           m_bCueIsEnabled(false),
-          m_bCueUsesFileAnnotation(false),
-          m_recordChannels(2) { // defaulting to stereo but not picking from
-                                // config in case config is not yet loaded
+          m_bCueUsesFileAnnotation(
+                  false) { // defaulting to stereo but not picking from config
+                           // in case config is not yet loaded
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 }
@@ -40,13 +40,6 @@ int EngineRecord::updateFromPreferences() {
     m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author"));
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
-    int channelMode = m_pConfig->getValue<int>(
-            ConfigKey(RECORDING_PREF_KEY, QStringLiteral("channel_mode")), 0);
-    if (channelMode == 1) {
-        m_recordChannels = 1; // mono recording but changing UI 0/1 to encoder 1/2.
-    } else {
-        m_recordChannels = 2; // Stereo recording (default)
-    }
 
     m_bCueIsEnabled = m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, QStringLiteral("CueEnabled")));
@@ -67,7 +60,7 @@ int EngineRecord::updateFromPreferences() {
     int ret = -1;
     if (m_pEncoder) {
         m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
-        ret = m_pEncoder->initEncoder(m_sampleRate, m_recordChannels, &userErrorMsg);
+        ret = m_pEncoder->initEncoder(m_sampleRate, &userErrorMsg);
     }
 
     if (ret < 0) {
@@ -214,6 +207,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize)
     // Checking again from m_pRecReady since its status might have changed
     // in the previous "if" blocks.
     if (m_pRecReady->get() == RECORD_ON) {
+        int channelMode = m_pConfig->getValue<int>(
+                ConfigKey(RECORDING_PREF_KEY, "channel_mode"), 0);
+        bool recordMono = (channelMode == 1);
         /* Downmixing audio to mono if mono recording is enabled.
         We need to do it before encoding because some encoders don't support mono
         and we want to be able to record in mono even with these encoders.*/
@@ -221,7 +217,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize)
         std::vector<CSAMPLE> monoBuffer;
         std::size_t encoderBufferSize = bufferSize;
 
-        if (m_recordChannels == 1) {
+        if (recordMono) {
             // Allocate mono buffer (half the size since we're going from 2 channels to 1)
             monoBuffer.resize(bufferSize / 2);
             SampleUtil::mixMultichannelToMono(monoBuffer.data(), pBuffer, bufferSize);

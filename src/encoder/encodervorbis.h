@@ -19,7 +19,6 @@ class EncoderVorbis : public Encoder {
     ~EncoderVorbis() override;
 
     int initEncoder(mixxx::audio::SampleRate sampleRate,
-            int channels,
             QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;

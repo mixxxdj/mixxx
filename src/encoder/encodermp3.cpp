@@ -179,7 +179,6 @@ void EncoderMp3::initStream() {
 }
 
 int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate,
-        int channels,
         QString* pUserErrorMessage) {
     unsigned long samplerate_in = sampleRate;
     // samplerate_out 0 means "let LAME pick the appropriate one"
@@ -201,6 +200,7 @@ int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate,
     lame_set_out_samplerate(m_lameFlags, samplerate_out);
 
     // Input channels into the encoder
+    int channels = (m_stereo_mode == MONO) ? 1 : 2;
     lame_set_num_channels(m_lameFlags, channels);
     // Output channels (on the mp3 file)
     // mode = 0,1,2,3 = stereo, jstereo, dual channel (not supported), mono
