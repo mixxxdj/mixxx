@@ -164,7 +164,8 @@ class AutoDJProcessor : public QObject {
         FadeAtOutroStart,
         FixedFullTrack,
         FixedSkipSilence,
-        FixedStartCenterSkipSilence
+        FixedStartCenterSkipSilence,
+        StartTimeDuration
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -186,6 +187,14 @@ class AutoDJProcessor : public QObject {
         return m_transitionMode;
     }
 
+    int getStartTimeSeconds() const {
+        return m_startTimeSeconds;
+    }
+
+    int getDurationSeconds() const {
+        return m_durationSeconds;
+    }
+
     PlaylistTableModel* getTableModel() const {
         return m_pAutoDJTableModel;
     }
@@ -195,6 +204,9 @@ class AutoDJProcessor : public QObject {
     void setTransitionTime(int seconds);
 
     void setTransitionMode(TransitionMode newMode);
+
+    void setStartTimeSeconds(int seconds);
+    void setDurationSeconds(int seconds);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
@@ -299,6 +311,9 @@ class AutoDJProcessor : public QObject {
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
     bool m_crossfaderStartCenter;
+
+    int m_startTimeSeconds;
+    int m_durationSeconds;
 
     QList<DeckAttributes*> m_decks;
 
