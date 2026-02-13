@@ -270,6 +270,10 @@ void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
                 pWidget->toggleKeyboardShortcutHints(enabled);
             });
 
+    connectShowOnlyKbdShortcuts(pWidget);
+}
+
+void KeyboardEventFilter::connectShowOnlyKbdShortcuts(WBaseWidget* pWidget) {
     // If toggled in Preferences -> Interface, we tell the widgets to show
     // only the keyboard shortcuts tooltip.
     connect(this,

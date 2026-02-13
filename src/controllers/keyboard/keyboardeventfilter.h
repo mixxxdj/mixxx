@@ -38,6 +38,7 @@ class KeyboardEventFilter : public QObject {
     }
 
     void registerShortcutWidget(WBaseWidget* pWidget);
+    void connectShowOnlyKbdShortcuts(WBaseWidget* pWidget);
     void updateWidgetShortcuts();
     void clearWidgets();
     QString buildShortcutString(const QString& shortcut, const QString& cmd) const;

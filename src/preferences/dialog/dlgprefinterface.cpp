@@ -594,6 +594,9 @@ void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
     case mixxx::preferences::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
         break;
+    case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+        radioButtonTooltipsOnlyKbdShortcuts->setChecked(true);
+        break;
     case mixxx::preferences::Tooltips::On:
     default:
         radioButtonTooltipsLibraryAndSkin->setChecked(true);

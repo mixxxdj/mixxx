@@ -2639,10 +2639,16 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
         }
     }
 
-    if (!shortcutKeys.isEmpty()) {
-        pWidget->setShortcutControlsAndCommands(shortcutKeys);
+    if (shortcutKeys.isEmpty()) {
+        // A widget with no control connections.
+        // We only make the connection to clear/fill the tooltip when the
+        //  tooltips mode "Keyboard shortcuts only" is toggled.
+        m_pKeyboard->connectShowOnlyKbdShortcuts(pWidget);
+    } else {
+        // A widget with at least one control connection.
         // KeyboardEventFilter will take care of creating the tooltips,
         // as well as updating them when the mapping file has changed.
+        pWidget->setShortcutControlsAndCommands(shortcutKeys);
         m_pKeyboard->registerShortcutWidget(pWidget);
     }
 }
