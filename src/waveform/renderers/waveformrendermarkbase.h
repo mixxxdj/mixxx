@@ -22,10 +22,6 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
 
     void onResize() override;
 
-    void clearMarks() {
-        m_marks.clear();
-    }
-
     void setDefaultMark(const QString& group, const WaveformMarkSet::DefaultMarkerStyle& model) {
         m_marks.setDefault(group, model);
     }
