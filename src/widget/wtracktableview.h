@@ -53,6 +53,7 @@ class WTrackTableView : public WLibraryTableView {
     void loadSelectedTrackToGroup(const QString& group,
             bool play);
 #endif
+    void toggleBpmLock(bool locked);
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;

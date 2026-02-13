@@ -105,6 +105,8 @@ class LibraryControl : public QObject {
     void slotEditItem(double);
     void slotGoToItem(double v);
 
+    void slotToggleBpmLock(double v);
+
     void slotTrackColorPrev(double v);
     void slotTrackColorNext(double v);
 
@@ -185,6 +187,8 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlEncoder> m_pSortColumnToggle;
     std::unique_ptr<ControlPushButton> m_pSortOrder;
     std::unique_ptr<ControlPushButton> m_pSortFocusedColumn;
+
+    std::unique_ptr<ControlPushButton> m_pBpmLock;
 
     // Controls to change track color
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;

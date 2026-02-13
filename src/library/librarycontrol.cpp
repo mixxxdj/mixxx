@@ -373,6 +373,13 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 &LibraryControl::slotIncrementFontSize);
     }
 
+    // Set BPM lock (button state does not reflect track(s) state)
+    m_pBpmLock = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "set_bpmlock"));
+    connect(m_pBpmLock.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotToggleBpmLock);
+
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
     m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
@@ -1183,6 +1190,17 @@ void LibraryControl::slotIncrementFontSize(double v) {
 void LibraryControl::slotDecrementFontSize(double v) {
     if (v > 0.0) {
         slotFontSize(-1);
+    }
+}
+
+void LibraryControl::slotToggleBpmLock(double v) {
+    if (!m_pLibraryWidget || v < 0) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->toggleBpmLock(v > 0);
     }
 }
 

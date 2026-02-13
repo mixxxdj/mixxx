@@ -459,6 +459,21 @@ TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     return pTrackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
+void WTrackTableView::toggleBpmLock(bool locked) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    const QModelIndexList indices = getSelectedRows();
+    for (const auto& index : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setBpmLocked(locked);
+        }
+    }
+}
+
 void WTrackTableView::assignPreviousTrackColor() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
