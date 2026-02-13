@@ -110,6 +110,8 @@ class LibraryControl : public QObject {
     void slotTrackColorPrev(double v);
     void slotTrackColorNext(double v);
 
+    void slotTrackRatingChangeRequestRelative(int change);
+
     // Deprecated navigation slots
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
@@ -193,6 +195,10 @@ class LibraryControl : public QObject {
     // Controls to change track color
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+
+    // Controls to change track rating
+    std::unique_ptr<ControlPushButton> m_pStarsUp;
+    std::unique_ptr<ControlPushButton> m_pStarsDown;
 
     // Control to show/hide the track menu
     std::unique_ptr<ControlPushButton> m_pShowTrackMenu;

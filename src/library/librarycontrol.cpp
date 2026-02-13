@@ -392,6 +392,26 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotTrackColorNext);
 
+    // Track Rating controls
+    m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "stars_up"));
+    m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "stars_down"));
+    connect(m_pStarsUp.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequestRelative(1);
+                }
+            });
+    connect(m_pStarsDown.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequestRelative(-1);
+                }
+            });
+
     // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "search_history_next"));
@@ -1223,5 +1243,16 @@ void LibraryControl::slotTrackColorNext(double v) {
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
         pTrackTableView->assignNextTrackColor();
+    }
+}
+
+void LibraryControl::slotTrackRatingChangeRequestRelative(int change) {
+    if (!m_pLibraryWidget || change == 0) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->trackRatingChangeRequestRelative(change);
     }
 }

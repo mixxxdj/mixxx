@@ -514,6 +514,27 @@ void WTrackTableView::assignNextTrackColor() {
     }
 }
 
+void WTrackTableView::trackRatingChangeRequestRelative(int change) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    const QModelIndexList indices = getSelectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex index = indices.at(0);
+    TrackPointer pTrack = pTrackModel->getTrack(index);
+    if (pTrack) {
+        int newRating = pTrack->getRating() + change;
+        if (mixxx::TrackRecord::isValidRating(newRating) &&
+                newRating != pTrack->getRating()) {
+            pTrack->setRating(newRating);
+        }
+    }
+}
+
 void WTrackTableView::slotPurge() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
