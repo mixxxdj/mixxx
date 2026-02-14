@@ -351,19 +351,32 @@ void SidebarModel::clicked(const QModelIndex& index) {
     // When triggered by a mouse event pressed() has been
     // invoked immediately before. That doesn't matter,
     // because we stop any running timer before handling
-    // this event.
+    // the click.
     stopPressedUntilClickedTimer();
-    if (index.isValid()) {
-        if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->activate();
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                DEBUG_ASSERT(pFeature);
-                pFeature->activateChild(index);
-            }
-        }
+
+    if (!index.isValid()) {
+        return;
+    }
+
+    TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+        return;
+    }
+
+    LibraryFeature* pFeature = pTreeItem->getFeature();
+    VERIFY_OR_DEBUG_ASSERT(pFeature) {
+        return;
+    }
+
+    if (kDebug) {
+        kLogger.debug() << "Activating feature:"
+                        << pFeature->title();
+    }
+
+    if (index.parent().isValid()) {
+        pFeature->activateChild(index);
+    } else {
+        pFeature->activate();
     }
 }
 
