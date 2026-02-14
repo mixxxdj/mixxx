@@ -95,6 +95,8 @@ class SidebarModel : public QAbstractItemModel {
     void featureRenamed(LibraryFeature*);
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
 
+    UserSettingsPointer m_pConfig;
+
     QTimer* const m_pressedUntilClickedTimer;
     QModelIndex m_pressedIndex;
 

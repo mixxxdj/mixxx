@@ -69,7 +69,7 @@ Library::Library(
           m_pConfig(pConfig),
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_pSidebarModel(make_parented<SidebarModel>(this)),
+          m_pSidebarModel(make_parented<SidebarModel>(pConfig, this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
           m_pLibraryWidget(nullptr),
           m_pKeyNotation(std::make_unique<ControlObject>(

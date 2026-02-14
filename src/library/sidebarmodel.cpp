@@ -22,16 +22,26 @@ constexpr bool kDebug = false;
 
 } // anonymous namespace
 
-SidebarModel::SidebarModel(
-        QObject* parent)
+const ConfigKey kLastSelectedFeatureConfigKey = ConfigKey("[Library]", "last_selected_feature");
+const ConfigKey kLastSelectedChildConfigKey = ConfigKey("[Library]", "last_selected_child");
+
+SidebarModel::SidebarModel(UserSettingsPointer pConfig, QObject* parent)
         : QAbstractItemModel(parent),
           m_iDefaultSelectedIndex(0),
-          m_pressedUntilClickedTimer(new QTimer(this)) {
+          m_pConfig(pConfig),
+          m_pressedUntilClickedTimer(new QTimer(this)),
+          m_saveTimer(new QTimer(this)) {
     m_pressedUntilClickedTimer->setSingleShot(true);
     connect(m_pressedUntilClickedTimer,
             &QTimer::timeout,
             this,
             &SidebarModel::slotPressedUntilClickedTimeout);
+    
+    m_saveTimer->setSingleShot(true);
+    connect(m_saveTimer,
+            &QTimer::timeout,
+            this,
+            &SidebarModel::performSave);
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
@@ -351,32 +361,19 @@ void SidebarModel::clicked(const QModelIndex& index) {
     // When triggered by a mouse event pressed() has been
     // invoked immediately before. That doesn't matter,
     // because we stop any running timer before handling
-    // the click.
+    // this event.
     stopPressedUntilClickedTimer();
-
-    if (!index.isValid()) {
-        return;
-    }
-
-    TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-    VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
-        return;
-    }
-
-    LibraryFeature* pFeature = pTreeItem->getFeature();
-    VERIFY_OR_DEBUG_ASSERT(pFeature) {
-        return;
-    }
-
-    if (kDebug) {
-        kLogger.debug() << "Activating feature:"
-                        << pFeature->title();
-    }
-
-    if (index.parent().isValid()) {
-        pFeature->activateChild(index);
-    } else {
-        pFeature->activate();
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+            m_sFeatures[index.row()]->activate();
+        } else {
+            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+            if (pTreeItem) {
+                LibraryFeature* pFeature = pTreeItem->feature();
+                DEBUG_ASSERT(pFeature);
+                pFeature->activateChild(index);
+            }
+        }
     }
 }
 
