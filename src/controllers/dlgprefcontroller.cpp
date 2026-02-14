@@ -27,6 +27,7 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
+#include "preferences/dialog/dlgpreferences.h"
 #include "preferences/usersettings.h"
 #include "util/cmdlineargs.h"
 #include "util/desktophelper.h"
@@ -88,7 +89,7 @@ DlgPrefController::DlgPrefController(
           m_pOutputProxyModel(nullptr),
           m_GuiInitialized(false),
           m_bDirty(false),
-          m_bSuppressPrefsDialogOnClose(false),
+          m_bPrefsDialogWasVisible(false),
           m_inputMappingsTabIndex(-1),
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
@@ -366,8 +367,13 @@ void DlgPrefController::slotRecreateControlPickerMenu() {
 }
 
 void DlgPrefController::showLearningWizard(bool suppressPrefsDialogOnClose) {
-    m_bSuppressPrefsDialogOnClose = suppressPrefsDialogOnClose;
-    
+    Q_UNUSED(suppressPrefsDialogOnClose);
+    QWidget* pPrefsDialog = this;
+    while (pPrefsDialog && !qobject_cast<DlgPreferences*>(pPrefsDialog)) {
+        pPrefsDialog = pPrefsDialog->parentWidget();
+    }
+    m_bPrefsDialogWasVisible = pPrefsDialog && pPrefsDialog->isVisible();
+
     if (isDirty()) {
         QMessageBox::StandardButton result = QMessageBox::question(this,
                 tr("Apply device settings?"),
@@ -417,7 +423,9 @@ void DlgPrefController::showLearningWizard(bool suppressPrefsDialogOnClose) {
             this,
             &DlgPrefController::midiInputMappingsLearned);
 
-    emit mappingStarted();
+    if (m_bPrefsDialogWasVisible) {
+        emit mappingStarted();
+    }
     connect(m_pDlgControllerLearning,
             &DlgControllerLearning::stopLearning,
             this,
@@ -426,10 +434,10 @@ void DlgPrefController::showLearningWizard(bool suppressPrefsDialogOnClose) {
 
 void DlgPrefController::slotStopLearning() {
     VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
-        if (!m_bSuppressPrefsDialogOnClose) {
+        if (m_bPrefsDialogWasVisible) {
             emit mappingEnded();
         }
-        m_bSuppressPrefsDialogOnClose = false;
+        m_bPrefsDialogWasVisible = false;
         return;
     }
 
@@ -461,11 +469,10 @@ void DlgPrefController::slotStopLearning() {
         }
     }
 
-    // Only emit mappingEnded if not launched from menu
-    if (!m_bSuppressPrefsDialogOnClose) {
+    if (m_bPrefsDialogWasVisible) {
         emit mappingEnded();
     }
-    m_bSuppressPrefsDialogOnClose = false;
+    m_bPrefsDialogWasVisible = false;
 }
 
 void DlgPrefController::midiInputMappingsLearned(

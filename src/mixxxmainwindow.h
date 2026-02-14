@@ -83,6 +83,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotNoDeckPassthroughInputConfigured();
     void slotNoVinylControlInputConfigured();
     /// Controller learning wizard menu management
+    void slotControllersChanged();
     void slotUpdateControllerLearningMenu();
     void slotOpenControllerLearningWizard(Controller* pController);
 #ifndef __APPLE__
@@ -166,4 +167,5 @@ class MixxxMainWindow : public QMainWindow {
     mixxx::preferences::ScreenSaver m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;
+    QHash<Controller*, QMetaObject::Connection> m_controllerConnections;
 };
