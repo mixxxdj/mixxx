@@ -398,19 +398,19 @@ void drawWaveformPartStackedRGB(
             // draw low band (widest)
             if (low > 0) {
                 pPainter->setPen(lowColor);
-                pPainter->drawLine(x, static_cast<int>(-low), x, 0);
+                pPainter->drawLine(x, -low, x, 0);
             }
 
             // draw mid band (on top of low)
             if (mid > 0) {
                 pPainter->setPen(midColor);
-                pPainter->drawLine(x, static_cast<int>(-mid), x, 0);
+                pPainter->drawLine(x, -mid, x, 0);
             }
 
             // draw high band (on top of mid)
             if (high > 0) {
                 pPainter->setPen(highColor);
-                pPainter->drawLine(x, static_cast<int>(-high), x, 0);
+                pPainter->drawLine(x, -high, x, 0);
             }
 
             // right channel
@@ -421,19 +421,19 @@ void drawWaveformPartStackedRGB(
             // draw low band (widest)
             if (low > 0) {
                 pPainter->setPen(lowColor);
-                pPainter->drawLine(x, 0, x, static_cast<int>(low));
+                pPainter->drawLine(x, 0, x, low);
             }
 
             // draw mid band (on top of low)
             if (mid > 0) {
                 pPainter->setPen(midColor);
-                pPainter->drawLine(x, 0, x, static_cast<int>(mid));
+                pPainter->drawLine(x, 0, x, mid);
             }
 
             // draw high band (on top of mid)
             if (high > 0) {
                 pPainter->setPen(highColor);
-                pPainter->drawLine(x, 0, x, static_cast<int>(high));
+                pPainter->drawLine(x, 0, x, high);
             }
         }
     }
