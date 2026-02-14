@@ -952,17 +952,16 @@ void MixxxMainWindow::connectMenuBar() {
     // Controller learning wizard menu
     if (m_pCoreServices->getControllerManager()) {
         connect(m_pCoreServices->getControllerManager().get(),
-                &ControllerManager::mappingApplied,
+                &ControllerManager::devicesChanged,
                 this,
-                &MixxxMainWindow::slotUpdateControllerLearningMenu,
+                &MixxxMainWindow::slotControllersChanged,
                 Qt::UniqueConnection);
         connect(m_pMenuBar,
                 &WMainMenuBar::openControllerLearningWizard,
                 this,
                 &MixxxMainWindow::slotOpenControllerLearningWizard,
                 Qt::UniqueConnection);
-        // Initialize the menu with current controllers
-        slotUpdateControllerLearningMenu();
+        slotControllersChanged();
     }
 
     if (m_pCoreServices->getTrackCollectionManager()) {
@@ -1165,12 +1164,41 @@ void MixxxMainWindow::slotNoVinylControlInputConfigured() {
     }
 }
 
+void MixxxMainWindow::slotControllersChanged() {
+    if (!m_pCoreServices->getControllerManager()) {
+        return;
+    }
+
+    QList<Controller*> allControllers =
+            m_pCoreServices->getControllerManager()->getControllerList(
+                    false, true);
+
+    QList<Controller*> trackedControllers = m_controllerConnections.keys();
+    for (Controller* pController : std::as_const(trackedControllers)) {
+        if (!allControllers.contains(pController)) {
+            disconnect(m_controllerConnections.value(pController));
+            m_controllerConnections.remove(pController);
+        }
+    }
+
+    for (Controller* pController : std::as_const(allControllers)) {
+        if (pController && !m_controllerConnections.contains(pController)) {
+            QMetaObject::Connection conn = connect(pController,
+                    &Controller::openChanged,
+                    this,
+                    &MixxxMainWindow::slotUpdateControllerLearningMenu);
+            m_controllerConnections.insert(pController, conn);
+        }
+    }
+
+    slotUpdateControllerLearningMenu();
+}
+
 void MixxxMainWindow::slotUpdateControllerLearningMenu() {
     if (!m_pCoreServices->getControllerManager()) {
         return;
     }
-    // Only show enabled/opened input controllers
-    // Use getControllerList(false, true) to get input devices only
+
     QList<Controller*> allControllers =
             m_pCoreServices->getControllerManager()->getControllerList(
                     false, true);

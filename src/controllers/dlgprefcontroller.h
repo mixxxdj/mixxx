@@ -157,7 +157,7 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
-    bool m_bSuppressPrefsDialogOnClose;
+    bool m_bPrefsDialogWasVisible;
     int m_inputMappingsTabIndex;  // Index of the input mappings tab
     int m_outputMappingsTabIndex; // Index of the output mappings tab
     int m_settingsTabIndex;       // Index of the settings tab
