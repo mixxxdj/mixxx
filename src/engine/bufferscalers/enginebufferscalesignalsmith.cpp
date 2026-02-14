@@ -174,21 +174,12 @@ double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iO
             m_frameFractionalLeftover;
 
     if (m_currentFrameOffset != m_expectedFrameLatency && dFrameRequired > 0) {
-        // In case the latency is not matching anymore, we apply a correction
-        // factor up to 16th of the output buffer. While this might sound much.
-        // The trade favours catching up as quick as possible to synchronisation
-        // without being hearable, as such a high value should lead to sync
-        // after a small amount of buffer process, thus not hearable.
-        //
-        // TLDR; best to have delay in BPM adjustment (a quick 100% to 1%, will in practice
-        // make a few stops along the way), rather than having the actual track
-        // position desynchronised. We could review this decision in the future
-        // depending of the user feedback.
-        auto maxCorrection = std::min(dFrameRequired, static_cast<double>(iOutputBufferSize / 16));
-        auto frameOffset = std::min(maxCorrection,
-                std::max(-maxCorrection,
-                        static_cast<double>(m_expectedFrameLatency) -
-                                static_cast<double>(m_currentFrameOffset)));
+        // This happens when the rate changes because the rate scales the input
+        // latency. We need more or less latency frames to keep the output steady.
+        // The rate changed is immediately applied to the audio without any glitch.
+        // Pitch changes do not affect latency.
+        double frameOffset = std::max(-dFrameRequired,
+                static_cast<double>(m_expectedFrameLatency - m_currentFrameOffset));
         dFrameRequired += frameOffset;
         m_currentFrameOffset += static_cast<SINT>(frameOffset);
     }
