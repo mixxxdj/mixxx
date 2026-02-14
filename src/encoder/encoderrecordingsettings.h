@@ -1,6 +1,8 @@
 #pragma once
 
 #include "encoder/encodersettings.h"
+#include "preferences/usersettings.h"
+#include "recording/defs_recording.h"
 #include "util/assert.h"
 
 class EncoderRecordingSettings : public EncoderSettings {
@@ -32,6 +34,35 @@ class EncoderRecordingSettings : public EncoderSettings {
         Q_UNUSED(groupCode);
         Q_UNUSED(optionIndex);
         DEBUG_ASSERT(!"unimplemented");
+    }
+
+    // Override getChannelMode to read from recording preferences but making it
+    // so that it fallbacks to stereo if no config is available (e.g. in
+    // broadcasting context)
+    ChannelMode getChannelMode() const override {
+        UserSettingsPointer config = getConfig();
+        if (!config) {
+            // Fallback if no config (shouldn't happen in recording context)
+            return ChannelMode::STEREO;
+        }
+
+        int channelMode = config->getValue<int>(
+                ConfigKey(RECORDING_PREF_KEY, "channel_mode"), 0);
+
+        switch (channelMode) {
+        case 1:
+            return ChannelMode::MONO;
+        case 0: // fallthrough
+        default:
+            return ChannelMode::STEREO;
+        }
+    }
+
+  protected:
+    // Subclasses override this to provide their m_pConfig
+    // Base class returns null pointer
+    virtual UserSettingsPointer getConfig() const {
+        return UserSettingsPointer();
     }
 };
 
