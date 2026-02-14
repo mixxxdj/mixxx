@@ -11,6 +11,8 @@
 
 namespace {
 
+mixxx::Logger kLogger("SidebarModel");
+
 /// The time between selecting and activating (= clicking) a feature item
 /// in the sidebar tree. This is essential to allow smooth scrolling through
 /// a list of items with an encoder or the keyboard! A value of 300 ms has
