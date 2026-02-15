@@ -440,7 +440,7 @@ TraktorMX2.padModeHandler = function(field) {
             } else {
                 TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedWhite, field.group, `pad_${i}`);
             }
-            }
+        }
         break;
 
     case "!stems":
@@ -503,8 +503,8 @@ TraktorMX2.padHandler = function(field) {
         // Stems Mode
         // ignore if no stemfile is loaded
         if (engine.getValue(field.group, "stem_count") === 0) {
-                return;
-            }
+            return;
+        }
 
         // only first 4 pads are used for stem mute/unmute
         if (padNumber <= Math.min(4, engine.getValue(field.group, "stem_count"))) {
