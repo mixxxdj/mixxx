@@ -3488,6 +3488,35 @@ if(KEYFINDER)
   target_compile_definitions(mixxx-lib PUBLIC __KEYFINDER__)
 endif()
 
+# SignalSmith
+option(
+  SIGNALSMITH
+  "Enable the SignalSmith Stretch engine for pitch-bending (experimental)"
+  OFF
+)
+if(SIGNALSMITH)
+  add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/signalsmith-linear/")
+  add_library(signalsmith-stretch INTERFACE)
+  set_target_properties(
+    signalsmith-stretch
+    PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+  target_link_libraries(signalsmith-stretch INTERFACE signalsmith-linear)
+  add_dependencies(mixxx-lib signalsmith-stretch)
+  target_include_directories(
+    mixxx-lib
+    SYSTEM
+    PUBLIC
+      "${CMAKE_CURRENT_SOURCE_DIR}/lib/signalsmith-stretch/"
+      "${CMAKE_CURRENT_SOURCE_DIR}/lib/signalsmith-linear/include/"
+  )
+  target_sources(
+    mixxx-lib
+    PRIVATE src/engine/bufferscalers/enginebufferscalesignalsmith.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __SIGNALSMITH__)
+endif()
+
 # FLAC
 find_package(FLAC REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE FLAC::FLAC)
@@ -3903,6 +3932,10 @@ if(QML)
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/qml"
     DESTINATION "${MIXXX_INSTALL_DATADIR}"
   )
+
+  if(SIGNALSMITH)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __SIGNALSMITH__)
+  endif()
 endif()
 
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
@@ -5185,6 +5218,13 @@ if(QML)
   target_compile_definitions(mixxx-qml-lib PRIVATE rendergraph=rendergraph_sg)
   target_compile_definitions(mixxx-qml-lib PRIVATE __SCENEGRAPH__)
   target_compile_definitions(mixxx-qml-lib PRIVATE allshader=allshader_sg)
+  target_include_directories(
+    mixxx-qml-lib
+    SYSTEM
+    PUBLIC
+      "${CMAKE_CURRENT_SOURCE_DIR}/lib/signalsmith-stretch/"
+      "${CMAKE_CURRENT_SOURCE_DIR}/lib/signalsmith-linear/include/"
+  )
 endif()
 
 # WavPack audio file support
