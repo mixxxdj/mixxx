@@ -57,6 +57,8 @@ var TraktorMX2 = new (function() {
         "[Channel2]": {1: 0x00, 2: 0x00, 3: 0x00, 4: 0x00, 5: 0x00, 6: 0x00}
     };
 
+    this.enableMasterGain = false;
+
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
     this.browseKnobEncoderState = {"[Channel1]": 0, "[Channel2]": 0};
@@ -96,6 +98,9 @@ var TraktorMX2 = new (function() {
 })();
 
 TraktorMX2.init = function(_id) {
+
+    TraktorMX2.enableMasterGain = engine.getSetting("enableMasterGain");
+
     TraktorMX2.registerInputPackets();
     TraktorMX2.registerOutputPackets();
     console.log("TraktorMX2: Init done!");
@@ -265,6 +270,8 @@ TraktorMX2.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x2b, 0xffff, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x2d, 0xffff, this.parameterHandler);
 
+    this.registerInputScaler(messageLong, "[Master]", "gain", 0x25, 0xffff, this.masterGainHandler);
+
     this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x31, 0xffff, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler);
 
@@ -429,11 +436,11 @@ TraktorMX2.padModeHandler = function(field) {
             if (active) {
                 const color = engine.getValue(field.group, `hotcue_${i}_color`);
                 const colorValue = TraktorMX2.PadColorMap.getValueForNearestColor(color);
-                TraktorMX2.outputHandler(colorValue, field.group, `pad_${  i}`);
+                TraktorMX2.outputHandler(colorValue, field.group, `pad_${i}`);
             } else {
                 TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedWhite, field.group, `pad_${i}`);
             }
-        }
+            }
         break;
 
     case "!stems":
@@ -447,7 +454,7 @@ TraktorMX2.padModeHandler = function(field) {
             const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
             const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
             const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
-            TraktorMX2.outputHandler(colorValue, field.group, `pad_${  i}`);
+            TraktorMX2.outputHandler(colorValue, field.group, `pad_${i}`);
         }
         break;
 
@@ -460,7 +467,7 @@ TraktorMX2.padModeHandler = function(field) {
         TraktorMX2.outputHandler(0, field.group, "loops");
         // Turn off LEDs
         for (let i = 1; i <= 8; ++i) {
-            TraktorMX2.outputHandler(0x00, field.group, `pad_${  i}`);
+            TraktorMX2.outputHandler(0x00, field.group, `pad_${i}`);
         }
         break;
 
@@ -472,7 +479,7 @@ TraktorMX2.padModeHandler = function(field) {
         TraktorMX2.outputHandler(1, field.group, "loops");
         // Turn LEDs green
         for (let i = 1; i <= 8; ++i) {
-            TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedGreen, field.group, `pad_${  i}`);
+            TraktorMX2.outputHandler(TraktorMX2.baseColors.dimmedGreen, field.group, `pad_${i}`);
         }
         break;
     }
@@ -496,8 +503,8 @@ TraktorMX2.padHandler = function(field) {
         // Stems Mode
         // ignore if no stemfile is loaded
         if (engine.getValue(field.group, "stem_count") === 0) {
-            return;
-        }
+                return;
+            }
 
         // only first 4 pads are used for stem mute/unmute
         if (padNumber <= Math.min(4, engine.getValue(field.group, "stem_count"))) {
@@ -509,7 +516,7 @@ TraktorMX2.padHandler = function(field) {
             const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "color");
             const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${padNumber}]`, "mute");
             const colorValue = status ? TraktorMX2.baseColors.dimmedRed : TraktorMX2.PadColorMap.getValueForNearestColor(color);
-            TraktorMX2.outputHandler(colorValue, field.group, `pad_${  padNumber}`);
+            TraktorMX2.outputHandler(colorValue, field.group, `pad_${padNumber}`);
 
         } else {
             // pads 5-8 are used for volume and filter control of the stems
@@ -525,9 +532,9 @@ TraktorMX2.padHandler = function(field) {
         // Loops Mode
 
         if (!TraktorMX2.shiftPressed[field.group]) {
-            engine.setValue(field.group, `beatlooproll_${  2 ** (padNumber - 5)  }_activate`, field.value);
+            engine.setValue(field.group, `beatlooproll_${2 ** (padNumber - 5)}_activate`, field.value);
         } else {
-            engine.setValue(field.group, `beatloop_${  2 ** ((padNumber - 5))  }_toggle`, 1);
+            engine.setValue(field.group, `beatloop_${2 ** ((padNumber - 5))}_toggle`, 1);
         }
         if (field.value === 1) {
             TraktorMX2.outputHandler(TraktorMX2.baseColors.green, field.group, `pad_${padNumber}`);
@@ -623,15 +630,15 @@ TraktorMX2.selectLoopHandler = function(field) {
 
                 if (!TraktorMX2.shiftPressed[field.group]) {
                     if (delta > 0) {
-                        script.triggerControl(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "super1_up");
+                        script.triggerControl(`[QuickEffectRack1_[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]]`, "super1_up");
                     } else {
-                        script.triggerControl(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "super1_down");
+                        script.triggerControl(`[QuickEffectRack1_[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]]`, "super1_down");
                     }
                 } else {
                     if (delta > 0) {
-                        engine.setValue(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "next_chain_preset", 1);
+                        engine.setValue(`[QuickEffectRack1_[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]]`, "next_chain_preset", 1);
                     } else {
-                        engine.setValue(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "prev_chain_preset", 1);
+                        engine.setValue(`[QuickEffectRack1_[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]]`, "prev_chain_preset", 1);
                     }
                 }
 
@@ -668,7 +675,7 @@ TraktorMX2.activateLoopHandler = function(field) {
         // Change Functionality in Stems Mode with pressed any of Pad 5-8
         for (const padNum in TraktorMX2.padPressed[field.group]) {
             if (TraktorMX2.padPressed[field.group][padNum]) {
-                script.toggleControl(`[QuickEffectRack1_[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]]`, "enabled");
+                script.toggleControl(`[QuickEffectRack1_[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]]`, "enabled");
             }
         }
     } else {
@@ -692,9 +699,9 @@ TraktorMX2.selectBeatjumpHandler = function(field) {
         for (const padNum in TraktorMX2.padPressed[field.group]) {
             if (TraktorMX2.padPressed[field.group][padNum]) {
                 if (delta > 0) {
-                    script.triggerControl(`[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]`, "volume_up");
+                    script.triggerControl(`[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]`, "volume_up");
                 } else {
-                    script.triggerControl(`[Channel${  field.group[field.group.length - 2]  }_Stem${  padNum - 4  }]`, "volume_down");
+                    script.triggerControl(`[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]`, "volume_down");
                 }
 
             }
@@ -755,6 +762,12 @@ TraktorMX2.microphoneHandler = function(field) {
 
 TraktorMX2.parameterHandler = function(field) {
     engine.setParameter(field.group, field.name, field.value / 4095);
+};
+
+TraktorMX2.masterGainHandler = function(field) {
+    if (TraktorMX2.enableMasterGain) {
+        engine.setParameter(field.group, field.name, field.value / 4095);
+    }
 };
 
 TraktorMX2.jogModeHandler = function(field) {
@@ -956,8 +969,8 @@ TraktorMX2.fxSelectHandler = function(field) {
         return;
     }
 
-    const group = `[EffectRack1_${  field.name  }]`;
-    const control = `group_${  field.group  }_enable`;
+    const group = `[EffectRack1_${field.name}]`;
+    const control = `group_${field.group}_enable`;
 
     script.toggleControl(group, control);
 };
@@ -966,7 +979,7 @@ TraktorMX2.gfxToggleHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    const group = `[QuickEffectRack1_${  field.group  }]`;
+    const group = `[QuickEffectRack1_${field.group}]`;
     const control = "enabled";
 
     script.toggleControl(group, control);
@@ -1364,7 +1377,7 @@ TraktorMX2.gfxOutputHandler = function() {
 
     for (let fxButton = 0; fxButton <= fxButtonCount; fxButton++) {
         const active = (presetNum === fxButton || (fxButton !== 0 && (fxButton === presetNum - fxButtonCount)));
-        TraktorMX2.outputHandler(active, "[ChannelX]", `gfx_${  fxButton}`);
+        TraktorMX2.outputHandler(active, "[ChannelX]", `gfx_${fxButton}`);
     }
 };
 
@@ -1424,7 +1437,7 @@ TraktorMX2.bottomLedOutputHandler = function() {
         for (let i = 1; i <= 5; i++) {
             TraktorMX2.controller.setOutput(channel, `bottom_led_${i}`, TraktorMX2.bottomLedState[channel][i], false);
         }
-        TraktorMX2.controller.setOutput(channel, `bottom_led_${  6}`, TraktorMX2.bottomLedState[channel][6], true);
+        TraktorMX2.controller.setOutput(channel, `bottom_led_${6}`, TraktorMX2.bottomLedState[channel][6], true);
     }
 
 };
@@ -1487,8 +1500,8 @@ TraktorMX2.lightDeck = function(switchOff) {
     for (let i = 1; i <= 8; ++i) {
         if (switchOff) {
             // do not dim but turn completely off
-            TraktorMX2.outputHandler(0x00, "[Channel1]", `pad_${  i}`);
-            TraktorMX2.outputHandler(0x00, "[Channel2]", `pad_${  i}`);
+            TraktorMX2.outputHandler(0x00, "[Channel1]", `pad_${i}`);
+            TraktorMX2.outputHandler(0x00, "[Channel2]", `pad_${i}`);
         } else {
             current = engine.getValue("[Channel1]", `hotcue_${i}_status`) ? TraktorMX2.baseColors.blue : TraktorMX2.baseColors.dimmed;
             TraktorMX2.outputHandler(current, "[Channel1]", `pad_${i}`);
