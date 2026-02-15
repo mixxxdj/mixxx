@@ -2,6 +2,9 @@ name: Softfix workflow
 on:
   issue_comment:
     types: [created]
+  push:
+    branches:
+      - chore/prepare-flatpak-ci
 
 jobs:
   softfix:
@@ -44,3 +47,67 @@ jobs:
         env:
           # PAT setup with content:write and pull_request:write
           GITHUB_TOKEN: ${{ secrets.MIXXX_SOFTFIX_PAT }}
+
+  publish-flatpak:
+    name: Publish Flatpak build
+    # if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/softfix')
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Check if commenter is maintainer
+      #   id: check-maintainer
+      #   uses: actions/github-script@v8
+      #   with:
+      #     script: |
+      #       const response = await github.rest.repos.getCollaboratorPermissionLevel({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         username: context.payload.comment.user.login
+      #       });
+
+      #       const isMaintainer = ['admin', 'write'].includes(response.data.permission);
+      #       return isMaintainer;
+
+      - name: "Prepare the download server"
+        # if: steps.check-maintainer.outputs.result == 'true'
+        run: |
+          ssh "${SSH_USER}@${SSH_HOST}" <<EOF
+          sudo apt-get update
+          sudo apt-get install -y flatpak ostree
+          if [ ! -d ~/public_html/downloads/flatpak ]; then
+            ostree --repo=~/public_html/downloads/flatpak init --mode=archive-z2
+          fi
+          EOF
+
+      # TODO find the latest build on the given PR
+
+      - name: "Download bundles"
+        # if: steps.check-maintainer.outputs.result == 'true'
+        uses: actions/download-artifact@v7
+        with:
+          pattern: Flatpak*
+          path: bundles
+          merge-multiple: true
+          run-id: 21939142014
+
+      - name: "[Ubuntu] Import PPA GPG key"
+        # if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        run: gpg --import <(echo "${RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY}")
+        env:
+          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
+      - name: "Create repo directory"
+        # if: steps.check-maintainer.outputs.result == 'true'
+        env:
+          RUN_ID: ${{ github.run_id }}
+          KEYID: rryan@mixxx.org
+        run: |
+          set -x
+          for file in bundles/*.flatpak; do
+            rsync rsync --verbose --recursive --checksum --times --delay-updates "$file" "${SSH_USER}@${SSH_HOST}:/tmp/$file"
+            ssh "${SSH_USER}@${SSH_HOST}" <<EOF
+            set -x
+            gpg --homedir "/tmp/flatpak-$RUN_ID" --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+            echo flatpak build-import-bundle --gpg-sign=$KEYID --gpg-homedir="/tmp/flatpak-$RUN_ID" ~/public_html/downloads/flatpak
+            rm -r "/tmp/flatpak-$RUN_ID" "/tmp/$file"
+            EOF
+          done

@@ -531,15 +531,36 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
+      # The ephemeral space doesn't seem consistent between runs. Sometimes it is available directly on the root (/), sometime on the mount folder (/mnt)
+      # If the ephemeral storage is available under a separate drive, we bind-mount as thee `vcpkg_path`
       - name: "Recover host disk space"
         run: |
-          rm -rf /host/opt/hostedtoolcache/CodeQL
-          rm -rf /host/opt/hostedtoolcache/go
-          rm -rf /host/usr/local/lib/android
-          rm -rf /host/usr/local/.ghcup
-          rm -rf /host/usr/local/share/powershell
-          rm -rf /host/usr/share/swift
-          rm -rf /host/usr/share/dotnet
+          if [ -d /host/mnt ]; then
+            mntSpace=$(df --output=avail /host/mnt | tail -n 1)
+            rootSpace=$(df --output=avail /host/ | tail -n 1)
+            if [ $mntSpace -gt $rootSpace ]; then
+              sudo mount -o bind /host/mnt ${{ github.workspace }}
+              sudo chown -R `id -u`:`id -g` ${{ github.workspace }}
+              exit 0
+            fi
+          fi
+          # In case we cannot use the ephemeral disk space because it either doesn't
+          # exist or is too small, we free as much as possible on the root.
+          sudo rm -rf /host/home/packer                 # Free up 677M
+          sudo rm -rf /host/opt/az                      # Free up 649M
+          sudo rm -rf /host/opt/google                  # Free up 378M
+          sudo rm -rf /host/opt/hostedtoolcache/CodeQL  # Free up 1.6G
+          sudo rm -rf /host/opt/hostedtoolcache/go      # Free up 808M
+          sudo rm -rf /host/opt/hostedtoolcache/node    # Free up 532M
+          sudo rm -rf /host/opt/hostedtoolcache/PyPy    # Free up 520M
+          sudo rm -rf /host/opt/hostedtoolcache/Python  # Free up 1.5G
+          sudo rm -rf /host/opt/microsoft               # Free up 781M
+          sudo rm -rf /host/opt/pipx                    # Free up 499M
+          sudo rm -rf /host/usr/lib/google-cloud-sdk    # Free up 957M
+          sudo rm -rf /host/usr/local/julia1.11.7       # Free up 996M
+          sudo rm -rf /host/usr/local/share/powershell  # Free up 1.3G
+          sudo rm -rf /host/usr/share/dotnet            # Free up 3.4G
+          sudo rm -rf /host/usr/share/swift             # Free up 3.2G
 
       - name: "Check out repository"
         uses: actions/checkout@v6
