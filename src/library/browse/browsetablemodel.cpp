@@ -533,7 +533,7 @@ bool BrowseTableModel::isColumnSortable(int column) const {
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
     WLibraryTableView* pTableView = qobject_cast<WLibraryTableView*>(pParent);
     DEBUG_ASSERT(pTableView);
-    if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
+    if (PlayerInfo::instance().numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
         return new PreviewButtonDelegate(pTableView, i);
     }
     return nullptr;
