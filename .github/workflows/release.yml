@@ -45,6 +45,19 @@ jobs:
       NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
       RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
+  publish:
+    needs:
+      - build
+    uses: ./.github/workflows/flatpak.yml
+    with:
+      channel: ${{ fromJSON('{"2.5":"stable","2.6":"beta","main":"alpha"}')[github.ref_name] }}
+      update_repo: ${{ github.ref_name == '2.5' }}
+      run_id: ${{ github.run_id }}
+      commit_summary: ${{ fromJSON('{"2.5":"Stable build for 2.5","2.6":"Beta build for 2.6","main":"Alpha build for 2.7"}')[github.ref_name] }}
+    secrets:
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
   sync:
     if: ${{ github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
     uses: ./.github/workflows/sync_branches.yml
