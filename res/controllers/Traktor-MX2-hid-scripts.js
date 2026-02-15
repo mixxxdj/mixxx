@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 /*                                                                                     */
 /* Traktor Kontrol MX2 HID controller script v1.00                                     */
-/* Last modification: January 2026                                                     */
+/* Last modification: February 2026                                                    */
 /* Author: K7                                                                          */
 /* https://manual.mixxx.org/2.6/en/hardware/controllers/native_instruments_traktor_mx2 */
 /*                                                                                     */
@@ -36,6 +36,8 @@ const JOGWHEEL_ALPHA = 0.5;
 // the jogwheel is considered to be stopped, allowing it to change directions or exit scratching mode instantly.
 const JOGWHEEL_EPSILON = 0.001;
 
+// eslint definitions
+/* global controller, HIDController, HIDPacket */
 var TraktorMX2 = new (function() {
     this.controller = new HIDController();
 
