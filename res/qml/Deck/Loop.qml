@@ -103,7 +103,7 @@ Rectangle {
             toggleable: loopEnabled.value
         }
     }
-    RowLayout {
+    MouseArea {
         anchors {
             bottom: parent.bottom
             bottomMargin: 6
@@ -112,191 +112,205 @@ Rectangle {
             right: parent.right
             rightMargin: 6
         }
-        Skin.Button {
-            id: loopSizeHalfButton
-
-            activeColor: root.buttonColor
-            implicitHeight: 28
-            implicitWidth: 22
-
-            contentItem: Item {
-                anchors.fill: parent
-
-                Shape {
-                    anchors.centerIn: parent
-                    antialiasing: true
-                    height: 10
-                    layer.enabled: true
-                    layer.samples: 4
-                    width: 12
-
-                    ShapePath {
-                        fillColor: root.buttonColor
-                        startX: 0
-                        startY: 5
-                        strokeColor: 'transparent'
-
-                        PathLine {
-                            x: 12
-                            y: 0
-                        }
-                        PathLine {
-                            x: 12
-                            y: 10
-                        }
-                        PathLine {
-                            x: 0
-                            y: 5
-                        }
-                    }
-                }
-            }
-
-            MouseArea {
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                anchors.fill: parent
-
-                onPressed: mouse => {
-                    if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
-                        loopHalve.trigger();
-                    }
-                    loopSizeRepeater.selectedIndex = Math.max(0, loopSizeRepeater.selectedIndex - 1);
-                }
+        onWheel: mouse => {
+            if (mouse.angleDelta.y < 0 && loopSizeRepeater.selectedIndex > 0) {
+                loopSizeRepeater.selectedIndex -= 1
+            } else if (mouse.angleDelta.y > 0 && loopSizeRepeater.selectedIndex < loopSizeRepeater.values.length - 1) {
+                loopSizeRepeater.selectedIndex += 1
             }
         }
-        Repeater {
-            id: loopSizeRepeater
-
-            property int selectedIndex: 0
-            property int valueCount: Math.min(Math.max(1, parseInt((root.width - 56) / 40)), 4)
-            property list<double> values: {
-                let values = [1 / 32];
-                while (values[values.length - 1] < 512) {
-                    values.push(values[values.length - 1] * 2);
-                }
-                return values;
-            }
-
-            function update() {
-                let values = [this.values[selectedIndex]];
-                let appendMode = values[0] <= this.values[0];
-                while (values.length < valueCount) {
-                    if (appendMode) {
-                        values.push(values[values.length - 1] * 2);
-                    } else {
-                        values = [values[0] / 2, ...values];
-                    }
-                    if (values[0] == this.values[0]) {
-                        appendMode = true;
-                    } else if (values[values.length - 1] == this.values[this.values.length - 1]) {
-                        appendMode = false;
-                    } else {
-                        appendMode = !appendMode;
-                    }
-                }
-                model = values;
-            }
-
-            Component.onCompleted: {
-                update();
-                selectedIndex = values.indexOf(beatloopSize.value);
-                if (selectedIndex < 0) {
-                    selectedIndex = values.indexOf(4);
-                }
-            }
-            onSelectedIndexChanged: update()
-            onValueCountChanged: update()
-
-            Connections {
-                function onValueChanged() {
-                    if (loopEnabled.value) {
-                        parent.selectedIndex = parent.values.indexOf(beatloopSize.value);
-                    }
-                    parent.update();
-                }
-
-                target: beatloopSize
-            }
+        implicitHeight: 28
+        RowLayout {
+            anchors.fill: parent
             Skin.Button {
-                id: loopSizeOpt1Button
-
-                property double currentSize: modelData
-                required property int index
-                required property var modelData
+                id: loopSizeHalfButton
 
                 activeColor: root.buttonColor
-                highlight: currentSize == beatloopSize.value && trackLoadedControl.value > 0
                 implicitHeight: 28
-                implicitWidth: 33
-                text: currentSize < 1 ? `1/${1 / currentSize}` : currentSize
+                implicitWidth: 22
 
-                onPressed: {
-                    if (loopEnabled.value) {
-                        beatloopSize.value = currentSize;
-                    } else {
-                        sizedBeatloopActivate.trigger();
+                contentItem: Item {
+                    anchors.fill: parent
+
+                    Shape {
+                        anchors.centerIn: parent
+                        antialiasing: true
+                        height: 10
+                        layer.enabled: true
+                        layer.samples: 4
+                        width: 12
+
+                        ShapePath {
+                            fillColor: root.buttonColor
+                            startX: 0
+                            startY: 5
+                            strokeColor: 'transparent'
+
+                            PathLine {
+                                x: 12
+                                y: 0
+                            }
+                            PathLine {
+                                x: 12
+                                y: 10
+                            }
+                            PathLine {
+                                x: 0
+                                y: 5
+                            }
+                        }
                     }
                 }
 
-                Mixxx.ControlProxy {
-                    id: sizedBeatloopActivate
+                MouseArea {
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    anchors.fill: parent
 
-                    group: root.group
-                    key: `beatloop_${currentSize}_activate`
-                }
-            }
-        }
-        Skin.Button {
-            id: loopSizeDoubleButton
-
-            activeColor: root.buttonColor
-            implicitHeight: 28
-            implicitWidth: 22
-
-            contentItem: Item {
-                anchors.fill: parent
-
-                Shape {
-                    anchors.centerIn: parent
-                    antialiasing: true
-                    height: 10
-                    layer.enabled: true
-                    layer.samples: 4
-                    width: 12
-
-                    ShapePath {
-                        capStyle: ShapePath.RoundCap
-                        fillColor: root.buttonColor
-                        fillRule: ShapePath.WindingFill
-                        startX: 0
-                        startY: 0
-                        strokeColor: 'transparent'
-
-                        PathLine {
-                            x: 12
-                            y: 5
+                    onPressed: mouse => {
+                        if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
+                            loopHalve.trigger();
                         }
-                        PathLine {
-                            x: 0
-                            y: 10
-                        }
-                        PathLine {
-                            x: 0
-                            y: 0
-                        }
+                        loopSizeRepeater.selectedIndex = Math.max(0, loopSizeRepeater.selectedIndex - 1);
                     }
                 }
             }
 
-            MouseArea {
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                anchors.fill: parent
+            Repeater {
+                id: loopSizeRepeater
 
-                onPressed: mouse => {
-                    if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
-                        loopDouble.trigger();
+                property int selectedIndex: 0
+                property int valueCount: Math.min(Math.max(1, parseInt((root.width - 56) / 40)), 4)
+                property list<double> values: {
+                    let values = [1 / 32];
+                    while (values[values.length - 1] < 512) {
+                        values.push(values[values.length - 1] * 2);
                     }
-                    loopSizeRepeater.selectedIndex = Math.min(loopSizeRepeater.values.length - 1, loopSizeRepeater.selectedIndex + 1);
+                    return values;
+                }
+
+                function update() {
+                    let values = [this.values[selectedIndex]];
+                    let appendMode = values[0] <= this.values[0];
+                    while (values.length < valueCount) {
+                        if (appendMode) {
+                            values.push(values[values.length - 1] * 2);
+                        } else {
+                            values = [values[0] / 2, ...values];
+                        }
+                        if (values[0] == this.values[0]) {
+                            appendMode = true;
+                        } else if (values[values.length - 1] == this.values[this.values.length - 1]) {
+                            appendMode = false;
+                        } else {
+                            appendMode = !appendMode;
+                        }
+                    }
+                    model = values;
+                }
+
+                Component.onCompleted: {
+                    update();
+                    selectedIndex = values.indexOf(beatloopSize.value);
+                    if (selectedIndex < 0) {
+                        selectedIndex = values.indexOf(4);
+                    }
+                }
+                onSelectedIndexChanged: update()
+                onValueCountChanged: update()
+
+                Connections {
+                    function onValueChanged() {
+                        if (loopEnabled.value) {
+                            parent.selectedIndex = parent.values.indexOf(beatloopSize.value);
+                        }
+                        parent.update();
+                    }
+
+                    target: beatloopSize
+                }
+                Skin.Button {
+                    id: loopSizeOpt1Button
+
+                    property double currentSize: modelData
+                    required property int index
+                    required property var modelData
+
+                    activeColor: root.buttonColor
+                    highlight: currentSize == beatloopSize.value && trackLoadedControl.value > 0
+                    implicitHeight: 28
+                    implicitWidth: 33
+                    text: currentSize < 1 ? `1/${1 / currentSize}` : currentSize
+
+                    onPressed: {
+                        if (loopEnabled.value) {
+                            beatloopSize.value = currentSize;
+                        } else {
+                            sizedBeatloopActivate.trigger();
+                        }
+                    }
+
+                    Mixxx.ControlProxy {
+                        id: sizedBeatloopActivate
+
+                        group: root.group
+                        key: `beatloop_${currentSize}_activate`
+                    }
+                }
+            }
+            Skin.Button {
+                id: loopSizeDoubleButton
+
+                Layout.alignment: Qt.AlignRight
+
+                activeColor: root.buttonColor
+                implicitHeight: 28
+                implicitWidth: 22
+
+                contentItem: Item {
+                    anchors.fill: parent
+
+                    Shape {
+                        anchors.centerIn: parent
+                        antialiasing: true
+                        height: 10
+                        layer.enabled: true
+                        layer.samples: 4
+                        width: 12
+
+                        ShapePath {
+                            capStyle: ShapePath.RoundCap
+                            fillColor: root.buttonColor
+                            fillRule: ShapePath.WindingFill
+                            startX: 0
+                            startY: 0
+                            strokeColor: 'transparent'
+
+                            PathLine {
+                                x: 12
+                                y: 5
+                            }
+                            PathLine {
+                                x: 0
+                                y: 10
+                            }
+                            PathLine {
+                                x: 0
+                                y: 0
+                            }
+                        }
+                    }
+                }
+
+                MouseArea {
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    anchors.fill: parent
+
+                    onPressed: mouse => {
+                        if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
+                            loopDouble.trigger();
+                        }
+                        loopSizeRepeater.selectedIndex = Math.min(loopSizeRepeater.values.length - 1, loopSizeRepeater.selectedIndex + 1);
+                    }
                 }
             }
         }
