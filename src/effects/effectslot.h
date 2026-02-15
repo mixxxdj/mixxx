@@ -133,11 +133,13 @@ class EffectSlot : public QObject {
     void slotLoadedEffectRequest(double value);
     void slotClear(double v);
     void slotEffectSelector(double v);
+    void slotPresetListVisibleChanged(bool visible);
     void slotEffectMetaParameter(double v, bool force = false);
 
   signals:
     void effectChanged();
     void parametersChanged();
+    void presetListShowRequest(bool show);
 
   private slots:
     void updateEngineState();
@@ -188,6 +190,7 @@ class EffectSlot : public QObject {
     std::unique_ptr<ControlEncoder> m_pControlEffectSelector;
     std::unique_ptr<ControlObject> m_pControlClear;
     std::unique_ptr<ControlPotmeter> m_pControlMetaParameter;
+    std::unique_ptr<ControlPushButton> m_pControlShowPresetList;
 
     SoftTakeover m_metaknobSoftTakeover;
 
