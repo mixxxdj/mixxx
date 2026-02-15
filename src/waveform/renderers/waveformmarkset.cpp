@@ -83,7 +83,7 @@ WaveformMarkSet::setDefault(const QString& group,
             0,
             Cue::kNoHotCue,
             signalColors);
-    if (!std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(mark)) {
+    if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(mark)) {
         return std::get<WaveformMark::WaveformMarkConstructionError>(mark);
     }
 
@@ -106,7 +106,7 @@ WaveformMarkSet::setDefault(const QString& group,
                     model.endIconPath,
                     model.enabledOpacity,
                     model.disabledOpacity);
-            if (!std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(pMaybeMark)) {
+            if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(pMaybeMark)) {
                 return std::get<WaveformMark::WaveformMarkConstructionError>(pMaybeMark);
             }
             auto pMark = WaveformMarkPointer(std::get<WaveformMark*>(pMaybeMark));

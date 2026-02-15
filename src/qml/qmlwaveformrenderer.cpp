@@ -37,6 +37,7 @@ QString waveformMarkerErrorToString(
         errorMessage.append(
                 QStringLiteral("unexpected number of arguments in endIcon: %1")
                         .arg(endIcon));
+        break;
     case WaveformMark::WaveformMarkConstructionError::PixmapNotFound:
         errorMessage.append(QStringLiteral("path %1 for pixmap cannot be found").arg(pixmap));
         break;
@@ -369,7 +370,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
                 pMark->disabledOpacity(),
                 pMark->enabledOpacity());
 
-        if (!std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(maybeMarker)) {
+        if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(maybeMarker)) {
             qmlEngine(this)->throwError(waveformMarkerErrorToString(
                     std::get<WaveformMark::WaveformMarkConstructionError>(
                             maybeMarker),
@@ -405,7 +406,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
                         pMark->enabledOpacity(),
                         pMark->disabledOpacity(),
                 });
-        if (!error.has_value()) {
+        if (error.has_value()) {
             qmlEngine(this)->throwError(waveformMarkerErrorToString(
                     error.value(), endIcon, pixmap, endPixmap, icon));
         }
