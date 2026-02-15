@@ -254,7 +254,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     m_outputChunkConsumed = 0;
 
     // Copy output to buffer (limited by maxFrames)
-    const SINT framesToCopy = std::min(m_outputChunk.frameCount, maxFrames);
+    const SINT framesToCopy = std::min(static_cast<SINT>(m_outputChunk.frameCount), maxFrames);
     const int channelCount = static_cast<int>(getOutputSignal().getChannelCount());
 
     for (SINT frame = 0; frame < framesToCopy; ++frame) {
