@@ -120,7 +120,10 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_callbackResult(paAbort),
           m_hostTimeFilter(kNumPointsInHostTimeFilter),
           m_cummulatedBufferTime(0),
-          m_meanOutputLatency(MovingInterquartileMean(128)) {
+          m_meanOutputLatency(MovingInterquartileMean(128)),
+          m_pExternalSyncLatencyCompensation(std::make_unique<ControlProxy>(
+                  QStringLiteral("[Master]"),
+                  QStringLiteral("externalSyncLatencyCompensation"))) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
@@ -1182,17 +1185,22 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
     // Only use latency from PortAudios timeInfo, if it's in reasonable range,
     // otherwise use latency value from PortAudios streamInfo
+    auto externalSyncLatencyUs = std::chrono::duration_cast<std::chrono::microseconds>(
+            std::chrono::duration<double, std::milli>(m_pExternalSyncLatencyCompensation->get()));
+
     if (callbackEntrytoDacSecs > kMinReasonableAudioLatencySecs &&
             timeSinceLastCbSecs < bufferSizeSec * 2) {
         m_meanOutputLatency.insert(timeInfo->outputBufferDacTime - soundCardTimeNow);
 
         m_absTimeWhenPrevOutputBufferReachesDac = filteredHostTimeNow +
-                std::chrono::microseconds(static_cast<long long>(
-                        m_meanOutputLatency.mean() * 1000000));
+                std::chrono::duration_cast<std::chrono::microseconds>(
+                        std::chrono::duration<double>(m_meanOutputLatency.mean())) +
+                externalSyncLatencyUs;
     } else {
         m_absTimeWhenPrevOutputBufferReachesDac = filteredHostTimeNow +
-                std::chrono::microseconds(
-                        static_cast<long long>(m_outputLatencyMillis * 1000));
+                std::chrono::duration_cast<std::chrono::microseconds>(
+                        std::chrono::duration<double, std::milli>(m_outputLatencyMillis)) +
+                externalSyncLatencyUs;
     }
 
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -

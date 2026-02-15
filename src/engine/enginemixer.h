@@ -313,6 +313,7 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<EngineDelay> m_pHeadDelay;
     std::unique_ptr<EngineDelay> m_pBoothDelay;
     std::unique_ptr<EngineDelay> m_pLatencyCompensationDelay;
+    std::unique_ptr<ControlPotmeter> m_pExternalSyncLatencyCompensation;
 
     std::unique_ptr<EngineVuMeter> m_pVumeter;
     std::unique_ptr<EngineSideChain> m_pEngineSideChain;

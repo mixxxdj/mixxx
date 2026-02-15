@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include <memory>
 
+#include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
@@ -100,4 +101,6 @@ class SoundDevicePortAudio : public SoundDevice {
     HostTimeFilter m_hostTimeFilter;
     double m_cummulatedBufferTime;
     MovingInterquartileMean m_meanOutputLatency;
+
+    std::unique_ptr<ControlProxy> m_pExternalSyncLatencyCompensation;
 };

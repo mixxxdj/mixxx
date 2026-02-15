@@ -151,14 +151,43 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="10" column="0">
+      <widget class="QLabel" name="externalSyncLatencyCompensationLabel">
+       <property name="text">
+        <string>External Sync Latency Compensation</string>
+       </property>
+       <property name="buddy">
+        <cstring>externalSyncLatencyCompensationSpinBox</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QDoubleSpinBox" name="externalSyncLatencyCompensationSpinBox">
+       <property name="suffix">
+        <string> ms</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
       <widget class="QLabel" name="mainDelayLabel">
        <property name="text">
         <string>Main Output Delay</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="12" column="1">
       <widget class="QDoubleSpinBox" name="mainDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -174,14 +203,14 @@
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="headDelayLabel">
        <property name="text">
         <string>Headphone Output Delay</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
+     <item row="13" column="1">
       <widget class="QDoubleSpinBox" name="headDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -197,14 +226,14 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="boothDelayLabel">
        <property name="text">
         <string>Booth Output Delay</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="1">
+     <item row="14" column="1">
       <widget class="QDoubleSpinBox" name="boothDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -213,14 +242,17 @@
         <number>3</number>
        </property>
        <property name="maximum">
-        <double>500.000000000000000</double>
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
        </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
-     <item row="14" column="0" colspan="2">
+     <item row="15" column="0" colspan="2">
       <widget class="QLabel" name="latencyCompensationWarningLabel">
        <property name="text">
         <string notr="true">warning goes here</string>

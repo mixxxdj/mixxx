@@ -93,6 +93,14 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(group, "boothDelay"))),
           m_pLatencyCompensationDelay(std::make_unique<EngineDelay>(
                   ConfigKey(group, "microphoneLatencyCompensation"))),
+          m_pExternalSyncLatencyCompensation(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, "externalSyncLatencyCompensation"),
+                  -100.0, // min
+                  100.0,  // max
+                  true,   // allowOutOfBounds
+                  true,   // bIgnoreNops
+                  false,  // bTrack
+                  true)), // bPersist
           m_pVumeter(std::make_unique<EngineVuMeter>(kMainGroup, kLegacyGroup)),
           // Starts a thread for recording and broadcast
           m_pEngineSideChain(bEnableSidechain
