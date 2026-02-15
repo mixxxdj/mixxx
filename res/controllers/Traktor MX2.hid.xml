@@ -15,4 +15,15 @@
       <file filename="Traktor-MX2-hid-scripts.js" functionprefix="TraktorMX2" />
     </scriptfiles>
   </controller>
+  <settings>
+    <group label="Controller modes">
+      <option
+              variable="enableMasterGain"
+              label="Enable Master gain"
+              type="boolean"
+              description="Use Master gain knob, or send output directly to soundcard"
+              default="false"
+      />
+    </group>
+  </settings>
 </MixxxControllerPreset>
