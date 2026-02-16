@@ -800,9 +800,9 @@ void DlgPrefSound::settingChanged() {
 #ifdef __RUBBERBAND__
 void DlgPrefSound::updateKeylockDualThreadingCheckbox() {
     auto currentEngine = keylockComboBox->currentData()
-            .value<EngineBuffer::KeylockEngine>();
+                                 .value<EngineBuffer::KeylockEngine>();
     bool supportedScaler = (currentEngine == EngineBuffer::KeylockEngine::RubberBandFaster) ||
-                           (currentEngine == EngineBuffer::KeylockEngine::RubberBandFiner);
+            (currentEngine == EngineBuffer::KeylockEngine::RubberBandFiner);
     bool monoMix = mainOutputModeComboBox->currentIndex() == 1;
     keylockDualthreadedCheckBox->setEnabled(!monoMix && supportedScaler);
     keylockDualthreadedCheckBox->setToolTip(monoMix

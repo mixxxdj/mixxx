@@ -316,7 +316,9 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
 
                         for (SINT frame = 0; frame < framesToCopy; ++frame) {
                             for (int ch = 0; ch < channelCount; ++ch) {
-                                pOutput[frame * channelCount + ch] = m_outputChunk.data[frame + ch * m_outputChunk.channelStride];
+                                pOutput[frame * channelCount +
+                                        ch] = m_outputChunk.data[frame +
+                                        ch * m_outputChunk.channelStride];
                             }
                         }
 

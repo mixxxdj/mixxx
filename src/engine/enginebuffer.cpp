@@ -117,9 +117,21 @@ EngineBuffer::EngineBuffer(const QString& group,
     SampleUtil::clear(m_pCrossfadeBuffer, kMaxEngineFrames * mixxx::kMaxEngineChannelInputCount);
 
     m_pReader = new CachingReader(group, pConfig, maxSupportedChannel);
-    connect(m_pReader, &CachingReader::trackLoading, this, &EngineBuffer::slotTrackLoading, Qt::DirectConnection);
-    connect(m_pReader, &CachingReader::trackLoaded, this, &EngineBuffer::slotTrackLoaded, Qt::DirectConnection);
-    connect(m_pReader, &CachingReader::trackLoadFailed, this, &EngineBuffer::slotTrackLoadFailed, Qt::DirectConnection);
+    connect(m_pReader,
+            &CachingReader::trackLoading,
+            this,
+            &EngineBuffer::slotTrackLoading,
+            Qt::DirectConnection);
+    connect(m_pReader,
+            &CachingReader::trackLoaded,
+            this,
+            &EngineBuffer::slotTrackLoaded,
+            Qt::DirectConnection);
+    connect(m_pReader,
+            &CachingReader::trackLoadFailed,
+            this,
+            &EngineBuffer::slotTrackLoadFailed,
+            Qt::DirectConnection);
 
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
@@ -129,31 +141,55 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     // Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
-    connect(m_playStartButton, &ControlObject::valueChanged, this, &EngineBuffer::slotControlPlayFromStart, Qt::DirectConnection);
+    connect(m_playStartButton,
+            &ControlObject::valueChanged,
+            this,
+            &EngineBuffer::slotControlPlayFromStart,
+            Qt::DirectConnection);
 
     // Jump to start and stop button
     m_stopStartButton = new ControlPushButton(ConfigKey(m_group, "start_stop"));
-    connect(m_stopStartButton, &ControlObject::valueChanged, this, &EngineBuffer::slotControlJumpToStartAndStop, Qt::DirectConnection);
+    connect(m_stopStartButton,
+            &ControlObject::valueChanged,
+            this,
+            &EngineBuffer::slotControlJumpToStartAndStop,
+            Qt::DirectConnection);
 
     // Stop playback (for sampler)
     m_stopButton = new ControlPushButton(ConfigKey(m_group, "stop"));
-    connect(m_stopButton, &ControlObject::valueChanged, this, &EngineBuffer::slotControlStop, Qt::DirectConnection);
+    connect(m_stopButton,
+            &ControlObject::valueChanged,
+            this,
+            &EngineBuffer::slotControlStop,
+            Qt::DirectConnection);
 
     // Start button
     m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
     m_startButton->setButtonMode(mixxx::control::ButtonMode::Trigger);
-    connect(m_startButton, &ControlObject::valueChanged, this, &EngineBuffer::slotControlStart, Qt::DirectConnection);
+    connect(m_startButton,
+            &ControlObject::valueChanged,
+            this,
+            &EngineBuffer::slotControlStart,
+            Qt::DirectConnection);
 
     // End button
     m_endButton = new ControlPushButton(ConfigKey(m_group, "end"));
-    connect(m_endButton, &ControlObject::valueChanged, this, &EngineBuffer::slotControlEnd, Qt::DirectConnection);
+    connect(m_endButton,
+            &ControlObject::valueChanged,
+            this,
+            &EngineBuffer::slotControlEnd,
+            Qt::DirectConnection);
 
     m_pSlipButton = new ControlPushButton(ConfigKey(m_group, "slip_enabled"));
     m_pSlipButton->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_playposSlider = new ControlLinPotmeter(
             ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
-    connect(m_playposSlider, &ControlObject::valueChanged, this, &EngineBuffer::slotControlSeek, Qt::DirectConnection);
+    connect(m_playposSlider,
+            &ControlObject::valueChanged,
+            this,
+            &EngineBuffer::slotControlSeek,
+            Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
     m_visualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
@@ -275,7 +311,8 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_bScalerChanged = true;
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(this, &EngineBuffer::slotPassthroughChanged, Qt::DirectConnection);
+    m_pPassthroughEnabled->connectValueChanged(
+            this, &EngineBuffer::slotPassthroughChanged, Qt::DirectConnection);
 
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
@@ -1047,9 +1084,11 @@ void EngineBuffer::processTrackLocked(
         // The linear scaler supports ramping though zero.
         // This is used for scratching, but not for reverse
         // For the other, crossfade forward and backward samples
-        if ((m_speed_old * speed < 0) &&                // Direction has changed!
-                (m_pScale != m_pScaleVinyl ||           // only m_pScaleLinear supports going though 0
-                        m_reverse_old != is_reverse)) { // no pitch change when reversing
+        if ((m_speed_old * speed < 0) &&      // Direction has changed!
+                (m_pScale != m_pScaleVinyl || // only m_pScaleLinear supports
+                                              // going though 0
+                        m_reverse_old !=
+                                is_reverse)) { // no pitch change when reversing
             // XXX: Trying to force RAMAN to read from correct
             //      playpos when rate changes direction - Albert
             readToCrossfadeBuffer(bufferSize);
