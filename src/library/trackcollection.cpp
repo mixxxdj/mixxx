@@ -141,7 +141,15 @@ QList<mixxx::FileInfo> TrackCollection::loadRootDirs(bool skipInvalidOrMissing) 
 }
 
 QStringList TrackCollection::getRootDirStrings() const {
-    return m_directoryDao.getRootDirStrings();
+    QStringList rootDirStrings;
+    for (auto& rootDirectory : m_directoryDao.getRootDirectories()) {
+        rootDirStrings.append(rootDirectory.path);
+    }
+    return rootDirStrings;
+}
+
+QList<DirectoryDAO::RootDirectory> TrackCollection::getRootDirectories() const {
+    return m_directoryDao.getRootDirectories();
 }
 
 DirectoryDAO::AddResult TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
