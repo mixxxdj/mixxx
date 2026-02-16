@@ -17,6 +17,8 @@
 #endif
 
 #ifdef MIXXX_USE_QOPENGL
+#include <QGuiApplication>
+
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
 #endif
