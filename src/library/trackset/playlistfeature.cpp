@@ -1,5 +1,6 @@
 #include "library/trackset/playlistfeature.h"
 
+#include <QActionGroup> //added to help create sort menu
 #include <QMenu>
 #include <QSqlTableModel>
 #include <QtDebug>
@@ -32,6 +33,8 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
+
+    loadSortSettings(); // To load Sorting settings for Playlists in the sidebar
     constructChildModel(kInvalidPlaylistId);
 
     m_pShufflePlaylistAction = make_parented<QAction>(tr("Shuffle Playlist"), this);
@@ -70,6 +73,75 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+
+    // adding sort menu items
+    QMenu* pSortMenu = new QMenu(tr("Sort playlists"), &menu);
+
+    // Sort by submenu
+    QMenu* pSortByMenu = new QMenu(tr("Sort by"), pSortMenu);
+
+    // Create action group for exclusive selection
+    QActionGroup* pSortByGroup = new QActionGroup(pSortByMenu);
+    pSortByGroup->setExclusive(true);
+
+    QAction* pSortByName = pSortByMenu->addAction(tr("Name"));
+    pSortByName->setCheckable(true);
+    pSortByName->setChecked(m_sortColumn == PlaylistSortColumn::Name);
+    pSortByName->setActionGroup(pSortByGroup);
+    connect(pSortByName, &QAction::triggered, [this]() {
+        qDebug() << "Clicked: Name";
+        m_sortColumn = PlaylistSortColumn::Name;
+        saveSortSettings();
+        clearChildModel();
+        constructChildModel(kInvalidPlaylistId);
+    });
+
+    QAction* pSortByDateCreated = pSortByMenu->addAction(tr("Date created"));
+    pSortByDateCreated->setCheckable(true);
+    pSortByDateCreated->setChecked(m_sortColumn == PlaylistSortColumn::DateCreated);
+    pSortByDateCreated->setActionGroup(pSortByGroup);
+    connect(pSortByDateCreated, &QAction::triggered, [this]() {
+        qDebug() << "Clicked: Date Created";
+        m_sortColumn = PlaylistSortColumn::DateCreated;
+        saveSortSettings();
+        clearChildModel();
+        constructChildModel(kInvalidPlaylistId);
+    });
+
+    pSortMenu->addMenu(pSortByMenu);
+    pSortMenu->addSeparator();
+
+    // Sort order (Ascending/Descending)
+    QActionGroup* pSortOrderGroup = new QActionGroup(pSortMenu);
+    pSortOrderGroup->setExclusive(true);
+
+    QAction* pSortAscending = pSortMenu->addAction(tr("Ascending"));
+    pSortAscending->setCheckable(true);
+    pSortAscending->setChecked(m_sortOrder == PlaylistSortOrder::Ascending);
+    pSortAscending->setActionGroup(pSortOrderGroup);
+    connect(pSortAscending, &QAction::triggered, [this]() {
+        qDebug() << "Clicked: sort ascending";
+        m_sortOrder = PlaylistSortOrder::Ascending;
+        saveSortSettings();
+        clearChildModel();
+        constructChildModel(kInvalidPlaylistId);
+    });
+
+    QAction* pSortDescending = pSortMenu->addAction(tr("Descending"));
+    pSortDescending->setCheckable(true);
+    pSortDescending->setChecked(m_sortOrder == PlaylistSortOrder::Descending);
+    pSortDescending->setActionGroup(pSortOrderGroup);
+    connect(pSortDescending, &QAction::triggered, [this]() {
+        qDebug() << "Clicked: sort descending";
+        m_sortOrder = PlaylistSortOrder::Descending;
+        saveSortSettings();
+        clearChildModel();
+        constructChildModel(kInvalidPlaylistId);
+    });
+
+    menu.addMenu(pSortMenu);
+    menu.addSeparator();
+
     menu.addAction(m_pUnlockPlaylistsAction);
     menu.addAction(m_pDeleteAllUnlockedPlaylistsAction);
     menu.addSeparator();
@@ -169,12 +241,15 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
+
+    // CREATE TEMPORARY VIEW without ORDER BY (views don't support ORDER BY in SQLite)
     QString queryString = QStringLiteral(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
             "AS SELECT "
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
             "  LOWER(Playlists.name) AS sort_name, "
+            "  Playlists.date_created AS date_created, "
             "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
             "    AS count, "
             "  SUM(case library.mixxx_deleted "
@@ -189,49 +264,38 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
                                   .arg(m_countsDurationTableName,
                                           QString::number(
                                                   PlaylistDAO::PLHT_NOT_HIDDEN));
-    queryString.append(
-            mixxx::DbConnection::collateLexicographically(
-                    " ORDER BY sort_name"));
+
+    // Execute CREATE VIEW query (no ORDER BY here!)
     QSqlQuery query(database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
 
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
+    // Now query the view WITH sorting
+    QString selectQuery = QStringLiteral("SELECT * FROM %1").arg(m_countsDurationTableName);
+    selectQuery.append(getSortOrderClause()); // Add ORDER BY to SELECT, not CREATE VIEW
 
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, idColumn))
-                        .toInt();
-        QString name =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, nameColumn))
-                        .toString();
-        int count =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, countColumn))
-                        .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, durationColumn))
-                        .toInt();
+    qDebug() << "Select query with sorting:" << selectQuery;
+
+    QSqlQuery selectQueryExec(database);
+    if (!selectQueryExec.exec(selectQuery)) {
+        LOG_FAILED_QUERY(selectQueryExec);
+        return playlistLabels; // Return empty list on error
+    }
+
+    // Read results directly from the query
+    while (selectQueryExec.next()) {
+        int id = selectQueryExec.value("id").toInt();
+        QString name = selectQueryExec.value("name").toString();
+        int count = selectQueryExec.value("count").toInt();
+        int duration = selectQueryExec.value("durationSeconds").toInt();
+
         BasePlaylistFeature::IdAndLabel idAndLabel;
         idAndLabel.id = id;
         idAndLabel.label = createPlaylistLabel(name, count, duration);
         playlistLabels.append(idAndLabel);
     }
+
     return playlistLabels;
 }
 
@@ -466,4 +530,63 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QStringLiteral("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
                         .arg(createPlaylistLink));
     return html;
+}
+
+void PlaylistFeature::loadSortSettings() {
+    // Load sort column (default: Name)
+    int sortColumnInt = m_pConfig->getValue(
+            ConfigKey("[Library]", "PlaylistSortColumn"),
+            static_cast<int>(PlaylistSortColumn::Name));
+    m_sortColumn = static_cast<PlaylistSortColumn>(sortColumnInt);
+
+    // Load sort order (default: Ascending)
+    int sortOrderInt = m_pConfig->getValue(
+            ConfigKey("[Library]", "PlaylistSortOrder"),
+            static_cast<int>(PlaylistSortOrder::Ascending));
+    m_sortOrder = static_cast<PlaylistSortOrder>(sortOrderInt);
+    qDebug() << "Loaded playlist sort settings - Column:" << sortColumnInt
+             << "Order:" << sortOrderInt;
+}
+
+void PlaylistFeature::saveSortSettings() {
+    m_pConfig->setValue(
+            ConfigKey("[Library]", "PlaylistSortColumn"),
+            static_cast<int>(m_sortColumn));
+    m_pConfig->setValue(
+            ConfigKey("[Library]", "PlaylistSortOrder"),
+            static_cast<int>(m_sortOrder));
+}
+
+QString PlaylistFeature::getSortColumnName() const {
+    switch (m_sortColumn) {
+    case PlaylistSortColumn::DateCreated:
+        return QStringLiteral("date_created");
+    case PlaylistSortColumn::Name:
+    default:
+        return QStringLiteral("sort_name");
+    }
+}
+
+QString PlaylistFeature::getSortOrderClause() const {
+    QString columnName = getSortColumnName();
+    QString order = (m_sortOrder == PlaylistSortOrder::Descending)
+            ? QStringLiteral(" DESC")
+            : QStringLiteral(" ASC"); // ← Explicitly add ASC
+
+    QString result;
+    // Use collateLexicographically ONLY for name columns
+    if (m_sortColumn == PlaylistSortColumn::Name) {
+        // For name sorting, use the special collation function
+        result = mixxx::DbConnection::collateLexicographically(
+                QStringLiteral(" ORDER BY ") + columnName);
+        // Append order AFTER the collation
+        result += order;
+    } else {
+        // For date columns, simple ORDER BY
+        result = QStringLiteral(" ORDER BY ") + columnName + order;
+    }
+
+    qDebug() << "PlaylistFeature sort - Column:" << columnName
+             << "Order:" << order << "Full clause:" << result;
+    return result;
 }
