@@ -5,9 +5,11 @@
 #include <QMimeData>
 #include <QScreen>
 #include <QtGlobal>
+#include <utility>
 
 #include "base/Pitch.h"
 #include "library/coverartcache.h"
+#include "library/dao/cuedao.h"
 #include "library/dao/trackschema.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
@@ -23,13 +25,16 @@
 #include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetracktablemodel.cpp"
+#include "track/cue.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/clipboard.h"
+#include "util/color/color.h"
 #include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/datetime.h"
@@ -72,6 +77,19 @@ QSqlDatabase cloneDatabase(
     }
     return cloneDatabase(
             pTrackCollectionManager->internalCollection()->database());
+}
+
+// For hotcue tooltip
+inline QString posOrLengthToSeconds(double posOrLength, double sampleRate) {
+    if (sampleRate <= 0) {
+        // if no sampleRate -> 44.1kHz
+
+        sampleRate = 44100.0;
+    }
+
+    double seconds = posOrLength / sampleRate;
+
+    return mixxx::Duration::formatTime(seconds, mixxx::Duration::Precision::CENTISECONDS);
 }
 
 } // anonymous namespace
@@ -610,6 +628,19 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+        // Eve: show the hotcue overview for in tooltips for following fields:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TITLE:
+        case ColumnCache::COLUMN_LIBRARYTABLE_ARTIST:
+        case ColumnCache::COLUMN_LIBRARYTABLE_ALBUM:
+        case ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST:
+        case ColumnCache::COLUMN_LIBRARYTABLE_GENRE:
+        case ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER:
+        case ColumnCache::COLUMN_LIBRARYTABLE_GROUPING:
+        case ColumnCache::COLUMN_LIBRARYTABLE_COMMENT:
+            if (role == Qt::ToolTipRole) {
+                return composeHotCueTooltip(index, rawValue.toString());
+            }
+            break;
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -1246,4 +1277,139 @@ QVariant BaseTrackTableModel::getFieldVariant(
 QString BaseTrackTableModel::getFieldString(
         const QModelIndex& index, ColumnCache::Column column) const {
     return getFieldVariant(index, column).toString();
+}
+
+QString BaseTrackTableModel::composeHotCueTooltip(
+        const QModelIndex& index, const QString& columnValue) const {
+    TrackPointer pTrack = getTrack(index);
+    if (!pTrack || !pTrack->getId().isValid()) {
+        return columnValue;
+    }
+
+    // Get all cue points for this track
+    const QList<CuePointer> cues = pTrack->getCuePoints();
+    // Collect only hotcues
+    QList<CuePointer> hotcues;
+    for (const auto& pCue : std::as_const(cues)) {
+        if (pCue && pCue->getHotCue() != Cue::kNoHotCue) {
+            hotcues.append(pCue);
+        }
+    }
+
+    // No hotcues -> column value
+    if (hotcues.isEmpty()) {
+        return columnValue;
+    }
+
+    // Sort hotcues by number
+    std::sort(hotcues.begin(), hotcues.end(), [](const CuePointer& a, const CuePointer& b) {
+        return a->getHotCue() < b->getHotCue();
+    });
+
+    double sampleRate = pTrack->getSampleRate();
+
+    // Start HTML
+    QString tooltip = QStringLiteral("<html><body>");
+
+    // Always show the column value (title, artist, composer, etc.)
+    if (!columnValue.isEmpty()) {
+        tooltip += QStringLiteral("<b>%1</b>").arg(columnValue.toHtmlEscaped());
+    }
+
+    if (!tooltip.isEmpty()) {
+        tooltip += QStringLiteral("<br><br>");
+    }
+    tooltip += QStringLiteral("<b>Hot Cues:</b>");
+    // In order to keep all properties aligned vertically we construct a html table.
+    // That means we need to wrap each field in <td></td> tags.
+    tooltip += QStringLiteral("<table><style>td {padding-right: 0.2em;}</style>");
+
+    for (const auto& pHotcue : std::as_const(hotcues)) {
+        tooltip += QStringLiteral("<tr>"); // start table row
+
+        // Make the cue appear like a colored hotcue button.
+        QColor cueColor = mixxx::RgbColor::toQColor(pHotcue->getColor());
+        // Pick a contrasting color for the label, like in skins
+        // FIXME Use the skin's custoom dark/bright threshold?
+        const QColor textColor = Color::chooseColorByBrightness(
+                cueColor,
+                Qt::white,
+                Qt::black,
+                127);
+        tooltip += QStringLiteral(
+                "<td align=right>"
+                "<span style='display:inline-block; "
+                "background-color: %1; "
+                "color: %2; "
+                "font-weight: bold; "
+                "vertical-align: middle; "
+                "border: 1px solid #444;'>"
+                // Qt RichText/Html only supports a subset of Html, so we
+                // need to fake left/right padding with whitespaces.
+                "&nbsp;%3&nbsp;"
+                "</span></td>")
+                           .arg(cueColor.name(),
+                                   textColor.name(),
+                                   QString::number(pHotcue->getHotCue() + 1));
+        // Cue position
+        tooltip += QStringLiteral("<td>%1</td>")
+                           .arg(posOrLengthToSeconds(pHotcue->getPosition().value(), sampleRate));
+
+        // Add label if present
+        const QString label = pHotcue->getLabel();
+        if (!label.isEmpty()) {
+            tooltip += QStringLiteral("<td>%1</td>").arg(label.toHtmlEscaped());
+        }
+
+        // Add type icon
+        // Icons are copied from LateNight Palemoon to images/library
+        // white icons were created from the original black icons
+        // still need to detect the background
+        QString iconHtml;
+        switch (pHotcue->getType()) {
+        case mixxx::CueType::Loop:
+            // white
+            iconHtml =
+                    "<img src=':/images/library/ic_loop_active_w.svg' "
+                    "width='16' height='16' 'title='Loop'>";
+            // black
+            // iconHtml = "<img src=':/images/library/ic_loop_active_w.svg'
+            // width='16' height='16' title='Loop'>";
+            break;
+        case mixxx::CueType::Jump:
+            // white
+            iconHtml =
+                    "<img "
+                    "src=':/images/library/ic_beatjump_right_active_w.svg' "
+                    "width='16' height='16' title='Jump'>";
+            // black
+            // iconHtml = "<img
+            // src=':/images/library/ic_beatjump_right_active_bl.svg' width='16'
+            // height='16' title='Jump'>";
+            break;
+        default:
+            iconHtml = "";
+            break;
+        }
+
+        if (!iconHtml.isEmpty()) {
+            tooltip += QStringLiteral("<td>%1</td>").arg(iconHtml);
+        } else {
+            // Add empty cell for alignment when no icon
+            tooltip += QStringLiteral("<td></td>");
+        }
+
+        // Add duration for saved loops/jumps
+        const auto length = pHotcue->getLengthFrames();
+        if (length > 0) {
+            tooltip += QStringLiteral("<td>(%1)</td>")
+                               .arg(posOrLengthToSeconds(length, sampleRate));
+        }
+        tooltip += QStringLiteral("</tr>"); // end table row
+    }
+
+    // Close table and HTML
+    tooltip += QStringLiteral("</table></body></html>");
+
+    return tooltip;
 }
