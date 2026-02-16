@@ -127,7 +127,7 @@ class LibraryScanner : public QThread {
     int m_numRelocatedTracks;
 
     QList<mixxx::FileInfo> m_libraryRootDirs;
-    QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
+    std::unique_ptr<LibraryScannerDlg> m_pProgressDlg;
 
     bool m_manualScan;
 };
