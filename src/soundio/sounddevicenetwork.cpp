@@ -301,7 +301,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
 
     if (writeExpected <= 0) {
         // Overflow: We more than one buffer ahead. That happens if the engine tries to catch up
-        // already earlier misses already filled with silence
+        // earlier misses already filled with silence
         // kLogger.debug() << "workerWriteProcess: ahead of time"
         //                 << "outChunkSize" << outChunkSize
         //                 << "readAvailable" << readAvailable
@@ -316,7 +316,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         // Underflow: We are late by more than one buffer outChunkSize
         if (pWorker->outputDrift()) {
             // kLogger.debug() << "workerWriteProcess: buffer empty."
-            //                 << "Catch up with silence:" << writeExpected - copyCount
+            //                 << "Catch up with silence:" << writeExpected - readAvailable
             //                 << "streamTime" << pWorker->getStreamTimeFrames();;
             // catch up by filling buffer until we are synced
             workerWriteSilence(pWorker, (writeExpected - readAvailable) / m_numOutputChannels);
@@ -340,7 +340,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         if (pWorker->outputDrift()) {
             // kLogger.debug() << "workerWriteProcess() "
             //                    "skip one frame"
-            //                 << (float)writeAvailable / outChunkSize
+            //                 << (float)writeExpected / outChunkSize
             //                 << (float)readAvailable / outChunkSize;
             if (size1 >= m_numOutputChannels) {
                 dataPtr1 += m_numOutputChannels;
