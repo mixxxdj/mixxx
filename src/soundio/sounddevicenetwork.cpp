@@ -326,7 +326,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         }
     } else if (writeExpected - readAvailable > outChunkSize / 2) {
         // try to keep PAs buffer filled up to 0.5 chunks
-        if (pWorker->outputDrift()) {
+        if (pWorker->outputDrift() && (size1 / m_numOutputChannels) > 0) {
             // duplicate one frame
             // kLogger.debug() << "workerWriteProcess() duplicate one frame"
             //                 << (float)writeExpected / outChunkSize
