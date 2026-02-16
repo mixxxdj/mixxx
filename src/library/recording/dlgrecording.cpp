@@ -148,8 +148,8 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
 
 // gets number of recorded bytes and update label
 void DlgRecording::slotBytesRecorded(int bytes) {
-    double megabytes = bytes / 1048576.0;
-    m_bytesRecordedStr = QString::number(megabytes,'f',2);
+    m_bytesRecordedStr =
+            QLocale().formattedDataSize(bytes, 1, QLocale::DataSizeSIFormat);
     refreshLabels();
 }
 
@@ -162,7 +162,7 @@ void DlgRecording::slotDurationRecorded(const QString& durationRecorded) {
 // update label besides start/stop button
 void DlgRecording::refreshLabels() {
     QString recFile = m_pRecordingManager->getRecordingFile();
-    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") +
+    QString recData = QString(QStringLiteral("(") + tr("%1 written in %2") +
             QStringLiteral(")"))
                               .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);
