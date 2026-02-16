@@ -238,7 +238,7 @@ void MixxxMainWindow::initialize() {
         m_pVisualsManager->addDeck(group);
     }
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfDecksChanged,
+            &PlayerManagerInterface::numberOfDecksChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -247,7 +247,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfSamplersChanged,
+            &PlayerManagerInterface::numberOfSamplersChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -1519,16 +1519,16 @@ bool MixxxMainWindow::confirmExit() {
     bool playing(false);
     bool playingSampler(false);
     auto pPlayerManager = m_pCoreServices->getPlayerManager();
-    unsigned int deckCount = pPlayerManager->numDecks();
-    unsigned int samplerCount = pPlayerManager->numSamplers();
-    for (unsigned int i = 0; i < deckCount; ++i) {
+    int deckCount = pPlayerManager->numberOfDecks();
+    int samplerCount = pPlayerManager->numberOfSamplers();
+    for (int i = 0; i < deckCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
-    for (unsigned int i = 0; i < samplerCount; ++i) {
+    for (int i = 0; i < samplerCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;
