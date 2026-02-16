@@ -27,7 +27,7 @@
 #include "engine/bufferscalers/enginebufferscalebungee.h"
 #endif
 
-//for the writer
+// for the writer
 #ifdef __SCALER_DEBUG__
 #include <QFile>
 #include <QTextStream>
@@ -57,7 +57,7 @@ class VisualPlayPosition;
 class EngineMixer;
 
 class EngineBuffer : public EngineObject {
-     Q_OBJECT
+    Q_OBJECT
   private:
     enum SyncRequestQueued {
         SYNC_REQUEST_NONE,
@@ -65,6 +65,7 @@ class EngineBuffer : public EngineObject {
         SYNC_REQUEST_DISABLE,
         SYNC_REQUEST_ENABLEDISABLE,
     };
+
   public:
     enum SeekRequest {
         SEEK_NONE = 0,

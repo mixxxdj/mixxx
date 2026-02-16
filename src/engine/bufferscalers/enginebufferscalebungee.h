@@ -25,11 +25,11 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     ~EngineBufferScaleBungee() override = default;
 
     void setScaleParameters(double base_rate,
-                            double* pTempoRatio,
-                            double* pPitchRatio) override;
+            double* pTempoRatio,
+            double* pPitchRatio) override;
 
     double scaleBuffer(CSAMPLE* pOutputBuffer,
-                       SINT iOutputBufferSize) override;
+            SINT iOutputBufferSize) override;
 
     void clear() override;
 

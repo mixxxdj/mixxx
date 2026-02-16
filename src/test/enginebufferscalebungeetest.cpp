@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QVector>
+#include <QtDebug>
 
 #include "engine/bufferscalers/enginebufferscalebungee.h"
 #include "engine/readaheadmanager.h"
@@ -11,10 +11,10 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-using ::testing::StrictMock;
-using ::testing::Return;
-using ::testing::Invoke;
 using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
+using ::testing::StrictMock;
 
 namespace {
 
@@ -410,4 +410,4 @@ TEST_F(EngineBufferScaleBungeeTest, RapidParameterChanges) {
     SampleUtil::free(pOutput);
 }
 
-}  // namespace
+} // namespace

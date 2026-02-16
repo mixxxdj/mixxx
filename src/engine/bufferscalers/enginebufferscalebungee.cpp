@@ -1,7 +1,6 @@
 #include "engine/bufferscalers/enginebufferscalebungee.h"
 
 #include <QtDebug>
-
 #include <cmath>
 #include <limits>
 
@@ -88,8 +87,8 @@ void EngineBufferScaleBungee::onSignalChanged() {
 }
 
 void EngineBufferScaleBungee::setScaleParameters(double base_rate,
-                                                 double* pTempoRatio,
-                                                 double* pPitchRatio) {
+        double* pTempoRatio,
+        double* pPitchRatio) {
     // Negative speed means we are going backwards
     m_bBackwards = *pTempoRatio < 0;
 
@@ -164,7 +163,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
             for (int ch = 0; ch < channelCount; ++ch) {
                 pOutputBuffer[frame * channelCount + ch] =
                         m_outputChunk.data[m_outputChunkConsumed + frame +
-                                           ch * m_outputChunk.channelStride];
+                                ch * m_outputChunk.channelStride];
             }
         }
 
@@ -275,7 +274,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
 }
 
 double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
-                                            SINT iOutputBufferSize) {
+        SINT iOutputBufferSize) {
     if (!m_pStretcher || m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
         return 0.0;
@@ -329,7 +328,7 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
                 // Clear any remaining buffer
                 if (remainingFrames > 0) {
                     SampleUtil::clear(pOutput,
-                                      getOutputSignal().frames2samples(remainingFrames));
+                            getOutputSignal().frames2samples(remainingFrames));
                 }
                 break;
             }
