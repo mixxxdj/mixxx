@@ -27,7 +27,8 @@ class Encoder {
     Encoder() {}
     virtual ~Encoder() = default;
 
-    virtual int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) = 0;
+    virtual int initEncoder(mixxx::audio::SampleRate sampleRate,
+            QString* pUserErrorMessage) = 0;
     // encodes the provided buffer of audio.
     virtual void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used

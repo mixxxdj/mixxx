@@ -136,7 +136,8 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate,
+        QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
 
     if (sampleRate != kMainSampleRate) {

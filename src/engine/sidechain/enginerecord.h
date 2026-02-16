@@ -7,6 +7,7 @@
 #include "control/pollingcontrolproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
+#include "encoder/encodersettings.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
