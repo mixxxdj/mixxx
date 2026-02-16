@@ -184,11 +184,12 @@ void DlgPrefLibrary::slotHide() {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("Music Directory Added"));
-    msgBox.setText(tr("You added one or more music directories. The tracks in "
-                      "these directories won't be available until you rescan "
-                      "your library. Would you like to rescan now?"));
+    msgBox.setText(tr(
+            "You added one or more music directories. The tracks in "
+            "these directories won't be available until you rescan "
+            "your library. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
-        tr("Scan"), QMessageBox::AcceptRole);
+            tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
     msgBox.setDefaultButton(scanButton);
     msgBox.exec();
@@ -231,7 +232,7 @@ void DlgPrefLibrary::populateDirList() {
     dirList->setModel(&m_dirListModel);
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));
     // reselect index if it still exists
-    for (int i=0 ; i<m_dirListModel.rowCount() ; ++i) {
+    for (int i = 0; i < m_dirListModel.rowCount(); ++i) {
         const QModelIndex index = m_dirListModel.index(i, 0);
         if (index.data().toString() == selected) {
             dirList->setCurrentIndex(index);
@@ -245,6 +246,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     spinbox_history_track_duplicate_distance->setValue(
             kHistoryTrackDuplicateDistanceDefault);
     spinbox_history_min_tracks_to_keep->setValue(1);
+    checkBox_open_last_used_library_view->setChecked(false);
     checkBox_sync_track_metadata->setChecked(false);
     checkBox_serato_metadata_export->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
@@ -280,6 +282,8 @@ void DlgPrefLibrary::slotUpdate() {
             kRescanOnStartupConfigKey, false));
     checkBox_library_scan_summary->setChecked(m_pConfig->getValue(
             kShowScanSummaryConfigKey, true));
+    checkBox_open_last_used_library_view->setChecked(m_pConfig->getValue(
+            kOpenLastUsedLibraryViewConfigKey, false));
 
     spinbox_history_track_duplicate_distance->setValue(m_pConfig->getValue(
             kHistoryTrackDuplicateDistanceConfigKey,
@@ -297,15 +301,15 @@ void DlgPrefLibrary::slotUpdate() {
             kUseRelativePathOnExportConfigKey, false));
 
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
+            ConfigKey("[Library]", "ShowRhythmboxLibrary"), true));
     checkBox_show_banshee->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowBansheeLibrary"), true));
+            ConfigKey("[Library]", "ShowBansheeLibrary"), true));
     checkBox_show_itunes->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowITunesLibrary"), true));
+            ConfigKey("[Library]", "ShowITunesLibrary"), true));
     checkBox_show_traktor->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowTraktorLibrary"), true));
+            ConfigKey("[Library]", "ShowTraktorLibrary"), true));
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowRekordboxLibrary"), true));
+            ConfigKey("[Library]", "ShowRekordboxLibrary"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
 
@@ -403,9 +407,9 @@ void DlgPrefLibrary::resetLibraryFont() {
 }
 
 void DlgPrefLibrary::slotAddDir() {
-    QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Choose a music directory"),
-        QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+    QString fd = QFileDialog::getExistingDirectory(this,
+            tr("Choose a music directory"),
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
         if (m_pLibrary->requestAddDir(fd)) {
             populateDirList();
@@ -423,29 +427,29 @@ void DlgPrefLibrary::slotRemoveDir() {
     removeMsgBox.setWindowTitle(tr("Confirm Directory Removal"));
 
     removeMsgBox.setText(tr(
-        "Mixxx will no longer watch this directory for new tracks. "
-        "What would you like to do with the tracks from this directory and "
-        "subdirectories?"
-        "<ul>"
-        "<li>Hide all tracks from this directory and subdirectories.</li>"
-        "<li>Delete all metadata for these tracks from Mixxx permanently.</li>"
-        "<li>Leave the tracks unchanged in your library.</li>"
-        "</ul>"
-        "Hiding tracks saves their metadata in case you re-add them in the "
-        "future."));
+            "Mixxx will no longer watch this directory for new tracks. "
+            "What would you like to do with the tracks from this directory and "
+            "subdirectories?"
+            "<ul>"
+            "<li>Hide all tracks from this directory and subdirectories.</li>"
+            "<li>Delete all metadata for these tracks from Mixxx permanently.</li>"
+            "<li>Leave the tracks unchanged in your library.</li>"
+            "</ul>"
+            "Hiding tracks saves their metadata in case you re-add them in the "
+            "future."));
     removeMsgBox.setInformativeText(tr(
-        "Metadata means all track details (artist, title, playcount, etc.) as "
-        "well as beatgrids, hotcues, and loops. This choice only affects the "
-        "Mixxx library. No files on disk will be changed or deleted."));
+            "Metadata means all track details (artist, title, playcount, etc.) as "
+            "well as beatgrids, hotcues, and loops. This choice only affects the "
+            "Mixxx library. No files on disk will be changed or deleted."));
 
     QPushButton* cancelButton =
             removeMsgBox.addButton(QMessageBox::Cancel);
     QPushButton* hideAllButton = removeMsgBox.addButton(
-        tr("Hide Tracks"), QMessageBox::AcceptRole);
+            tr("Hide Tracks"), QMessageBox::AcceptRole);
     QPushButton* deleteAllButton = removeMsgBox.addButton(
-        tr("Delete Track Metadata"), QMessageBox::AcceptRole);
+            tr("Delete Track Metadata"), QMessageBox::AcceptRole);
     QPushButton* leaveUnchangedButton = removeMsgBox.addButton(
-        tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
+            tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
     Q_UNUSED(leaveUnchangedButton); // Only used in DEBUG_ASSERT
     removeMsgBox.setDefaultButton(cancelButton);
     removeMsgBox.exec();
@@ -487,7 +491,7 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Relink music directory to new location"), startDir);
+            this, tr("Relink music directory to new location"), startDir);
 
     if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
         populateDirList();
@@ -519,6 +523,8 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(kShowScanSummaryConfigKey,
             ConfigValue((int)checkBox_library_scan_summary->isChecked()));
+    m_pConfig->set(kOpenLastUsedLibraryViewConfigKey,
+            ConfigValue((int)checkBox_open_last_used_library_view->isChecked()));
 
     m_pConfig->set(kHistoryTrackDuplicateDistanceConfigKey,
             ConfigValue(spinbox_history_track_duplicate_distance->value()));
@@ -541,16 +547,16 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue(checkBox_enable_search_history_shortcuts->isChecked()));
     updateSearchLineEditHistoryOptions();
 
-    m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
-                ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
-                ConfigValue((int)checkBox_show_banshee->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
-                ConfigValue((int)checkBox_show_itunes->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
-                ConfigValue((int)checkBox_show_traktor->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
-                ConfigValue((int)checkBox_show_rekordbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowRhythmboxLibrary"),
+            ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowBansheeLibrary"),
+            ConfigValue((int)checkBox_show_banshee->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowITunesLibrary"),
+            ConfigValue((int)checkBox_show_itunes->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowTraktorLibrary"),
+            ConfigValue((int)checkBox_show_traktor->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowRekordboxLibrary"),
+            ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
 
@@ -587,14 +593,14 @@ void DlgPrefLibrary::slotApply() {
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {
         m_pConfig->set(ConfigKey("[Library]", "Font"),
-                       ConfigValue(font.toString()));
+                ConfigValue(font.toString()));
         m_originalTrackTableFont = font;
     }
 
     int rowHeight = spinBox_row_height->value();
     if (m_iOriginalTrackTableRowHeight != rowHeight) {
-        m_pConfig->set(ConfigKey("[Library]","RowHeight"),
-                       ConfigValue(rowHeight));
+        m_pConfig->set(ConfigKey("[Library]", "RowHeight"),
+                ConfigValue(rowHeight));
         m_iOriginalTrackTableRowHeight = rowHeight;
     }
 
@@ -660,8 +666,10 @@ void DlgPrefLibrary::setLibraryFont(const QFont& font) {
 void DlgPrefLibrary::slotSelectFont() {
     // False if the user cancels font selection.
     bool ok = false;
-    QFont font = QFontDialog::getFont(&ok, m_pLibrary->getTrackTableFont(),
-                                      this, tr("Select Library Font"));
+    QFont font = QFontDialog::getFont(&ok,
+            m_pLibrary->getTrackTableFont(),
+            this,
+            tr("Select Library Font"));
     if (ok) {
         setLibraryFont(font);
     }

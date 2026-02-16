@@ -114,3 +114,18 @@ const ConfigKey mixxx::library::prefs::kTagFetcherApplyCoverConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("TagFetcherApplyCover")};
+
+const ConfigKey mixxx::library::prefs::kOpenLastUsedLibraryViewConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("OpenLastUsedLibraryView")};
+
+const ConfigKey mixxx::library::prefs::kLastUsedLibraryFeatureConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("LastUsedLibraryFeature")};
+
+const ConfigKey mixxx::library::prefs::kLastUsedLibraryItemDataConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("LastUsedLibraryItemData")};

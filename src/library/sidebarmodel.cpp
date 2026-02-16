@@ -102,8 +102,7 @@ void SidebarModel::activateDefaultSelection() {
     }
 }
 
-QModelIndex SidebarModel::index(int row, int column,
-                                const QModelIndex& parent) const {
+QModelIndex SidebarModel::index(int row, int column, const QModelIndex& parent) const {
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::index row=" << row
                  << "column=" << column << "parent=" << parent;
@@ -274,7 +273,7 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     }
 
     if (index.internalPointer() == this) {
-        //If it points to SidebarModel
+        // If it points to SidebarModel
         switch (role) {
         case Qt::DisplayRole:
             return m_sFeatures[index.row()]->title();
@@ -355,12 +354,15 @@ void SidebarModel::clicked(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            m_sFeatures[index.row()]->activate();
+            LibraryFeature* pFeature = m_sFeatures[index.row()];
+            emit sidebarItemActivated(pFeature, index);
+            pFeature->activate();
         } else {
             TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
             if (pTreeItem) {
                 LibraryFeature* pFeature = pTreeItem->feature();
                 DEBUG_ASSERT(pFeature);
+                emit sidebarItemActivated(pFeature, index);
                 pFeature->activateChild(index);
             }
         }
@@ -372,7 +374,7 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
     stopPressedUntilClickedTimer();
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-           return;
+            return;
         } else {
             TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
             if (pTreeItem) {
@@ -529,14 +531,14 @@ void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex
 }
 
 void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {
-    //qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
+    // qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
 
     QModelIndex newParent = translateSourceIndex(parent);
     beginInsertRows(newParent, start, end);
 }
 
 void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end) {
-    //qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
+    // qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
 
     QModelIndex newParent = translateSourceIndex(parent);
     beginRemoveRows(newParent, start, end);
@@ -555,8 +557,8 @@ void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    //qDebug() << "slotRowsRemoved" << parent << start << end;
-    //QModelIndex newParent = translateSourceIndex(parent);
+    // qDebug() << "slotRowsRemoved" << parent << start << end;
+    // QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();
 }
 
@@ -589,7 +591,7 @@ void SidebarModel::slotFeatureLoadingFinished(LibraryFeature* pFeature) {
 }
 
 void SidebarModel::featureRenamed(LibraryFeature* pFeature) {
-    for (int i=0; i < m_sFeatures.size(); ++i) {
+    for (int i = 0; i < m_sFeatures.size(); ++i) {
         if (m_sFeatures[i] == pFeature) {
             QModelIndex ind = index(i, 0);
             emit dataChanged(ind, ind);
@@ -605,12 +607,13 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
         TreeItem* pTreeItem = static_cast<TreeItem*>(featureIndex.internalPointer());
         ind = createIndex(featureIndex.row(), featureIndex.column(), pTreeItem);
     } else {
-        for (int i=0; i < m_sFeatures.size(); ++i) {
+        for (int i = 0; i < m_sFeatures.size(); ++i) {
             if (m_sFeatures[i] == pFeature) {
                 ind = index(i, 0);
                 break;
             }
         }
     }
+    emit sidebarItemActivated(pFeature, ind);
     emit selectIndex(ind, scrollTo);
 }
