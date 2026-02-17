@@ -44,8 +44,8 @@ void WaveformRendererSlipMode::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
-    m_pSlipModeControl.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled")));
+    m_pSlipModeControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
 
     return true;
 }

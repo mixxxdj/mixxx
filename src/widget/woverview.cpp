@@ -192,8 +192,6 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
     m_pCueMenuPopup->setColorPalette(colorPalette);
 
-    m_marks.connectSamplePositionChanged(this, &WOverview::onMarkChanged);
-    m_marks.connectSampleEndPositionChanged(this, &WOverview::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WOverview::onMarkChanged);
 
     QDomNode child = node.firstChild();
