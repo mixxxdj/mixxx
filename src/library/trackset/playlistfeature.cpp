@@ -88,7 +88,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortByName->setCheckable(true);
     pSortByName->setChecked(m_sortColumn == PlaylistSortColumn::Name);
     pSortByName->setActionGroup(pSortByGroup);
-    connect(pSortByName, &QAction::triggered, [this]() {
+    connect(pSortByName, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: Name";
         m_sortColumn = PlaylistSortColumn::Name;
         saveSortSettings();
@@ -100,7 +100,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortByDateCreated->setCheckable(true);
     pSortByDateCreated->setChecked(m_sortColumn == PlaylistSortColumn::DateCreated);
     pSortByDateCreated->setActionGroup(pSortByGroup);
-    connect(pSortByDateCreated, &QAction::triggered, [this]() {
+    connect(pSortByDateCreated, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: Date Created";
         m_sortColumn = PlaylistSortColumn::DateCreated;
         saveSortSettings();
@@ -119,7 +119,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortAscending->setCheckable(true);
     pSortAscending->setChecked(m_sortOrder == PlaylistSortOrder::Ascending);
     pSortAscending->setActionGroup(pSortOrderGroup);
-    connect(pSortAscending, &QAction::triggered, [this]() {
+    connect(pSortAscending, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: sort ascending";
         m_sortOrder = PlaylistSortOrder::Ascending;
         saveSortSettings();
@@ -131,7 +131,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortDescending->setCheckable(true);
     pSortDescending->setChecked(m_sortOrder == PlaylistSortOrder::Descending);
     pSortDescending->setActionGroup(pSortOrderGroup);
-    connect(pSortDescending, &QAction::triggered, [this]() {
+    connect(pSortDescending, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: sort descending";
         m_sortOrder = PlaylistSortOrder::Descending;
         saveSortSettings();
