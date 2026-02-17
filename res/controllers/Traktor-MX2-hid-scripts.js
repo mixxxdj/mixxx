@@ -117,8 +117,6 @@ class TraktorMX2Class {
     }
 
     registerInputPackets() {
-        // eslint definitions
-        /* global HIDController, HIDPacket */
         const messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback.bind(this));
         const messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback.bind(this));
         const messageJog = new HIDPacket("reportmessage", 0x03, this.messageCallback.bind(this));
