@@ -1796,4 +1796,5 @@ class TraktorMX2Class {
 
 }
 
-var TraktorMX2 = new TraktorMX2Class;  // eslint-disable-line no-var, no-unused-vars
+// eslint-disable-next-line
+var TraktorMX2 = new TraktorMX2Class;
