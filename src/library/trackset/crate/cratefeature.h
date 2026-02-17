@@ -20,6 +20,11 @@ class QAction;
 class QPoint;
 class CrateSummary;
 
+enum class CrateSortOrder { // enum class to help with name based sorting in crates
+    Ascending,
+    Descending
+};
+
 class CrateFeature : public BaseTrackSetFeature {
     Q_OBJECT
 
@@ -114,6 +119,12 @@ class CrateFeature : public BaseTrackSetFeature {
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     TrackId m_selectedTrackId;
+
+    CrateSortOrder m_sortOrder;
+
+    // Helper methods for sorting
+    void saveCrateSortSettings();
+    void loadCrateSortSettings();
 
     parented_ptr<QAction> m_pCreateCrateAction;
     parented_ptr<QAction> m_pDeleteCrateAction;
