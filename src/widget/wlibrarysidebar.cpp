@@ -18,10 +18,10 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
           WBaseWidget(this),
           m_lastDragMoveAccepted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
-    //Set some properties
+    // Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    //Drag and drop setup
+    // Drag and drop setup
     setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
@@ -252,7 +252,7 @@ void WLibrarySidebar::toggleSelectedItem() {
 bool WLibrarySidebar::isLeafNodeSelected() {
     QModelIndex index = selectedIndex();
     if (index.isValid()) {
-        if(!index.model()->hasChildren(index)) {
+        if (!index.model()->hasChildren(index)) {
             return true;
         }
         const SidebarModel* pSidebarModel = qobject_cast<const SidebarModel*>(index.model());
