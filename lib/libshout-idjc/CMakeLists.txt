@@ -8,6 +8,8 @@ project(shout_mixxx LANGUAGES C VERSION 2.4.1)
 add_library(${PROJECT_NAME} STATIC
     src/codec_opus.c
     src/codec_vorbis.c
+    #src/codec_speex.c
+    #src/codec_theora.c
     src/common/avl/avl.c
     src/common/net/sock.c
     src/common/net/resolver.c
@@ -15,9 +17,13 @@ add_library(${PROJECT_NAME} STATIC
     src/common/httpp/httpp.c
     src/common/httpp/encoding.c
     src/common/thread/thread.c
+    src/connection.c
     src/format_mpeg.c
     src/format_ogg.c
+    src/format_text.c
     src/format_webm.c
+    src/icy.c
+    src/legacy.c
     src/proto_http.c
     src/proto_icy.c
     src/proto_roaraudio.c
@@ -27,7 +33,7 @@ add_library(${PROJECT_NAME} STATIC
     src/tls.c
     src/util.c
 )
-target_include_directories(${PROJECT_NAME} PRIVATE include src src/common)
+target_include_directories(${PROJECT_NAME} PRIVATE src src/common)
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
@@ -78,7 +84,8 @@ endif()
 # Configure shout.h
 set(SHOUT_THREADSAFE 1)
 set(SHOUT_TLS 1)
-configure_file(include/shoutidjc/shout.h.in "${CMAKE_CURRENT_BINARY_DIR}/include/shoutidjc/shout.h" @ONLY)
+configure_file(include/shoutidjc/shout.h.in "include/shoutidjc/shout.h" @ONLY)
+target_include_directories(${PROJECT_NAME} BEFORE PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # Required system dependencies
 # Ogg Vorbis
@@ -242,6 +249,11 @@ if(HAVE_INET_PTON)
 endif()
 if(HAVE_SETHOSTENT)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_SETHOSTENT)
+endif()
+
+check_include_file(ws2tcpip.h HAVE_WS2TCPIP_H)
+if(HAVE_WS2TCPIP_H)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_WS2TCPIP_H)
 endif()
 
 check_symbol_exists(strcasestr "string.h" HAVE_STRCASESTR)

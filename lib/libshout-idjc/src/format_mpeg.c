@@ -127,7 +127,7 @@ static int open_mpeg(shout_t *self, size_t header_size, int (*reader)(const uint
 	self->send = send_mpeg;
 	self->close = close_mpeg;
 
-	mpeg_data->header_size = (int)header_size;
+	mpeg_data->header_size = header_size;
 	mpeg_data->header_read = reader;
 
 	return SHOUTERR_SUCCESS;
@@ -146,7 +146,7 @@ static int send_mpeg(shout_t *self, const unsigned char *buff, size_t len)
 	pos = 0;
 	start = 0;
 	error = 0;
-	end = (int)len - 1;
+	end = len - 1;
 
 	/* finish the previous frame */
 	if (mpeg_data->frame_left > 0) {
@@ -157,8 +157,8 @@ static int send_mpeg(shout_t *self, const unsigned char *buff, size_t len)
 			pos += mpeg_data->frame_left;
 			mpeg_data->frame_left = 0;
 		} else {
-			mpeg_data->frame_left -= (unsigned int)len;
-			pos = (unsigned long)len;
+			mpeg_data->frame_left -= len;
+			pos = len;
 		}
 	}
 
@@ -174,7 +174,7 @@ static int send_mpeg(shout_t *self, const unsigned char *buff, size_t len)
 
 		buff = bridge_buff;
 		len += mpeg_data->header_bridges;
-		end = (int)len - 1;
+		end = len - 1;
 
 		mpeg_data->header_bridges = 0;
 	}
@@ -187,7 +187,7 @@ static int send_mpeg(shout_t *self, const unsigned char *buff, size_t len)
 		if (mpeg_data->header_read(&buff[pos], &mh)) {
 			if (error) {
 				start = pos;
-				end = (int)len - 1;
+				end = len - 1;
 				error = 0;
 			}
 
@@ -200,8 +200,8 @@ static int send_mpeg(shout_t *self, const unsigned char *buff, size_t len)
 				mpeg_data->frames++;
 				pos += mh.framesize;
 			} else {
-				mpeg_data->frame_left = (unsigned int)(mh.framesize - (len - pos));
-				pos = (unsigned long)len;
+				mpeg_data->frame_left = mh.framesize - (len - pos);
+				pos = len;
 			}
 		} else {
 			/* there was an error
@@ -324,7 +324,7 @@ static int adts_header(const uint8_t *window, header_digest_t *mh)
 		return 0;
 
 	/* make sure frame length is sane */
-	if (mh->framesize < (unsigned int)(h.protection_absent ? MIN_ADTS_HEADER_SIZE : MAX_ADTS_HEADER_SIZE))
+	if (mh->framesize < (h.protection_absent ? MIN_ADTS_HEADER_SIZE : MAX_ADTS_HEADER_SIZE))
 		return 0;
 
 	return 1;

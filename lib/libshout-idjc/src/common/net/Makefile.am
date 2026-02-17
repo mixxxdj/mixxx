@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = BUILDING COPYING README TODO test_resolver.c
+EXTRA_DIST = BUILDING COPYING README TODO
 
 noinst_LTLIBRARIES = libicenet.la
 noinst_HEADERS = resolver.h sock.h

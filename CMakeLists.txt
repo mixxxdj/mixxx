@@ -3731,6 +3731,16 @@ if(BROADCAST)
   if (QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __BROADCAST__)
   endif()
+
+  if(GNU_GCC OR LLVM_CLANG)
+    # shout_set_metadata() is deprecated in favour of shout_set_metadata_utf8()
+    # available in libshout 2.4.6
+    set_property(
+        SOURCE src/engine/sidechain/shoutconnection.cpp
+        APPEND_STRING
+        PROPERTY COMPILE_OPTIONS -Wno-deprecated-declarations
+    )
+  endif()
 endif()
 
 # Opus (RFC 6716)
