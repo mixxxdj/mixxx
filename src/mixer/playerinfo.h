@@ -6,7 +6,7 @@
 #include <QMutex>
 #include <QObject>
 
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "track/track_decl.h"
 
 class PlayerInfo : public QObject {
@@ -24,6 +24,10 @@ class PlayerInfo : public QObject {
     bool isTrackLoaded(const TrackPointer& pTrack) const;
     bool isFileLoaded(const QString& track_location) const;
 
+    int numDecks() const;
+    int numPreviewDecks() const;
+    int numSamplers() const;
+
   signals:
     void currentPlayingDeckChanged(int deck);
     void currentPlayingTrackChanged(TrackPointer pTrack);
@@ -39,10 +43,10 @@ class PlayerInfo : public QObject {
                     m_orientation(group, "orientation") {
           }
 
-            ControlProxy m_play;
-            ControlProxy m_pregain;
-            ControlProxy m_volume;
-            ControlProxy m_orientation;
+          PollingControlProxy m_play;
+          PollingControlProxy m_pregain;
+          PollingControlProxy m_volume;
+          PollingControlProxy m_orientation;
     };
 
     void clearControlCache();
@@ -54,7 +58,12 @@ class PlayerInfo : public QObject {
     ~PlayerInfo() override;
 
     mutable QMutex m_mutex;
-    ControlProxy* m_pCOxfader;
+
+    PollingControlProxy m_xfader;
+    PollingControlProxy m_numDecks;
+    PollingControlProxy m_numSamplers;
+    PollingControlProxy m_numPreviewDecks;
+
     // QMap is faster than QHash for small count of elements < 50
     QMap<QString, TrackPointer> m_loadedTrackMap;
     QAtomicInt m_currentlyPlayingDeck;
