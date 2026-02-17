@@ -120,19 +120,19 @@ void DlgPrefControllers::slotUpdate() {
 }
 
 void DlgPrefControllers::slotCancel() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : m_controllerPages) {
         pControllerDlg->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : m_controllerPages) {
         pControllerDlg->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : m_controllerPages) {
         pControllerDlg->slotResetToDefaults();
     }
 }
@@ -172,7 +172,7 @@ void DlgPrefControllers::destroyControllerWidgets() {
     // to keep this dialog and the controllermanager consistent.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    for (auto* pController : std::as_const(controllerList)) {
+    for (auto* pController : controllerList) {
         pController->disconnect(this);
     }
     while (!m_controllerPages.isEmpty()) {
@@ -202,7 +202,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    for (auto* pController : std::as_const(controllerList)) {
+    for (auto* pController : controllerList) {
         auto pControllerDlg = make_parented<DlgPrefController>(
                 this, pController, m_pControllerManager, m_pConfig);
         connect(pControllerDlg,
