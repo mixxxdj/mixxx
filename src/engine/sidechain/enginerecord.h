@@ -86,5 +86,6 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     QString m_cueFileName;
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
+    bool m_bTracklistAsCommentEnabled;
     bool m_bCueUsesFileAnnotation;
 };

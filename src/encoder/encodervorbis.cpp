@@ -1,5 +1,6 @@
 #include "encoder/encodervorbis.h"
 
+#include <qglobal.h>
 #include <stdlib.h> // needed for random num gen
 #include <time.h>   // needed for random num gen
 #include <vorbis/vorbisenc.h>
@@ -31,6 +32,9 @@ EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
 
 EncoderVorbis::~EncoderVorbis() {
     if (m_bStreamInitialized) {
+        QString trackList = m_trackList.join("\n");
+        vorbis_comment_add_tag(&m_vcomment, "COMMENT", trackList.toUtf8().constData());
+
         ogg_stream_clear(&m_oggs);
         vorbis_block_clear(&m_vblock);
         vorbis_dsp_clear(&m_vdsp);
@@ -161,10 +165,16 @@ void EncoderVorbis::encodeBuffer(const CSAMPLE* samples, const std::size_t buffe
  *
  * Currently this method is used before init() once to save artist, title and album
 */
-void EncoderVorbis::updateMetaData(const QString& artist, const QString& title, const QString& album) {
-    m_metaDataTitle = title;
-    m_metaDataArtist = artist;
-    m_metaDataAlbum = album;
+void EncoderVorbis::updateMetaData(const QString& artist,
+        const QString& title,
+        const QString& album,
+        std::chrono::seconds) {
+    if (!m_bStreamInitialized) {
+        m_metaDataTitle = title;
+        m_metaDataArtist = artist;
+        m_metaDataAlbum = album;
+    }
+    // Tracklist tag not supported in OGG
 }
 
 void EncoderVorbis::initStream() {
