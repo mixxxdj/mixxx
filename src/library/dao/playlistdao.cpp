@@ -427,9 +427,29 @@ bool PlaylistDAO::removeTracksFromPlaylist(int playlistId, int startIndex) {
     return true;
 }
 
+bool PlaylistDAO::playlistExists(const int playlistId) const {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("SELECT id FROM Playlists WHERE id = :id"));
+    query.bindValue(":id", playlistId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    if (query.next()) {
+        // id is guaranteed to be unique, so we can return here
+        return true;
+    }
+    // not found
+    return false;
+}
+
 bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId) {
     // qDebug() << "PlaylistDAO::appendTracksToPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
+    DEBUG_ASSERT(playlistExists(playlistId));
 
     // Start the transaction
     ScopedTransaction transaction(m_database);
