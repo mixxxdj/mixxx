@@ -14,13 +14,6 @@ const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]")
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_pEQEnabled(nullptr),
-          m_pLowFilterControlObject(nullptr),
-          m_pMidFilterControlObject(nullptr),
-          m_pHighFilterControlObject(nullptr),
-          m_pLowKillControlObject(nullptr),
-          m_pMidKillControlObject(nullptr),
-          m_pHighKillControlObject(nullptr),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
           m_allChannelVisualGain(1),
@@ -51,50 +44,37 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_rgbMidColor_b(0),
           m_rgbHighColor_r(0),
           m_rgbHighColor_g(0),
-          m_rgbHighColor_b(0) {
+          m_rgbHighColor_b(0),
+          m_rgbLowFilteredColor_r(0),
+          m_rgbLowFilteredColor_g(0),
+          m_rgbLowFilteredColor_b(0),
+          m_rgbMidFilteredColor_r(0),
+          m_rgbMidFilteredColor_g(0),
+          m_rgbMidFilteredColor_b(0),
+          m_rgbHighFilteredColor_r(0),
+          m_rgbHighFilteredColor_g(0),
+          m_rgbHighFilteredColor_b(0) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {
-    deleteControls();
-}
-
-void WaveformRendererSignalBase::deleteControls() {
-    if (m_pEQEnabled) {
-        delete m_pEQEnabled;
-    }
-    if (m_pLowFilterControlObject) {
-        delete m_pLowFilterControlObject;
-    }
-    if (m_pMidFilterControlObject) {
-        delete m_pMidFilterControlObject;
-    }
-    if (m_pHighFilterControlObject) {
-        delete m_pHighFilterControlObject;
-    }
-    if (m_pLowKillControlObject) {
-        delete m_pLowKillControlObject;
-    }
-    if (m_pMidKillControlObject) {
-        delete m_pMidKillControlObject;
-    }
-    if (m_pHighKillControlObject) {
-        delete m_pHighKillControlObject;
-    }
 }
 
 bool WaveformRendererSignalBase::init() {
-    deleteControls();
-
-    //create controls
-    m_pEQEnabled = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterWaveformEnable");
+    m_pEQEnabled = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), QStringLiteral("filterWaveformEnable"));
     const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
-    m_pLowFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter1"));
-    m_pMidFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter2"));
-    m_pHighFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter3"));
-    m_pLowKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter1"));
-    m_pMidKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
-    m_pHighKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter3"));
+    m_pLowFilterControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("parameter1"));
+    m_pMidFilterControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("parameter2"));
+    m_pHighFilterControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("parameter3"));
+    m_pLowKillControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("button_parameter1"));
+    m_pMidKillControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("button_parameter2"));
+    m_pHighKillControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("button_parameter3"));
 
     return onInit();
 }

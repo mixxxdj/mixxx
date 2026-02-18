@@ -909,11 +909,11 @@ void WaveformWidgetFactory::swapSelf() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                WGLWidget* glw = pWaveformWidget->getGLWidget();
-                if (glw != nullptr) {
-                    glw->makeCurrentIfNeeded();
-                    glw->swapBuffers();
-                    glw->doneCurrent();
+                WGLWidget* pGlw = pWaveformWidget->getGLWidget();
+                if (pGlw != nullptr) {
+                    pGlw->makeCurrentIfNeeded();
+                    pGlw->swapBuffers();
+                    pGlw->doneCurrent();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
@@ -1025,6 +1025,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
     QHash<WaveformWidgetType::Type,
             allshader::WaveformRendererSignalBase::Options>
             supportedOptions;
+    bool useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
         case WaveformWidgetType::Empty:
@@ -1033,40 +1034,50 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::Simple:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<SimpleSignalWaveformWidget>());
             break;
         case WaveformWidgetType::Filtered:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>());
             break;
         case WaveformWidgetType::VSyncTest:
-#ifdef MIXXX_USE_QOPENGL
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_OPENGL_ES_2)
             addHandle(collectedHandles, type, waveformWidgetVars<GLVSyncTestWidget>());
 #endif
             break;
         case WaveformWidgetType::RGB:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
             break;
         case WaveformWidgetType::HSV:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
             break;
         case WaveformWidgetType::Stacked:
 #ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
-            supportedOptions[type] = allshader::WaveformWidget::supportedOptions(type);
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(
+                            type, useGles);
 #endif
             break;
         default:
@@ -1179,50 +1190,50 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createVSyncTestWaveformWidget(
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
-        WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    WaveformWidgetAbstract* widget = nullptr;
-    if (viewer) {
+        WaveformWidgetType::Type type, WWaveformViewer* pViewer) {
+    WaveformWidgetAbstract* pWidget = nullptr;
+    if (pViewer) {
         if (CmdlineArgs::Instance().getSafeMode()) {
             type = WaveformWidgetType::Empty;
         }
 
         switch (type) {
         case WaveformWidgetType::Simple:
-            widget = createSimpleWaveformWidget(viewer);
+            pWidget = createSimpleWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::Filtered:
-            widget = createFilteredWaveformWidget(viewer);
+            pWidget = createFilteredWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::HSV:
-            widget = createHSVWaveformWidget(viewer);
+            pWidget = createHSVWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::VSyncTest:
-            widget = createVSyncTestWaveformWidget(viewer);
+            pWidget = createVSyncTestWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::RGB:
-            widget = createRGBWaveformWidget(viewer);
+            pWidget = createRGBWaveformWidget(pViewer);
             break;
         case WaveformWidgetType::Stacked:
-            widget = createStackedWaveformWidget(viewer);
+            pWidget = createStackedWaveformWidget(pViewer);
             break;
         default:
-            widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
+            pWidget = new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
             break;
         }
-        widget->castToQWidget();
-        if (!widget->isValid()) {
+        pWidget->castToQWidget();
+        if (!pWidget->isValid()) {
             qWarning() << "failed to init WaveformWidget" << type << "fall back to \"Empty\"";
-            delete widget;
-            widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
-            widget->castToQWidget();
-            if (!widget->isValid()) {
+            delete pWidget;
+            pWidget = new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
+            pWidget->castToQWidget();
+            if (!pWidget->isValid()) {
                 qWarning() << "failed to init EmptyWaveformWidget";
-                delete widget;
-                widget = nullptr;
+                delete pWidget;
+                pWidget = nullptr;
             }
         }
     }
-    return widget;
+    return pWidget;
 }
 
 int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
@@ -1387,15 +1398,18 @@ WaveformWidgetFactory::getWaveformOptionsSupportedByType(
 }
 
 void WaveformWidgetFactory::setWaveformOption(
-        allshader::WaveformRendererSignalBase::Option option, bool enabled) {
-    allshader::WaveformRendererSignalBase::Options currentOption = m_config->getValue(
-            kWaveformOptionsKey,
-            allshader::WaveformRendererSignalBase::Option::None);
-    m_config->setValue<int>(kWaveformOptionsKey,
-            enabled ? currentOption |
-                            option
-                    : currentOption ^
-                            option);
+        allshader::WaveformRendererSignalBase::Option option,
+        bool enabled,
+        WaveformWidgetType::Type type) {
+    WaveformWidgetBackend backend = getBackendFromConfig();
+    allshader::WaveformRendererSignalBase::Options currentOptions = getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
+            getWaveformOptionsSupportedByType(type, backend);
+
+    currentOptions.setFlag(option, enabled);
+    // clear unsupported options
+    currentOptions &= supportedOptions;
+    m_config->setValue<int>(kWaveformOptionsKey, currentOptions);
 }
 
 void WaveformWidgetFactory::resetWaveformOptions() {
@@ -1466,6 +1480,16 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     // On Linux, horrible FPS were seen with "VSync off" before switching to QOpenGLWindow too
     format.setSwapInterval(vsyncMode == VSyncThread::ST_PLL ? 1 : 0);
 #endif
+
+#ifdef FORCE_GLES
+    // Define FORCE_GLES to test GLES waveforms on a GLSL Hardware
+    qDebug() << "QOpenGLContext::openGLModuleType()" << QOpenGLContext::openGLModuleType();
+
+    format.setRenderableType(QSurfaceFormat::OpenGLES);
+    format.setVersion(3, 0);
+    QSurfaceFormat::setDefaultFormat(format);
+#endif
+
     return format;
 }
 

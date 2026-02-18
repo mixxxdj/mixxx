@@ -1,5 +1,10 @@
 /* Tango style sheet */
 
+#StemLabelEmpty {
+  color: #FFFFFF;
+}
+
+
 #Mixxx {  /*
   AlignRight just for testing, to attach SkinSettings to right edge.
   Not working. See https://github.com/mixxxdj/mixxx/issues/8646 */
@@ -2763,7 +2768,9 @@ WLibrarySidebar::item:!selected {
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
-WLibrarySidebar::item:!selected:focus {
+WLibrarySidebar::item:!selected:focus,
+/* This, in conjunction with the c++ counterpart, styles only items hovered while dragging */
+WLibrarySidebar[dragHover="true"]::item:hover {
   outline: none;
   border: 1px solid white;
 }

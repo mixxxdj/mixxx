@@ -17,9 +17,15 @@
 
 */
 
+/* Label for empty stems */
+#StemLabelEmpty {
+  color: #FFFFFF;
+}
+
 /*******************************************************************************
  ** BORDER *********************************************************************
  *******************************************************************************/
+
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
 #DeckControls {
@@ -261,7 +267,9 @@ WLibrarySidebar::item:selected,
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
-WLibrarySidebar::item:!selected:focus {
+WLibrarySidebar::item:!selected:focus,
+/* This, in conjunction with the c++ counterpart, styles only items hovered while dragging */
+WLibrarySidebar[dragHover="true"]::item:hover {
   outline: none;
   border: 1px solid white;
 }

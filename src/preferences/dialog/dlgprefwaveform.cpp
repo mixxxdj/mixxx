@@ -245,9 +245,9 @@ DlgPrefWaveform::DlgPrefWaveform(
 void DlgPrefWaveform::slotSetWaveformOptions(
         allshader::WaveformRendererSignalBase::Option option, bool enabled) {
     auto* pFactory = WaveformWidgetFactory::instance();
-    pFactory->setWaveformOption(option, enabled);
     auto type = static_cast<WaveformWidgetType::Type>(
             waveformTypeComboBox->currentData().toInt());
+    pFactory->setWaveformOption(option, enabled, type);
     pFactory->setWidgetTypeFromHandle(
             pFactory->findHandleIndexFromType(type), true);
 }
@@ -495,14 +495,17 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
     auto* pFactory = WaveformWidgetFactory::instance();
 
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
-    auto backend = pFactory->getBackendFromConfig();
-    auto currentOptions = pFactory->getWaveformOptions();
-    auto supportedOptions = pFactory->getWaveformOptionsSupportedByType(type, backend);
+    WaveformWidgetBackend backend = pFactory->getBackendFromConfig();
+    allshader::WaveformRendererSignalBase::Options currentOptions = pFactory->getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
+            pFactory->getWaveformOptionsSupportedByType(type, backend);
 
     splitLeftRightCheckBox->setEnabled(useWaveform &&
-            (supportedOptions & allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
+            (supportedOptions &
+                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setEnabled(useWaveform &&
-            (supportedOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
+            (supportedOptions &
+                    allshader::WaveformRendererSignalBase::Option::HighDetail));
     splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
             (currentOptions &
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));

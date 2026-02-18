@@ -126,9 +126,9 @@ BaseTrackTableModel::BaseTrackTableModel(
           m_trackPlayedColor(QColor(WTrackTableView::kDefaultTrackPlayedColor)),
           m_trackMissingColor(QColor(WTrackTableView::kDefaultTrackMissingColor)) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
-            &TrackDAO::forceModelUpdate,
+            &TrackDAO::tracksRemoved,
             this,
-            &BaseTrackTableModel::slotRefreshAllRows);
+            &BaseTrackTableModel::slotTracksRemoved);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::trackChanged,
             this,
@@ -359,7 +359,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new BPMDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return new CheckboxDelegate(pTableView, QStringLiteral("LibraryPlayedCheckbox"));
-    } else if (PlayerManager::numPreviewDecks() > 0 &&
+    } else if (PlayerInfo::instance().numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {
@@ -1076,6 +1076,10 @@ void BaseTrackTableModel::slotRefreshOverviewRows(const QList<int>& rows) {
 
 void BaseTrackTableModel::slotRefreshAllRows() {
     select();
+}
+
+void BaseTrackTableModel::slotTracksRemoved(const QSet<TrackId>& trackIds) {
+    removeTrackRows(trackIds);
 }
 
 void BaseTrackTableModel::emitDataChangedForMultipleRowsInColumn(

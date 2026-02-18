@@ -74,6 +74,10 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(
                 QStringLiteral("[App]"), QStringLiteral("num_decks")));
+        m_pNumSamplers = new ControlObject(ConfigKey(
+                QStringLiteral("[App]"), QStringLiteral("num_samplers")));
+        m_pNumPreviewDecks = new ControlObject(ConfigKey(
+                QStringLiteral("[App]"), QStringLiteral("num_preview_decks")));
         m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pEngineMixer = new TestEngineMixer(m_pConfig,
                 m_sMainGroup,
@@ -142,6 +146,8 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         delete m_pEngineMixer;
         delete m_pEffectsManager;
         delete m_pNumDecks;
+        delete m_pNumSamplers;
+        delete m_pNumPreviewDecks;
         PlayerInfo::destroy();
     }
 
@@ -261,6 +267,8 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
+    ControlObject* m_pNumSamplers;
+    ControlObject* m_pNumPreviewDecks;
     std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
