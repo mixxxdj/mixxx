@@ -592,7 +592,7 @@ jobs:
       - name: "Upload Debug extension"
         uses: actions/upload-artifact@v6
         with:
-          name: Flatpak Debug ${{ matrix.variant.arch }}
+          name: Flatpak Debug Extension ${{ matrix.variant.arch }}
           path: Mixxx-${{ env.GIT_DESC }}-${{ matrix.variant.arch }}.Debug.flatpak
 
   update_manifest:
