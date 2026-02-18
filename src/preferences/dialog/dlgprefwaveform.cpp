@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
+#include <QLocale>
 #include <QMetaEnum>
 
 #include "control/controlpushbutton.h"
@@ -79,6 +80,11 @@ DlgPrefWaveform::DlgPrefWaveform(
             i++) {
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
+
+    m_pOverviewStereoControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup,
+                    QStringLiteral("overview_stereo_mode")));
+    m_pOverviewStereoControl->setReadOnly();
 
     m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")));
@@ -193,6 +199,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
+    connect(overviewStereoCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetOverviewStereoMode);
 
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
@@ -361,6 +371,11 @@ void DlgPrefWaveform::slotUpdate() {
         overview_scale_allReplayGain->setChecked(true);
     }
 
+    bool overviewStereo = m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), true);
+    overviewStereoCheckBox->setChecked(overviewStereo);
+    m_pOverviewStereoControl->forceSet(overviewStereo);
+
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")), true);
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
@@ -419,6 +434,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(
             waveformOverviewComboBox->findData(QVariant::fromValue(OverviewType::RGB)));
+
+    // Default to overview stereo mode
+    overviewStereoCheckBox->setChecked(true);
 
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
@@ -706,6 +724,11 @@ void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
     m_pOverviewMinuteMarkersControl->forceSet(draw);
 }
 
+void DlgPrefWaveform::slotSetOverviewStereoMode(bool stereo) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), stereo);
+    m_pOverviewStereoControl->forceSet(stereo);
+}
+
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
     frameRateAverage->setText(
             QString::number((double)frameRate, 'f', 2) + " : " +
@@ -775,10 +798,7 @@ void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
     size_t numBytes = analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVEFORM) +
             analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
 
-    // Display total cached waveform size in mebibytes with 2 decimals.
-    QString sizeMebibytes = QString::number(
-            numBytes / (1024.0 * 1024.0), 'f', 2);
-
+    QString sizeText = QLocale().formattedDataSize(numBytes, 1, QLocale::DataSizeSIFormat);
     waveformDiskUsage->setText(
-            tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
+            tr("Cached waveforms occupy %1 on disk.").arg(sizeText));
 }

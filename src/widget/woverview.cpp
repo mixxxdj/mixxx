@@ -45,6 +45,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_type(OverviewType::RGB),
+          m_stereo(true),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -96,6 +97,13 @@ WOverview::WOverview(
             this);
     m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeControlChanged);
     slotTypeControlChanged(m_pTypeControl->get());
+
+    m_pStereoControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("overview_stereo_mode"),
+            this);
+    m_pStereoControl->connectValueChanged(this, &WOverview::slotStereoControlChanged);
+    slotStereoControlChanged(m_pStereoControl->get());
 
     m_pMinuteMarkersControl = make_parented<ControlProxy>(
             QStringLiteral("[Waveform]"),
@@ -466,6 +474,18 @@ void WOverview::slotTypeControlChanged(double v) {
     slotWaveformSummaryUpdated();
 }
 
+void WOverview::slotStereoControlChanged(double v) {
+    bool stereo = v > 0;
+    if (stereo == m_stereo) {
+        return;
+    }
+
+    m_stereo = stereo;
+    // Enforce generation of the new stereo/mono source image
+    m_waveformSourceImage = QImage();
+    slotWaveformSummaryUpdated();
+}
+
 void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
@@ -736,6 +756,10 @@ void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
 }
 
 void WOverview::drawAxis(QPainter* pPainter) {
+    if (!m_stereo) {
+        return;
+    }
+
     PainterScope painterScope(pPainter);
     pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
     if (m_orientation == Qt::Horizontal) {
@@ -780,7 +804,7 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
 
     if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
         const QRect sourceRect(0,
-                static_cast<int>(diffGain),
+                (m_stereo ? 1 : 2) * static_cast<int>(diffGain),
                 m_waveformSourceImage.width(),
                 m_waveformSourceImage.height() -
                         2 * static_cast<int>(diffGain));
@@ -830,14 +854,20 @@ void WOverview::drawMinuteMarkers(QPainter* pPainter) {
         if (m_orientation == Qt::Horizontal) {
             line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
             pPainter->drawLine(line);
-            line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
-            pPainter->drawLine(line);
+            // Draw bottom markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
+                pPainter->drawLine(line);
+            }
         } else {
             // untested, best effort basis
             line.setLine(0.0, currentMarkerXPos, markerHeight, currentMarkerXPos);
             pPainter->drawLine(line);
-            line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
-            pPainter->drawLine(line);
+            // Draw right markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
+                pPainter->drawLine(line);
+            }
         }
     }
 }
@@ -893,18 +923,21 @@ void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
     if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
             (m_analyzerProgress < kAnalyzerProgressDone)) {
         PainterScope painterScope(pPainter);
-        pPainter->setPen(QPen(m_playPosColor, 3 * m_scaleFactor));
+        double penWidth = 3 * m_scaleFactor;
+        pPainter->setPen(QPen(m_playPosColor, penWidth));
 
         if (m_analyzerProgress > kAnalyzerProgressNone) {
             if (m_orientation == Qt::Horizontal) {
+                double y = m_stereo ? height() / 2 : height() - penWidth / 2;
                 pPainter->drawLine(QLineF(width() * m_analyzerProgress,
-                        height() / 2,
+                        y,
                         width(),
-                        height() / 2));
+                        y));
             } else {
-                pPainter->drawLine(QLineF(width() / 2,
+                double x = m_stereo ? width() / 2 : width() - penWidth / 2;
+                pPainter->drawLine(QLineF(x,
                         height() * m_analyzerProgress,
-                        width() / 2,
+                        x,
                         height()));
             }
         }
@@ -1472,21 +1505,24 @@ bool WOverview::drawNextPixmapPart() {
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     } else if (m_type == OverviewType::HSV) {
         waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     }
 
     m_waveformImageScaled = QImage();

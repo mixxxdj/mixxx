@@ -1,17 +1,14 @@
 #include "library/autodj/autodjprocessor.h"
 
-#include "control/controlproxy.h"
-#include "control/controlpushbutton.h"
 #include "engine/channels/enginedeck.h"
-#include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"
 #include "track/track.h"
 #include "util/math.h"
 
-#define kConfigKey "[Auto DJ]"
 namespace {
+const QString kConfigKey = QStringLiteral("[Auto DJ]");
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
@@ -119,59 +116,39 @@ AutoDJProcessor::AutoDJProcessor(
           m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
-          m_transitionTime(kTransitionPreferenceDefault) {
-    m_pAutoDJTableModel = new PlaylistTableModel(
+          m_transitionTime(kTransitionPreferenceDefault),
+          m_pPlayerManager(pPlayerManager),
+          m_coCrossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
+          m_coCrossfaderReverse(QStringLiteral("[Mixer Profile]"), QStringLiteral("xFaderReverse")),
+          m_shufflePlaylist(ConfigKey(kConfigKey, QStringLiteral("shuffle_playlist"))),
+          m_skipNext(ConfigKey(kConfigKey, QStringLiteral("skip_next"))),
+          m_addRandomTrack(ConfigKey(kConfigKey, QStringLiteral("add_random_track"))),
+          m_fadeNow(ConfigKey(kConfigKey, QStringLiteral("fade_now"))),
+          m_enabledAutoDJ(ConfigKey(kConfigKey, QStringLiteral("enabled"))) {
+    m_pAutoDJTableModel = make_parented<PlaylistTableModel>(
             this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
     m_pAutoDJTableModel->select();
 
-    m_pShufflePlaylist = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    connect(m_pShufflePlaylist,
+    connect(&m_shufflePlaylist,
             &ControlPushButton::valueChanged,
             this,
             &AutoDJProcessor::controlShuffle);
-
-    m_pSkipNext = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "skip_next"));
-    connect(m_pSkipNext, &ControlObject::valueChanged,
-            this, &AutoDJProcessor::controlSkipNext);
-
-    m_pAddRandomTrack = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "add_random_track"));
-    connect(m_pAddRandomTrack,
+    connect(&m_skipNext, &ControlObject::valueChanged, this, &AutoDJProcessor::controlSkipNext);
+    connect(&m_addRandomTrack,
             &ControlObject::valueChanged,
             this,
             &AutoDJProcessor::controlAddRandomTrack);
-
-    m_pFadeNow = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "fade_now"));
-    connect(m_pFadeNow, &ControlObject::valueChanged,
-            this, &AutoDJProcessor::controlFadeNow);
-
-    m_pEnabledAutoDJ = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "enabled"));
-    m_pEnabledAutoDJ->setButtonMode(mixxx::control::ButtonMode::Toggle);
-    m_pEnabledAutoDJ->connectValueChangeRequest(this,
+    connect(&m_fadeNow, &ControlObject::valueChanged, this, &AutoDJProcessor::controlFadeNow);
+    m_enabledAutoDJ.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_enabledAutoDJ.connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
 
-    // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
-    // are created.
-    for (unsigned int i = 0; i < pPlayerManager->numberOfDecks(); ++i) {
-        QString group = PlayerManager::groupForDeck(i);
-        BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
-        // Shouldn't be possible.
-        VERIFY_OR_DEBUG_ASSERT(pPlayer) {
-            continue;
-        }
-        m_decks.append(new DeckAttributes(i, pPlayer));
-    }
-    // Auto-DJ needs at least two decks
-    DEBUG_ASSERT(m_decks.length() > 1);
-
-    m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
-    m_crossfaderStartCenter = false;
+    connect(pPlayerManager,
+            &PlayerManagerInterface::numberOfDecksChanged,
+            this,
+            &AutoDJProcessor::slotNumberOfDecksChanged);
+    slotNumberOfDecksChanged(pPlayerManager->numberOfDecks());
 
     QString str_autoDjTransition = m_pConfig->getValueString(
             ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -183,33 +160,32 @@ AutoDJProcessor::AutoDJProcessor(
             ConfigKey(kConfigKey, kTransitionModePreferenceName), TransitionMode::FullIntroOutro);
 }
 
-AutoDJProcessor::~AutoDJProcessor() {
-    qDeleteAll(m_decks);
-    m_decks.clear();
-    delete m_pCOCrossfader;
-    delete m_pCOCrossfaderReverse;
-
-    delete m_pSkipNext;
-    delete m_pAddRandomTrack;
-    delete m_pShufflePlaylist;
-    delete m_pEnabledAutoDJ;
-    delete m_pFadeNow;
-
-    delete m_pAutoDJTableModel;
+void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {
+    m_decks.reserve(decks);
+    // Add more decks if we have not all yet.
+    // Mixxx does not support reducing the number of deck
+    for (int i = static_cast<int>(m_decks.size()); i < decks; ++i) {
+        BaseTrackPlayer* pPlayer = m_pPlayerManager->getDeckBase(i);
+        // Shouldn't be possible.
+        VERIFY_OR_DEBUG_ASSERT(pPlayer) {
+            return;
+        }
+        m_decks.emplace_back(std::make_unique<DeckAttributes>(i, pPlayer));
+    }
 }
 
 double AutoDJProcessor::getCrossfader() const {
-    if (m_pCOCrossfaderReverse->toBool()) {
-        return m_pCOCrossfader->get() * -1.0;
+    if (m_coCrossfaderReverse.toBool()) {
+        return m_coCrossfader.get() * -1.0;
     }
-    return m_pCOCrossfader->get();
+    return m_coCrossfader.get();
 }
 
 void AutoDJProcessor::setCrossfader(double value) {
-    if (m_pCOCrossfaderReverse->toBool()) {
+    if (m_coCrossfaderReverse.toBool()) {
         value *= -1.0;
     }
-    m_pCOCrossfader->set(value);
+    m_coCrossfader.set(value);
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
@@ -398,17 +374,19 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             emit autoDJError(ADJ_BOTH_DECKS_PLAYING);
             return ADJ_BOTH_DECKS_PLAYING;
         }
+        // Auto-DJ needs at least two decks
+        DEBUG_ASSERT(m_decks.size() > 1);
 
-        // TODO: This is a total bandaid for making Auto DJ work with four decks.
+        // TODO: This is a total band aid for making Auto DJ work with four decks.
         // We should design a nicer way to handle this.
-        for (const auto& pDeck : std::as_const(m_decks)) {
+        for (const auto& pDeck : m_decks) {
             VERIFY_OR_DEBUG_ASSERT(pDeck) {
                 continue;
             }
-            if (pDeck == pLeftDeck) {
+            if (pDeck.get() == pLeftDeck) {
                 continue;
             }
-            if (pDeck == pRightDeck) {
+            if (pDeck.get() == pRightDeck) {
                 continue;
             }
             if (pDeck->isPlaying()) {
@@ -450,17 +428,17 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
             qDebug() << "Queue is empty now, disable Auto DJ";
-            m_pEnabledAutoDJ->setAndConfirm(0.0);
+            m_enabledAutoDJ.setAndConfirm(0.0);
             emitAutoDJStateChanged(m_eState);
             emit autoDJError(ADJ_QUEUE_EMPTY);
             return ADJ_QUEUE_EMPTY;
         }
 
         // Track is available so GO
-        m_pEnabledAutoDJ->setAndConfirm(1.0);
+        m_enabledAutoDJ.setAndConfirm(1.0);
         qDebug() << "Auto DJ enabled";
 
-        m_pCOCrossfader->connectValueChanged(this, &AutoDJProcessor::crossfaderChanged);
+        m_coCrossfader.connectValueChanged(this, &AutoDJProcessor::crossfaderChanged);
 
         connect(pLeftDeck,
                 &DeckAttributes::playPositionChanged,
@@ -590,19 +568,19 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         emitAutoDJStateChanged(m_eState);
     } else { // Disable Auto DJ
-        m_pEnabledAutoDJ->setAndConfirm(0.0);
+        m_enabledAutoDJ.setAndConfirm(0.0);
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
-        disconnect(m_pCOCrossfader,
+        disconnect(&m_coCrossfader,
                 &ControlProxy::valueChanged,
                 this,
                 &AutoDJProcessor::crossfaderChanged);
-        for (const auto& pDeck : std::as_const(m_decks)) {
+        for (const auto& pDeck : m_decks) {
             pDeck->disconnect(this);
         }
         if (m_pConfig->getValue<bool>(ConfigKey(kConfigKey,
                     QStringLiteral("center_xfader_when_disabling")))) {
-            m_pCOCrossfader->set(0);
+            m_coCrossfader.set(0);
         }
         emitAutoDJStateChanged(m_eState);
     }
@@ -655,7 +633,7 @@ void AutoDJProcessor::crossfaderChanged(double value) {
             return;
         }
 
-        double crossfaderPosition = value * (m_pCOCrossfaderReverse->toBool() ? -1 : 1);
+        double crossfaderPosition = value * (m_coCrossfaderReverse.toBool() ? -1 : 1);
         if ((crossfaderPosition == 1.0 && pFromDeck->isLeft()) ||       // crossfader right
                 (crossfaderPosition == -1.0 && pFromDeck->isRight())) { // crossfader left
             if (!pToDeck->isPlaying()) {
@@ -1789,9 +1767,9 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 
 DeckAttributes* AutoDJProcessor::getLeftDeck() {
     // find first left deck
-    for (const auto& pDeck : std::as_const(m_decks)) {
+    for (const auto& pDeck : m_decks) {
         if (pDeck->isLeft()) {
-            return pDeck;
+            return pDeck.get();
         }
     }
     return nullptr;
@@ -1799,9 +1777,9 @@ DeckAttributes* AutoDJProcessor::getLeftDeck() {
 
 DeckAttributes* AutoDJProcessor::getRightDeck() {
     // find first right deck
-    for (const auto& pDeck : std::as_const(m_decks)) {
+    for (const auto& pDeck : m_decks) {
         if (pDeck->isRight()) {
-            return pDeck;
+            return pDeck.get();
         }
     }
     return nullptr;
@@ -1819,9 +1797,9 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
-    for (const auto& pDeck : std::as_const(m_decks)) {
+    for (const auto& pDeck : m_decks) {
         if (pDeck->isFromDeck) {
-            return pDeck;
+            return pDeck.get();
         }
     }
     return nullptr;

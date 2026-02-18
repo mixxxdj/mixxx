@@ -20,7 +20,8 @@ class EncoderWave : public Encoder {
     EncoderWave(EncoderCallback* pCallback = nullptr);
     ~EncoderWave() override;
 
-    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate,
+            QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
@@ -36,6 +37,6 @@ class EncoderWave : public Encoder {
 
     SNDFILE* m_pSndfile;
     SF_INFO m_sfInfo;
-
     SF_VIRTUAL_IO m_virtualIo;
+    int m_channels;
 };

@@ -134,7 +134,7 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
     void loadTrackSync(const QString& trackLocation) {
         TrackPointer pTrack1 = m_pTrackCollectionManager->getOrAddTrack(
                 TrackRef::fromFilePath(getTestDir().filePath(trackLocation)));
-        auto* deck = m_pPlayerManager->getDeck(1);
+        auto* deck = m_pPlayerManager->getDeck(0);
         deck->slotLoadTrack(pTrack1,
 #ifdef __STEM__
                 mixxx::StemChannelSelection(),

@@ -152,8 +152,10 @@ void EchoEffect::processChannel(
         delay_seconds = 1 / engineParameters.sampleRate();
     }
 
-    int delay_samples = static_cast<int>(delay_seconds *
-            engineParameters.channelCount() * engineParameters.sampleRate());
+    int delay_frames = static_cast<int>(delay_seconds *
+            engineParameters.sampleRate());
+
+    int delay_samples = delay_frames * engineParameters.channelCount();
     VERIFY_OR_DEBUG_ASSERT(delay_samples <= pGroupState->delay_buf.size()) {
         delay_samples = pGroupState->delay_buf.size();
     }

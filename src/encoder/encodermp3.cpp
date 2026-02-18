@@ -178,7 +178,8 @@ void EncoderMp3::initStream() {
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
 }
 
-int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate,
+        QString* pUserErrorMessage) {
     unsigned long samplerate_in = sampleRate;
     // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
@@ -199,11 +200,24 @@ int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserE
     lame_set_out_samplerate(m_lameFlags, samplerate_out);
 
     // Input channels into the encoder
-    lame_set_num_channels(m_lameFlags, 2);
+    int channels = (m_stereo_mode == MONO) ? 1 : 2;
+    lame_set_num_channels(m_lameFlags, channels);
     // Output channels (on the mp3 file)
     // mode = 0,1,2,3 = stereo, jstereo, dual channel (not supported), mono
     // Note: JOINT_STEREO is not "forced joint stereo" (That is lame_set_force_ms )
+    if (channels == 1) {
+        m_stereo_mode = MONO;
+        qDebug() << "EncoderMp3: forcing MONO (channels = 1)";
+    } else {
+        // channels == 2
+        m_stereo_mode = JOINT_STEREO;
+        qDebug() << "EncoderMp3: stereo encoding (channels = 2)";
+    }
     lame_set_mode(m_lameFlags, m_stereo_mode);
+    qDebug() << "EncoderMp3::initEncoder"
+             << "sampleRate =" << samplerate_in
+             << "channels =" << channels
+             << "mode =" << m_stereo_mode;
 
     if (m_encoding_mode == vbr_off) {
         qDebug() << " CBR mode with bitrate: " << m_bitrate;

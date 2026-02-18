@@ -360,7 +360,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new BPMDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return new CheckboxDelegate(pTableView, QStringLiteral("LibraryPlayedCheckbox"));
-    } else if (PlayerManager::numPreviewDecks() > 0 &&
+    } else if (PlayerInfo::instance().numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {

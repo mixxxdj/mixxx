@@ -67,7 +67,11 @@ module.exports = tseslint.config(
                 "Controller": "readonly",
                 "Button": "readonly",
                 "Control": "readonly",
-                "Deck": "readonly"
+                "Deck": "readonly",
+                // common-hid-packet-parser globals
+                HIDController: "readonly",
+                HIDDebug: "readonly",
+                HIDPacket: "readonly"
             }
         }
     },

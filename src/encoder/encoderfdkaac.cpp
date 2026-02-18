@@ -247,7 +247,8 @@ void EncoderFdkAac::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+int EncoderFdkAac::initEncoder(mixxx::audio::SampleRate sampleRate,
+        QString* pUserErrorMessage) {
     m_sampleRate = sampleRate;
 
     if (!m_pLibrary) {
