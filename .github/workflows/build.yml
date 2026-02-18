@@ -563,14 +563,6 @@ jobs:
           build-bundle: false
           upload-artifact: false
 
-      - name: "Sign repo commit"
-        if: env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY
-        run: |
-          gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
-          flatpak build-sign --gpg-sign="rryan@mixxx.org" repo org.mixxx.Mixxx
-        env:
-          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
-
       - name: "Create Flatpak bundle"
         run: |
           flatpak build-bundle repo \
