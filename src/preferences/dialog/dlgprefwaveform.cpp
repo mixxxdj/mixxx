@@ -86,7 +86,7 @@ DlgPrefWaveform::DlgPrefWaveform(
     waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(OverviewType::HSV));
     waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(OverviewType::RGB));
     waveformOverviewComboBox->addItem(
-            tr("Stacked (RGB)"), QVariant::fromValue(OverviewType::StackedRGB));
+            tr("Stacked"), QVariant::fromValue(OverviewType::StackedRGB));
     if (!ControlObject::exists(kOverviewTypeCfgKey)) {
         m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
         m_pTypeControl->setStates(QMetaEnum::fromType<OverviewType>().keyCount());
