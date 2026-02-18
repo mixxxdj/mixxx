@@ -40,14 +40,9 @@ EngineBufferScaleBungee::EngineBufferScaleBungee(ReadAheadManager* pReadAheadMan
 }
 
 void EngineBufferScaleBungee::onSignalChanged() {
-    if (!getOutputSignal().isValid()) {
-        return;
-    }
-
     const int channelCount = static_cast<int>(getOutputSignal().getChannelCount());
-    const int sampleRate = static_cast<int>(getOutputSignal().getSampleRate());
 
-    // Initialize channel buffers
+    // Initialize channel buffers (even if signal is not yet valid)
     if (m_channelBuffers.size() != static_cast<size_t>(channelCount)) {
         m_channelBuffers.resize(channelCount);
         m_channelBufferPtrs.resize(channelCount);
@@ -67,6 +62,13 @@ void EngineBufferScaleBungee::onSignalChanged() {
         m_interleavedReadBuffer = mixxx::SampleBuffer(interleavedSize);
     }
 
+    // Only create stretcher if we have a valid signal
+    if (!getOutputSignal().isValid()) {
+        return;
+    }
+
+    const int sampleRate = static_cast<int>(getOutputSignal().getSampleRate());
+
     // Create Bungee stretcher with input and output sample rates
     Bungee::SampleRates sampleRates;
     sampleRates.input = sampleRate;
@@ -84,6 +86,10 @@ void EngineBufferScaleBungee::onSignalChanged() {
     m_remainingOutputFrames = 0;
     m_outputChunkConsumed = 0;
     m_grainPosition = 0.0;
+
+    // Initialize output chunk
+    m_outputChunk.data = nullptr;
+    m_outputChunk.frameCount = 0;
 }
 
 void EngineBufferScaleBungee::setScaleParameters(double base_rate,
@@ -149,7 +155,7 @@ void EngineBufferScaleBungee::deinterleaveInput(const CSAMPLE* pBuffer, SINT fra
 }
 
 SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrames) {
-    if (!m_pStretcher) {
+    if (!m_pStretcher || !getOutputSignal().isValid()) {
         return 0;
     }
 
@@ -181,27 +187,32 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     if (m_bResetNeeded) {
         m_request.reset = true;
         m_bResetNeeded = false;
+        // Reset grain position when reset is requested to prevent drift
+        m_grainPosition = 0.0;
     } else {
         m_request.reset = false;
     }
 
-    // Calculate the next grain position
-    // For continuous playback, we advance by the synthesis hop size
+    // Only process if we have valid parameters
+    double speed = m_dBaseRate * m_dTempoRatio;
+    if (m_bBackwards) {
+        speed = -speed;
+    }
+
+    // Calculate the next grain position based on actual consumed input
+    // This ensures position tracking stays synchronized with the audio
     if (!std::isnan(m_request.position)) {
-        // Advance position based on speed
-        double speed = m_dBaseRate * m_dTempoRatio;
-        if (m_bBackwards) {
-            speed = -speed;
-        }
-        // Typical Bungee grain size is around 2048 samples at 44.1kHz
-        const double grainAdvance = 2048.0 / std::max(0.1, std::abs(speed));
+        // Advance position based on actual frames consumed in previous iteration
+        // Use Bungee's expected input chunk size to maintain synchronization
+        const double grainAdvance = static_cast<double>(kMaxGrainFrames);
         m_grainPosition += (m_bBackwards ? -grainAdvance : grainAdvance);
     } else {
-        // First grain - start at position 0 or use current play position
+        // First grain - start at position 0
         m_grainPosition = 0.0;
     }
 
     m_request.position = m_grainPosition;
+    m_request.speed = speed;
 
     // Get input requirements for this grain
     m_currentInputChunk = m_pStretcher->specifyGrain(m_request);
@@ -216,7 +227,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     // Read input from ReadAheadManager
     const SINT samplesNeeded = getOutputSignal().frames2samples(framesNeeded);
     const SINT availableSamples = m_pReadAheadManager->getNextSamples(
-            (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
+            speed,
             m_interleavedReadBuffer.data(),
             samplesNeeded,
             getOutputSignal().getChannelCount());
@@ -224,8 +235,8 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     const SINT availableFrames = getOutputSignal().samples2frames(availableSamples);
 
     if (availableFrames <= 0) {
-        // No input available - mark position as invalid to flush
-        m_request.position = std::numeric_limits<double>::quiet_NaN();
+        // No input available - don't advance position to retry at same position
+        // This prevents waveform jiggle when data is temporarily unavailable
         return 0;
     }
 
@@ -275,7 +286,8 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
 
 double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
-    if (!m_pStretcher || m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {
+    if (!m_pStretcher || m_dBaseRate == 0.0 || m_dTempoRatio == 0.0 ||
+            !getOutputSignal().isValid()) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
         return 0.0;
     }
@@ -302,12 +314,18 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
             if (lastReadFailed) {
                 // Flush any remaining output from Bungee
                 if (!m_pStretcher->isFlushed()) {
-                    // Mark position as NaN to flush
-                    m_request.position = std::numeric_limits<double>::quiet_NaN();
-                    m_pStretcher->specifyGrain(m_request);
+                    // Create a flush request
+                    Bungee::Request flushRequest;
+                    flushRequest.position = std::numeric_limits<double>::quiet_NaN();
+                    flushRequest.speed = m_request.speed;
+                    flushRequest.pitch = m_request.pitch;
+                    flushRequest.reset = true;
+                    flushRequest.resampleMode = resampleMode_autoOut;
+
+                    m_pStretcher->specifyGrain(flushRequest);
                     m_pStretcher->synthesiseGrain(m_outputChunk);
 
-                    if (m_outputChunk.frameCount > 0) {
+                    if (m_outputChunk.frameCount > 0 && m_outputChunk.data != nullptr) {
                         const SINT framesToCopy = std::min(
                                 static_cast<SINT>(m_outputChunk.frameCount),
                                 remainingFrames);
@@ -359,17 +377,17 @@ void EngineBufferScaleBungee::clear() {
     m_remainingOutputFrames = 0;
     m_outputChunkConsumed = 0;
     m_request.position = std::numeric_limits<double>::quiet_NaN();
+    m_request.speed = 1.0;
+    m_request.pitch = 1.0;
+    m_request.reset = true;
+    m_request.resampleMode = resampleMode_autoOut;
     m_grainPosition = 0.0;
 
-    if (m_pStretcher) {
-        // Create a flush request with NaN position
-        Bungee::Request flushRequest;
-        flushRequest.position = std::numeric_limits<double>::quiet_NaN();
-        flushRequest.speed = 1.0;
-        flushRequest.pitch = 1.0;
-        flushRequest.reset = true;
-        flushRequest.resampleMode = resampleMode_autoOut;
+    // Reset output chunk state to prevent use of stale data
+    m_outputChunk.data = nullptr;
+    m_outputChunk.frameCount = 0;
 
-        m_pStretcher->specifyGrain(flushRequest);
-    }
+    // Note: We don't call specifyGrain on the stretcher here because
+    // it can cause crashes when switching engines while playing.
+    // The reset flag in m_request will be processed on the next processGrain call.
 }

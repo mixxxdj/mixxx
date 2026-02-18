@@ -1261,6 +1261,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
 #ifdef __RUBBERBAND__
     m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
 #endif
+#ifdef __BUNGEE__
+    m_pScaleBungee->setSignal(m_sampleRate, m_channelCount);
+#endif
 
     bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
     if (hasStableTrack && m_pause.tryLock()) {
