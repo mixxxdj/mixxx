@@ -155,7 +155,7 @@ void EngineBufferScaleBungee::deinterleaveInput(const CSAMPLE* pBuffer, SINT fra
 }
 
 SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrames) {
-    if (!m_pStretcher) {
+    if (!m_pStretcher || !getOutputSignal().isValid()) {
         return 0;
     }
 
@@ -286,7 +286,8 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
 
 double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
         SINT iOutputBufferSize) {
-    if (!m_pStretcher || m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {
+    if (!m_pStretcher || m_dBaseRate == 0.0 || m_dTempoRatio == 0.0 ||
+            !getOutputSignal().isValid()) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
         return 0.0;
     }
@@ -313,12 +314,18 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
             if (lastReadFailed) {
                 // Flush any remaining output from Bungee
                 if (!m_pStretcher->isFlushed()) {
-                    // Mark position as NaN to flush
-                    m_request.position = std::numeric_limits<double>::quiet_NaN();
-                    m_pStretcher->specifyGrain(m_request);
+                    // Create a flush request
+                    Bungee::Request flushRequest;
+                    flushRequest.position = std::numeric_limits<double>::quiet_NaN();
+                    flushRequest.speed = m_request.speed;
+                    flushRequest.pitch = m_request.pitch;
+                    flushRequest.reset = true;
+                    flushRequest.resampleMode = resampleMode_autoOut;
+
+                    m_pStretcher->specifyGrain(flushRequest);
                     m_pStretcher->synthesiseGrain(m_outputChunk);
 
-                    if (m_outputChunk.frameCount > 0) {
+                    if (m_outputChunk.frameCount > 0 && m_outputChunk.data != nullptr) {
                         const SINT framesToCopy = std::min(
                                 static_cast<SINT>(m_outputChunk.frameCount),
                                 remainingFrames);
@@ -370,21 +377,17 @@ void EngineBufferScaleBungee::clear() {
     m_remainingOutputFrames = 0;
     m_outputChunkConsumed = 0;
     m_request.position = std::numeric_limits<double>::quiet_NaN();
+    m_request.speed = 1.0;
+    m_request.pitch = 1.0;
+    m_request.reset = true;
+    m_request.resampleMode = resampleMode_autoOut;
     m_grainPosition = 0.0;
-
-    if (m_pStretcher) {
-        // Create a flush request with NaN position
-        Bungee::Request flushRequest;
-        flushRequest.position = std::numeric_limits<double>::quiet_NaN();
-        flushRequest.speed = 1.0;
-        flushRequest.pitch = 1.0;
-        flushRequest.reset = true;
-        flushRequest.resampleMode = resampleMode_autoOut;
-
-        m_pStretcher->specifyGrain(flushRequest);
-    }
 
     // Reset output chunk state to prevent use of stale data
     m_outputChunk.data = nullptr;
     m_outputChunk.frameCount = 0;
+
+    // Note: We don't call specifyGrain on the stretcher here because
+    // it can cause crashes when switching engines while playing.
+    // The reset flag in m_request will be processed on the next processGrain call.
 }
