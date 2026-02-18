@@ -956,6 +956,13 @@ void MixxxMainWindow::connectMenuBar() {
                 this,
                 &MixxxMainWindow::slotControllersChanged,
                 Qt::UniqueConnection);
+        // mappingApplied fires after a controller is opened post-startup
+        // (devicesChanged is only emitted once, on startup)
+        connect(m_pCoreServices->getControllerManager().get(),
+                &ControllerManager::mappingApplied,
+                this,
+                &MixxxMainWindow::slotUpdateControllerLearningMenu,
+                Qt::UniqueConnection);
         connect(m_pMenuBar,
                 &WMainMenuBar::openControllerLearningWizard,
                 this,
