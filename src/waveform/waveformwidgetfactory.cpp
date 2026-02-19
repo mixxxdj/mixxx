@@ -15,6 +15,7 @@
 #include <GLES3/gl3.h>
 #endif
 
+#include <QGuiApplication>
 #include <QOpenGLFunctions>
 #include <QRegularExpression>
 #include <QStringList>
@@ -1393,6 +1394,17 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConf
     static const VSyncThread::VSyncMode vsyncMode = pConfig
             ? pConfig->getValue(kVSyncKey, VSyncThread::ST_DEFAULT)
             : VSyncThread::ST_DEFAULT;
+
+#ifdef MIXXX_USE_QOPENGL
+    // QOpenGLWindow inside createWindowContainer causes synchronous Wayland
+    // compositor buffer reallocation on every resize event, making splitter
+    // drag extremely slow. Running under XWayland (QT_QPA_PLATFORM=xcb)
+    // avoids this. See https://github.com/mixxxdj/mixxx/issues/16013
+    if (QGuiApplication::platformName() == QLatin1String("wayland")) {
+        qWarning() << "Wayland detected with OpenGL waveforms: waveform resize"
+                      " may be slow. Set QT_QPA_PLATFORM=xcb to use XWayland.";
+    }
+#endif
 
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
