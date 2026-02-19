@@ -18,11 +18,9 @@ class CueDAO : public DAO {
     bool deleteCuesForTrack(TrackId trackId) const;
     bool deleteCuesForTracks(const QList<TrackId>& trackIds) const;
 
+    void updateTrackHotcueCount(TrackId trackId) const;
+    void updateTrackHotcueCount(TrackId trackId, int hotcueCount) const;
+
   private:
     bool saveCue(TrackId trackId, Cue* pCue) const;
-    void updateTrackHotcueCount(TrackId trackId) const;
-
-  public:
-    // update hotcue count with explicit count value (for live updates from memory)
-    void updateTrackHotcueCount(TrackId trackId, int hotcueCount) const;
 };
