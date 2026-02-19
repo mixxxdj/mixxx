@@ -581,7 +581,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         for (const auto& pDeck : m_decks) {
             pDeck->disconnect(this);
         }
-        if (m_pConfig->getValue<bool>(ConfigKey(kConfigKey,
+        if (m_pConfig->getValue<bool>(ConfigKey(kPreferenceGroup,
                     QStringLiteral("center_xfader_when_disabling")))) {
             m_coCrossfader.set(0);
         }
