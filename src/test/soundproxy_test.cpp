@@ -1120,8 +1120,29 @@ TEST_F(SoundSourceProxyTest, taglibStringToEnumFileType) {
     const QStringList fileTypes = SoundSourceProxy::getSupportedFileTypes();
     for (const auto& fileType : fileTypes) {
         qDebug() << fileType;
-        if (fileType != "okt" &&     // Oktalyzer
-                fileType != "stm") { // "Scream Tracker";
+        // Tracker module formats handled by openmpt, not taglib
+        if (fileType != "okt" &&
+                fileType != "stm" &&
+                fileType != "mod" &&
+                fileType != "s3m" &&
+                fileType != "xm" &&
+                fileType != "it" &&
+                fileType != "mptm" &&
+                fileType != "669" &&
+                fileType != "amf" &&
+                fileType != "ams" &&
+                fileType != "dbm" &&
+                fileType != "dmf" &&
+                fileType != "dsm" &&
+                fileType != "far" &&
+                fileType != "mdl" &&
+                fileType != "med" &&
+                fileType != "mtm" &&
+                fileType != "mt2" &&
+                fileType != "psm" &&
+                fileType != "ptm" &&
+                fileType != "ult" &&
+                fileType != "umx") {
             ASSERT_NE(mixxx::taglib::stringToEnumFileType(fileType),
                     mixxx::taglib::FileType::Unknown);
         }
