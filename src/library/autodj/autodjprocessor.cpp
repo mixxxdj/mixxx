@@ -8,7 +8,8 @@
 #include "util/math.h"
 
 namespace {
-const QString kConfigKey = QStringLiteral("[Auto DJ]");
+const QString kPreferenceGroup = QStringLiteral("[Auto DJ]");
+const QString kControlGroup = QStringLiteral("[AutoDJ]");
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
@@ -120,11 +121,11 @@ AutoDJProcessor::AutoDJProcessor(
           m_pPlayerManager(pPlayerManager),
           m_coCrossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_coCrossfaderReverse(QStringLiteral("[Mixer Profile]"), QStringLiteral("xFaderReverse")),
-          m_shufflePlaylist(ConfigKey(kConfigKey, QStringLiteral("shuffle_playlist"))),
-          m_skipNext(ConfigKey(kConfigKey, QStringLiteral("skip_next"))),
-          m_addRandomTrack(ConfigKey(kConfigKey, QStringLiteral("add_random_track"))),
-          m_fadeNow(ConfigKey(kConfigKey, QStringLiteral("fade_now"))),
-          m_enabledAutoDJ(ConfigKey(kConfigKey, QStringLiteral("enabled"))) {
+          m_shufflePlaylist(ConfigKey(kControlGroup, QStringLiteral("shuffle_playlist"))),
+          m_skipNext(ConfigKey(kControlGroup, QStringLiteral("skip_next"))),
+          m_addRandomTrack(ConfigKey(kControlGroup, QStringLiteral("add_random_track"))),
+          m_fadeNow(ConfigKey(kControlGroup, QStringLiteral("fade_now"))),
+          m_enabledAutoDJ(ConfigKey(kControlGroup, QStringLiteral("enabled"))) {
     m_pAutoDJTableModel = make_parented<PlaylistTableModel>(
             this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
@@ -151,13 +152,14 @@ AutoDJProcessor::AutoDJProcessor(
     slotNumberOfDecksChanged(pPlayerManager->numberOfDecks());
 
     QString str_autoDjTransition = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kTransitionPreferenceName));
+            ConfigKey(kPreferenceGroup, kTransitionPreferenceName));
     if (!str_autoDjTransition.isEmpty()) {
         m_transitionTime = str_autoDjTransition.toDouble();
     }
 
     m_transitionMode = m_pConfig->getValue(
-            ConfigKey(kConfigKey, kTransitionModePreferenceName), TransitionMode::FullIntroOutro);
+            ConfigKey(kPreferenceGroup, kTransitionModePreferenceName),
+            TransitionMode::FullIntroOutro);
 }
 
 void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {
@@ -400,7 +402,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         if (pLeftDeck->index > 1 || pRightDeck->index > 1) {
             // Left and/or right deck is deck 3/4 which may not be visible.
             // Make sure it is, if the current skin is a 4-deck skin.
-            ControlObject::set(ConfigKey("[Skin]", "show_4decks"), 1);
+            ControlObject::set(
+                    ConfigKey(QStringLiteral("[Skin]"), QStringLiteral("show_4decks")), 1);
         }
 
         // Never load the same track if it is already playing
@@ -877,9 +880,11 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
     bool randomQueueEnabled = m_pConfig->getValue<bool>(
-            ConfigKey("[Auto DJ]", "EnableRandomQueue"));
-    int minAutoDJCrateTracks = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+            ConfigKey(kPreferenceGroup, QStringLiteral("EnableRandomQueue")));
+    int minAutoDJCrateTracks =
+            m_pConfig->getValueString(ConfigKey(kPreferenceGroup,
+                                              QStringLiteral("RandomQueueMinimumAllowed")))
+                    .toInt();
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     // In case we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
@@ -960,7 +965,7 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
     // Re-queue if configured.
-    if (m_pConfig->getValueString(ConfigKey(kConfigKey, "Requeue")).toInt()) {
+    if (m_pConfig->getValueString(ConfigKey(kPreferenceGroup, QStringLiteral("Requeue"))).toInt()) {
         m_pAutoDJTableModel->appendTrack(nextId);
     }
 
@@ -969,10 +974,15 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
 }
 
 void AutoDJProcessor::maybeFillRandomTracks() {
-    int minAutoDJCrateTracks = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
-    bool randomQueueEnabled = (((m_pConfig->getValueString(
-            ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+    int minAutoDJCrateTracks =
+            m_pConfig->getValueString(ConfigKey(kPreferenceGroup,
+                                              QStringLiteral("RandomQueueMinimumAllowed")))
+                    .toInt();
+    bool randomQueueEnabled =
+            m_pConfig->getValueString(
+                             ConfigKey(kPreferenceGroup,
+                                     QStringLiteral("EnableRandomQueue")))
+                    .toInt() == 1;
 
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     if (randomQueueEnabled && (tracksToAdd > 0)) {
@@ -1689,8 +1699,8 @@ void AutoDJProcessor::setTransitionTime(int time) {
     }
 
     // Update the transition time first.
-    m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
-                   ConfigValue(time));
+    m_pConfig->setValue(ConfigKey(kPreferenceGroup, kTransitionPreferenceName),
+            time);
     m_transitionTime = time;
 
     // Then re-calculate fade thresholds for the decks.
@@ -1713,7 +1723,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
 }
 
 void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
-    m_pConfig->set(ConfigKey(kConfigKey, kTransitionModePreferenceName),
+    m_pConfig->set(ConfigKey(kPreferenceGroup, kTransitionModePreferenceName),
             ConfigValue(static_cast<int>(newMode)));
     m_transitionMode = newMode;
 
