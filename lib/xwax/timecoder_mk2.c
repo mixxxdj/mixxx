@@ -142,7 +142,7 @@ int lut_store_mk2(struct timecode_def *def, const char *lut_dir_path)
     int r = 0;
     int size;
 
-    sprintf(path, "%s/%s%s", lut_dir_path, def->name, ".lut");
+    snprintf(path, sizeof(path), "%s/%s%s", lut_dir_path, def->name, ".mk2lut");
 
     fprintf(stdout, "Storing LUT at %s\n", path);
     fp = fopen(path, "wb");
@@ -213,19 +213,58 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
 
     struct slot_mk2 *slot;
 
-    char path[1024];
     int i, j, hashes;
+    char oldpath[1024];
+    size_t lut_size;
+    char path[1024];
+    size_t size;
+    long fsize;
     int r = 0;
-    int size;
     FILE *fp;
     int len;
 
-    sprintf(path, "%s/%s%s", lut_dir_path, def->name, ".lut");
+    snprintf(oldpath, sizeof(oldpath), "%s/%s%s", lut_dir_path, def->name, ".lut");
+    snprintf(path, sizeof(path), "%s/%s%s", lut_dir_path, def->name, ".mk2lut");
+
+    /* Remove old LUT file. Safe to call when it doesn't exist. */
+
+    remove(oldpath);
+
+    hashes = 1 << 16;
+    lut_size = def->length * sizeof(struct slot_mk2) + (hashes + 1) * sizeof(slot_no_t);
 
     fprintf(stdout, "Loading LUT from %s\n", path);
     fp = fopen(path, "rb");
     if (!fp) {
         fprintf(stderr, "LUT for %s not found on disk\n", def->desc);
+        return -1;
+    }
+
+
+    /* Get the actual file size */
+
+    r = fseek(fp, 0L, SEEK_END);
+    if (r) {
+        perror("fseek");
+        goto out;
+    }
+
+    fsize = ftell(fp);
+    if (fsize < 0) {
+        perror("ftell");
+        r = -1;
+        goto out;
+    }
+
+    rewind(fp);
+
+    /* Check if the sizes match */
+
+    if (lut_size != (size_t)fsize) {
+        fprintf(stderr,
+           "LUT size mismatch: (file: %ldKb, expected: %zuKb). Regenerating...\n",
+            fsize / 1024, lut_size / 1024);
+        fclose(fp);
         return -1;
     }
 
@@ -247,7 +286,6 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
         }
     }
 
-    hashes = 1 << 16;
     for (j = 0; j < hashes; j++) {
 
         slot_no_t *hash = &def->lut_mk2.table[j];
