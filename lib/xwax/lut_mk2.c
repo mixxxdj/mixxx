@@ -69,8 +69,14 @@ int lut_init_mk2(struct lut_mk2 *lut, int nslots)
 
 void lut_clear_mk2(struct lut_mk2 *lut)
 {
-    free(lut->table);
-    free(lut->slot);
+    if (!lut)
+        return;
+
+    if (lut->table)
+        free(lut->table);
+
+    if (lut->slot)
+        free(lut->slot);
 }
 
 /*

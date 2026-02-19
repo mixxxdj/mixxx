@@ -130,74 +130,73 @@ int build_lookup_mk2(struct timecode_def *def)
 
 int lut_store_mk2(struct timecode_def *def, const char *lut_dir_path)
 {
-    if (!def || !lut_dir_path)
+    if (!def || !lut_dir_path) {
+        errno = EINVAL;
+        perror(__func__);
         return -1;
+    }
 
     struct slot_mk2 *slot;
     slot_no_t *hash;
 
-    int i, j, len, hashes;
+    const size_t hashes = 1 << 16;
+    size_t hashes_written = 0;
+    size_t slots_written = 0;
     char path[1024];
     FILE *fp = NULL;
-    int r = 0;
+    int ret = 0;
     int size;
 
     snprintf(path, sizeof(path), "%s/%s%s", lut_dir_path, def->name, ".mk2lut");
 
     fprintf(stdout, "Storing LUT at %s\n", path);
+
     fp = fopen(path, "wb");
     if (!fp) {
         perror("fopen");
-        return -1;
+        goto error_fopen;
     }
 
-    for (i = 0; i < def->length; i++) {
-        slot = &def->lut_mk2.slot[i];
+    for (slots_written = 0; slots_written < def->length; slots_written++) {
+        slot = &def->lut_mk2.slot[slots_written];
 
-        if (!slot) {
-            printf("slot_no: %d doesn't exist'\n", i);
-            r = -1;
-            goto out;
-        }
         size = fwrite(slot, sizeof(struct slot_mk2), 1, fp);
-
         if (!size) {
-            perror("fwrite");
-            r = -1;
-            goto out;
+            perror("fwrite slot_mk2");
+            goto error;
         }
     }
 
-    hashes = 1 << 16;
-    for (j = 0; j < hashes; j++) {
-        hash = &def->lut_mk2.table[j];
+    for (hashes_written = 0; hashes_written < hashes; hashes_written++) {
+        hash = &def->lut_mk2.table[hashes_written];
 
         size = fwrite(hash, sizeof(slot_no_t), 1, fp);
         if (!size) {
-            perror("fwrite");
-            r = -1;
-            goto out;
+            perror("fwrite hashes");
+            goto error;
         }
     }
 
     size = fwrite(&def->lut_mk2.avail, sizeof(slot_no_t), 1, fp);
     if (!size) {
-        perror("fwrite");
-        r = -1;
-        goto out;
+        perror("fwrite avail");
+        goto error;
     }
 
-out:
+    if (ret || hashes != hashes_written || def->length != slots_written)
+        fprintf(stderr, "Hashes and slots written don't match what's expected\n");
+
     fclose(fp);
 
-    if (hashes != j || def->length != i)
-        fprintf(stderr, "Something went wrong: ");
+    return 0;
 
-    fprintf(stderr, "Wrote %d hashes and %d slots to disk\n", j, i);
+error:
+    fclose(fp);
+error_fopen:
+    lut_clear_mk2(&def->lut_mk2);
 
-    return r;
+    return -1;
 }
-
 
 /*
  * Loads the stored LUT from the disk.
@@ -208,20 +207,24 @@ out:
 
 int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
 {
-    if (!def || !lut_dir_path)
+    if (!def || !lut_dir_path) {
+        errno = EINVAL;
+        perror(__func__);
         return -1;
+    }
 
     struct slot_mk2 *slot;
 
-    int i, j, hashes;
+    const size_t hashes = 1 << 16;
+    size_t hashes_read = 0;
+    size_t slots_read = 0;
     char oldpath[1024];
     size_t lut_size;
     char path[1024];
     size_t size;
     long fsize;
-    int r = 0;
+    int ret = 0;
     FILE *fp;
-    int len;
 
     snprintf(oldpath, sizeof(oldpath), "%s/%s%s", lut_dir_path, def->name, ".lut");
     snprintf(path, sizeof(path), "%s/%s%s", lut_dir_path, def->name, ".mk2lut");
@@ -230,30 +233,30 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
 
     remove(oldpath);
 
-    hashes = 1 << 16;
-    lut_size = def->length * sizeof(struct slot_mk2) + (hashes + 1) * sizeof(slot_no_t);
+    /* Compute the expected file size */
+
+    lut_size = def->length * sizeof(struct slot_mk2) +
+               (hashes + 1) * sizeof(slot_no_t);
 
     fprintf(stdout, "Loading LUT from %s\n", path);
     fp = fopen(path, "rb");
     if (!fp) {
         fprintf(stderr, "LUT for %s not found on disk\n", def->desc);
-        return -1;
+        goto error_fopen;
     }
-
 
     /* Get the actual file size */
 
-    r = fseek(fp, 0L, SEEK_END);
-    if (r) {
+    ret = fseek(fp, 0L, SEEK_END);
+    if (ret) {
         perror("fseek");
-        goto out;
+        goto error;
     }
 
     fsize = ftell(fp);
     if (fsize < 0) {
         perror("ftell");
-        r = -1;
-        goto out;
+        goto error;
     }
 
     rewind(fp);
@@ -264,58 +267,58 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
         fprintf(stderr,
            "LUT size mismatch: (file: %ldKb, expected: %zuKb). Regenerating...\n",
             fsize / 1024, lut_size / 1024);
-        fclose(fp);
-        return -1;
+        goto error;
     }
 
-    r = lut_init_mk2(&def->lut_mk2, def->length);
-    if (r) {
+    /* Create the LUT struct and load the data */
+
+    ret = lut_init_mk2(&def->lut_mk2, def->length);
+    if (ret) {
         fprintf(stderr, "Couldn't initialise LUT\n");
-        goto out;
+        goto error;
     }
 
-    fprintf(stdout, "Loading LUT from %s\n", path);
-    for (i = 0; i < def->length; i++) {
-        slot = &def->lut_mk2.slot[i];
+    for (slots_read = 0; slots_read < def->length; slots_read++) {
+        slot = &def->lut_mk2.slot[slots_read];
 
         size = fread(slot, sizeof(struct slot_mk2), 1, fp);
         if (!size) {
-            perror("fread");
-            r = -1;
-            goto out;
+            perror("fread slot_mk2");
+            goto error;
         }
     }
 
-    for (j = 0; j < hashes; j++) {
-
-        slot_no_t *hash = &def->lut_mk2.table[j];
+    for (hashes_read = 0; hashes_read < hashes; hashes_read++) {
+        slot_no_t *hash = &def->lut_mk2.table[hashes_read];
 
         size = fread(hash, sizeof(slot_no_t), 1, fp);
         if (!size) {
-            perror("fread");
-            r = -1;
-            goto out;
+            perror("fread hashes");
+            goto error;
         }
     }
 
     size = fread(&def->lut_mk2.avail, sizeof(slot_no_t), 1, fp);
     if (!size) {
-        perror("fwrite");
-        r = -1;
+        perror("fread avail");
+        goto error;
     }
 
-
-out:
-    fclose(fp);
-
-    if (hashes == j && def->length == i)
+    if (hashes == hashes_read && def->length == slots_read) {
         def->lookup = true;
-    else
-        fprintf(stderr, "Something went wrong: ");
+    } else {
+        fprintf(stderr, "Hashes and slots read don't match what's expected\n");
+        goto error;
+    }
 
-    fprintf(stderr, "Loaded %d hashes and %d slots from disk\n", j, i);
+    return 0;
 
-    return r;
+error:
+    fclose(fp);
+error_fopen:
+    lut_clear_mk2(&def->lut_mk2);
+
+    return -1;
 }
 
 /*
