@@ -2,6 +2,8 @@
 
 #define FILTERS_H
 
+#include "ringbuffer.h"
+
 struct ewma_filter {
     double alpha;
     int y_old;
@@ -24,5 +26,17 @@ struct root_mean_square {
 
 void rms_init(struct root_mean_square *f, const float alpha);
 int rms(struct root_mean_square *f, const int x);
+
+struct savitzky_golay {
+    size_t window_size;           /* Window size */
+    size_t M;                     /* Half width */
+    size_t polyorder;             /* Polynomial order */
+    double *coeff;                /* Filter coefficeints */
+    struct ringbuffer *delayline; /* Sample ringbuffer */
+};
+
+struct savitzky_golay *savgol_create(size_t window_size, size_t polyorder);
+void savgol_destroy(struct savitzky_golay *f);
+int savgol(struct savitzky_golay *f, int x);
 
 #endif /* end of include guard FILTERS_H */

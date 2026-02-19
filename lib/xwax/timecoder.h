@@ -61,14 +61,14 @@ struct timecoder_channel {
     unsigned int crossing_ticker; /* samples since we last crossed zero */
 
     int rms, rms_deriv; /* RMS values for the signal and its derivative */
-    signed int deriv, deriv_scaled; /* Derivative and its scaled version */
+    signed int deriv, deriv_decoder, deriv_scaled; /* Derivative and its scaled version */
 
     struct ringbuffer *delayline; /* needed for the pitch detection*/
     struct ringbuffer *delayline_deriv; /* needed for the pitch detection*/
     struct ewma_filter ewma_filter;
     struct differentiator differentiator;
     struct root_mean_square rms_filter, rms_deriv_filter;
-
+    struct savitzky_golay *savgol_filter;
 };
 
 struct mk2_subcode {

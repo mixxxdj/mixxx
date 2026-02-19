@@ -381,7 +381,7 @@ void mk2_subcode_init(struct mk2_subcode *sc)
     sc->avg_slope = INT_MAX/2;
     sc->bit = U128_ZERO;
 
-    sc->readings = rb_alloc(5, sizeof(int));
+    sc->readings = rb_alloc(3, sizeof(int));
     if (!sc->readings) {
         perror(__func__);
         return;
@@ -396,7 +396,8 @@ void mk2_subcode_init(struct mk2_subcode *sc)
  * Initialise filter values for one channel
  */
 
-static void init_channel(struct timecode_def *def, struct timecoder_channel *ch)
+static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
+    unsigned int sample_rate)
 {
     ch->positive = false;
     ch->zero = 0;
@@ -422,6 +423,11 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch)
 
     rms_init(&ch->rms_filter, 1e-3);
     rms_init(&ch->rms_deriv_filter, 1e-3);
+
+    size_t window = (size_t)ceil(sample_rate / def->resolution);
+    if (window % 2 == 0)
+        window++;
+    ch->savgol_filter = savgol_create(window, 2);
 }
 
 /*
@@ -452,8 +458,8 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
-    init_channel(tc->def, &tc->primary);
-    init_channel(tc->def, &tc->secondary);
+    init_channel(tc->def, &tc->primary, sample_rate);
+    init_channel(tc->def, &tc->secondary, sample_rate);
 
     tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
 
@@ -516,6 +522,9 @@ void timecoder_clear(struct timecoder *tc)
         rb_free(tc->upper_bitstream.readings);
         rb_free(tc->lower_bitstream.readings);
     }
+
+    savgol_destroy(tc->primary.savgol_filter);
+    savgol_destroy(tc->secondary.savgol_filter);
 }
 
 /*
@@ -720,9 +729,18 @@ void process_carrier(struct timecoder *tc, signed int primary,
 
     /* Compute the discrete derivative */
     tc->primary.deriv = derivative(&tc->primary.differentiator,
-        ewma(&tc->primary.ewma_filter, primary));
+        primary);
     tc->secondary.deriv = derivative(&tc->secondary.differentiator,
-        ewma(&tc->secondary.ewma_filter, secondary));
+        secondary);
+
+    tc->primary.deriv = ewma(&tc->primary.ewma_filter, tc->primary.deriv);
+    tc->secondary.deriv = ewma(&tc->secondary.ewma_filter, tc->secondary.deriv);
+
+    tc->primary.deriv_decoder = tc->primary.deriv;
+    tc->secondary.deriv_decoder = tc->secondary.deriv;
+
+    tc->primary.deriv = savgol(tc->primary.savgol_filter, tc->primary.deriv);
+    tc->secondary.deriv = savgol(tc->secondary.savgol_filter, tc->secondary.deriv);
 
     /* Compute the smoothed RMS value */
     tc->primary.rms = rms(&tc->primary.rms_filter, primary);
@@ -763,9 +781,9 @@ static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
-        detect_zero_crossing(&tc->primary, tc->primary.deriv_scaled, tc->zero_alpha,
+        detect_zero_crossing(&tc->primary, tc->primary.deriv_decoder, tc->zero_alpha,
                 tc->threshold);
-        detect_zero_crossing(&tc->secondary, tc->secondary.deriv_scaled, tc->zero_alpha,
+        detect_zero_crossing(&tc->secondary, tc->secondary.deriv_decoder, tc->zero_alpha,
                 tc->threshold);
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
@@ -816,7 +834,7 @@ static void process_sample(struct timecoder *tc,
     if (tc->def->flags & TRAKTOR_MK2) {
         if (tc->secondary.swapped)
         {
-            int reading = *(int*)rb_at(tc->secondary.delayline, 3);
+            int reading = *(int *)rb_at(tc->secondary.delayline, 3);
             mk2_process_timecode(tc, reading);
         }
     } else {
