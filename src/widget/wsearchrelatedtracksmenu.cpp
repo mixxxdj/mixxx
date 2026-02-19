@@ -376,7 +376,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
     // This is for click and Space key
     connect(pCheckBox.get(),
-            &QCheckBox::clicked,
+            &QCheckBox::toggled,
             this,
             &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
 }
@@ -419,7 +419,7 @@ bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
 }
 
 void WSearchRelatedTracksMenu::updateSearchButton() {
-    // Enable the Search button if at least opChildbox is checked.
+    // Enable the Search button if at least one checkbox is ticked
     VERIFY_OR_DEBUG_ASSERT(m_pSearchAction) {
         return;
     }
