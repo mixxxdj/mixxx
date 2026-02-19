@@ -69,6 +69,7 @@ struct timecoder_channel {
     struct differentiator differentiator;
     struct root_mean_square rms_filter, rms_deriv_filter;
     struct savitzky_golay *savgol_filter;
+    struct rumble_filter rumble_filter;
 };
 
 struct mk2_subcode {

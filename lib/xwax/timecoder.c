@@ -428,6 +428,8 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
     if (window % 2 == 0)
         window++;
     ch->savgol_filter = savgol_create(window, 2);
+
+    rhpf_init(&ch->rumble_filter, sample_rate, 50 * (def->resolution / 1000));
 }
 
 /*
@@ -726,6 +728,9 @@ void process_carrier(struct timecoder *tc, signed int primary,
 
     rb_push(tc->primary.delayline, &primary);
     rb_push(tc->secondary.delayline, &secondary);
+
+    primary = rhpf_process(&tc->primary.rumble_filter, primary);
+    secondary = rhpf_process(&tc->secondary.rumble_filter, secondary);
 
     /* Compute the discrete derivative */
     tc->primary.deriv = derivative(&tc->primary.differentiator,

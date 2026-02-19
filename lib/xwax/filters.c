@@ -315,3 +315,46 @@ int savgol(struct savitzky_golay *f, int x)
 
     return y;
 }
+
+/*
+ * Implements a simple highpass as rumble filter
+ */
+
+void rhpf_init(struct rumble_filter *f, unsigned int fs, double fc)
+{
+    if (!f) {
+        errno = EINVAL;
+        perror(__func__);
+        return;
+    }
+
+    f->fs = (double)fs;
+    f->fc = fc;
+
+    double RC = 1.0 / (2.0 * (double)M_PI * fc);
+    double dt = 1.0 / fs;
+    f->alpha = RC / (RC + dt);   // from standard 1st order HP formula
+
+    f->x_old = 0.0;
+    f->y_old = 0.0;
+}
+
+/*
+ * Processes a sample in the rumble filter
+ */
+
+int rhpf_process(struct rumble_filter *f, int x)
+{
+    if (!f) {
+        errno = EINVAL;
+        perror(__func__);
+        return 0;
+    }
+
+    int y = f->alpha * (f->y_old + x - f->x_old);
+
+    f->x_old = x;
+    f->y_old = y;
+
+    return y;
+}

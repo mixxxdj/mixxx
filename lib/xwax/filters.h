@@ -39,4 +39,15 @@ struct savitzky_golay *savgol_create(size_t window_size, size_t polyorder);
 void savgol_destroy(struct savitzky_golay *f);
 int savgol(struct savitzky_golay *f, int x);
 
+struct rumble_filter {
+    double fc;    /* Cutoff frequency */
+    double fs;    /* Sample rate */
+    double alpha; /* Filter coefficient */
+    int x_old;    /* x[n-1] */
+    int y_old;    /* y[n-1] */
+};
+
+void rhpf_init(struct rumble_filter *f, unsigned int fs, double fc);
+int rhpf_process(struct rumble_filter *f, int x);
+
 #endif /* end of include guard FILTERS_H */
