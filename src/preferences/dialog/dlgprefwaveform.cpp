@@ -71,8 +71,15 @@ DlgPrefWaveform::DlgPrefWaveform(
         }
         waveformTypeComboBox->addItem(types[i].getDisplayName(), types[i].getType());
     }
-    // Sort the combobox items alphabetically
+    // Sort the combobox items alphabetically, then move Simple to the top
     waveformTypeComboBox->model()->sort(0);
+    int simpleIdx = waveformTypeComboBox->findData(WaveformWidgetType::Simple);
+    if (simpleIdx > 0) {
+        QString simpleName = waveformTypeComboBox->itemText(simpleIdx);
+        QVariant simpleData = waveformTypeComboBox->itemData(simpleIdx);
+        waveformTypeComboBox->removeItem(simpleIdx);
+        waveformTypeComboBox->insertItem(0, simpleName, simpleData);
+    }
 
     // Populate zoom options.
     for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
