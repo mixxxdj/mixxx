@@ -402,7 +402,7 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
     ch->positive = false;
     ch->zero = 0;
 
-    ch->deriv_scaled = INT_MAX/2;
+    ch->deriv = INT_MAX/2;
     ch->rms = INT_MAX/2;
     ch->rms_deriv = 0;
 
@@ -499,9 +499,6 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->timecode_ticker = 0;
 
     tc->mon = NULL;
-
-    /* Compute the factor the scale up the derivative to the original level */
-    tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
 
     if (tc->def->flags & TRAKTOR_MK2) {
         mk2_subcode_init(&tc->upper_bitstream);
@@ -702,17 +699,10 @@ static inline double phase_difference(const int *cos0, const int *sin0,
 /*
  * Various processing of the carrier wave needed for pitch detection.
  *
- * Pushes samples into a delayline, computes the derivative, computes RMS
- * values and scales the derivative back up to the original signal's level.
+ * Pushes samples into a delayline, computes the derivative, filters it and
+ * computes RMS values.
  * Afterards the upscaled derivative can by processed by the pitch detection
  * algorithm.
- *
- * NOTE: Ideally the gain compensation should be done in the derivative and lowpass
- * filter structures by determining the amplitude response. I had this
- * implemented previously, but chose gain compensation by using the RMS value,
- * since it is easier to understand for developers not trained in signal
- * processing. Additionally it's nice to have the dB level at hand.
- *
  */
 
 void process_carrier(struct timecoder *tc, signed int primary,
@@ -757,22 +747,11 @@ void process_carrier(struct timecoder *tc, signed int primary,
     tc->secondary.rms_deriv =
         rms(&tc->secondary.rms_deriv_filter, tc->secondary.deriv);
 
-    /* Compute the gain compensation for the derivative*/
-    tc->gain_compensation = (double)tc->secondary.rms / tc->secondary.rms_deriv;
-
-    /* Without this limit pitch becomes too sensitive */
-    if (tc->gain_compensation > 25.0)
-        tc->gain_compensation = 25.0;
-
     tc->dB = 20 * log10((double)tc->secondary.rms / INT_MAX);
 
-    /* Compute the scaled derivative */
-    tc->primary.deriv_scaled = tc->primary.deriv * tc->gain_compensation;
-    tc->secondary.deriv_scaled = tc->secondary.deriv * tc->gain_compensation;
-
     /* Push the derivative samples into the ringbuffer */
-    rb_push(tc->primary.delayline_deriv, &tc->primary.deriv_scaled);
-    rb_push(tc->secondary.delayline_deriv, &tc->secondary.deriv_scaled);
+    rb_push(tc->primary.delayline_deriv, &tc->primary.deriv);
+    rb_push(tc->secondary.delayline_deriv, &tc->secondary.deriv);
 }
 
 /*
@@ -923,8 +902,8 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
              * two is necessary.
              */
 
-            update_monitor(tc, tc->primary.deriv_scaled * 2,
-                    tc->secondary.deriv_scaled * 2);
+            update_monitor(tc, tc->primary.deriv * 2,
+                    tc->secondary.deriv * 2);
         } else {
             process_sample(tc, primary, secondary);
             update_monitor(tc, left, right);
