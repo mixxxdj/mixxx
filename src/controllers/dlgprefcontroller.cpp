@@ -398,6 +398,11 @@ void DlgPrefController::showLearningWizard(bool suppressPrefsDialogOnClose) {
         showMapping(m_pMapping);
     }
 
+    // Hide the prefs dialog before showing the wizard. The wizard is parented
+    // to this page (a child of the prefs dialog), so hiding the prefs dialog
+    // after show() would cascade-hide the wizard too.
+    emit mappingStarted();
+
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
     m_pDlgControllerLearning =
@@ -422,10 +427,6 @@ void DlgPrefController::showLearningWizard(bool suppressPrefsDialogOnClose) {
             &DlgControllerLearning::inputMappingsLearned,
             this,
             &DlgPrefController::midiInputMappingsLearned);
-
-    if (m_bPrefsDialogWasVisible) {
-        emit mappingStarted();
-    }
     connect(m_pDlgControllerLearning,
             &DlgControllerLearning::stopLearning,
             this,
