@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2026-02-17" timestamp="1771293807">
+    <release version="2.6.0" type="development" date="2026-02-17" timestamp="1771353064">
       <description>
  <p>
   STEM file support
@@ -107,8 +107,19 @@
    #13044
   </li>
   <li>
-   Add stem controls
+   Add stem controls and waveforms
    #13086
+   #14951
+   #14870
+   #15494
+   #14769
+   #15386
+   #15383
+   #15656
+   #15317
+   #15384
+   #15686
+   #15668
   </li>
   <li>
    Add analyser support for stem
@@ -135,11 +146,6 @@
   <li>
    Add stem files to the taglib lookup table
    #13612
-  </li>
-  <li>
-   Stem controls for LateNight
-   #13537
-   #14745
   </li>
   <li>
    Fix: make "stem_group,mute" a powerwindow button
@@ -179,28 +185,33 @@
    #14291
   </li>
   <li>
-   LateNight: hide stem control if the track has no stems
-   #15493
-  </li>
-  <li>
    Fix: reset the STEM Quick FX on track load when enabled
    #15743
   </li>
   <li>
    Allow pre-mastered stream not to match stem streams properties
    #15246
+   #14572
   </li>
   <li>
    Fix: clone states when cloning a deck
    #15501
+   #15093
+   #15510
   </li>
   <li>
    Fix: reset stem color correctly
    #15494
+   #14769
   </li>
   <li>
    Fix: skip stem count assert on secondary decks
    #15655
+   #15593
+  </li>
+  <li>
+   Name Stem QuickEffect chains node like deck QuickEffects in effects.xml
+   #15530
   </li>
  </ul>
  <p>
@@ -219,6 +230,7 @@
    Add overview column with small waveform
    #14140
    #15368
+   #15366
    #15431
   </li>
   <li>
@@ -248,9 +260,11 @@
    #13392
   </li>
   <li>
-   Library scan: log summary and show popup
+   Library scan: log summary and show popup (opt-out)
    #13427
    #10720
+   #15089
+   #15085
   </li>
   <li>
    Search: add BPM lock filter
@@ -295,6 +309,7 @@
   <li>
    Library: enable drag'n'drop of directories
    #15688
+   #5100
   </li>
   <li>
    Search: add
@@ -305,15 +320,18 @@
   <li>
    Search: add filter shortcuts, eg. t|title, a|artist, cm|comment, y|year
    #15115
+   #15101
   </li>
   <li>
    Search: add constant BPM filter
    bpm:const
    #14642
+   #11064
   </li>
   <li>
    Search: fix 'not' operator
    #15923
+   #15918
   </li>
   <li>
    Library: also apply library font size(!) to tracks header
@@ -321,32 +339,18 @@
    #15476
   </li>
   <li>
-   Library: make scan report optional (opt-out)
-   #15089
-  </li>
-  <li>
    Rhythmbox: fix imports
    #15798
-  </li>
-  <li>
-   Library sidebar: add drag hover styles
-   #15841
-  </li>
-  <li>
-   Fix, external library features: additional asserts for invalid argument
    #15770
   </li>
   <li>
-   <p>
-    WTrackMenu: warn before opening &gt;10 tracks in file browser
-    #15828
-   </p>
+   WTrackMenu: warn before opening more than 10 tracks in file browser
+   #15828
+   #15819
   </li>
   <li>
-   <p>
-    Key delegate: apply 'played' color
-    #15839
-   </p>
+   Key delegate: apply 'played' color
+   #15839
   </li>
   <li>
    Track Info dialog: restore column stretching
@@ -359,6 +363,7 @@
   <li>
    Fix "dataChanged() called with an invalid index range" warning
    #15937
+   #14610
   </li>
   <li>
    Fix: use correct Hidden settings namespace
@@ -395,12 +400,9 @@
    #15949
   </li>
   <li>
-   STEM: name Stem QuickEffect chains node like deck QuickEffects in effects.xml
-   #15530
-  </li>
-  <li>
    QuickEffect: fix crackling noise when switching
    #15796
+   #15794
   </li>
  </ul>
  <p>
@@ -413,7 +415,10 @@
    #6428
    #13226
    #15277
+   #14801
+   #15272
    #15349
+   #15338
   </li>
   <li>
    Add minute markers on horizontal waveform overview
@@ -427,6 +432,7 @@
    #14039
    #13422
    #15837
+   #15834
   </li>
   <li>
    Disable textured waveforms when using OpenGL ES
@@ -458,10 +464,27 @@
    #14461
    #14726
    #14706
-   #15502
    #14953
+   #14262
    #14461
    #14470
+   #14464
+   #14453
+   #14469
+   #14467
+   #15846
+   #15103
+   #15797
+   #15968
+   #15967
+   #15841
+   #15834
+   #15507
+   #14546
+   #14952
+   #14317
+   #15419
+   #15374
   </li>
   <li>
    Improve appearance of marks on the waveforms
@@ -499,43 +522,10 @@
    #14037
   </li>
   <li>
-   STEM: improve waveform channel visibility
-   #14951
-  </li>
-  <li>
-   Fix waveform display freeze on Linux
-   #15846
-  </li>
-  <li>
-   Fix debug assert violation when building without stem support
-   #15535
-  </li>
-  <li>
-   Fix: reset stem color correctly
-   #15494
-  </li>
-  <li>
-   Fix building without STEM
-   #15510
-  </li>
-  <li>
-   Fix: remove assert on QML waveform when stem are disabled
-   #15507
-  </li>
-  <li>
-   Fix: use max the channel value on mono coloration
-   #14952
-   14953)
-  </li>
-  <li>
-   Fix: initialize
-   allshader::WaveformWidget::m_type
-   #15419
-  </li>
-  <li>
    Fix: unify scaling of scrolling waveforms
    #15324
    #15808
+   #15788
   </li>
  </ul>
  <p>
@@ -561,38 +551,47 @@
  </p>
  <ul>
   <li>
-   Behringer DDM4000 &amp; BCR2000: Remove XML input declarations from mapping
+   Behringer DDM4000 &amp; BCR2000: remove XML input declarations from mapping
    #14285
-  </li>
-  <li>
-   Hercules DJ Control Starlight: Add EffectChain superknob control
-   #14126
-  </li>
-  <li>
-   Numark Mixtrack 3: Update scripts
-   #14193
-  </li>
-  <li>
-   Traktor S3: Small updates and fixes
-   #14340
-  </li>
-  <li>
-   CDJ-350: fix incorrect name in controller mapping
-   #15683
   </li>
   <li>
    Hercules DJControl Inpulse 500: add new mapping
    #14316
   </li>
   <li>
+   Hercules DJControl Starlight: add EffectChain superknob control
+   #14126
+  </li>
+  <li>
+   Midi Fighter Spectra: add stems layer
+   #14932
+  </li>
+  <li>
+   Midi Fighter Twister: add stems layer
+   #14931
+  </li>
+  <li>
    Numark Mixstream Pro: add support
    #15732
+  </li>
+  <li>
+   Numark Mixtrack 3: update scripts
+   #14193
+   #14180
+  </li>
+  <li>
+   Numark Mixtrack Platinum: add stems support
+   #15768
   </li>
   <li>
    Numark NS4FX: add new mapping
    #15829
    #15948
    #15894
+  </li>
+  <li>
+   Pioneer CDJ-350: fix incorrect name in controller mapping
+   #15683
   </li>
   <li>
    Pioneer DDJ-FLX4: fix obsolete hotcue status keys
@@ -609,18 +608,16 @@
   <li>
    Reloop Beatmix 2/4: implement shift+jog wheel seek
    #15575
-  </li>
-  <li>
-   Midi Fighter Spectra: add stems layer
-   #14932
-  </li>
-  <li>
-   Numark Mixtrack Platinum: add stems support
-   #15768
+   #12334
   </li>
   <li>
    Traktor Kontrol Z1: fix crossfader cut
    #14451
+   #14450
+  </li>
+  <li>
+   Traktor S3: small updates and fixes
+   #14340
   </li>
   <li>
    Traktor S4Mk2: check for deck undefined
@@ -633,10 +630,6 @@
   <li>
    Traktor S4Mk3: various improvements
    #15216
-  </li>
-  <li>
-   Midi Fighter Twister: add stems layer
-   #14931
   </li>
  </ul>
  <p>
@@ -729,6 +722,7 @@
   </li>
   <li>
    ControllerRenderingEngine: fix deadlock with mappings with display controllers
+   #15524
   </li>
   <li>
    Restore common-hid-packet-parser global symbol exceptions for eslint
@@ -736,18 +730,16 @@
   </li>
   <li>
    ControllerRenderingEngine: add OpenGL ES for controller screen rendering
+   #15566
   </li>
   <li>
    Fix changing stem group for deck in ComponentsJS
    #14928
+   #14764
   </li>
   <li>
    Fix an unused parameter warning
    #15313
-  </li>
-  <li>
-   Update Numark-Mixtrack-3-scripts.js
-   #14180
   </li>
  </ul>
  <p>
@@ -776,11 +768,8 @@
    #14753
   </li>
   <li>
-   Beat: speed up detection
+   QueenMaryBeats: detection speed up
    #15127
-  </li>
-  <li>
-   BPM: speed up detection
    #15067
   </li>
   <li>
@@ -796,6 +785,7 @@
    m_pVCEnabled
    with nullptr for samplers
    #15303
+   #15288
   </li>
   <li>
    Fix: document libFLAC 1.5
@@ -867,10 +857,12 @@
   <li>
    Interface: use main window screen to detect if skin fits
    #15824
+   #15823
   </li>
   <li>
    Stats: convert ns to ms and add spacing for readability
    #14978
+   #14908
   </li>
   <li>
    Controller: add Stem controls to control picker / menu
@@ -931,19 +923,31 @@
    #14045
   </li>
   <li>
-   Tango and Deere: Add STEM controls
+   Latenight, Tango and Deere: Add STEM controls
    #15492
+   #15310
+   #15309
+   #14752
    #15877
    #15876
    #15885
+   #15878
+   #13537
+   #14745
+   #15493
+   #14242
+   #15535
+   #15533
   </li>
   <li>
    Tracks: avoid re-sorting table when purging/hiding tracks
    #15872
+   #12565
   </li>
   <li>
    Tracks: confirm dialog for Auto DJ queue replace action
    #15149
+   #14956
   </li>
   <li>
    Tracks: add track drop indicator line
@@ -952,14 +956,17 @@
   <li>
    Tracks: align ReplayGain right
    #15144
+   #14997
   </li>
   <li>
    Update cue &amp; play indicators on paused decks when switching cue mode
    #14930
+   #9928
   </li>
   <li>
    Time widget: make ShowSeconds only show seconds, no extra locale info
    #15805
+   #15804
   </li>
   <li>
    EngineVuMeter: fix constructor
@@ -968,10 +975,6 @@
   <li>
    Overview scale options
    #14463
-  </li>
-  <li>
-   Menubar: update Dutch message for Hide
-   #14664
   </li>
  </ul>
  <p>
@@ -1096,12 +1099,9 @@
    #14954
   </li>
   <li>
-   GLES fix
-   #15797
-  </li>
-  <li>
    Never render into an invalid OpenGL Window
    #15951
+   #15942
   </li>
   <li>
    Fail early if not running from Visual Studio environment
@@ -1130,6 +1130,31 @@
   <li>
    Fix WiX error log file generation in GitHub workflow
    #15045
+  </li>
+  <li>
+   Make Debian non-free optional
+   #15895
+  </li>
+  <li>
+   MacOS: don't install already installed Ninja
+   #14499
+  </li>
+  <li>
+   MacOS: Use same CMake internal buildenv download/unzip as for Windows
+   #15033
+  </li>
+  <li>
+   MacOS: String comparison fix for zsh
+   #15568
+  </li>
+  <li>
+   Fix qt 6.10 warnings
+   #15719
+   #15698
+  </li>
+  <li>
+   Follow Ubuntu libstdc++6 and libgcc-s1 updates
+   #15275
   </li>
  </ul>
  <p>
@@ -1597,14 +1622,6 @@
    #14649
   </li>
   <li>
-   Fix discovery of STEM tests by CTest
-   #15386
-  </li>
-  <li>
-   STEM: add a ALAC stem test file
-   #15656
-  </li>
-  <li>
    Add automation to help with release branch syncing
    #15111
    #15052
@@ -1617,9 +1634,10 @@
    #15649
   </li>
   <li>
-   Chore: disable broken benchmark
+   Chore: disable broken/slow benchmark
    #15658
    #15508
+   #14846
   </li>
   <li>
    CI: refactor workflow into modular actions
@@ -1642,6 +1660,7 @@
   <li>
    Remove all VCPKG_DEFAULT_HOST_TRIPLET entries from build.yml
    #15029
+   #15022
   </li>
   <li>
    CMake find modules required for the new VCPKG environment
@@ -1659,28 +1678,18 @@
    #14988
   </li>
   <li>
-   MacOS: don't install already installed Ninja
-   #14499
-  </li>
-  <li>
-   MacOS: Use same CMake internal buildenv download/unzip as for Windows
-   #15033
-  </li>
-  <li>
    Windows_buildenv.bat: remove stray command
    #15237
-  </li>
-  <li>
-   String comparison fix for zsh
-   #15568
   </li>
   <li>
    Add a MMutexLockerDebug to trace Multithreading
    #14428
   </li>
   <li>
-   Reduce number of iterations in globalTrackCacheTest.concurrentDelete
+   Unitttests: Reduce number of iterations in globalTrackCacheTest.concurrentDelete
    #15287
+   #14833
+   #14919
   </li>
   <li>
    Remove accidentally committed "backup" file
@@ -1697,14 +1706,7 @@
   <li>
    Logging: remove redundant class names
    #15496
-  </li>
-  <li>
-   Remove redundant logging prefix from TrackDAO
    #15860
-  </li>
-  <li>
-   Debian free fix
-   #15895
   </li>
   <li>
    Don't hardcode the limit of parallel compiler threads for GitHub runners
@@ -1721,18 +1723,6 @@
   <li>
    Fix pre-commit of 2.6 branch
    #15853
-  </li>
-  <li>
-   Fix qt warnings #ISSUE 15698
-   #15719
-  </li>
-  <li>
-   Fix unittest
-   #15686
-  </li>
-  <li>
-   Follow Ubuntu libstdc++6 and libgcc-s1 updates
-   #15275
   </li>
   <li>
    Num deck streamline
