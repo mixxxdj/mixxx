@@ -61,7 +61,7 @@ struct timecoder_channel {
     unsigned int crossing_ticker; /* samples since we last crossed zero */
 
     int rms, rms_deriv; /* RMS values for the signal and its derivative */
-    signed int deriv, deriv_decoder, deriv_scaled; /* Derivative and its scaled version */
+    signed int deriv, deriv_decoder; /* Derivative */
 
     struct ringbuffer *delayline; /* needed for the pitch detection*/
     struct ringbuffer *delayline_deriv; /* needed for the pitch detection*/
@@ -129,7 +129,6 @@ struct timecoder {
     int mon_size, mon_counter;
 
     struct mk2_subcode upper_bitstream, lower_bitstream;
-    double gain_compensation; /* Scaling factor for the derivative */
 };
 
 struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path);
