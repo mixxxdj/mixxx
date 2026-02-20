@@ -472,7 +472,7 @@ void mk2_process_timecode(struct timecoder *tc, signed int reading)
     tc->timecode_ticker = 0;
 
     tc->ref_level -= tc->ref_level / REF_PEAKS_AVG;
-    tc->ref_level += abs((int)(tc->secondary.rms_deriv * tc->gain_compensation))
+    tc->ref_level += abs((int)(tc->secondary.rms_deriv))
         / REF_PEAKS_AVG;
 
     debug("upper.valid_counter: %d, lower.valid_counter %d, forwards: %b\n", */
