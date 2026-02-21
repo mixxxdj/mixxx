@@ -163,31 +163,49 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
 
+    // line added to start github CI
     QStringList columns;
-    columns << PLAYLISTTRACKSTABLE_TRACKID + " AS " + LIBRARYTABLE_ID
-            << PLAYLISTTRACKSTABLE_POSITION
-            << PLAYLISTTRACKSTABLE_DATETIMEADDED
+    columns << QStringLiteral("%1.%2").arg(
+                       QStringLiteral(LIBRARY_TABLE), LIBRARYTABLE_ID)
+            << QStringLiteral("%1.%2").arg(
+                       QStringLiteral(PLAYLIST_TRACKS_TABLE),
+                       PLAYLISTTRACKSTABLE_POSITION)
+            << QStringLiteral("%1.%2").arg(
+                       QStringLiteral(PLAYLIST_TRACKS_TABLE),
+                       PLAYLISTTRACKSTABLE_DATETIMEADDED)
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
-            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+            << QStringLiteral("%1.%2").arg(QStringLiteral(LIBRARY_TABLE),
+                       LIBRARYTABLE_COVERART_DIGEST) +
+                    " AS " + LIBRARYTABLE_COVERART;
+    QString queryString =
+            QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM %3 "
+                    "INNER JOIN %5 "
+                    "ON %3.%4 = %5.%6 "
+                    "WHERE %5.%7 = %8 "
+                    "AND %3.%9 = 0")
+                    .arg(playlistTableName,
+                            columns.join(","),
+                            LIBRARY_TABLE,
+                            LIBRARYTABLE_ID,
+                            PLAYLIST_TRACKS_TABLE,
+                            PLAYLISTTRACKSTABLE_TRACKID,
+                            PLAYLISTTRACKSTABLE_PLAYLISTID,
+                            QString::number(playlistId),
+                            LIBRARYTABLE_MIXXXDELETED);
+    // qDebug() << "[PlaylistTableModel] -> queryString: " << queryString;
+    FwdSqlQuery(m_database, queryString).execPrepared();
 
-    QString queryString = QString(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-            "SELECT %2 FROM PlaylistTracks "
-            "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-            "WHERE PlaylistTracks.playlist_id = %3")
-                                  .arg(escaper.escapeString(playlistTableName),
-                                          columns.join(","),
-                                          QString::number(playlistId));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
     columns[0] = LIBRARYTABLE_ID;
-    // columns[1] = PLAYLISTTRACKSTABLE_POSITION from above
-    // columns[2] = PLAYLISTTRACKSTABLE_DATETIMEADDED from above
+    columns[1] = PLAYLISTTRACKSTABLE_POSITION;
+    columns[2] = PLAYLISTTRACKSTABLE_DATETIMEADDED;
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
     setTable(playlistTableName,
