@@ -742,6 +742,12 @@ audio::FramePos Beats::snapPosToNearBeat(audio::FramePos position) const {
 
 int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const {
     startPosition = snapPosToNearBeat(startPosition);
+    if (startPosition > endPosition) {
+        // May happen if arguments are in the wrong order.
+        // Also helps with Jumpcues so caller doesn't have to swap
+        // positions in case it's a backward jump.
+        std::swap(startPosition, endPosition);
+    }
     audio::FramePos lastPosition = audio::kStartFramePos;
     int i = 1;
     while (lastPosition < endPosition) {
