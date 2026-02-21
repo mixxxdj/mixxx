@@ -27,13 +27,60 @@
  */
 
 (function(global) {
+    /**
+     * @typedef {[number, number] | [[number, number], [number, number]]} MidiBytesVariations
+     *
+     * @typedef {object} ComponentOptions
+     * @property {MidiBytesVariations} [midi] MIDI events
+     * @property {MidiBytesVariations} [midiIn] MIDI events
+     * @property {MidiBytesVariations} [midiOut] MIDI events
+     */
+
     const NO_TIMER = 0;
-    const Component = function(options) {
-        if (Array.isArray(options) && typeof options[0] === "number") {
-            this.midi = options;
-        } else {
-            Object.assign(this, options);
+
+    /**
+     * @param {ComponentOptions | [number, number]} options Component configuration
+     * @class
+     */
+    const Component = function(options = {}) {
+        this.normalizeMidi = (midiBytesVar) => {
+            if (!Array.isArray(midiBytesVar)) {
+                if ("object" === typeof midiBytesVar) {
+                    return this.normalizeNestedMidi(midiBytesVar);
+                }
+                return [];
+            }
+
+            const isArrayOfArrays = midiBytesVar.every(Array.isArray);
+
+            if (isArrayOfArrays) {
+                return midiBytesVar;
+            } else {
+                return [midiBytesVar];
+            }
+        };
+
+        this.normalizeNestedMidi = (nestedMidi) => {
+            let array = [];
+            Object.keys(nestedMidi).forEach(key => {
+                array[key] = this.normalizeMidi(nestedMidi[key]);
+            });
+            return array;
         }
+
+        if (Array.isArray(options)) {
+            const [midiStatus, midiNo] = options;
+            options = {midiOut: [midiStatus, midiNo]};
+        } else if (Array.isArray(options.midi)) {
+            console.warn("Passing `midi` configuration is deprecated in favor `midiOut`");
+            options.midiOut = options.midi;
+            delete options.midi;
+        }
+
+        options.midiIn = this.normalizeMidi(options.midiIn);
+        options.midiOut = this.normalizeMidi(options.midiOut);
+
+        Object.assign(this, options);
 
         if (typeof this.unshift === "function") {
             this.unshift();
@@ -46,6 +93,9 @@
             this.inKey = options.key;
             this.outKey = options.key;
         }
+
+        /** @type {MidiInputHandlerController[]} */
+        this.inputHandlers = [];
 
         if (this.outConnect && this.group !== undefined && this.outKey !== undefined) {
             this.connect();
@@ -77,6 +127,23 @@
         outTrigger: true,
 
         max: 127, // for MIDI. When adapting for HID this may change.
+
+        /**
+         * @deprecated
+         * @returns {[number, number]}
+         */
+        get midi() {
+            console.warn("`midi` property is deprecated, please use `midiOut` instead");
+            return this.midiOut.length > 0 ? this.midiOut[0] : undefined;
+        },
+        /**
+         * @deprecated
+         * @param {MidiBytesVariations} value New midi value
+         */
+        set midi(value) {
+            console.warn("`midi` property is deprecated, please use `midiOut` instead");
+            this.midiOut = this.normalizeMidi(value);
+        },
 
         // common functions
         // In most cases, you should not overwrite these.
@@ -112,13 +179,13 @@
             this.outSetValue(!this.outGetValue());
         },
 
-        connect: function() {
+        connectMidiOut() {
             /**
-            Override this method with a custom one to connect multiple Mixxx COs for a single Component.
-            Add the connection objects to the this.connections array so they all get disconnected just
-            by calling this.disconnect(). This can be helpful for multicolor LEDs that show a
-            different color depending on the state of different Mixxx COs. Refer to
-            SamplerButton.connect() and SamplerButton.output() for an example.
+             Override this method with a custom one to connect multiple Mixxx COs for a single Component.
+             Add the connection objects to the this.connections array so they all get disconnected just
+             by calling this.disconnect(). This can be helpful for multicolor LEDs that show a
+             different color depending on the state of different Mixxx COs. Refer to
+             SamplerButton.connect() and SamplerButton.output() for an example.
              */
             if (undefined !== this.group &&
                 undefined !== this.outKey &&
@@ -127,11 +194,52 @@
                 this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         },
+        connectMidiIn() {
+
+            if (0 in this.midiIn) {
+                for (const [midiStatus, midino] of this.midiIn) {
+                    this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this.input.bind(this)));
+                }
+                return;
+            }
+
+            Object.keys(this.midiIn).forEach(key => {
+                let methodNameOriginal = 'input' + key;
+                let methodNameCamelCase = 'input' + String(key[0]).toUpperCase() + String(key).slice(1);
+                let methodNameCapitals = 'input' + String(key).toUpperCase();
+                let methodName = null;
+
+                switch (true) {
+                    case methodNameOriginal in this:
+                        methodName = methodNameOriginal;
+                        break;
+                    case methodNameCamelCase in this:
+                        methodName = methodNameCamelCase;
+                        break;
+                    case methodNameCapitals in this:
+                        methodName = methodNameCapitals;
+                        break;
+                }
+                if (methodName !== null) {
+                    for (const [midiStatus, midino] of this.midiIn[key]) {
+                        this.inputHandlers.push(midi.makeInputHandler(midiStatus, midino, this[methodName].bind(this)));
+                    }
+                }
+            });
+
+        },
+        connect() {
+            this.connectMidiIn();
+            this.connectMidiOut();
+        },
         disconnect: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
                     conn.disconnect();
                 });
+            }
+            for (const inputHandler of this.inputHandlers) {
+                inputHandler.disconnect();
             }
         },
         trigger: function() {
@@ -146,15 +254,19 @@
         shiftChannel: false,
         shiftControl: false,
         send: function(value) {
-            if (this.midi === undefined || this.midi[0] === undefined || this.midi[1] === undefined) {
+            if (this.midiOut.length <= 0) {
                 return;
             }
-            midi.sendShortMsg(this.midi[0], this.midi[1], value);
+            for (const [midiStatus, midino] of this.midiOut) {
+                midi.sendShortMsg(midiStatus, midino, value);
+            }
+
             if (this.sendShifted) {
+                console.assert(this.midiOut.length === 1, "use nested `midiOut: [[...], [...], ...]` instead of `sendShifted`!");
                 if (this.shiftChannel) {
-                    midi.sendShortMsg(this.midi[0] + this.shiftOffset, this.midi[1], value);
+                    midi.sendShortMsg(this.midiOut[0][0] + this.shiftOffset, this.midiOut[0][1], value);
                 } else if (this.shiftControl) {
-                    midi.sendShortMsg(this.midi[0], this.midi[1] + this.shiftOffset, value);
+                    midi.sendShortMsg(this.midiOut[0][0], this.midiOut[0][1] + this.shiftOffset, value);
                 }
             }
         },
@@ -499,7 +611,9 @@
                 this._firstLSB = value;
             }
         },
-        connect: function() {
+        connect() {
+            this.connectMidiIn();
+            this.connectMidiOut();
             if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
@@ -1279,7 +1393,7 @@
             this.effectFocusButton.trigger();
 
             this.enableOnChannelButtons.forEachComponent(function(button) {
-                if (button.midi !== undefined) {
+                if (button.midiOut.length > 0) {
                     button.disconnect();
                     button.connect();
                     button.trigger();
