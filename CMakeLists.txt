@@ -1391,6 +1391,7 @@ add_library(
   src/library/dao/analysisdao.cpp
   src/library/dao/autodjcratesdao.cpp
   src/library/dao/cuedao.cpp
+  src/library/dao/genredao.cpp
   src/library/dao/directorydao.cpp
   src/library/dao/libraryhashdao.cpp
   src/library/dao/playlistdao.cpp
