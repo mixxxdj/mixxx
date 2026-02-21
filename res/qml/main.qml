@@ -13,6 +13,8 @@ ApplicationWindow {
     property alias editDeck: editDeckButton.checked
     property var focusedDeck: null
     property alias maximizeLibrary: maximizeLibraryButton.checked
+    readonly property int numDecks: 4
+    readonly property int numSamplers: 16
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
@@ -25,13 +27,19 @@ ApplicationWindow {
     width: 1792
 
     Mixxx.ControlProxy {
-        id: numDecksControl
-
         group: "[App]"
         key: "num_decks"
 
-        Component.onCompleted: {
-            value = 4;
+        onInitializedChanged: {
+            value = root.numDecks;
+        }
+    }
+    Mixxx.ControlProxy {
+        group: "[App]"
+        key: "num_samplers"
+
+        onInitializedChanged: {
+            value = root.numSamplers;
         }
     }
     Column {
