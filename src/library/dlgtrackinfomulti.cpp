@@ -172,6 +172,11 @@ void DlgTrackInfoMulti::init() {
             this,
             &DlgTrackInfoMulti::slotOpenInFileBrowser);
 
+    connect(btnSwapArtistTitle,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfoMulti::slotSwapArtistTitle);
+
     QList<QComboBox*> valueComboBoxes;
     valueComboBoxes.append(txtArtist);
     valueComboBoxes.append(txtTitle);
@@ -290,6 +295,31 @@ void DlgTrackInfoMulti::init() {
             &WCoverArtMenu::reloadCoverArt,
             this,
             &DlgTrackInfoMulti::slotReloadCoverArt);
+}
+
+void DlgTrackInfoMulti::slotSwapArtistTitle() {
+    qDebug() << "[DlgTrackInfoMulti] -> slotSwapArtistTitle() called";
+    QString oldArtist, oldTitle;
+    if (m_trackRecords.isEmpty()) {
+        return;
+    }
+
+    for (auto& rec : m_trackRecords) {
+        oldTitle.clear();
+        oldArtist.clear();
+        oldArtist = rec.getMetadata().getTrackInfo().getArtist();
+        oldTitle = rec.getMetadata().getTrackInfo().getTitle();
+        rec.refMetadata().refTrackInfo().setArtist(oldTitle);
+        rec.refMetadata().refTrackInfo().setTitle(oldArtist);
+    }
+
+    disconnectTracksChanged();
+    for (const auto& rec : std::as_const(m_trackRecords)) {
+        auto pTrack = m_pLoadedTracks.value(rec.getId());
+        pTrack->replaceRecord(rec);
+    }
+    connectTracksChanged();
+    updateFromTracks();
 }
 
 void DlgTrackInfoMulti::slotApply() {

@@ -171,10 +171,14 @@ void DlgTrackInfo::init() {
             &TapFilter::tapped,
             this,
             &DlgTrackInfo::slotBpmTap);
-
+    // Swap Title - Artist
+    connect(btnSwapArtistTitle,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotSwapArtistTitle);
     // Metadata fields
     connect(txtTitle,
-            &QLineEdit::editingFinished,
+            &QLineEdit::textChanged,
             this,
             [this]() {
                 txtTitle->setText(txtTitle->text().trimmed());
@@ -182,7 +186,7 @@ void DlgTrackInfo::init() {
                         txtTitle->text());
             });
     connect(txtArtist,
-            &QLineEdit::editingFinished,
+            &QLineEdit::textChanged,
             this,
             [this]() {
                 txtArtist->setText(txtArtist->text().trimmed());
@@ -302,6 +306,13 @@ void DlgTrackInfo::init() {
                 trackColorDialogSetColor(newColor);
                 m_trackRecord.setColor(newColor);
             });
+}
+
+void DlgTrackInfo::slotSwapArtistTitle() {
+    QString artist = txtArtist->text();
+    QString title = txtTitle->text();
+    txtArtist->setText(title);
+    txtTitle->setText(artist);
 }
 
 void DlgTrackInfo::slotApply() {

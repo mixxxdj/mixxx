@@ -90,7 +90,7 @@
            </widget>
           </item>
 
-          <item row="0" column="2" rowspan="3" colspan="2">
+          <item row="0" column="2" rowspan="4" colspan="2">
            <widget class="QWidget" name="coverWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -142,7 +142,18 @@
            </widget>
           </item>
 
-          <item row="2" column="0">
+          <item row="2" column="1">
+           <widget class="QPushButton" name="btnSwapArtistTitle">
+            <property name="text">
+             <string>Swap Artist - Title</string>
+            </property>
+            <property name="toolTip">
+             <string>Swap the Artist and Title (requires apply or OK)</string>
+            </property>
+           </widget>
+          </item>
+
+          <item row="3" column="0">
            <widget class="QLabel" name="lblAlbum">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -158,7 +169,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="3" column="1">
            <widget class="QLineEdit" name="txtAlbum">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -175,7 +186,7 @@
            </widget>
           </item>
 
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="lblAlbumArtist">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -191,7 +202,7 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QLineEdit" name="txtAlbumArtist">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -208,7 +219,7 @@
            </widget>
           </item>
 
-          <item row="3" column="2" colspan="2">
+          <item row="4" column="2" colspan="2">
            <widget class="QWidget" name="verticalWidgetStars" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -227,7 +238,7 @@
            </widget>
           </item>
 
-          <item row="4" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="lblComposer">
             <property name="text">
              <string>Composer</string>
@@ -237,7 +248,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
+          <item row="5" column="1">
            <widget class="QLineEdit" name="txtComposer">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -254,7 +265,7 @@
            </widget>
           </item>
 
-          <item row="4" column="2">
+          <item row="5" column="2">
            <widget class="QLabel" name="lblYear">
             <property name="text">
              <string>Year</string>
@@ -264,7 +275,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="3">
+          <item row="5" column="3">
            <widget class="QLineEdit" name="txtYear">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -275,7 +286,7 @@
            </widget>
           </item>
 
-          <item row="5" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="lblGenre">
             <property name="text">
              <string>Genre</string>
@@ -285,7 +296,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
+          <item row="6" column="1">
            <widget class="QLineEdit" name="txtGenre">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -302,7 +313,7 @@
            </widget>
           </item>
 
-          <item row="5" column="2">
+          <item row="6" column="2">
            <widget class="QLabel" name="lblKey">
             <property name="text">
              <string>Key</string>
@@ -312,7 +323,7 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="3">
+          <item row="6" column="3">
            <widget class="QLineEdit" name="txtKey">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -329,7 +340,7 @@
            </widget>
           </item>
 
-          <item row="6" column="0">
+          <item row="7" column="0">
            <widget class="QLabel" name="lblGrouping">
             <property name="text">
              <string>Grouping</string>
@@ -339,7 +350,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="7" column="1">
            <widget class="QLineEdit" name="txtGrouping">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -356,7 +367,7 @@
            </widget>
           </item>
 
-          <item row="6" column="2">
+          <item row="7" column="2">
            <widget class="QLabel" name="lblTrackNumber">
             <property name="text">
              <string>Track #</string>
@@ -366,7 +377,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="3">
+          <item row="7" column="3">
            <widget class="QLineEdit" name="txtTrackNumber">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -383,7 +394,7 @@
            </widget>
           </item>
 
-          <item row="7" column="0">
+          <item row="8" column="0">
            <widget class="QLabel" name="lblTrackComment">
             <property name="text">
              <string>Comments</string>
@@ -393,7 +404,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1" colspan="3">
+          <item row="8" column="1" colspan="3">
            <widget class="QPlainTextEdit" name="txtComment">
             <property name="tabChangesFocus">
              <bool>true</bool>
@@ -401,7 +412,7 @@
            </widget>
           </item>
 
-          <item row="8" column="0">
+          <item row="9" column="0">
            <widget class="QLabel" name="lblTrackColor">
             <property name="text">
              <string>Color</string>
@@ -411,7 +422,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="1" colspan="3">
+          <item row="9" column="1" colspan="3">
            <widget class="QPushButton" name="btnColorPicker">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -421,7 +432,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
+          <item row="10" column="0">
            <spacer name="horizontalSpacer_5">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -434,7 +445,7 @@
             </property>
            </spacer>
           </item>
-          <item row="10" column="0" colspan="4">
+          <item row="11" column="0" colspan="4">
            <layout class="QHBoxLayout" name="meatdata_buttons_layout">
             <item>
              <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
