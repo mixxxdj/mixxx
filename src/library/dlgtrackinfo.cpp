@@ -3,6 +3,7 @@
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
+#include <cmath>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
@@ -33,6 +34,9 @@ constexpr int kMinBpm = 30;
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 const QString kBpmPropertyName = QStringLiteral("bpm");
+
+constexpr double kStandardTuningHz = 440.0;
+constexpr double kCentsPerOctave = 1200.0;
 
 } // namespace
 
@@ -167,6 +171,11 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             &DlgTrackInfo::slotKeyTextChanged);
+
+    connect(spinTuning,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgTrackInfo::slotTuningValueChanged);
 
     connect(bpmTap,
             &QPushButton::pressed,
@@ -434,6 +443,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtBpm->setText(
             m_trackRecord.getMetadata().getTrackInfo().getBpmText());
     displayKeyText();
+    displayTuningFields();
 
     // Non-editable fields
     txtDuration->setText(
@@ -655,6 +665,7 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     updateKeyText();
 
+    slotTuningValueChanged(spinTuning->value());
     m_trackRecord.setBpmLocked(m_bpmLocked);
 
     // Update the cached track
@@ -795,6 +806,53 @@ void DlgTrackInfo::updateKeyText() {
 void DlgTrackInfo::displayKeyText() {
     const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
+}
+
+void DlgTrackInfo::displayTuningFields() {
+    const double tuningHz =
+            m_trackRecord.getKeys().getGlobalTuningFrequencyHz();
+    const QSignalBlocker blocker(spinTuning);
+    if (tuningHz > 0.0) {
+        // Block signals to avoid triggering slotTuningValueChanged
+        // while we are just loading data into the widget.
+        spinTuning->setValue(tuningHz);
+
+        const double cents = kCentsPerOctave *
+                std::log2(tuningHz / kStandardTuningHz);
+        const int centsRounded = static_cast<int>(std::lround(cents));
+        const QString offsetText = centsRounded >= 0
+                ? QStringLiteral("+%1 ct").arg(centsRounded)
+                : QStringLiteral("%1 ct").arg(centsRounded);
+        txtTuningCents->setText(offsetText);
+    } else {
+        // No tuning data: set to minimum (triggers specialValueText = blank)
+        spinTuning->setValue(spinTuning->minimum());
+        txtTuningCents->clear();
+    }
+}
+
+void DlgTrackInfo::slotTuningValueChanged(double value) {
+    // Store the user-entered Hz value in the Keys protobuf
+    Keys keys = m_trackRecord.getKeys();
+    if (value <= spinTuning->minimum()) {
+        // Special value (minimum) means "no tuning set" — store 0 Hz
+        keys.setGlobalTuningFrequencyHz(0.0);
+        m_trackRecord.setKeys(std::move(keys));
+        txtTuningCents->clear();
+        return;
+    }
+
+    keys.setGlobalTuningFrequencyHz(value);
+    m_trackRecord.setKeys(std::move(keys));
+
+    // Update the cents offset label so the user gets immediate feedback
+    const double cents = kCentsPerOctave *
+            std::log2(value / kStandardTuningHz);
+    const int centsRounded = static_cast<int>(std::lround(cents));
+    const QString offsetText = centsRounded >= 0
+            ? QStringLiteral("+%1 ct").arg(centsRounded)
+            : QStringLiteral("%1 ct").arg(centsRounded);
+    txtTuningCents->setText(offsetText);
 }
 
 void DlgTrackInfo::slotKeyTextChanged() {
