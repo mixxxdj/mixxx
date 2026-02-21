@@ -3,6 +3,7 @@
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
+#include <cmath>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
@@ -33,6 +34,12 @@ constexpr int kMinBpm = 30;
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 const QString kBpmPropertyName = QStringLiteral("bpm");
+
+// CHANGE: Constants for tuning frequency to cents conversion.
+// A4 = 440 Hz is the international standard concert pitch.
+// cents = 1200 * log2(freq / 440) converts Hz to cents offset.
+constexpr double kStandardTuningHz = 440.0;
+constexpr double kCentsPerOctave = 1200.0;
 
 } // namespace
 
@@ -162,6 +169,14 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             &DlgTrackInfo::slotKeyTextChanged);
+
+    // CHANGE: Connect the new tuning spinbox to our slot.
+    // When the user changes the Hz value, slotTuningValueChanged updates
+    // the Keys object in m_trackRecord and refreshes the cents offset label.
+    connect(spinTuning,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgTrackInfo::slotTuningValueChanged);
 
     connect(bpmTap,
             &QPushButton::pressed,
@@ -430,6 +445,10 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getTrackInfo().getBpmText());
     displayKeyText();
 
+    // CHANGE: Populate the tuning spinbox and cents offset label
+    // from the tuning frequency stored in the Keys protobuf.
+    displayTuningFields();
+
     // Non-editable fields
     txtDuration->setText(
             m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
@@ -637,6 +656,12 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     updateKeyText();
 
+    // CHANGE: Capture any pending tuning spinbox edits before saving.
+    // Same pattern as BPM/Key above: if the user edits the spinbox and
+    // hits Apply/OK without pressing Enter first, the valueChanged signal
+    // may not have fired yet.
+    slotTuningValueChanged(spinTuning->value());
+
     // Update the cached track
     //
     // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
@@ -766,6 +791,65 @@ void DlgTrackInfo::updateKeyText() {
 void DlgTrackInfo::displayKeyText() {
     const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
+}
+
+// method — populates the tuning spinbox and cents offset label
+// from the tuning frequency stored in the Keys protobuf object.
+// If no tuning data exists (0 Hz), the spinbox is set to its minimum
+// which triggers the specialValueText (empty string) so the box appears blank.
+void DlgTrackInfo::displayTuningFields() {
+    const double tuningHz =
+            m_trackRecord.getKeys().getGlobalTuningFrequencyHz();
+    if (tuningHz > 0.0) {
+        // Block signals to avoid triggering slotTuningValueChanged
+        // while we are just loading data into the widget.
+        const QSignalBlocker blocker(spinTuning);
+        spinTuning->setValue(tuningHz);
+
+        // Convert Hz to cents offset from A440:
+        // cents = 1200 * log2(freq / 440)
+        const double cents = kCentsPerOctave *
+                std::log2(tuningHz / kStandardTuningHz);
+        const int centsRounded = static_cast<int>(std::lround(cents));
+        const QString offsetText = centsRounded >= 0
+                ? QStringLiteral("+%1 ct").arg(centsRounded)
+                : QStringLiteral("%1 ct").arg(centsRounded);
+        txtTuningCents->setText(offsetText);
+    } else {
+        // No tuning data: set to minimum (triggers specialValueText = blank)
+        const QSignalBlocker blocker(spinTuning);
+        spinTuning->setValue(spinTuning->minimum());
+        txtTuningCents->clear();
+    }
+}
+
+// New slot — called when the user changes the tuning spinbox value.
+// Updates the Keys object in m_trackRecord with the new tuning frequency
+// and refreshes the cents offset label. If the value is at the spinbox
+// minimum, it means "no tuning" so we store 0 Hz.
+void DlgTrackInfo::slotTuningValueChanged(double value) {
+    if (value <= spinTuning->minimum()) {
+        // Special value (minimum) means "no tuning set" — store 0 Hz
+        Keys keys = m_trackRecord.getKeys();
+        keys.setGlobalTuningFrequencyHz(0.0);
+        m_trackRecord.setKeys(std::move(keys));
+        txtTuningCents->clear();
+        return;
+    }
+
+    // Store the user-entered Hz value in the Keys protobuf
+    Keys keys = m_trackRecord.getKeys();
+    keys.setGlobalTuningFrequencyHz(value);
+    m_trackRecord.setKeys(std::move(keys));
+
+    // Update the cents offset label so the user gets immediate feedback
+    const double cents = kCentsPerOctave *
+            std::log2(value / kStandardTuningHz);
+    const int centsRounded = static_cast<int>(std::lround(cents));
+    const QString offsetText = centsRounded >= 0
+            ? QStringLiteral("+%1 ct").arg(centsRounded)
+            : QStringLiteral("%1 ct").arg(centsRounded);
+    txtTuningCents->setText(offsetText);
 }
 
 void DlgTrackInfo::slotKeyTextChanged() {
