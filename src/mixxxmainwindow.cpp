@@ -1497,9 +1497,21 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
                 emit fullScreenChanged(isFullScreen());
             }
         }
+    } else if (event->type() == QEvent::TabletMove ||
+            event->type() == QEvent::TabletPress ||
+            event->type() == QEvent::TabletRelease ||
+            event->type() == QEvent::TabletTrackingChange ||
+            event->type() == QEvent::TabletEnterProximity ||
+            event->type() == QEvent::TabletLeaveProximity) {
+        qWarning() << "Event filter:" << event;
     }
     // standard event processing
     return QMainWindow::eventFilter(obj, event);
+}
+
+void MixxxMainWindow::tabletEvent(QTabletEvent* event) {
+    qWarning() << "QTabletEvent:" << event;
+    QMainWindow::tabletEvent(event);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
