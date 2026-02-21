@@ -47,6 +47,7 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
+#include "widget/wgenretaginput.h"
 #include "widget/wmenucheckbox.h"
 #include "widget/wsearchrelatedtracksmenu.h"
 // WStarRating is required for DlgTrackInfo
@@ -2729,6 +2730,11 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // Create a fresh dialog on invocation.
         m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
                 m_pConfig);
+        if (m_pLibrary && m_pLibrary->trackCollectionManager()) {
+            TrackCollection* pTrackCollection =
+                    m_pLibrary->trackCollectionManager()->internalCollection();
+            m_pDlgTrackInfoMulti->setTrackCollection(pTrackCollection);
+        }
         connect(m_pDlgTrackInfoMulti.get(),
                 &QDialog::finished,
                 this,
@@ -2757,6 +2763,11 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         m_pDlgTrackInfo = std::make_unique<DlgTrackInfo>(
                 m_pConfig,
                 m_pTrackModel);
+        if (m_pLibrary && m_pLibrary->trackCollectionManager()) {
+            TrackCollection* pTrackCollection =
+                    m_pLibrary->trackCollectionManager()->internalCollection();
+            m_pDlgTrackInfo->setTrackCollection(pTrackCollection);
+        }
         connect(m_pDlgTrackInfo.get(),
                 &QDialog::finished,
                 this,
