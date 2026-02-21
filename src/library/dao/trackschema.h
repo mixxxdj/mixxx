@@ -80,6 +80,16 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
+// Tabella Genres
+const QString TableGenres = QStringLiteral("genres");
+const QString GenresId = QStringLiteral("id");
+const QString GenresName = QStringLiteral("name");
+
+// Tabella Genre-Tracks Junction
+const QString TableGenreTracks = QStringLiteral("genre_tracks");
+const QString GenreTracksTrackId = QStringLiteral("track_id");
+const QString GenreTracksGenreId = QStringLiteral("genre_id");
+
 namespace mixxx {
 namespace trackschema {
 // TableForColumn returns the name of the table that contains the named column.
