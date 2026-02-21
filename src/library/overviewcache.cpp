@@ -3,10 +3,15 @@
 #include <QFutureWatcher>
 #include <QPixmapCache>
 #include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QtConcurrentRun>
 
 #include "library/dao/analysisdao.h"
+#include "library/dao/cuedao.h"
+#include "library/dao/trackschema.h"
 #include "moc_overviewcache.cpp"
+#include "track/cueinfo.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
@@ -93,9 +98,14 @@ QPixmap OverviewCache::requestCachedOverview(
 QPixmap OverviewCache::requestUncachedOverview(
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
-        TrackId trackId,
+        TrackPointer pTrack,
         const QObject* pRequester,
         QSize desiredSize) {
+    if (!pTrack) {
+        return QPixmap();
+    }
+
+    TrackId trackId = pTrack->getId();
     if (!trackId.isValid()) {
         return QPixmap();
     }
@@ -107,8 +117,6 @@ QPixmap OverviewCache::requestUncachedOverview(
     if (m_tracksWithoutOverview.contains(trackId)) {
         return QPixmap();
     }
-
-    // kLogger.info() << "requestUncachedOverview()" << trackId << pRequester << desiredSize;
 
     const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
     QPixmap pixmap;
@@ -127,7 +135,7 @@ QPixmap OverviewCache::requestUncachedOverview(
             m_pDbConnectionPool,
             type,
             signalColors,
-            trackId,
+            pTrack,
             pRequester,
             desiredSize);
     connect(watcher,
@@ -145,40 +153,55 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
         const mixxx::DbConnectionPoolPtr pDbConnectionPool,
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
-        TrackId trackId,
+        TrackPointer pTrack,
         const QObject* pRequester,
         QSize desiredSize) {
-    // kLogger.warning() << "prepareOverview" << trackId;
     FutureResult result;
-    result.trackId = trackId;
+    result.trackId = pTrack ? pTrack->getId() : TrackId();
     result.type = type;
     result.requester = pRequester;
     result.image = QImage();
     result.resizedToSize = desiredSize;
 
-    if (!trackId.isValid() || desiredSize.isEmpty()) {
+    if (!pTrack || !result.trackId.isValid() || desiredSize.isEmpty()) {
         return result;
     }
 
     mixxx::DbConnectionPooler dbConnectionPooler(pDbConnectionPool);
+    QSqlDatabase database = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     AnalysisDao analysisDao(pConfig);
-    analysisDao.initialize(mixxx::DbConnectionPooled(pDbConnectionPool));
+    analysisDao.initialize(database);
 
     QList<AnalysisDao::AnalysisInfo> analyses =
             analysisDao.getAnalysesForTrackByType(
-                    trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
+                    result.trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
 
     if (!analyses.isEmpty()) {
         ConstWaveformPointer pLoadedTrackWaveformSummary = ConstWaveformPointer(
                 WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
 
         if (!pLoadedTrackWaveformSummary.isNull()) {
+            // get track duration and cue info from the Track object
+            const double trackDurationMillis = pTrack->getDuration() * 1000.0;
+            const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
+
+            // convert cue points to cue infos
+            QList<mixxx::CueInfo> cueInfos;
+            const QList<CuePointer> cuePoints = pTrack->getCuePoints();
+            for (const auto& pCue : cuePoints) {
+                if (pCue) {
+                    cueInfos.append(pCue->getCueInfo(sampleRate));
+                }
+            }
+
             QImage image = waveformOverviewRenderer::render(
                     pLoadedTrackWaveformSummary,
                     type,
                     signalColors,
-                    true /* mono, bottom-aligned */);
+                    true /* mono, bottom-aligned */,
+                    cueInfos,
+                    trackDurationMillis);
 
             if (!image.isNull()) {
                 image = resizeImageSize(image, desiredSize);
