@@ -5,6 +5,7 @@
 #include <QModelIndex>
 #include <memory>
 
+#include "library/trackcollection.h"
 #include "library/ui_dlgtrackinfomulti.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
@@ -13,6 +14,7 @@
 #include "util/parented_ptr.h"
 #include "util/tapfilter.h"
 #include "widget/wcolorpickeraction.h"
+#include "widget/wgenretaginput.h"
 
 class WColorPickerAction;
 class WStarRating;
@@ -31,6 +33,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void loadTracks(const QList<TrackPointer>& pTracks);
     void focusField(const QString& property);
 
+    void setTrackCollection(TrackCollection* pTrackCollection);
+
   protected:
     /// We need this to set the max width of the comment QComboBox which has
     /// issues with long lines / multi-line content. See init() for details.
@@ -42,6 +46,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void slotOk();
     void slotApply();
     void slotCancel();
+    void slotGenresChanged();
+    void slotGenreActionChanged();
 
     void slotImportMetadataFromFiles();
 
@@ -73,6 +79,14 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void init();
     void loadTracksInternal(const QList<TrackPointer>& pTracks);
     void saveTracks();
+
+    // Initialize the Multi Genre widget.
+    void setupGenreWidget();
+    void loadGenresFromTracks();
+    void saveGenresToTracks();
+    void testGenreDao();
+
+    QStringList getOriginalCommonGenres();
 
     void connectTracksChanged();
     void disconnectTracksChanged();
@@ -116,6 +130,12 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     bool m_starRatingModified;
     int m_newRating;
     bool m_colorChanged;
+
+    // Multi-genre widget
+    parented_ptr<WGenreTagInput> m_pGenreWidget;
+    TrackCollection* m_pTrackCollection;
+    bool m_genreAddMode;
+
     mixxx::RgbColor::optional_t m_newColor;
     parented_ptr<WColorPickerAction> m_pColorPicker;
 };
