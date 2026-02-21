@@ -36,6 +36,7 @@ DlgPrefWaveform::DlgPrefWaveform(
     setupUi(this);
 
     // Waveform overview init
+    waveformOverviewComboBox->addItem(tr("Simple"), QVariant::fromValue(OverviewType::Simple));
     waveformOverviewComboBox->addItem(
             tr("Filtered"), QVariant::fromValue(OverviewType::Filtered));
     waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(OverviewType::HSV));
