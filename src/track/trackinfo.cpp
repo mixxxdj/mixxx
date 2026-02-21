@@ -1,5 +1,6 @@
 #include "track/trackinfo.h"
 
+#include <QStringList>
 
 namespace mixxx {
 
@@ -56,7 +57,7 @@ bool TrackInfo::compareEq(
             (getEncoder() == trackInfo.getEncoder()) &&
             (getEncoderSettings() == trackInfo.getEncoderSettings()) &&
 #endif // __EXTRA_METADATA__
-            (getGenre() == trackInfo.getGenre()) &&
+            (m_genres == trackInfo.m_genres) &&
             (getGrouping() == trackInfo.getGrouping()) &&
 #if defined(__EXTRA_METADATA__)
             (getISRC() == trackInfo.getISRC()) &&
@@ -100,7 +101,8 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgEncoder(dbg);
     arg.dbgEncoderSettings(dbg);
 #endif // __EXTRA_METADATA__
-    arg.dbgGenre(dbg);
+    dbg.nospace() << "," << Qt::endl
+                  << "  " << arg.getGenres();
     arg.dbgGrouping(dbg);
 #if defined(__EXTRA_METADATA__)
     arg.dbgISRC(dbg);
@@ -131,6 +133,30 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgYear(dbg);
     dbg << '}';
     return dbg;
+}
+
+// Returns the list of genres for this track.
+const QList<Genre>& TrackInfo::getGenres() const {
+    return m_genres;
+}
+
+// Returns a string of genre names for simple display.
+QString TrackInfo::getGenresString() const {
+    QStringList genreNames;
+    // Reserve memory to optimize performance for tracks with many genres.
+    genreNames.reserve(m_genres.size());
+    for (const Genre& genre : m_genres) {
+        genreNames.append(genre.name);
+    }
+    // Joins the names with " / " for a readable format, e.g. "House, Techno".
+    return genreNames.join(" / ");
+}
+
+// Sets the list of genres for this track.
+void TrackInfo::setGenres(const QList<Genre>& genres) {
+    if (m_genres != genres) {
+        m_genres = genres;
+    }
 }
 
 } // namespace mixxx
