@@ -114,3 +114,8 @@ const ConfigKey mixxx::library::prefs::kTagFetcherApplyCoverConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("TagFetcherApplyCover")};
+
+const ConfigKey mixxx::library::prefs::kDateFormatConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("DateFormat")};
