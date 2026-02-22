@@ -144,6 +144,13 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotBpmClear);
 
+    // connect to clicked() instead of toggled() since button
+    // is no longer checkable. The lock state is tracked by m_bpmLocked.
+    connect(bpmLock,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmLockClicked);
+
     connect(bpmConst,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
             &QCheckBox::checkStateChanged,
@@ -464,20 +471,36 @@ void DlgTrackInfo::updateSpinBpmFromBeats() {
     spinBpm->setValue(bpmValue);
 }
 
+// Updates button text and enables/disables all BPM editing controls based on m_bpmLocked.
+void DlgTrackInfo::updateBpmEditControls() {
+    bpmLock->setText(m_bpmLocked ? tr("Unlock BPM") : tr("Lock BPM"));
+
+    const bool editingEnabled = !m_bpmLocked;
+    bpmConst->setEnabled(editingEnabled && m_trackHasBeatMap);
+    spinBpm->setEnabled(editingEnabled && !m_trackHasBeatMap);
+    bpmTap->setEnabled(editingEnabled && !m_trackHasBeatMap);
+    bpmDouble->setEnabled(editingEnabled);
+    bpmHalve->setEnabled(editingEnabled);
+    bpmTwoThirds->setEnabled(editingEnabled);
+    bpmThreeFourth->setEnabled(editingEnabled);
+    bpmFourThirds->setEnabled(editingEnabled);
+    bpmThreeHalves->setEnabled(editingEnabled);
+    bpmClear->setEnabled(editingEnabled);
+}
+
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_pBeatsClone = track.getBeats();
     updateSpinBpmFromBeats();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tap them
-    bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
-    if (track.isBpmLocked()) {
-        tabBPM->setEnabled(false);
-    } else {
-        tabBPM->setEnabled(true);
-    }
+    // Store the lock state from the track into the local staging variable.
+    // This will only be written back to the track on Apply/OK.
+    m_bpmLocked = track.isBpmLocked();
+
+    tabBPM->setEnabled(true);
+
+    updateBpmEditControls();
 }
 
 void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
@@ -637,6 +660,11 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     updateKeyText();
 
+    // Apply the staged BPM lock state to the track.
+    // This is deferred from slotBpmLockClicked so that it behaves
+    // like all other beat modifications — only committed on Apply.
+    m_pLoadedTrack->setBpmLocked(m_bpmLocked);
+
     // Update the cached track
     //
     // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
@@ -663,6 +691,7 @@ void DlgTrackInfo::clear() {
     resetTrackRecord();
 
     m_pBeatsClone.reset();
+    m_bpmLocked = false;
     updateSpinBpmFromBeats();
 
     txtLocation->setText("");
@@ -689,6 +718,15 @@ void DlgTrackInfo::slotBpmClear() {
     bpmConst->setEnabled(m_trackHasBeatMap);
     spinBpm->setEnabled(true);
     bpmTap->setEnabled(true);
+}
+
+// The actual lock change is applied in saveTrack().
+void DlgTrackInfo::slotBpmLockClicked() {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    m_bpmLocked = !m_bpmLocked;
+    updateBpmEditControls();
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)

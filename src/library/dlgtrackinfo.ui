@@ -732,6 +732,16 @@
        <string>BPM</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QPushButton" name="bpmLock">
+          <property name="toolTip">
+           <string>Lock or unlock the BPM and beatgrid for this track.</string>
+          </property>
+          <property name="text">
+           <string>Lock BPM</string>
+          </property>
+         </widget>
+        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
