@@ -120,19 +120,19 @@ void DlgPrefControllers::slotUpdate() {
 }
 
 void DlgPrefControllers::slotCancel() {
-    for (DlgPrefController* pControllerDlg : m_controllerPages) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    for (DlgPrefController* pControllerDlg : m_controllerPages) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    for (DlgPrefController* pControllerDlg : m_controllerPages) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotResetToDefaults();
     }
 }
@@ -172,7 +172,7 @@ void DlgPrefControllers::destroyControllerWidgets() {
     // to keep this dialog and the controllermanager consistent.
     QList<Controller*> controllerList =
             m_pControllerManager->getControllerList(false, true);
-    for (auto* pController : controllerList) {
+    for (auto* pController : std::as_const(controllerList)) {
         pController->disconnect(this);
     }
     while (!m_controllerPages.isEmpty()) {
@@ -202,7 +202,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
-    for (auto* pController : controllerList) {
+    for (auto* pController : std::as_const(controllerList)) {
         auto pControllerDlg = make_parented<DlgPrefController>(
                 this, pController, m_pControllerManager, m_pConfig);
         connect(pControllerDlg,
@@ -294,7 +294,7 @@ void DlgPrefControllers::openLearningWizard(Controller* pController) {
     }
 
     // Find the DlgPrefController for this controller by matching the controller pointer
-    for (auto* pControllerDlg : m_controllerPages) {
+    for (auto* pControllerDlg : std::as_const(m_controllerPages)) {
         if (pControllerDlg->controller() == pController) {
             pControllerDlg->showLearningWizard(true);
             return;
