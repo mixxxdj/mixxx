@@ -136,4 +136,6 @@ class borrowable_ptr {
     std::shared_ptr<Tp> m_sharedPtr; ///< Non-owning private shared pointer to the managed object.
     // must not be changed after construction, because changing shared pointers is not thread safe.
     const std::weak_ptr<Tp> m_weakPtr; ///< Non-owning shared pointer for sharing,
+
+    Q_DISABLE_COPY_MOVE(borrowable_ptr)
 };
