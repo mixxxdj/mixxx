@@ -344,6 +344,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pBpmTwoThirdsAction;
     parented_ptr<QAction> m_pBpmFourThirdsAction;
     parented_ptr<QAction> m_pBpmThreeFourthsAction;
+    parented_ptr<QAction> m_pBpmFourFifthsAction;
     parented_ptr<QAction> m_pBpmFiveFourthsAction;
     parented_ptr<QAction> m_pBpmThreeHalvesAction;
     parented_ptr<QAction> m_pBpmDoubleAction;

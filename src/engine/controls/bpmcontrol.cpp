@@ -154,6 +154,16 @@ BpmControl::BpmControl(const QString& group,
                     slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
                 }
             });
+    m_pBeatsFourFifths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fourfifths"), false);
+    connect(m_pBeatsFourFifths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FourFifths);
+                }
+            });
     m_pBeatsFiveFourths = std::make_unique<ControlPushButton>(
             ConfigKey(group, "beats_set_fivefourths"), false);
     connect(m_pBeatsFiveFourths.get(),
