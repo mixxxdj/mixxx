@@ -108,7 +108,6 @@ class borrowable_ptr {
 
     ~borrowable_ptr() {
         reset();
-        // m_mutex.unlock();
     }
 
     // @brief Borrow a strong reference to the managed object.
