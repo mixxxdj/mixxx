@@ -73,6 +73,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Waveform Zoom")
             << QString("%1").arg(resetToDefault);
 
+    add("[Waveform],play_marker_position")
+            << tr("Playback Marker Position")
+            << tr("Adjust the horizontal position of the playback marker on the waveforms.");
+
     add("spinny")
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
