@@ -82,6 +82,12 @@ TEST_F(BeatMapTest, Scale) {
                     .value());
 
     pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
+    pMap = *pMap->tryScale(Beats::BpmScale::FourFifths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 4 / 5,
+            pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
     pMap = *pMap->tryScale(Beats::BpmScale::FiveFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 5 / 4,
             pMap->getBpmInRange(audio::kStartFramePos, trackEndPosition)

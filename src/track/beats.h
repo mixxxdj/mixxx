@@ -267,6 +267,7 @@ class Beats : private std::enable_shared_from_this<Beats> {
         Halve,
         TwoThirds,
         ThreeFourths,
+        FourFifths,
         FiveFourths,
         FourThirds,
         ThreeHalves,

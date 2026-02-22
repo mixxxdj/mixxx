@@ -495,6 +495,8 @@ void WTrackMenu::createActions() {
         storeActionTextAndScaleInProperties(m_pBpmTwoThirdsAction, 2.0 / 3.0);
         m_pBpmThreeFourthsAction = make_parented<QAction>(tr("3/4 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmThreeFourthsAction, 3.0 / 4.0);
+        m_pBpmFourFifthsAction = make_parented<QAction>(tr("4/5 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmFourFifthsAction, 4.0 / 5.0);
         m_pBpmFiveFourthsAction = make_parented<QAction>(tr("5/4 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmFiveFourthsAction, 5.0 / 4.0);
         m_pBpmFourThirdsAction = make_parented<QAction>(tr("4/3 BPM"), m_pBPMMenu);
@@ -512,6 +514,9 @@ void WTrackMenu::createActions() {
         });
         connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
+        });
+        connect(m_pBpmFourFifthsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::BpmScale::FourFifths);
         });
         connect(m_pBpmFiveFourthsAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::FiveFourths);
@@ -646,6 +651,7 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addAction(m_pBpmFourFifthsAction);
         m_pBPMMenu->addAction(m_pBpmFiveFourthsAction);
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
@@ -1137,6 +1143,7 @@ void WTrackMenu::updateMenus() {
             m_pBpmHalveAction->setEnabled(!anyBpmLocked);
             m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+            m_pBpmFourFifthsAction->setEnabled(!anyBpmLocked);
             m_pBpmFiveFourthsAction->setEnabled(!anyBpmLocked);
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
@@ -1157,6 +1164,7 @@ void WTrackMenu::updateMenus() {
                     appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmFourFifthsAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmFiveFourthsAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);

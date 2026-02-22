@@ -100,6 +100,14 @@ TEST(BeatGridTest, Scale) {
     pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
             mixxx::audio::kStartFramePos,
             mixxx::Bpm(bpm));
+    pGrid = *pGrid->tryScale(Beats::BpmScale::FourFifths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 4 / 5,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
     pGrid = *pGrid->tryScale(Beats::BpmScale::FiveFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 5 / 4,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
