@@ -191,6 +191,8 @@ class Track : public QObject {
     void setAlbum(const QString&);
     QString getAlbumArtist() const;
     void setAlbumArtist(const QString&);
+    QString getCatalogueNumber() const;
+    void setCatalogueNumber(const QString&);
 
     // Returns the content of the year library column.
     // This was original only the four digit (gregorian) calendar year of the release date

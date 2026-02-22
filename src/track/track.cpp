@@ -698,6 +698,19 @@ void Track::setAlbumArtist(const QString& s) {
     }
 }
 
+QString Track::getCatalogueNumber() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getAlbumInfo().getCatalogueNumber();
+}
+
+void Track::setCatalogueNumber(const QString& s) {
+    auto locked = lockMutex(&m_qMutex);
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrCatalogueNumber(), value)) {
+        markDirtyAndUnlock(&locked);
+    }
+}
+
 QString Track::getYear()  const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getMetadata().getTrackInfo().getYear();
