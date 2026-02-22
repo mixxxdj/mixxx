@@ -21,6 +21,9 @@
        <property name="text">
         <string>Sound API</string>
        </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
        <property name="buddy">
         <cstring>apiComboBox</cstring>
        </property>
@@ -95,20 +98,20 @@
      <item row="6" column="0">
       <widget class="QLabel" name="masteMixLabel">
        <property name="text">
-        <string>Master Mix</string>
+        <string>Main Mix</string>
        </property>
       </widget>
      </item>
      <item row="6" column="1">
-      <widget class="QComboBox" name="masterMixComboBox"/>
+      <widget class="QComboBox" name="mainMixComboBox"/>
      </item>
      <item row="7" column="1">
-      <widget class="QComboBox" name="masterOutputModeComboBox"/>
+      <widget class="QComboBox" name="mainOutputModeComboBox"/>
      </item>
      <item row="7" column="0">
-      <widget class="QLabel" name="masterMonoLabel">
+      <widget class="QLabel" name="mainMonoLabel">
        <property name="text">
-        <string>Master Output Mode</string>
+        <string>Main Output Mode</string>
        </property>
       </widget>
      </item>
@@ -120,12 +123,18 @@
        <property name="text">
         <string>Microphone Monitor Mode</string>
        </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="9" column="0">
       <widget class="QLabel" name="latencyCompensationLabel">
        <property name="text">
         <string>Microphone Latency Compensation</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -146,14 +155,14 @@
       </widget>
      </item>
      <item row="11" column="0">
-      <widget class="QLabel" name="masterDelayLabel">
+      <widget class="QLabel" name="mainDelayLabel">
        <property name="text">
-        <string>Master Delay</string>
+        <string>Main Output Delay</string>
        </property>
       </widget>
      </item>
      <item row="11" column="1">
-      <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
+      <widget class="QDoubleSpinBox" name="mainDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
        </property>
@@ -171,7 +180,7 @@
      <item row="12" column="0">
       <widget class="QLabel" name="headDelayLabel">
        <property name="text">
-        <string>Headphone Delay</string>
+        <string>Headphone Output Delay</string>
        </property>
       </widget>
      </item>
@@ -194,7 +203,7 @@
      <item row="13" column="0">
       <widget class="QLabel" name="boothDelayLabel">
        <property name="text">
-        <string>Booth Delay</string>
+        <string>Booth Output Delay</string>
        </property>
       </widget>
      </item>
@@ -320,6 +329,19 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="deckBusHint">
+        <property name="text">
+         <string>Deck and Bus outputs are for external mixers. They are post-fader and include effects and crossfader (for Auto DJ). For external mixing, make sure all Mixxx faders and EQ knobs are set to their default position (right- or double-click). </string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="underflowCounterHint">
         <property name="text">
          <string>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</string>
@@ -329,7 +351,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
+      <item row="2" column="0" colspan="2">
        <widget class="QLabel" name="audioBufferHint">
         <property name="text">
          <string>Downsize your audio buffer to improve Mixxx's responsiveness.</string>
@@ -403,22 +425,6 @@
      </layout>
     </widget>
    </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Expanding</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -429,11 +435,11 @@
   <tabstop>deviceSyncComboBox</tabstop>
   <tabstop>engineClockComboBox</tabstop>
   <tabstop>keylockComboBox</tabstop>
-  <tabstop>masterMixComboBox</tabstop>
-  <tabstop>masterOutputModeComboBox</tabstop>
+  <tabstop>mainMixComboBox</tabstop>
+  <tabstop>mainOutputModeComboBox</tabstop>
   <tabstop>micMonitorModeComboBox</tabstop>
   <tabstop>latencyCompensationSpinBox</tabstop>
-  <tabstop>masterDelaySpinBox</tabstop>
+  <tabstop>mainDelaySpinBox</tabstop>
   <tabstop>headDelaySpinBox</tabstop>
   <tabstop>boothDelaySpinBox</tabstop>
   <tabstop>queryButton</tabstop>

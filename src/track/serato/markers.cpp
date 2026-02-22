@@ -43,7 +43,7 @@ const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray::fromRawData(
 //     serato32 value   | 06 32 10 00  00000110001100100001000000000000
 //
 // See this for details:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md#custom-serato32-binary-format
+// https://github.com/Holzhaus/serato-tags/blob/main/docs/serato_markers_.md#custom-serato32-binary-format
 
 /// Decode value from Serato's 32-bit custom format to 24-bit plaintext.
 quint32 serato32toUint24(quint8 w, quint8 x, quint8 y, quint8 z) {
@@ -238,7 +238,9 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
                     color,
                     type,
                     isLocked));
-    kLogger.trace() << "SeratoMarkersEntry (ID3)" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkersEntry (ID3)" << *pEntry;
+    }
     return pEntry;
 }
 
@@ -317,7 +319,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
                     color,
                     type,
                     isLocked));
-    kLogger.trace() << "SeratoMarkersEntry (MP4)" << *pEntry;
+
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkersEntry (MP4)" << *pEntry;
+    }
     return pEntry;
 }
 
@@ -329,7 +334,7 @@ bool SeratoMarkers::parse(
     }
 
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return parseID3(seratoMarkers, data);
     case taglib::FileType::MP4:
@@ -546,7 +551,7 @@ bool SeratoMarkers::parseMP4(
 
 QByteArray SeratoMarkers::dump(taglib::FileType fileType) const {
     switch (fileType) {
-    case taglib::FileType::MP3:
+    case taglib::FileType::MPEG:
     case taglib::FileType::AIFF:
         return dumpID3();
     case taglib::FileType::MP4:
@@ -635,12 +640,12 @@ QByteArray SeratoMarkers::dumpMP4() const {
 }
 
 QList<CueInfo> SeratoMarkers::getCues() const {
-    qDebug() << "Reading cues from 'Serato Markers_' tag data...";
+    // qDebug() << "Reading cues from 'Serato Markers_' tag data...";
 
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
     int loopIndex = 0;
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }

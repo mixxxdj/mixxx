@@ -1,8 +1,8 @@
 #pragma once
 
-#include <taglib/xiphcomment.h>
+#include <xiphcomment.h>
 
-#include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_file.h"
 
 namespace mixxx {
 
@@ -20,7 +20,8 @@ QImage importCoverImageFromPictureList(
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::Ogg::XiphComment& tag,
-        FileType fileType);
+        FileType fileType,
+        bool resetMissingTagMetadata);
 
 bool exportTrackMetadataIntoTag(
         TagLib::Ogg::XiphComment* pTag,

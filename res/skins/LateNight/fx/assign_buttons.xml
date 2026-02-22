@@ -4,7 +4,7 @@ Description:
 Variables:
   ObjectName        : object name
   ToolTipID         : standard Tooltip from mixxx db
-    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/TooltipIds.cpp
+    see: https://github.com/mixxxdj/mixxx/blob/main/src/skin/legacy/tooltips.cpp
   Size              : button size
   state_X_text      : label text for state X
   state_X_pressed   : background graphic for pressed state X
@@ -25,12 +25,12 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>f,min</SizePolicy>
         <Children>
-          <Template src="skin:/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">1</SetVariable>
             <SetVariable name="Width">26</SetVariable>
             <SetVariable name="Text">&#8202;FX</SetVariable>
           </Template>
-          <Template src="skin:/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">2</SetVariable>
             <SetVariable name="Width">26</SetVariable>
             <SetVariable name="Text">&#8202;FX</SetVariable>
@@ -48,20 +48,20 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>f,min</SizePolicy>
         <Children>
-          <Template src="skin:/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">1</SetVariable>
             <SetVariable name="Width">26</SetVariable>
             <SetVariable name="Text">&#8202;FX&#8202;</SetVariable>
           </Template>
-          <Template src="skin:/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">2</SetVariable>
             <SetVariable name="Width">20</SetVariable>
           </Template>
-          <Template src="skin:/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">3</SetVariable>
             <SetVariable name="Width">20</SetVariable>
           </Template>
-          <Template src="skin:/fx/assign_button.xml">
+          <Template src="skins:LateNight/fx/assign_button.xml">
             <SetVariable name="FxUnit">4</SetVariable>
             <SetVariable name="Width">20</SetVariable>
           </Template>

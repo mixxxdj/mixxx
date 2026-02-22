@@ -1,20 +1,15 @@
 #pragma once
 
 #include <QString>
-#include <QWidget>
-#include <QDomNode>
-#include <QWheelEvent>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QResizeEvent>
 
-#include "skin/legacy/skincontext.h"
-#include "util/widgetrendertimer.h"
 #include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 
-/** A widget for a slider composed of a background pixmap and a handle. */
+class QDomNode;
+class SkinContext;
+
+/// A widget for a slider composed of a background pixmap and a handle.
 class WSliderComposed : public WWidget  {
     Q_OBJECT
   public:
@@ -27,11 +22,15 @@ class WSliderComposed : public WWidget  {
             Paintable::DrawMode drawMode,
             double scaleFactor);
     void setHandlePixmap(
-            bool bHorizontal,
             const PixmapSource& sourceHandle,
             Paintable::DrawMode mode,
             double scaleFactor);
-    inline bool isHorizontal() const { return m_bHorizontal; };
+    // This is called by LegacySkinParser::setupConnections() before setup()
+    // because it needs 'horizontal' for picking the correct keyboard shortcut
+    // command (left/right or up/down.
+    // Doesn't recognize variables, hence we don't store the result in m_bHorizontal,
+    // that's done in setup() where we have a SkinContext, i.e. variable support.
+    bool tryParseHorizontal(const QDomNode& node) const;
     void inputActivity();
 
   public slots:
@@ -42,6 +41,7 @@ class WSliderComposed : public WWidget  {
     void mouseMoveEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
     void drawBar(QPainter* pPainter);
     void wheelEvent(QWheelEvent* e) override;
@@ -74,7 +74,6 @@ class WSliderComposed : public WWidget  {
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
     SliderEventHandler<WSliderComposed> m_handler;
-    WidgetRenderTimer m_renderTimer;
 
     friend class SliderEventHandler<WSliderComposed>;
 };

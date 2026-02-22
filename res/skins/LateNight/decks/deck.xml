@@ -2,15 +2,15 @@
 
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <MaximumSize>,208</MaximumSize>
+    <MaximumSize>,230</MaximumSize>
     <Children>
 
-      <Template src="skin:/decks/deck_singletons.xml">
+      <Template src="skins:LateNight/decks/deck_singletons.xml">
         <SetVariable name="Type">deck</SetVariable>
         <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
       </Template>
 
-      <WidgetStack currentpage="[Master],show_mixer" persist="true">
+      <WidgetStack currentpage="[Skin],show_mixer" persist="true">
         <Children>
 
           <!-- no mixer -->
@@ -47,7 +47,7 @@
           </WidgetStack>
 
           <!-- mixer shown = full deck -->
-          <WidgetGroup trigger="[Master],show_mixer" on_hide_select="0">
+          <WidgetGroup trigger="[Skin],show_mixer" on_hide_select="0">
             <Layout>horizontal</Layout>
             <Children>
               <SingletonContainer>

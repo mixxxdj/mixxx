@@ -1,8 +1,8 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
   <SetVariable name="Group">[Master]</SetVariable>
-  <SetVariable name="KnobBg">master</SetVariable>
-  <SetVariable name="KnobIndicator">master</SetVariable>
+  <SetVariable name="KnobBg">main</SetVariable>
+  <SetVariable name="KnobIndicator">main</SetVariable>
   <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
   <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
 
@@ -12,19 +12,19 @@
     <Children>
 
       <WidgetGroup><!--sized and styled in css -->
-        <ObjectName>MasterMixerSeparator</ObjectName>
+        <ObjectName>MainMixerSeparator</ObjectName>
         <Layout>horizontal</Layout>
         <Children/>
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>MixerMasterHeadphone</ObjectName>
+        <ObjectName>MixerMainHeadphone</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>MasterControls</ObjectName>
+            <ObjectName>MainControls</ObjectName>
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -35,7 +35,7 @@
                 <SizePolicy>min,me</SizePolicy>
               </WidgetGroup>
 
-              <!-- Master knobs
+              <!-- Main knobs
                   Labels are separate so knobs are spaced equally -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
@@ -45,8 +45,8 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
-                        <SetVariable name="TooltipId">master_gain</SetVariable>
+                      <Template src="skins:LateNight/controls/knob_with_label.xml">
+                        <SetVariable name="TooltipId">main_gain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">orange</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
@@ -61,7 +61,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
+                      <Template src="skins:LateNight/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">balance</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">red</SetVariable>
@@ -86,7 +86,7 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
-                  <Template src="skin:/controls/knob.xml">
+                  <Template src="skins:LateNight/controls/knob.xml">
                     <SetVariable name="TooltipId">booth_gain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="KnobColor">orange</SetVariable>
@@ -125,8 +125,8 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/fx/assign_buttons_master.xml">
-                    <SetVariable name="Type">master</SetVariable>
+                  <Template src="skins:LateNight/fx/assign_buttons_main.xml">
+                    <SetVariable name="Type">main</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -143,15 +143,15 @@
                   </WidgetGroup>
 
                   <WidgetGroup>
-                    <ObjectName>VuMeterMaster_4Decks</ObjectName>
+                    <ObjectName>VuMeterMain_4Decks</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>max,max</SizePolicy>
                     <Children>
                       <SingletonContainer>
-                        <ObjectName>VuMeterMaster_Light</ObjectName>
+                        <ObjectName>VuMeterMain_Light</ObjectName>
                       </SingletonContainer>
                     </Children>
-                  </WidgetGroup><!-- VuMeterMaster_4Decks -->
+                  </WidgetGroup><!-- VuMeterMain_4Decks -->
 
                   <WidgetGroup>
                     <MinimumSize>0,20</MinimumSize>
@@ -164,13 +164,13 @@
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /MasterVuMeter4ch -->
+              </WidgetGroup><!-- /MainVuMeter4ch -->
 
             </Children>
-          </WidgetGroup><!-- MasterControls -->
+          </WidgetGroup><!-- MainControls -->
 
           <WidgetGroup><!-- sized and styled in css -->
-            <ObjectName>MasterHeadphoneSeparator</ObjectName>
+            <ObjectName>MainHeadphoneSeparator</ObjectName>
             <Layout>horizontal</Layout>
             <Children/>
           </WidgetGroup>
@@ -195,7 +195,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
+                      <Template src="skins:LateNight/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">headphone_gain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">orange</SetVariable>
@@ -211,7 +211,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/knob_with_label.xml">
+                      <Template src="skins:LateNight/controls/knob_with_label.xml">
                         <SetVariable name="TooltipId">headMix</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">red</SetVariable>
@@ -242,13 +242,13 @@
                     <RightClickIsPushButton>false</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey>[Master],headSplit</ConfigKey>
@@ -269,7 +269,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/fx/assign_buttons_master.xml">
+                  <Template src="skins:LateNight/fx/assign_buttons_main.xml">
                     <SetVariable name="Group">[Headphone]</SetVariable>
                     <SetVariable name="Type">headphones</SetVariable>
                   </Template>
@@ -282,7 +282,7 @@
           </WidgetGroup><!-- HeadphoneControls -->
 
         </Children>
-      </WidgetGroup><!-- MixerMasterHeadphone -->
+      </WidgetGroup><!-- MixerMainHeadphone -->
 
     </Children>
     <Connection>

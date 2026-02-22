@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 Findwavpack
 -----------
@@ -51,12 +46,12 @@ endif()
 find_path(wavpack_INCLUDE_DIR
   NAMES wavpack.h
   PATH_SUFFIXES wavpack
-  PATHS ${PC_wavpack_INCLUDE_DIRS}
+  HINTS ${PC_wavpack_INCLUDE_DIRS}
   DOC "wavpack include directory")
 mark_as_advanced(wavpack_INCLUDE_DIR)
 
 find_library(wavpack_LIBRARY NAMES wavpack wv wavpackdll
-  PATHS ${PC_wavpack_LIBRARY_DIRS}
+  HINTS ${PC_wavpack_LIBRARY_DIRS}
   DOC "wavpack library"
 )
 mark_as_advanced(wavpack_LIBRARY)

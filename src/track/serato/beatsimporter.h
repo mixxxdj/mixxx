@@ -4,6 +4,7 @@
 
 #include <QList>
 
+#include "track/beats.h"
 #include "track/beatsimporter.h"
 #include "track/serato/beatgrid.h"
 
@@ -18,14 +19,15 @@ class SeratoBeatsImporter : public BeatsImporter {
     ~SeratoBeatsImporter() override = default;
 
     bool isEmpty() const override;
-    QVector<double> importBeatsAndApplyTimingOffset(
+    BeatsPointer importBeatsAndApplyTimingOffset(
             const QString& filePath,
+            const QString& fileType,
             const audio::StreamInfo& streamInfo) override;
 
   private:
     FRIEND_TEST(SeratoBeatGridTest, SerializeBeatMap);
 
-    QVector<double> importBeatsAndApplyTimingOffset(
+    BeatsPointer importBeatsAndApplyTimingOffset(
             double timingOffsetMillis, const audio::SignalInfo& signalInfo);
 
     QList<SeratoBeatGridNonTerminalMarkerPointer> m_nonTerminalMarkers;

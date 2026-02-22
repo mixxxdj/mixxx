@@ -2,14 +2,14 @@
 
 #include <QtDebug>
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "track/track.h"
 #include "util/math.h"
-#include "util/sample.h"
 #include "util/timer.h"
 
 namespace {
-const double kReplayGain2ReferenceLUFS = -18;
+constexpr double kReplayGain2ReferenceLUFS = -18;
 } // anonymous namespace
 
 AnalyzerEbur128::AnalyzerEbur128(UserSettingsPointer pConfig)
@@ -22,10 +22,10 @@ AnalyzerEbur128::~AnalyzerEbur128() {
 }
 
 bool AnalyzerEbur128::initialize(
-        TrackPointer pTrack,
+        const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         SINT frameLength) {
-    if (m_rgSettings.isAnalyzerDisabled(2, pTrack) || frameLength <= 0) {
+    if (m_rgSettings.isAnalyzerDisabled(2, track.getTrack()) || frameLength <= 0) {
         qDebug() << "Skipping AnalyzerEbur128";
         return false;
     }
@@ -49,7 +49,7 @@ bool AnalyzerEbur128::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return false;
     }
-    ScopedTimer t("AnalyzerEbur128::processSamples()");
+    ScopedTimer t(u"AnalyzerEbur128::processSamples()");
     size_t frames = count / mixxx::kAnalysisChannels;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
     VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
@@ -69,7 +69,11 @@ void AnalyzerEbur128::storeResults(TrackPointer pTrack) {
         qWarning() << "AnalyzerEbur128::storeResults() failed with" << e;
         return;
     }
-    if (averageLufs == -HUGE_VAL || averageLufs == 0.0) {
+    if (averageLufs == -HUGE_VAL ||
+            averageLufs == HUGE_VAL ||
+            // This catches 0 and abnormal values inf and -inf (that may have
+            // slipped through in libebur128 for some reason.
+            !util_isnormal(averageLufs)) {
         qWarning() << "AnalyzerEbur128::storeResults() averageLufs invalid:"
                    << averageLufs;
         return;

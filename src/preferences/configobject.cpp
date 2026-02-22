@@ -17,18 +17,36 @@ const QString kTempFilenameExtension = QStringLiteral(".tmp");
 const QString kCMakeCacheFile = QStringLiteral("CMakeCache.txt");
 const QLatin1String kSourceDirLine = QLatin1String("mixxx_SOURCE_DIR:STATIC=");
 
-QString computeResourcePath() {
+QString computeResourcePathImpl() {
     // Try to read in the resource directory from the command line
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isEmpty()) {
+#ifdef __EMSCRIPTEN__
+        // When targeting Emscripten/WebAssembly, we have a virtual file system
+        // that is populated by our preloaded resources located at /res. See
+        // also https://emscripten.org/docs/porting/files/packaging_files.html
+        qResourcePath = "/res";
+#else
         QDir mixxxDir = QCoreApplication::applicationDirPath();
+
         // We used to support using the mixxx.cfg's [Config],Path setting but
         // this causes issues if you try and use two different versions of Mixxx
         // on the same computer.
-        auto cmakecache = QFile(mixxxDir.filePath(kCMakeCacheFile));
+
+        QDir potentialBuildDir = mixxxDir;
+#ifdef __APPLE__
+        if (potentialBuildDir.absolutePath().endsWith(".app/Contents/MacOS")) {
+            // We are in an app bundle (built with `-DMACOS_BUNDLE=ON`).
+            // If we are in a development build directory, we need to search three directories up.
+            potentialBuildDir.cd("../../..");
+        }
+#endif
+
+        // Check if there's a `CMakeCache.txt`, if so we are in a development build directory.
+        auto cmakecache = QFile(potentialBuildDir.filePath(kCMakeCacheFile));
         if (cmakecache.open(QFile::ReadOnly | QFile::Text)) {
-            // We are running form a build dir (CMAKE_CURRENT_BINARY_DIR),
+            // We are running from a build dir (CMAKE_CURRENT_BINARY_DIR),
             // Look up the source path from CMakeCache.txt (mixxx_SOURCE_DIR)
             QTextStream in(&cmakecache);
             QString line = in.readLine();
@@ -39,10 +57,16 @@ QString computeResourcePath() {
                 }
                 line = in.readLine();
             }
-            DEBUG_ASSERT(QDir(qResourcePath).exists());
+            if (!QDir(qResourcePath).exists()) {
+                reportCriticalErrorAndQuit(
+                        "Resource path listed in " + kCMakeCacheFile +
+                        " does not exist. Did you move the build directory? "
+                        "Hint: Set an alternative resource path with "
+                        "'--resource-path <path>'.");
+            }
         }
 #if defined(__UNIX__)
-        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("share/mixxx"))) {
+        else if (mixxxDir.cd(QStringLiteral("../share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
 #elif defined(__WINDOWS__)
@@ -51,20 +75,29 @@ QString computeResourcePath() {
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#elif defined(__APPLE__)
-        else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+#elif defined(Q_OS_IOS)
+        // On iOS the bundle contains the resources directly.
+        else {
+            qResourcePath = QCoreApplication::applicationDirPath();
+        }
+#elif defined(Q_OS_MACOS)
+        else if (mixxxDir.cd("../Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
             // TODO(rryan): What should we do here?
         }
 #endif
+#endif // !defined(__EMSCRIPTEN__)
     } else {
         //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
 
     if (qResourcePath.isEmpty()) {
-        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+        reportCriticalErrorAndQuit(
+                "qResourcePath is empty, this should not happen -- did our "
+                "developers forget to define __UNIX__, __WINDOWS__ or "
+                "__APPLE__??");
     }
 
     // If the directory does not end with a "/", add one
@@ -105,9 +138,19 @@ ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
     QTextStream(&value) << m_keys.toString();
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QString& file)
-        : m_resourcePath(computeResourcePath()),
-          m_settingsPath(computeSettingsPath(file)) {
+template<class ValueType>
+ConfigObject<ValueType>::ConfigObject(const QString& file)
+        : ConfigObject(file, computeResourcePathImpl(), computeSettingsPath(file)) {
+    reopen(file);
+}
+
+template<class ValueType>
+ConfigObject<ValueType>::ConfigObject(
+        const QString& file,
+        const QString& resourcePath,
+        const QString& settingsPath)
+        : m_resourcePath(resourcePath),
+          m_settingsPath(settingsPath) {
     reopen(file);
 }
 
@@ -156,7 +199,11 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        DEBUG_ASSERT(text.encoding() == QStringConverter::Utf8);
+#else
         text.setCodec("UTF-8");
+#endif
 
         while (!text.atEnd()) {
             line = text.readLine().trimmed();
@@ -203,7 +250,12 @@ bool ConfigObject<ValueType>::save() {
         return false;
     }
     QTextStream stream(&tmpFile);
+    // UTF-8 is the default in Qt6.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    DEBUG_ASSERT(stream.encoding() == QStringConverter::Utf8);
+#else
     stream.setCodec("UTF-8");
+#endif
 
     QString group = "";
 
@@ -460,4 +512,14 @@ QString ConfigObject<ConfigValueKbd>::getValue(
         return default_value;
     }
     return value.value;
+}
+
+template<>
+QString ConfigObject<ConfigValue>::computeResourcePath() {
+    return computeResourcePathImpl();
+}
+
+template<>
+QString ConfigObject<ConfigValueKbd>::computeResourcePath() {
+    return computeResourcePathImpl();
 }

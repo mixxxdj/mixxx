@@ -83,7 +83,7 @@ Variables:
             <ObjectName>Duration</ObjectName>
             <Size>80me,21f</Size>
             <TooltipId>track_duration</TooltipId>
-            <Property>durationFormatted</Property>
+            <Property>durationTextSeconds</Property>
             <Alignment>left</Alignment>
             <Channel><Variable name="chanNum"/></Channel>
           </TrackProperty>

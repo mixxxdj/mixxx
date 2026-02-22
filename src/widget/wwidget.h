@@ -1,14 +1,11 @@
 #pragma once
 
 #include <QWidget>
-#include <QEvent>
-#include <QString>
 
-#include "preferences/usersettings.h"
-#include "util/color/color.h"
 #include "widget/wbasewidget.h"
 
 class ControlProxy;
+class QEvent;
 
 /** Abstract class used in widgets connected to ControlObjects. Derived
   * widgets can implement the signal and slot for manipulating the widgets

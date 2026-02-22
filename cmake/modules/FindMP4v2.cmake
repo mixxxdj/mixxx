@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindMP4v2
 ---------
@@ -50,13 +45,13 @@ endif()
 
 find_path(MP4v2_INCLUDE_DIR
   NAMES mp4v2/mp4v2.h
-  PATHS ${PC_MP4v2_INCLUDE_DIRS}
+  HINTS ${PC_MP4v2_INCLUDE_DIRS}
   DOC "MP4v2 include directory")
 mark_as_advanced(MP4v2_INCLUDE_DIR)
 
 find_library(MP4v2_LIBRARY
   NAMES mp4v2
-  PATHS ${PC_MP4v2_LIBRARY_DIRS}
+  HINTS ${PC_MP4v2_LIBRARY_DIRS}
   DOC "MP4v2 library"
 )
 mark_as_advanced(MP4v2_LIBRARY)

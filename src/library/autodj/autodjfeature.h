@@ -1,34 +1,26 @@
-// AutoDJfeature.h
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef AUTODJFEATURE_H
-#define AUTODJFEATURE_H
-
-#include <QObject>
-#include <QStringListModel>
-#include <QVariant>
-#include <QIcon>
-#include <QUrl>
 #include <QList>
-#include <QModelIndex>
-#include <QPoint>
-#include <QAction>
+#include <QObject>
 #include <QPointer>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "library/treeitemmodel.h"
-#include "library/crate/crate.h"
 #include "library/dao/autodjcratesdao.h"
+#include "library/libraryfeature.h"
+#include "library/trackset/crate/crate.h"
+#include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class DlgAutoDJ;
 class Library;
 class PlayerManagerInterface;
 class TrackCollection;
-class TrackCollectionManager;
 class AutoDJProcessor;
 class WLibrarySidebar;
+class QAction;
+class QModelIndex;
+class QPoint;
 
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
@@ -39,7 +31,10 @@ class AutoDJFeature : public LibraryFeature {
     virtual ~AutoDJFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
+
+    void clear() override;
+    void paste() override;
+    void deleteItem(const QModelIndex& index) override;
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
@@ -48,7 +43,7 @@ class AutoDJFeature : public LibraryFeature {
                     KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     bool hasTrackTable() override {
         return true;
@@ -57,6 +52,7 @@ class AutoDJFeature : public LibraryFeature {
   public slots:
     void activate() override;
 
+    void onRightClick(const QPoint& globalPos) override;
     // Temporary, until WCrateTableView can be written.
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
@@ -67,11 +63,12 @@ class AutoDJFeature : public LibraryFeature {
     // The id of the AutoDJ playlist.
     int m_iAutoDJPlaylistId;
     AutoDJProcessor* m_pAutoDJProcessor;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAutoDJ* m_pAutoDJView;
 
     // Initialize the list of crates loaded into the auto-DJ queue.
     void constructCrateChildModel();
+    void removeCrateFromAutoDj(CrateId crateId = CrateId());
 
     // The "Crates" tree-item under the "Auto DJ" tree-item.
     TreeItem* m_pCratesTreeItem;
@@ -84,29 +81,23 @@ class AutoDJFeature : public LibraryFeature {
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
 
+    parented_ptr<QAction> m_pClearQueueAction;
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
-    QAction *m_pRemoveCrateFromAutoDj;
+    parented_ptr<QAction> m_pRemoveCrateFromAutoDjAction;
 
-    QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
   private slots:
+    void slotClearQueue();
     // Add a crate to the auto-DJ queue.
-    void slotAddCrateToAutoDj(int iCrateId);
-
+    void slotAddCrateToAutoDj(CrateId crateId);
     // Implements the context-menu item.
     void slotRemoveCrateFromAutoDj();
-
     void slotCrateChanged(CrateId crateId);
-
     // Adds a random track from all loaded crates to the auto-DJ queue.
     void slotAddRandomTrack();
-
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
 };
-
-
-#endif /* AUTODJFEATURE_H */

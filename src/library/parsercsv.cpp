@@ -6,7 +6,8 @@
 #include <QtDebug>
 
 #include "errordialoghandler.h"
-#include "moc_parsercsv.cpp"
+#include "library/basesqltablemodel.h"
+#include "library/parser.h"
 
 namespace {
 
@@ -26,61 +27,83 @@ bool isColumnExported(BaseSqlTableModel* pPlaylistTableModel, int column) {
 
 } // namespace
 
-QList<QString> ParserCsv::parse(const QString& sFilename) {
-    QFile file(sFilename);
-    QString basepath = sFilename.section('/', 0, -2);
+// static
+bool ParserCsv::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return playlistFile.endsWith(".csv", Qt::CaseInsensitive);
+}
 
-    clearLocations();
+// static
+QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
+    QFile file(playlistFile);
+
+    QList<QString> locations;
     //qDebug() << "ParserCsv: Starting to parse.";
     if (file.open(QIODevice::ReadOnly)) {
-        QByteArray byteArray = file.readAll();
+        QByteArray bytes = file.readAll();
 
-        QList<QList<QString> > tokens = tokenize(byteArray, ',');
+        QList<QList<QString>> tokens = tokenize(bytes, ',');
 
-        // detect Location column
-        int loc_coll = 0x7fffffff;
-        if (tokens.size()) {
-            for (int i = 0; i < tokens[0].size(); ++i) {
-                if (tokens[0][i] == tr("Location")) {
-                    loc_coll = i;
-                    break;
-                }
+        const auto detect_location_column =
+                [&](const auto& tokens_list,
+                        auto predicate) -> std::optional<std::size_t> {
+            const auto it = std::find_if(std::begin(tokens_list), std::end(tokens_list), predicate);
+            return (it != std::end(tokens_list))
+                    ? static_cast<std::size_t>(std::distance(std::begin(tokens_list), it))
+                    : std::optional<std::size_t>{};
+        };
+        if (!tokens.isEmpty()) {
+            std::optional<std::size_t> locationColumnIndex = detect_location_column(
+                    tokens[0],
+                    [&](auto i) { return i == QObject::tr("Location"); });
+            if ((!locationColumnIndex.has_value()) && tokens.size() > 1) {
+                // Last resort, find column with valid path in first row
+                // This happens in case of csv files in a different language,
+                // where the column name is not "Location" If the first row
+                // contains a valid path separator, we assume this is the location column.
+                // - Linux & macOS: Only / is a valid path separator
+                // - Windows: / and \ are valid path separators
+                // This is independent of the existence of the file referred in
+                // the first row, as it's only used for the column detection,
+                // and other rows might contain paths to existing files
+                locationColumnIndex = detect_location_column(tokens[1],
+                        [&](auto i) {
+#ifdef Q_OS_WIN
+                            return (i.contains(QChar('\\')) || i.contains(QChar('/')));
+                        });
+#else
+                            return i.contains(QChar('/'));
+                        });
+#endif
             }
-            for (int i = 1; i < tokens.size(); ++i) {
-                if (loc_coll < tokens[i].size()) {
-                    // Todo: check if path is relative
-                    QFileInfo fi = tokens[i][loc_coll];
-                    if (fi.isRelative()) {
-                        // add base path
-                        qDebug() << "is relative" << basepath << fi.filePath();
-                        fi.setFile(basepath,fi.filePath());
+            if (locationColumnIndex.has_value()) {
+                for (int row = 1; row < tokens.size(); ++row) {
+                    if (locationColumnIndex.has_value() &&
+                            locationColumnIndex.value() <
+                                    static_cast<std::size_t>(
+                                            tokens[row].size())) {
+                        locations.append(tokens[row][static_cast<int>(
+                                locationColumnIndex.value())]);
                     }
-                    m_sLocations.append(fi.filePath());
                 }
+            } else {
+                qInfo() << "No location column found in"
+                        << playlistFile;
             }
         }
-
         file.close();
-
-        if (m_sLocations.count() != 0) {
-            return m_sLocations;
-        } else {
-            return QList<QString>(); // NULL pointer returned when no locations were found
-        }
     }
 
     qDebug() << "ParserCsv::parse() failed"
-             << sFilename
+             << playlistFile
              << file.errorString();
 
-    file.close();
-    return QList<QString>(); //if we get here something went wrong
+    return locations;
 }
 
 // Code was posted at http://www.qtcentre.org/threads/35511-Parsing-CSV-data
 // by "adzajac" and adapted to use QT Classes
-QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter) {
-    QList<QList<QString> > tokens;
+QList<QList<QString>> ParserCsv::tokenize(const QByteArray& str, char delimiter) {
+    QList<QList<QString>> tokens;
 
     unsigned int row = 0;
     bool quotes = false;
@@ -93,21 +116,23 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
         if (!quotes && c == '"') {
             quotes = true;
         } else if (quotes && c== '"' ) {
-            if (pos + 1 < str.length() && str[pos+1]== '"') {
+            if (pos + 1 < str.length() && str[pos + 1] == '"') {
                 field.append(c);
                 pos++;
             } else {
                 quotes = false;
             }
         } else if (!quotes && c == delimiter) {
-            if (isUtf8(field.constData())) {
+            if (Parser::isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));
             }
             field.clear();
+        } else if (!quotes && c == '\r' && str[pos + 1] == '\n') {
+            // skip \r in \r\n
         } else if (!quotes && (c == '\r' || c == '\n')) {
-            if (isUtf8(field.constData())) {
+            if (Parser::isUtf8(field.constData())) {
                 tokens[row].append(QString::fromUtf8(field));
             } else {
                 tokens[row].append(QString::fromLatin1(field));
@@ -135,8 +160,8 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
         ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
         ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle(tr("Playlist Export Failed"));
-        props->setText(tr("Could not create file") + " " + file_str);
+        props->setTitle(QObject::tr("Playlist Export Failed"));
+        props->setText(QObject::tr("Could not create file") + " " + file_str);
         props->setDetails(file.errorString());
         pDialogHandler->requestErrorDialog(props);
         return false;
@@ -147,9 +172,14 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     qDebug() << "Basepath: " << base;
     QTextStream out(&file);
-    out.setCodec("UTF-8"); // rfc4180: Common usage of CSV is US-ASCII ...
-                           // Using UTF-8 to get around codepage issues
-                           // and it's the default encoding in Ooo Calc
+    // rfc4180: Common usage of CSV is US-ASCII ...
+    // Using UTF-8 to get around codepage issues
+    // and it's the default encoding in Ooo Calc
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    DEBUG_ASSERT(out.encoding() == QStringConverter::Utf8);
+#else
+    out.setCodec("UTF-8");
+#endif
 
     // writing header section
     bool first = true;
@@ -221,8 +251,8 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
-                tr("Readable text Export Failed"),
-                tr("Could not create file") + " " + file_str + +"\n" + file.errorString());
+                QObject::tr("Readable text Export Failed"),
+                QObject::tr("Could not create file") + " " + file_str + "\n" + file.errorString());
         return false;
     }
 

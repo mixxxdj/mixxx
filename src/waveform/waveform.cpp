@@ -3,11 +3,10 @@
 #include <QtDebug>
 
 #include "analyzer/constants.h"
+#include "engine/engine.h"
 #include "proto/waveform.pb.h"
 
 using namespace mixxx::track;
-
-const int kNumChannels = 2;
 
 // Return the smallest power of 2 which is greater than the desired size when
 // squared.
@@ -104,15 +103,14 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::Signal* high = filtered->mutable_high();
 
     // TODO(vrince) set max/min for each signal
-    int numChannels = kNumChannels;
     all->set_units(io::Waveform::RMS);
-    all->set_channels(numChannels);
+    all->set_channels(mixxx::kEngineChannelCount);
     low->set_units(io::Waveform::RMS);
-    low->set_channels(numChannels);
+    low->set_channels(mixxx::kEngineChannelCount);
     mid->set_units(io::Waveform::RMS);
-    mid->set_channels(numChannels);
+    mid->set_channels(mixxx::kEngineChannelCount);
     high->set_units(io::Waveform::RMS);
-    high->set_channels(numChannels);
+    high->set_channels(mixxx::kEngineChannelCount);
 
     int dataSize = getDataSize();
     for (int i = 0; i < dataSize; ++i) {

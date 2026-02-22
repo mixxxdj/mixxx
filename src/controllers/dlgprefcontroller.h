@@ -1,54 +1,65 @@
 #pragma once
 
-#include <QHash>
-#include <QSortFilterProxyModel>
+#include <memory>
 
-#include "controllers/controllerinputmappingtablemodel.h"
-#include "controllers/controlleroutputmappingtablemodel.h"
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetinfo.h"
-#include "controllers/dlgcontrollerlearning.h"
+#include "controllers/controllermappinginfo.h"
+#include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 // Forward declarations
 class Controller;
+class ControllerInputMappingTableModel;
+class ControllerMappingTableProxyModel;
 class ControllerManager;
-class PresetInfoEnumerator;
+class ControllerOutputMappingTableModel;
+class ControlPickerMenu;
+class DlgControllerLearning;
+class MappingInfoEnumerator;
 
 /// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
-    DlgPrefController(QWidget *parent, Controller* controller,
-                      ControllerManager* controllerManager,
-                      UserSettingsPointer pConfig);
+    DlgPrefController(QWidget* parent,
+            Controller* controller,
+            std::shared_ptr<ControllerManager> controllerManager,
+            UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
     QUrl helpUrl() const override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
     void slotApply() override;
+    /// Called when the preferences are hidden, e.g. when closing the window
+    /// with the [X] button or keyboard shortcut
+    void slotHide() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
 
+    void slotRecreateControlPickerMenu();
+
   signals:
-    void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
+    void applyMapping(Controller* pController,
+            std::shared_ptr<LegacyControllerMapping> pMapping,
+            bool bEnabled);
     void mappingStarted();
     void mappingEnded();
 
   private slots:
-    /// Called when the user selects another preset in the combobox
-    void slotPresetSelected(int index);
-    /// Used to selected the current preset in the combobox and display the
-    /// preset information.
-    void slotShowPreset(ControllerPresetPointer preset);
+    /// Called when the user selects another mapping in the combobox
+    void slotMappingSelected(int index);
+    void slotInputControlSearch();
+    void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
+    void enableWizardAndIOTabs(bool enable);
 
     // Input mappings
     void addInputMapping();
@@ -64,16 +75,19 @@ class DlgPrefController : public DlgPreferencePage {
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
-    QString presetShortName(const ControllerPresetPointer pPreset) const;
-    QString presetName(const ControllerPresetPointer pPreset) const;
-    QString presetAuthor(const ControllerPresetPointer pPreset) const;
-    QString presetDescription(const ControllerPresetPointer pPreset) const;
-    QString presetSupportLinks(const ControllerPresetPointer pPreset) const;
-    QString presetFileLinks(const ControllerPresetPointer pPreset) const;
-    QString presetPathFromIndex(int index) const;
-    QString askForPresetName(const QString& prefilledName = QString()) const;
-    void applyPresetChanges();
-    bool savePreset();
+    /// Used to selected the current mapping in the combobox and display the
+    /// mapping information.
+    void showMapping(std::shared_ptr<LegacyControllerMapping> mapping);
+    QString mappingShortName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingAuthor(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingFilePathFromIndex(int index) const;
+    QString askForMappingName(const QString& prefilledName = QString()) const;
+    void applyMappingChanges();
+    bool saveMapping();
     void initTableView(QTableView* pTable);
 
     /// Set dirty state (i.e. changes have been made).
@@ -92,14 +106,14 @@ class DlgPrefController : public DlgPreferencePage {
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.
-    bool isDirty() {
+    bool isDirty() const {
         return m_bDirty;
     }
 
     /// Reload the mappings in the dropdown dialog
-    void enumeratePresets(const QString& selectedPresetPath);
-    PresetInfo enumeratePresetsFromEnumerator(
-            QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,
+    void enumerateMappings(const QString& selectedMappingPath);
+    MappingInfo enumerateMappingsFromEnumerator(
+            QSharedPointer<MappingInfoEnumerator> pMappingEnumerator,
             const QIcon& icon = QIcon());
 
     void enableDevice();
@@ -108,16 +122,16 @@ class DlgPrefController : public DlgPreferencePage {
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
     const QString m_pUserDir;
-    ControllerManager* m_pControllerManager;
+    std::shared_ptr<ControllerManager> m_pControllerManager;
     Controller* m_pController;
-    ControlPickerMenu* m_pControlPickerMenu;
+    parented_ptr<ControlPickerMenu> m_pControlPickerMenu;
     DlgControllerLearning* m_pDlgControllerLearning;
-    ControllerPresetPointer m_pPreset;
-    QMap<QString, bool> m_pOverwritePresets;
+    std::shared_ptr<LegacyControllerMapping> m_pMapping;
+    QMap<QString, bool> m_pOverwriteMappings;
     ControllerInputMappingTableModel* m_pInputTableModel;
-    QSortFilterProxyModel* m_pInputProxyModel;
+    ControllerMappingTableProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
-    QSortFilterProxyModel* m_pOutputProxyModel;
+    ControllerMappingTableProxyModel* m_pOutputProxyModel;
     bool m_GuiInitialized;
     bool m_bDirty;
 };

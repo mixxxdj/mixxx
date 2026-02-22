@@ -158,3 +158,17 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     int m_iNumStates;
     QScopedPointer<QTimer> m_pushTimer;
 };
+
+class ControlLinSteppedIntPotBehavior : public ControlPotmeterBehavior {
+  public:
+    ControlLinSteppedIntPotBehavior(
+            double dMinValue, double dMaxValue, bool allowOutOfBounds);
+
+    double valueToParameter(double dValue) override;
+    double parameterToValue(double dParam) override;
+
+  protected:
+    double m_lastSnappedParam;
+    double m_dist;
+    double m_oldVal;
+};

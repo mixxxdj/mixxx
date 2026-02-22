@@ -1,19 +1,33 @@
 #pragma once
 
+#include "library/coverart.h"
 #include "proto/keys.pb.h"
-
-#include "track/trackid.h"
 #include "track/cue.h"
 #include "track/keys.h"
 #include "track/keyutils.h"
-#include "track/trackmetadata.h"
 #include "track/playcounter.h"
-
-#include "library/coverart.h"
+#include "track/trackid.h"
+#include "track/trackmetadata.h"
 #include "util/color/rgbcolor.h"
 
+// Forward declaration for accessing m_headerParsed
+class TrackDAO;
 
 namespace mixxx {
+
+/// Effect of updating a property with a new value.
+enum class UpdateResult {
+    /// The value has been updated and changed.
+    Updated,
+
+    /// The value didn't change and has not been updated.
+    Unchanged,
+
+    /// The provided value is invalid or insonsistent with
+    /// any existing value(s) and has been rejected, i.e.
+    /// the current value didn't change either.
+    Rejected,
+};
 
 // Properties of tracks that are stored in the database.
 class TrackRecord final {
@@ -25,19 +39,13 @@ class TrackRecord final {
     // has been inserted or is loaded from the library DB.
     MIXXX_DECL_PROPERTY(TrackId, id, Id)
 
-    // TODO(uklotz): Change data type from bool to QDateTime
-    //
     // Both import and export of metadata can be tracked by a single time
     // stamp, the direction doesn't matter. The value should be set to the
     // modification time stamp provided by the metadata source. This would
     // enable us to update the metadata of all tracks in the database after
     // the external metadata has been modified, i.e. if the corresponding
     // files have been modified.
-    //
-    // Requires a database update! We could reuse the 'header_parsed' column.
-    // During migration the boolean value will be substituted with either a
-    // default time stamp 1970-01-01 00:00:00.000 or NULL respectively.
-    MIXXX_DECL_PROPERTY(bool /*QDateTime*/, metadataSynchronized, MetadataSynchronized)
+    MIXXX_DECL_PROPERTY(QDateTime, sourceSynchronizedAt, SourceSynchronizedAt)
 
     MIXXX_DECL_PROPERTY(CoverInfoRelative, coverInfo, CoverInfo)
 
@@ -46,7 +54,7 @@ class TrackRecord final {
     MIXXX_DECL_PROPERTY(QString, url, Url)
     MIXXX_DECL_PROPERTY(PlayCounter, playCounter, PlayCounter)
     MIXXX_DECL_PROPERTY(RgbColor::optional_t, color, Color)
-    MIXXX_DECL_PROPERTY(CuePosition, cuePoint, CuePoint)
+    MIXXX_DECL_PROPERTY(mixxx::audio::FramePos, mainCuePosition, MainCuePosition)
     MIXXX_DECL_PROPERTY(int, rating, Rating)
     MIXXX_DECL_PROPERTY(bool, bpmLocked, BpmLocked)
 
@@ -77,7 +85,7 @@ class TrackRecord final {
         return getRating() != kNoRating;
     }
 
-    void setKeys(const Keys& keys);
+    void setKeys(Keys keys);
     void resetKeys() {
         setKeys(Keys());
     }
@@ -85,23 +93,38 @@ class TrackRecord final {
         return m_keys;
     }
 
-    track::io::key::ChromaticKey getGlobalKey() const {
-        if (getKeys().isValid()) {
-            return getKeys().getGlobalKey();
-        } else {
-            return track::io::key::INVALID;
-        }
-    }
-    bool updateGlobalKey(
-            track::io::key::ChromaticKey key,
-            track::io::key::Source keySource);
-
-    QString getGlobalKeyText() const {
-        return KeyUtils::getGlobalKeyText(getKeys());
-    }
-    bool updateGlobalKeyText(
+    // Key text will be stored as StandardID3v2
+    // Invalid Keys are rejected and empty string deletes the key
+    UpdateResult updateGlobalKeyNormalizeText(
             const QString& keyText,
             track::io::key::Source keySource);
+
+    enum class SourceSyncStatus {
+        /// The metadata has not been imported yet.
+        Void,
+
+        /// The metadata has been imported once, but until Mixxx 2.4 no
+        /// synchronization time stamps have been stored in the database
+        /// that allow to monitor the modification time of the file.
+        Unknown,
+
+        /// The metadata in Mixxx is up-to-date, i.e. not older than the
+        /// last modification time stamp of the underlying file.
+        Synchronized,
+
+        /// The metadata in Mixxx is older than the metadata stored in file tags
+        /// and should be re-imported.
+        Outdated,
+
+        /// The status could not be determined for whatever reason,
+        /// e.g. inaccessible file, ...
+        Undefined,
+    };
+    SourceSyncStatus checkSourceSyncStatus(
+            const FileInfo& fileInfo) const;
+    bool replaceMetadataFromSource(
+            TrackMetadata&& importedMetadata,
+            const QDateTime& sourceSynchronizedAt);
 
     // Merge the current metadata with new and additional properties
     // imported from the file. Since these properties are not (yet)
@@ -111,7 +134,7 @@ class TrackRecord final {
     // data when needed.
     //
     // Returns true if any property has been modified or false otherwise.
-    bool mergeImportedMetadata(
+    bool mergeExtraMetadataFromSource(
             const TrackMetadata& importedMetadata);
 
     /// Update the stream info after opening the audio stream during
@@ -131,7 +154,13 @@ class TrackRecord final {
         return m_streamInfoFromSource;
     }
 
-private:
+  private:
+    // TODO: Remove this dependency
+    friend class ::Track;
+
+    bool updateSourceSynchronizedAt(
+            const QDateTime& sourceSynchronizedAt);
+
     Keys m_keys;
 
     // TODO: Use TrackMetadata as single source of truth and do not
@@ -155,6 +184,9 @@ private:
     //  - STALE =      1 << 2
     //    Stale metadata should be re-imported depending on the other flags.
     std::optional<audio::StreamInfo> m_streamInfoFromSource;
+
+    friend class ::TrackDAO;
+    bool m_headerParsed; // deprecated, replaced by sourceSynchronizedAt
 
     /// Equality comparison
     ///

@@ -78,7 +78,7 @@
                   <Template src="skin:vumeter.xml">
                     <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
                     <SetVariable name="Size">5f,42f</SetVariable>
-                    <SetVariable name="control">VuMeter</SetVariable>
+                    <SetVariable name="control">vu_meter</SetVariable>
                   </Template>
 
                 </Children>
@@ -101,14 +101,14 @@
                 <Children>
 
                   <Template src="skin:left_2state_button.xml">
-                    <SetVariable name="TooltipId">master_enable</SetVariable>
+                    <SetVariable name="TooltipId">main_enable</SetVariable>
                     <SetVariable name="ObjectName">AuxPlayButton</SetVariable>
                     <SetVariable name="MinimumSize">32,22</SetVariable>
                     <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
                     <SetVariable name="SizePolicy">me,f</SetVariable>
                     <SetVariable name="state_0_text">Play</SetVariable>
                     <SetVariable name="state_1_text">Play</SetVariable>
-                    <SetVariable name="left_connection_control"><Variable name="group"/>,master</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,main_mix</SetVariable>
                   </Template>
 
                   <Template src="skin:left_2state_button.xml">
@@ -177,7 +177,7 @@
       </WidgetGroup><!-- MicAuxContainer -->
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

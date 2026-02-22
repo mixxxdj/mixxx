@@ -5,15 +5,18 @@
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "util/color/color.h"
+#include "util/color/predefinedcolorpalettes.h"
 
 namespace mixxx {
 
-TEST(CueTest, DefaultCueToCueInfoTest) {
-    const Cue cueObject;
-    auto cueInfo = cueObject.getCueInfo(
-            audio::SampleRate(44100));
-    cueInfo.setColor(std::nullopt);
-    EXPECT_EQ(CueInfo(), cueInfo);
+TEST(CueTest, NewCueIsDirty) {
+    const auto cue = Cue(
+            mixxx::CueType::HotCue,
+            1,
+            mixxx::audio::kStartFramePos,
+            mixxx::audio::kInvalidFramePos,
+            mixxx::PredefinedColorPalettes::kDefaultCueColor);
+    EXPECT_TRUE(cue.isDirty());
 }
 
 TEST(CueTest, DefaultCueInfoToCueRoundtrip) {
@@ -43,6 +46,7 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
             cueInfo1,
             audio::SampleRate(44100),
             true);
+    EXPECT_TRUE(cueObject.isDirty());
     const auto cueInfo2 = cueObject.getCueInfo(
             audio::SampleRate(44100));
     EXPECT_EQ(cueInfo1, cueInfo2);

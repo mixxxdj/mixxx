@@ -1,33 +1,11 @@
 #include "database/schemamanager.h"
 
-#include <gtest/gtest.h>
-
 #include <QSqlQuery>
 
-#include "database/mixxxdb.h"
 #include "library/dao/settingsdao.h"
-#include "test/mixxxtest.h"
-#include "util/assert.h"
-#include "util/db/dbconnectionpooled.h"
-#include "util/db/dbconnectionpooler.h"
+#include "test/mixxxdbtest.h"
 
-class SchemaManagerTest : public MixxxTest {
-  protected:
-    SchemaManagerTest()
-            : m_mixxxDb(config()),
-              m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-              m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())) {
-    }
-
-    QSqlDatabase dbConnection() const {
-        return m_dbConnection;
-    }
-
-  private:
-    const MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPooler m_dbConnectionPooler;
-    QSqlDatabase m_dbConnection;
-};
+class SchemaManagerTest : public MixxxDbTest {};
 
 TEST_F(SchemaManagerTest, UpgradeFromPreviousToNextVersion) {
     // Verify that all schema migrations work as expected

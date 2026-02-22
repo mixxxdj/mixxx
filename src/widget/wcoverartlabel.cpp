@@ -1,81 +1,121 @@
 #include "widget/wcoverartlabel.h"
 
-#include <QtDebug>
+#include <QContextMenuEvent>
 
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
 #include "moc_wcoverartlabel.cpp"
-#include "track/track.h"
-#include "util/compatibility.h"
 #include "widget/wcoverartmenu.h"
 
 namespace {
 
-constexpr QSize kDeviceIndependentCoverLabelSize = QSize(100, 100);
+// Device-independent size for the label
+constexpr QSize kDefaultSize = QSize(100, 100);
+
+// Size for the pixmap. Assumes frame width is 1px.
+constexpr QSize kDefaultPixmapSize = kDefaultSize - QSize(2, 2);
 
 inline QPixmap scaleCoverLabel(
-        QWidget* parent,
-        QPixmap pixmap) {
-    const auto devicePixelRatioF = getDevicePixelRatioF(parent);
+        QLabel* pLabel,
+        QPixmap pixmap,
+        QSize size) {
+    VERIFY_OR_DEBUG_ASSERT(size.isValid()) {
+        size = kDefaultPixmapSize;
+    }
+    const auto devicePixelRatioF = pLabel->devicePixelRatioF();
     pixmap.setDevicePixelRatio(devicePixelRatioF);
     return pixmap.scaled(
-            kDeviceIndependentCoverLabelSize * devicePixelRatioF,
+            size * devicePixelRatioF,
             Qt::KeepAspectRatio,
             Qt::SmoothTransformation);
 }
 
-QPixmap createDefaultCover(QWidget* parent) {
+QPixmap createDefaultCover(QLabel* pLabel, QSize size) {
     auto defaultCover = QPixmap(CoverArtUtils::defaultCoverLocation());
-    return scaleCoverLabel(parent, defaultCover);
+    return scaleCoverLabel(pLabel, defaultCover, size);
 }
 
 } // anonymous namespace
 
-WCoverArtLabel::WCoverArtLabel(QWidget* parent)
-        : QLabel(parent),
-          m_pCoverMenu(make_parented<WCoverArtMenu>(this)),
-          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this)),
-          m_defaultCover(createDefaultCover(this)) {
-    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+WCoverArtLabel::WCoverArtLabel(QWidget* pParent, WCoverArtMenu* pCoverMenu)
+        : QLabel(pParent),
+          m_pCoverMenu(pCoverMenu),
+          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this, nullptr, pCoverMenu)),
+          m_maxSize(kDefaultSize),
+          m_pixmapSizeMax(kDefaultPixmapSize),
+          m_defaultCover(createDefaultCover(this, m_pixmapSizeMax)) {
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
-    connect(m_pCoverMenu,
-            &WCoverArtMenu::coverInfoSelected,
-            this,
-            &WCoverArtLabel::coverInfoSelected);
-    connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArtLabel::reloadCoverArt);
-
-    setPixmap(m_defaultCover);
+    setPixmapAndResize(m_defaultCover);
 }
 
 WCoverArtLabel::~WCoverArtLabel() = default;
 
-void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
+void WCoverArtLabel::setCoverInfoAndPixmap(const CoverInfo& coverInfo,
         const QPixmap& px) {
-    m_pCoverMenu->setCoverArt(coverInfo);
+    if (m_pCoverMenu != nullptr) {
+        m_pCoverMenu->setCoverArt(coverInfo);
+    }
+    setPixmapAndResize(px);
+}
+
+void WCoverArtLabel::setPixmapAndResize(const QPixmap& px) {
     if (px.isNull()) {
         m_loadedCover = px;
+        m_fullSizeCover = px;
         setPixmap(m_defaultCover);
     } else {
-        m_loadedCover = scaleCoverLabel(this, px);
+        m_loadedCover = scaleCoverLabel(this, px, m_pixmapSizeMax);
+        m_fullSizeCover = px;
         setPixmap(m_loadedCover);
     }
-
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    QSize frameSize = pixmap(Qt::ReturnByValue).size() / getDevicePixelRatioF(this);
+    QSize newSize = pixmap().size() / devicePixelRatioF();
 #else
-    QSize frameSize = pixmap()->size() / getDevicePixelRatioF(this);
+    QSize newSize = pixmap()->size() / devicePixelRatioF();
 #endif
-    frameSize += QSize(2,2); // margin
-    setMinimumSize(frameSize);
-    setMaximumSize(frameSize);
+    // add the frame so the entire pixmap is visible
+    newSize += QSize(frameWidth() * 2, frameWidth() * 2);
+    if (size() != newSize) {
+        setFixedSize(newSize);
+    }
+}
+
+void WCoverArtLabel::setMaxSize(const QSize newSize) {
+    if (newSize == m_maxSize) {
+        return;
+    }
+
+    m_maxSize = newSize;
+    m_pixmapSizeMax = newSize - QSize(frameWidth() * 2, frameWidth() * 2);
+    // Skip resizing the pixmap and label if the pixmap already fits.
+    // Check if we got more space in one dimension and don't need it
+    // for the other.
+    const QSize pixmapSize = pixmap().size() / devicePixelRatioF();
+    if (m_pixmapSizeMax == pixmapSize ||
+            (m_pixmapSizeMax.height() == pixmapSize.height() &&
+                    m_pixmapSizeMax.width() > pixmapSize.width()) ||
+            (m_pixmapSizeMax.width() == pixmapSize.width() &&
+                    m_pixmapSizeMax.height() > pixmapSize.height())) {
+        return;
+    }
+
+    m_defaultCover = createDefaultCover(this, m_pixmapSizeMax);
+    setPixmapAndResize(m_fullSizeCover);
 }
 
 void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
+    if (m_pCoverMenu == nullptr) {
+        return;
+    }
     m_pCoverMenu->popup(mapToGlobal(pos));
 }
 
 void WCoverArtLabel::contextMenuEvent(QContextMenuEvent* event) {
+    if (m_pCoverMenu == nullptr) {
+        return;
+    }
     event->accept();
     m_pCoverMenu->popup(event->globalPos());
 }
@@ -85,15 +125,23 @@ void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
 }
 
 void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
-    if (m_pCoverMenu->isVisible()) {
+    if (m_pCoverMenu != nullptr && m_pCoverMenu->isVisible()) {
         return;
     }
 
     if (event->button() == Qt::LeftButton) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
-        } else if (!m_loadedCover.isNull()) {
-            m_pDlgFullSize->init(m_pLoadedTrack);
+        } else {
+            if (m_loadedCover.isNull()) {
+                // Nothing to show
+                return;
+            } else if (!m_pLoadedTrack && !m_fullSizeCover.isNull()) {
+                m_pDlgFullSize->initFetchedCoverArt(m_fullSizeCover);
+            } else {
+                // Regular track cover
+                m_pDlgFullSize->init(m_pLoadedTrack);
+            }
         }
     }
 }

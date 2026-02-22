@@ -8,19 +8,20 @@
 #include <pthread.h>
 #endif
 
-#include "util/performancetimer.h"
-#include "util/memory.h"
-#include "soundio/sounddevice.h"
+#include <memory>
+
+#include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/networkoutputstreamworker.h"
+#include "soundio/sounddevice.h"
+#include "util/fifo.h"
+#include "util/performancetimer.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
 class SoundManager;
-class ControlProxy;
 class EngineNetworkStream;
 class SoundDeviceNetworkThread;
-
 
 class SoundDeviceNetwork : public SoundDevice {
   public:
@@ -29,16 +30,14 @@ class SoundDeviceNetwork : public SoundDevice {
                        QSharedPointer<EngineNetworkStream> pNetworkStream);
     ~SoundDeviceNetwork() override;
 
-    SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
+    SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override;
     bool isOpen() const override;
-    SoundDeviceError close() override;
+    SoundDeviceStatus close() override;
     void readProcess(SINT framesPerBuffer) override;
     void writeProcess(SINT framesPerBuffer) override;
     QString getError() const override;
 
-    unsigned int getDefaultSampleRate() const override {
-        return 44100;
-    }
+    mixxx::audio::SampleRate getDefaultSampleRate() const override;
 
     // NOTE: This does not take a frames per buffer argument because that is
     //       always equal to the configured buffer size for network streams
@@ -57,11 +56,11 @@ class SoundDeviceNetwork : public SoundDevice {
     void workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker, int frames);
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
-    std::unique_ptr<FIFO<CSAMPLE> > m_outputFifo;
-    std::unique_ptr<FIFO<CSAMPLE> > m_inputFifo;
+    std::unique_ptr<FIFO<CSAMPLE>> m_outputFifo;
+    std::unique_ptr<FIFO<CSAMPLE>> m_inputFifo;
     bool m_inputDrift;
 
-    std::unique_ptr<ControlProxy> m_pMasterAudioLatencyUsage;
+    PollingControlProxy m_audioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     std::unique_ptr<SoundDeviceNetworkThread> m_pThread;

@@ -22,10 +22,10 @@
 namespace {
 
 QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
-    const QString fileExtension =
-            mixxx::SoundSource::getTypeFromFile(filePath);
+    const QString fileType =
+            mixxx::SoundSource::getTypeFromFile(QFileInfo(filePath));
     const mixxx::SoundSourceProviderPointer pPrimaryProvider =
-            SoundSourceProxy::getPrimaryProviderForFileExtension(fileExtension);
+            SoundSourceProxy::getPrimaryProviderForFileType(fileType);
     if (pPrimaryProvider) {
         return pPrimaryProvider->getDisplayName();
     } else {
@@ -73,6 +73,7 @@ namespace mixxx {
 
 double SeratoTags::guessTimingOffsetMillis(
         const QString& filePath,
+        const QString& fileType,
         const audio::SignalInfo& signalInfo) {
     // The following code accounts for timing offsets required to
     // correctly align timing information (e.g. cue points) exported from
@@ -82,7 +83,7 @@ double SeratoTags::guessTimingOffsetMillis(
     // PR for more detailed information:
     // https://github.com/mixxxdj/mixxx/pull/2119
     double timingOffset = 0;
-    if (taglib::getFileTypeFromFileName(filePath) == taglib::FileType::MP3) {
+    if (fileType == "mp3") {
         const QString primaryDecoderName =
                 getPrimaryDecoderNameForFilePath(filePath);
         // There should always be an MP3 decoder available
@@ -279,7 +280,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     }
 
     const QList<CueInfo> cueInfos = cueMap.values();
-    qDebug() << "SeratoTags::getCueInfos()";
+    // qDebug() << "SeratoTags::getCueInfos()";
     for (const CueInfo& cueInfo : cueInfos) {
         qDebug() << cueInfo;
     }
@@ -292,7 +293,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     // ensure that each hotcue number is unique (by using a map), apply the
     // timing offset and split up cues and loops.
     QList<CueInfo> cueList;
-    for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
+    for (const CueInfo& cueInfo : std::as_const(cueInfos)) {
         if (!cueInfo.getHotCueIndex()) {
             continue;
         }
@@ -359,7 +360,7 @@ std::optional<RgbColor::optional_t> SeratoTags::getTrackColor() const {
             pStoredColor->toDisplayedColor());
 }
 
-void SeratoTags::setTrackColor(RgbColor::optional_t color) {
+void SeratoTags::setTrackColor(const RgbColor::optional_t& color) {
     auto storedColor = SeratoStoredTrackColor::fromDisplayedColor(color);
     m_seratoMarkers.setTrackColor(storedColor);
     m_seratoMarkers2.setTrackColor(storedColor);

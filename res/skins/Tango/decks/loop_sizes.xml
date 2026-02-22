@@ -31,42 +31,42 @@ Variables:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">0.125</SetVariable>
                     <SetVariable name="LoopLength_Text">/8</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">0.25</SetVariable>
                     <SetVariable name="LoopLength_Text">/4</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">0.5</SetVariable>
                     <SetVariable name="LoopLength_Text">/2</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">1</SetVariable>
                     <SetVariable name="LoopLength_Text">1</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">2</SetVariable>
                     <SetVariable name="LoopLength_Text">2</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">4</SetVariable>
                     <SetVariable name="LoopLength_Text">4</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">8</SetVariable>
                     <SetVariable name="LoopLength_Text">8</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                  <Template src="skin:../Tango/controls/button_loopsize.xml">
+                  <Template src="skins:Tango/controls/button_loopsize.xml">
                     <SetVariable name="LoopLength_Control">16</SetVariable>
                     <SetVariable name="LoopLength_Text">16</SetVariable>
                   </Template>

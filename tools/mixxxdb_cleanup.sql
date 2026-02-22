@@ -47,8 +47,26 @@ DELETE FROM PlaylistTracks WHERE track_id NOT IN (SELECT id FROM library);
 -- Analysis
 DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations);
 
--- Custom Tags (scheduled for 2.4.0)
---DELETE FROM track_custom_tags WHERE track_id NOT IN (SELECT id FROM library);
+-----------------------------------------------------------------------
+-- Restore the play count columns in the library table from the      --
+-- history playlists (requires SQLite v3.33.0 or newer)              --
+-----------------------------------------------------------------------
+
+UPDATE library
+SET timesplayed=q.timesplayed,last_played_at=q.last_played_at
+FROM (
+    SELECT
+    PlaylistTracks.track_id as id,
+    COUNT(PlaylistTracks.track_id) as timesplayed,
+    MAX(PlaylistTracks.pl_datetime_added) as last_played_at
+    FROM PlaylistTracks
+    JOIN Playlists
+    ON PlaylistTracks.playlist_id=Playlists.id
+    -- PlaylistDAO::PLHT_SET_LOG=2
+    WHERE Playlists.hidden=2
+    GROUP BY PlaylistTracks.track_id
+) q
+WHERE library.id=q.id;
 
 -----------------------------------------------------------------------
 -- Fix referential integrity issues in external libraries (optional) --
@@ -79,6 +97,13 @@ DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations
 -- Post-cleanup maintenance                                          --
 -----------------------------------------------------------------------
 
+-- Rebuild the entire database file
+-- https://www.sqlite.org/lang_vacuum.html
 VACUUM;
 
-PRAGMA optimize;
+-- According to Richard Hipp himself executing VACUUM before ANALYZE is the
+-- recommended order: https://sqlite.org/forum/forumpost/62fb63a29c5f7810?t=h
+
+-- Update statistics for the query planner
+-- https://www.sqlite.org/lang_analyze.html
+ANALYZE;

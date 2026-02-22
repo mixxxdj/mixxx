@@ -32,15 +32,15 @@
                       <Number>0</Number>
                       <Text><Variable name="state_0_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
                       <Text><Variable name="state_1_text"/></Text>
                       <Alignment><Variable name="Align"/></Alignment>
-                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_set.svg</Unpressed>
-                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_set.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_medium_active.svg</Pressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,cue_default</ConfigKey>
@@ -60,7 +60,7 @@
                     <Layout>stacked</Layout>
                     <Size>42f,26f</Size>
                     <Children>
-                      <Template src="skin:/controls/button_2state_right_display.xml">
+                      <Template src="skins:LateNight/controls/button_2state_right_display.xml">
                         <SetVariable name="TooltipId">play_cue_default</SetVariable>
                         <SetVariable name="ObjectName">PlayDeckMini</SetVariable>
                         <SetVariable name="Size">42f,26f</SetVariable>
@@ -97,7 +97,7 @@
                 <MinimumSize>250,46</MinimumSize>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:/decks/overview.xml">
+                  <Template src="skins:LateNight/decks/overview.xml">
                     <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeDeckMini"/></SetVariable>
                   </Template>
                 </Children>
@@ -117,7 +117,7 @@
                   </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[LateNight],show_spinny_cover</ConfigKey>
+                  <ConfigKey>[Skin],show_spinny_or_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- SpinnyCoverContainer_MiniDeck -->

@@ -109,7 +109,11 @@ inline bool isUnrecoverableError(mad_error error) {
     return (MAD_ERROR_NONE != error) && !MAD_RECOVERABLE(error);
 }
 
-inline bool hasUnrecoverableError(const mad_stream* pMadStream) {
+#ifndef MIXXX_DEBUG_ASSERTIONS_ENABLED
+[[maybe_unused]]
+#endif
+inline bool
+hasUnrecoverableError(const mad_stream* pMadStream) {
     if (pMadStream) {
         return isUnrecoverableError(pMadStream->error);
     }
@@ -121,7 +125,18 @@ bool decodeFrameHeader(
         mad_stream* pMadStream,
         bool skipId3Tag) {
     DEBUG_ASSERT(!hasUnrecoverableError(pMadStream));
-    if (mad_header_decode(pMadHeader, pMadStream)) {
+    int ret = mad_header_decode(pMadHeader, pMadStream);
+    if (pMadHeader->flags & MAD_FLAG_FREEFORMAT) {
+        // perform missing sanity check for Layer I and II
+        // See libmad frame.c free_bitrate()
+        if ((pMadHeader->layer == MAD_LAYER_I && pMadHeader->bitrate > 896000) ||
+                (pMadHeader->layer == MAD_LAYER_II && pMadHeader->bitrate > 768000)) {
+            pMadStream->error = MAD_ERROR_LOSTSYNC;
+            pMadStream->sync = 0;
+            ret = -1;
+        }
+    }
+    if (ret) {
         // Something went wrong when decoding the frame header...
         DEBUG_ASSERT(pMadStream->error != MAD_ERROR_NONE);
         if (MAD_ERROR_BUFLEN == pMadStream->error) {
@@ -130,7 +145,8 @@ bool decodeFrameHeader(
         }
         if (isUnrecoverableError(pMadStream->error)) {
             kLogger.warning() << "Unrecoverable MP3 header decoding error:"
-                              << mad_stream_errorstr(pMadStream);
+                              << mad_stream_errorstr(pMadStream)
+                              << pMadStream->this_frame - pMadStream->buffer;
             return false;
         }
         if ((pMadStream->error == MAD_ERROR_LOSTSYNC) && skipId3Tag) {
@@ -148,7 +164,8 @@ bool decodeFrameHeader(
         // worry users when logged as a warning. The issue will become
         // obsolete once we switched to FFmpeg for MP3 decoding.
         kLogger.info() << "Recoverable MP3 header decoding error:"
-                       << mad_stream_errorstr(pMadStream);
+                       << mad_stream_errorstr(pMadStream)
+                       << pMadStream->this_frame - pMadStream->buffer;
         logFrameHeader(kLogger.info(), *pMadHeader);
         return false;
     }
@@ -161,12 +178,16 @@ bool decodeFrameHeader(
 } // anonymous namespace
 
 //static
-const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
+const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD");
 
 //static
-const QStringList SoundSourceProviderMp3::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderMp3::kSupportedFileTypes = {
         QStringLiteral("mp3"),
 };
+
+QString SoundSourceProviderMp3::getVersionString() const {
+    return QString(QString(mad_version) + QChar(' ') + QString(mad_build)).trimmed();
+}
 
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url),
@@ -216,7 +237,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     // Mixxx immediately. This behavior is documented in the manpage of
     // mmap(). It has already appeared due to hardware errors and is
     // described in the following bug report:
-    // https://bugs.launchpad.net/mixxx/+bug/1452005
+    // https://github.com/mixxxdj/mixxx/issues/8011
 
     // Transfer it to the mad stream-buffer:
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
@@ -276,11 +297,11 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         }
 
         // Grab data from madHeader
-        const unsigned int madSampleRate = madHeader.samplerate;
+        const audio::SampleRate madSampleRate = audio::SampleRate(madHeader.samplerate);
 
         // MAD must not change its enum values!
         static_assert(MAD_UNITS_8000_HZ == 8000);
-        const mad_units madUnits = static_cast<mad_units>(madSampleRate);
+        const mad_units madUnits = static_cast<mad_units>(madSampleRate.value());
 
         const long madFrameLength = mad_timer_count(madHeader.duration, madUnits);
         if (0 >= madFrameLength) {
@@ -342,8 +363,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
                     << m_file.fileName();
         }
 
-        const int sampleRateIndex = getIndexBySampleRate(
-                audio::SampleRate(madSampleRate));
+        const int sampleRateIndex = getIndexBySampleRate(madSampleRate);
         if (sampleRateIndex >= kSampleRateCount) {
             kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
                               << madSampleRate;
@@ -443,7 +463,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     // Calculate average bitrate values
     DEBUG_ASSERT(m_seekFrameList.size() > 0); // see above
-    m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
+    m_avgSeekFrameCount = frameLength() / static_cast<SINT>(m_seekFrameList.size());
     if (cntBitrateFrames > 0) {
         const unsigned long avgBitrate = sumBitrateFrames / cntBitrateFrames;
         initBitrateOnce(avgBitrate / 1000); // bps -> kbps
@@ -486,8 +506,9 @@ void SoundSourceMp3::close() {
 
 void SoundSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
-    if (kLogger.debugEnabled()) {
-        kLogger.debug() << "restartDecoding @" << seekFrame.frameIndex;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "restartDecoding for frame" << seekFrame.frameIndex << "@"
+                        << (seekFrame.pInputData - m_pFileData);
     }
 
     // Discard decoded output
@@ -675,8 +696,16 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                         // Don't bother the user with warnings from recoverable
                         // errors while skipping decoded samples or that even
                         // might occur for files that are perfectly ok.
-                        if (kLogger.debugEnabled()) {
-                            kLogger.debug()
+                        if (kLogger.traceEnabled()) {
+                            kLogger.trace()
+                                    << "Recoverable MP3 frame decoding error:"
+                                    << mad_stream_errorstr(&m_madStream);
+                        }
+                    } else if (m_madStream.error == MAD_ERROR_BADDATAPTR &&
+                            m_curFrameIndex == firstFrameIndex) {
+                        // This is expected after starting decoding with an offset
+                        if (kLogger.traceEnabled()) {
+                            kLogger.trace()
                                     << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         }
@@ -718,7 +747,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             if (madFrameChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
                                   << madFrameChannelCount << "<>" << getSignalInfo().getChannelCount()
-                                  << " - aborting";
+                                  << " - aborting @" << m_madStream.this_frame - m_madStream.buffer;
                 abortReading = true;
             }
 #endif

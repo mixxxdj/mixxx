@@ -365,7 +365,7 @@ EksOtus.init = function (id) {
     if (EksOtus.LEDUpdateInterval!=undefined) {
         controller.timers["led_update"] = engine.beginTimer(
             EksOtus.LEDUpdateInterval,
-            "EksOtus.updateLEDs(true)"
+            () => EksOtus.updateLEDs(true)
         );
     }
 
@@ -670,7 +670,7 @@ EksOtus.deckSwitch = function(field) {
         if (EksOtus.deckSwitchClicked==false) {
             EksOtus.deckSwitchClicked=true;
             controller.timers["deck_switch"] = engine.beginTimer(
-                250,"EksOtus.deckSwitchClickedClear()"
+                250, EksOtus.deckSwitchClickedClear
             );
         } else {
             EksOtus.deckSwitchDoubleClick();
@@ -731,7 +731,7 @@ EksOtus.enableSpinningPlatterLEDs = function() {
         return;
     engine.connectControl(
         EksOtus.activeSpinningPlatterGroup,
-        "visual_playposition",
+        "playposition",
         "EksOtus.circleLEDs"
     );
     engine.connectControl(
@@ -748,7 +748,7 @@ EksOtus.disableSpinningPlatterLEDs = function() {
         return;
     engine.connectControl(
         EksOtus.activeSpinningPlatterGroup,
-        "visual_playposition",
+        "playposition",
         "EksOtus.circleLEDs",
         true
     );

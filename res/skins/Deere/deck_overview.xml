@@ -59,7 +59,6 @@
     <Mark>
       <Control>intro_start_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
@@ -93,7 +92,6 @@
     <Mark>
       <Control>outro_end_position</Control>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-      <Text></Text>
       <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>

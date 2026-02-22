@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindUpower
 ----------
@@ -51,13 +46,13 @@ endif()
 find_path(Upower_INCLUDE_DIR
   NAMES upower.h
   PATH_SUFFIXES upower-glib libupower-glib
-  PATHS ${PC_Upower_INCLUDE_DIRS}
+  HINTS ${PC_Upower_INCLUDE_DIRS}
   DOC "Upower include directory")
 mark_as_advanced(Upower_INCLUDE_DIR)
 
 find_library(Upower_LIBRARY
   NAMES upower-glib
-  PATHS ${PC_Upower_LIBRARY_DIRS}
+  HINTS ${PC_Upower_LIBRARY_DIRS}
   DOC "Upower library"
 )
 mark_as_advanced(Upower_LIBRARY)

@@ -1,9 +1,9 @@
 #include "waveformsignalcolors.h"
 
-#include <QDomNode>
-
+#include "util/colorcomponents.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
+class QDomNode;
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
@@ -18,35 +18,56 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     // toRgb(). Otherwise Mixxx will waste 3% of its CPU time while rendering
     // the filtered waveform doing RGB color space conversions!
 
-    m_signalColor.setNamedColor(context.selectString(node, "SignalColor"));
+    m_signalColor = QColor(context.selectString(node, "SignalColor"));
     m_signalColor = WSkinColor::getCorrectColor(m_signalColor).toRgb();
 
-    m_lowColor.setNamedColor(context.selectString(node, "SignalLowColor"));
+    m_lowColor = QColor(context.selectString(node, "SignalLowColor"));
     m_lowColor = WSkinColor::getCorrectColor(m_lowColor).toRgb();
 
-    m_midColor.setNamedColor(context.selectString(node, "SignalMidColor"));
+    m_midColor = QColor(context.selectString(node, "SignalMidColor"));
     m_midColor = WSkinColor::getCorrectColor(m_midColor).toRgb();
 
-    m_highColor.setNamedColor(context.selectString(node, "SignalHighColor"));
+    m_highColor = QColor(context.selectString(node, "SignalHighColor"));
     m_highColor = WSkinColor::getCorrectColor(m_highColor).toRgb();
 
-    m_rgbLowColor.setNamedColor(context.selectString(node, "SignalRGBLowColor"));
+    m_rgbLowColor = QColor(context.selectString(node, "SignalRGBLowColor"));
     if (!m_rgbLowColor.isValid()) {
         m_rgbLowColor = Qt::red;
     }
     m_rgbLowColor = WSkinColor::getCorrectColor(m_rgbLowColor).toRgb();
 
-    m_rgbMidColor.setNamedColor(context.selectString(node, "SignalRGBMidColor"));
+    m_rgbMidColor = QColor(context.selectString(node, "SignalRGBMidColor"));
     if (!m_rgbMidColor.isValid()) {
         m_rgbMidColor = Qt::green;
     }
     m_rgbMidColor = WSkinColor::getCorrectColor(m_rgbMidColor).toRgb();
 
-    m_rgbHighColor.setNamedColor(context.selectString(node, "SignalRGBHighColor"));
+    m_rgbHighColor = QColor(context.selectString(node, "SignalRGBHighColor"));
     if (!m_rgbHighColor.isValid()) {
         m_rgbHighColor = Qt::blue;
     }
     m_rgbHighColor = WSkinColor::getCorrectColor(m_rgbHighColor).toRgb();
+
+    // filtered colors
+    m_rgbLowFilteredColor = QColor(context.selectString(node, "SignalRGBLowFilteredColor"));
+    if (!m_rgbLowFilteredColor.isValid()) {
+        m_rgbLowFilteredColor = m_rgbLowColor.darker(300);
+    }
+    m_rgbLowFilteredColor = WSkinColor::getCorrectColor(m_rgbLowFilteredColor).toRgb();
+
+    m_rgbMidFilteredColor = QColor(context.selectString(node, "SignalRGBMidFilteredColor"));
+    if (!m_rgbMidFilteredColor.isValid()) {
+        m_rgbMidFilteredColor = m_rgbMidColor.darker(300);
+        ;
+    }
+    m_rgbMidFilteredColor = WSkinColor::getCorrectColor(m_rgbMidFilteredColor).toRgb();
+
+    m_rgbHighFilteredColor = QColor(context.selectString(node, "SignalRGBHighFilteredColor"));
+    if (!m_rgbHighFilteredColor.isValid()) {
+        m_rgbHighFilteredColor = m_rgbHighColor.darker(300);
+        ;
+    }
+    m_rgbHighFilteredColor = WSkinColor::getCorrectColor(m_rgbHighFilteredColor).toRgb();
 
     m_axesColor = context.selectColor(node, "AxesColor");
     if (!m_axesColor.isValid()) {
@@ -67,12 +88,18 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
         m_playedOverlayColor = Qt::transparent;
     }
 
-    // This color is used to draw an overlay over the entire overview-waveforms
-    // if vinyl passthrough is enabled
+    // This color is used to draw an overlay over the entire overview waveforms
+    // if vinyl passthrough is enabled. Default is black with 73% opacity.
     m_passthroughOverlayColor = context.selectColor(node, "PassthroughOverlayColor");
     m_passthroughOverlayColor = WSkinColor::getCorrectColor(m_passthroughOverlayColor).toRgb();
     if (!m_passthroughOverlayColor.isValid()) {
         m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(0, 0, 0, 187)).toRgb();
+    }
+    // This color is for the "Passthrough" label on scrolling waveforms. Default is orange.
+    m_passthroughLabelColor = context.selectColor(node, "PassthroughLabelColor");
+    m_passthroughLabelColor = WSkinColor::getCorrectColor(m_passthroughLabelColor).toRgb();
+    if (!m_passthroughLabelColor.isValid()) {
+        m_passthroughLabelColor = WSkinColor::getCorrectColor(QColor(100, 53, 0, 255)).toRgb();
     }
 
     m_bgColor = context.selectColor(node, "BgColor");
@@ -106,39 +133,49 @@ void WaveformSignalColors::fallBackFromSignalColor() {
     // qWarning() << "WaveformSignalColors::fallBackFromSignalColor - "
     //           << "skin do not provide low/mid/high signal colors";
 
-    // NOTE(rryan): On ARM, qreal is float so it's important we use qreal here
-    // and not double or float or else we will get build failures on ARM.
-    qreal h, s, l, a;
-    m_signalColor.getHslF(&h,&s,&l,&a);
+    float h, s, l, a;
+    getHslF(m_signalColor, &h, &s, &l, &a);
 
-    const double analogousAngle = 1.0/12.0;
+    constexpr double analogousAngle = 1.0 / 12.0;
 
     if (s < 0.1) { // gray
-        const qreal sMax = 1.0 - h;
+        const float sMax = 1.0f - h;
         m_lowColor.setHslF(h,s,l);
-        m_midColor.setHslF(h,s+sMax*0.2,l);
-        m_highColor.setHslF(h,s+sMax*0.4,l);
+        m_midColor.setHslF(h, s + sMax * 0.2f, l);
+        m_highColor.setHslF(h, s + sMax * 0.4f, l);
     } else {
         if (l < 0.1) { // ~white
-            const qreal lMax = 1.0 - l;
+            const float lMax = 1.0f - l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(h,s,l+lMax*0.2);
-            m_highColor.setHslF(h,s,l+lMax*0.4);
+            m_midColor.setHslF(h, s, l + lMax * 0.2f);
+            m_highColor.setHslF(h, s, l + lMax * 0.4f);
         } else if (l < 0.5) {
-            const qreal lMax = 1.0 - l;
+            const float lMax = 1.0f - l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l+lMax*0.1);
-            m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l+lMax*0.4);
+            m_midColor.setHslF(
+                    static_cast<float>(stableHue(h - analogousAngle * 0.3)),
+                    s,
+                    l + lMax * 0.1f);
+            m_highColor.setHslF(
+                    static_cast<float>(stableHue(h + analogousAngle * 0.3)),
+                    s,
+                    l + lMax * 0.4f);
         } else if (l < 0.9) {
-            const qreal lMin = l;
+            const float lMin = l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(stableHue(h-analogousAngle*0.3),s,l-lMin*0.1);
-            m_highColor.setHslF(stableHue(h+analogousAngle*0.3),s,l-lMin*0.4);
+            m_midColor.setHslF(
+                    static_cast<float>(stableHue(h - analogousAngle * 0.3)),
+                    s,
+                    l - lMin * 0.1f);
+            m_highColor.setHslF(
+                    static_cast<float>(stableHue(h + analogousAngle * 0.3)),
+                    s,
+                    l - lMin * 0.4f);
         } else { // ~black
-            const qreal lMin = l;
+            const float lMin = l;
             m_lowColor.setHslF(h,s,l);
-            m_midColor.setHslF(h,s,l-lMin*0.2);
-            m_highColor.setHslF(h,s,l-lMin*0.4);
+            m_midColor.setHslF(h, s, l - lMin * 0.2f);
+            m_highColor.setHslF(h, s, l - lMin * 0.4f);
         }
     }
 

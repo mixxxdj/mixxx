@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include <QEvent>
 
 #include "control/controlobject.h"
 #include "widget/controlwidgetconnection.h"
+
+class QEvent;
 
 struct ControlInfo {
     ControlInfo()
@@ -41,7 +42,7 @@ class ControllerLearningEventFilter : public QObject {
     void stopListening();
 
   signals:
-    void controlClicked(ControlObject* pControl);
+    void controlClicked(const ConfigKey& controlKey);
 
   private:
     QHash<QWidget*, ControlInfo> m_widgetControlInfo;

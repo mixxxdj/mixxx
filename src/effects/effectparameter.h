@@ -1,87 +1,69 @@
 #pragma once
 
-#include <QObject>
-#include <QVariant>
-
-#include "effects/effectmanifestparameter.h"
+#include "effects/backends/effectmanifestparameter.h"
 #include "util/class.h"
 
-class Effect;
-class EffectsManager;
+class EngineEffect;
+class EffectParameterPreset;
 
-// An EffectParameter is an instance of an EffectManifestParameter, which is in
-// charge of keeping track of the instance values for the default, minimum,
-// maximum and value for each Effect's parameter, and validating that they are
-// always within acceptable ranges. This class is NOT thread-safe and must only
-// be used from the main thread.
-class EffectParameter : public QObject {
-    Q_OBJECT
+/// An EffectParameter is a main thread representation of the state of an
+/// EngineEffectParameter. EffectParameter tracks a mutable value state and
+/// communicates that state to the engine. Separating this from the parameterX
+/// ControlObjects in EffectParameterSlotBase allows for decoupling the state of
+/// the parameters from the ControlObject states, which is required for
+/// EffectSlot to do parameter hiding and rearrangement. EffectParameter is
+/// responsible for manipulating the value of knob parameters when the metaknob
+/// of the EffectSlot is changed (button parameters cannot be linked to the
+/// metaknob). For EffectParameter, there is no difference between knobs and
+/// buttons; only EffectSlot and
+/// EffectKnobParameterSlot/EffectButtonParameterSlot are responsible for taking
+/// care of that difference.
+class EffectParameter {
   public:
-    EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                    int iParameterNumber, EffectManifestParameterPointer pParameter);
+    EffectParameter(EngineEffect* pEngineEffect,
+            EffectsMessengerPointer pEffectsMessenger,
+            EffectManifestParameterPointer pParameterManifest,
+            const EffectParameterPreset& preset);
     virtual ~EffectParameter();
 
-    void addToEngine();
-    void removeFromEngine();
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Parameter Information
-    ///////////////////////////////////////////////////////////////////////////
-
     EffectManifestParameterPointer manifest() const;
-    const QString& id() const;
-    const QString& name() const;
-    const QString& shortName() const;
-    const QString& description() const;
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Value Settings
-    ///////////////////////////////////////////////////////////////////////////
-
-    EffectManifestParameter::LinkType getDefaultLinkType() const;
-    EffectManifestParameter::LinkInversion getDefaultLinkInversion() const;
-    double getNeutralPointOnScale() const;
+    void setLinkType(EffectManifestParameter::LinkType type) {
+        m_linkType = type;
+    }
+    EffectManifestParameter::LinkType linkType() const {
+        return m_linkType;
+    }
+    void setLinkInversion(EffectManifestParameter::LinkInversion inversion) {
+        m_linkInversion = inversion;
+    }
+    EffectManifestParameter::LinkInversion linkInversion() const {
+        return m_linkInversion;
+    }
 
     double getValue() const;
-
     void setValue(double value);
-
-    double getDefault() const;
-    void setDefault(double defaultValue);
-
-    double getMinimum() const;
-    void setMinimum(double minimum);
-
-    double getMaximum() const;
-    void setMaximum(double maximum);
-
-    EffectManifestParameter::ControlHint getControlHint() const;
 
     void updateEngineState();
 
-  signals:
-    void valueChanged(double value);
-
   private:
     QString debugString() const {
-        return QString("EffectParameter(%1)").arg(m_pParameter->name());
+        return QString("EffectParameter(%1)").arg(m_pParameterManifest->name());
     }
 
     static bool clampValue(double* pValue,
-                           const double& minimum, const double& maximum);
+            const double& minimum,
+            const double& maximum);
     bool clampValue();
-    bool clampDefault();
-    bool clampRanges();
 
-    Effect* m_pEffect;
-    EffectsManager* m_pEffectsManager;
-    int m_iParameterNumber;
-    EffectManifestParameterPointer m_pParameter;
-    double m_minimum;
-    double m_maximum;
-    double m_default;
+    EngineEffect* m_pEngineEffect;
+    EffectsMessengerPointer m_pMessenger;
+    EffectManifestParameterPointer m_pParameterManifest;
     double m_value;
-    bool m_bAddedToEngine;
+    // Hidden parameters cannot be linked to the metaknob, but EffectParameter
+    // needs to maintain their state in case they are loaded into an EffectParameterSlot.
+    EffectManifestParameter::LinkType m_linkType;
+    EffectManifestParameter::LinkInversion m_linkInversion;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);
 };

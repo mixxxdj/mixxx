@@ -1,45 +1,43 @@
-//
-// C++ Implementation: parserpls
-//
-// Description: module to parse pls formatted playlists
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
 #include "library/parserpls.h"
 
 #include <QDir>
 #include <QFile>
-#include <QMessageBox>
-#include <QUrl>
 #include <QtDebug>
 
 #include "errordialoghandler.h"
-#include "moc_parserpls.cpp"
 
-/**
-   ToDo:
-    - parse ALL information from the pls file if available ,
-          not only the filepath;
- **/
+namespace {
 
-ParserPls::ParserPls() : Parser() {
+QString getFilePath(QTextStream* pStream) {
+    QString textline = pStream->readLine();
+    while (!textline.isEmpty()) {
+        if (textline.isNull()) {
+            break;
+        }
+
+        if (textline.contains("File")) {
+            int iPos = textline.indexOf("=", 0);
+            ++iPos;
+            return textline.right(textline.length() - iPos);
+        }
+        textline = pStream->readLine();
+    }
+    // Signal we reached the end
+    return QString();
 }
 
-ParserPls::~ParserPls() {
+} // namespace
+
+// static
+bool ParserPls::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return playlistFile.endsWith(".pls", Qt::CaseInsensitive);
 }
 
-QList<QString> ParserPls::parse(const QString& sFilename) {
-    //long numEntries =0;
-    QFile file(sFilename);
-    const auto basePath = sFilename.section('/', 0, -2);
+// static
+QList<QString> ParserPls::parseAllLocations(const QString& playlistFile) {
+    QFile file(playlistFile);
 
-    clearLocations();
-
+    QList<QString> locations;
     if (file.open(QIODevice::ReadOnly)) {
         /* Unfortunately, QT 4.7 does not handle <CR> (=\r or asci value 13) line breaks.
          * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
@@ -54,82 +52,28 @@ QList<QString> ParserPls::parse(const QString& sFilename) {
         bool isCRLF_encoded = byteArray.contains("\r\n");
         bool isCR_encoded = byteArray.contains("\r");
         if (isCR_encoded && !isCRLF_encoded) {
-            byteArray.replace('\r','\n');
+            byteArray.replace('\r', '\n');
         }
         QTextStream textstream(byteArray.constData());
 
         while(!textstream.atEnd()) {
-            QString psLine = getFilePath(&textstream, basePath);
+            QString psLine = getFilePath(&textstream);
             if(psLine.isNull()) {
                 break;
             } else {
-                m_sLocations.append(psLine);
+                locations.append(psLine);
             }
 
         }
 
         file.close();
-
-        if (m_sLocations.count() != 0) {
-            return m_sLocations;
-        } else {
-            return QList<QString>(); // NULL pointer returned when no locations were found
-        }
     }
 
     qDebug() << "ParserPls::parse() failed"
-             << sFilename
+             << playlistFile
              << file.errorString();
 
-    file.close();
-    return QList<QString>(); //if we get here something went wrong :D
-}
-
-long ParserPls::getNumEntries(QTextStream *stream) {
-    QString textline;
-    textline = stream->readLine();
-
-    if (textline.contains("[playlist]")) {
-        while (!textline.contains("NumberOfEntries")) {
-            textline = stream->readLine();
-        }
-
-        QString temp = textline.section("=",-1,-1);
-
-        return temp.toLong();
-
-    } else{
-        qDebug() << "ParserPls: pls file is not a playlist! \n";
-        return 0;
-    }
-
-}
-
-
-QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
-    QString textline = stream->readLine();
-    while (!textline.isEmpty()) {
-        if (textline.isNull()) {
-            break;
-        }
-
-        if(textline.contains("File")) {
-            int iPos = textline.indexOf("=", 0);
-            ++iPos;
-
-            QString filename = textline.right(textline.length() - iPos);
-            auto trackFile = playlistEntryToTrackFile(filename, basePath);
-            if (trackFile.checkFileExists()) {
-                return trackFile.location();
-            }
-            // We couldn't match this to a real file so ignore it
-            qWarning() << trackFile << "not found";
-        }
-        textline = stream->readLine();
-    }
-
-    // Signal we reached the end
-    return QString();
+    return locations;
 }
 
 bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &items, bool useRelativePath)
@@ -139,8 +83,8 @@ bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &item
         ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
         ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle(tr("Playlist Export Failed"));
-        props->setText(tr("Could not create file") + " " + file_str);
+        props->setTitle(QObject::tr("Playlist Export Failed"));
+        props->setText(QObject::tr("Could not create file") + " " + file_str);
         props->setDetails(file.errorString());
         pDialogHandler->requestErrorDialog(props);
         return false;

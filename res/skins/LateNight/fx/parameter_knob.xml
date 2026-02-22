@@ -9,6 +9,7 @@
     EffectParameter: the parameter
 -->
 <Template>
+  <SetVariable name="FxUnitGroup">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
   <SetVariable name="FxRack_FxUnit_FxNum"><Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/></SetVariable>
 
   <WidgetGroup>
@@ -25,10 +26,13 @@
         <Children>
           <EffectParameterKnobComposed>
             <Size>26f,26f</Size>
-            <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_fx_<Variable name="KnobColorFxParameter"/>.svg</Knob>
-            <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
+            <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_fx_<Variable name="KnobColorFxParameter"/>.svg</Knob>
+            <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <EffectUnitGroup><Variable name="FxUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
             <ArcRadius><Variable name="ArcRadius"/></ArcRadius>
             <ArcColor><Variable name="ArcColorFxParameter"/></ArcColor>
             <ArcThickness><Variable name="ArcThickness"/></ArcThickness>
@@ -41,25 +45,18 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>AlignBottom</ObjectName>
-        <Layout>horizontal</Layout>
+      <EffectParameterName>
+        <ObjectName>FxKnobLabel</ObjectName>
         <SizePolicy>me,f</SizePolicy>
         <MinimumSize>40,10</MinimumSize>
-        <MaximumSize>58,10</MaximumSize>
-        <Children>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-          <EffectParameterName>
-            <ObjectName>FxKnobLabel</ObjectName>
-            <EffectRack>1</EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
-            <Alignment>center</Alignment>
-          </EffectParameterName>
-          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
-        </Children>
-      </WidgetGroup>
+        <MaximumSize>60,10</MaximumSize>
+        <EffectRack>1</EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+        <Alignment>center</Alignment>
+        <Elide>right</Elide>
+      </EffectParameterName>
 
       <WidgetGroup>
         <ObjectName>FxLinkButtons</ObjectName>
@@ -68,7 +65,7 @@
         <Children>
           <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
           <!-- Meta knob link invert button -->
-          <Template src="skin:/controls/button_2state.xml">
+          <Template src="skins:LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
             <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
             <SetVariable name="Size">8f,7f</SetVariable>
@@ -76,7 +73,7 @@
           </Template>
 
           <!-- Meta knob link button -->
-          <Template src="skin:/controls/button_5state.xml">
+          <Template src="skins:LateNight/controls/button_5state.xml">
             <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
             <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
             <SetVariable name="Size">34,7f</SetVariable>

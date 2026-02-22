@@ -40,7 +40,7 @@
                         <MinimumSize>16,16</MinimumSize>
                         <SizePolicy>me,me</SizePolicy>
                         <Connection>
-                          <ConfigKey>[Library],show_coverart</ConfigKey>
+                          <ConfigKey>[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>

@@ -1,16 +1,16 @@
-#include "library/trackcollection.h"
 #include "widget/wanalysislibrarytableview.h"
+
+#include "moc_wanalysislibrarytableview.cpp"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(
         QWidget* parent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         double trackTableBackgroundColorOpacity)
         : WTrackTableView(parent,
                   pConfig,
-                  pTrackCollectionManager,
-                  trackTableBackgroundColorOpacity,
-                  true) {
+                  pLibrary,
+                  trackTableBackgroundColorOpacity) {
     setDragDropMode(QAbstractItemView::DragOnly);
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }

@@ -14,7 +14,7 @@ class AnalyzerEbur128 : public Analyzer {
         return rgSettings.isAnalyzerEnabled(2);
     }
 
-    bool initialize(TrackPointer pTrack,
+    bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;

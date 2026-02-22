@@ -1,20 +1,21 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/duration.h"
-#include "util/memory.h"
 #include "util/performancetimer.h"
-#include "waveform/visualplayposition.h"
+
+class VisualPlayPosition;
 
 namespace {
 
 // Rate at which the playpos slider is updated
-const int kUpdateRate = 15; // updates per second
+constexpr int kUpdateRate = 15; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kSlowUpdateDivider = 4; // kUpdateRate / kSlowUpdateDivider = 3.75 updates per sec
+constexpr int kSlowUpdateDivider = 4; // kUpdateRate / kSlowUpdateDivider = 3.75 updates per sec
 
 } // anonymous namespace
 
@@ -25,21 +26,27 @@ class DeckVisuals {
     DeckVisuals(const QString& group);
     void process(double remainingTimeTriggerSeconds);
 
+    const QString& getGroup() const {
+        return m_group;
+    }
+
   private:
     const QString m_group;
     int m_SlowTickCnt;
     bool m_trackLoaded;
 
-    std::unique_ptr<ControlObject> m_pTimeElapsed;
-    std::unique_ptr<ControlObject> m_pTimeRemaining;
-    std::unique_ptr<ControlObject> m_pEndOfTrack;
-    std::unique_ptr<ControlObject> m_pVisualBpm;
-    std::unique_ptr<ControlObject> m_pVisualKey;
+    std::unique_ptr<ControlProxy> m_pPlayButton;
+    std::unique_ptr<ControlProxy> m_pLoopEnabled;
 
-    ControlProxy playButton;
-    ControlProxy loopEnabled;
-    ControlProxy engineBpm;
-    ControlProxy engineKey;
+    std::unique_ptr<ControlProxy> m_pEngineBpm;
+    std::unique_ptr<ControlProxy> m_pVisualBpm;
+
+    std::unique_ptr<ControlProxy> m_pEngineKey;
+    std::unique_ptr<ControlProxy> m_pVisualKey;
+
+    std::unique_ptr<ControlProxy> m_pTimeElapsed;
+    std::unique_ptr<ControlProxy> m_pTimeRemaining;
+    std::unique_ptr<ControlProxy> m_pEndOfTrack;
 
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
 };
@@ -51,8 +58,20 @@ class VisualsManager {
     }
 
     void addDeck(const QString& group) {
+        VERIFY_OR_DEBUG_ASSERT(!group.trimmed().isEmpty()) {
+            return;
+        }
         m_deckVisuals.push_back(
                 std::make_unique<DeckVisuals>(group));
+    }
+
+    void addDeckIfNotExist(const QString& group) {
+        for (auto& pDeckVisuals : m_deckVisuals) {
+            if (pDeckVisuals->getGroup() == group) {
+                return;
+            }
+        }
+        addDeck(group);
     }
 
     void process(double remainingTimeTriggerSeconds) {
@@ -64,6 +83,6 @@ class VisualsManager {
         }
     }
   private:
-    std::vector<std::unique_ptr<DeckVisuals> > m_deckVisuals;
+    std::vector<std::unique_ptr<DeckVisuals>> m_deckVisuals;
     PerformanceTimer m_cpuTimer;
 };

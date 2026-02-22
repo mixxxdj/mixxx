@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QImage>
-#include <QSqlDatabase>
 #include <cmath>
 #include <limits>
 
@@ -12,8 +10,12 @@
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
+#ifdef TEST_HEAT_MAP
+class QImage;
+#endif
 
 class EngineFilterIIRBase;
+class QSqlDatabase;
 
 inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
@@ -24,6 +26,16 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     } else {
         return std::pow(invalue, 2.0f * 0.316f);
     }
+
+    // According to this discussion
+    // https://github.com/mixxxdj/mixxx/issues/6352
+    // it looks like this scaling is done to accentuate
+    // low level information.
+
+    // This scaling can be undone with a function in
+    //  waveform/renderers/waveformrenderersignalbase.h
+    // but arguable it would be better not to do this scaling here at all
+    // and do it (or not) at the waveform renderer side.
 }
 
 struct WaveformStride {
@@ -140,7 +152,7 @@ class AnalyzerWaveform : public Analyzer {
             const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
-    bool initialize(TrackPointer pTrack,
+    bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* buffer, SINT count) override;
@@ -153,7 +165,7 @@ class AnalyzerWaveform : public Analyzer {
     void storeCurrentStridePower();
     void resetCurrentStride();
 
-    void createFilters(int sampleRate);
+    void createFilters(mixxx::audio::SampleRate sampleRate);
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 

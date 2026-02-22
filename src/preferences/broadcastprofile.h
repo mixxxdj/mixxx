@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QString>
 
-#include "preferences/usersettings.h"
-
 class BroadcastProfile;
+class QDomElement;
+
 typedef QSharedPointer<BroadcastProfile> BroadcastProfilePtr;
 Q_DECLARE_METATYPE(BroadcastProfilePtr)
 
@@ -31,7 +31,18 @@ class BroadcastProfile : public QObject {
 
     static BroadcastProfilePtr loadFromFile(const QString& filename);
     static bool validName(const QString& str);
+    bool validPassword();
+    // static so they're accessible for BroadcastProfileTest
+    static bool validPassword(const QString& password);
     static QString stripForbiddenChars(const QString& str);
+    static QString removeControlCharacters(
+            const QString& str,
+            const QString& fieldName,
+            bool* pFixed = nullptr);
+    QString selectCleanNodeString(
+            const QDomElement& doc,
+            const QString& fieldName,
+            bool* pFixed = nullptr);
 
     QString getLastFilename() const;
 

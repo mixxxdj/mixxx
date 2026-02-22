@@ -80,7 +80,7 @@ Hercules4Mx.userSettings = {
     // Setting this setting to true, the curve will change to scratch curve when the scratch mode is on (scratch button).
     // Setting it to false will not change it, so it will use the setting configured in the DJHercules Tray-icon configuration.
     'crossfaderScratchCurve': false,
-    // _Scratching_ Playback speed of the virtual vinyl that is being scratched. 45.00 and 33.33 are the common speeeds. (Lower number equals faster scratch)
+    // _Scratching_ Playback speed of the virtual vinyl that is being scratched. 45.00 and 33.33 are the common speeds. (Lower number equals faster scratch)
     'vinylSpeed': 45,
     // _Scratching_ You should configure this setting to the same value than in the DJHercules tray icon configuration. (Normal means 1/1).
     // If crossfaderScratchCurve is true, or the setting is changed while Mixxx is active, this value will be detected automatically.
@@ -325,10 +325,10 @@ Hercules4Mx.init = function(id, debugging) {
         }
     }
     if (Hercules4Mx.userSettings.useVuMeters) {
-        engine.connectControl("[Master]", "VuMeterL", "Hercules4Mx.onVuMeterMasterL");
-        engine.connectControl("[Master]", "VuMeterR", "Hercules4Mx.onVuMeterMasterR");
+        engine.connectControl("[Main]", "vu_meter_left", "Hercules4Mx.onVuMeterMasterL");
+        engine.connectControl("[Main]", "vu_meter_right", "Hercules4Mx.onVuMeterMasterR");
         for (i = 1; i <= 4; i++) {
-            engine.connectControl("[Channel" + i + "]", "VuMeter", "Hercules4Mx.onVuMeterDeck" + i);
+            engine.connectControl("[Channel" + i + "]", "vu_meter", "Hercules4Mx.onVuMeterDeck" + i);
             engine.connectControl("[Channel" + i + "]", "passthrough", "Hercules4Mx.onKillOrSourceChange" + i);
             engine.connectControl("[EqualizerRack1_[Channel" + i + "]_Effect1]", "button_parameter3", "Hercules4Mx.onKillOrSourceChange" + i);
             engine.connectControl("[EqualizerRack1_[Channel" + i + "]_Effect1]", "button_parameter2", "Hercules4Mx.onKillOrSourceChange" + i);
@@ -343,7 +343,7 @@ Hercules4Mx.init = function(id, debugging) {
         Hercules4Mx.setupFXButtonsCustomMixx21();
     }
 
-    engine.beginTimer(3000, "Hercules4Mx.doDelayedSetup", true);
+    engine.beginTimer(3000, Hercules4Mx.doDelayedSetup, true);
 };
 //timer-called (delayed) setup.
 Hercules4Mx.doDelayedSetup = function() {
@@ -385,7 +385,7 @@ Hercules4Mx.shutdown = function() {
 //Set all leds to off
 Hercules4Mx.allLedsOff = function() {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.allLedsOff: switching leds off");
+        console.log("Hercules4Mx.allLedsOff: switching leds off");
     }
     // Switch off all LEDs
     // +0x20 -> the other deck
@@ -471,7 +471,7 @@ Hercules4Mx.onEnableLed = function(value, group, control) {
 //A change in the loop position or loop state has happened.
 Hercules4Mx.onLoopStateChange = function(value, group, control) {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.onLoopStateChange: value, group, control: " + value + ", " + group + ", " + control);
+        console.log("Hercules4Mx.onLoopStateChange: value, group, control: " + value + ", " + group + ", " + control);
     }
     var deck = script.deckFromGroup(group);
     var messageto = (deck === 1 || deck === 2) ? Hercules4Mx.NOnC1 : Hercules4Mx.NOnC2;
@@ -569,7 +569,7 @@ Hercules4Mx.onAutoDJFade = function(value, group, control) {
     //After 5 seconds, restore non-flashing led. It would be perfect if autoDJFade was triggered also
     //when the fading ends, but right now it seems this is not possible. Also, it doesn't seem to be
     //an option to get the duration of the fading, that's why i simply put there 5 seconds.
-    Hercules4Mx.autoDJfadingId = engine.beginTimer(5000, "Hercules4Mx.doEndAutoDJFadeOffAction", true);
+    Hercules4Mx.autoDJfadingId = engine.beginTimer(5000, Hercules4Mx.doEndAutoDJFadeOffAction, true);
 };
 Hercules4Mx.doEndAutoDJFadeOffAction = function() {
     midi.sendShortMsg(Hercules4Mx.NOnC1, 0x7C, 0x00);
@@ -673,7 +673,7 @@ Hercules4Mx.updateVumeterEvent = function(vumeter, value) {
     var newval = parseInt(value * 0x80);
     if (vumeter.lastvalue !== newval) {
         vumeter.lastvalue = newval;
-        if (engine.getValue(vumeter.source, "PeakIndicator") > 0) {
+        if (engine.getValue(vumeter.source, "peak_indicator") > 0) {
             // IF it clips, we put the top led on and the rest off, which gives a "flash" effect.
             midi.sendShortMsg(vumeter.midichan, vumeter.clip, 0x7F);
             newval = 0;
@@ -1210,20 +1210,20 @@ Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
 //This is used in conjunction with the keypad button mapping. It's the default "no-operation" action.
 Hercules4Mx.FxActionNoOp = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxActionNoOp");
+        console.log("entering Hercules4Mx.FxActionNoOp");
     }
 };
 //This is used in conjunction with the keypad button mapping. A keypad button has been pushed
 Hercules4Mx.buttonPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.buttonPush");
+        console.log("entering Hercules4Mx.buttonPush");
     }
     engine.setValue(group, extraparam, value);
 };
 //This is used in conjunction with the keypad button mapping. A keypad button for an audio effect has been pushed
 Hercules4Mx.FxSwitchDown = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxSwitchDown");
+        console.log("entering Hercules4Mx.FxSwitchDown");
     }
     if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
         Hercules4Mx.deactivateEditModeAction();
@@ -1234,7 +1234,7 @@ Hercules4Mx.FxSwitchDown = function(group, fxbutton, value, extraparam) {
 //This is used in conjunction with the keypad button mapping. A keypad button for an audio effect has been released
 Hercules4Mx.FxSwitchUp = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxSwitchUp");
+        console.log("entering Hercules4Mx.FxSwitchUp");
     }
     if (Hercules4Mx.editModeStatus.used === false) {
         var deck = script.deckFromGroup(group);
@@ -1246,7 +1246,7 @@ Hercules4Mx.FxSwitchUp = function(group, fxbutton, value, extraparam) {
 //This is used in conjunction with the keypad button mapping. A keypad button for an audio effect has been released
 Hercules4Mx.FxSamplerPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxSamplerPush");
+        console.log("entering Hercules4Mx.FxSamplerPush");
     }
     var deck = script.deckFromGroup(group);
     //Since the sampler does not depend on the deck, buttons on deck
@@ -1296,7 +1296,7 @@ Hercules4Mx.FxSamplerPush = function(group, fxbutton, value, extraparam) {
 */
 Hercules4Mx.LoopEditPress = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.LoopEditPress");
+        console.log("entering Hercules4Mx.LoopEditPress");
     }
     if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
         Hercules4Mx.deactivateEditModeAction();
@@ -1306,7 +1306,7 @@ Hercules4Mx.LoopEditPress = function(group, fxbutton, value, extraparam) {
 };
 Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.LoopEditRelease");
+        console.log("entering Hercules4Mx.LoopEditRelease");
     }
     if (Hercules4Mx.editModeStatus.used === false) {
         var deck = script.deckFromGroup(group);
@@ -1333,7 +1333,7 @@ Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
 };
 Hercules4Mx.LoopEditComplete = function(group, button) {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.LoopEditComplete");
+        console.log("Hercules4Mx.LoopEditComplete");
     }
     switch (button) {
         case 1:
@@ -1362,7 +1362,7 @@ Hercules4Mx.LoopEditComplete = function(group, button) {
 };
 Hercules4Mx.LoopButtonPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.LoopButtonPush");
+        console.log("Hercules4Mx.LoopButtonPush");
     }
     var split = extraparam.split(";");
     if (split[0] === "roll" && split.length === 2) {
@@ -1405,8 +1405,8 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, groupInitial) 
         }
     } else if (value) {
         if (Hercules4Mx.debuglog === true) {
-            engine.log(JSON.stringify(mapping));
-            engine.log(JSON.stringify(Hercules4Mx.noActionButtonMap));
+            console.log(JSON.stringify(mapping));
+            console.log(JSON.stringify(Hercules4Mx.noActionButtonMap));
         }
         mapping.buttonPressAction(group, fxbutton, 1, mapping.extraParameter);
     } else if (mapping.buttonReleaseAction !== null) {

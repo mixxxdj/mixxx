@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QMutex>
-#include <QTime>
-#include <QMap>
 #include <QAtomicPointer>
+#include <QMap>
+#include <QTime>
+#include <atomic>
 
-#include "util/performancetimer.h"
 #include "control/controlvalue.h"
+#include "engine/slipmodestate.h"
+#include "util/performancetimer.h"
 
 class ControlProxy;
 class VSyncThread;
@@ -29,10 +30,17 @@ class VisualPlayPositionData {
   public:
     PerformanceTimer m_referenceTime;
     int m_callbackEntrytoDac; // Time from Audio Callback Entry to first sample of Buffer is transferred to DAC
-    double m_enginePlayPos; // Play position of fist Sample in Buffer
-    double m_rate;
+    double m_playPos;         // Play position of first Sample in Buffer
+    double m_playRate;
     double m_positionStep;
-    double m_slipPosition;
+    double m_slipPos;
+    double m_slipRate;
+    SlipModeState m_slipModeState;
+    bool m_loopEnabled;
+    bool m_loopInAdjustActive;
+    bool m_loopOutAdjustActive;
+    double m_loopStartPos;
+    double m_loopEndPos;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
     double m_audioBufferMicroS;
 };
@@ -46,11 +54,17 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must be called only from the
     // engine thread.
-    void set(
-            double playPos,
-            double rate,
+    void set(double playPos,
+            double playRate,
             double positionStep,
-            double slipPosition,
+            double slipPos,
+            double slipRate,
+            SlipModeState slipModeState,
+            bool loopEnabled,
+            bool loopInAdjustActive,
+            bool loopOutAdjustActive,
+            double loopStartPos,
+            double loopEndPos,
             double tempoTrackSeconds,
             double audioBufferMicroS);
 
@@ -58,6 +72,8 @@ class VisualPlayPosition : public QObject {
     void getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
             double* playPosition,
             double* slipPosition);
+    double determinePlayPosInLoopBoundries(
+            const VisualPlayPositionData& data, const double& offset);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 
@@ -68,18 +84,21 @@ class VisualPlayPosition : public QObject {
     // This is called by SoundDevicePortAudio just after the callback starts.
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
-    void setInvalid() { m_valid = false; };
+    void setInvalid() {
+        m_valid.store(false);
+    };
     bool isValid() const {
-        return m_valid;
+        return m_valid.load();
     }
 
   private:
-    double calcPosAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
+    double calcOffsetAtNextVSync(VSyncThread* pVSyncThread, const VisualPlayPositionData& data);
     ControlValueAtomic<VisualPlayPositionData> m_data;
-    bool m_valid;
+    std::atomic<bool> m_valid;
     QString m_key;
+    bool m_noTransport;
 
-    static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
+    static QMap<QString, QWeakPointer<VisualPlayPosition>> m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called
     static double m_dCallbackEntryToDacSecs;
     // Time stamp for m_timeInfo in main CPU time

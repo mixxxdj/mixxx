@@ -1,11 +1,11 @@
 #pragma once
 
-#include "waveformrendererabstract.h"
-#include "waveformsignalcolors.h"
 #include "skin/legacy/skincontext.h"
+#include "util/span.h"
+#include "waveformrendererabstract.h"
 
-class ControlObject;
 class ControlProxy;
+class WaveformSignalColors;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
 public:
@@ -21,8 +21,20 @@ public:
   protected:
     void deleteControls();
 
-    void getGains(float* pAllGain, float* pLowGain, float* pMidGain,
-                  float* highGain);
+    void getGains(float* pAllGain,
+            bool applyCompensation,
+            float* pLowGain,
+            float* pMidGain,
+            float* highGain);
+
+    static std::span<float, 256> unscaleTable();
+    inline float unscale(unsigned char value) {
+        // The all and hi components of the waveform data are scaled with pow(value, 2.0f * 0.316f)
+        // (see analyzerwaveform.h). This function can be used to undo that scaling,
+        // but apparently it is intentional.
+        static const auto table = unscaleTable();
+        return table[value];
+    }
 
   protected:
     ControlProxy* m_pEQEnabled;
@@ -37,12 +49,15 @@ public:
     Qt::Orientation m_orientation;
 
     const WaveformSignalColors* m_pColors;
-    qreal m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
-    qreal m_signalColor_r, m_signalColor_g, m_signalColor_b;
-    qreal m_lowColor_r, m_lowColor_g, m_lowColor_b;
-    qreal m_midColor_r, m_midColor_g, m_midColor_b;
-    qreal m_highColor_r, m_highColor_g, m_highColor_b;
-    qreal m_rgbLowColor_r, m_rgbLowColor_g, m_rgbLowColor_b;
-    qreal m_rgbMidColor_r, m_rgbMidColor_g, m_rgbMidColor_b;
-    qreal m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b;
+    float m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
+    float m_signalColor_r, m_signalColor_g, m_signalColor_b;
+    float m_lowColor_r, m_lowColor_g, m_lowColor_b;
+    float m_midColor_r, m_midColor_g, m_midColor_b;
+    float m_highColor_r, m_highColor_g, m_highColor_b;
+    float m_rgbLowColor_r, m_rgbLowColor_g, m_rgbLowColor_b;
+    float m_rgbMidColor_r, m_rgbMidColor_g, m_rgbMidColor_b;
+    float m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b;
+    float m_rgbLowFilteredColor_r, m_rgbLowFilteredColor_g, m_rgbLowFilteredColor_b;
+    float m_rgbMidFilteredColor_r, m_rgbMidFilteredColor_g, m_rgbMidFilteredColor_b;
+    float m_rgbHighFilteredColor_r, m_rgbHighFilteredColor_g, m_rgbHighFilteredColor_b;
 };

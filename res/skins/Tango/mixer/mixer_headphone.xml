@@ -1,6 +1,6 @@
 <!--
 Description:
-	Container for Master mixer in topbar.
+	Container for Main mixer in topbar.
 -->
 <Template>
   <WidgetGroup>
@@ -54,8 +54,8 @@ Description:
                   <KnobComposed>
                     <TooltipId>headphone_gain</TooltipId>
                     <Size>26f,22f</Size>
-                    <Knob>skin:../Tango/knobs_sliders/knob_yellow.svg</Knob>
-                    <BackPath>skin:../Tango/knobs_sliders/knob_bg_head.svg</BackPath>
+                    <Knob>skins:Tango/knobs_sliders/knob_yellow.svg</Knob>
+                    <BackPath>skins:Tango/knobs_sliders/knob_bg_head.svg</BackPath>
                     <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                     <KnobCenterYOffset>2.000</KnobCenterYOffset>
@@ -69,15 +69,15 @@ Description:
                 <TooltipId>headMix</TooltipId>
                 <Size>54f,24f</Size>
                 <ObjectName>MixerbarSlider</ObjectName>
-                <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/headMix_handle.svg</Handle>
-                <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/headMix_scale.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/headMix_handle.svg</Handle>
+                <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/headMix_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
                   <ConfigKey>[Master],headMix</ConfigKey>
                 </Connection>
               </SliderComposed>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">headSplit</SetVariable>
                 <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
                 <SetVariable name="Size">30f,22f</SetVariable>
@@ -94,7 +94,7 @@ Description:
 
     </Children>
     <Connection>
-      <ConfigKey>[Tango],master_mixer</ConfigKey>
+      <ConfigKey>[Tango],main_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

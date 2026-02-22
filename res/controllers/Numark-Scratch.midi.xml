@@ -1,0 +1,1011 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.5.0+">
+  <info>
+    <name>Numark Scratch</name>
+    <author>Al Hadebe(NotYourAverageAl)</author>
+    <description>Mapping for the Numark Scratch Mixer</description>
+    <forums>https://mixxx.discourse.group/t/numark-scratch-mapping/25186</forums>
+    <manual>https://manual.mixxx.org/latest/en/hardware/controllers/numark_scratch</manual>
+  </info>
+  <settings>
+    <group label="Alternative Mapping">
+      <option
+        variable="invertLoopEncoderFunction"
+        type="boolean"
+        default="false"
+        label="Invert the Loop Encoder functionality">
+        <description>
+          By default the Encoder manages looping and Shift + Encoder scrolls the library/loads track.
+          If this option is selected the Encoder scrolls the library/loads track and Shift + Encoder manages looping.
+        </description>
+      </option>
+    </group>
+    <group label="Mixer Lighting">
+      <option
+        variable="inactiveLightsAlwaysBacklit"
+        type="boolean"
+        default="true"
+        label="Keep LEDs dimmed instead of off when inactive">
+        <description>
+          This will consistently ensure buttons are backlit, which can be helpful in low-light environments.
+          Please note the PAD MODE and CUE buttons are hardware controlled and always dim when inactive.
+        </description>
+      </option>
+    </group>
+    <group label="Beatloop Roll Size">
+      <row orientation="vertical">
+          <option
+              variable="beatLoopRollsSize1"
+              type="enum"
+              label="First Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4" default="true">0.25</value>
+              <value label="1/2">0.5</value>
+              <value label="1">1</value>
+              <value label="2">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The first pad.</description>
+          </option>
+          <option
+              variable="beatLoopRollsSize2"
+              type="enum"
+              label="Second Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4">0.25</value>
+              <value label="1/2" default="true">0.5</value>
+              <value label="1">1</value>
+              <value label="2">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The second pad.</description>
+          </option>
+          <option
+              variable="beatLoopRollsSize3"
+              type="enum"
+              label="Third Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4">0.25</value>
+              <value label="1/2">0.5</value>
+              <value label="1" default="true">1</value>
+              <value label="2">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The third pad.</description>
+          </option>
+          <option
+              variable="beatLoopRollsSize4"
+              type="enum"
+              label="Fourth Pad">
+              <value label="1/32">0.03125</value>
+              <value label="1/16">0.0625</value>
+              <value label="1/8">0.125</value>
+              <value label="1/4">0.25</value>
+              <value label="1/2">0.5</value>
+              <value label="1">1</value>
+              <value label="2" default="true">2</value>
+              <value label="4">4</value>
+              <value label="8">8</value>
+              <description>The fourth pad.</description>
+          </option>
+      </row>
+  </group>
+  </settings>
+  <controller id="Numark-Scratch">
+    <scriptfiles>
+      <file functionprefix="" filename="lodash.mixxx.js"/>
+      <file functionprefix="" filename="midi-components-0.0.js"/>
+      <file functionprefix="NumarkScratch" filename="Numark-Scratch-scripts.js"/>
+    </scriptfiles>
+    <controls>
+      <!-- CH 1 PC/LINE/PHONO -->
+      <control>
+        <group>[Master]</group>
+        <key>NumarkScratch.setChannelInput</key>
+        <description>CH 1 PC</description>
+        <status>0x8F</status>
+        <midino>0x57</midino>
+        <options>
+            <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>NumarkScratch.setChannelInput</key>
+        <description>CH 1 LINE/PHONO</description>
+        <status>0x9F</status>
+        <midino>0x57</midino>
+        <options>
+            <script-binding/>
+        </options>
+      </control>
+      <!-- CH 2 PC/LINE/PHONO -->
+      <control>
+        <group>[Master]</group>
+        <key>NumarkScratch.setChannelInput</key>
+        <description>CH 2 PC</description>
+        <status>0x8F</status>
+        <midino>0x60</midino>
+        <options>
+            <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>NumarkScratch.setChannelInput</key>
+        <description>CH 2 LINE/PHONO</description>
+        <status>0x9F</status>
+        <midino>0x60</midino>
+        <options>
+            <script-binding/>
+        </options>
+      </control>
+      <!-- Crossfader -->
+      <control>
+        <group>[Master]</group>
+        <key>NumarkScratch.xfader.crossfader.input</key>
+        <status>0xBF</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Cue mix knob -->
+      <control>
+        <group>[Master]</group>
+        <key>headMix</key>
+        <status>0xBF</status>
+        <midino>0x0D</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <!-- Gain -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].gain.input</key>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].gain.input</key>
+        <status>0xB1</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- EQ -->
+      <control>
+        <group>[EqualizerRack1_[Channel1]]</group>
+        <key>NumarkScratch.deck[0].treble.input</key>
+        <status>0xB0</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]]</group>
+        <key>NumarkScratch.deck[1].treble.input</key>
+        <status>0xB1</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]]</group>
+        <key>NumarkScratch.deck[0].mid.input</key>
+        <status>0xB0</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]]</group>
+        <key>NumarkScratch.deck[1].mid.input</key>
+        <status>0xB1</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]]</group>
+        <key>NumarkScratch.deck[0].bass.input</key>
+        <status>0xB0</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]]</group>
+        <key>NumarkScratch.deck[1].bass.input</key>
+        <status>0xB1</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Filter -->
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>NumarkScratch.deck[0].filter.input</key>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>NumarkScratch.deck[1].filter.input</key>
+        <status>0xB1</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Channel volume -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].volume.input</key>
+        <status>0xB0</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].volume.input</key>
+        <status>0xB1</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Xfader Reverse On -->
+      <control>
+        <group>[Mixer Profile]</group>
+        <key>NumarkScratch.xfader.xFaderReverse.input</key>
+        <status>0x9F</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Xfader Reverse Off -->
+      <control>
+        <group>[Mixer Profile]</group>
+        <key>NumarkScratch.xfader.xFaderReverse.input</key>
+        <status>0x8F</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Xfader Curve -->
+      <control>
+        <group>[Mixer Profile]</group>
+        <key>NumarkScratch.xfader.setCurve</key>
+        <status>0xBF</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Shift button (press) -->
+      <control>
+        <group>[Master]</group>
+        <key>NumarkScratch.shiftButton.input</key>
+        <status>0x9F</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Shift button (release) -->
+      <control>
+        <group>[Master]</group>
+        <key>NumarkScratch.shiftButton.input</key>
+        <status>0x8F</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Pad modes (press) -->
+      <!-- Hotcue -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.modeButtonPress</key>
+        <status>0x94</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.modeButtonPress</key>
+        <status>0x95</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Sample -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.modeButtonPress</key>
+        <status>0x94</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.modeButtonPress</key>
+        <status>0x95</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Roll -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.modeButtonPress</key>
+        <status>0x94</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.modeButtonPress</key>
+        <status>0x95</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Pad modes (Release) -->
+      <!-- Hotcue Release-->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.modeButtonPress</key>
+        <status>0x84</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.modeButtonPress</key>
+        <status>0x85</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Sample Release -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.modeButtonPress</key>
+        <status>0x84</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.modeButtonPress</key>
+        <status>0x85</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Roll Release-->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.modeButtonPress</key>
+        <status>0x84</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.modeButtonPress</key>
+        <status>0x85</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Pads (press) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Pads (release) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Pads (shift) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Pads (shift release) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Loop Encoder knob (turn) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].loopMinus.input</key>
+        <status>0x94</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].loopPlus.input</key>
+        <status>0x94</status>
+        <midino>0x35</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].loopMinus.input</key>
+        <status>0x95</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].loopPlus.input</key>
+        <status>0x95</status>
+        <midino>0x35</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].loopButton.input</key>
+        <status>0x94</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].loopButton.input</key>
+        <status>0x95</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Loop Encoder knob button (release) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].loopButton.input</key>
+        <status>0x84</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].loopButton.input</key>
+        <status>0x85</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX dry/wet knob -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].dryWetKnob.input</key>
+        <status>0xB8</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].dryWetKnob.input</key>
+        <status>0xB9</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Echo button (press) -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].effectButtons[0].input</key>
+        <status>0x98</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Echo button (release) -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].effectButtons[0].input</key>
+        <status>0x88</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Delay button (press) -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].effectButtons[1].input</key>
+        <status>0x98</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Delay button (release) -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].effectButtons[1].input</key>
+        <status>0x88</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Flanger button (press) -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].effectButtons[2].input</key>
+        <status>0x98</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Flanger button (release) -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].effectButtons[2].input</key>
+        <status>0x88</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Reverb button (press) -->
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].effectButtons[0].input</key>
+        <status>0x99</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Reverb button (release) -->
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].effectButtons[0].input</key>
+        <status>0x89</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX V.Echo button (press) -->
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].effectButtons[1].input</key>
+        <status>0x99</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX V.Echo button (release) -->
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].effectButtons[1].input</key>
+        <status>0x89</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Phaser button (press) -->
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].effectButtons[2].input</key>
+        <status>0x99</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX Phaser button (release) -->
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].effectButtons[2].input</key>
+        <status>0x89</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- FX enable switch -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkScratch.effect[0].paddle.input</key>
+        <status>0xB8</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkScratch.effect[1].paddle.input</key>
+        <status>0xB9</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- PFL buttons (press) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].pflButton.input</key>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].pflButton.input</key>
+        <status>0x91</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- PFL buttons (release) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].pflButton.input</key>
+        <status>0x80</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].pflButton.input</key>
+        <status>0x81</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+    </controls>
+  </controller>
+</MixxxControllerPreset>

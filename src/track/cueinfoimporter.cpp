@@ -7,19 +7,20 @@ CueInfoImporter::CueInfoImporter(QList<CueInfo> cueInfos)
 }
 
 bool CueInfoImporter::hasCueOfType(CueType cueType) const {
-    for (const CueInfo& cueInfo : qAsConst(m_cueInfos)) {
+    for (const CueInfo& cueInfo : std::as_const(m_cueInfos)) {
         if (cueInfo.getType() == cueType) {
             return true;
         }
     }
-
     return false;
 }
 
 double CueInfoImporter::guessTimingOffsetMillis(
         const QString& filePath,
+        const QString& fileType,
         const audio::SignalInfo& signalInfo) const {
     Q_UNUSED(filePath);
+    Q_UNUSED(fileType);
     Q_UNUSED(signalInfo);
     return 0;
 };
@@ -34,6 +35,7 @@ bool CueInfoImporter::isEmpty() const {
 
 QList<CueInfo> CueInfoImporter::importCueInfosAndApplyTimingOffset(
         const QString& filePath,
+        const QString& fileType,
         const audio::SignalInfo& signalInfo) {
     // Consume the collected cue points during the import
     QList<CueInfo> cueInfos = m_cueInfos;
@@ -43,7 +45,7 @@ QList<CueInfo> CueInfoImporter::importCueInfosAndApplyTimingOffset(
         return cueInfos;
     }
 
-    double timingOffsetMillis = guessTimingOffsetMillis(filePath, signalInfo);
+    double timingOffsetMillis = guessTimingOffsetMillis(filePath, fileType, signalInfo);
 
     // If we don't have any offset, we can just return the CueInfo objects
     // unchanged.

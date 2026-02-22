@@ -8,7 +8,6 @@
 
 #include "engine/sidechain/enginesidechain.h"
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/engine.h"
@@ -17,7 +16,6 @@
 #include "util/counter.h"
 #include "util/event.h"
 #include "util/sample.h"
-#include "util/timer.h"
 #include "util/trace.h"
 
 #define SIDECHAIN_BUFFER_SIZE 65536
@@ -35,7 +33,7 @@ EngineSideChain::EngineSideChain(
     // a suitable choice since we do semi-realtime tasks
     // in the sidechain thread. To get reliable timing, it's important
     // that this work be prioritized over the GUI and non-realtime tasks. See
-    // discussion on Bug #1270583 and Bug #1194543.
+    // discussion on issue #7272 and https://bugs.launchpad.net/mixxx/1.11/+bug/1194543.
     start(QThread::HighPriority);
 }
 
@@ -67,7 +65,7 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
 void EngineSideChain::receiveBuffer(const AudioInput& input,
         const CSAMPLE* pBuffer,
         unsigned int iFrames) {
-    VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioInput::RECORD_BROADCAST) {
+    VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioPathType::RecordBroadcast) {
         qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
         return;
     }
@@ -79,11 +77,10 @@ void EngineSideChain::receiveBuffer(const AudioInput& input,
 void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
     Trace sidechain("EngineSideChain::writeSamples");
     // TODO: remove assumption of stereo buffer
-    const int kChannels = 2;
-    const int iSamples = iFrames * kChannels;
-    int samples_written = m_sampleFifo.write(pBuffer, iSamples);
+    const int numSamples = iFrames * mixxx::kEngineChannelCount;
+    const int numSamplesWritten = m_sampleFifo.write(pBuffer, numSamples);
 
-    if (samples_written != iSamples) {
+    if (numSamplesWritten != numSamples) {
         Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 

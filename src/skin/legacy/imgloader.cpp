@@ -1,8 +1,7 @@
-#include <QImageReader>
-#include <QFileInfo>
-
 #include "imgloader.h"
-#include "widget/wwidget.h"
+
+#include <QFileInfo>
+#include <QImageReader>
 
 ImgLoader::ImgLoader() {
 }

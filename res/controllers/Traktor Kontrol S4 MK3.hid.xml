@@ -1,0 +1,699 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>Traktor Kontrol S4 MK3</name>
+        <author>Be, A. Colombier</author>
+        <description>HID Mapping for Traktor Kontrol S4 MK3</description>
+        <manual>native_instruments_traktor_kontrol_s4_mk3</manual>
+        <devices>
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1720" usage_page="0xff01" usage="0x0" interface_number="0x3" />
+        </devices>
+    </info>
+    <settings>
+        <group label="Deck Lighting">
+            <row orientation="vertical">
+                <option
+                    variable="deckA"
+                    type="enum"
+                    label="Deck A">
+                    <value label="Aqua">aqua</value>
+                    <value label="Azalea">azalea</value>
+                    <value label="Blue">blue</value>
+                    <value label="Celeste">celeste</value>
+                    <value label="Fuscia">fuscia</value>
+                    <value label="Green">green</value>
+                    <value label="Lime">lime</value>
+                    <value label="Orange">orange</value>
+                    <value label="Purple">purple</value>
+                    <value label="Red" default="true">red</value>
+                    <value label="Salmon">salmon</value>
+                    <value label="Sky">sky</value>
+                    <value label="White">white</value>
+                    <value label="Yellow">yellow</value>
+                </option>
+                <option
+                    variable="deckB"
+                    type="enum"
+                    label="Deck B">
+                    <value label="Aqua">aqua</value>
+                    <value label="Azalea">azalea</value>
+                    <value label="Blue" default="true">blue</value>
+                    <value label="Celeste">celeste</value>
+                    <value label="Fuscia">fuscia</value>
+                    <value label="Green">green</value>
+                    <value label="Lime">lime</value>
+                    <value label="Orange">orange</value>
+                    <value label="Purple">purple</value>
+                    <value label="Red">red</value>
+                    <value label="Salmon">salmon</value>
+                    <value label="Sky">sky</value>
+                    <value label="White">white</value>
+                    <value label="Yellow">yellow</value>
+                </option>
+                <option
+                    variable="deckC"
+                    type="enum"
+                    label="Deck C">
+                    <value label="Aqua">aqua</value>
+                    <value label="Azalea">azalea</value>
+                    <value label="Blue">blue</value>
+                    <value label="Celeste">celeste</value>
+                    <value label="Fuscia">fuscia</value>
+                    <value label="Green">green</value>
+                    <value label="Lime">lime</value>
+                    <value label="Orange">orange</value>
+                    <value label="Purple">purple</value>
+                    <value label="Red">red</value>
+                    <value label="Salmon">salmon</value>
+                    <value label="Sky">sky</value>
+                    <value label="White">white</value>
+                    <value label="Yellow" default="true">yellow</value>
+                </option>
+                <option
+                    variable="deckD"
+                    type="enum"
+                    label="Deck D">
+                    <value label="Aqua">aqua</value>
+                    <value label="Azalea">azalea</value>
+                    <value label="Blue">blue</value>
+                    <value label="Celeste">celeste</value>
+                    <value label="Fuscia">fuscia</value>
+                    <value label="Green">green</value>
+                    <value label="Lime">lime</value>
+                    <value label="Orange">orange</value>
+                    <value label="Purple" default="true">purple</value>
+                    <value label="Red">red</value>
+                    <value label="Salmon">salmon</value>
+                    <value label="Sky">sky</value>
+                    <value label="White">white</value>
+                    <value label="Yellow">yellow</value>
+                </option>
+            </row>
+            <option
+                variable="inactiveLightsAlwaysBacklit"
+                type="boolean"
+                default="true"
+                label="Keep one-color LED dimmed instead of off when inactive">
+                <description>
+                    This will consistently ensure that every button is backlit, which can be helpful in low-light environments, but it might alter the primary color scheme of the deck.
+                </description>
+            </option>
+            <option
+                variable="gridButtonBlinkOverBeat"
+                type="boolean"
+                default="false"
+                label="Make the :hwbtn:`GRID` button blink over the beat">
+                <description>
+                    This will make the :hwbtn:`GRID` button blink when the track is going over a detected beat. This can help adjusting the beat grid or BPM.
+                </description>
+            </option>
+            <option
+                variable="deckSelectAlwaysBacklit"
+                type="boolean"
+                default="true"
+                label="Keep both deck select buttons backlit">
+                <description>
+                    Keep both deck select buttons backlit and do not fully turn off the inactive deck button. If enabled, will keep the unselected deck dimmed, otherwise it will fully turn it off.
+                </description>
+            </option>
+            <option
+                variable="wheelLedBlinkOnTrackEnd"
+                type="boolean"
+                default="true"
+                label="Wheel LED blinking when reaching the end of the track">
+                <description>
+                    The wheel LED will blink when reaching the end of the track, as per the settings defined under "Waveforms" > "End of Track Warning".
+                </description>
+            </option>
+            <option
+                variable="tempoFaderSoftTakeoverColorLow"
+                type="enum"
+                label="Tempo fader low soft takeover color">
+                <value label="Aqua">aqua</value>
+                <value label="Azalea">azalea</value>
+                <value label="Blue">blue</value>
+                <value label="Celeste">celeste</value>
+                <value label="Fuscia">fuscia</value>
+                <value label="Green">green</value>
+                <value label="Lime">lime</value>
+                <value label="Orange">orange</value>
+                <value label="Purple">purple</value>
+                <value label="Red">red</value>
+                <value label="Salmon">salmon</value>
+                <value label="Sky">sky</value>
+                <value label="White" default="true">white</value>
+                <value label="Yellow">yellow</value>
+                <description>
+                    This color defines how the LED next to the tempo fader will be lit when the actual BPM is higher than the fader value.
+                </description>
+            </option>
+            <option
+                variable="tempoFaderSoftTakeoverColorHigh"
+                type="enum"
+                label="Tempo fader high soft takeover color">
+                <value label="Aqua">aqua</value>
+                <value label="Azalea">azalea</value>
+                <value label="Blue">blue</value>
+                <value label="Celeste">celeste</value>
+                <value label="Fuscia">fuscia</value>
+                <value label="Green" default="true">green</value>
+                <value label="Lime">lime</value>
+                <value label="Orange">orange</value>
+                <value label="Purple">purple</value>
+                <value label="Red">red</value>
+                <value label="Salmon">salmon</value>
+                <value label="Sky">sky</value>
+                <value label="White">white</value>
+                <value label="Yellow">yellow</value>
+                <description>
+                    This color defines how the LED next to the tempo fader will be lit when the actual BPM is lower than the fader value.
+                </description>
+            </option>
+        </group>
+
+        <group label="Tempo Fader">
+            <option
+                variable="tempoCenterRangeMm"
+                type="real"
+                min="0.3"
+                max="5.0"
+                default="1.0"
+                label="Center Snap Region in Millimeter">
+                <description>
+                    Defines the center range in mm where the rate snaps to 0.
+                </description>
+            </option>
+            <row orientation="vertical">
+                <option
+                    variable="tempoCenterOffsetMmLeft"
+                    type="real"
+                    min="-3.0"
+                    max="3.0"
+                    default="0.0"
+                    label="Center Snap Offset in Millimeter (Left Deck)">
+                    <description>
+                        Shifts the center range in case it doesn't match the center marker.
+                    </description>
+                </option>
+                <option
+                    variable="tempoCenterOffsetMmRight"
+                    type="real"
+                    min="-3.0"
+                    max="3.0"
+                    default="0.0"
+                    label="Center Snap Offset in Millimeter (Right Deck)">
+                    <description>
+                        Shifts the center range in case it doesn't match the center marker.
+                    </description>
+                </option>
+            </row>
+        </group>
+
+        <group label="Alternative Mapping">
+            <option
+                variable="useKeylockOnMaster"
+                type="boolean"
+                default="false"
+                label="Keylock on :hwbtn:`SHIFT`+:hwbtn:`MASTER` instead of :hwbtn:`SHIFT`+:hwbtn:`SYNC`">
+                <description>
+                    This setting toggles the keylock on push instead of release, as there is a long-press action on :hwbtn:`SHIFT`+:hwbtn:`SYNC` (copy key).
+                </description>
+            </option>
+            <option
+                variable="useBeatloopRollInsteadOfSampler"
+                type="boolean"
+                default="false"
+                label="Use the Sampler tab as a Beatloop Roll tab instead">
+                <description>
+                    This option is useful if you don't use samplers and would like to access a set of predefined beatloop rolls. Beat size can be customized individually.
+                </description>
+            </option>
+            <option
+                variable="defaultPadLayout"
+                type="enum"
+                label="Default Pad Layout">
+                <value label="Intro/Outro + 4 hotcues" default="true">default</value>
+                <value label="Hotcues">hotcue</value>
+                <value label="Sampler or beatloop">samplerBeatloop</value>
+                <value label="Keyboard">keyboard</value>
+                <description>
+                    Define the default layout used for the pads.
+                </description>
+            </option>
+        </group>
+
+        <group label="Mixer">
+            <option
+                variable="mixerControlsMicAuxOnShift"
+                type="boolean"
+                default="true"
+                label="Shift to mix microphones or auxiliary lines">
+                <description>
+                    When shifting decks, the mixer controls microphones or auxiliary lines. If both a microphone and an auxiliary are configured on the same channel, the mixer will prioritize controlling the auxiliary.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerMain"
+                type="boolean"
+                default="false"
+                label="Main gain is handled by the Mixxx built-in mixer">
+                <description>
+                    When enabled, the master potentiometer on top right column of the mixer will drive both the main gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could result in undesired clipping if enabled when using the hardware audio outputs.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerBooth"
+                type="boolean"
+                default="false"
+                label="Booth gain is handled by the Mixxx built-in mixer">
+                <description>
+                    When enabled, the booth potentiometer on right column of the mixer will drive both the booth gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could result in undesired clipping if enabled when using the hardware audio outputs.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerHeadphone"
+                type="boolean"
+                default="false"
+                label="Headphone gain and cue mix is handled by the Mixxx built-in mixer">
+                <description>
+                    When enabled, the headphone volume and cue potentiometers on bottom right column of the mixer will drive both the headphone controls of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could create undesirable clipping if enabled when using the hardware audio outputs.
+                </description>
+            </option>
+        </group>
+
+        <group label="Beatloop Roll Size (Only if Enabled Instead of the Sampler Tab)">
+            <row orientation="vertical">
+                <option
+                    variable="beatLoopRollsSize1"
+                    type="enum"
+                    label="First Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16" default="true">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size">half</value>
+                    <value label="Double beatloop size">double</value>
+                    <description>The top left or pad button.</description>
+                </option>
+                <option
+                    variable="beatLoopRollsSize2"
+                    type="enum"
+                    label="Second Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8" default="true">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size">half</value>
+                    <value label="Double beatloop size">double</value>
+                    <description>The top left second pad button.</description>
+                </option>
+                <option
+                    variable="beatLoopRollsSize3"
+                    type="enum"
+                    label="Third Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4" default="true">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size">half</value>
+                    <value label="Double beatloop size">double</value>
+                    <description>The top right second pad button.</description>
+                </option>
+                <option
+                    variable="beatLoopRollsSize4"
+                    type="enum"
+                    label="Fourth Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2" default="true">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size">half</value>
+                    <value label="Double beatloop size">double</value>
+                    <description>The top right pad button.</description>
+                </option>
+            </row>
+            <row orientation="vertical">
+                <option
+                    variable="beatLoopRollsSize5"
+                    type="enum"
+                    label="Fifth Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1" default="true">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size">half</value>
+                    <value label="Double beatloop size">double</value>
+                    <description>The bottom left pad button.</description>
+                </option>
+                <option
+                    variable="beatLoopRollsSize6"
+                    type="enum"
+                    label="Sixth Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2" default="true">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size">half</value>
+                    <value label="Double beatloop size">double</value>
+                    <description>The bottom left second pad button.</description>
+                </option>
+                <option
+                    variable="beatLoopRollsSize7"
+                    type="enum"
+                    label="Seventh Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4" >4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size" default="true">half</value>
+                    <value label="Double beatloop size">double</value>
+                    <description>The bottom right second pad button.</description>
+                </option>
+                <option
+                    variable="beatLoopRollsSize8"
+                    type="enum"
+                    label="Eighth Pad">
+                    <value label="1/32">0.03125</value>
+                    <value label="1/16">0.0625</value>
+                    <value label="1/8">0.125</value>
+                    <value label="1/4">0.25</value>
+                    <value label="1/2">0.5</value>
+                    <value label="1">1</value>
+                    <value label="2">2</value>
+                    <value label="4">4</value>
+                    <value label="8">8</value>
+                    <value label="Halve beatloop size">half</value>
+                    <value label="Double beatloop size" default="true">double</value>
+                    <description>The bottom right pad button.</description>
+                </option>
+            </row>
+        </group>
+
+        <group label="Library">
+            <row orientation="vertical">
+                <option
+                    variable="librarySortableColumns1Value"
+                    type="enum"
+                    label="First column">
+                    <value label="Artist" default="true">1</value>
+                    <value label="Title">2</value>
+                    <value label="Album">3</value>
+                    <value label="Album Artist">4</value>
+                    <value label="Year">5</value>
+                    <value label="Genre">6</value>
+                    <value label="Composer">7</value>
+                    <value label="Grouping">8</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
+                    <value label="Native Location">11</value>
+                    <value label="Comment">12</value>
+                    <value label="Duration">13</value>
+                    <value label="Bitrate">14</value>
+                    <value label="BPM">15</value>
+                    <value label="Replay Gain">16</value>
+                    <value label="Datetime Added">17</value>
+                    <value label="Times Played">18</value>
+                    <value label="Rating">19</value>
+                    <value label="Key">20</value>
+                    <description>First column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
+                </option>
+                <option
+                    variable="librarySortableColumns2Value"
+                    type="enum"
+                    label="Second column">
+                    <value label="---">0</value>
+                    <value label="Artist">1</value>
+                    <value label="Title" default="true">2</value>
+                    <value label="Album">3</value>
+                    <value label="Album Artist">4</value>
+                    <value label="Year">5</value>
+                    <value label="Genre">6</value>
+                    <value label="Composer">7</value>
+                    <value label="Grouping">8</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
+                    <value label="Native Location">11</value>
+                    <value label="Comment">12</value>
+                    <value label="Duration">13</value>
+                    <value label="Bitrate">14</value>
+                    <value label="BPM">15</value>
+                    <value label="Replay Gain">16</value>
+                    <value label="Datetime Added">17</value>
+                    <value label="Times Played">18</value>
+                    <value label="Rating">19</value>
+                    <value label="Key">20</value>
+                    <description>Second column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
+                </option>
+                <option
+                    variable="librarySortableColumns3Value"
+                    type="enum"
+                    label="Third column">
+                    <value label="---">0</value>
+                    <value label="Artist">1</value>
+                    <value label="Title">2</value>
+                    <value label="Album">3</value>
+                    <value label="Album Artist">4</value>
+                    <value label="Year">5</value>
+                    <value label="Genre">6</value>
+                    <value label="Composer">7</value>
+                    <value label="Grouping">8</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
+                    <value label="Native Location">11</value>
+                    <value label="Comment">12</value>
+                    <value label="Duration">13</value>
+                    <value label="Bitrate">14</value>
+                    <value label="BPM" default="true">15</value>
+                    <value label="Replay Gain">16</value>
+                    <value label="Datetime Added">17</value>
+                    <value label="Times Played">18</value>
+                    <value label="Rating">19</value>
+                    <value label="Key">20</value>
+                    <description>Third column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
+                </option>
+                <option
+                    variable="librarySortableColumns4Value"
+                    type="enum"
+                    label="Fourth column">
+                    <value label="---" default="true">0</value>
+                    <value label="Artist">1</value>
+                    <value label="Title">2</value>
+                    <value label="Album">3</value>
+                    <value label="Album Artist">4</value>
+                    <value label="Year">5</value>
+                    <value label="Genre">6</value>
+                    <value label="Composer">7</value>
+                    <value label="Grouping">8</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
+                    <value label="Native Location">11</value>
+                    <value label="Comment">12</value>
+                    <value label="Duration">13</value>
+                    <value label="Bitrate">14</value>
+                    <value label="BPM">15</value>
+                    <value label="Replay Gain">16</value>
+                    <value label="Datetime Added">17</value>
+                    <value label="Times Played">18</value>
+                    <value label="Rating">19</value>
+                    <value label="Key" default="true">20</value>
+                    <description>Fourth column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
+                </option>
+                <option
+                    variable="librarySortableColumns5Value"
+                    type="enum"
+                    label="Fifth column">
+                    <value label="---" default="true">0</value>
+                    <value label="Artist">1</value>
+                    <value label="Title">2</value>
+                    <value label="Album">3</value>
+                    <value label="Album Artist">4</value>
+                    <value label="Year">5</value>
+                    <value label="Genre">6</value>
+                    <value label="Composer">7</value>
+                    <value label="Grouping">8</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
+                    <value label="Native Location">11</value>
+                    <value label="Comment">12</value>
+                    <value label="Duration">13</value>
+                    <value label="Bitrate">14</value>
+                    <value label="BPM">15</value>
+                    <value label="Replay Gain">16</value>
+                    <value label="Datetime Added">17</value>
+                    <value label="Times Played">18</value>
+                    <value label="Rating">19</value>
+                    <value label="Key">20</value>
+                    <description>Fifth column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
+                </option>
+                <option
+                    variable="librarySortableColumns6Value"
+                    type="enum"
+                    label="Sixth column">
+                    <value label="---" default="true">0</value>
+                    <value label="Artist">1</value>
+                    <value label="Title">2</value>
+                    <value label="Album">3</value>
+                    <value label="Album Artist">4</value>
+                    <value label="Year">5</value>
+                    <value label="Genre">6</value>
+                    <value label="Composer">7</value>
+                    <value label="Grouping">8</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
+                    <value label="Native Location">11</value>
+                    <value label="Comment">12</value>
+                    <value label="Duration">13</value>
+                    <value label="Bitrate">14</value>
+                    <value label="BPM">15</value>
+                    <value label="Replay Gain">16</value>
+                    <value label="Datetime Added">17</value>
+                    <value label="Times Played">18</value>
+                    <value label="Rating">19</value>
+                    <value label="Key">20</value>
+                    <description>Sixth column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
+                </option>
+            </row>
+        </group>
+
+        <group label="Jog wheel">
+            <option
+                variable="loopWheelMoveFactor"
+                type="integer"
+                min="20"
+                max="500"
+                step="2"
+                default="50"
+                label="Jogwheel sensitivity in loop mode" />
+            <description>
+                Define the sensitivity factor when the jogwheel is used to move the in and out point of a loop using the Loop Mode.
+            </description>
+            <row>
+                <option
+                    variable="loopEncoderMoveFactor"
+                    type="integer"
+                    min="100"
+                    max="2500"
+                    step="20"
+                    default="500"
+                    label="Loop encoder sensitivity in loop mode">
+                    <description>
+                        Define the sensitivity of the loop encoder when moving loop position in the Loop Mode.
+                    </description>
+                </option>
+                <option
+                    variable="loopEncoderShiftMoveFactor"
+                    type="integer"
+                    min="500"
+                    max="12500"
+                    step="20"
+                    default="2500"
+                    label="Loop encoder sensitivity in loop mode (shift)">
+                    <description>
+                        Define the sensitivity of shift+loop encoder when moving loop position in the Loop Mode.
+                    </description>
+                </option>
+
+            </row>
+            <option
+                variable="baseRevolutionsPerMinute"
+                type="enum"
+                label="Turntable speed">
+                <value label="33.3 RPM" default="true">33.33</value>
+                <value label="45 RPM">45</value>
+                <description>Define how fast the jogwheel rotates at the default play rate. This will impact scratch sensitivity, motor speed and ring LED pace.</description>
+            </option>
+        </group>
+
+        <group label="Haptic drive feature (BETA)">
+            <option
+                variable="useMotors"
+                type="boolean"
+                default="false"
+                label="Allow Mixxx to interact with jog wheel motors (BETA)">
+                <description>
+                    This will defines whether or not Mixxx is allowed to interact with the motors. &lt;br /&gt;&lt;b&gt;WARNING&lt;/b&gt;: while interacting with motors should be harmless for your device, it could cause excess wear and tear.
+                </description>
+            </option>
+
+            <option
+                variable="cueHapticFeedback"
+                type="boolean"
+                default="true"
+                label="Emit haptic feedback when the platter goes over the main cue">
+                <description>
+                    This will emit a haptic feedback on the platter while scratching over the main cue point.
+                </description>
+            </option>
+
+            <row>
+                <option
+                    variable="tightnessFactor"
+                    type="real"
+                    precision="2"
+                    min="0.05"
+                    max="0.95"
+                    step="0.05"
+                    default="0.5"
+                    label="Jogwheel tension">
+                    <description>
+                        Jogwheel resistance. It is a similar setting that the Grid+Wheel in Tracktor. 0 is very tight, 1 is very loose.
+                        &lt;br /&gt;&lt;b&gt;WARNING&lt;/b&gt;: A loose value can sometimes lead to unintended motion!
+                    </description>
+                </option>
+
+                <option
+                    variable="maxWheelForce"
+                    type="integer"
+                    min="8000"
+                    max="32000"
+                    step="500"
+                    default="25000"
+                    label="Jogwheel torque">
+                    <description>
+                        This setting defines how much torque can Mixxx use on the motor.
+                    </description>
+                </option>
+            </row>
+        </group>
+    </settings>
+    <controller id="Traktor">
+        <scriptfiles>
+            <file filename="Traktor-Kontrol-S4-MK3.js" functionprefix="TraktorS4MK3"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

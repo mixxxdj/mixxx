@@ -3,7 +3,7 @@
 #include <QString>
 
 #include "soundio/sounddevice.h"
-
+#include "soundio/soundmanagerconfig.h"
 
 class SoundManager;
 class EngineNetworkStream;
@@ -20,14 +20,14 @@ class SoundDeviceNotFound : public SoundDevice {
         m_strDisplayName = name;
     }
 
-    SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override {
+    SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override {
         Q_UNUSED(isClkRefDevice);
         Q_UNUSED(syncBuffers);
-        return SOUNDDEVICE_ERROR_ERR;
+        return SoundDeviceStatus::Error;
     };
     bool isOpen() const  override { return false; };
-    SoundDeviceError close() override {
-        return SOUNDDEVICE_ERROR_ERR;
+    SoundDeviceStatus close() override {
+        return SoundDeviceStatus::Error;
     };
     void readProcess(SINT /*framesPerbuffer*/) override{};
     void writeProcess(SINT /*framesPerbuffer*/) override{};
@@ -35,7 +35,7 @@ class SoundDeviceNotFound : public SoundDevice {
         return QObject::tr("Device not found");
     };
 
-    unsigned int getDefaultSampleRate() const override {
-        return 44100;
+    mixxx::audio::SampleRate getDefaultSampleRate() const override {
+        return SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 };

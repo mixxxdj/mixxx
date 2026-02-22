@@ -1,28 +1,29 @@
 #include "engine/controls/enginecontrol.h"
 
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sync/enginesync.h"
-#include "mixer/playermanager.h"
 #include "moc_enginecontrol.cpp"
 
 EngineControl::EngineControl(const QString& group,
         UserSettingsPointer pConfig)
         : m_group(group),
           m_pConfig(pConfig),
-          m_pEngineMaster(nullptr),
+          m_pEngineMixer(nullptr),
           m_pEngineBuffer(nullptr) {
-    setCurrentSample(EngineBuffer::kInitialSamplePosition, 0.0, 0.0);
+    setFrameInfo(mixxx::audio::kStartFramePos,
+            mixxx::audio::kInvalidFramePos,
+            mixxx::audio::SampleRate());
 }
 
 EngineControl::~EngineControl() {
 }
 
 void EngineControl::process(const double dRate,
-                           const double dCurrentSample,
-                           const int iBufferSize) {
+        mixxx::audio::FramePos currentPosition,
+        const int iBufferSize) {
     Q_UNUSED(dRate);
-    Q_UNUSED(dCurrentSample);
+    Q_UNUSED(currentPosition);
     Q_UNUSED(iBufferSize);
 }
 
@@ -34,24 +35,21 @@ void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     Q_UNUSED(pBeats);
 }
 
-void EngineControl::hintReader(HintVector*) {
+void EngineControl::hintReader(gsl::not_null<HintVector*>) {
 }
 
-void EngineControl::setEngineMaster(EngineMaster* pEngineMaster) {
-    m_pEngineMaster = pEngineMaster;
+void EngineControl::setEngineMixer(EngineMixer* pEngineMixer) {
+    m_pEngineMixer = pEngineMixer;
 }
 
 void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
     m_pEngineBuffer = pEngineBuffer;
 }
 
-void EngineControl::setCurrentSample(
-        const double dCurrentSample, const double dTotalSamples, const double dTrackSampleRate) {
-    SampleOfTrack sot;
-    sot.current = dCurrentSample;
-    sot.total = dTotalSamples;
-    sot.rate = dTrackSampleRate;
-    m_sampleOfTrack.setValue(sot);
+void EngineControl::setFrameInfo(mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FramePos trackEndPosition,
+        mixxx::audio::SampleRate sampleRate) {
+    m_frameInfo.setValue(FrameInfo{currentPosition, trackEndPosition, sampleRate});
 }
 
 QString EngineControl::getGroup() const {
@@ -62,50 +60,58 @@ UserSettingsPointer EngineControl::getConfig() {
     return m_pConfig;
 }
 
-EngineMaster* EngineControl::getEngineMaster() {
-    return m_pEngineMaster;
+EngineMixer* EngineControl::getEngineMixer() {
+    return m_pEngineMixer;
 }
 
 EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::seekAbs(double samplePosition) {
+void EngineControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(samplePosition);
+        m_pEngineBuffer->setBeatLoop(startPosition, enabled);
     }
 }
 
-void EngineControl::seekExact(double playPosition) {
+void EngineControl::setLoop(mixxx::audio::FramePos startPosition,
+        mixxx::audio::FramePos endPosition,
+        bool enabled) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekExact(playPosition);
+        m_pEngineBuffer->setLoop(startPosition, endPosition, enabled);
     }
 }
 
-void EngineControl::seek(double sample) {
+void EngineControl::seekAbs(mixxx::audio::FramePos position) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeek(sample);
+        m_pEngineBuffer->seekAbs(position);
     }
 }
 
-void EngineControl::notifySeek(double dNewPlaypos) {
-    SampleOfTrack sot = m_sampleOfTrack.getValue();
-    sot.current = dNewPlaypos;
-    m_sampleOfTrack.setValue(sot);
+void EngineControl::seekExact(mixxx::audio::FramePos position) {
+    if (m_pEngineBuffer) {
+        m_pEngineBuffer->seekExact(position);
+    }
+}
+
+void EngineControl::seek(double fractionalPosition) {
+    if (m_pEngineBuffer) {
+        m_pEngineBuffer->slotControlSeek(fractionalPosition);
+    }
 }
 
 EngineBuffer* EngineControl::pickSyncTarget() {
-    EngineMaster* pMaster = getEngineMaster();
-    if (!pMaster) {
+    EngineMixer* pEngineMixer = getEngineMixer();
+    if (!pEngineMixer) {
         return nullptr;
     }
 
-    EngineSync* pEngineSync = pMaster->getEngineSync();
+    EngineSync* pEngineSync = pEngineMixer->getEngineSync();
     if (!pEngineSync) {
         return nullptr;
     }
 
-    EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
+    EngineChannel* pThisChannel = pEngineMixer->getChannel(getGroup());
     Syncable* pSyncable = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
     // pickNonSyncSyncTarget can return nullptr, but if it doesn't the Syncable
     // definitely has an EngineChannel.

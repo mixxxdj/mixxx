@@ -189,14 +189,14 @@ inline bool startsWithADTSHeader(
 const QString SoundSourceProviderM4A::kDisplayName = QStringLiteral("Nero FAAD2");
 
 //static
-const QStringList SoundSourceProviderM4A::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderM4A::kSupportedFileTypes = {
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
 };
 
-QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
+QStringList SoundSourceProviderM4A::getSupportedFileTypes() const {
     if (faad2::LibLoader::Instance()->isLoaded()) {
-        return kSupportedFileExtensions;
+        return kSupportedFileTypes;
     } else {
         return QStringList(); // none available
     }
@@ -262,7 +262,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
         if (mode == OpenMode::Strict) {
             // Abort and give another decoder with lower priority
             // the chance to open the same file.
-            // Fixes https://bugs.launchpad.net/mixxx/+bug/1504113
+            // Fixes https://github.com/mixxxdj/mixxx/issues/8248
             return OpenResult::Aborted;
         } else {
             // Fallback: Use a default value
@@ -292,7 +292,7 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
     if (maxSampleBlockInputSize > kMaxSampleBlockInputSizeLimit) {
         // Workaround for a possible bug in libmp4v2 2.0.0 (Ubuntu 16.04)
         // that returns 4278190742 when opening a corrupt file.
-        // https://bugs.launchpad.net/mixxx/+bug/1594169
+        // https://github.com/mixxxdj/mixxx/issues/8577
         kLogger.warning() << "MP4 DecoderConfigDescriptor.bufferSizeDB ="
                           << maxSampleBlockInputSize
                           << ">"

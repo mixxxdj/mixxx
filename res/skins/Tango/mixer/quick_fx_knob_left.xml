@@ -9,149 +9,57 @@ Variables:
 -->
 <Template>
   <SetVariable name="QuickFxGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="QuickFx">[QuickEffectRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <ObjectName>EQKnobContainerLeft</ObjectName>
+    <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
-    <Layout>vertical</Layout>
     <Children>
+
+      <!-- QuickEffect enable button -->
       <WidgetGroup>
+        <ObjectName>QuickFXSide</ObjectName>
+        <Size>12f,23f</Size>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
         <Children>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children>
-              <!-- QuickFx enable button at the SIDE when an EQ is loaded
-              AND when EQ Kill buttons are visible -->
-              <WidgetGroup>
-                <ObjectName>AlignVCenter</ObjectName>
-                <SizePolicy>me,me</SizePolicy>
-                <Layout>vertical</Layout>
-                <Children>
-                  <WidgetGroup>
-                    <ObjectName>QuickFXSide</ObjectName>
-                    <Size>12f,24f</Size>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <Template src="skin:../Tango/controls/button_2state.xml">
-                        <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                        <SetVariable name="ObjectName">QuickFXButton</SetVariable>
-                        <SetVariable name="Size">12f,24f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
-                      </Template>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-                </Children>
-                <Connection>
-                  <ConfigKey>[EqualizerRack1_[Channel<Variable name="chanNum"/>]_Effect1],loaded</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <!-- QuickEffect knob + Enable indicator underneath -->
-              <WidgetGroup>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>stacked</Layout>
-                <Children>
-                  <KnobComposed>
-                    <TooltipId>QuickEffectRack_super1</TooltipId>
-                    <Size>30f,26f</Size>
-                    <Knob>skin:../Tango/knobs_sliders/knob_blue.svg</Knob>
-                    <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
-                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                    <KnobCenterYOffset>2.000</KnobCenterYOffset>
-                    <Connection>
-                      <ConfigKey><Variable name="QuickFxGroup"/>,super1</ConfigKey>
-                    </Connection>
-                  </KnobComposed>
-
-                  <Template src="skin:../Tango/controls/button_2state.xml">
-                    <SetVariable name="ObjectName">QuickFxDisabledUnderlay</SetVariable>
-                    <SetVariable name="Size">30f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-
-            </Children>
-          </WidgetGroup>
-
-          <!-- QuickFx enable button BELOW when an EQ plugin is loaded AND Kill buttons are hidden -->
-          <WidgetGroup>
-            <ObjectName>AlignVCenter</ObjectName>
-            <SizePolicy>min,me</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <WidgetGroup>
-                <ObjectName>QuickFXBottom</ObjectName>
-                <Size>30f,16f</Size>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:../Tango/controls/button_2state.xml">
-                    <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                    <SetVariable name="ObjectName">QuickFXButton</SetVariable>
-                    <SetVariable name="Size">24f,12f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[EqualizerRack1_[Channel<Variable name="chanNum"/>]_Effect1],loaded</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-          <!-- /QuickFx enable button BELOW when an EQ plugin is loaded AND Kill buttons are hidden -->
-
-          <!-- QuickFx enable button BELOW when no EQ plugin is loaded -->
-          <WidgetGroup>
-            <ObjectName>QuickFXBottom</ObjectName>
-            <SizePolicy>min,me</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:../Tango/controls/button_2state.xml">
-                <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                <SetVariable name="ObjectName">QuickFXButton</SetVariable>
-                <SetVariable name="Size">24f,12f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="QuickFx"/>,enabled</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[EqualizerRack1_[Channel<Variable name="chanNum"/>]_Effect1],loaded</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-          <!-- /QuickFx enable button BELOW when no EQ plugin is loaded -->
-
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
+            <SetVariable name="ObjectName">QuickFXButton</SetVariable>
+            <SetVariable name="Size">12f,23f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
+          </Template>
         </Children>
         <Connection>
-          <ConfigKey><Variable name="QuickFx"/>,loaded</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup><!-- /QuickEffect knob + enable button -->
-
-      <WidgetGroup><!-- Spacer when no QuickEffect is loaded -->
-        <Size>0min,30f</Size>
-        <Connection>
-          <ConfigKey><Variable name="QuickFx"/>,loaded</ConfigKey>
-          <Transform><Not/></Transform>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
+
+      <!-- QuickEffect knob + Enable indicator underneath -->
+      <WidgetGroup>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>stacked</Layout>
+        <Children>
+          <KnobComposed>
+            <TooltipId>QuickEffectRack_super1</TooltipId>
+            <Size>30f,26f</Size>
+            <Knob>skins:Tango/knobs_sliders/knob_blue.svg</Knob>
+            <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
+            <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+            <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+            <KnobCenterYOffset>2.000</KnobCenterYOffset>
+            <Connection>
+              <ConfigKey><Variable name="QuickFxGroup"/>,super1</ConfigKey>
+            </Connection>
+          </KnobComposed>
+
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="ObjectName">QuickFxDisabledUnderlay</SetVariable>
+            <SetVariable name="Size">30f,26f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="QuickFxGroup"/>,enabled</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

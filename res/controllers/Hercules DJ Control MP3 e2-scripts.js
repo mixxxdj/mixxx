@@ -352,7 +352,7 @@ HerculesMP3e2.holdButton = function (group, value, first, second) {
 
     if (value) {
         engine.setValue(group, first, 1);    // Set "On" the first function
-        holdTimerID = engine.beginTimer(2000, "HerculesMP3e2.holdTimer(\""+group+"\", \""+first+"\", \""+second+"\")", true);
+        holdTimerID = engine.beginTimer(2000, () => HerculesMP3e2.holdTimer(group, first, second), true);
         }
     else {
         if (holdButtonFlag) {
@@ -606,7 +606,7 @@ HerculesMP3e2.scratch = function(midino, control, value, status, group) {
             if (scratchMode === 0) {
                 // Enable the scratch mode on the corresponding deck and start the timer
                 scratchMode = 1;
-                scratchTimer = engine.beginTimer(scratchResetTime, "HerculesMP3e2.wheelOnOff()");
+                scratchTimer = engine.beginTimer(scratchResetTime, HerculesMP3e2.wheelOnOff);
                 midi.sendShortMsg(0x90, 45, 0x7F); // Switch-on the Scratch led
                 engine.setValue("[Channel1]", "keylock", 0);
                 engine.setValue("[Channel2]", "keylock", 0);
@@ -731,8 +731,8 @@ HerculesMP3e2.jogWheel = function(midino, control, value, status, group) {
 
 // drive master tempo led connected to sync_mode
 HerculesMP3e2.syncmode = function(value, group, control) {
-    // Following code was used for sync_master control.
-    // Deactivated for now due to https://bugs.launchpad.net/mixxx/+bug/1456801
+    // Following code was used for sync_leader control.
+    // Deactivated for now due to https://github.com/mixxxdj/mixxx/issues/8039
     // currently (2015-05-20) explicit master mode is not supported.
     // Switched to sync_enabled (binary) control
 

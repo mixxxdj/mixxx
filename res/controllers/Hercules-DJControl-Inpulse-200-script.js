@@ -25,7 +25,8 @@
 //
 //*************************************************************************
 
-var DJCi200 = {};
+var DJCi200 = {}; //  eslint-disable-line
+
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
@@ -46,6 +47,9 @@ DJCi200.kScratchActionSeek = 2;
 DJCi200.kScratchActionBend = 3;
 
 DJCi200.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     // Scratch button state
     DJCi200.scratchButtonState = true;
     // Scratch Action

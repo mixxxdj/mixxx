@@ -9,7 +9,7 @@ static constexpr audio::ChannelCount kEngineChannelCount =
         audio::ChannelCount::stereo();
 
 // Contains the information needed to process a buffer of audio
-class EngineParameters {
+class EngineParameters final {
   public:
     SINT framesPerBuffer() const {
         return m_framesPerBuffer;
@@ -34,6 +34,7 @@ class EngineParameters {
                       sampleRate),
               m_framesPerBuffer(framesPerBuffer) {
         DEBUG_ASSERT(framesPerBuffer > 0);
+        DEBUG_ASSERT(sampleRate > 0);
     }
 
   private:

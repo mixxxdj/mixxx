@@ -1,16 +1,17 @@
 #pragma once
 
 #include <QMutex>
-#include <QSemaphore>
 #include <QString>
-#include <QThread>
-#include <QtDebug>
 
+#include "audio/frame.h"
+#include "audio/types.h"
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "track/track_decl.h"
-#include "util/fifo.h"
+
+template<class DataType>
+class FIFO;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
@@ -113,7 +114,7 @@ class CachingReaderWorker : public EngineWorker {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int sampleRate, double numSamples);
+    void trackLoaded(TrackPointer pTrack, mixxx::audio::SampleRate sampleRate, double numSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:
@@ -147,8 +148,12 @@ class CachingReaderWorker : public EngineWorker {
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);
 
+    void verifyFirstSound(const CachingReaderChunk* pChunk);
+
     // The current audio source of the track loaded
     mixxx::AudioSourcePointer m_pAudioSource;
+
+    mixxx::audio::FramePos m_firstSoundFrameToVerify;
 
     // Temporary buffer for reading samples from all channels
     // before conversion to a stereo signal.

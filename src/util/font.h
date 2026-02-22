@@ -50,14 +50,26 @@ class FontUtils {
         // In developer mode, spit out all the families / styles / sizes
         // supported by the new font.
         if (CmdlineArgs::Instance().getDeveloper()) {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             QFontDatabase database;
-            QStringList families = QFontDatabase::applicationFontFamilies(result);
-            foreach (const QString& family, families) {
-                QStringList styles = database.styles(family);
-                foreach (const QString& style, styles) {
-                    QList<int> pointSizes = database.pointSizes(family, style);
-                    QStringList pointSizesStr;
-                    foreach (int point, pointSizes) {
+#endif
+            QStringList pointSizesStr;
+            const QStringList families = QFontDatabase::applicationFontFamilies(result);
+            for (const QString& family : families) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                const QStringList styles = QFontDatabase::styles(family);
+#else
+                const QStringList styles = database.styles(family);
+#endif
+                for (const QString& style : styles) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    const QList<int> pointSizes = QFontDatabase::pointSizes(family, style);
+#else
+                    const QList<int> pointSizes = database.pointSizes(family, style);
+#endif
+                    pointSizesStr.clear();
+                    pointSizesStr.reserve(pointSizes.count());
+                    for (int point : pointSizes) {
                         pointSizesStr.append(QString::number(point));
                     }
                     qDebug() << "FONT LOADED family:" << family

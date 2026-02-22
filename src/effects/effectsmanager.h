@@ -1,146 +1,124 @@
 #pragma once
 
-#include <QObject>
 #include <QHash>
 #include <QList>
 #include <QSet>
-#include <QScopedPointer>
-#include <QPair>
 
-#include "preferences/usersettings.h"
 #include "control/controlpotmeter.h"
-#include "control/controlpushbutton.h"
+#include "effects/backends/effectsbackendmanager.h"
+#include "effects/presets/effectchainpresetmanager.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/message.h"
+#include "preferences/usersettings.h"
 #include "util/class.h"
-#include "util/fifo.h"
 
 class EngineEffectsManager;
-class EffectChainManager;
-class EffectManifest;
-class EffectsBackend;
 
-class EffectsManager : public QObject {
-    Q_OBJECT
+/// EffectsManager initializes and shuts down the effects system. It creates and
+/// destroys a fixed set of StandardEffectChains on Mixxx startup/shutdown
+/// and creates a QuickEffectChain and EqualizerEffectChain when
+/// PlayerManager creates decks. It also initializes a handful of sub-manager classes
+/// responsible for specific parts of the effects system.
+class EffectsManager {
   public:
-    static const QString kNoEffectString;
+    EffectsManager(UserSettingsPointer pConfig,
+            std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory);
 
-    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
-
-    EffectsManager(QObject* pParent,
-            UserSettingsPointer pConfig,
-            ChannelHandleFactoryPointer pChannelHandleFactory);
     virtual ~EffectsManager();
 
-    EngineEffectsManager* getEngineEffectsManager() {
-        return m_pEngineEffectsManager;
+    void setup();
+    void addDeck(const ChannelHandleAndGroup& deckHandleGroup);
+
+    void loadDefaultEqsAndQuickEffects();
+
+    EffectChainPointer getEffectChain(const QString& group) const;
+    EqualizerEffectChainPointer getEqualizerEffectChain(
+            const QString& deckGroupName) const {
+        return m_equalizerEffectChains.value(deckGroupName);
+    }
+    QuickEffectChainPointer getQuickEffectChain(
+            const QString& deckGroupName) const {
+        return m_quickEffectChains.value(deckGroupName);
+    }
+    EffectChainPointer getStandardEffectChain(int unitNumber) const;
+    EffectChainPointer getOutputEffectChain() const;
+
+    EngineEffectsManager* getEngineEffectsManager() const {
+        // Must only be called from Engine classes which have a shorter
+        // lifetime than this EffectsManager. See CoreServices::finalize()
+        return m_pEngineEffectsManager.get();
     }
 
-    EffectChainManager* getEffectChainManager() {
-        return m_pEffectChainManager;
-    }
-
-    const ChannelHandle getMasterHandle() {
+    const ChannelHandle getMainHandle() const {
         return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     }
 
-    // Add an effect backend to be managed by EffectsManager. EffectsManager
-    // takes ownership of the backend, and will delete it when EffectsManager is
-    // being deleted. Not thread safe -- use only from the GUI thread.
-    void addEffectsBackend(EffectsBackend* pEffectsBackend);
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
-    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& registeredInputChannels() const;
-    const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const;
-
-    StandardEffectRackPointer addStandardEffectRack();
-    StandardEffectRackPointer getStandardEffectRack(int rack);
-
-    EqualizerRackPointer addEqualizerRack();
-    EqualizerRackPointer getEqualizerRack(int rack);
-
-    QuickEffectRackPointer addQuickEffectRack();
-    QuickEffectRackPointer getQuickEffectRack(int rack);
-
-    OutputEffectRackPointer addOutputsEffectRack();
-    OutputEffectRackPointer getOutputsEffectRack();
-
-    void loadEffectChains();
-
-    EffectRackPointer getEffectRack(const QString& group);
-    EffectSlotPointer getEffectSlot(const QString& group);
-
-    EffectParameterSlotPointer getEffectParameterSlot(
-            const ConfigKey& configKey);
-    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(
-            const ConfigKey& configKey);
-
-    QString getNextEffectId(const QString& effectId);
-    QString getPrevEffectId(const QString& effectId);
-
-    inline const QList<EffectManifestPointer>& getAvailableEffectManifests() const {
-        return m_availableEffectManifests;
-    };
-    inline const QList<EffectManifestPointer>& getVisibleEffectManifests() const {
-        return m_visibleEffectManifests;
-    };
-    const QList<EffectManifestPointer> getAvailableEffectManifestsFiltered(
-        EffectManifestFilterFnc filter) const;
-    bool isEQ(const QString& effectId) const;
-    void getEffectManifestAndBackend(
-            const QString& effectId,
-            EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
-    EffectManifestPointer getEffectManifest(const QString& effectId) const;
-    EffectPointer instantiateEffect(const QString& effectId);
-
-    void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
-    bool getEffectVisibility(EffectManifestPointer pManifest);
-
-    // Temporary, but for setting up all the default EffectChains and EffectRacks
-    void setup();
-
-    // Reloads all effect to the slots to update parameter assignments
-    void refeshAllRacks();
-
-    // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
-    // ownership of request and deletes it once a response is received.
-    bool writeRequest(EffectsRequest* request);
-
-  signals:
-    // TODO() Not connected. Can be used when we implement effect PlugIn loading at runtime
-    void availableEffectsUpdated(EffectManifestPointer);
-    void visibleEffectsUpdated();
-
-  private slots:
-    void slotBackendRegisteredEffect(EffectManifestPointer pManifest);
-
-  private:
-    QString debugString() const {
-        return "EffectsManager";
+    const EffectChainPresetManagerPointer getChainPresetManager() const {
+        return m_pChainPresetManager;
+    }
+    const EffectPresetManagerPointer getEffectPresetManager() const {
+        return m_pEffectPresetManager;
     }
 
-    void processEffectsResponses();
-    void collectGarbage(const EffectsRequest* pResponse);
+    const EffectsBackendManagerPointer getBackendManager() const {
+        return m_pBackendManager;
+    }
 
-    ChannelHandleFactoryPointer m_pChannelHandleFactory;
+    const VisibleEffectsListPointer getVisibleEffectsList() const {
+        return m_pVisibleEffectsList;
+    }
 
-    EffectChainManager* m_pEffectChainManager;
-    QList<EffectsBackend*> m_effectsBackends;
-    QList<EffectManifestPointer> m_availableEffectManifests;
-    QList<EffectManifestPointer> m_visibleEffectManifests;
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredInputChannels() const {
+        return m_registeredInputChannels;
+    }
 
-    EngineEffectsManager* m_pEngineEffectsManager;
+    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const {
+        return m_registeredOutputChannels;
+    }
 
-    QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
-    qint64 m_nextRequestId;
-    QHash<qint64, EffectsRequest*> m_activeRequests;
+    bool isAdoptMetaknobSettingEnabled() const;
 
-    ControlObject* m_pNumEffectsAvailable;
-    // We need to create Control Objects for Equalizers' frequencies
-    ControlPotmeter* m_pLoEqFreq;
-    ControlPotmeter* m_pHiEqFreq;
+  private:
+    void addStandardEffectChains();
+    void addOutputEffectChain();
 
-    bool m_underDestruction;
+    void addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup);
+    void addQuickEffectChain(const ChannelHandleAndGroup& deckHandleGroup);
+
+    void readEffectsXml();
+    void readEffectsXmlSingleDeck(const QString& deckGroup);
+    void saveEffectsXml();
+
+    QSet<ChannelHandleAndGroup> m_registeredInputChannels;
+    QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
+    UserSettingsPointer m_pConfig;
+    QHash<QString, EffectChainPointer> m_effectChainSlotsByGroup;
+
+    QList<StandardEffectChainPointer> m_standardEffectChains;
+    OutputEffectChainPointer m_outputEffectChain;
+    // These two store <deck group, effect chain pointer>
+    QHash<QString, EqualizerEffectChainPointer> m_equalizerEffectChains;
+    QHash<QString, QuickEffectChainPointer> m_quickEffectChains;
+
+    EffectsBackendManagerPointer m_pBackendManager;
+    std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
+
+    std::unique_ptr<EngineEffectsManager> m_pEngineEffectsManager;
+    EffectsMessengerPointer m_pMessenger;
+    VisibleEffectsListPointer m_pVisibleEffectsList;
+    EffectPresetManagerPointer m_pEffectPresetManager;
+    EffectChainPresetManagerPointer m_pChainPresetManager;
+
+    // ControlObjects for Equalizers' frequencies
+    // TODO: replace these with effect parameters that are hidden by default
+    ControlPotmeter m_loEqFreq;
+    ControlPotmeter m_hiEqFreq;
+
+    // This is set true when setup() is run. Then, the initial decks (their EQ
+    // and QuickEffect chains) have been initialized, either with defaults or the
+    // previous state read from effects.xml
+    bool m_initializedFromEffectsXml;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

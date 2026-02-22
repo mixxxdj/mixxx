@@ -24,8 +24,8 @@
               <SliderComposed>
                 <TooltipId>crossfader</TooltipId>
                 <Size>115f,40f</Size>
-                <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
-                <Slider visible="false" scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_crossfader.svg</Slider>
+                <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_crossfader.svg</Handle>
+                <Slider visible="false" scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_crossfader.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <BarColor><Variable name="BarColorCrossfader"/></BarColor>
                 <BarWidth><Variable name="BarWidth"/></BarWidth>
@@ -51,7 +51,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:/mixer/vumeter_single.xml">
+          <Template src="skins:LateNight/mixer/vumeter_single.xml">
             <SetVariable name="Group">[Channel1]</SetVariable>
           </Template>
         </Children>
@@ -65,7 +65,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:/mixer/vumeter_single.xml">
+          <Template src="skins:LateNight/mixer/vumeter_single.xml">
             <SetVariable name="Group">[Channel2]</SetVariable>
           </Template>
         </Children>
@@ -79,7 +79,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:/mixer/vumeter_single.xml">
+          <Template src="skins:LateNight/mixer/vumeter_single.xml">
             <SetVariable name="Group">[Channel3]</SetVariable>
           </Template>
         </Children>
@@ -93,7 +93,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:/mixer/vumeter_single.xml">
+          <Template src="skins:LateNight/mixer/vumeter_single.xml">
             <SetVariable name="Group">[Channel4]</SetVariable>
           </Template>
         </Children>
@@ -102,12 +102,12 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>VuMeterMaster_Dark</ObjectName>
+    <ObjectName>VuMeterMain_Dark</ObjectName>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:/mixer/vumeter_master.xml">
+          <Template src="skins:LateNight/mixer/vumeter_main.xml">
             <SetVariable name="VuColor">dark</SetVariable>
           </Template>
         </Children>
@@ -116,12 +116,12 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>VuMeterMaster_Light</ObjectName>
+    <ObjectName>VuMeterMain_Light</ObjectName>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:/mixer/vumeter_master.xml">
+          <Template src="skins:LateNight/mixer/vumeter_main.xml">
             <SetVariable name="VuColor">light</SetVariable>
           </Template>
         </Children>

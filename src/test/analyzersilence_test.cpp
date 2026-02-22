@@ -2,6 +2,9 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+
+#include "analyzer/analyzertrack.h"
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
@@ -16,7 +19,6 @@ class AnalyzerSilenceTest : public MixxxTest {
   protected:
     AnalyzerSilenceTest()
             : analyzerSilence(config()),
-              pTrackSampleData(nullptr),
               nTrackSampleDataLength(0) {
     }
 
@@ -29,18 +31,17 @@ class AnalyzerSilenceTest : public MixxxTest {
                 mixxx::Duration::fromSeconds(kTrackLengthFrames / 44100.0));
 
         nTrackSampleDataLength = kChannelCount * kTrackLengthFrames;
-        pTrackSampleData = new CSAMPLE[nTrackSampleDataLength];
+        pTrackSampleData.resize(nTrackSampleDataLength);
     }
 
     void TearDown() override {
-        delete[] pTrackSampleData;
     }
 
     void analyzeTrack() {
-        analyzerSilence.initialize(pTrack,
+        analyzerSilence.initialize(AnalyzerTrack(pTrack),
                 pTrack->getSampleRate(),
                 kTrackLengthFrames);
-        analyzerSilence.processSamples(pTrackSampleData, nTrackSampleDataLength);
+        analyzerSilence.processSamples(pTrackSampleData.data(), nTrackSampleDataLength);
         analyzerSilence.storeResults(pTrack);
         analyzerSilence.cleanup();
     }
@@ -48,28 +49,28 @@ class AnalyzerSilenceTest : public MixxxTest {
   protected:
     AnalyzerSilence analyzerSilence;
     TrackPointer pTrack;
-    CSAMPLE* pTrackSampleData;
-    int nTrackSampleDataLength; // in samples
+    std::vector<CSAMPLE> pTrackSampleData;
+    SINT nTrackSampleDataLength; // in samples
 };
 
 TEST_F(AnalyzerSilenceTest, SilenceTrack) {
     // Fill the entire buffer with silence
-    for (int i = 0; i < nTrackSampleDataLength; i++) {
+    for (SINT i = 0; i < nTrackSampleDataLength; i++) {
         pTrackSampleData[i] = 0.0;
     }
 
     analyzeTrack();
 
-    CuePosition cue = pTrack->getCuePoint();
-    EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
+    const mixxx::audio::FramePos cuePosition = pTrack->getMainCuePosition();
+    EXPECT_EQ(mixxx::audio::kStartFramePos, cuePosition);
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kStartFramePos, pIntroCue->getPosition());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames() * kChannelCount);
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getLengthFrames() * kChannelCount);
 }
 
 TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
@@ -81,16 +82,16 @@ TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
 
     analyzeTrack();
 
-    CuePosition cue = pTrack->getCuePoint();
-    EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
+    const mixxx::audio::FramePos cuePosition = pTrack->getMainCuePosition();
+    EXPECT_EQ(mixxx::audio::kStartFramePos, cuePosition);
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kStartFramePos, pIntroCue->getPosition());
+    EXPECT_DOUBLE_EQ(0.0 / kChannelCount, pIntroCue->getLengthFrames());
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / kChannelCount, pOutroCue->getLengthFrames());
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
@@ -112,16 +113,16 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
 
     analyzeTrack();
 
-    CuePosition cue = pTrack->getCuePoint();
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, cue.getPosition());
+    const mixxx::audio::FramePos cuePosition = pTrack->getMainCuePosition();
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, cuePosition.toEngineSamplePos());
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, pIntroCue->getPosition().toEngineSamplePos());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames());
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(3 * nTrackSampleDataLength / 4, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(3 * nTrackSampleDataLength / 4 / kChannelCount, pOutroCue->getLengthFrames());
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
@@ -155,35 +156,42 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
 
     analyzeTrack();
 
-    CuePosition cue = pTrack->getCuePoint();
-    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, cue.getPosition());
+    const mixxx::audio::FramePos cuePosition = pTrack->getMainCuePosition();
+    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength / kChannelCount, cuePosition.value());
 
     CuePointer pIntroCue = pTrack->findCueByType(mixxx::CueType::Intro);
-    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, pIntroCue->getPosition().toEngineSamplePos());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames());
 
     CuePointer pOutroCue = pTrack->findCueByType(mixxx::CueType::Outro);
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(4 * oneFifthOfTrackLength, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(4 * oneFifthOfTrackLength, pOutroCue->getLengthFrames() * kChannelCount);
 }
 
 TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     // Arbitrary values
-    const double kManualCuePosition = 0.2 * nTrackSampleDataLength;
-    const double kManualIntroPosition = 0.1 * nTrackSampleDataLength;
-    const double kManualOutroPosition = 0.9 * nTrackSampleDataLength;
+    const auto kManualCuePosition = mixxx::audio::FramePos::fromEngineSamplePos(
+            0.2 * nTrackSampleDataLength);
+    const auto kManualIntroPosition =
+            mixxx::audio::FramePos::fromEngineSamplePos(
+                    0.1 * nTrackSampleDataLength);
+    const auto kManualOutroPosition =
+            mixxx::audio::FramePos::fromEngineSamplePos(
+                    0.9 * nTrackSampleDataLength);
 
-    pTrack->setCuePoint(CuePosition(kManualCuePosition));
+    pTrack->setMainCuePosition(kManualCuePosition);
 
-    CuePointer pIntroCue = pTrack->createAndAddCue();
-    pIntroCue->setType(mixxx::CueType::Intro);
-    pIntroCue->setStartPosition(kManualIntroPosition);
-    pIntroCue->setEndPosition(Cue::kNoPosition);
+    CuePointer pIntroCue = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            kManualIntroPosition,
+            mixxx::audio::kInvalidFramePos);
 
-    CuePointer pOutroCue = pTrack->createAndAddCue();
-    pOutroCue->setType(mixxx::CueType::Outro);
-    pOutroCue->setStartPosition(Cue::kNoPosition);
-    pOutroCue->setEndPosition(kManualOutroPosition);
+    CuePointer pOutroCue = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            mixxx::audio::kInvalidFramePos,
+            kManualOutroPosition);
 
     // Fill the first half with silence
     for (int i = 0; i < nTrackSampleDataLength / 2; i++) {
@@ -198,14 +206,36 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
 
     analyzeTrack();
 
-    CuePosition cue = pTrack->getCuePoint();
-    EXPECT_DOUBLE_EQ(kManualCuePosition, cue.getPosition());
+    mixxx::audio::FramePos cuePosition = pTrack->getMainCuePosition();
+    EXPECT_EQ(kManualCuePosition, cuePosition);
 
-    EXPECT_DOUBLE_EQ(kManualIntroPosition, pIntroCue->getPosition());
-    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_EQ(kManualIntroPosition, pIntroCue->getPosition());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLengthFrames());
 
-    EXPECT_DOUBLE_EQ(Cue::kNoPosition, pOutroCue->getPosition());
-    EXPECT_DOUBLE_EQ(kManualOutroPosition, pOutroCue->getLength());
+    EXPECT_EQ(mixxx::audio::kInvalidFramePos, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(kManualOutroPosition.value(), pOutroCue->getLengthFrames());
+}
+
+TEST_F(AnalyzerSilenceTest, verifyFirstSound) {
+    const CSAMPLE s[] = {
+            0.0000f,
+            0.0000f,
+            -0.0002f,
+            -0.0002f,
+            0.0004f,
+            0.0004f,
+            -0.0008f,
+            -0.0008f,
+            0.0010f,
+            0.0010f,
+            0.0011f,
+            0.0010f,
+            -0.0020f,
+            -0.0020f};
+    std::span<const CSAMPLE> samples = s;
+
+    EXPECT_EQ(false, AnalyzerSilence::verifyFirstSound(samples, mixxx::audio::FramePos(5)));
+    EXPECT_EQ(true, AnalyzerSilence::verifyFirstSound(samples, mixxx::audio::FramePos(4)));
 }
 
 } // namespace

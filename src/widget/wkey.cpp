@@ -1,13 +1,14 @@
 #include "widget/wkey.h"
 
+#include "library/library_prefs.h"
 #include "moc_wkey.cpp"
-#include "track/keys.h"
+#include "skin/legacy/skincontext.h"
 #include "track/keyutils.h"
 
 WKey::WKey(const QString& group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
-          m_keyNotation("[Library]", "key_notation", this),
+          m_keyNotation(mixxx::library::prefs::kKeyNotationConfigKey, this),
           m_engineKeyDistance(group,
                   "visual_key_distance",
                   this,
@@ -61,6 +62,9 @@ void WKey::setCents() {
     setValue(m_dOldValue);
 }
 
-void WKey::keyNotationChanged(double dValue) {
-    setValue(dValue);
+void WKey::keyNotationChanged(double dKeyNotationValue) {
+    Q_UNUSED(dKeyNotationValue);
+    // NOTE: dKeyNotationValue is the index of the key notation type, NOT the
+    // key itself, so we intentionally set the old value again to update the UI.
+    setValue(m_dOldValue);
 }

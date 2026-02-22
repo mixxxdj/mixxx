@@ -3,36 +3,66 @@
 #include <QObject>
 #include <QString>
 
-#include "control/controlobject.h"
+#include "audio/frame.h"
 
+class ControlObject;
+class ControlProxy;
 class VelocityController;
 class RateIIFilter;
 
 class PositionScratchController : public QObject {
+    Q_OBJECT
   public:
     PositionScratchController(const QString& group);
-    virtual ~PositionScratchController();
+    // required for the forward-declarations of uniquq_pointers of
+    // VelocityController and RateIIFilter
+    ~PositionScratchController() override;
 
-    void process(double currentSample, double releaseRate,
-                 int iBufferSize, double baserate);
-    bool isEnabled();
-    double getRate();
-    void notifySeek(double currentSample);
+    void process(double currentSample,
+            double releaseRate,
+            int bufferSize,
+            double baseSampleRate,
+            int wrappedAround,
+            mixxx::audio::FramePos trigger,
+            mixxx::audio::FramePos target);
+    bool isEnabled() const {
+        // TODO return true only if m_rate is valid.
+        return m_isScratching;
+    }
+    double getRate() const {
+        return m_rate;
+    }
+    void notifySeek(mixxx::audio::FramePos position);
+    void reset();
+
+  private slots:
+    void slotUpdateFilterParameters(double sampleRate);
 
   private:
     const QString m_group;
-    ControlObject* m_pScratchEnable;
-    ControlObject* m_pScratchPosition;
-    ControlObject* m_pMasterSampleRate;
-    VelocityController* m_pVelocityController;
-    RateIIFilter* m_pRateIIFilter;
-    bool m_bScratching;
-    bool m_bEnableInertia;
-    double m_dLastPlaypos;
-    double m_dPositionDeltaSum;
-    double m_dTargetDelta;
-    double m_dStartScratchPosition;
-    double m_dRate;
-    double m_dMoveDelay;
-    double m_dMouseSampeTime;
+    std::unique_ptr<ControlObject> m_pScratchEnable;
+    std::unique_ptr<ControlObject> m_pScratchPos;
+    std::unique_ptr<ControlProxy> m_pMainSampleRate;
+    std::unique_ptr<VelocityController> m_pVelocityController;
+    std::unique_ptr<RateIIFilter> m_pRateIIFilter;
+    bool m_isScratching;
+    bool m_inertiaEnabled;
+    double m_prevSamplePos;
+    mixxx::audio::FramePos m_seekFramePos;
+    double m_samplePosDeltaSum;
+    double m_scratchTargetDelta;
+    double m_scratchStartPos;
+    double m_rate;
+    double m_moveDelay;
+    double m_scratchPosSampleTime;
+
+    int m_bufferSize;
+
+    double m_dt;
+    double m_callsPerDt;
+    double m_callsToStop;
+
+    double m_p;
+    double m_d;
+    double m_f;
 };

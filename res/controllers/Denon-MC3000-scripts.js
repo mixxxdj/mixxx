@@ -69,8 +69,8 @@ mc3000.init = function(id) {
         engine.connectControl("[Channel"+i+"]", "keylock", "mc3000.keylockSetLed");
         engine.connectControl("[Channel"+i+"]", "play", "mc3000.playSetLed");
         engine.connectControl("[Channel"+i+"]", "playposition", "mc3000.playPositionSetLed");
-        engine.connectControl("[Channel"+i+"]", "PeakIndicator", "mc3000.peakIndicatorSetLed");
-        engine.connectControl("[Channel"+i+"]", "VuMeter", "mc3000.vuMeterSetLeds");
+        engine.connectControl("[Channel"+i+"]", "peak_indicator", "mc3000.peakIndicatorSetLed");
+        engine.connectControl("[Channel"+i+"]", "vu_meter", "mc3000.vuMeterSetLeds");
         engine.connectControl("[Channel"+i+"]", "pfl", "mc3000.pflSetLed");
     }
 

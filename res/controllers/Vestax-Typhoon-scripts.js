@@ -82,8 +82,8 @@ VestaxTyphoon.init = function(id){
 	engine.connectControl("[Channel1]","sync_enabled","VestaxTyphoon.hookMasterSyncCh1");
 	engine.connectControl("[Channel2]","sync_enabled","VestaxTyphoon.hookMasterSyncCh2");
 
-	engine.connectControl("[Channel1]","VuMeter","VestaxTyphoon.ch1_vu");
-	engine.connectControl("[Channel2]","VuMeter","VestaxTyphoon.ch2_vu");
+	engine.connectControl("[Channel1]","vu_meter","VestaxTyphoon.ch1_vu");
+	engine.connectControl("[Channel2]","vu_meter","VestaxTyphoon.ch2_vu");
 
 	engine.connectControl("[Channel1]","play_indicator","VestaxTyphoon.ch1_playing");
 	engine.connectControl("[Channel2]","play_indicator","VestaxTyphoon.ch2_playing");
@@ -112,14 +112,14 @@ VestaxTyphoon.DeckLoad = function(channel, control, value, status, group){
 	if(group=="[Channel1]"){
 		if(value==0x7f){
 			if(engine.getValue(group,"play")){
-				engine.connectControl("[Channel1]","VuMeter","VestaxTyphoon.ch1_vu",true);
+				engine.connectControl("[Channel1]","vu_meter","VestaxTyphoon.ch1_vu",true);
 				engine.connectControl("[Channel1]","playposition","VestaxTyphoon.ch1_playpos");
 			} else {
 				engine.setValue(group,"LoadSelectedTrack",true);
 			}
 		}else{
 			if(engine.getValue(group,"play")){
-				engine.connectControl("[Channel1]","VuMeter","VestaxTyphoon.ch1_vu");
+				engine.connectControl("[Channel1]","vu_meter","VestaxTyphoon.ch1_vu");
 				engine.connectControl("[Channel1]","playposition","VestaxTyphoon.ch1_playpos",true);
 			} else {
 				engine.setValue(group,"LoadSelectedTrack",false);
@@ -130,14 +130,14 @@ VestaxTyphoon.DeckLoad = function(channel, control, value, status, group){
 	if(group=="[Channel2]"){
 		if(value==0x7f){
 			if(engine.getValue(group,"play")){
-				engine.connectControl("[Channel2]","VuMeter","VestaxTyphoon.ch2_vu",true);
+				engine.connectControl("[Channel2]","vu_meter","VestaxTyphoon.ch2_vu",true);
 				engine.connectControl("[Channel2]","playposition","VestaxTyphoon.ch2_playpos");
 			} else {
 				engine.setValue(group,"LoadSelectedTrack",true);
 			}
 		}else{
 			if(engine.getValue(group,"play")){
-				engine.connectControl("[Channel2]","VuMeter","VestaxTyphoon.ch2_vu");
+				engine.connectControl("[Channel2]","vu_meter","VestaxTyphoon.ch2_vu");
 				engine.connectControl("[Channel2]","playposition","VestaxTyphoon.ch2_playpos",true);
 			} else {
 				engine.setValue(group,"LoadSelectedTrack",false);
@@ -239,7 +239,7 @@ VestaxTyphoon.ch1_vu = function(value){
 		midi.sendShortMsg(0x90,0x2c,0x00)
 	}
 
-	if(engine.getValue("[Channel1]","PeakIndicator")==true){
+	if(engine.getValue("[Channel1]","peak_indicator")==true){
 		midi.sendShortMsg(0x90,0x2d,0x7f)
 	} else {
 		midi.sendShortMsg(0x90,0x2d,0x00)
@@ -271,7 +271,7 @@ VestaxTyphoon.ch2_vu = function(value){
 		midi.sendShortMsg(0x91,0x2c,0x00)
 	}
 
-	if(engine.getValue("[Channel2]","PeakIndicator")==true){
+	if(engine.getValue("[Channel2]","peak_indicator")==true){
 		midi.sendShortMsg(0x91,0x2d,0x7f)
 	} else {
 		midi.sendShortMsg(0x91,0x2d,0x00)

@@ -23,19 +23,21 @@
           <WidgetGroup><!-- BPM + rate + Tap overlay-->
             <ObjectName>BpmTapContainer</ObjectName>
             <Layout>stacked</Layout>
-            <Size>60f,42f</Size>
+            <Size>60f,40f</Size>
             <Children>
-              <!-- In order to make the bpm display tappable, we use an old-style
-              widget group and put the bpm pushbutton on top of the display. -->
+              <!-- invisible Tempo/BPM tap button on top of BPM display -->
               <PushButton>
-                <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                <TooltipId>tempo_tap_bpm_tap_visual_bpm</TooltipId>
                 <ObjectName>BpmTap</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
                 <NumberStates>1</NumberStates>
-                <Connection>
-                  <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                </Connection>
+                  <Connection>
+                    <ConfigKey><Variable name="Group"/>,tempo_tap</ConfigKey>
+                  </Connection>
+                  <Connection>
+                    <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
+                    <ButtonState>RightButton</ButtonState>
+                  </Connection>
               </PushButton>
               <WidgetGroup><!-- BPM + rate -->
                 <ObjectName>AlignCenter</ObjectName>
@@ -46,6 +48,7 @@
                     <ObjectName>BpmText</ObjectName>
                     <TooltipId>visual_bpm</TooltipId>
                     <Size>-1me,22f</Size>
+                    <Alignment>center</Alignment>
                     <NumberOfDigits>2</NumberOfDigits>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
@@ -55,6 +58,7 @@
                     <TooltipId>rate_display</TooltipId>
                     <ObjectName>RateText</ObjectName>
                     <Channel><Variable name="ChanNum" /></Channel>
+                    <Alignment>center</Alignment>
                     <NumberOfDigits>2</NumberOfDigits>
                   </NumberRate>
                 </Children>
@@ -71,6 +75,7 @@
             <Children>
               <!-- Rate controls with Sync button -->
               <WidgetGroup>
+                <ObjectName>AlignCenter</ObjectName>
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
@@ -79,15 +84,31 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_2state_right.xml">
-                        <SetVariable name="TooltipId">sync_enabled</SetVariable>
-                        <SetVariable name="ObjectName">SyncDeck</SetVariable>
-                        <SetVariable name="Size">48f,22f</SetVariable>
-                        <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
-                        <SetVariable name="BtnSize">sync</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatsync_tempo</SetVariable>
-                      </Template>
+                      <PushButton>
+                        <TooltipId>sync_enabled</TooltipId>
+                        <ObjectName>SyncDeck</ObjectName>
+                        <Size>40f,22f</Size>
+                        <NumberStates>2</NumberStates>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,sync_enabled</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                      <PushButton>
+                        <TooltipId>sync_leader</TooltipId>
+                        <ObjectName>SyncLeader</ObjectName>
+                        <Size>22f,22f</Size>
+                        <NumberStates>3</NumberStates>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                      </PushButton>
                     </Children>
                   </WidgetGroup>
 
@@ -114,8 +135,8 @@
                             <Size>40f,79f</Size>
                             <Pos>5,2</Pos>
                             <TooltipId>rate</TooltipId>
-                            <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
-                            <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact_sync.svg</Slider>
+                            <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                            <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact_sync.svg</Slider>
                             <Horizontal>false</Horizontal>
                             <BarWidth><Variable name="BarWidth"/></BarWidth>
                             <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
@@ -176,8 +197,8 @@
                         <Size>40f,95f</Size>
                         <Pos>5,2</Pos>
                         <TooltipId>rate</TooltipId>
-                        <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
-                        <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact.svg</Slider>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact.svg</Slider>
                         <Horizontal>false</Horizontal>
                         <BarWidth><Variable name="BarWidth"/></BarWidth>
                         <BarMargins><Variable name="BarMarginPitch"/></BarMargins>

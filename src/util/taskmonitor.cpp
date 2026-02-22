@@ -1,7 +1,6 @@
 #include "util/taskmonitor.h"
 
 #include <QCoreApplication>
-#include <QThread>
 
 #include "moc_taskmonitor.cpp"
 #include "util/assert.h"
@@ -130,13 +129,7 @@ void TaskMonitor::abortAllTasks() {
     for (auto* pTask : toBeAbortedTasks) {
         QMetaObject::invokeMethod(
                 pTask,
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-                "slotAbortTask",
-                Qt::AutoConnection
-#else
-                &Task::slotAbortTask
-#endif
-        );
+                &Task::slotAbortTask);
     }
     // Finally update the progress bar, which should have
     // finished if no new tasks have been started in the
@@ -145,13 +138,17 @@ void TaskMonitor::abortAllTasks() {
 }
 
 void TaskMonitor::closeProgressDialog() {
+    DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_taskInfos.isEmpty());
     // Deleting the progress dialog immediately might cause
     // segmentation faults due to pending signals! The deletion
     // has to be deferred until re-entering the event loop.
     auto* const pProgressDlg = m_pProgressDlg.release();
+    DEBUG_ASSERT(!m_pProgressDlg);
     if (pProgressDlg) {
-        pProgressDlg->setVisible(false);
+        DEBUG_ASSERT(pProgressDlg->autoClose());
+        pProgressDlg->reset();
         pProgressDlg->deleteLater();
     }
 }

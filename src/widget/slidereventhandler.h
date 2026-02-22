@@ -42,9 +42,17 @@ class SliderEventHandler {
     void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
         if (!m_bRightButtonPressed) {
             if (m_bHorizontal) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                m_dPos = e->position().x() - m_dHandleLength / 2;
+#else
                 m_dPos = e->x() - m_dHandleLength / 2;
+#endif
             } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                m_dPos = e->position().y() - m_dHandleLength / 2;
+#else
                 m_dPos = e->y() - m_dHandleLength / 2;
+#endif
             }
 
             m_dPos = m_dStartHandlePos + (m_dPos - m_dStartMousePos);
@@ -81,12 +89,26 @@ class SliderEventHandler {
                 m_bRightButtonPressed = true;
             } else {
                 if (m_bHorizontal) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    m_dStartMousePos = e->position().x() - m_dHandleLength / 2;
+#else
                     m_dStartMousePos = e->x() - m_dHandleLength / 2;
+#endif
                 } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    m_dStartMousePos = e->position().y() - m_dHandleLength / 2;
+#else
                     m_dStartMousePos = e->y() - m_dHandleLength / 2;
+#endif
                 }
                 m_dStartHandlePos = m_dPos;
             }
+        }
+    }
+
+    void mouseDoubleClickEvent(T* pWidget, QMouseEvent* e) {
+        if (e->button() == Qt::LeftButton) {
+            pWidget->resetControlParameter();
         }
     }
 

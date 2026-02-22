@@ -67,7 +67,7 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 
 // end callbacks
 
-const SINT kBitsPerSampleDefault = 0;
+constexpr SINT kBitsPerSampleDefault = 0;
 
 } // namespace
 
@@ -75,13 +75,13 @@ const SINT kBitsPerSampleDefault = 0;
 const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
 
 //static
-const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderFLAC::kSupportedFileTypes = {
         QStringLiteral("flac"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;
@@ -397,7 +397,7 @@ namespace {
 // garbage in the most significant, unused bits of decoded samples.
 // Required at least for libFLAC 1.3.2. This workaround might become
 // obsolete once libFLAC is taking care of these issues internally.
-// https://bugs.launchpad.net/mixxx/+bug/1769717
+// https://github.com/mixxxdj/mixxx/issues/9275
 // https://hydrogenaud.io/index.php/topic,61792.msg559045.html#msg559045
 
 // We multiply the decoded samples by 2 ^ (32 - m_bitsPerSample) to
@@ -407,7 +407,7 @@ namespace {
 // with epsilon = 1 / 2 ^ bitsPerSample.
 //
 // We have to negate the nominator to compensate for the negative denominator!
-// Otherwise the phase would be inverted: https://bugs.launchpad.net/mixxx/+bug/1933001
+// Otherwise the phase would be inverted: https://github.com/mixxxdj/mixxx/issues/10445
 constexpr CSAMPLE kSampleScaleFactor = -CSAMPLE_PEAK /
         (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
@@ -584,6 +584,14 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
 #if FLAC_API_VERSION_CURRENT >= 12
     case FLAC__STREAM_DECODER_ERROR_STATUS_BAD_METADATA:
         error = "STREAM_DECODER_ERROR_STATUS_BAD_METADATA";
+        break;
+#endif
+#if FLAC_API_VERSION_CURRENT >= 14
+    case FLAC__STREAM_DECODER_ERROR_STATUS_MISSING_FRAME:
+        error = "STREAM_DECODER_ERROR_STATUS_MISSING_FRAME";
+        break;
+    case FLAC__STREAM_DECODER_ERROR_STATUS_OUT_OF_BOUNDS:
+        error = "FLAC__STREAM_DECODER_ERROR_STATUS_OUT_OF_BOUNDS";
         break;
 #endif
     }

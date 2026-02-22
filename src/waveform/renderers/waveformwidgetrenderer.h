@@ -1,13 +1,7 @@
 #pragma once
 
-#include <QPainter>
-#include <QTime>
-#include <QVector>
-#include <QtDebug>
-
 #include "track/track_decl.h"
 #include "util/class.h"
-#include "util/performancetimer.h"
 #include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -18,6 +12,8 @@
 class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;
+class QPainter;
+class WaveformRendererAbstract;
 
 class WaveformWidgetRenderer {
   public:
@@ -25,6 +21,11 @@ class WaveformWidgetRenderer {
     static const double s_waveformMaxZoom;
     static const double s_waveformDefaultZoom;
     static const double s_defaultPlayMarkerPosition;
+
+    struct WaveformMarkOnScreen {
+        WaveformMarkPointer m_pMark;
+        int m_offsetOnScreen;
+    };
 
   public:
     explicit WaveformWidgetRenderer(const QString& group);
@@ -45,6 +46,10 @@ class WaveformWidgetRenderer {
         return m_pTrack;
     }
 
+    bool isSlipActive() const {
+        return m_pos[::WaveformRendererAbstract::Play] != m_pos[::WaveformRendererAbstract::Slip];
+    }
+
     ConstWaveformPointer getWaveform() const;
 
     /// Get cue mark at a point on the waveform widget.
@@ -52,11 +57,20 @@ class WaveformWidgetRenderer {
 
     CuePointer getCuePointerFromIndex(int cueIndex) const;
 
-    double getFirstDisplayedPosition() const {
-        return m_firstDisplayedPosition;
+    double getFirstDisplayedPosition(
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play) const {
+        return m_firstDisplayedPosition[type];
     }
-    double getLastDisplayedPosition() const {
-        return m_lastDisplayedPosition;
+    double getLastDisplayedPosition(
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play) const {
+        return m_lastDisplayedPosition[type];
+    }
+
+    double getTruePosSample(::WaveformRendererAbstract::PositionSource type =
+                                    ::WaveformRendererAbstract::Play) const {
+        return m_truePosSample[type];
     }
 
     void setZoom(double zoom);
@@ -71,25 +85,26 @@ class WaveformWidgetRenderer {
         return m_audioSamplePerPixel;
     }
 
-    // those function replace at its best sample position to an admissible
-    // sample position according to the current visual resampling
-    // this make mark and signal deterministic
-    void regulateVisualSample(int& sampleIndex) const;
-
     // this "regulate" against visual sampling to make the position in widget
     // stable and deterministic
     // Transform sample index to pixel in track.
-    inline double transformSamplePositionInRendererWorld(double samplePosition) const {
-        const double relativePosition = samplePosition / m_trackSamples;
-        return transformPositionInRendererWorld(relativePosition);
-    }
-    // Transform position (percentage of track) to pixel in track.
-    inline double transformPositionInRendererWorld(double position) const {
-        return m_trackPixelCount * (position - m_firstDisplayedPosition);
+    inline double transformSamplePositionInRendererWorld(double samplePosition,
+            ::WaveformRendererAbstract::PositionSource type =
+                    ::WaveformRendererAbstract::Play) const {
+        if (std::abs(samplePosition - m_truePosSample[type]) < 1.f) {
+            // When asked for the sample position that corresponds with the play
+            // marker, return the play market pixel position. This avoids a rare
+            // rounding issue where a marker at that sample position would be
+            // 1 pixel off.
+            return m_playMarkerPosition * getLength();
+        }
+        return (samplePosition - m_firstDisplayedPosition[type] * m_trackSamples) /
+                2 / m_audioSamplePerPixel;
     }
 
-    int getPlayPosVSample() const {
-        return m_playPosVSample;
+    int getPlayPosVSample(::WaveformRendererAbstract::PositionSource type =
+                                  ::WaveformRendererAbstract::Play) const {
+        return m_posVSample[type];
     }
     int getTotalVSample() const {
         return m_totalVSamples;
@@ -97,8 +112,21 @@ class WaveformWidgetRenderer {
     double getZoomFactor() const {
         return m_zoomFactor;
     }
-    double getGain() const {
-        return m_gain;
+    double getGain(bool applyCompensation) const {
+        // m_gain was always multiplied by 2.0, according to a comment:
+        //
+        //   "This gain adjustment compensates for an arbitrary /2 gain chop in
+        //   EnginePregain. See the comment there."
+        //
+        // However, no comment there seems to explain this, and it resulted
+        // in renderers that use the filtered.all data for the amplitude, to
+        // be twice the expected value.
+        // But without this compensation, renderers that use the combined
+        // lo, mid, hi values became much lower than expected. By making this
+        // optional we move the decision to each renderer whether to apply the
+        // compensation or not, in order to have a more similar amplitude across
+        // waveform renderers
+        return applyCompensation ? m_gain * 2.f : m_gain;
     }
     double getTrackSamples() const {
         return m_trackSamples;
@@ -108,7 +136,8 @@ class WaveformWidgetRenderer {
         return m_alphaBeatGrid;
     }
 
-    void resize(int width, int height, float devicePixelRatio);
+    virtual void resizeRenderer(int width, int height, float devicePixelRatio);
+
     int getHeight() const {
         return m_height;
     }
@@ -134,19 +163,19 @@ class WaveformWidgetRenderer {
         return m_dimBrightThreshold;
     }
 
-    template< class T_Renderer>
-    inline T_Renderer* addRenderer() {
-        T_Renderer* renderer = new T_Renderer(this);
+    template<class T_Renderer, typename... Args>
+    inline T_Renderer* addRenderer(Args&&... args) {
+        T_Renderer* renderer = new T_Renderer(this, std::forward<Args>(args)...);
         m_rendererStack.push_back(renderer);
         return renderer;
     }
 
     void setTrack(TrackPointer track);
-    void setMarkPositions(const QMap<WaveformMarkPointer, int>& markPositions) {
+    void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
     }
 
-    double getPlayMarkerPosition() {
+    double getPlayMarkerPosition() const {
         return m_playMarkerPosition;
     }
 
@@ -155,6 +184,12 @@ class WaveformWidgetRenderer {
             newPos = math_clamp(newPos, 0.0, 1.0);
         }
         m_playMarkerPosition = newPos;
+    }
+
+    void setPassThroughEnabled(bool enabled);
+
+    bool shouldOnlyDrawBackground() const {
+        return m_trackSamples <= 0.0 || m_pos[::WaveformRendererAbstract::Play] == -1;
     }
 
   protected:
@@ -167,9 +202,10 @@ class WaveformWidgetRenderer {
     int m_width;
     float m_devicePixelRatio;
     WaveformSignalColors m_colors;
+    QColor m_passthroughLabelColor;
 
-    double m_firstDisplayedPosition;
-    double m_lastDisplayedPosition;
+    double m_firstDisplayedPosition[2];
+    double m_lastDisplayedPosition[2];
     double m_trackPixelCount;
 
     double m_zoomFactor;
@@ -181,7 +217,7 @@ class WaveformWidgetRenderer {
     //TODO: vRince create some class to manage control/value
     //ControlConnection
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
-    int m_playPosVSample;
+    int m_posVSample[2];
     int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
     ControlProxy* m_pGainControlObject;
@@ -203,7 +239,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
-    QMap<WaveformMarkPointer, int> m_markPositions;
+    QList<WaveformMarkOnScreen> m_markPositions;
     // draw play position indicator triangles
     void drawPlayPosmarker(QPainter* painter);
     void drawTriangle(QPainter* painter,
@@ -211,6 +247,9 @@ private:
             QPointF p1,
             QPointF p2,
             QPointF p3);
+    void drawPassthroughLabel(QPainter* painter);
 
-    double m_playPos;
+    bool m_passthroughEnabled;
+    double m_pos[2];
+    double m_truePosSample[2];
 };

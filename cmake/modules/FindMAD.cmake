@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindMAD
 -------
@@ -50,14 +45,14 @@ endif()
 
 find_path(MAD_INCLUDE_DIR
   NAMES mad.h
-  PATHS ${PC_MAD_INCLUDE_DIRS}
+  HINTS ${PC_MAD_INCLUDE_DIRS}
   PATH_SUFFIXES mad
   DOC "MAD include directory")
 mark_as_advanced(MAD_INCLUDE_DIR)
 
 find_library(MAD_LIBRARY
   NAMES mad
-  PATHS ${PC_MAD_LIBRARY_DIRS}
+  HINTS ${PC_MAD_LIBRARY_DIRS}
   DOC "MAD library"
 )
 mark_as_advanced(MAD_LIBRARY)

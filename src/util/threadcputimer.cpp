@@ -1,19 +1,13 @@
 #include "util/threadcputimer.h"
 
-#if defined(Q_OS_MAC)
+#if defined(__APPLE__)
 #include <sys/time.h>
 #include <unistd.h>
 #include <mach/mach_time.h>
-#elif defined(Q_OS_SYMBIAN)
-#include <e32std.h>
-#include <sys/time.h>
-#include <hal.h>
-#include <hal_data.h>
-#elif defined(Q_OS_UNIX)
-#include <sys/time.h>
+#elif defined(__UNIX__)
 #include <time.h>
 #include <unistd.h>
-#elif defined(Q_OS_WIN)
+#elif defined(_WIN32)
 #include <windows.h>
 #endif
 

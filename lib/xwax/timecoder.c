@@ -1,33 +1,35 @@
 /*
- * Copyright (C) 2013 Mark Hills <mark@xwax.org>
+ * Copyright (C) 2021 Mark Hills <mark@xwax.org>
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2, as published by the Free Software Foundation.
+ * This file is part of "xwax".
  *
- * This program is distributed in the hope that it will be useful, but
+ * "xwax" is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License, version 3 as
+ * published by the Free Software Foundation.
+ *
+ * "xwax" is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License version 2 for more details.
+ * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * version 2 along with this program; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
+ * along with this program; if not, see <https://www.gnu.org/licenses/>.
  *
  */
 
 #include <assert.h>
 #include <limits.h>
+#include <pitch.h>
+#include <pitch_kalman.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 #include "debug.h"
 #include "timecoder.h"
-
-#define ZERO_THRESHOLD (128 << 16)
 
 #define ZERO_RC 0.001 /* time constant for zero/rumble filter */
 
@@ -52,89 +54,110 @@
 
 static struct timecode_def timecodes[] = {
     {
-        .name = "serato_2a",
-        .desc = "Serato 2nd Ed., side A",
-        .resolution = 1000,
-        .flags = 0,
-        .bits = 20,
-        .seed = 0x59017,
-        .taps = 0x361e4,
-        .length = 712000,
-        .safe = 625000,
-        .lookup = false
-    },
+     .name = "serato_2a",
+     .desc = "Serato 2nd Ed., side A",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0x59017,
+     .taps = 0x361e4,
+     .length = 712000,
+     .safe = 625000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "serato_2b",
-        .desc = "Serato 2nd Ed., side B",
-        .resolution = 1000,
-        .flags = 0,
-        .bits = 20,
-        .seed = 0x8f3c6,
-        .taps = 0x4f0d8, /* reverse of side A */
-        .length = 922000,
-        .safe = 908000,
-        .lookup = false
-    },
+     .name = "serato_2b",
+     .desc = "Serato 2nd Ed., side B",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0x8f3c6,
+     .taps = 0x4f0d8,
+     .length = 922000,
+     .safe = 908000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "serato_cd",
-        .desc = "Serato CD",
-        .resolution = 1000,
-        .flags = 0,
-        .bits = 20,
-        .seed = 0xd8b40,
-        .taps = 0x34d54,
-        .length = 950000,
-        .safe = 890000,
-        .lookup = false
-    },
+     .name = "serato_cd",
+     .desc = "Serato CD",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0xd8b40,
+     .taps = 0x34d54,
+     .length = 950000,
+     .safe = 890000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "traktor_a",
-        .desc = "Traktor Scratch, side A",
-        .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        .bits = 23,
-        .seed = 0x134503,
-        .taps = 0x041040,
-        .length = 1500000,
-        .safe = 605000,
-        .lookup = false
-    },
+     .name = "traktor_a",
+     .desc = "Traktor Scratch, side A",
+     .resolution = 2000,
+     .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+     .bits = 23,
+     .seed = 0x134503,
+     .taps = 0x041040,
+     .length = 1500000,
+     .safe = 605000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "traktor_b",
-        .desc = "Traktor Scratch, side B",
-        .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        .bits = 23,
-        .seed = 0x32066c,
-        .taps = 0x041040, /* same as side A */
-        .length = 2110000,
-        .safe = 907000,
-        .lookup = false
-    },
+     .name = "traktor_b",
+     .desc = "Traktor Scratch, side B",
+     .resolution = 2000,
+     .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+     .bits = 23,
+     .seed = 0x32066c,
+     .taps = 0x041040,
+     .length = 2110000,
+     .safe = 907000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "mixvibes_v2",
-        .desc = "MixVibes V2",
-        .resolution = 1300,
-        .flags = SWITCH_PHASE,
-        .bits = 20,
-        .seed = 0x22c90,
-        .taps = 0x00008,
-        .length = 950000,
-        .safe = 655000,
-        .lookup = false
-    },
+     .name = "mixvibes_v2",
+     .desc = "MixVibes V2",
+     .resolution = 1300,
+     .flags = SWITCH_PHASE,
+     .bits = 20,
+     .seed = 0x22c90,
+     .taps = 0x00008,
+     .length = 950000,
+     .safe = 655000,
+     .threshold = (128 << 16),
+     },
     {
-        .name = "mixvibes_7inch",
-        .desc = "MixVibes 7\"",
-        .resolution = 1300,
-        .flags = SWITCH_PHASE,
-        .bits = 20,
-        .seed = 0x22c90,
-        .taps = 0x00008,
-        .length = 312000,
-        .safe = 238000,
-        .lookup = false
-    },
+     .name = "mixvibes_7inch",
+     .desc = "MixVibes 7\"",
+     .resolution = 1300,
+     .flags = SWITCH_PHASE,
+     .bits = 20,
+     .seed = 0x22c90,
+     .taps = 0x00008,
+     .length = 312000,
+     .safe = 238000,
+     .threshold = (128 << 16),
+     },
+    {
+     .name = "pioneer_a",
+     .desc = "Pioneer RekordBox DVS Control Vinyl, side A",
+     .resolution = 1000,
+     .flags = SWITCH_POLARITY,
+     .bits = 20,
+     .seed = 0x78370,
+     .taps = 0x7933a,
+     .length = 635000,
+     .safe = 614000,
+     .threshold = (128 << 16),
+     },
+    {
+     .name = "pioneer_b",
+     .desc = "Pioneer RekordBox DVS Control Vinyl, side B",
+     .resolution = 1000,
+     .flags = SWITCH_POLARITY,
+     .bits = 20,
+     .seed = 0xf7012,
+     .taps = 0x2ef1c,
+     .length = 918500,
+     .safe = 913000,
+     .threshold = (128 << 16),
+     },
 };
 
 /*
@@ -212,12 +235,12 @@ static int build_lookup(struct timecode_def *def)
         bits_t next;
 
         /* timecode must not wrap */
-        dassert(lut_lookup(&def->lut, current) == (unsigned)-1);
+        assert(lut_lookup(&def->lut, current) == (unsigned)-1);
         lut_push(&def->lut, current);
 
         /* check symmetry of the lfsr functions */
         next = fwd(current, def);
-        dassert(rev(next, def) == current);
+        assert(rev(next, def) == current);
 
         current = next;
     }
@@ -230,30 +253,26 @@ static int build_lookup(struct timecode_def *def)
 /*
  * Find a timecode definition by name
  *
- * Return: pointer to timecode definition, or NULL if not found
+ * Return: pointer to timecode definition, or NULL if not available
  */
 
 struct timecode_def* timecoder_find_definition(const char *name)
 {
-    struct timecode_def *def, *end;
+    unsigned int n;
 
-    def = &timecodes[0];
-    end = def + ARRAY_SIZE(timecodes);
+    for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
+        struct timecode_def *def = &timecodes[n];
 
-    for (;;) {
-        if (!strcmp(def->name, name))
-            break;
+        if (strcmp(def->name, name) != 0)
+            continue;
 
-        def++;
+        if (build_lookup(def) == -1)
+            return NULL;  /* error */
 
-        if (def == end)
-            return NULL;
+        return def;
     }
 
-    if (build_lookup(def) == -1)
-        return NULL;
-
-    return def;
+    return NULL;  /* not found */
 }
 
 /*
@@ -261,15 +280,13 @@ struct timecode_def* timecoder_find_definition(const char *name)
  */
 
 void timecoder_free_lookup(void) {
-    struct timecode_def *def, *end;
+    unsigned int n;
 
-    def = &timecodes[0];
-    end = def + ARRAY_SIZE(timecodes);
+    for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
+        struct timecode_def *def = &timecodes[n];
 
-    while (def < end) {
         if (def->lookup)
             lut_clear(&def->lut);
-        def++;
     }
 }
 
@@ -290,7 +307,7 @@ static void init_channel(struct timecoder_channel *ch)
  */
 
 void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono)
+                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator)
 {
     assert(def != NULL);
 
@@ -303,14 +320,36 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
 
     tc->dt = 1.0 / sample_rate;
     tc->zero_alpha = tc->dt / (ZERO_RC + tc->dt);
-    tc->threshold = ZERO_THRESHOLD;
+
+    tc->threshold = tc->def->threshold;
+
     if (phono)
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
     init_channel(&tc->primary);
     init_channel(&tc->secondary);
-    pitch_init(&tc->pitch, tc->dt);
+
+    tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
+
+    tc->quadrant = 0;
+    tc->last_quadrant = 0;
+    tc->direction_changed = false;
+
+    if (tc->use_legacy_pitch_filter) {
+        pitch_init(&tc->pitch, tc->dt);
+    } else {
+        pitch_kalman_init(&tc->pitch_kalman,
+                          tc->dt,
+                          KALMAN_COEFFS(1e-8, 10.0), /* stable mode */
+                          KALMAN_COEFFS(1e-4, 1e-1), /* adjust mode */
+                          KALMAN_COEFFS(1e-3, 1e-2), /* reactive mode */
+                          KALMAN_COEFFS(1e-1, 1e-4), /* scratch mode */
+                          6e-4, /* adjust threshold */
+                          25e-4, /* reactive threshold */
+                          40e-4, /* scratch threshold */
+                          false);
+    }
 
     tc->ref_level = INT_MAX;
     tc->bitstream = 0;
@@ -343,7 +382,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
 {
     assert(tc->mon == NULL);
     tc->mon_size = size;
-    tc->mon = malloc(SQ(tc->mon_size));
+    tc->mon = (unsigned char*)(malloc(SQ(tc->mon_size)));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
@@ -392,7 +431,7 @@ static void detect_zero_crossing(struct timecoder_channel *ch,
  * Plot the given sample value in the x-y monitor
  */
 
-inline static void update_monitor(struct timecoder *tc, signed int x, signed int y)
+static inline void update_monitor(struct timecoder *tc, signed int x, signed int y)
 {
     int px, py, size, ref;
 
@@ -415,7 +454,7 @@ inline static void update_monitor(struct timecoder *tc, signed int x, signed int
 
     assert(ref > 0);
 
-    /* ref_level is half the prevision of signal level */
+    /* ref_level is half the precision of signal level */
     px = size / 2 + (long long)x * size / ref / 8;
     py = size / 2 + (long long)y * size / ref / 8;
 
@@ -478,6 +517,59 @@ static void process_bitstream(struct timecoder *tc, signed int m)
 }
 
 /*
+ * Compare the last quadrant we were in to the new one and return the
+ * correct displacement for the pitch filter model.
+ *
+ * A full revolution of the carrier has the length of 1.0 / tc->def->resolution,
+ * which is also the sample rate of the timecode (not the audio). One quadrant
+ * corresponds to 1/4 * revolution, which is the time between two zero
+ * crossings. Hence we multiply this quantity by displacement in quadrants.
+ */
+
+static double quantize_phase(struct timecoder *tc)
+{
+    unsigned diff = ((tc->quadrant - tc->last_quadrant) % 4);
+    static unsigned long long direction_change_counter = 0;
+    const unsigned int forwards_diff = (tc->def->flags & SWITCH_PHASE) ? 1 : 3;
+    const unsigned int backwards_diff = (tc->def->flags & SWITCH_PHASE) ? 3 : 1;
+
+    /* Check for a displacement of four quadrants */
+    if (diff == 0 && !tc->direction_changed) {
+        return 1.0 / tc->def->resolution;
+    }
+    
+    /* Check for a displacement of three quadrants */
+    if ((tc->forwards && diff == forwards_diff) || (!tc->forwards && diff == backwards_diff)) {
+        return (3.0 / tc->def->resolution) / 4.0;
+    }
+    
+    /* Check for a displacement of two quadrants  */
+    if (diff == 2) {
+        return (1.0 / tc->def->resolution) / 2.0;
+    }
+    
+    return (1.0 / tc->def->resolution) / 4.0;
+}
+
+/*
+ * Track the quadrature phase of the pitch counter on the unit circle
+ *
+ * There are four zero crossings in a whole cycle. In between are the four
+ * quadrants of the sine and cosine, which are in quadrature.
+ */
+
+static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
+{
+    tc->last_quadrant = tc->quadrant;
+    tc->direction_changed = direction_changed;
+
+    bool pos = tc->primary.swapped ? tc->primary.positive : tc->secondary.positive;
+    bool add = tc->secondary.swapped ? 0b1 : 0b0;
+
+    tc->quadrant = (!pos << 1) | add;
+}
+
+/*
  * Process a single sample from the incoming audio
  *
  * The two input signals (primary and secondary) are in the full range
@@ -505,24 +597,41 @@ static void process_sample(struct timecoder *tc,
         if (tc->def->flags & SWITCH_PHASE)
 	    forwards = !forwards;
 
+        track_quadrature_phase(tc, forwards != tc->forwards);
+
         if (forwards != tc->forwards) { /* direction has changed */
             tc->forwards = forwards;
             tc->valid_counter = 0;
         }
     }
 
-    /* If any axis has been crossed, register movement using the pitch
-     * counters */
+    /*
+     * If any axis has been crossed, register movement using the pitch
+     * counters. This occurs four time per cycle of the sinusoid.
+     */
 
-    if (!tc->primary.swapped && !tc->secondary.swapped)
-	pitch_dt_observation(&tc->pitch, 0.0);
-    else {
-	double dx;
+    if (!tc->primary.swapped && !tc->secondary.swapped) {
+        if (tc->use_legacy_pitch_filter)
+            pitch_dt_observation(&tc->pitch, 0.0);
+        else
+            pitch_kalman_update(&tc->pitch_kalman, 0.0);
+    } else {
+        double dx;
 
-	dx = 1.0 / tc->def->resolution / 4;
-	if (!tc->forwards)
-	    dx = -dx;
-	pitch_dt_observation(&tc->pitch, dx);
+        /*
+         * Assumption: We usually advance by a quarter rotation,
+         * unless we skip zero crossings. In this case the new quadrature
+         * tracker calculates the correct displacement for the pitch filter.
+         */
+
+        dx = quantize_phase(tc);
+        if (!tc->forwards)
+            dx = -dx;
+
+        if (tc->use_legacy_pitch_filter)
+            pitch_dt_observation(&tc->pitch, dx);
+        else
+            pitch_kalman_update(&tc->pitch_kalman, dx);
     }
 
     /* If we have crossed the primary channel in the right polarity,
@@ -554,7 +663,7 @@ static struct timecode_def* next_definition(struct timecode_def *def)
     do {
         def++;
 
-        if (def > timecodes + ARRAY_SIZE(timecodes))
+        if (def >= timecodes + ARRAY_SIZE(timecodes))
             def = timecodes;
 
     } while (!def->lookup);

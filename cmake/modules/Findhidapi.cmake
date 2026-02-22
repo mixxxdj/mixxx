@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 Findhidapi
 ----------
@@ -43,25 +38,35 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_hidapi QUIET hidapi-libusb)
+  pkg_search_module(PC_hidapi QUIET hidapi-libusb hidapi)
 endif()
 
 find_path(hidapi_INCLUDE_DIR
   NAMES hidapi.h
-  PATHS ${PC_hidapi_INCLUDE_DIRS}
+  HINTS ${PC_hidapi_INCLUDE_DIRS}
   PATH_SUFFIXES hidapi
   DOC "hidapi include directory")
 mark_as_advanced(hidapi_INCLUDE_DIR)
 
 find_library(hidapi_LIBRARY
   NAMES hidapi-libusb hidapi
-  PATHS ${PC_hidapi_LIBRARY_DIRS}
+  HINTS ${PC_hidapi_LIBRARY_DIRS}
   DOC "hidapi library"
 )
 mark_as_advanced(hidapi_LIBRARY)
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  find_library(hidapi-hidraw_LIBRARY
+    NAMES hidapi-hidraw
+    HINTS ${PC_hidapi_LIBRARY_DIRS}
+    DOC "hidap-hidraw library"
+  )
+  mark_as_advanced(hidapi-hidraw_LIBRARY)
+endif()
 
 # Version detection
 if(DEFINED PC_hidapi_VERSION AND NOT PC_hidapi_VERSION STREQUAL "")
@@ -81,17 +86,14 @@ else()
         NOT hidapi_VERSION_MINOR STREQUAL "" AND
         NOT hidapi_VERSION_PATCH STREQUAL "")
         set(hidapi_VERSION "${hidapi_VERSION_MAJOR}.${hidapi_VERSION_MINOR}.${hidapi_VERSION_PATCH}")
-    else()
-        # take what we have found, likely "" to fail the version check.
-        set(hidapi_VERSION "${hidapi_VERSION_MAJOR}")
-    endif()
+      endif()
   endif()
-endif ()
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   hidapi
-  REQUIRED_VARS hidapi_LIBRARY hidapi_INCLUDE_DIR
+  REQUIRED_VARS hidapi_LIBRARY hidapi_INCLUDE_DIR hidapi_VERSION
   VERSION_VAR hidapi_VERSION
 )
 
@@ -108,5 +110,31 @@ if(hidapi_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_hidapi_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${hidapi_INCLUDE_DIR}"
     )
+   if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+     add_library(hidapi::hidraw UNKNOWN IMPORTED)
+     set_target_properties(hidapi::hidraw
+       PROPERTIES
+         IMPORTED_LOCATION "${hidapi-hidraw_LIBRARY}"
+         INTERFACE_COMPILE_OPTIONS "${PC_hidapi_CFLAGS_OTHER}"
+         INTERFACE_INCLUDE_DIRECTORIES "${hidapi_INCLUDE_DIR}"
+      )
+
+      find_package(Libudev)
+      if(Libudev_FOUND)
+        is_static_library(hidapi_IS_STATIC hidapi::hidapi)
+        if(hidapi_IS_STATIC)
+          set_property(TARGET hidapi::hidapi APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            Libudev::Libudev
+          )
+        endif()
+
+        is_static_library(hidapi-hidraw_IS_STATIC hidapi::hidraw)
+        if(hidapi-hidraw_IS_STATIC)
+          set_property(TARGET hidapi::hidraw APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            Libudev::Libudev
+          )
+        endif()
+      endif()
+    endif()
   endif()
 endif()

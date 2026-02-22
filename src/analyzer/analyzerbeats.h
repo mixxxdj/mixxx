@@ -1,20 +1,13 @@
-/* Beat Tracking test via vamp-plugins
- * analyzerbeats.h
- *
- *  Created on: 16/mar/2011
- *      Author: Vittorio Colao
- */
-
 #pragma once
 
 #include <QHash>
 #include <QList>
+#include <memory>
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
-#include "util/memory.h"
 
 class AnalyzerBeats : public Analyzer {
   public:
@@ -26,7 +19,7 @@ class AnalyzerBeats : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
     static mixxx::AnalyzerPluginInfo defaultPlugin();
 
-    bool initialize(TrackPointer pTrack,
+    bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;

@@ -1,13 +1,10 @@
 #include "preferences/dialog/dlgprefkey.h"
 
-#include <QLineEdit>
-#include <QMessageBox>
-
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
+#include "library/library_prefs.h"
 #include "moc_dlgprefkey.cpp"
-#include "util/compatibility.h"
-#include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -44,23 +41,40 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
     m_availablePlugins = AnalyzerKey::availablePlugins();
-    for (const auto& info : qAsConst(m_availablePlugins)) {
-        plugincombo->addItem(info.name, info.id);
+    for (const auto& info : std::as_const(m_availablePlugins)) {
+        plugincombo->addItem(info.name(), info.id());
     }
 
-    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
+    m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
 
     loadSettings();
 
     // Connections
     connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgPrefKey::pluginSelected);
+    setScrollSafeGuard(plugincombo);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(banalyzerenabled, &QCheckBox::checkStateChanged,
+#else
     connect(banalyzerenabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::analyzerEnabled);
+#endif
+            this,
+            &DlgPrefKey::analyzerEnabled);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(bfastAnalysisEnabled, &QCheckBox::checkStateChanged,
+#else
     connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::fastAnalysisEnabled);
+#endif
+            this,
+            &DlgPrefKey::fastAnalysisEnabled);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    connect(breanalyzeEnabled, &QCheckBox::checkStateChanged,
+#else
     connect(breanalyzeEnabled, &QCheckBox::stateChanged,
-            this, &DlgPrefKey::reanalyzeEnabled);
+#endif
+            this,
+            &DlgPrefKey::reanalyzeEnabled);
 
     connect(radioNotationOpenKey, &QRadioButton::toggled,
             this, &DlgPrefKey::setNotationOpenKey);
@@ -91,10 +105,10 @@ void DlgPrefKey::loadSettings() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    QString notation_name = m_keySettings.getKeyNotation();
-    KeyUtils::KeyNotation notation_type;
+    KeyUtils::KeyNotation notation_type =
+            KeyUtils::keyNotationFromString(m_keySettings.getKeyNotation());
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
-    if (notation_name == KEY_NOTATION_CUSTOM) {
+    if (notation_type == KeyUtils::KeyNotation::Custom) {
         radioNotationCustom->setChecked(true);
         // Read the custom notation from the config and store it in a temp QMap
         for (auto it = m_keyLineEdits.constBegin();
@@ -102,20 +116,15 @@ void DlgPrefKey::loadSettings() {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
             notation[it.key()] = it.value()->text();
         }
-        notation_type = KeyUtils::KeyNotation::Custom;
     } else {
-        if (notation_name == KEY_NOTATION_LANCELOT) {
+        if (notation_type == KeyUtils::KeyNotation::Lancelot) {
             radioNotationLancelot->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::Lancelot;
-        } else if (notation_name == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::LancelotAndTraditional) {
             radioNotationLancelotAndTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::LancelotAndTraditional;
-        } else if (notation_name == KEY_NOTATION_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::Traditional) {
             radioNotationTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::Traditional;
-        } else if (notation_name == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
+        } else if (notation_type == KeyUtils::KeyNotation::OpenKeyAndTraditional) {
             radioNotationOpenKeyAndTraditional->setChecked(true);
-            notation_type = KeyUtils::KeyNotation::OpenKeyAndTraditional;
         } else { // KEY_NOTATION_OPEN_KEY and unknown names
             radioNotationOpenKey->setChecked(true);
             notation_type = KeyUtils::KeyNotation::OpenKey;
@@ -145,7 +154,7 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
     if (m_availablePlugins.size() > 0) {
-        m_selectedAnalyzerId = m_availablePlugins[0].id;
+        m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
 
     KeyUtils::KeyNotation notation_type;
@@ -163,31 +172,44 @@ void DlgPrefKey::slotResetToDefaults() {
         radioNotationOpenKey->setChecked(true);
         notation_type = KeyUtils::KeyNotation::OpenKey;
     }
-    setNotation(notation_type);
-
-    slotUpdate();
+    setNotation(notation_type); // calls slotUpdate()
 }
 
 void DlgPrefKey::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
-    m_selectedAnalyzerId = m_availablePlugins[i].id;
+    m_selectedAnalyzerId = m_availablePlugins[i].id();
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::analyzerEnabled(Qt::CheckState state) {
+    m_bAnalyzerEnabled = (state == Qt::Checked);
+#else
 void DlgPrefKey::analyzerEnabled(int i) {
     m_bAnalyzerEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::fastAnalysisEnabled(Qt::CheckState state) {
+    m_bFastAnalysisEnabled = (state == Qt::Checked);
+#else
 void DlgPrefKey::fastAnalysisEnabled(int i) {
     m_bFastAnalysisEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
-void DlgPrefKey::reanalyzeEnabled(int i){
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefKey::reanalyzeEnabled(Qt::CheckState state) {
+    m_bReanalyzeEnabled = (state == Qt::Checked);
+#else
+void DlgPrefKey::reanalyzeEnabled(int i) {
     m_bReanalyzeEnabled = static_cast<bool>(i);
+#endif
     slotUpdate();
 }
 
@@ -255,7 +277,7 @@ void DlgPrefKey::slotUpdate() {
         bool found = false;
         for (int i = 0; i < m_availablePlugins.size(); ++i) {
             const auto& info = m_availablePlugins.at(i);
-            if (info.id == m_selectedAnalyzerId) {
+            if (info.id() == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
                 found = true;
                 break;
@@ -263,7 +285,7 @@ void DlgPrefKey::slotUpdate() {
         }
         if (!found) {
             plugincombo->setCurrentIndex(0);
-            m_selectedAnalyzerId = m_availablePlugins[0].id;
+            m_selectedAnalyzerId = m_availablePlugins[0].id();
         }
     }
 }

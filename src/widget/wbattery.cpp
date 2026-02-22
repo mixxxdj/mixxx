@@ -4,6 +4,7 @@
 #include <QStylePainter>
 
 #include "moc_wbattery.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/battery/battery.h"
 #include "util/math.h"
 
@@ -144,7 +145,7 @@ void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
                          Paintable::DrawMode mode, double scaleFactor) {
     PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (pPixmap.isNull() || pPixmap->isNull()) {
-        qDebug() << this << "Error loading pixmap:" << source.getPath();
+        qDebug() << "WBattery: Error loading pixmap:" << source.getPath();
     } else {
         *ppPixmap = pPixmap;
         if (mode == Paintable::FIXED) {

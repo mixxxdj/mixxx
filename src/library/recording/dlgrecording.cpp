@@ -1,15 +1,12 @@
 #include "library/recording/dlgrecording.h"
 
-#include <QDesktopServices>
-
-#include "control/controlobject.h"
-#include "library/trackcollectionmanager.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 #include "moc_dlgrecording.cpp"
+#include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
-#include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
-#include "widget/wwidget.h"
 
 DlgRecording::DlgRecording(
         WLibrary* parent,
@@ -23,11 +20,10 @@ DlgRecording::DlgRecording(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
-                          parent->getTrackTableBackgroundColorOpacity(),
-                          true)),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
-          m_proxyModel(&m_browseModel),
+                          pLibrary,
+                          parent->getTrackTableBackgroundColorOpacity())),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
+          m_proxyModel(&m_browseModel, true),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
           m_pRecordingManager(pRecordingManager) {
@@ -69,6 +65,10 @@ DlgRecording::DlgRecording(
             &RecordingManager::durationRecorded,
             this,
             &DlgRecording::slotDurationRecorded);
+    connect(&m_browseModel,
+            &BrowseTableModel::restoreModelState,
+            m_pTrackTableView,
+            &WTrackTableView::restoreCurrentViewState);
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -78,12 +78,10 @@ DlgRecording::DlgRecording(
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_recordingDir = m_pRecordingManager->getRecordingDir();
-
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_browseModel.setPath(m_recordingDir);
+    refreshBrowseModel();
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
     connect(pushButtonRecording,
@@ -103,17 +101,18 @@ DlgRecording::DlgRecording(
 DlgRecording::~DlgRecording() {
 }
 
-void DlgRecording::onShow() {
-    m_recordingDir = m_pRecordingManager->getRecordingDir();
-    m_browseModel.setPath(m_recordingDir);
-}
-
 bool DlgRecording::hasFocus() const {
     return m_pTrackTableView->hasFocus();
 }
 
+void DlgRecording::setFocus() {
+    m_pTrackTableView->setFocus();
+}
+
 void DlgRecording::refreshBrowseModel() {
-     m_browseModel.setPath(m_recordingDir);
+    saveCurrentViewState();
+    QString recordingDir = m_pRecordingManager->getRecordingDir();
+    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(recordingDir)));
 }
 
 void DlgRecording::onSearch(const QString& text) {
@@ -122,30 +121,6 @@ void DlgRecording::onSearch(const QString& text) {
 
 void DlgRecording::slotRestoreSearch() {
     emit restoreSearch(currentSearch());
-}
-
-void DlgRecording::loadSelectedTrack() {
-    m_pTrackTableView->loadSelectedTrack();
-}
-
-void DlgRecording::slotAddToAutoDJBottom() {
-    m_pTrackTableView->slotAddToAutoDJBottom();
-}
-
-void DlgRecording::slotAddToAutoDJTop() {
-    m_pTrackTableView->slotAddToAutoDJTop();
-}
-
-void DlgRecording::slotAddToAutoDJReplace() {
-    m_pTrackTableView->slotAddToAutoDJReplace();
-}
-
-void DlgRecording::loadSelectedTrackToGroup(const QString& group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgRecording::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
 }
 
 void DlgRecording::slotRecButtonClicked(bool toggle) {
@@ -168,7 +143,7 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
         labelRecStatistics->hide();
     }
     //This will update the recorded track table view
-    m_browseModel.setPath(m_recordingDir);
+    refreshBrowseModel();
 }
 
 // gets number of recorded bytes and update label
@@ -192,4 +167,12 @@ void DlgRecording::refreshLabels() {
                               .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);
     labelRecStatistics->setText(recData);
+}
+
+void DlgRecording::saveCurrentViewState() {
+    m_pTrackTableView->saveCurrentViewState();
+}
+
+bool DlgRecording::restoreCurrentViewState() {
+    return m_pTrackTableView->restoreCurrentViewState();
 }

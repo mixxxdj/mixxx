@@ -1,10 +1,5 @@
-/*
- * browsethread.cpp         (C) 2011 Tobias Rafreider
- */
-
 #include "library/browse/browsethread.h"
 
-#include <QDateTime>
 #include <QDirIterator>
 #include <QStringList>
 #include <QtDebug>
@@ -12,9 +7,12 @@
 #include "library/browse/browsetablemodel.h"
 #include "moc_browsethread.cpp"
 #include "sources/soundsourceproxy.h"
-#include "track/track.h"
 #include "util/datetime.h"
 #include "util/trace.h"
+
+namespace {
+constexpr int kRowBatchSize = 10;
+} // namespace
 
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;
@@ -65,9 +63,9 @@ BrowseThreadPointer BrowseThread::getInstanceRef() {
     return strong;
 }
 
-void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(mixxx::FileAccess path, BrowseTableModel* client) {
     m_path_mutex.lock();
-    m_path = path;
+    m_path = std::move(path);
     m_model_observer = client;
     m_path_mutex.unlock();
     m_locationUpdated.wakeAll();
@@ -116,143 +114,175 @@ public:
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
-    MDir thisPath = m_path;
+    auto thisPath = m_path;
     BrowseTableModel* thisModelObserver = m_model_observer;
     m_path_mutex.unlock();
 
-    // Refresh the name filters in case we loaded new SoundSource plugins.
-    QStringList nameFilters(SoundSourceProxy::getSupportedFileNamePatterns());
+    if (!thisPath.info().hasLocation()) {
+        // Abort if the location is inaccessible or does not exist
+        qWarning() << "Skipping" << thisPath.info();
+        return;
+    }
 
-    QDirIterator fileIt(thisPath.dir().absolutePath(), nameFilters,
-                        QDir::Files | QDir::NoDotAndDotDot);
+    // Refresh the name filters in case we loaded new SoundSource plugins.
+    const QStringList nameFilters = SoundSourceProxy::getSupportedFileNamePatterns();
+
+    QDirIterator fileIt(thisPath.info().location(),
+            nameFilters,
+            QDir::Files | QDir::NoDotAndDotDot);
 
     // remove all rows
     // This is a blocking operation
     // see signal/slot connection in BrowseTableModel
     emit clearModel(thisModelObserver);
 
-    QList< QList<QStandardItem*> > rows;
+    QList<QList<QStandardItem*>> rows;
+    rows.reserve(kRowBatchSize);
+    QList<QStandardItem*> row_data;
+    row_data.reserve(NUM_COLUMNS);
 
     int row = 0;
     // Iterate over the files
-    while (fileIt.hasNext()) {
+    while (!m_bStopThread && fileIt.hasNext()) {
         // If a user quickly jumps through the folders
         // the current task becomes "dirty"
         m_path_mutex.lock();
-        MDir newPath = m_path;
+        auto newPath = m_path;
         m_path_mutex.unlock();
 
-        if (thisPath.dir() != newPath.dir()) {
+        if (thisPath.info() != newPath.info()) {
             qDebug() << "Abort populateModel()";
             populateModel();
             return;
         }
 
-        QList<QStandardItem*> row_data;
-
         QStandardItem* item = new QStandardItem("0");
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        const QString filepath = fileIt.next();
+        const auto fileAccess = mixxx::FileAccess(
+                mixxx::FileInfo(fileIt.next()),
+                thisPath.token());
         {
-            const TrackPointer pTrack =
-                    SoundSourceProxy::importTemporaryTrack(
-                            filepath,
-                            thisPath.token());
+            mixxx::TrackMetadata trackMetadata;
+            // Both resetMissingTagMetadata = false/true have the same effect
+            constexpr auto resetMissingTagMetadata = false;
+            SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+                    fileAccess,
+                    &trackMetadata,
+                    nullptr,
+                    resetMissingTagMetadata);
 
-            item = new QStandardItem(pTrack->getFileInfo().fileName());
+            item = new QStandardItem(fileAccess.info().fileName());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_FILENAME, item);
 
-            item = new QStandardItem(pTrack->getArtist());
+            QString artist = trackMetadata.getTrackInfo().getArtist();
+            QString title = trackMetadata.getTrackInfo().getTitle();
+            if (artist.isEmpty() && title.isEmpty()) {
+                if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
+                            fileAccess.info().fileName(), true)) {
+                    artist = trackMetadata.getTrackInfo().getArtist();
+                    title = trackMetadata.getTrackInfo().getTitle();
+                }
+            }
+
+            item = new QStandardItem(artist);
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_ARTIST, item);
 
-            item = new QStandardItem(pTrack->getTitle());
+            item = new QStandardItem(title);
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_TITLE, item);
 
-            item = new QStandardItem(pTrack->getAlbum());
+            item = new QStandardItem(trackMetadata.getAlbumInfo().getTitle());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_ALBUM, item);
 
-            item = new QStandardItem(pTrack->getTrackNumber());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getTrackNumber());
             item->setToolTip(item->text());
             item->setData(item->text().toInt(), Qt::UserRole);
             row_data.insert(COLUMN_TRACK_NUMBER, item);
 
-            const QString year(pTrack->getYear());
+            const QString year(trackMetadata.getTrackInfo().getYear());
             item = new YearItem(year);
             item->setToolTip(year);
             // The year column is sorted according to the numeric calendar year
             item->setData(mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
             row_data.insert(COLUMN_YEAR, item);
 
-            item = new QStandardItem(pTrack->getGenre());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getGenre());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_GENRE, item);
 
-            item = new QStandardItem(pTrack->getComposer());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getComposer());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_COMPOSER, item);
 
-            item = new QStandardItem(pTrack->getComment());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getComment());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_COMMENT, item);
 
-            QString duration = pTrack->getDurationText(mixxx::Duration::Precision::SECONDS);
+            QString duration = trackMetadata.getDurationText(
+                    mixxx::Duration::Precision::SECONDS);
             item = new QStandardItem(duration);
             item->setToolTip(item->text());
-            item->setData(pTrack->getDuration(), Qt::UserRole);
+            item->setData(trackMetadata.getStreamInfo()
+                                  .getDuration()
+                                  .toDoubleSeconds(),
+                    Qt::UserRole);
             row_data.insert(COLUMN_DURATION, item);
 
-            item = new QStandardItem(pTrack->getBpmText());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getBpmText());
             item->setToolTip(item->text());
-            item->setData(pTrack->getBpm(), Qt::UserRole);
+            const mixxx::Bpm bpm = trackMetadata.getTrackInfo().getBpm();
+            item->setData(bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueUndefined, Qt::UserRole);
             row_data.insert(COLUMN_BPM, item);
 
-            item = new QStandardItem(pTrack->getKeyText());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getKeyText());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_KEY, item);
 
-            item = new QStandardItem(pTrack->getType());
+            item = new QStandardItem(fileAccess.info().suffix());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_TYPE, item);
 
-            item = new QStandardItem(pTrack->getBitrateText());
+            item = new QStandardItem(trackMetadata.getBitrateText());
             item->setToolTip(item->text());
-            item->setData(pTrack->getBitrate(), Qt::UserRole);
+            item->setData(
+                    static_cast<qlonglong>(
+                            trackMetadata.getStreamInfo().getBitrate().value()),
+                    Qt::UserRole);
             row_data.insert(COLUMN_BITRATE, item);
 
-            QString location = pTrack->getLocation();
+            QString location = fileAccess.info().location();
             QString nativeLocation = QDir::toNativeSeparators(location);
             item = new QStandardItem(nativeLocation);
             item->setToolTip(nativeLocation);
             item->setData(location, Qt::UserRole);
             row_data.insert(COLUMN_NATIVELOCATION, item);
 
-            item = new QStandardItem(pTrack->getAlbumArtist());
+            item = new QStandardItem(trackMetadata.getAlbumInfo().getArtist());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_ALBUMARTIST, item);
 
-            item = new QStandardItem(pTrack->getGrouping());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getGrouping());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_GROUPING, item);
 
             const auto fileLastModified =
-                    pTrack->getFileInfo().fileLastModified();
+                    fileAccess.info().lastModified();
             item = new QStandardItem(
                     mixxx::displayLocalDateTime(fileLastModified));
             item->setToolTip(item->text());
@@ -260,34 +290,36 @@ void BrowseThread::populateModel() {
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
             const auto fileCreated =
-                    pTrack->getFileInfo().fileCreated();
+                    fileAccess.info().birthTime();
             item = new QStandardItem(
                     mixxx::displayLocalDateTime(fileCreated));
             item->setToolTip(item->text());
             item->setData(fileCreated, Qt::UserRole);
             row_data.insert(COLUMN_FILE_CREATION_TIME, item);
 
-            const mixxx::ReplayGain replayGain(pTrack->getReplayGain());
+            const mixxx::ReplayGain replayGain(trackMetadata.getTrackInfo().getReplayGain());
             item = new QStandardItem(
                     mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_REPLAYGAIN, item);
-        } // implicitly release track pointer and unlock cache
+        }
 
         rows.append(row_data);
+        row_data.clear();
         ++row;
         // If 10 tracks have been analyzed, send it to GUI
         // Will limit GUI freezing
-        if (row % 10 == 0) {
+        if (row % kRowBatchSize == 0) {
             // this is a blocking operation
             emit rowsAppended(rows, thisModelObserver);
-            qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append" << rows.count() << "tracks from "
+                     << thisPath.info().locationPath();
             rows.clear();
         }
-        // Sleep additionally for 10ms which prevents us from GUI freezes
+        // Sleep additionally for 20ms which prevents us from GUI freezes
         msleep(20);
     }
     emit rowsAppended(rows, thisModelObserver);
-    qDebug() << "Append last " << rows.count();
+    qDebug() << "Append last" << rows.count() << "tracks from" << thisPath.info().locationPath();
 }

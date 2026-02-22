@@ -1,6 +1,13 @@
 #!/bin/bash
 # This script works with Debian, Ubuntu, and derivatives.
 # shellcheck disable=SC1091
+
+# Fail if not executed with bash
+if [ -z "$BASH_VERSION" ]; then
+    echo "Error: This script must be called as executable: ./debian_buildenv.sh setup" >&2
+    exit 1
+fi
+
 set -o pipefail
 
 case "$1" in
@@ -10,61 +17,108 @@ case "$1" in
         ;;
 
     setup)
-        source /etc/lsb-release 2>/dev/null
-        case "${DISTRIB_CODENAME}" in
-            bionic) # Ubuntu 18.04 LTS
+        source /etc/os-release 2>/dev/null
+        case "${VERSION_CODENAME}" in
+            jammy|bullseye|victoria|vera|vanessa|virginia) # <= Ubuntu 22.04.5 LTS
                 PACKAGES_EXTRA=(
-                    libmp4v2-dev
+                    libqt6shadertools6-dev
                 )
                 ;;
-            *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
+            *)
                 PACKAGES_EXTRA=(
-                    libavformat-dev
+                    qt6-shadertools-dev
+                )
+        esac
+
+        case "${VERSION_CODENAME}" in
+            jammy|noble|oracular|bullseye|bookworm|victoria|vera|vanessa|virginia|wilma|wildflower) # <= Ubuntu 24.10
+                # qt6-svg-plugins not available
+                ;;
+            *)
+                PACKAGES_EXTRA+=(
+                    qt6-svg-plugins
                 )
         esac
 
         sudo apt-get update
 
-	  # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
+        # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
         # This avoids a package deadlock, resulting in jackd2 being removed, and jackd1 being installed,
         # to satisfy portaudio19-dev's need for a jackd dev package. In short, portaudio19-dev needs a
         # jackd dev library, so let's give it one..
         if [ "$(dpkg-query -W -f='${Status}' jackd2 2>/dev/null | grep -c "ok installed")" -eq 1 ];
         then
-         sudo apt-get install libjack-jackd2-dev;
+            sudo apt-get install libjack-jackd2-dev;
         fi
 
+        # Install a faster linker. Prefer mold, fall back to lld
+        if apt-cache show mold 2>/dev/null >/dev/null;
+        then
+            sudo apt-get install -y --no-install-recommends mold
+        else
+            if apt-cache show lld 2>/dev/null >/dev/null;
+            then
+                sudo apt-get install -y --no-install-recommends lld
+            fi
+        fi
+
+        # Check if fonts-ubuntu is available (from non-free repository)
+        if ! apt-cache show fonts-ubuntu 2>/dev/null | grep -q "Package: fonts-ubuntu"; then
+            echo ""
+            echo "WARNING: The package 'fonts-ubuntu' is not available."
+            echo "This package is required for Mixxx and is located in the Debian non-free repository."
+            echo ""
+            echo "See also: https://wiki.debian.org/SourcesList"
+            echo ""
+            read -p "Would you like to exit to enable 'non-free' now? (y = Exit / n = Continue without fonts): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo "Please edit your /etc/apt/sources.list, run 'sudo apt update', and restart this script."
+                exit 1
+            fi
+        else
+            FONTS_UBUNTU_AVAILABLE=true
+        fi
 
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
+            clazy \
+            clang-tidy \
             debhelper \
             devscripts \
             docbook-to-man \
             dput \
             fonts-open-sans \
-            fonts-ubuntu \
+            "$([ "$FONTS_UBUNTU_AVAILABLE" = true ] && echo "fonts-ubuntu")" \
             g++ \
+            lcov \
+            libavformat-dev \
+            libbenchmark-dev \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
             libfaad-dev \
             libfftw3-dev \
             libflac-dev \
+            libgmock-dev \
+            libgtest-dev \
+            libgl1-mesa-dev \
             libhidapi-dev \
             libid3tag0-dev \
             liblilv-dev \
             libmad0-dev \
             libmodplug-dev \
             libmp3lame-dev \
+            libmsgsl-dev \
             libopus-dev \
             libopusfile-dev \
             libportmidi-dev \
             libprotobuf-dev \
-            libqt5opengl5-dev \
-            libqt5sql5-sqlite \
-            libqt5svg5-dev \
-            libqt5x11extras5-dev \
+            libqt6core5compat6-dev \
+            libqt6opengl6-dev \
+            libqt6sql6-sqlite \
+            libqt6svg6-dev \
             librubberband-dev \
             libshout-idjc-dev \
             libsndfile1-dev \
@@ -72,14 +126,26 @@ case "$1" in
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
+            libudev-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \
             libwavpack-dev \
+            lv2-dev \
             markdown \
             portaudio19-dev \
             protobuf-compiler \
-            qt5keychain-dev \
-            qtscript5-dev \
+            qtkeychain-qt6-dev \
+            qt6-declarative-private-dev \
+            qt6-base-private-dev \
+            qt6-qpa-plugins \
+            qml6-module-qt5compat-graphicaleffects \
+            qml6-module-qtqml-workerscript \
+            qml6-module-qtquick-controls \
+            qml6-module-qtquick-layouts \
+            qml6-module-qtquick-shapes \
+            qml6-module-qtquick-templates \
+            qml6-module-qtquick-window \
+            qml6-module-qt-labs-qmlmodels \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)

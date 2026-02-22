@@ -1,7 +1,6 @@
 #pragma once
 
-#include "encoder/encoderwavesettings.h"
-#ifdef Q_OS_WIN
+#ifdef _WIN32
 // Enable unicode in libsndfile on Windows
 // (sf_open uses UTF-8 otherwise)
 #include <windows.h>
@@ -21,7 +20,7 @@ class EncoderWave : public Encoder {
     EncoderWave(EncoderCallback* pCallback = nullptr);
     ~EncoderWave() override;
 
-    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;

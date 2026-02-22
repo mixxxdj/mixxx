@@ -1,8 +1,10 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 
-#include <QMessageBox>
 #include <QStringList>
 #include <QUrl>
+#include <QXmlStreamAttributes>
+#include <QXmlStreamReader>
+#include <QtConcurrentRun>
 #include <QtDebug>
 
 #include "library/baseexternalplaylistmodel.h"
@@ -15,9 +17,9 @@
 #include "moc_rhythmboxfeature.cpp"
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_cancelImport(false),
-          m_icon(":/images/library/ic_library_rhythmbox.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rhythmbox")),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
+          m_cancelImport(false) {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns = {
@@ -50,23 +52,26 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
             std::move(searchColumns),
             false);
 
-    m_pRhythmboxTrackModel = new BaseExternalTrackModel(
-        this, pLibrary->trackCollections(),
-        "mixxx.db.model.rhythmbox",
-        "rhythmbox_library",
-        m_trackSource);
-    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
-        this, pLibrary->trackCollections(),
-        "mixxx.db.model.rhythmbox_playlist",
-        "rhythmbox_playlists",
-        "rhythmbox_playlist_tracks",
-        m_trackSource);
+    m_pRhythmboxTrackModel = new BaseExternalTrackModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox",
+            "rhythmbox_library",
+            m_trackSource);
+    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox_playlist",
+            "rhythmbox_playlists",
+            "rhythmbox_playlist_tracks",
+            m_trackSource);
 
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
-                                             "RHYTHMBOX_SCANNER");
+    m_database =
+            QSqlDatabase::cloneDatabase(pLibrary->trackCollectionManager()
+                                                ->internalCollection()
+                                                ->database(),
+                    "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -92,14 +97,17 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 std::unique_ptr<BaseSqlTableModel>
-RhythmboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& playlist_name) {
+    VERIFY_OR_DEBUG_ASSERT(playlist_name.canConvert<QString>()) {
+        return {};
+    }
     auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
-            m_pLibrary->trackCollections(),
+            m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.rhythmbox_playlist",
             "rhythmbox_playlists",
             "rhythmbox_playlist_tracks",
             m_trackSource);
-    pModel->setPlaylist(playlist);
+    pModel->setPlaylist(playlist_name.toString());
     return pModel;
 }
 
@@ -112,12 +120,8 @@ QVariant RhythmboxFeature::title() {
     return m_title;
 }
 
-QIcon RhythmboxFeature::getIcon() {
-    return m_icon;
-}
-
-TreeItemModel* RhythmboxFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* RhythmboxFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void RhythmboxFeature::activate() {
@@ -125,13 +129,17 @@ void RhythmboxFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        m_track_future = QtConcurrent::run(&RhythmboxFeature::importMusicCollection, this);
+#else
         m_track_future = QtConcurrent::run(this, &RhythmboxFeature::importMusicCollection);
+#endif
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
         emit featureIsLoading(this, true);
     }
-
+    emit saveModelState();
     emit showTrackModel(m_pRhythmboxTrackModel);
     emit enableCoverArtDisplay(false);
 }
@@ -140,6 +148,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "RhythmboxFeature::activateChild()" << index;
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
+    emit saveModelState();
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     emit showTrackModel(m_pRhythmboxPlaylistModel);
     emit enableCoverArtDisplay(false);
@@ -157,8 +166,10 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
         }
     }
 
-    if (!Sandbox::askForAccess(QFileInfo(db).absoluteFilePath()) ||
+    mixxx::FileInfo fileInfo(db);
+    if (!Sandbox::askForAccess(&fileInfo) ||
             !db.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open Rhythmbox db at" << db.fileName() << db.errorString();
         return nullptr;
     }
 
@@ -181,7 +192,7 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
-        if (xml.isStartElement() && xml.name() == "entry") {
+        if (xml.isStartElement() && xml.name() == QLatin1String("entry")) {
             QXmlStreamAttributes attr = xml.attributes();
             //Check if we really parse a track and not album art information
             if (attr.value("type").toString() == "song") {
@@ -232,15 +243,17 @@ TreeItem* RhythmboxFeature::importPlaylists() {
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
-        if (xml.isStartElement() && xml.name() == "playlist") {
+        if (xml.isStartElement() && xml.name() == QLatin1String("playlist")) {
             QXmlStreamAttributes attr = xml.attributes();
 
             //Only parse non built-in playlists
             if (attr.value("type").toString() == "static") {
                 QString playlist_name = attr.value("name").toString();
 
-                //Construct the childmodel
-                rootItem->appendChild(playlist_name);
+                // Construct the childmodel
+                // For Rhythmbox, the playlist name _is_ the unique identifier,
+                // so we're using it for both the label and data.
+                rootItem->appendChild(playlist_name, playlist_name);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
@@ -255,7 +268,9 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 int playlist_id = query_insert_to_playlists.lastInsertId().toInt();
 
                 //Process playlist entries
+                ScopedTransaction transaction(m_database);
                 importPlaylist(xml, query_insert_to_playlist_tracks, playlist_id);
+                transaction.commit();
             }
         }
     }
@@ -291,55 +306,55 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isStartElement()) {
-            if (xml.name() == "title") {
+            if (xml.name() == QLatin1String("title")) {
                 title = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "artist") {
+            if (xml.name() == QLatin1String("artist")) {
                 artist = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "genre") {
+            if (xml.name() == QLatin1String("genre")) {
                 genre = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "album") {
+            if (xml.name() == QLatin1String("album")) {
                 album = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "track-number") {
+            if (xml.name() == QLatin1String("track-number")) {
                 tracknumber = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "duration") {
+            if (xml.name() == QLatin1String("duration")) {
                 playtime = xml.readElementText().toInt();;
                 continue;
             }
-            if (xml.name() == "bitrate") {
+            if (xml.name() == QLatin1String("bitrate")) {
                 bitrate = xml.readElementText().toInt();
                 continue;
             }
-            if (xml.name() == "beats-per-minute") {
+            if (xml.name() == QLatin1String("beats-per-minute")) {
                 bpm = xml.readElementText().toInt();
                 continue;
             }
-            if (xml.name() == "comment") {
+            if (xml.name() == QLatin1String("comment")) {
                 comment = xml.readElementText();
                 continue;
             }
-            if (xml.name() == "location") {
+            if (xml.name() == QLatin1String("location")) {
                 locationUrl = QUrl(xml.readElementText());
                 continue;
             }
         }
         //exit the loop if we reach the closing <entry> tag
-        if (xml.isEndElement() && xml.name() == "entry") {
+        if (xml.isEndElement() && xml.name() == QLatin1String("entry")) {
             break;
         }
     }
 
-    const auto trackFile = TrackFile::fromUrl(locationUrl);
-    QString location = trackFile.location();
+    const auto fileInfo = mixxx::FileInfo::fromQUrl(locationUrl);
+    QString location = fileInfo.location();
     if (location.isEmpty()) {
         // here in case of smb:// location
         // TODO(XXX) QUrl does not support SMB:// locations does Mixxx?
@@ -377,14 +392,14 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
     while (!xml.atEnd()) {
         //read next XML element
         xml.readNext();
-        if (xml.isStartElement() && xml.name() == "location") {
-            const auto trackFile = TrackFile::fromUrl(xml.readElementText());
+        if (xml.isStartElement() && xml.name() == QLatin1String("location")) {
+            const auto fileInfo = mixxx::FileInfo::fromQUrl(xml.readElementText());
 
             //get the ID of the file in the rhythmbox_library table
             int track_id = -1;
             QSqlQuery finder_query(m_database);
             finder_query.prepare("select id from rhythmbox_library where location=:path");
-            finder_query.bindValue(":path", trackFile.location());
+            finder_query.bindValue(":path", fileInfo.location());
             bool success = finder_query.exec();
 
             if (success) {
@@ -411,7 +426,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
             }
         }
         // Exit the the loop if we reach the closing <playlist> tag
-        if (xml.isEndElement() && xml.name() == "playlist") {
+        if (xml.isEndElement() && xml.name() == QLatin1String("playlist")) {
             break;
         }
     }
@@ -435,7 +450,7 @@ void RhythmboxFeature::clearTable(const QString& table_name) {
 void RhythmboxFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_track_future.result());
     if (root) {
-        m_childModel.setRootItem(std::move(root));
+        m_pSidebarModel->setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.
         m_trackSource->buildIndex();

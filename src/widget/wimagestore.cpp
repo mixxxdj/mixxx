@@ -5,11 +5,10 @@
 #include <QPainter>
 
 #include "skin/legacy/imgloader.h"
-#include "util/assert.h"
 
 
 // static
-QHash<QString, std::weak_ptr<QImage> > WImageStore::m_dictionary;
+QHash<QString, std::weak_ptr<QImage>> WImageStore::m_dictionary;
 QSharedPointer<ImgSource> WImageStore::m_loader
         = QSharedPointer<ImgSource>(new ImgLoader());
 
@@ -31,7 +30,7 @@ std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double
     // Search for Image in list
     QString key = source.getId() + QString::number(scaleFactor);
 
-    QHash<QString, std::weak_ptr<QImage> >::iterator it = m_dictionary.find(key);
+    QHash<QString, std::weak_ptr<QImage>>::iterator it = m_dictionary.find(key);
     if (it != m_dictionary.end()) {
         //qDebug() << "WImageStore returning cached Image for:" << source.getPath();
         return it.value().lock();
@@ -88,7 +87,7 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
 
 // static
 void WImageStore::deleteImage(QImage* p) {
-    QMutableHashIterator<QString, std::weak_ptr<QImage> >it(m_dictionary);
+    QMutableHashIterator<QString, std::weak_ptr<QImage>> it(m_dictionary);
     while (it.hasNext()) {
         if(it.next().value().expired()) {
             it.remove();

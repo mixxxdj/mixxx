@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindSndFile
 -----------
@@ -43,6 +38,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_SndFile QUIET sndfile)
@@ -50,14 +47,14 @@ endif()
 
 find_path(SndFile_INCLUDE_DIR
   NAMES sndfile.h
-  PATHS ${PC_SndFile_INCLUDE_DIRS}
+  HINTS ${PC_SndFile_INCLUDE_DIRS}
   PATH_SUFFIXES sndfile
   DOC "SndFile include directory")
 mark_as_advanced(SndFile_INCLUDE_DIR)
 
 find_library(SndFile_LIBRARY
   NAMES sndfile sndfile-1
-  PATHS ${PC_SndFile_LIBRARY_DIRS}
+  HINTS ${PC_SndFile_LIBRARY_DIRS}
   DOC "SndFile library"
 )
 mark_as_advanced(SndFile_LIBRARY)
@@ -94,5 +91,24 @@ if(SndFile_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_SndFile_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${SndFile_INCLUDE_DIR}"
     )
+    is_static_library(SndFile_IS_STATIC SndFile::sndfile)
+    if(SndFile_IS_STATIC)
+      find_package(FLAC)
+      if(FLAC_FOUND)
+        set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          FLAC::FLAC
+        )
+      endif()
+
+      # The mpg123 dependency was introduced in libsndfile 1.1.0
+      if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
+        find_package(mpg123 CONFIG)
+        if(mpg123_FOUND)
+          set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            MPG123::libmpg123
+          )
+        endif()
+      endif()
+    endif()
   endif()
 endif()

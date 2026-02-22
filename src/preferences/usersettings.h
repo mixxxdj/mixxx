@@ -4,6 +4,7 @@
 #include <QWeakPointer>
 
 #include "preferences/configobject.h"
+#include "preferences/usersettings.h"
 
 typedef ConfigObject<ConfigValue> UserSettings;
 typedef QSharedPointer<UserSettings> UserSettingsPointer;

@@ -18,7 +18,7 @@
 // amidi -p hw:1 -S F00001600200F7
 // amidi -p hw:1 -S F00001601000F7
 
-SCS3D = {};
+var SCS3D = {};
 
 SCS3D.init = function(id) {
     this.device = this.Device();

@@ -1,4 +1,3 @@
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "track/keys.h"
@@ -28,11 +27,6 @@ const QString& Keys::getSubVersion() const {
 
 void Keys::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
-}
-
-bool Keys::isValid() const {
-    return m_keyMap.global_key() != mixxx::track::io::key::INVALID ||
-            m_keyMap.global_key_text().length() > 0;
 }
 
 ChromaticKey Keys::getGlobalKey() const {

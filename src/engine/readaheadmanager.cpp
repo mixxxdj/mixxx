@@ -4,10 +4,7 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "util/defs.h"
-#include "util/math.h"
 #include "util/sample.h"
-
-static const int kNumChannels = 2;
 
 ReadAheadManager::ReadAheadManager()
         : m_pLoopingControl(nullptr),
@@ -15,7 +12,8 @@ ReadAheadManager::ReadAheadManager()
           m_currentPosition(0),
           m_pReader(nullptr),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_cacheMissHappened(false) {
+          m_cacheMissCount(0),
+          m_cacheMissExpected(false) {
     // For testing only: ReadAheadManagerMock
 }
 
@@ -26,7 +24,8 @@ ReadAheadManager::ReadAheadManager(CachingReader* pReader,
           m_currentPosition(0),
           m_pReader(pReader),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_cacheMissHappened(false) {
+          m_cacheMissCount(0),
+          m_cacheMissExpected(false) {
     DEBUG_ASSERT(m_pLoopingControl != nullptr);
     DEBUG_ASSERT(m_pReader != nullptr);
 }
@@ -37,20 +36,25 @@ ReadAheadManager::~ReadAheadManager() {
 
 SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         SINT requested_samples) {
-    // TODO(XXX): Remove implicit assumption of 2 channels
-    if (!even(requested_samples)) {
+    // qDebug() << "getNextSamples:" << m_currentPosition << requested_samples;
+
+    int modSamples = requested_samples % mixxx::kEngineChannelCount;
+    if (modSamples != 0) {
         qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
-        requested_samples--;
+        requested_samples -= modSamples;
     }
     bool in_reverse = dRate < 0;
 
-    //qDebug() << "start" << start_sample << requested_samples;
-
-    double target;
+    mixxx::audio::FramePos targetPosition;
     // A loop (beat loop or track on repeat) will only limit the amount we
     // can read in one shot.
-    const double loop_trigger = m_pLoopingControl->nextTrigger(
-            in_reverse, m_currentPosition, &target);
+    const mixxx::audio::FramePos loopTriggerPosition =
+            m_pLoopingControl->nextTrigger(in_reverse,
+                    mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                            m_currentPosition),
+                    &targetPosition);
+    const double loop_trigger = loopTriggerPosition.toEngineSamplePosMaybeInvalid();
+    const double target = targetPosition.toEngineSamplePosMaybeInvalid();
 
     SINT preloop_samples = 0;
     double samplesToLoopTrigger = 0.0;
@@ -66,7 +70,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
             // We can only read whole frames from the reader.
             // Use ceil here, to be sure to reach the loop trigger.
             preloop_samples = SampleUtil::ceilPlayPosToFrameStart(
-                    samplesToLoopTrigger, kNumChannels);
+                    samplesToLoopTrigger, mixxx::kEngineChannelCount);
             // clamp requested samples from the caller to the loop trigger point
             if (preloop_samples <= requested_samples) {
                 reachedTrigger = true;
@@ -82,7 +86,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     }
 
     SINT start_sample = SampleUtil::roundPlayPosToFrameStart(
-            m_currentPosition, kNumChannels);
+            m_currentPosition, mixxx::kEngineChannelCount);
 
     const auto readResult = m_pReader->read(
             start_sample, samples_from_reader, in_reverse, pOutput);
@@ -91,14 +95,21 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         SampleUtil::clear(pOutput, samples_from_reader);
         // Set the cache miss flag to decide when to apply ramping
         // after the following read attempts.
-        m_cacheMissHappened = true;
-    } else if (m_cacheMissHappened) {
+        m_cacheMissCount++;
+    } else if (m_cacheMissCount > 0) {
         // Previous read was a cache miss, but now we got something back.
         // Apply ramping gain, because the last buffer has unwanted silence
         // and new samples without fading are causing a pop.
-        SampleUtil::applyRampingGain(pOutput, 0.0, 1.0, samples_from_reader);
+        SampleUtil::applyRampingGain(pOutput,
+                CSAMPLE_GAIN_ZERO,
+                CSAMPLE_GAIN_ONE,
+                samples_from_reader);
         // Reset the cache miss flag, because we are now back on track.
-        m_cacheMissHappened = false;
+        if (!m_cacheMissExpected) {
+            qDebug() << "ReadAheadManager: continue after number cache misses:" << m_cacheMissCount;
+        }
+        m_cacheMissCount = 0;
+        m_cacheMissExpected = false;
     }
 
     // Increment or decrement current read-ahead position
@@ -115,6 +126,10 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     // Activate on this trigger if necessary
     if (reachedTrigger) {
         DEBUG_ASSERT(target != kNoTrigger);
+        if (m_pRateControl) {
+            m_pRateControl->notifyWrapAround(loopTriggerPosition, targetPosition);
+        }
+        // TODO probably also useful for hotcue_X_indicator in CueControl::updateIndicators()
 
         // Jump to other end of loop or track.
         m_currentPosition = target;
@@ -139,7 +154,9 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         // start reading before the loop start point, to crossfade these samples
         // with the samples we need to the loop end
         int loop_read_position = SampleUtil::roundPlayPosToFrameStart(
-                m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
+                m_currentPosition +
+                        (in_reverse ? preloop_samples : -preloop_samples),
+                mixxx::kEngineChannelCount);
 
         int crossFadeStart = 0;
         int crossFadeSamples = samples_from_reader;
@@ -150,6 +167,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         } else {
             int trackSamples = static_cast<int>(m_pLoopingControl->getTrackSamples());
             if (loop_read_position > trackSamples) {
+                // looping in reverse overlapping post-roll without samples
                 crossFadeStart = loop_read_position - trackSamples;
                 crossFadeSamples -= crossFadeStart;
             }
@@ -167,7 +185,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                 SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
                 // Set the cache miss flag to decide when to apply ramping
                 // after the following read attempts.
-                m_cacheMissHappened = true;
+                m_cacheMissCount++;
             }
 
             // do crossfade from the current buffer into the new loop beginning
@@ -177,10 +195,16 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
                         m_pCrossFadeBuffer,
                         crossFadeSamples);
             }
+        } else {
+            // No samples for crossfading, ramp to zero
+            SampleUtil::applyRampingGain(pOutput,
+                    CSAMPLE_GAIN_ONE,
+                    CSAMPLE_GAIN_ZERO,
+                    samples_from_reader);
         }
     }
 
-    //qDebug() << "read" << m_currentPosition << samples_read;
+    // qDebug() << "read" << m_currentPosition << samples_from_reader;
     return samples_from_reader;
 }
 
@@ -191,19 +215,12 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
 // Not thread-save, call from engine thread only
 void ReadAheadManager::notifySeek(double seekPosition) {
     m_currentPosition = seekPosition;
-    m_cacheMissHappened = false;
+    m_cacheMissCount = 0;
+    m_cacheMissExpected = true;
     m_readAheadLog.clear();
-
-    // TODO(XXX) notifySeek on the engine controls. EngineBuffer currently does
-    // a fine job of this so it isn't really necessary but eventually I think
-    // RAMAN should do this job. rryan 11/2011
-
-    // foreach (EngineControl* pControl, m_sEngineControls) {
-    //     pControl->notifySeek(iSeekPosition);
-    // }
 }
 
-void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
+void ReadAheadManager::hintReader(double dRate, gsl::not_null<HintVector*> pHintList) {
     bool in_reverse = dRate < 0;
     Hint current_position;
 
@@ -215,11 +232,11 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     // this called after the precious chunk was consumed
     if (in_reverse) {
         current_position.frame =
-                static_cast<SINT>(ceil(m_currentPosition / kNumChannels)) -
+                static_cast<SINT>(ceil(m_currentPosition / mixxx::kEngineChannelCount)) -
                 frameCountToCache;
     } else {
         current_position.frame =
-                static_cast<SINT>(floor(m_currentPosition / kNumChannels));
+                static_cast<SINT>(floor(m_currentPosition / mixxx::kEngineChannelCount));
     }
 
     // If we are trying to cache before the start of the track,
@@ -231,7 +248,7 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     }
 
     // top priority, we need to read this data immediately
-    current_position.priority = 1;
+    current_position.type = Hint::Type::CurrentPosition;
     pHintList->append(current_position);
 }
 
@@ -265,19 +282,8 @@ double ReadAheadManager::getFilePlaypositionFromLog(
     }
 
     double filePlayposition = 0;
-    bool shouldNotifySeek = false;
     while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
         ReadLogEntry& entry = m_readAheadLog.front();
-
-        // Notify EngineControls that we have taken a seek.
-        // Every new entry start with a seek
-        // (Not looping control)
-        if (shouldNotifySeek) {
-            if (m_pRateControl) {
-                m_pRateControl->notifySeek(entry.virtualPlaypositionStart);
-            }
-        }
-
         // Advance our idea of the current virtual playposition to this
         // ReadLogEntry's start position.
         filePlayposition = entry.advancePlayposition(&numConsumedSamples);
@@ -286,8 +292,16 @@ double ReadAheadManager::getFilePlaypositionFromLog(
             // This entry is empty now.
             m_readAheadLog.pop_front();
         }
-        shouldNotifySeek = true;
     }
 
     return filePlayposition;
+}
+
+mixxx::audio::FramePos ReadAheadManager::getFilePlaypositionFromLog(
+        mixxx::audio::FramePos currentPosition,
+        mixxx::audio::FrameDiff_t numConsumedFrames) {
+    const double positionSamples =
+            getFilePlaypositionFromLog(currentPosition.toEngineSamplePos(),
+                    numConsumedFrames * mixxx::kEngineChannelCount);
+    return mixxx::audio::FramePos::fromEngineSamplePos(positionSamples);
 }

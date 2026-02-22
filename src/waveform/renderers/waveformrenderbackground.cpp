@@ -1,8 +1,6 @@
 #include "waveformrenderbackground.h"
-#include "waveformwidgetrenderer.h"
 
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wimagestore.h"
 
 WaveformRenderBackground::WaveformRenderBackground(
@@ -37,7 +35,7 @@ void WaveformRenderBackground::drawImage(QPainter* painter) {
     painter->drawImage(QPoint(0, 0), m_backgroundImage);
 
     // This produces a white back ground with Linux QT 4.6 QGlWidget and
-    // Intel i915 driver and has peroformance issues on other setups. See lp:981210
+    // Intel i915 driver and has peroformance issues on other setups. See #6363
     //painter->drawPixmap(QPoint(0, 0), m_backgroundPixmap);
 }
 

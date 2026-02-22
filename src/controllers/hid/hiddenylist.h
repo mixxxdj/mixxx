@@ -9,16 +9,13 @@ typedef struct hid_denylist {
 } hid_denylist_t;
 
 /// USB HID device that should not be recognized as controllers
-hid_denylist_t hid_denylisted[] = {
-        {0x1157, 0x300, 0x1, 0x2, -1},   // EKS Otus mouse pad (OS/X,windows)
-        {0x1157, 0x300, 0x0, 0x0, 0x3},  // EKS Otus mouse pad (linux)
+constexpr hid_denylist_t hid_denylisted[] = {
+        {0x1157, 0x300, 0x1, 0x2, -1},  // EKS Otus mouse pad (OS/X,windows)
+        {0x1157, 0x300, 0x0, 0x0, 0x3}, // EKS Otus mouse pad (linux)
+        {0x04f3, 0x2d26, 0x0, 0x0, -1}, // ELAN2D26:00 Touch screen
+        {0x046d, 0xc539, 0x0, 0x0, -1}, // Logitech G Pro Wireless
+        // The following rules have been created using the official USB HID page
+        // spec as specified at https://usb.org/sites/default/files/hut1_4.pdf
+        {0x0, 0x0, 0x0D, 0x04, -1}, // Touch Screen
+        {0x0, 0x0, 0x0D, 0x22, -1}, // Finger
 };
-
-// Apple has two two different vendor IDs which are used for different devices.
-constexpr unsigned short kAppleVendorId = 0x5ac;
-constexpr unsigned short kAppleIncVendorId = 0x004c;
-
-constexpr unsigned short kGenericDesktopUsagePage = 0x01;
-
-constexpr unsigned short kGenericDesktopMouseUsage = 0x02;
-constexpr unsigned short kGenericDesktopKeyboardUsage = 0x06;

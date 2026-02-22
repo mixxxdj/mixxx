@@ -127,7 +127,7 @@ NumarkTotalControl.loopOut = function(channel, control, value, status, group) {
 						// Get current position by temporary setting loop start
 						NumarkTotalControl.oldLoopStart[deck-1] = start;
 						engine.setValue(group, "loop_in", 1);
-						engine.beginTimer(20, "NumarkTotalControl.loopExtendedAdjustment('" + group + "')", true);
+						engine.beginTimer(20, () => NumarkTotalControl.loopExtendedAdjustment(group), true);
 					}
 				} else {
 					engine.setValue(group, "loop_out", 1);
@@ -144,7 +144,7 @@ NumarkTotalControl.loopExtendedAdjustment = function(group) {
 	var start = engine.getValue(group, "loop_start_position");
 	if (start == NumarkTotalControl.oldLoopStart[deck-1]) {
 		// Still old loop start -> retry later
-		engine.beginTimer(20, "NumarkTotalControl.loopExtendedAdjustment('" + group + "')", true);
+		engine.beginTimer(20, () => { NumarkTotalControl.loopExtendedAdjustment(group); }, true);
 		return;
 	}
 
@@ -208,7 +208,7 @@ NumarkTotalControl.loopExtendedChange = function(group, timerCall) {
 		NumarkTotalControl.extendedLoopingLEDState[deck-1] = engine.getValue(group, "loop_enabled");
 		// Start LED blink timer
 		NumarkTotalControl.loopLEDBlink(deck);
-		NumarkTotalControl.extendedLoopingLEDTimer[deck-1] = engine.beginTimer(333, "NumarkTotalControl.loopLEDBlink(" + deck + ")");
+		NumarkTotalControl.extendedLoopingLEDTimer[deck-1] = engine.beginTimer(333, () => { NumarkTotalControl.loopLEDBlink(deck); });
 	}
 }
 
@@ -260,7 +260,7 @@ NumarkTotalControl.extendedFunctionButton = function(normalFunction, extendedLoo
 				NumarkTotalControl.extendedLoopingChanged[deck-1] = false;
 				NumarkTotalControl.extendedLoopingJogCarryOver[deck-1] = 0;
 				// Start alternative function timer -> activated after button was 500msec pressed or jog wheel movement (see jogWheel function)
-				NumarkTotalControl.extendedLoopingLEDTimer[deck-1] = engine.beginTimer(500, "NumarkTotalControl.loopExtendedChange('" + group + "', true)", true);
+				NumarkTotalControl.extendedLoopingLEDTimer[deck-1] = engine.beginTimer(500, () => {NumarkTotalControl.loopExtendedChange(group, true); }, true);
 			}
 		} else {
 			// Check if alternative function wasn't used
@@ -307,7 +307,7 @@ NumarkTotalControl.quantizeLED = function(value, group, key) {
 		NumarkTotalControl.setLED(NumarkTotalControl.leds[0]["quantize"], deck1);
 	} else if (NumarkTotalControl.quantizeLEDTimer == -1) {
 		NumarkTotalControl.quantizeLEDBlink();
-		NumarkTotalControl.quantizeLEDTimer = engine.beginTimer(333, "NumarkTotalControl.quantizeLEDBlink()");
+		NumarkTotalControl.quantizeLEDTimer = engine.beginTimer(333, NumarkTotalControl.quantizeLEDBlink);
 	}
 }
 
@@ -408,7 +408,7 @@ NumarkTotalControl.jogWheel = function(channel, control, value, status, group) {
 			engine.stopTimer(NumarkTotalControl.scratchTimer[deck-1]);
 		}
 		engine.scratchTick(deck, adjustedJog);
-		NumarkTotalControl.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkTotalControl.jogWheelStopScratch(" + deck + ")", true);
+		NumarkTotalControl.scratchTimer[deck-1] = engine.beginTimer(20, () => { NumarkTotalControl.jogWheelStopScratch(deck); }, true);
 	} else {
 		var gammaInputRange = 64;	// Max jog speed
 		var maxOutFraction = 0.5;	// Where on the curve it should peak; 0.5 is half-way

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QQueue>
+#include <list>
 
 // Truncated Interquartile mean
 

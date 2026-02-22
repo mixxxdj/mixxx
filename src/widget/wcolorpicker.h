@@ -1,15 +1,13 @@
 #pragma once
 
-#include <QGridLayout>
-#include <QMap>
-#include <QPushButton>
 #include <QStyle>
-#include <QStyleFactory>
 #include <QWidget>
 
-#include "util/color/color.h"
 #include "util/color/colorpalette.h"
 #include "util/parented_ptr.h"
+
+class QGridLayout;
+class QPushButton;
 
 class WColorPicker : public QWidget {
     Q_OBJECT
@@ -30,17 +28,17 @@ class WColorPicker : public QWidget {
     explicit WColorPicker(Options options, const ColorPalette& palette, QWidget* parent = nullptr);
 
     void resetSelectedColor();
-    void setSelectedColor(mixxx::RgbColor::optional_t color);
+    void setSelectedColor(const mixxx::RgbColor::optional_t& color);
     void setColorPalette(const ColorPalette& palette);
 
   signals:
-    void colorPicked(mixxx::RgbColor::optional_t color);
+    void colorPicked(const mixxx::RgbColor::optional_t& color);
 
   private slots:
-    void slotColorPicked(mixxx::RgbColor::optional_t color);
+    void slotColorPicked(const mixxx::RgbColor::optional_t& color);
 
   private:
-    void setColorButtonChecked(mixxx::RgbColor::optional_t color, bool checked);
+    void setColorButtonChecked(const mixxx::RgbColor::optional_t& color, bool checked);
     void addColorButtons();
     void removeColorButtons();
     void addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column);

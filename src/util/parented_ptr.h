@@ -1,9 +1,13 @@
 #pragma once
 
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#include <QObject>
+#endif
 #include <QPointer>
 #include <memory>
 
 #include "util/assert.h"
+#include "util/parented_ptr.h"
 
 // Use this wrapper class to clearly represent a raw pointer that is owned by the QT object tree.
 // Objects which both derive from QObject AND have a parent object, have their lifetime governed by
@@ -26,14 +30,21 @@ class parented_ptr final {
     explicit parented_ptr(T* t) noexcept
             : m_ptr{t} {
     }
-
+// Only generate destructor if not empty, otherwise its empty but will
+// cause the parented_ptr to be not trivially destructible even though it could be.
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     ~parented_ptr() noexcept {
-        DEBUG_ASSERT(!m_ptr || m_ptr->parent());
+        DEBUG_ASSERT(!m_ptr || static_cast<const QObject*>(m_ptr)->parent());
     }
-
-    // Delete copy constructor and copy assignment operator
+#else
+    // explicitly generate trivial destructor (since decltype(m_ptr) is not a class type)
+    ~parented_ptr() noexcept = default;
+#endif
+    // Rule of 5
     parented_ptr(const parented_ptr<T>&) = delete;
     parented_ptr& operator=(const parented_ptr<T>&) = delete;
+    parented_ptr(const parented_ptr<T>&& other) = delete;
+    parented_ptr& operator=(const parented_ptr<T>&& other) = delete;
 
     // If U* is convertible to T* then parented_ptr<U> is convertible to parented_ptr<T>
     template<

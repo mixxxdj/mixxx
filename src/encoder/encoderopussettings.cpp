@@ -3,10 +3,9 @@
 #include "encoder/encoderopussettings.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
-#include "util/compatibility.h"
 
 namespace {
-const int kDefaultQualityIndex = 6;
+constexpr int kDefaultQualityIndex = 6;
 const char* kQualityKey = "Opus_Quality";
 const mixxx::Logger kLogger("EncoderOpusSettings");
 } // namespace
@@ -89,7 +88,7 @@ QList<EncoderSettings::OptionsGroup> EncoderOpusSettings::getOptionGroups() cons
 
 void EncoderOpusSettings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found = false;
-    for (const OptionsGroup& group : qAsConst(m_radioList)) {
+    for (const OptionsGroup& group : std::as_const(m_radioList)) {
         if (groupCode == group.groupCode) {
             found = true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
@@ -115,7 +114,7 @@ int EncoderOpusSettings::getSelectedOption(const QString& groupCode) const {
             ConfigKey(RECORDING_PREF_KEY, BITRATE_MODE_GROUP), 0);
 
     bool found = false;
-    for (const OptionsGroup& group : qAsConst(m_radioList)) {
+    for (const OptionsGroup& group : std::as_const(m_radioList)) {
         if (groupCode == group.groupCode) {
             found = true;
             if (value >= group.controlNames.size() && value > 1) {

@@ -2,10 +2,6 @@
 
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wskincolor.h"
-#include "track/track.h"
-#include "widget/wwidget.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 
@@ -33,6 +29,8 @@ void WaveformRendererRGB::draw(
         return;
     }
 
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
@@ -56,8 +54,11 @@ void WaveformRendererRGB::draw(
     painter->resetTransform();
 
     // Rotate if drawing vertical waveforms
+    // and revert devicePixelRatio scaling in x direction.
     if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-        painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
+        painter->setTransform(QTransform(0, 1 / devicePixelRatio, 1, 0, 0, 0));
+    } else {
+        painter->setTransform(QTransform(1 / devicePixelRatio, 0, 0, 1, 0, 0));
     }
 
     const double firstVisualIndex =
@@ -69,13 +70,14 @@ void WaveformRendererRGB::draw(
 
     const double offset = firstVisualIndex;
 
+    const float length = m_waveformRenderer->getLength() * devicePixelRatio;
+
     // Represents the # of waveform data points per horizontal pixel.
-    const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getLength();
+    const double gain = (lastVisualIndex - firstVisualIndex) / length;
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     QColor color;
 
@@ -92,7 +94,7 @@ void WaveformRendererRGB::draw(
     painter->setPen(m_pColors->getAxesColor());
     painter->drawLine(QLineF(0, halfBreadth, m_waveformRenderer->getLength(), halfBreadth));
 
-    for (int x = 0; x < m_waveformRenderer->getLength(); ++x) {
+    for (int x = 0; x < static_cast<int>(length); ++x) {
         // Width of the x position in visual indices.
         const double xSampleWidth = gain * x;
 
@@ -147,16 +149,19 @@ void WaveformRendererRGB::draw(
             maxAllNext = math_max(maxAllNext, allNext);
         }
 
-        qreal maxLowF = maxLow * lowGain;
-        qreal maxMidF = maxMid * midGain;
-        qreal maxHighF = maxHigh * highGain;
+        float maxLowF = maxLow * lowGain;
+        float maxMidF = maxMid * midGain;
+        float maxHighF = maxHigh * highGain;
 
-        qreal red   = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r + maxHighF * m_rgbHighColor_r;
-        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g + maxHighF * m_rgbHighColor_g;
-        qreal blue  = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b + maxHighF * m_rgbHighColor_b;
+        float red = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r +
+                maxHighF * m_rgbHighColor_r;
+        float green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g +
+                maxHighF * m_rgbHighColor_g;
+        float blue = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b +
+                maxHighF * m_rgbHighColor_b;
 
         // Compute maximum (needed for value normalization)
-        qreal max = math_max3(red, green, blue);
+        float max = math_max3(red, green, blue);
 
         // Prevent division by zero
         if (max > 0.0f) {

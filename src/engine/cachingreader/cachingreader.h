@@ -8,7 +8,6 @@
 #include <list>
 
 #include "engine/cachingreader/cachingreaderworker.h"
-#include "engine/engineworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/fifo.h"
@@ -18,22 +17,32 @@
 // SoundSource will be used 'soon' and so it should be brought into memory by
 // the reader work thread.
 typedef struct Hint {
+    enum class Type {
+        SlipPosition,     // prio 1 (so far unused Mixxx 2.3 priority for reference)
+        CurrentPosition,  // prio 1
+        LoopStartEnabled, // prio 2
+        MainCue,          // prio 10
+        HotCue,           // prio 10
+        LoopEndEnabled,   // prio 10
+        LoopStart,        // prio 10
+        FirstSound,
+        IntroStart,
+        IntroEnd,
+        OutroStart
+    };
+
     // The frame to ensure is present in memory.
     SINT frame;
     // If a range of frames should be present, use frameCount to indicate that the
     // range (frame, frame + frameCount) should be present in memory.
     SINT frameCount;
     // Currently unused -- but in the future could be used to prioritize certain
-    // hints over others. A priority of 1 is the highest priority and should be
-    // used for samples that will be read imminently. Hints for samples that
-    // have the potential to be read (i.e. a cue point) should be issued with
-    // priority >10.
-    int priority;
+    // hints over others.
+    Type type;
 
     // for the default frame count in forward direction
     static constexpr SINT kFrameCountForward = 0;
     static constexpr SINT kFrameCountBackward = -1;
-
 } Hint;
 
 // Note that we use a QVarLengthArray here instead of a QVector. Since this list
@@ -111,7 +120,9 @@ class CachingReader : public QObject {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int trackSampleRate, double trackNumSamples);
+    void trackLoaded(TrackPointer pTrack,
+            mixxx::audio::SampleRate trackSampleRate,
+            double trackNumSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

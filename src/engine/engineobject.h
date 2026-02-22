@@ -3,13 +3,14 @@
 #include <QObject>
 
 #include "util/types.h"
-#include "engine/effects/groupfeaturestate.h"
+
+struct GroupFeatureState;
 
 class EngineObject : public QObject {
     Q_OBJECT
   public:
     EngineObject();
-    virtual ~EngineObject();
+    ~EngineObject() override;
     virtual void process(CSAMPLE* pInOut,
                          const int iBufferSize) = 0;
 
@@ -24,7 +25,7 @@ class EngineObjectConstIn : public QObject {
     Q_OBJECT
   public:
     EngineObjectConstIn();
-    virtual ~EngineObjectConstIn();
+    ~EngineObjectConstIn() override;
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOut,
                          const int iBufferSize) = 0;

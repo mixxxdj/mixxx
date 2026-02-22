@@ -1,15 +1,13 @@
 #pragma once
 
 #include <QAtomicInt>
+#include <QThread>
 
 #include "controllers/controller.h"
-#include "controllers/hid/hidcontrollerpreset.h"
-#include "controllers/hid/hidcontrollerpresetfilehandler.h"
-#include "util/duration.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
 
 struct libusb_device_handle;
 struct libusb_context;
-struct libusb_device_descriptor;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
@@ -35,52 +33,38 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
-    BulkController(UserSettingsPointer pConfig,
+    BulkController(
             libusb_context* context,
             libusb_device_handle* handle,
             struct libusb_device_descriptor* desc);
     ~BulkController() override;
 
-    QString presetExtension() override;
+    QString mappingExtension() override;
 
-    ControllerPresetPointer getPreset() const override {
-        HidControllerPreset* pClone = new HidControllerPreset();
-        *pClone = m_preset;
-        return ControllerPresetPointer(pClone);
-    }
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
-
-    void accept(ControllerVisitor* visitor) override {
-        if (visitor) {
-            visitor->visit(this);
-        }
-    }
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
 
     bool isMappable() const override {
-        return m_preset.isMappable();
+        if (!m_pMapping) {
+            return false;
+        }
+        return m_pMapping->isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset) override;
+    bool matchMapping(const MappingInfo& mapping) override;
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length);
+    void send(const QList<int>& data, unsigned int length) override;
 
-  private slots:
+  private:
     int open() override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(const QByteArray& data) override;
-
-    // Returns a pointer to the currently loaded controller preset. For internal
-    // use only.
-    ControllerPreset* preset() override {
-        return &m_preset;
-    }
+    void sendBytes(const QByteArray& data) override;
 
     bool matchProductInfo(const ProductInfo& product);
 
@@ -89,14 +73,17 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short vendor_id;
-    unsigned short product_id;
-    unsigned char in_epaddr;
-    unsigned char out_epaddr;
-    QString manufacturer;
-    QString product;
+    unsigned short m_vendorId;
+    unsigned short m_productId;
+    unsigned char m_inEndpointAddr;
+    unsigned char m_outEndpointAddr;
+#if defined(__WINDOWS__) || defined(__APPLE__)
+    unsigned int m_interfaceNumber;
+#endif
+    QString m_manufacturer;
+    QString m_product;
 
     QString m_sUID;
     BulkReader* m_pReader;
-    HidControllerPreset m_preset;
+    std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };

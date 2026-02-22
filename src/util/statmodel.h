@@ -45,7 +45,7 @@ class StatModel final : public QAbstractTableModel {
     void statUpdated(const Stat& stat);
 
   private:
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     QList<Stat> m_stats;
     QHash<QString, int> m_statNameToRow;
 };

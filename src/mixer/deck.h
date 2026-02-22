@@ -1,5 +1,4 @@
-#ifndef MIXER_DECK_H
-#define MIXER_DECK_H
+#pragma once
 
 #include <QObject>
 
@@ -8,14 +7,11 @@
 class Deck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
-    Deck(QObject* pParent,
-         UserSettingsPointer pConfig,
-         EngineMaster* pMixingEngine,
-         EffectsManager* pEffectsManager,
-         VisualsManager* pVisualsManager,
-         EngineChannel::ChannelOrientation defaultOrientation,
-         const QString& group);
+    Deck(PlayerManager* pParent,
+            UserSettingsPointer pConfig,
+            EngineMixer* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            const ChannelHandleAndGroup& handleGroup);
     ~Deck() override = default;
 };
-
-#endif // MIXER_DECK_H

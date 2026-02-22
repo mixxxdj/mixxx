@@ -10,15 +10,9 @@
 // Based on C Source from R. Lindner published at public domain
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=196
 
-#include <memory.h>
-#include <stdio.h>
-
-#include <QDebug>
-
+#include "audio/types.h"
 #include "engine/engineobject.h"
-#include "util/math.h"
 #include "util/sample.h"
-#include "util/timer.h"
 
 namespace {
 
@@ -53,12 +47,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
   public:
     EngineFilterMoogLadderBase(
-            unsigned int sampleRate, float cutoff, float resonance) {
-        initBuffers();
-        setParameter(sampleRate, cutoff, resonance);
-        m_postGain = m_postGainNew;
-        m_kacr = m_kacrNew;
-        m_k2vg = m_k2vgNew;
+            mixxx::audio::SampleRate sampleRate, float cutoff, float resonance) {
+         initBuffers();
+         setParameter(sampleRate, cutoff, resonance);
+         m_postGain = m_postGainNew;
+         m_kacr = m_kacrNew;
+         m_k2vg = m_k2vgNew;
     }
 
     virtual ~EngineFilterMoogLadderBase() {
@@ -72,8 +66,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     // cutoff  in Hz
     // resonance  range 0 ... 4 (4 = self resonance)
-    void setParameter(int sampleRate, float cutoff, float resonance) {
-        const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
+    void setParameter(mixxx::audio::SampleRate sampleRate, float cutoff, float resonance) {
+        constexpr float v2 = 2 + kVt; // twice the 'thermal voltage of a transistor'
 
         float kfc = cutoff / sampleRate;
         float kf = kfc;
@@ -93,11 +87,23 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Resonance correction for self oscillation ~4
         m_kacrNew = resonance * (-3.9364f * (kfc * kfc) + 1.8409f * kfc + 0.9968f);
 
+        // See https://github.com/mixxxdj/mixxx/pull/11177 for the Jupyter
+        // notebook used to derive this
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
-            m_postGainNew = 1;
+            // This for all intents and purposes is just 1.0, so let's just stick with that
+            // m_postGainNew = 0.9999999983339118f + (4.58745459575558e-13f * resonance);
+            m_postGainNew = 1.0;
         } else {
-            m_postGainNew = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
-                    * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
+            // Analyzing this filter as a linear system will show a small dip in
+            // passband/DC gain when the cutoff frequency is around 10 kHz:
+            // https://github.com/mixxxdj/mixxx/pull/11177#issuecomment-1374833386
+            //
+            // In practice this is either not a noticeable issue when running
+            // music through the filter, or it might even be desirable as it
+            // keeps the overall gain increase a bit lower when the resonance is
+            // turned up and the cutoff frequency is around 10 kHz. This may be
+            // worth more experimentation in the future.
+            m_postGainNew = 1.0001784074555027f + (0.9331585678097162f * resonance);
         }
 
         m_doRamping = true;
@@ -182,8 +188,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     }
 
     inline CSAMPLE processSample(float input, struct Buffer* pB) {
-
-        const float v2 = 2 + kVt;   // twice the 'thermal voltage of a transistor'
+        constexpr float v2 = 2 + kVt; // twice the 'thermal voltage of a transistor'
 
         // cascade of 4 1st-order sections
         float x1 = input - pB->m_amf * m_kacr;
@@ -260,12 +265,16 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<MoogMode::LowPassOversampling> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4Low(mixxx::audio::SampleRate sampleRate,
+            double freqCorner1,
+            double resonance);
 };
 
 
 class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<MoogMode::HighPassOversampling> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4High(mixxx::audio::SampleRate sampleRate,
+            double freqCorner1,
+            double resonance);
 };

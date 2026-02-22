@@ -3,6 +3,7 @@
 #include <QStyledItemDelegate>
 
 class MidiChannelDelegate : public QStyledItemDelegate {
+    Q_OBJECT
   public:
     MidiChannelDelegate(QObject* pParent);
     virtual ~MidiChannelDelegate();

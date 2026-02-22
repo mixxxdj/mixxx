@@ -1,25 +1,29 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
-#include <QMutexLocker>
-
-#include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_playerinfo.cpp"
 #include "track/track.h"
+#include "util/compatibility/qmutex.h"
 
 namespace {
 
-const int kPlayingDeckUpdateIntervalMillis = 2000;
+constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
+
+const QString kAppGroup = QStringLiteral("[App]");
+const QString kMasterGroup = QStringLiteral("[Master]");
 
 } // namespace
 
 PlayerInfo::PlayerInfo()
-        : m_pCOxfader(new ControlProxy("[Master]","crossfader", this)),
+        : m_xfader(kMasterGroup, QStringLiteral("crossfader")),
+          m_numDecks(kAppGroup, QStringLiteral("num_decks")),
+          m_numSamplers(kAppGroup, QStringLiteral("num_samplers")),
+          m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
           m_currentlyPlayingDeck(-1) {
     startTimer(kPlayingDeckUpdateIntervalMillis);
 }
@@ -52,14 +56,14 @@ void PlayerInfo::destroy() {
 }
 
 TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     return m_loadedTrackMap.value(group);
 }
 
 void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) {
     TrackPointer pOld;
     { // Scope
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         pOld = m_loadedTrackMap.value(group);
         m_loadedTrackMap.insert(group, pTrack);
     }
@@ -77,7 +81,7 @@ void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) 
 }
 
 bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
@@ -88,14 +92,28 @@ bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
     return false;
 }
 
+QStringList PlayerInfo::getPlayerGroupsWithTracksLoaded(const TrackPointerList& tracks) const {
+    const auto locker = lockMutex(&m_mutex);
+    QStringList groups;
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        TrackPointer pLoadedTrack = it.value();
+        if (pLoadedTrack && tracks.contains(pLoadedTrack)) {
+            groups.append(it.key());
+        }
+    }
+    return groups;
+}
+
 QMap<QString, TrackPointer> PlayerInfo::getLoadedTracks() {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     QMap<QString, TrackPointer> ret = m_loadedTrackMap;
     return ret;
 }
 
 bool PlayerInfo::isFileLoaded(const QString& track_location) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
@@ -115,7 +133,7 @@ void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
 }
 
 void PlayerInfo::updateCurrentPlayingDeck() {
-    QMutexLocker locker(&m_mutex);
+    auto locker = lockMutex(&m_mutex);
 
     double maxVolume = 0;
     int maxDeck = -1;
@@ -123,7 +141,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     CSAMPLE_GAIN xfl, xfr;
     // TODO: supply correct parameters to the function. If the hamster style
     // for the crossfader is enabled, the result is currently wrong.
-    EngineXfader::getXfadeGains(m_pCOxfader->get(),
+    EngineXfader::getXfadeGains(m_xfader.get(),
             1.0,
             0.0,
             MIXXX_XFADER_ADDITIVE,
@@ -131,7 +149,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             &xfl,
             &xfr);
 
-    for (int i = 0; i < (int)PlayerManager::numDecks(); ++i) {
+    for (int i = 0; i < numDecks(); ++i) {
         DeckControls* pDc = getDeckControls(i);
 
         if (pDc->m_play.get() == 0.0) {
@@ -200,4 +218,16 @@ void PlayerInfo::clearControlCache() {
         delete m_deckControlList[i];
     }
     m_deckControlList.clear();
+}
+
+int PlayerInfo::numDecks() const {
+    return static_cast<int>(m_numDecks.get());
+}
+
+int PlayerInfo::numPreviewDecks() const {
+    return static_cast<int>(m_numPreviewDecks.get());
+}
+
+int PlayerInfo::numSamplers() const {
+    return static_cast<int>(m_numSamplers.get());
 }

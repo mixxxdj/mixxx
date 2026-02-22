@@ -1,15 +1,16 @@
 #include "library/mixxxlibraryfeature.h"
 
 #include <QtDebug>
+#ifdef __ENGINEPRIME__
+#include <QMenu>
+#endif
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
-#include "library/dlghidden.h"
-#include "library/dlgmissing.h"
-#include "library/hiddentablemodel.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
+#include "library/missing_hidden/dlghidden.h"
+#include "library/missing_hidden/dlgmissing.h"
 #include "library/parser.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
@@ -17,17 +18,20 @@
 #include "library/treeitem.h"
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "widget/wlibrary.h"
+#ifdef __ENGINEPRIME__
+#include "widget/wlibrarysidebar.h"
+#endif
+
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        UserSettingsPointer pConfig)
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_icon(":/images/library/ic_library_tracks.svg"),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
     QString idColumn = LIBRARYTABLE_ID;
@@ -35,6 +39,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             LIBRARYTABLE_ID,
             LIBRARYTABLE_PLAYED,
             LIBRARYTABLE_TIMESPLAYED,
+            LIBRARYTABLE_LAST_PLAYED_AT,
             // has to be up here otherwise Played and TimesPlayed are not shown
             LIBRARYTABLE_ALBUMARTIST,
             LIBRARYTABLE_ALBUM,
@@ -63,6 +68,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             LIBRARYTABLE_COVERART_SOURCE,
             LIBRARYTABLE_COVERART_TYPE,
             LIBRARYTABLE_COVERART_LOCATION,
+            LIBRARYTABLE_COVERART_COLOR,
+            LIBRARYTABLE_COVERART_DIGEST,
             LIBRARYTABLE_COVERART_HASH};
     QStringList searchColumns = {
             LIBRARYTABLE_ARTIST,
@@ -103,13 +110,23 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pLibrary->trackCollections(), "mixxx.db.model.library");
+    m_pLibraryTableModel = new LibraryTableModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.library");
 
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
+
+#ifdef __ENGINEPRIME__
+    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine DJ"), this);
+    connect(m_pExportLibraryAction.get(),
+            &QAction::triggered,
+            this,
+            &MixxxLibraryFeature::exportLibrary);
+#endif
 }
 
 void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
@@ -135,12 +152,8 @@ QVariant MixxxLibraryFeature::title() {
     return tr("Tracks");
 }
 
-QIcon MixxxLibraryFeature::getIcon() {
-    return m_icon;
-}
-
-TreeItemModel* MixxxLibraryFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
@@ -155,14 +168,31 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     }
 }
 
+void MixxxLibraryFeature::searchAndActivate(const QString& query) {
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryTableModel) {
+        return;
+    }
+    m_pLibraryTableModel->search(query);
+    activate();
+}
+
+#ifdef __ENGINEPRIME__
+void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClick
+    m_pSidebarWidget = pSidebarWidget;
+}
+#endif
+
 void MixxxLibraryFeature::activate() {
-    qDebug() << "MixxxLibraryFeature::activate()";
+    //qDebug() << "MixxxLibraryFeature::activate()";
+    emit saveModelState();
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
+    emit saveModelState();
     emit switchToView(itemName);
     if (m_pMissingView && itemName == kMissingTitle) {
         emit restoreSearch(m_pMissingView->currentSearch());
@@ -176,7 +206,7 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
     if (pSource) {
         return false;
     } else {
-        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(
+        QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
                 urls, true);
         return trackIds.size() > 0;
     }
@@ -186,3 +216,11 @@ bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
+
+#ifdef __ENGINEPRIME__
+void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
+    QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pExportLibraryAction.get());
+    menu.exec(globalPos);
+}
+#endif

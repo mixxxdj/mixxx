@@ -12,7 +12,7 @@ const Logger kLogger("AudioSource");
 // stream works.
 // NOTE(2020-05-01): A single frame is sufficient to reliably detect
 // the broken FAAD2 v2.9.1 library.
-const SINT kVerifyReadableMaxFrameCount = 1;
+constexpr SINT kVerifyReadableMaxFrameCount = 1;
 
 } // anonymous namespace
 

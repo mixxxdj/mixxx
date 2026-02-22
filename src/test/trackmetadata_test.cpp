@@ -62,7 +62,7 @@ TEST_F(TrackMetadataTest, parseArtistTitleFromFileName) {
     }
 }
 
-TEST_F(TrackMetadataTest, mergeImportedMetadata) {
+TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
     // Existing track metadata (stored in the database) without extra properties
     mixxx::TrackRecord oldTrackRecord;
     mixxx::TrackMetadata* pOldTrackMetadata = oldTrackRecord.ptrMetadata();
@@ -82,7 +82,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     pOldTrackInfo->setComposer("old composer");
     pOldTrackInfo->setGenre("old genre");
     pOldTrackInfo->setGrouping("old grouping");
-    pOldTrackInfo->setKey("1A");
+    pOldTrackInfo->setKeyText("1A");
     pOldTrackInfo->setReplayGain(mixxx::ReplayGain(0.1, 1));
     pOldTrackInfo->setTitle("old title");
     pOldTrackInfo->setTrackNumber("1");
@@ -120,7 +120,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
 #if defined(__EXTRA_METADATA__)
     pNewTrackInfo->setISRC("isrc");
 #endif // __EXTRA_METADATA__
-    pNewTrackInfo->setKey("1A");
+    pNewTrackInfo->setKeyText("1A");
 #if defined(__EXTRA_METADATA__)
     pNewTrackInfo->setLanguage("language");
     pNewTrackInfo->setLyricist("lyricist");
@@ -156,7 +156,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     mixxx::TrackRecord mergedTrackRecord = oldTrackRecord;
     ASSERT_EQ(mergedTrackRecord.getMetadata(), oldTrackRecord.getMetadata());
     ASSERT_NE(newTrackMetadata, *pOldTrackMetadata);
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
 
     mixxx::TrackMetadata* pMergedTrackMetadata = mergedTrackRecord.ptrMetadata();
     EXPECT_EQ(pOldTrackMetadata->getStreamInfo(), pMergedTrackMetadata->getStreamInfo());
@@ -177,7 +177,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
 #if defined(__EXTRA_METADATA__)
     EXPECT_EQ(pNewTrackInfo->getISRC(), pMergedTrackInfo->getISRC());
 #endif // __EXTRA_METADATA__
-    EXPECT_EQ(pOldTrackInfo->getKey(), pMergedTrackInfo->getKey());
+    EXPECT_EQ(pOldTrackInfo->getKeyText(), pMergedTrackInfo->getKeyText());
 #if defined(__EXTRA_METADATA__)
     EXPECT_EQ(pNewTrackInfo->getLanguage(), pMergedTrackInfo->getLanguage());
     EXPECT_EQ(pNewTrackInfo->getLyricist(), pMergedTrackInfo->getLyricist());
@@ -225,7 +225,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     pMergedTrackInfo->setTitle(QString());
     pMergedAlbumInfo->setArtist("");
     pMergedAlbumInfo->setTitle(QString());
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
     EXPECT_EQ(QString(""), pMergedTrackInfo->getArtist());
     EXPECT_EQ(QString(), pMergedTrackInfo->getTitle());
     EXPECT_EQ(QString(""), pMergedAlbumInfo->getArtist());
@@ -234,11 +234,11 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     // Check that the placeholder for track total is replaced with the actual property
     ASSERT_NE(mixxx::TrackRecord::kTrackTotalPlaceholder, pNewTrackInfo->getTrackTotal());
     pMergedTrackInfo->setTrackTotal(mixxx::TrackRecord::kTrackTotalPlaceholder);
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
     EXPECT_EQ(pNewTrackInfo->getTrackTotal(), pMergedTrackInfo->getTrackTotal());
     // ...but if track total is missing entirely it should be preserved
     ASSERT_NE(QString(), pNewTrackInfo->getTrackTotal());
     pMergedTrackInfo->setTrackTotal(QString());
-    mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
+    mergedTrackRecord.mergeExtraMetadataFromSource(newTrackMetadata);
     EXPECT_EQ(QString(), pMergedTrackInfo->getTrackTotal());
 }

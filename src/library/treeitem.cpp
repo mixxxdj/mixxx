@@ -1,5 +1,7 @@
 #include "library/treeitem.h"
 
+#include "util/make_const_iterator.h"
+
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
  * TreeItems are used by the TreeItemModel class to display tree
@@ -69,15 +71,14 @@ void TreeItem::insertChild(int row, std::unique_ptr<TreeItem> pChild) {
 }
 
 void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
-    DEBUG_ASSERT(!m_pFeature ||
-            m_pFeature == pFeature);
     DEBUG_ASSERT(!m_pParent ||
             m_pParent->m_pFeature == pFeature);
     if (m_pFeature == pFeature) {
         return;
     }
+    DEBUG_ASSERT(!m_pFeature);
     m_pFeature = pFeature;
-    for (auto* pChild : qAsConst(m_children)) {
+    for (auto* pChild : std::as_const(m_children)) {
         pChild->initFeatureRecursively(pFeature);
     }
 }
@@ -106,6 +107,6 @@ void TreeItem::removeChildren(int row, int count) {
     DEBUG_ASSERT(count <= m_children.size());
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= (m_children.size() - count));
-    qDeleteAll(m_children.begin() + row, m_children.begin() + (row + count));
-    m_children.erase(m_children.begin() + row, m_children.begin() + (row + count));
+    qDeleteAll(m_children.constBegin() + row, m_children.constBegin() + (row + count));
+    constErase(&m_children, m_children.constBegin() + row, m_children.constBegin() + (row + count));
 }

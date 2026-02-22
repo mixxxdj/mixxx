@@ -377,7 +377,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkers2LoopEntry& arg) {
 ///
 /// This class includes functions for formatting and parsing SeratoMarkers2
 /// metadata according to the specification:
-/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers2.md
+/// https://github.com/Holzhaus/serato-tags/blob/main/docs/serato_markers2.md
 class SeratoMarkers2 final {
   public:
     SeratoMarkers2()

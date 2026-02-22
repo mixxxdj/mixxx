@@ -1,26 +1,50 @@
 #include "widget/wtracktableviewheader.h"
 
-#include <QtDebug>
+#include <QCheckBox>
+#include <QContextMenuEvent>
+#include <QWidgetAction>
 
 #include "library/trackmodel.h"
 #include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
+#include "util/parented_ptr.h"
+#include "widget/wmenucheckbox.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
-HeaderViewState::HeaderViewState(const QHeaderView& headers)
-{
+HeaderViewState::HeaderViewState(const WTrackTableViewHeader& headers) {
     QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
         int li = headers.logicalIndex(vi);
         mixxx::library::HeaderViewState::HeaderState* header_state =
                 m_view_state.add_header_state();
         header_state->set_hidden(headers.isSectionHidden(li));
-        header_state->set_size(headers.sectionSize(li));
+        // Unfortunately sectionSize() is always 0 for hidden columns. Though,
+        // QHeaderView keeps track of hidden sizes internally, and we do the same.
+        int size = headers.sectionSize(li);
+        if (headers.isSectionHidden(li) && size == 0) {
+            size = headers.getWidthOfHiddenColumn(li);
+            if (size == 0) {
+                // Indicates a hidden column we didn't enable yet, hence didn't
+                // store its previous width when hiding it.
+                // Let's get the default width from the track model.
+                // If this also returns 0 for some reason, we'll reset to minimum
+                // width when restoring the header.
+                auto* pTrackModel = headers.model();
+                DEBUG_ASSERT(pTrackModel);
+                size = pTrackModel->headerData(
+                                          li,
+                                          headers.orientation(),
+                                          TrackModel::kHeaderWidthRole)
+                               .toInt();
+            }
+        }
+        header_state->set_size(size);
         header_state->set_logical_index(li);
         header_state->set_visual_index(vi);
-        QString column_name = model->headerData(
-                li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
+        const QString column_name = model->headerData(
+                                                 li, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                                            .toString();
         // If there was some sort of error getting the column id,
         // we have to skip this one. (Happens with non-displayed columns)
         if (column_name.isEmpty()) {
@@ -58,9 +82,9 @@ QString HeaderViewState::saveState() const {
     return QString(array.toBase64());
 }
 
-void HeaderViewState::restoreState(QHeaderView* headers) {
+void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
     const int max_columns =
-            math_min(headers->count(), m_view_state.header_state_size());
+            math_min(pHeaders->count(), m_view_state.header_state_size());
 
     typedef QMap<QString, mixxx::library::HeaderViewState::HeaderState*> state_map;
     state_map map;
@@ -70,11 +94,11 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     }
 
     // First set all sections to be hidden and update logical indexes.
-    for (int li = 0; li < headers->count(); ++li) {
-        headers->setSectionHidden(li, true);
-        auto it = map.find(headers->model()->headerData(
-                                                   li, Qt::Horizontal, TrackModel::kHeaderNameRole)
-                                   .toString());
+    for (int li = 0; li < pHeaders->count(); ++li) {
+        pHeaders->setSectionHidden(li, true);
+        auto it = map.find(pHeaders->model()->headerData(
+                                                    li, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                        .toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
@@ -85,40 +109,46 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
         const mixxx::library::HeaderViewState::HeaderState& header =
                 m_view_state.header_state(vi);
         const int li = header.logical_index();
-        headers->setSectionHidden(li, header.hidden());
-        headers->resizeSection(li, header.size());
-        headers->moveSection(headers->visualIndex(li), vi);
+        pHeaders->setSectionHidden(li, header.hidden());
+        // If the stored size is 0 or less than the minimum column width,
+        // we use the latter. This might happen if  WTTVH_MINIMUM_SECTION_SIZE
+        // has been increased by us or the header state from database was corrupted.
+        // Note: setting the size works even if the column is hidden. Size is stored
+        // by QHeaderView internally and is applied once the column is shown.
+        int size = math_max(header.size(), WTTVH_MINIMUM_SECTION_SIZE);
+        pHeaders->resizeSection(li, size);
+        pHeaders->moveSection(pHeaders->visualIndex(li), vi);
     }
     if (m_view_state.sort_indicator_shown()) {
-        headers->setSortIndicator(
+        pHeaders->setSortIndicator(
                 m_view_state.sort_indicator_section(),
                 static_cast<Qt::SortOrder>(m_view_state.sort_order()));
     }
 }
 
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
-                                             QWidget* parent)
-        : QHeaderView(orientation, parent),
+        QWidget* pParent)
+        : QHeaderView(orientation, pParent),
           m_menu(tr("Show or hide columns."), this) {
 }
 
-void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
-    event->accept();
-    m_menu.popup(event->globalPos());
+void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
+    pEvent->accept();
+    m_menu.popup(pEvent->globalPos());
 }
 
-void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
-    TrackModel* oldTrackModel = getTrackModel();
+void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
+    TrackModel* pOldTrackModel = getTrackModel();
 
-    if (dynamic_cast<QAbstractItemModel*>(oldTrackModel) == model) {
+    if (dynamic_cast<QAbstractItemModel*>(pOldTrackModel) == pModel) {
         // If the models are the same, do nothing but the redundant call.
-        QHeaderView::setModel(model);
+        QHeaderView::setModel(pModel);
         return;
     }
 
     // Won't happen in practice since the WTrackTableView new's a new
     // WTrackTableViewHeader each time a new TrackModel is loaded.
-    // if (oldTrackModel) {
+    // if (pOldTrackModel) {
     //     saveHeaderState();
     // }
 
@@ -126,16 +156,17 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     clearActions();
 
     // Now set the header view to show the new model
-    QHeaderView::setModel(model);
+    QHeaderView::setModel(pModel);
 
     // Now build actions for the new TrackModel
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(pModel);
 
-    if (!trackModel) {
+    if (!pTrackModel) {
         return;
     }
 
     // Restore saved header state to get sizes, column positioning, etc. back.
+    m_hiddenColumnSizes.clear();
     restoreHeaderState();
 
     // Here we can override values to prevent restoring corrupt values from database
@@ -146,41 +177,54 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
 
-    int columns = model->columnCount();
+    // Create a checkbox for each column.
+    // We want to keep the menu open after un/ticking a box because that allows
+    // to toggle multiple columns in one go, i.e. without having to open the
+    // menu again and again. This does not work with regular QActions so we
+    // create QCheckboxes inside QWidgetAction.
+    // * toggle a box with mouse click or Space on a selected box (via keyboard,
+    //   not just hovered by mouse pointer)
+    // * toggle and close by pressing Return on a selected box
+    int columns = pModel->columnCount();
     for (int i = 0; i < columns; ++i) {
-        if (trackModel->isColumnInternal(i)) {
+        if (pTrackModel->isColumnInternal(i)) {
             continue;
         }
 
-        QString title = model->headerData(i, orientation()).toString();
-        auto* action = new QAction(title, &m_menu);
-        action->setCheckable(true);
+        const QString title = pModel->headerData(i, orientation()).toString();
 
-        /* If Mixxx starts the first time or the header states have been cleared
-         * due to database schema evolution we gonna hide all columns that may
-         * contain a potential large number of NULL values.  Here we uncheck
-         * item in the context menu that are hidden by default (e.g., key
-         * column)
-         */
-        if (!hasPersistedHeaderState() &&
-            trackModel->isColumnHiddenByDefault(i)) {
-            action->setChecked(false);
+        // Custom QCheckBox with fixed hover behavior
+        auto pCheckBox = make_parented<WMenuCheckBox>(title, &m_menu);
+        // Keep a map of checkboxes and columns
+        m_columnCheckBoxes.insert(i, pCheckBox.get());
+        connect(pCheckBox.get(),
+                &QCheckBox::toggled,
+                this,
+                [this, i] {
+                    showOrHideColumn(i);
+                });
+        // If Mixxx starts the first time or the header states have been cleared
+        // due to database schema evolution we gonna hide all columns that may
+        // contain a potential large number of NULL values.  Here we uncheck
+        // the items that are hidden by default (e.g., key column).
+        if (!hasPersistedHeaderState() && pTrackModel->isColumnHiddenByDefault(i)) {
+            pCheckBox->setChecked(false);
         } else {
-            action->setChecked(!isSectionHidden(i));
+            pCheckBox->setChecked(!isSectionHidden(i));
         }
 
-        // Map this action's signals
-        m_columnActions.insert(i, action);
-        connect(action, &QAction::triggered,
-                this, [this, i] { showOrHideColumn(i); });
-        m_menu.addAction(action);
+        auto pAction = make_parented<QWidgetAction>(this);
+        pAction->setDefaultWidget(pCheckBox.get());
+        // Pressing Return triggers the action but that would not toggle the
+        // checkbox, we need to do this ourselves while the menu is being closed.
+        connect(pAction,
+                &QAction::triggered,
+                this,
+                [pCheckBox{pCheckBox.get()}] {
+                    pCheckBox->toggle();
+                });
+        m_menu.addAction(pAction);
 
-        // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE
-        if (sectionSize(i) <  WTTVH_MINIMUM_SECTION_SIZE) {
-            // This might happen if  WTTVH_MINIMUM_SECTION_SIZ has changed or
-            // the header state from database was corrupt
-            resizeSection(i,WTTVH_MINIMUM_SECTION_SIZE);
-        }
     }
 
     // Safety check against someone getting stuck with all columns hidden
@@ -193,24 +237,24 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 }
 
 void WTrackTableViewHeader::saveHeaderState() {
-    TrackModel* track_model = getTrackModel();
-    if (!track_model) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
         return;
     }
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
-    track_model->setModelSetting("header_state_pb", view_state.saveState());
+    pTrackModel->setModelSetting("header_state_pb", view_state.saveState());
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
-    TrackModel* track_model = getTrackModel();
+    TrackModel* pTrackModel = getTrackModel();
 
-    if (!track_model) {
+    if (!pTrackModel) {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    const QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
     if (headerStateString.isNull()) {
         loadDefaultHeaderState();
     } else {
@@ -228,10 +272,11 @@ void WTrackTableViewHeader::restoreHeaderState() {
 
 void WTrackTableViewHeader::loadDefaultHeaderState() {
     // TODO: isColumnHiddenByDefault logic probably belongs here now.
-    QAbstractItemModel* m = model();
+    QAbstractItemModel* pModel = model();
     for (int i = 0; i < count(); ++i) {
-        int header_size = m->headerData(
-                i, orientation(), TrackModel::kHeaderWidthRole).toInt();
+        int header_size = pModel->headerData(
+                                        i, orientation(), TrackModel::kHeaderWidthRole)
+                                  .toInt();
         if (header_size > 0) {
             resizeSection(i, header_size);
         }
@@ -239,11 +284,11 @@ void WTrackTableViewHeader::loadDefaultHeaderState() {
 }
 
 bool WTrackTableViewHeader::hasPersistedHeaderState() {
-    TrackModel* track_model = getTrackModel();
-    if (!track_model) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    const QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
     return !headerStateString.isNull();
 }
 
@@ -251,37 +296,50 @@ void WTrackTableViewHeader::clearActions() {
     // The QActions are parented to the menu, so clearing deletes them. Since
     // they are deleted we don't have to disconnect their signals from the
     // mapper.
-    m_columnActions.clear();
+    m_columnCheckBoxes.clear();
     m_menu.clear();
 }
 
 void WTrackTableViewHeader::showOrHideColumn(int column) {
-    if (!m_columnActions.contains(column)) {
-        qDebug() << "WTrackTableViewHeader got invalid column" << column;
+    auto it = m_columnCheckBoxes.constFind(column);
+    if (it == m_columnCheckBoxes.constEnd()) {
+        qWarning() << "WTrackTableViewHeader got invalid column" << column;
         return;
     }
-
-    QAction* action = m_columnActions[column];
-    if (action->isChecked()) {
+    QCheckBox* pCheckBox = it.value();
+    if (pCheckBox->isChecked()) {
         showSection(column);
+        VERIFY_OR_DEBUG_ASSERT(sectionSize(column) >= WTTVH_MINIMUM_SECTION_SIZE) {
+            resizeSection(column, WTTVH_MINIMUM_SECTION_SIZE);
+        }
+        m_hiddenColumnSizes.remove(column);
     } else {
-        // If the user hides every column then the table will disappear. This
-        // guards against that. NB: hiddenCount reflects checked QAction's so
-        // size-hiddenCount will be zero the moment they uncheck the last
+        // If the user hides every column, the table will disappear. This guards
+        // against that. Note: hiddenCount reflects number of checked QActions,
+        // so size - hiddenCount will be zero the moment they uncheck the last
         // section.
-        if (m_columnActions.size() - hiddenCount() > 0) {
+        if (m_columnCheckBoxes.size() - hiddenCount() > 0) {
+            m_hiddenColumnSizes.insert(column, sectionSize(column));
             hideSection(column);
         } else {
             // Otherwise, ignore the request and re-check this QAction.
-            action->setChecked(true);
+            pCheckBox->setChecked(true);
         }
     }
 }
 
+int WTrackTableViewHeader::getWidthOfHiddenColumn(int column) const {
+    const auto& it = m_hiddenColumnSizes.find(column);
+    if (it != m_hiddenColumnSizes.constEnd()) {
+        return it.value();
+    }
+    return 0;
+}
+
 int WTrackTableViewHeader::hiddenCount() {
     int count = 0;
-    for (const auto& pAction : qAsConst(m_columnActions)) {
-        if (!pAction->isChecked()) {
+    for (const auto& pCheckBox : std::as_const(m_columnCheckBoxes)) {
+        if (!pCheckBox->isChecked()) {
             count += 1;
         }
     }
@@ -289,6 +347,6 @@ int WTrackTableViewHeader::hiddenCount() {
 }
 
 TrackModel* WTrackTableViewHeader::getTrackModel() {
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model());
-    return trackModel;
+    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(model());
+    return pTrackModel;
 }

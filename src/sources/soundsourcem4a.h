@@ -80,13 +80,13 @@ class SoundSourceM4A : public SoundSource {
 class SoundSourceProviderM4A : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
-    static const QStringList kSupportedFileExtensions;
+    static const QStringList kSupportedFileTypes;
 
     QString getDisplayName() const override {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override;
+    QStringList getSupportedFileTypes() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override;
 };

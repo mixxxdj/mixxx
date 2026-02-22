@@ -15,12 +15,22 @@
 
 #include <QDir>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QTextCodec>
 #include <QUrl>
 #include <QtDebug>
 
 #include "errordialoghandler.h"
-#include "moc_parserm3u.cpp"
+
+namespace {
+// according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
+// see also http://tools.ietf.org/html/draft-pantos-http-live-streaming-07
+const char kStandardM3uTextEncoding[] = "Windows-1250";
+const char kM3uHeader[] = "#EXTM3U";
+const char kM3uCommentPrefix[] = "#";
+// Note: The RegEx pattern is compiled, when first used the first time
+const auto kUniveralEndOfLineRegEx = QRegularExpression(QStringLiteral("\r\n|\r|\n"));
+} // anonymous namespace
 
 /**
    ToDo:
@@ -37,77 +47,47 @@
           or on a mounted harddrive.
  **/
 
-ParserM3u::ParserM3u() : Parser()
-{
+// static
+bool ParserM3u::isPlaylistFilenameSupported(const QString& fileName) {
+    return fileName.endsWith(".m3u", Qt::CaseInsensitive) ||
+            fileName.endsWith(".m3u8", Qt::CaseInsensitive);
 }
 
-ParserM3u::~ParserM3u()
-{
+QList<QString> ParserM3u::parseAllLocations(const QString& playlistFile) {
+    QList<QString> paths;
 
-}
-
-QList<QString> ParserM3u::parse(const QString& sFilename) {
-    clearLocations();
-
-    QFile file(sFilename);
+    QFile file(playlistFile);
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning()
                 << "Failed to open playlist file"
-                << sFilename
+                << playlistFile
                 << file.errorString();
-        return m_sLocations;
+        return paths;
     }
 
-    // Unfortunately QTextStream does not handle <CR> (=\r or asci value 13) line breaks.
-    // This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
-    // rather that <LF>.
-    //
-    // Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-    // We replace any '\r' with '\n' if applicable
-    // This ensures that playlists from iTunes on OS X can be parsed
     QByteArray byteArray = file.readAll();
-    //detect encoding
-    bool isCRLF_encoded = byteArray.contains("\r\n");
-    bool isCR_encoded = byteArray.contains("\r");
-    if (isCR_encoded && !isCRLF_encoded) {
-        byteArray.replace('\r', '\n');
-    }
-
-    QTextStream textstream(byteArray.constData());
-    if (isUtf8(byteArray.constData())) {
-        textstream.setCodec("UTF-8");
+    QString fileContents;
+    if (Parser::isUtf8(byteArray.constData())) {
+        fileContents = QString::fromUtf8(byteArray);
     } else {
-        textstream.setCodec("windows-1252");
+        // FIXME: replace deprecated QTextCodec with direct usage of libicu
+        fileContents = QTextCodec::codecForName(kStandardM3uTextEncoding)
+                               ->toUnicode(byteArray);
     }
 
-    const auto basePath = sFilename.section('/', 0, -2);
-    while (!textstream.atEnd()) {
-        QString sLine = getFilePath(&textstream, basePath);
-        if (sLine.isEmpty()) {
+    if (!fileContents.startsWith(kM3uHeader)) {
+        qWarning() << "M3U playlist file" << playlistFile << "does not start with" << kM3uHeader;
+    }
+
+    const QStringList fileLines = fileContents.split(kUniveralEndOfLineRegEx);
+    for (const QString& line : fileLines) {
+        if (line.startsWith(kM3uCommentPrefix)) {
+            // Skip lines with comments
             continue;
         }
-        m_sLocations.append(sLine);
+        paths.append(line);
     }
-
-    return m_sLocations;
-}
-
-QString ParserM3u::getFilePath(QTextStream* stream, const QString& basePath) {
-    QString textline;
-    while (!(textline = stream->readLine().trimmed()).isEmpty()) {
-        if (textline.startsWith("#")) {
-            // Skip comments
-            continue;
-        }
-        auto trackFile = playlistEntryToTrackFile(textline, basePath);
-        if (trackFile.checkFileExists()) {
-            return trackFile.location();
-        }
-        // We couldn't match this to a real file so ignore it
-        qWarning() << trackFile << "not found";
-    }
-    // Signal we reached the end
-    return QString();
+    return paths;
 }
 
 bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath) {
@@ -123,27 +103,43 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     // Important note:
     // On Windows \n will produce a <CR><CL> (=\r\n)
     // On Linux and OS X \n is <CR> (which remains \n)
-
-    QTextCodec* codec;
-    if (useUtf8) {
-        codec = QTextCodec::codecForName("UTF-8");
-    } else {
-        // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
-        // see also http://tools.ietf.org/html/draft-pantos-http-live-streaming-07
-        // check if the all items can be properly encoded to Latin1.
-        codec = QTextCodec::codecForName("windows-1252");
-        for (int i = 0; i < items.size(); ++i) {
-            if (!codec->canEncode(items.at(i))) {
-                // filepath contains incompatible character
-                QMessageBox::warning(nullptr,
-                        tr("Playlist Export Failed"),
-                        tr("File path contains characters, not allowed in m3u "
-                           "playlists.\n") +
-                                tr("Export a m3u8 playlist instead!\n") +
-                                items.at(i));
-                return false;
+    bool urlEncodingUsed = false;
+    QDir baseDirectory(QFileInfo(file_str).canonicalPath());
+    QTextCodec* codec = QTextCodec::codecForName(kStandardM3uTextEncoding);
+    QString fileContents(QStringLiteral("#EXTM3U\n"));
+    for (const QString& item : items) {
+        fileContents += QStringLiteral("#EXTINF\n");
+        if (useUtf8) {
+            if (useRelativePath) {
+                fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
+            } else {
+                fileContents += item + QStringLiteral("\n");
+            }
+        } else {
+            QByteArray trackByteArray = codec->fromUnicode(item);
+            QString trackName = codec->toUnicode(trackByteArray);
+            if (trackName == item) {
+                if (useRelativePath) { //Issue: URL Location is not working properly for Relative Paths
+                    fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
+                } else {
+                    fileContents += item + QStringLiteral("\n");
+                }
+            } else {
+                QUrl itemUrl = QUrl::fromLocalFile(item);
+                QString itemUrlEncoded = itemUrl.toEncoded();
+                fileContents += itemUrlEncoded + QStringLiteral("\n");
+                urlEncodingUsed = true;
             }
         }
+    }
+
+    QByteArray outputByteArray;
+    if (useUtf8) {
+        outputByteArray = fileContents.toUtf8();
+    } else {
+        // FIXME: replace deprecated QTextCodec with direct usage of libicu
+        outputByteArray = QTextCodec::codecForName(kStandardM3uTextEncoding)
+                                  ->fromUnicode(fileContents);
     }
 
     QFile file(file_str);
@@ -151,31 +147,21 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
         ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
         ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle(tr("Playlist Export Failed"));
-        props->setText(tr("Could not create file") + " " + file_str);
+        props->setTitle(QObject::tr("Playlist Export Failed"));
+        props->setText(QObject::tr("Could not create file") + " " + file_str);
         props->setDetails(file.errorString());
         pDialogHandler->requestErrorDialog(props);
         return false;
     }
-
-    // Base folder of file
-    QString base = file_str.section('/', 0, -2);
-    QDir base_dir(base);
-
-    qDebug() << "Basepath: " << base;
-    QTextStream out(&file);
-    out.setCodec(codec);
-    out << "#EXTM3U\n";
-    for (int i = 0; i < items.size(); ++i) {
-        out << "#EXTINF\n";
-        // Write relative path if possible
-        if (useRelativePath) {
-            //QDir::relativePath() will return the absolutePath if it cannot compute the
-            //relative Path
-            out << base_dir.relativeFilePath(items.at(i)) << "\n";
-        } else {
-            out << items.at(i) << "\n";
-        }
+    if (urlEncodingUsed) {
+        QMessageBox::information(nullptr,
+                QObject::tr("Playlist Export Has Special Characters"),
+                QObject::tr("Some file paths in the playlist have special characters. "
+                            "These file paths will be encoded as absolute path URLs. "
+                            "Please select the m3u8 format for better and lossless exporting."));
     }
+    file.write(outputByteArray);
+    file.close();
+
     return true;
 }

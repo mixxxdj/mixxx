@@ -1,5 +1,3 @@
-#include <QtDebug>
-
 #include "widget/wbasewidget.h"
 
 #include "widget/controlwidgetconnection.h"
@@ -86,36 +84,37 @@ double WBaseWidget::getControlParameterDisplay() const {
 }
 
 void WBaseWidget::resetControlParameter() {
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_connections)) {
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_connections)) {
         pControlConnection->resetControl();
     }
 }
 
 void WBaseWidget::setControlParameter(double v) {
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_connections)) {
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_connections)) {
         pControlConnection->setControlParameter(v);
     }
 }
 
 void WBaseWidget::setControlParameterUp(double v) {
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_connections)) {
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_connections)) {
         pControlConnection->setControlParameterUp(v);
     }
 }
 
 void WBaseWidget::setControlParameterDown(double v) {
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_connections)) {
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_connections)) {
         pControlConnection->setControlParameterDown(v);
     }
 }
 
 void WBaseWidget::setControlParameterLeftDown(double v) {
     if (!m_leftConnections.isEmpty()) {
-        for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_leftConnections)) {
+        for (ControlParameterWidgetConnection* pControlConnection :
+                std::as_const(m_leftConnections)) {
             pControlConnection->setControlParameterDown(v);
         }
     } else {
-        for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_connections)) {
+        for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_connections)) {
             pControlConnection->setControlParameterDown(v);
         }
     }
@@ -123,24 +122,25 @@ void WBaseWidget::setControlParameterLeftDown(double v) {
 
 void WBaseWidget::setControlParameterLeftUp(double v) {
     if (!m_leftConnections.isEmpty()) {
-        for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_leftConnections)) {
+        for (ControlParameterWidgetConnection* pControlConnection :
+                std::as_const(m_leftConnections)) {
             pControlConnection->setControlParameterUp(v);
         }
     } else {
-        for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_connections)) {
+        for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_connections)) {
             pControlConnection->setControlParameterUp(v);
         }
     }
 }
 
 void WBaseWidget::setControlParameterRightDown(double v) {
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_rightConnections)) {
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_rightConnections)) {
         pControlConnection->setControlParameterDown(v);
     }
 }
 
 void WBaseWidget::setControlParameterRightUp(double v) {
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_rightConnections)) {
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_rightConnections)) {
         pControlConnection->setControlParameterUp(v);
     }
 }
@@ -193,14 +193,14 @@ void WBaseWidget::fillDebugTooltip(QStringList* debug) {
            << QString("SizeHint: %1").arg(toDebugString(m_pWidget->sizeHint()))
            << QString("MinimumSizeHint: %1").arg(toDebugString(m_pWidget->minimumSizeHint()));
 
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_leftConnections)) {
-        *debug << QString("LeftConnection: %1").arg(pControlConnection->toDebugString());
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_leftConnections)) {
+            *debug << QString("LeftConnection: %1").arg(pControlConnection->toDebugString());
     }
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_rightConnections)) {
-        *debug << QString("RightConnection: %1").arg(pControlConnection->toDebugString());
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_rightConnections)) {
+            *debug << QString("RightConnection: %1").arg(pControlConnection->toDebugString());
     }
-    for (ControlParameterWidgetConnection* pControlConnection : qAsConst(m_connections)) {
-        *debug << QString("Connection: %1").arg(pControlConnection->toDebugString());
+    for (ControlParameterWidgetConnection* pControlConnection : std::as_const(m_connections)) {
+            *debug << QString("Connection: %1").arg(pControlConnection->toDebugString());
     }
     if (m_pDisplayConnection) {
         *debug << QString("DisplayConnection: %1").arg(m_pDisplayConnection->toDebugString());

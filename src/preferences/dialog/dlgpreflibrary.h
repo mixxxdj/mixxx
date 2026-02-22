@@ -2,14 +2,16 @@
 
 #include <QFont>
 #include <QStandardItemModel>
-#include <QWidget>
+#include <memory>
 
-#include "defs_urls.h"
-#include "library/library.h"
-#include "library/library_preferences.h"
+#include "library/library_decl.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
+
+class QWidget;
+class ControlProxy;
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
@@ -21,11 +23,18 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
         Ignore = 3,
     };
 
+    enum class CoverArtFetcherQuality {
+        Low = 0,
+        Medium = 1,
+        High = 2,
+        Highest = 3,
+    };
+
     DlgPrefLibrary(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            Library* pLibrary);
-    ~DlgPrefLibrary() override {}
+            std::shared_ptr<Library> pLibrary);
+    ~DlgPrefLibrary() override;
 
     QUrl helpUrl() const override;
 
@@ -47,25 +56,31 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void apply();
     void scanLibrary();
     void requestAddDir(const QString& dir);
-    void requestRemoveDir(const QString& dir, Library::RemovalType removalType);
+    void requestRemoveDir(const QString& dir, LibraryRemovalType removalType);
     void requestRelocateDir(const QString& currentDir, const QString& newDir);
 
   private slots:
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
-    void slotSyncTrackMetadataExportToggled();
+    void slotSyncTrackMetadataToggled();
     void slotSearchDebouncingTimeoutMillisChanged(int);
+    void slotBpmRangeSelected(int index);
+    void slotBpmColumnPrecisionChanged(int bpmPrecision);
     void slotSeratoMetadataExportClicked(bool);
 
   private:
-    void initializeDirList();
+    void populateDirList();
     void setLibraryFont(const QFont& font);
+    void resetLibraryFont();
+    void updateSearchLineEditHistoryOptions();
     void setSeratoMetadataEnabled(bool shouldSyncTrackMetadata);
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
+    std::shared_ptr<Library> m_pLibrary;
     bool m_bAddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
+    // Listen to rate range changes in order to update the fuzzy BPM range
+    parented_ptr<ControlProxy> m_pRateRangeDeck1;
 };

@@ -1,10 +1,10 @@
 #include "dialog/dlgdevelopertools.h"
 
 #include <QDateTime>
+#include <QDir>
 
 #include "control/control.h"
 #include "moc_dlgdevelopertools.cpp"
-#include "util/cmdlineargs.h"
 #include "util/logging.h"
 #include "util/statsmanager.h"
 
@@ -14,33 +14,11 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
-    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
-            ControlDoublePrivate::getAllInstances();
-    const QHash<ConfigKey, ConfigKey> controlAliases =
-            ControlDoublePrivate::getControlAliases();
-
-    for (auto it = controlsList.constBegin();
-            it != controlsList.constEnd(); ++it) {
-        const QSharedPointer<ControlDoublePrivate>& pControl = *it;
-        if (pControl) {
-            m_controlModel.addControl(pControl->getKey(), pControl->name(),
-                                      pControl->description());
-
-            ConfigKey aliasKey = controlAliases[pControl->getKey()];
-            if (aliasKey.isValid()) {
-                m_controlModel.addControl(aliasKey, pControl->name(),
-                                          "Alias for " + pControl->getKey().group + pControl->getKey().item);
-            }
-        }
-    }
-
-    m_controlProxyModel.setSourceModel(&m_controlModel);
-    m_controlProxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_controlProxyModel.setFilterKeyColumn(ControlModel::CONTROL_COLUMN_FILTER);
     controlsTable->setModel(&m_controlProxyModel);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_TITLE);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_DESCRIPTION);
     controlsTable->hideColumn(ControlModel::CONTROL_COLUMN_FILTER);
+    m_controlProxyModel.sort(0, Qt::AscendingOrder);
 
     StatsManager* pManager = StatsManager::instance();
     if (pManager) {
@@ -60,7 +38,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
         qWarning() << "ERROR: Could not open log file:" << logFileName;
     }
 
-    // Connect search box signals to the library
+    // Set up the control search
+    m_controlProxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     connect(controlSearch,
             &WSearchLineEdit::search,
             this,
@@ -116,9 +95,6 @@ void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
                 logTextView->append(newLines.join(""));
             }
         }
-    } else if (toolTabWidget->currentWidget() == controlsTab) {
-        //m_controlModel.updateDirtyRows();
-        controlsTable->update();
     } else if (toolTabWidget->currentWidget() == statsTab) {
         StatsManager* pManager = StatsManager::instance();
         if (pManager) {
@@ -128,7 +104,13 @@ void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
 }
 
 void DlgDeveloperTools::slotControlSearch(const QString& search) {
-    m_controlProxyModel.setFilterFixedString(search);
+    QStringList words = search.split(' ');
+    if (words.size() > 1) {
+        QString combo = words.join(QStringLiteral(".*"));
+        m_controlProxyModel.setFilterRegularExpression(combo);
+    } else {
+        m_controlProxyModel.setFilterFixedString(search);
+    }
 }
 
 void DlgDeveloperTools::slotControlDump() {

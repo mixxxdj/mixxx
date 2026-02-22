@@ -1,19 +1,21 @@
 #pragma once
 
-#include <QWidget>
+#include <memory>
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 
-class MixxxMainWindow;
+class ControlPushButton;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
     Q_OBJECT
   public:
-    DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                    UserSettingsPointer pConfig, Library* pLibrary);
+    DlgPrefWaveform(
+            QWidget* pParent,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPrefWaveform();
 
   public slots:
@@ -25,7 +27,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
   private slots:
     void slotSetFrameRate(int frameRate);
     void slotSetWaveformType(int index);
-    void slotSetWaveformOverviewType(int index);
+    void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
@@ -37,13 +39,20 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
+    void slotSetUntilMarkShowBeats(bool checked);
+    void slotSetUntilMarkShowTime(bool checked);
+    void slotSetUntilMarkAlign(int index);
+    void slotSetUntilMarkTextPointSize(int value);
+    void slotSetUntilMarkTextHeightLimit(int index);
 
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
+    void updateEnableUntilMark();
+
+    std::unique_ptr<ControlPushButton> m_pTypeControl;
 
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
-    MixxxMainWindow* m_pMixxx;
+    std::shared_ptr<Library> m_pLibrary;
 };

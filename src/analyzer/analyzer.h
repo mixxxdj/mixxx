@@ -1,6 +1,8 @@
 #pragma once
 
+#include "analyzer/analyzertrack.h"
 #include "audio/signalinfo.h"
+#include "audio/types.h"
 #include "util/assert.h"
 #include "util/types.h"
 
@@ -22,14 +24,9 @@ class Analyzer {
     //  1. Check if the track needs to be analyzed, otherwise return false.
     //  2. Perform the initialization and return true on success.
     //  3. If the initialization failed log the internal error and return false.
-    virtual bool initialize(TrackPointer pTrack,
+    virtual bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
             SINT frameLength) = 0;
-
-    /////////////////////////////////////////////////////////////////////////
-    // All following methods will only be invoked after initialize()
-    // returned true!
-    /////////////////////////////////////////////////////////////////////////
 
     // Analyze the next chunk of audio samples and return true if successful.
     // If processing fails the analysis can be aborted early by returning
@@ -69,14 +66,16 @@ class AnalyzerWithState final {
         return m_active;
     }
 
-    bool initialize(TrackPointer pTrack, mixxx::audio::SampleRate sampleRate, SINT frameLength) {
+    bool initialize(const AnalyzerTrack& track,
+            mixxx::audio::SampleRate sampleRate,
+            SINT frameLength) {
         DEBUG_ASSERT(!m_active);
-        return m_active = m_analyzer->initialize(pTrack, sampleRate, frameLength);
+        return m_active = m_analyzer->initialize(track, sampleRate, frameLength);
     }
 
-    void processSamples(const CSAMPLE* pIn, const int iLen) {
+    void processSamples(const CSAMPLE* pIn, const int count) {
         if (m_active) {
-            m_active = m_analyzer->processSamples(pIn, iLen);
+            m_active = m_analyzer->processSamples(pIn, count);
             if (!m_active) {
                 // Ensure that cleanup() is invoked after processing
                 // failed and the analyzer became inactive!
@@ -85,9 +84,9 @@ class AnalyzerWithState final {
         }
     }
 
-    void finish(TrackPointer pTrack) {
+    void finish(const AnalyzerTrack& track) {
         if (m_active) {
-            m_analyzer->storeResults(pTrack);
+            m_analyzer->storeResults(track.getTrack());
             m_analyzer->cleanup();
             m_active = false;
         }

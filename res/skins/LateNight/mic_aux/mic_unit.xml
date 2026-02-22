@@ -34,7 +34,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/button_2state.xml">
+                  <Template src="skins:LateNight/controls/button_2state.xml">
                     <SetVariable name="TooltipId">microphone_talkover</SetVariable>
                     <SetVariable name="ObjectName">MicTalk</SetVariable>
                     <SetVariable name="Size">42f,26f</SetVariable>
@@ -52,7 +52,7 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:/mixer/vumeter_single.xml">
+              <Template src="skins:LateNight/mixer/vumeter_single.xml">
                 <SetVariable name="ChannelType">microphone</SetVariable>
                 <SetVariable name="VuSize">micaux</SetVariable>
               </Template>
@@ -69,7 +69,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <Template src="skin:/controls/knob.xml">
+                  <Template src="skins:LateNight/controls/knob.xml">
                     <SetVariable name="TooltipId">microphone_pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
                     <SetVariable name="KnobColor">orange</SetVariable>
@@ -82,7 +82,7 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <Template src="skin:/controls/button_2state.xml">
+                      <Template src="skins:LateNight/controls/button_2state.xml">
                         <SetVariable name="TooltipId">pfl</SetVariable>
                         <SetVariable name="ObjectName">PflButton</SetVariable>
                         <SetVariable name="BtnSize">square</SetVariable>
@@ -102,7 +102,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:/fx/assign_buttons.xml"/>
+                  <Template src="skins:LateNight/fx/assign_buttons.xml"/>
                 </Children>
               </WidgetGroup>
 
@@ -114,7 +114,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey><Variable name="Group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="Group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

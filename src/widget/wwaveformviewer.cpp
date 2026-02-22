@@ -1,21 +1,16 @@
 #include "widget/wwaveformviewer.h"
 
-#include <QDomNode>
 #include <QDragEnterEvent>
 #include <QEvent>
-#include <QMimeData>
-#include <QPainter>
-#include <QUrl>
-#include <QtDebug>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_wwaveformviewer.cpp"
-#include "track/track.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wglwidget.h"
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,
@@ -41,6 +36,8 @@ WWaveformViewer::WWaveformViewer(
     m_pWheel = new ControlProxy(
             group, "wheel", this, ControlFlag::NoAssertIfMissing);
     m_pPlayEnabled = new ControlProxy(group, "play", this, ControlFlag::NoAssertIfMissing);
+    m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough", this);
+    m_pPassthroughEnabled->connectValueChanged(this, &WWaveformViewer::passthroughChanged);
 
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
@@ -53,18 +50,34 @@ WWaveformViewer::~WWaveformViewer() {
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
+        m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
     }
-    m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
 }
 
-void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
+void WWaveformViewer::resizeEvent(QResizeEvent* event) {
+    Q_UNUSED(event);
     if (m_waveformWidget) {
+        // Note m_waveformWidget is a WaveformWidgetAbstract,
+        // so this calls the method of WaveformWidgetAbstract,
+        // note of the derived waveform widgets which are also
+        // a QWidget, though that will be called directly.
         m_waveformWidget->resize(width(), height());
     }
 }
 
+void WWaveformViewer::showEvent(QShowEvent* event) {
+    Q_UNUSED(event);
+    if (m_waveformWidget) {
+        // We leave it up to Qt to set the size of the derived
+        // waveform widget, but we still need to set the size
+        // of the renderer.
+        m_waveformWidget->resizeRenderer(
+                width(), height(), static_cast<float>(devicePixelRatioF()));
+    }
+}
+
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
-    if (!m_waveformWidget) {
+    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
         return;
     }
 
@@ -83,20 +96,24 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
         m_pScratchPosition->set(targetPosition);
-        m_pScratchPositionEnable->slotSet(1.0);
+        m_pScratchPositionEnable->set(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
         if (!isPlaying() && m_pHoveredMark) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
-                m_pCueMenuPopup->setTrackAndCue(currentTrack, cueAtClickPos);
+                m_pCueMenuPopup->setTrackCueGroup(currentTrack, cueAtClickPos, m_group);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                m_pCueMenuPopup->popup(event->globalPosition().toPoint());
+#else
                 m_pCueMenuPopup->popup(event->globalPos());
+#endif
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't
             // be used at once.
             if (m_bScratching) {
-                m_pScratchPositionEnable->slotSet(0.0);
+                m_pScratchPositionEnable->set(0.0);
                 m_bScratching = false;
             }
             m_pWheel->setParameter(0.5);
@@ -111,7 +128,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
-    if (!m_waveformWidget) {
+    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
         return;
     }
 
@@ -175,22 +192,26 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     setCursor(Qt::ArrowCursor);
 }
 
-void WWaveformViewer::wheelEvent(QWheelEvent *event) {
+void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
-        } else {
             onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
+        } else if (event->angleDelta().y() < 0) {
+            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
         }
     }
 }
 
-void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WWaveformViewer::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
 
-void WWaveformViewer::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WWaveformViewer::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
+}
+
+bool WWaveformViewer::handleDragAndDropEventFromWindow(QEvent* pEvent) {
+    return event(pEvent);
 }
 
 void WWaveformViewer::leaveEvent(QEvent*) {
@@ -240,7 +261,9 @@ void WWaveformViewer::setZoom(double zoom) {
 }
 
 void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
-    m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+    if (m_waveformWidget) {
+        m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+    }
 }
 
 void WWaveformViewer::setPlayMarkerPosition(double position) {
@@ -252,13 +275,45 @@ void WWaveformViewer::setPlayMarkerPosition(double position) {
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        disconnect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
+        disconnect(pWidget);
     }
     m_waveformWidget = waveformWidget;
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
+        DEBUG_ASSERT(pWidget);
+        connect(pWidget,
+                &QWidget::destroyed,
+                this,
+                [this]() {
+                    // The pointer must be considered as dangling!
+                    m_waveformWidget = nullptr;
+                });
         m_waveformWidget->getWidget()->setMouseTracking(true);
+#ifdef MIXXX_USE_QOPENGL
+        if (m_waveformWidget->getGLWidget()) {
+            // The OpenGLWindow used to display the waveform widget interferes with the
+            // normal Qt tooltip mechanism and uses it's own mechanism. We set the tooltip
+            // of the waveform widget to the tooltip of its parent WWaveformViewer so the
+            // OpenGLWindow will display it.
+            m_waveformWidget->getGLWidget()->setToolTip(toolTip());
+
+            // Tell the WGLWidget that this is its drag&drop target
+            m_waveformWidget->getGLWidget()->setTrackDropTarget(this);
+        }
+#endif
+        // Make connection to show "Passthrough" label on the waveform, except for
+        // "Empty" waveform type
+        if (m_waveformWidget->getType() == WaveformWidgetType::EmptyWaveform) {
+            return;
+        }
+        connect(this,
+                &WWaveformViewer::passthroughChanged,
+                this,
+                [this](double value) {
+                    m_waveformWidget->setPassThroughEnabled(value > 0);
+                });
+        // Make sure the label is shown after the waveform type was changed
+        emit passthroughChanged(m_pPassthroughEnabled->toBool());
     }
 }
 

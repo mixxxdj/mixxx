@@ -1,6 +1,6 @@
 #include "library/trackcollectioniterator.h"
 
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 
 namespace mixxx {
 
@@ -11,7 +11,7 @@ std::optional<TrackPointer> TrackByIdCollectionIterator::nextItem() {
         return std::nullopt;
     }
     const auto trackPtr =
-            m_pTrackCollection->getTrackById(*nextTrackId);
+            m_pTrackCollectionManager->getTrackById(*nextTrackId);
     if (!trackPtr) {
         return std::nullopt;
     }

@@ -1,7 +1,7 @@
+#include "library/trackset/crate/cratestorage.h"
+
+#include "library/trackset/crate/crate.h"
 #include "test/librarytest.h"
-
-#include "library/crate/cratestorage.h"
-
 
 class CrateStorageTest : public LibraryTest {
   protected:
@@ -13,7 +13,7 @@ class CrateStorageTest : public LibraryTest {
 };
 
 TEST_F(CrateStorageTest, persistentLifecycle) {
-    const uint kNumCrates = 10;
+    constexpr uint kNumCrates = 10;
 
     // Insert some crates
     for (auto i = kNumCrates; i > 0; --i) {

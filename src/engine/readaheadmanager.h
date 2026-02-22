@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QList>
-#include <QPair>
+#include <gsl/pointers>
 #include <list>
 
+#include "audio/frame.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "util/math.h"
 #include "util/types.h"
@@ -46,14 +46,20 @@ class ReadAheadManager {
     }
 
     virtual void notifySeek(double seekPosition);
+    virtual void notifySeek(mixxx::audio::FramePos position) {
+        notifySeek(position.toEngineSamplePos());
+    }
 
     /// hintReader allows the ReadAheadManager to provide hints to the reader to
     /// indicate that the given portion of a song is about to be read.
-    virtual void hintReader(double dRate, HintVector* hintList);
+    virtual void hintReader(double dRate, gsl::not_null<HintVector*> pHintList);
 
     virtual double getFilePlaypositionFromLog(
             double currentFilePlayposition,
             double numConsumedSamples);
+    mixxx::audio::FramePos getFilePlaypositionFromLog(
+            mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FrameDiff_t numConsumedFrames);
 
   private:
     /// An entry in the read log indicates the virtual playposition the read
@@ -117,5 +123,6 @@ class ReadAheadManager {
     double m_currentPosition;
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
-    bool m_cacheMissHappened;
+    int m_cacheMissCount;
+    bool m_cacheMissExpected;
 };

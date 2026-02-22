@@ -11,14 +11,18 @@ name: "Pull Request Labeler"
 on:
   - pull_request_target
 
+permissions:
+  contents: read
+
 jobs:
   triage:
+    permissions:
+      contents: read # for actions/labeler to determine modified files
+      pull-requests: write # for actions/labeler to add labels to PRs
     runs-on: ubuntu-latest
 
     steps:
-      # version between v4.0.3 and the one after which has not yet been tagged
-      # at the time of writing
-      - uses: actions/labeler@7012d51fe062f0b1e26e224a3c9fb52598ee3302
+      - uses: actions/labeler@v6.0.1
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           sync-labels: false

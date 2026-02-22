@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "track/replaygain.h"
-
 #include <QtDebug>
+
+#include "test/mockedenginebackendtest.h"
+#include "track/replaygain.h"
 
 namespace {
 
@@ -154,6 +155,39 @@ TEST_F(ReplayGainTest, NormalizePeak) {
     normalizePeak(mixxx::ReplayGain::kPeakClip);
     normalizePeak(-mixxx::ReplayGain::kPeakClip);
     normalizePeak(mixxx::ReplayGain::kPeakClip + mixxx::ReplayGain::kPeakClip);
+}
+
+class AdjustReplayGainTest : public MockedEngineBackendTest {};
+
+TEST_F(AdjustReplayGainTest, AdjustReplayGainUpdatesPregain) {
+    const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
+    TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
+
+    // Load the same track in decks 1 and 2 so we can see that the pregain is adjusted on both
+    // decks.
+    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck2, pTrack);
+
+    // Initialize fake track replaygain so it's not zero.
+    mixxx::ReplayGain replayGain;
+    replayGain.setRatio(1.0);
+    pTrack->setReplayGain(replayGain);
+    // Because of this artificial process we have to manually set the replaygain CO for the second
+    // deck.
+    m_pMixerDeck2->slotSetReplayGain(replayGain);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "pregain"))->set(1.2);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "update_replaygain_from_pregain"))->set(1.0);
+
+    // The pregain value is folded into the replaygain value, and pregains is reset
+    // for the deck where the adjust control was triggered so that the audible volume
+    // of the track does not change.
+    // Pregain should not change on other decks with this track loaded.
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::getControl(ConfigKey(m_sGroup1, "pregain"))->get());
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::getControl(ConfigKey(m_sGroup2, "pregain"))->get());
+    EXPECT_DOUBLE_EQ(1.2, ControlObject::getControl(ConfigKey(m_sGroup1, "replaygain"))->get());
+    EXPECT_DOUBLE_EQ(1.2, ControlObject::getControl(ConfigKey(m_sGroup2, "replaygain"))->get());
+    EXPECT_DOUBLE_EQ(1.2, pTrack->getReplayGain().getRatio());
 }
 
 } // anonymous namespace

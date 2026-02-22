@@ -28,7 +28,7 @@
     MIXXX_WIKI_URL "/Hardware-Compatibility"
 #define MIXXX_WIKI_AUDIO_LATENCY_URL \
     MIXXX_WIKI_URL "/Adjusting-Audio-Latency"
-#define MIXXX_WIKI_CONTROLLER_PRESET_FORMAT_URL \
+#define MIXXX_WIKI_CONTROLLER_MAPPING_FORMAT_URL \
     MIXXX_WIKI_URL "/Midi-Controller-Mapping-File-Format"
 #define MIXXX_WIKI_MIDI_SCRIPTING_URL \
     MIXXX_WIKI_URL "/Midi-Scripting"
@@ -48,11 +48,21 @@
 #define MIXXX_MANUAL_CONTROLS_URL \
     MIXXX_MANUAL_URL "/chapters/advanced_topics.html#mixxx-controls"
 #define MIXXX_MANUAL_SOUND_URL \
-    MIXXX_MANUAL_URL "/chapters/preferences.html#sound-hardware"
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware.html"
+#define MIXXX_MANUAL_SOUND_API_URL \
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware.html#sound-api"
 #define MIXXX_MANUAL_LIBRARY_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#library"
 #define MIXXX_MANUAL_CUE_MODES_URL \
     MIXXX_MANUAL_URL "/chapters/user_interface.html#using-cue-modes"
+#define MIXXX_MANUAL_SYNC_MODES_URL \
+    MIXXX_MANUAL_URL "/chapters/djing_with_mixxx#sync-lock-with-dynamic-tempo"
+#define MIXXX_MANUAL_TRACK_SEARCH_URL \
+    MIXXX_MANUAL_URL "/chapters/library.html#finding-tracks-search"
+#define MIXXX_MANUAL_MIC_MONITOR_MODES_URL \
+    MIXXX_MANUAL_URL "/chapters/microphones"
+#define MIXXX_MANUAL_MIC_LATENCY_URL \
+    MIXXX_MANUAL_URL "/chapters/microphones#latency-compensation"
 #define MIXXX_MANUAL_BEATS_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#beat-detection"
 #define MIXXX_MANUAL_KEY_URL \
@@ -65,5 +75,9 @@
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#configuring-vinyl-control"
 #define MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL \
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#troubleshooting"
+#define MIXXX_MANUAL_SETTINGS_DIRECTORY_URL \
+    MIXXX_MANUAL_URL "/chapters/appendix.html#settings-directory"
+#define MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES \
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware#output-and-input-devices"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
 #define MIXXX_KBD_SHORTCUTS_FILENAME "Mixxx-Keyboard-Shortcuts.pdf"

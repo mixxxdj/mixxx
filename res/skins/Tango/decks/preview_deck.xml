@@ -57,18 +57,19 @@ Variables:
                 <Size>1me,18f</Size>
                 <ObjectName>PreviewTitle</ObjectName>
                 <Children>
-                  <Text>
+                  <TrackProperty>
                     <TooltipId>text</TooltipId>
                     <Size>1me,17f</Size>
                     <Group><Variable name="group"/></Group>
+                    <Property>info</Property>
                     <Elide>right</Elide>
-                  </Text>
+                  </TrackProperty>
                 </Children>
               </WidgetGroup>
 
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/controls/button_1state.xml">
+              <Template src="skins:Tango/controls/button_1state.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="ObjectName">PreviewEject</SetVariable>
                 <SetVariable name="Size">18f,18f</SetVariable>
@@ -89,7 +90,7 @@ Variables:
                 <Layout>stacked</Layout>
                 <Size>25f,34f</Size>
                 <Children>
-                  <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+                  <Template src="skins:Tango/controls/button_2state_right_display.xml">
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
                     <SetVariable name="TooltipId">play_start</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
@@ -100,7 +101,7 @@ Variables:
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
                   </Template>
                   <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
-                  <Template src="skin:../Tango/controls/button_2state.xml">
+                  <Template src="skins:Tango/controls/button_2state.xml">
                     <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
@@ -138,7 +139,7 @@ Variables:
                 </Connection>
               </Overview>
 
-              <Template src="skin:../Tango/mixer/vumeter_mini.xml">
+              <Template src="skins:Tango/mixer/vumeter_mini.xml">
                 <SetVariable name="Size">5f,1me</SetVariable>
                 <SetVariable name="sourceType">preview</SetVariable>
               </Template>
@@ -150,8 +151,8 @@ Variables:
                   <KnobComposed>
                     <TooltipId>pregain</TooltipId>
                     <Size>24f,20f</Size>
-                    <Knob>skin:../Tango/knobs_sliders/knob_tiny_red.svg</Knob>
-                    <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+                    <Knob>skins:Tango/knobs_sliders/knob_tiny_red.svg</Knob>
+                    <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
                     <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                     <Connection>
@@ -164,13 +165,13 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Play-Overview-Gain -->
 
-          <Template src="skin:../Tango/decks/hotcues_sampler_preview.xml"/>
+          <Template src="skins:Tango/decks/hotcues_sampler_preview.xml"/>
 
         </Children>
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_preview_decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

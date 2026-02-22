@@ -1,54 +1,108 @@
-# - Try to find Portaudio
-# Once done this will define
-#
-#  PortAudio_FOUND - system has Portaudio
-#  PortAudio_INCLUDE_DIRS - the Portaudio include directory
-#  PortAudio_LIBRARIES - Link these to use Portaudio
+#[=======================================================================[.rst:
+FindPortAudio
+--------
+
+Finds the PortAudio library.
+
+Imported Targets
+^^^^^^^^^^^^^^^^
+
+This module provides the following imported targets, if found:
+
+``PortAudio::PortAudio``
+  The PortAudio library
+
+Result Variables
+^^^^^^^^^^^^^^^^
+
+This will define the following variables:
+
+``PortAudio_FOUND``
+  True if the system has the PortAudio library.
+``PortAudio_INCLUDE_DIRS``
+  Include directories needed to use PortAudio.
+``PortAudio_LIBRARIES``
+  Libraries needed to link to PortAudio.
+``PortAudio_DEFINITIONS``
+  Compile definitions needed to use PortAudio.
+
+Cache Variables
+^^^^^^^^^^^^^^^
+
+The following cache variables may also be set:
+
+``PortAudio_INCLUDE_DIR``
+  The directory containing ``PortAudio/all.h``.
+``PortAudio_LIBRARY``
+  The path to the PortAudio library.
+
+#]=======================================================================]
+
+include(IsStaticLibrary)
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_PortAudio portaudio-2.0)
+  pkg_check_modules(PC_PortAudio QUIET portaudio-2.0)
 endif()
 
-find_path(PortAudio_INCLUDE_DIRS
-  NAMES
-    portaudio.h
-  PATHS
-      /usr/local/include
-      /usr/include
-  HINTS
-    ${PC_PortAudio_INCLUDEDIR}
+find_path(PortAudio_INCLUDE_DIR
+  NAMES portaudio.h
+  HINTS ${PC_PortAudio_INCLUDE_DIRS}
+  DOC "PortAudio include directory")
+mark_as_advanced(PortAudio_INCLUDE_DIR)
+
+# Temporary hack until https://github.com/PortAudio/portaudio/pull/635 is released.
+find_path(PortAudio_ALSA_H
+  NAMES pa_linux_alsa.h
+  HINTS ${PC_PortAudio_INCLUDE_DIRS})
+mark_as_advanced(PortAudio_ALSA_H)
+
+find_library(PortAudio_LIBRARY
+  NAMES portaudio
+  HINTS ${PC_PortAudio_LIBRARY_DIRS}
+  DOC "PortAudio library"
+)
+mark_as_advanced(PortAudio_LIBRARY)
+
+if(DEFINED PC_PortAudio_VERSION AND NOT PC_PortAudio_VERSION STREQUAL "")
+  set(PortAudio_VERSION "${PC_PortAudio_VERSION}")
+endif()
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
+  PortAudio
+  REQUIRED_VARS PortAudio_LIBRARY PortAudio_INCLUDE_DIR
+  VERSION_VAR PortAudio_VERSION
 )
 
-find_library(PortAudio_LIBRARIES
-  NAMES
-    portaudio
-  PATHS
-      /usr/local/lib
-      /usr/lib
-      /usr/lib64
-  HINTS
-    ${PC_PortAudio_LIBDIR}
-)
-
-mark_as_advanced(PortAudio_INCLUDE_DIRS PortAudio_LIBRARIES)
-
-# Found PortAudio, but it may be version 18 which is not acceptable.
-if(EXISTS ${PortAudio_INCLUDE_DIRS}/portaudio.h)
-  include(CheckCXXSourceCompiles)
-  set(CMAKE_REQUIRED_INCLUDES_SAVED ${CMAKE_REQUIRED_INCLUDES})
-  set(CMAKE_REQUIRED_INCLUDES ${PortAudio_INCLUDE_DIRS})
-  CHECK_CXX_SOURCE_COMPILES(
-    "#include <portaudio.h>\nPaDeviceIndex pa_find_device_by_name(const char *name); int main () {return 0;}"
-    PortAudio2_FOUND)
-  set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_SAVED})
-  unset(CMAKE_REQUIRED_INCLUDES_SAVED)
-  if(PortAudio2_FOUND)
-    INCLUDE(FindPackageHandleStandardArgs)
-    FIND_PACKAGE_HANDLE_STANDARD_ARGS(PortAudio DEFAULT_MSG PortAudio_INCLUDE_DIRS PortAudio_LIBRARIES)
-  else(PortAudio2_FOUND)
-    message(STATUS
-      "  portaudio.h not compatible (requires API 2.0)")
-    set(PortAudio_FOUND FALSE)
-  endif(PortAudio2_FOUND)
+if(PortAudio_FOUND)
+  if(NOT TARGET PortAudio::PortAudio)
+    add_library(PortAudio::PortAudio UNKNOWN IMPORTED)
+    set_target_properties(PortAudio::PortAudio
+      PROPERTIES
+        IMPORTED_LOCATION "${PortAudio_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_PortAudio_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${PortAudio_INCLUDE_DIR}"
+    )
+    is_static_library(PortAudio_IS_STATIC PortAudio::PortAudio)
+    if(PortAudio_IS_STATIC)
+      if(PortAudio_ALSA_H)
+        find_package(ALSA)
+        if(ALSA_FOUND)
+          set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            ALSA::ALSA
+          )
+        endif()
+      endif()
+      find_package(JACK)
+      if(JACK_FOUND)
+        set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          JACK::jack
+        )
+      endif()
+    endif()
+    if(PortAudio_ALSA_H)
+      target_compile_definitions(PortAudio::PortAudio INTERFACE PA_USE_ALSA)
+    endif()
+  endif()
 endif()

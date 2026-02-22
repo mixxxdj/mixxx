@@ -20,7 +20,7 @@
             <BackPath>style/style_bg_sampler_top.png</BackPath>
             <Layout>horizontal</Layout>
             <Children>
-              <Text>
+              <TrackProperty>
                 <TooltipId>text</TooltipId>
                 <Style>QLabel {
                     font-size: 12px;
@@ -35,7 +35,8 @@
                 <Group><Variable name="group"/></Group>
                 <SizePolicy>me,max</SizePolicy>
                 <Elide>right</Elide>
-              </Text>
+                <Property>titleInfo</Property>
+              </TrackProperty>
               <!-- Alternative "TITLE ONLY" display
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
@@ -57,6 +58,7 @@
               <WidgetGroup>
                 <Size>35f,24f</Size>
                 <Children>
+                  <!-- invisible Tempo/BPM tap button on top of BPM display -->
                   <Number>
                     <TooltipId>visual_bpm</TooltipId>
                     <Style>QLabel {
@@ -70,21 +72,14 @@
                     <Size>35f,24f</Size>
                     <Pos>0,2</Pos>
                     <Group><Variable name="group"/></Group>
-                    <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                    <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
                     <Alignment>right</Alignment>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                     </Connection>
                   </Number>
-                  <!-- Little trickery here:
-                    BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
-                    changed tooltip accordingly
-                  -->
                   <PushButton>
-                  <!-- Original:
-                    <TooltipId>bpm_tap</TooltipId>
-                  -->
-                    <TooltipId>bpm_tap_visual_bpm</TooltipId>
+                    <TooltipId>tempo_tap_bpm_tap_visual_bpm</TooltipId>
                     <Pos>0,5</Pos>
                     <NumberStates>1</NumberStates>
                     <State>
@@ -93,8 +88,11 @@
                       <Unpressed>skin:/btn/btn_tap_sampler.png</Unpressed>
                     </State>
                     <Connection>
+                      <ConfigKey><Variable name="group"/>,tempo_tap</ConfigKey>
+                    </Connection>
+                    <Connection>
                       <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
                 </Children>
@@ -251,8 +249,8 @@
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_master.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_master.png</Unpressed>
+                      <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
@@ -300,23 +298,23 @@
                 <Size>204f,32f</Size>
                 <Children>
                   <PushButton>
-                    <TooltipId>beatsync_beatsync_tempo</TooltipId>
-                    <NumberStates>1</NumberStates>
+                    <TooltipId>sync_enabled</TooltipId>
+                    <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
+                      <Pressed>skin:/btn/btn_sync_sampler_down.png</Pressed>
                       <Unpressed>skin:/btn/btn_sync_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_sampler_over.png</Unpressed>
                     </State>
                     <Pos>3,4</Pos>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                       <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
-                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                      <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
 
@@ -379,11 +377,11 @@
             <Pos>3,7</Pos>
             <Children>
               <StatusLight>
-                <TooltipId>sampler_PeakIndicator</TooltipId>
+                <TooltipId>sampler_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
             </Children>
@@ -402,7 +400,7 @@
                 <PeakFallTime>50</PeakFallTime>
                 <PeakFallStep>2</PeakFallStep>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,vu_meter</ConfigKey>
                 </Connection>
               </VuMeter>
             </Children>

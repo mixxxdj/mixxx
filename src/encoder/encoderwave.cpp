@@ -1,11 +1,11 @@
-#include <QtDebug>
-
 #include "encoder/encoderwave.h"
 
-#include "encoder/encodercallback.h"
-#include "errordialoghandler.h"
-#include "recording/defs_recording.h"
+#include <QtDebug>
 
+#include "audio/types.h"
+#include "encoder/encodercallback.h"
+#include "encoder/encoderwavesettings.h"
+#include "recording/defs_recording.h"
 
 // The virtual file context must return the length of the virtual file in bytes.
 static sf_count_t  sf_f_get_filelen (void *user_data)
@@ -194,11 +194,11 @@ void EncoderWave::initStream() {
     }
 }
 
-int EncoderWave::initEncoder(int samplerate, QString* pUserErrorMessage) {
+int EncoderWave::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
-    m_sfInfo.samplerate = samplerate;
+    m_sfInfo.samplerate = sampleRate;
     m_sfInfo.channels = 2;
     m_sfInfo.frames = 0;
     m_sfInfo.sections = 0;

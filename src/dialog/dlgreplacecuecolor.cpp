@@ -5,7 +5,9 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
-#include <QtConcurrent>
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QStyleFactory>
 
 #include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"
@@ -13,6 +15,7 @@
 #include "moc_dlgreplacecuecolor.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
+#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
@@ -150,11 +153,19 @@ DlgReplaceCueColor::DlgReplaceCueColor(
 
     // Update dialog widgets when conditions checkboxes are (un)checked
     connect(checkBoxCurrentColorCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
     connect(checkBoxHotcueIndexCondition,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
             &QCheckBox::stateChanged,
+#endif
             this,
             &DlgReplaceCueColor::slotUpdateWidgets);
 
@@ -309,7 +320,7 @@ void DlgReplaceCueColor::slotApply() {
     }
 
     // Flush cached tracks to database
-    QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
+    const QSet<TrackId> cachedTrackIds = GlobalTrackCacheLocker().getCachedTrackIds();
     for (const TrackId& trackId : cachedTrackIds) {
         TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId);
         if (pTrack) {
@@ -342,7 +353,7 @@ void DlgReplaceCueColor::slotApply() {
             continue;
         }
         CueDatabaseRow row = {DbId(selectQuery.value(idColumn)),
-                TrackId(selectQuery.value(trackIdColumn).toInt()),
+                TrackId(selectQuery.value(trackIdColumn)),
                 *color};
         rows << row;
         trackIds << row.trackId;
@@ -386,14 +397,14 @@ void DlgReplaceCueColor::slotApply() {
     bool canceled = false;
 
     QMultiMap<TrackPointer, DbId> cues;
-    for (const auto& row : qAsConst(rows)) {
+    for (const auto& row : std::as_const(rows)) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
             canceled = true;
             break;
         }
         query.bindValue(":id", row.id.toVariant());
-        query.bindValue(":track_id", row.trackId.value());
+        query.bindValue(":track_id", row.trackId.toVariant());
         query.bindValue(":current_color", mixxx::RgbColor::toQVariant(row.color));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);

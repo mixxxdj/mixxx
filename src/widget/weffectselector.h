@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QDomNode>
 #include <QComboBox>
-#include "effects/effectrack.h"
-#include "effects/effectslot.h"
-#include "skin/legacy/skincontext.h"
+
+#include "effects/defs.h"
+#include "widget/wbasewidget.h"
 
 class EffectsManager;
+class QDomNode;
+class SkinContext;
 
 class WEffectSelector : public QComboBox, public WBaseWidget {
     Q_OBJECT
@@ -15,18 +16,14 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
-  protected:
-    bool event(QEvent* pEvent) override;
-
   private slots:
     void slotEffectUpdated();
     void slotEffectSelected(int newIndex);
     void populate();
+    bool event(QEvent* pEvent) override;
 
   private:
     EffectsManager* m_pEffectsManager;
+    VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectSlotPointer m_pEffectSlot;
-    EffectChainSlotPointer m_pChainSlot;
-    EffectRackPointer m_pRack;
-    double m_scaleFactor;
 };

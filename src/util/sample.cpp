@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdlib>
 
+#include "engine/engine.h"
 #include "util/math.h"
 
 #ifdef __WINDOWS__
@@ -154,6 +155,23 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
             pBuffer[i] *= old_gain;
         }
     }
+}
+
+CSAMPLE SampleUtil::copyWithRampingNormalization(CSAMPLE* pDest,
+        const CSAMPLE* pSrc,
+        CSAMPLE_GAIN old_gain,
+        CSAMPLE_GAIN targetAmplitude,
+        SINT numSamples) {
+    SINT numMonoSamples = numSamples / mixxx::kEngineChannelCount.value();
+    mixMultichannelToMono(pDest, pSrc, numSamples);
+
+    CSAMPLE maxAmplitude = maxAbsAmplitude(pDest, numMonoSamples);
+    CSAMPLE_GAIN gain = maxAmplitude == CSAMPLE_ZERO
+            ? 1
+            : targetAmplitude / maxAmplitude;
+    copyWithRampingGain(pDest, pSrc, old_gain, gain, numSamples);
+
+    return gain;
 }
 
 // static
@@ -427,6 +445,33 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL,
 }
 
 // static
+CSAMPLE SampleUtil::sumSquared(const CSAMPLE* pBuffer, SINT numSamples) {
+    CSAMPLE sumSq = CSAMPLE_ZERO;
+
+    for (SINT i = 0; i < numSamples; ++i) {
+        sumSq += pBuffer[i] * pBuffer[i];
+    }
+
+    return sumSq;
+}
+
+// static
+CSAMPLE SampleUtil::rms(const CSAMPLE* pBuffer, SINT numSamples) {
+    return sqrtf(sumSquared(pBuffer, numSamples) / numSamples);
+}
+
+CSAMPLE SampleUtil::maxAbsAmplitude(const CSAMPLE* pBuffer, SINT numSamples) {
+    CSAMPLE max = pBuffer[0];
+    for (SINT i = 1; i < numSamples; ++i) {
+        CSAMPLE absValue = abs(pBuffer[i]);
+        if (absValue > max) {
+            max = absValue;
+        }
+    }
+    return max;
+}
+
+// static
 void SampleUtil::copyClampBuffer(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc, SINT iNumSamples) {
     // note: LOOP VECTORIZED.
@@ -526,6 +571,19 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples) {
 }
 
 // static
+void SampleUtil::mixMultichannelToMono(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples) {
+    auto chCount = mixxx::kEngineChannelCount.value();
+    const CSAMPLE_GAIN mixScale = CSAMPLE_GAIN_ONE / (CSAMPLE_GAIN_ONE * chCount);
+    for (SINT i = 0; i < numSamples / chCount; ++i) {
+        pDest[i] = CSAMPLE_ZERO;
+        for (auto ch = 0; ch < chCount; ++ch) {
+            pDest[i] += pSrc[i * chCount + ch];
+        }
+        pDest[i] *= mixScale;
+    }
+}
+
+// static
 void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, SINT numFrames) {
     // backward loop
     SINT i = numFrames;
@@ -565,8 +623,8 @@ void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
 void SampleUtil::stripMultiToStereo(
         CSAMPLE* pBuffer,
         SINT numFrames,
-        int numChannels) {
-    DEBUG_ASSERT(numChannels > 2);
+        mixxx::audio::ChannelCount numChannels) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pBuffer[i * 2] = pBuffer[i * numChannels];
@@ -579,15 +637,14 @@ void SampleUtil::copyMultiToStereo(
         CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         SINT numFrames,
-        int numChannels) {
-    DEBUG_ASSERT(numChannels > 2);
+        mixxx::audio::ChannelCount numChannels) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pDest[i * 2] = pSrc[i * numChannels];
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
     }
 }
-
 
 // static
 void SampleUtil::reverse(CSAMPLE* pBuffer, SINT numSamples) {

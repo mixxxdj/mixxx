@@ -136,7 +136,7 @@
                         }
                         </Style>
                         <Channel><Variable name="channum"/></Channel>
-                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                        <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
                         <Alignment>center</Alignment>
                         <Elide>right</Elide>
                         <Connection>
@@ -157,7 +157,7 @@
                         }
                         </Style>
                         <Channel><Variable name="channum"/></Channel>
-                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                        <!--CSS alignments not respected see bug #5459 , lets call <Alignment>-->
                         <Alignment>center</Alignment>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>

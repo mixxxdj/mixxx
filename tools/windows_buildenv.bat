@@ -4,12 +4,20 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 CALL :REALPATH "%~dp0\.."
 SET MIXXX_ROOT=%RETVAL%
 
-IF NOT DEFINED PLATFORM (
-    SET PLATFORM=x64
+REM Detect host architecture
+IF /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    SET "HOST_ARCH=x64"
+) else IF /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+    SET "HOST_ARCH=arm64"
+) else (
+    echo ^Error: Unknown processor architecture: %PROCESSOR_ARCHITECTURE%
+    PAUSE
+    EXIT /B 1
 )
 
-IF NOT DEFINED CONFIGURATION (
-    SET CONFIGURATION=release-fastbuild
+IF NOT DEFINED PLATFORM (
+    ECHO ^Info: The PLATFORM environment variable is not defined. Using host's PROCESSOR_ARCHITECTURE=%PROCESSOR_ARCHITECTURE%.
+    SET "PLATFORM=%HOST_ARCH%"
 )
 
 IF NOT DEFINED BUILDENV_BASEPATH (
@@ -22,6 +30,26 @@ IF NOT DEFINED BUILD_ROOT (
 
 IF NOT DEFINED INSTALL_ROOT (
     SET INSTALL_ROOT=%MIXXX_ROOT%\install
+)
+
+IF /I "%PLATFORM%"=="x64" (
+    IF DEFINED BUILDENV_RELEASE (
+        SET BUILDENV_BRANCH=2.5-rel
+        SET VCPKG_TARGET_TRIPLET=x64-windows-release
+        SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-40c29ff
+        SET BUILDENV_SHA256=a9d809ae9c52d8a553af1bb8a58565649ced7b1f938d1d37c1c7d83ad53aacf3
+    ) ELSE (
+        SET BUILDENV_BRANCH=2.5
+        SET VCPKG_TARGET_TRIPLET=x64-windows
+        SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-c15790e
+        SET BUILDENV_SHA256=138e4685ec73c6a6a509f71f8573be581403b091e4ecea2314df2cc79f9720b9
+    )
+) ELSE (
+    ECHO ^ERROR: Unsupported PLATFORM: %PLATFORM%
+    ECHO ^Please refer to the following guide to manually build the vcpkg environment:"
+    ECHO ^https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
+    PAUSE
+    EXIT /B 1
 )
 
 IF "%~1"=="" (
@@ -38,15 +66,12 @@ ENDLOCAL & SET "MIXXX_VCPKG_ROOT=%MIXXX_VCPKG_ROOT%" & SET "VCPKG_DEFAULT_TRIPLE
 EXIT /B 0
 
 :COMMAND_name
-    CALL :READ_ENVNAME
     IF DEFINED GITHUB_ENV (
-        ECHO BUILDENV_NAME=!RETVAL! >> !GITHUB_ENV!
+        ECHO BUILDENV_NAME=%BUILDENV_NAME% >> !GITHUB_ENV!
     )
     GOTO :EOF
 
 :COMMAND_setup
-    CALL :READ_ENVNAME
-    SET BUILDENV_NAME=%RETVAL%
     SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
 
     IF NOT EXIST "%BUILDENV_BASEPATH%" (
@@ -55,13 +80,19 @@ EXIT /B 0
     )
 
     IF NOT EXIST "%BUILDENV_PATH%" (
-        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.3/Windows/!BUILDENV_NAME!.zip
+        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/!BUILDENV_BRANCH!/Windows/!BUILDENV_NAME!.zip
         IF NOT EXIST "!BUILDENV_PATH!.zip" (
             ECHO ^Download prebuilt build environment from "!BUILDENV_URL!" to "!BUILDENV_PATH!.zip"...
             REM TODO: The /DYNAMIC parameter is required because our server does not yet support HTTP range headers
             BITSADMIN /transfer buildenvjob /download /priority normal /DYNAMIC !BUILDENV_URL! "!BUILDENV_PATH!.zip"
-            REM TODO: verify download using sha256sum?
             ECHO ^Download complete.
+            certutil -hashfile "!BUILDENV_PATH!.zip" SHA256 | FIND /C "!BUILDENV_SHA256!"
+            IF errorlevel 1 (
+                ECHO ^ERROR: Download did not match expected SHA256 checksum!
+                certutil -hashfile "!BUILDENV_PATH!.zip" SHA256
+                echo ^Expected: "!BUILDENV_SHA256!"
+                EXIT /B 1
+            )
         ) else (
             ECHO ^Using cached archive at "!BUILDENV_PATH!.zip".
         )
@@ -72,7 +103,7 @@ EXIT /B 0
             CALL :UNZIP_POWERSHELL "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         ) ELSE (
             ECHO ^Unpacking "!BUILDENV_PATH!.zip" using 7z...
-            CALL :UNZIP_SEVENZIP "!RETVAL!" "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
+            CALL :UNZIP_SEVENZIP !RETVAL! "!BUILDENV_PATH!.zip" "!BUILDENV_BASEPATH!"
         )
         IF NOT EXIST "%BUILDENV_PATH%" (
             ECHO ^Error: Unpacking failed. The downloaded archive might be broken, consider removing "!BUILDENV_PATH!.zip" to force redownload.
@@ -86,21 +117,17 @@ EXIT /B 0
     ECHO ^Build environment path: !BUILDENV_PATH!
 
     SET "MIXXX_VCPKG_ROOT=!BUILDENV_PATH!"
-    SET "VCPKG_DEFAULT_TRIPLET=x64-windows"
-    SET "X_VCPKG_APPLOCAL_DEPS_INSTALL=ON"
     SET "CMAKE_GENERATOR=Ninja"
+    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\!VCPKG_TARGET_TRIPLET!"
 
     ECHO ^Environment Variables:
     ECHO ^- MIXXX_VCPKG_ROOT='!MIXXX_VCPKG_ROOT!'
-    ECHO ^- VCPKG_DEFAULT_TRIPLET='!VCPKG_DEFAULT_TRIPLET!'
-    ECHO ^- X_VCPKG_APPLOCAL_DEPS_INSTALL='!X_VCPKG_APPLOCAL_DEPS_INSTALL!'
     ECHO ^- CMAKE_GENERATOR='!CMAKE_GENERATOR!'
 
     IF DEFINED GITHUB_ENV (
         ECHO MIXXX_VCPKG_ROOT=!MIXXX_VCPKG_ROOT!>>!GITHUB_ENV!
-        ECHO VCPKG_DEFAULT_TRIPLET=!VCPKG_DEFAULT_TRIPLET!>>!GITHUB_ENV!
-        ECHO X_VCPKG_APPLOCAL_DEPS_INSTALL=!X_VCPKG_APPLOCAL_DEPS_INSTALL!>>!GITHUB_ENV!
         ECHO CMAKE_GENERATOR=!CMAKE_GENERATOR!>>!GITHUB_ENV!
+        ECHO VCPKG_TARGET_TRIPLET=!VCPKG_TARGET_TRIPLET!>>!GITHUB_ENV!
     ) ELSE (
         ECHO ^Generating "CMakeSettings.json"...
         CALL :GENERATE_CMakeSettings_JSON
@@ -119,7 +146,7 @@ EXIT /B 0
 
 
 :DETECT_SEVENZIP
-    SET SEVENZIP_PATH=7z.exe
+    SET SEVENZIP_PATH="7z.exe"
     !SEVENZIP_PATH! --help >NUL 2>NUL
     IF errorlevel 1 (
         SET SEVENZIP_PATH="c:\Program Files\7-Zip\7z.exe"
@@ -128,16 +155,16 @@ EXIT /B 0
             SET SEVENZIP_PATH="c:\Program Files (x86)\7-Zip\7z.exe"
             !SEVENZIP_PATH! --help >NUL 2>NUL
             if errorlevel 1 (
-                SET SEVENZIP_PATH=
+                SET SEVENZIP_PATH=""
             )
         )
     )
-    SET RETVAL="!SEVENZIP_PATH!"
+    SET RETVAL=!SEVENZIP_PATH!
     GOTO :EOF
 
 
 :UNZIP_SEVENZIP <7zippath> <newzipfile> <ExtractTo>
-    %1 x -o%3 %2
+    %1 x "-o%~3" %2
     GOTO :EOF
 
 
@@ -151,15 +178,6 @@ EXIT /B 0
     SET RETVAL=%~f1
     GOTO :EOF
 
-
-:READ_ENVNAME
-    ECHO Reading name of prebuild environment from "%MIXXX_ROOT%\packaging\windows\build_environment"
-    SET /P BUILDENV_NAME=<"%MIXXX_ROOT%\packaging\windows\build_environment"
-    SET BUILDENV_NAME=!BUILDENV_NAME:PLATFORM=%PLATFORM%!
-    SET BUILDENV_NAME=!BUILDENV_NAME:CONFIGURATION=%CONFIGURATION%!
-    SET RETVAL=%BUILDENV_NAME%
-    ECHO Environment name: %RETVAL%
-    GOTO :EOF
 
 :GENERATE_CMakeSettings_JSON
 REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
@@ -182,13 +200,20 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo {
     >>"%CMakeSettings%" echo   "configurations": [
     SET configElementTermination=,
-    CALL :Configuration2CMakeSettings_JSON off       Debug
+    IF NOT DEFINED BUILDENV_RELEASE (
+        CALL :Configuration2CMakeSettings_JSON off       Debug
+    )
     CALL :Configuration2CMakeSettings_JSON legacy    RelWithDebInfo
     CALL :Configuration2CMakeSettings_JSON portable  RelWithDebInfo
     SET configElementTermination=
     CALL :Configuration2CMakeSettings_JSON native    Release
     >>"%CMakeSettings%" echo   ]
     >>"%CMakeSettings%" echo }
+
+    echo ^You can now open CMakeSetting.json from Visual Studio
+    echo ^or configure cmake from the command line in an EMPTY build directory via:
+    echo ^cmake -DCMAKE_TOOLCHAIN_FILE=!MIXXX_VCPKG_ROOT!\scripts\buildsystems\vcpkg.cmake %MIXXX_ROOT%
+
     CALL :RESTORECONSOLE %OLDCODEPAGE%
     GOTO :EOF
 
@@ -199,17 +224,18 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>"%CMakeSettings%" echo       "configurationType": "%2",
     >>"%CMakeSettings%" echo       "enableClangTidyCodeAnalysis": true,
     >>"%CMakeSettings%" echo       "generator": "Ninja",
-    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
+    REM <compiler>_<architecture>_<host_arch>
+    >>"%CMakeSettings%" echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!HOST_ARCH!" ],
     >>"%CMakeSettings%" echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
     >>"%CMakeSettings%" echo       "cmakeToolchain": "!MIXXX_VCPKG_ROOT:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
+    REM <platform>-<compiler>-<architecture>
     >>"%CMakeSettings%" echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>"%CMakeSettings%" echo       "variables": [
     SET variableElementTermination=,
-    CALL :AddCMakeVar2CMakeSettings_JSON "X_VCPKG_APPLOCAL_DEPS_INSTALL"      "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING" "x64-windows"
+    CALL :AddCMakeVar2CMakeSettings_JSON "MIXXX_VCPKG_ROOT"                   "STRING"   "!MIXXX_VCPKG_ROOT:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "True"
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
     REM CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
@@ -225,8 +251,10 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MODPLUG"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QT6"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING"  "!VCPKG_TARGET_TRIPLET!"
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
     SET variableElementTermination=
     CALL :AddCMakeVar2CMakeSettings_JSON "WAVPACK"                            "BOOL"   "True"

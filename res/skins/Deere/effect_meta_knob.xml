@@ -13,12 +13,20 @@
     <Layout>vertical</Layout>
     <Size>40f,34f</Size>
     <Children>
-      <Template src="skin:knob.xml">
-        <SetVariable name="TooltipId">EffectSlot_metaknob</SetVariable>
-        <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
-        <SetVariable name="control">meta</SetVariable>
-        <SetVariable name="color">blue_gapless</SetVariable>
-      </Template>
+      <EffectMetaKnob>
+        <TooltipId>EffectSlot_metaknob</TooltipId>
+        <Size>40f,34f</Size>
+        <Knob>knob.svg</Knob>
+        <BackPath>knob_bg_blue_gapless.svg</BackPath>
+        <MinAngle>-135</MinAngle>
+        <MaxAngle>135</MaxAngle>
+        <KnobCenterYOffset>1.602</KnobCenterYOffset>
+        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+        <Effect><Variable name="Effect"/></Effect>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],meta</ConfigKey>
+        </Connection>
+      </EffectMetaKnob>
     </Children>
   </WidgetGroup>
 </Template>

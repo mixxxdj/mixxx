@@ -1,4 +1,5 @@
 #pragma once
+#include <QtDebug>
 
 #include "util/types.h"
 
@@ -63,7 +64,8 @@ public:
     // Parsing and formatting of gain values according to the
     // ReplayGain 1.0/2.0 specification.
     static double ratioFromString(const QString& dBGain, bool* pValid = 0);
-    static QString ratioToString(double ratio);
+    static QString ratioToString(double ratio,
+            std::optional<int> precision = std::nullopt);
 
     static double normalizeRatio(double ratio);
 
@@ -98,7 +100,7 @@ public:
         m_peak = normalizePeak(m_peak);
     }
 
-private:
+  private:
     double m_ratio;
     CSAMPLE m_peak;
 };
@@ -118,7 +120,7 @@ QDebug operator<<(QDebug dbg, const ReplayGain& arg) {
     return dbg << "ratio =" << arg.getRatio() << "/" << "peak =" << arg.getPeak();
 }
 
-}
+} // namespace mixxx
 
 Q_DECLARE_TYPEINFO(mixxx::ReplayGain, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::ReplayGain)

@@ -1,79 +1,77 @@
 #include "preferences/dialog/dlgprefinterface.h"
 
 #include <QDir>
-#include <QDoubleSpinBox>
 #include <QList>
 #include <QLocale>
+#include <QMainWindow>
 #include <QScreen>
-#include <QToolTip>
-#include <QWidget>
+#include <QVariant>
+#include <QtGlobal>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "mixxx.h"
 #include "moc_dlgprefinterface.cpp"
+#include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
+#include "skin/skin.h"
 #include "skin/skinloader.h"
+#include "util/cmdlineargs.h"
 #include "util/screensaver.h"
+#include "util/screensavermanager.h"
 #include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
+using mixxx::skin::SkinPointer;
 
 namespace {
 
-const QRegExp kMinSizeRegExp("<MinimumSize>(\\d+), *(\\d+)<");
+const QString kConfigGroup = QStringLiteral("[Config]");
+const QString kControlsGroup = QStringLiteral("[Controls]");
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
+const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
+const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
+const QString kSchemeKey = QStringLiteral("Scheme");
+const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
+const QString kLocaleKey = QStringLiteral("Locale");
+const QString kTooltipsKey = QStringLiteral("Tooltips");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+const QString kHideMenuBarKey = QStringLiteral("hide_menubar");
 
-bool skinFitsScreenSize(
-        const QScreen& screen,
-        const QString& skin) {
-    // Use the full resolution of the entire screen that is
-    // available in full-screen mode.
-    const auto screenSize = screen.size();
-    QFile skinfile(skin + QStringLiteral("/skin.xml"));
-    if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream in(&skinfile);
-        bool found_size = false;
-        while (!in.atEnd()) {
-            if (kMinSizeRegExp.indexIn(in.readLine()) != -1) {
-                found_size = true;
-                break;
-            }
-        }
-        if (found_size) {
-            return !(kMinSizeRegExp.cap(1).toInt() > screenSize.width() ||
-                    kMinSizeRegExp.cap(2).toInt() > screenSize.height());
-        }
-    }
-
-    // If regex failed, fall back to skin name parsing.
-    QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
-    QString resName = skin.right(skin.count() - skinName.count());
-    QString res = resName.left(resName.lastIndexOf(QRegExp("\\d")) + 1);
-    QString skinWidth = res.left(res.indexOf("x"));
-    QString skinHeight = res.right(res.count() - skinWidth.count() - 1);
-    return skinWidth.toInt() <= screenSize.width() &&
-            skinHeight.toInt() <= screenSize.height();
-}
+// TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
+const bool kStartInFullscreenDefault = false;
+const bool kHideMenuBarDefault = true;
 
 } // namespace
 
-DlgPrefInterface::DlgPrefInterface(QWidget* parent,
-        MixxxMainWindow* mixxx,
-        SkinLoader* pSkinLoader,
+DlgPrefInterface::DlgPrefInterface(
+        QWidget* parent,
+        std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
+        std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_mixxx(mixxx),
+          m_pScreensaverManager(pScreensaverManager),
           m_pSkinLoader(pSkinLoader),
-          m_dScaleFactorAuto(1.0),
-          m_bUseAutoScaleFactor(false),
+          m_pSkin(pSkinLoader ? pSkinLoader->getConfiguredSkin() : nullptr),
           m_dScaleFactor(1.0),
-          m_dDevicePixelRatio(1.0),
-          m_bStartWithFullScreen(false),
-          m_bRebootMixxxView(false) {
+          m_minScaleFactor(1.0),
+          m_dDevicePixelRatio(1.0) {
     setupUi(this);
+
+    // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
+    m_dDevicePixelRatio = devicePixelRatioF();
+
+    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
+    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
+    // unusable GUI with visual artefacts
+    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
+    if (initialScaleFactor <= 0) {
+        initialScaleFactor = 1.0;
+    }
+    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
+    m_minScaleFactor = 1 / unscaledDevicePixelRatio;
 
     // Locale setting
     // Iterate through the available locales and add them to the combobox
@@ -90,7 +88,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
     DEBUG_ASSERT(!fileNames.contains(QStringLiteral("mixxx_en_US.qm")));
     fileNames.push_back(QStringLiteral("mixxx_en_US.qm"));
 
-    for (const auto& fileName : qAsConst(fileNames)) {
+    for (const auto& fileName : std::as_const(fileNames)) {
         // Extract locale name from file name
         QString localeName = fileName;
         // Strip prefix
@@ -99,7 +97,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
         // Strip file extension
         localeName.truncate(localeName.lastIndexOf('.'));
         // Convert to QLocale name format. Unfortunately the translation files
-        // use inconsistent language/country separators, i.e. both '-' and '_'.
+        // use inconsistent language/territory separators, i.e. both '-' and '_'.
         auto localeNameFixed = localeName;
         localeNameFixed.replace('-', '_');
         const auto locale = QLocale(localeNameFixed);
@@ -107,21 +105,25 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
         const QString languageName = QLocale::languageToString(locale.language());
         // Ugly hack to skip non-resolvable locales
         if (languageName == QStringLiteral("C")) {
-            qWarning() << "Unsupported locale" << localeNameFixed;
+            qWarning() << "Preferences: skipping unsupported locale" << localeNameFixed;
             continue;
         }
-        QString countryName;
-        // Ugly hack to detect locales with an explicitly specified country.
+        QString territoryName;
+        // Ugly hack to detect locales with an explicitly specified country/territory.
         // https://doc.qt.io/qt-5/qlocale.html#QLocale-1
         // "If country is not present, or is not a valid ISO 3166 code, the most
         // appropriate country is chosen for the specified language."
         if (localeNameFixed.contains('_')) {
-            countryName = QLocale::countryToString(locale.country());
-            DEBUG_ASSERT(!countryName.isEmpty());
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            territoryName = QLocale::countryToString(locale.country());
+#else
+            territoryName = QLocale::territoryToString(locale.territory());
+#endif
+            DEBUG_ASSERT(!territoryName.isEmpty());
         }
         QString displayName = languageName;
-        if (!countryName.isEmpty()) {
-            displayName += QStringLiteral(" (") + countryName + ')';
+        if (!territoryName.isEmpty()) {
+            displayName += QStringLiteral(" (") + territoryName + ')';
         }
         // The locale name is stored in the config
         ComboBoxLocale->addItem(displayName, localeName);
@@ -130,89 +132,101 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
     ComboBoxLocale->model()->sort(0);
     // ...and then insert entry for default system locale at the top
     ComboBoxLocale->insertItem(0, QStringLiteral("System"), "");
+    ComboBoxLocale->insertSeparator(1);
 
-    // Skin configurations
-    QString sizeWarningString =
-            "<img src=\":/images/preferences/ic_preferences_warning.svg\") "
-            "width=16 height=16 />   " +
-            tr("The minimum size of the selected skin is bigger than your "
-               "screen resolution.");
-    warningLabel->setText(sizeWarningString);
+    if (pSkinLoader) {
+        // Skin configurations
+        warningLabel->setText(kWarningIconHtmlString +
+                tr("The minimum size of the selected skin is bigger than your "
+                   "screen resolution."));
 
-    ComboBoxSkinconf->clear();
-    // align left edge of preview image and skin description with comboboxes
-    skinPreviewLabel->setStyleSheet("QLabel { margin-left: 4px; }");
-    skinPreviewLabel->setText("");
-    skinDescriptionText->setStyleSheet("QLabel { margin-left: 2px; }");
-    skinDescriptionText->setText("");
-    skinDescriptionText->hide();
+        ComboBoxSkinconf->clear();
+        skinPreviewLabel->setText("");
+        skinDescriptionText->setText("");
+        skinDescriptionText->hide();
 
-    QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
-    QList<QFileInfo> skins;
-    for (QDir& dir : skinSearchPaths) {
-        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-        skins.append(dir.entryInfoList());
-    }
-
-    m_dDevicePixelRatio = getDevicePixelRatioF(this);
-
-    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
-    int index = 0;
-    const auto* const pScreen = getScreen();
-    for (const QFileInfo& skinInfo : skins) {
-        ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
-
-        if (skinInfo.absoluteFilePath() == configuredSkinPath) {
-            m_skin = skinInfo.fileName();
-            ComboBoxSkinconf->setCurrentIndex(index);
-            // schemes must be updated here to populate the drop-down box and set m_colorScheme
-            slotUpdateSchemes();
-            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin,
-                    m_colorScheme,
-                    m_dDevicePixelRatio));
-            if (skinFitsScreenSize(*pScreen, configuredSkinPath)) {
-                warningLabel->hide();
-            } else {
-                warningLabel->show();
-            }
-            slotSetSkinDescription(m_skin);
+        const QList<SkinPointer> skins = m_pSkinLoader->getSkins();
+        int index = 0;
+        for (const SkinPointer& pSkin : skins) {
+            ComboBoxSkinconf->insertItem(index, pSkin->name());
+            m_skins.insert(pSkin->name(), pSkin);
+            index++;
         }
-        index++;
+
+        ComboBoxSkinconf->setCurrentIndex(index);
+        // schemes must be updated here to populate the drop-down box and set m_colorScheme
+        slotUpdateSchemes();
+        slotSetSkinPreview();
+        const auto* const pScreen = getScreen();
+        if (m_pSkin->fitsScreenSize(*pScreen)) {
+            warningLabel->hide();
+        } else {
+            warningLabel->show();
+        }
+        slotSetSkinDescription();
+
+        connect(ComboBoxSkinconf,
+                QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this,
+                &DlgPrefInterface::slotSetSkin);
+        connect(ComboBoxSchemeconf,
+                QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this,
+                &DlgPrefInterface::slotSetScheme);
+    } else {
+        groupBoxSkinOptions->hide();
     }
-
-    connect(ComboBoxSkinconf,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefInterface::slotSetSkin);
-    connect(ComboBoxSchemeconf,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefInterface::slotSetScheme);
-
-    checkBoxScaleFactorAuto->hide();
-    spinBoxScaleFactor->hide();
-    labelScaleFactor->hide();
-
-    // Start in fullscreen mode
-    checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
-                    ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
 
     // Screensaver mode
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
-            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::Off));
     comboBoxScreensaver->addItem(tr("Prevent screensaver from running"),
-            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON));
+            QVariant::fromValue((mixxx::preferences::ScreenSaver::On)));
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
-            static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON_PLAY));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::OnPlay));
 
-    int inhibitsettings = static_cast<int>(mixxx->getInhibitScreensaver());
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
+            QVariant::fromValue(m_pScreensaverManager->status())));
+
+    // Multi-Sampling
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        multiSamplingComboBox->clear();
+        multiSamplingComboBox->addItem(tr("Disabled"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Disabled));
+        multiSamplingComboBox->addItem(tr("2x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Two));
+        multiSamplingComboBox->addItem(tr("4x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Four));
+        multiSamplingComboBox->addItem(tr("8x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Eight));
+        multiSamplingComboBox->addItem(tr("16x MSAA"),
+                QVariant::fromValue(mixxx::preferences::MultiSamplingMode::Sixteen));
+
+        m_multiSampling = m_pConfig->getValue<mixxx::preferences::MultiSamplingMode>(
+                ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+                mixxx::preferences::MultiSamplingMode::Four);
+        int multiSamplingIndex = multiSamplingComboBox->findData(
+                QVariant::fromValue((m_multiSampling)));
+        if (multiSamplingIndex != -1) {
+            multiSamplingComboBox->setCurrentIndex(multiSamplingIndex);
+        } else {
+            multiSamplingComboBox->setCurrentIndex(0); // Disabled
+            m_pConfig->setValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+                    mixxx::preferences::MultiSamplingMode::Disabled);
+        }
+    } else
+#endif
+    {
+#ifdef MIXXX_USE_QML
+        m_multiSampling = mixxx::preferences::MultiSamplingMode::Disabled;
+#endif
+        multiSamplingLabel->hide();
+        multiSamplingComboBox->hide();
+    }
 
     // Tooltip configuration
-    // Initialize checkboxes to match config
-    loadTooltipPreferenceFromConfig();
-    slotSetTooltips();  // Update disabled status of "only library" checkbox
     connect(buttonGroupTooltips,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -221,39 +235,55 @@ DlgPrefInterface::DlgPrefInterface(QWidget* parent,
                 slotSetTooltips();
             });
 
+    setScrollSafeGuardForAllInputWidgets(this);
+
     slotUpdate();
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    auto* pScreen =
-            mixxx::widgethelper::getScreen(*this);
+    QScreen* pScreen = nullptr;
+    const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
+    for (QWidget* pWidget : topLevelWidgets) {
+        // Ignore other popups and hidden track menus
+        QMainWindow* pMainWindow = qobject_cast<QMainWindow*>(pWidget);
+        if (pMainWindow) {
+            pScreen = mixxx::widgethelper::getScreen(*pMainWindow);
+            break;
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        pScreen = mixxx::widgethelper::getScreen(*this);
+    }
     if (!pScreen) {
-        // Obtain the screen from the main widget as a fallback. This
-        // is necessary if no window is available before the widget
-        // is displayed.
-        pScreen = mixxx::widgethelper::getScreen(*m_mixxx);
+        // Obtain the primary screen. This is necessary if no window is
+        // available before the widget is displayed.
+        pScreen = qGuiApp->primaryScreen();
     }
     DEBUG_ASSERT(pScreen);
     return pScreen;
 }
 
 void DlgPrefInterface::slotUpdateSchemes() {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
     // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getSkinPath(m_skin));
+    const QList<QString> schlist = m_pSkin->colorschemes();
 
     ComboBoxSchemeconf->clear();
+    m_colorSchemeOnUpdate = QString();
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
         ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", nullptr));
         ComboBoxSchemeconf->setCurrentIndex(0);
-        // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
+        // clear m_colorScheme so that the correct skin preview is loaded
         m_colorScheme = QString();
     } else {
         ComboBoxSchemeconf->setEnabled(true);
-        QString configScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+        QString configScheme = m_pConfig->getValue(ConfigKey(kConfigGroup, kSchemeKey));
         bool foundConfigScheme = false;
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
@@ -261,6 +291,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
             if (schlist[i] == configScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
                 m_colorScheme = configScheme;
+                m_colorSchemeOnUpdate = configScheme;
                 foundConfigScheme = true;
             }
         }
@@ -270,43 +301,51 @@ void DlgPrefInterface::slotUpdateSchemes() {
         // m_colorScheme to avoid an empty skin preview.
         if (!foundConfigScheme) {
             m_colorScheme = schlist[0];
+            m_colorSchemeOnUpdate = schlist[0];
         }
     }
 }
 
 void DlgPrefInterface::slotUpdate() {
-    m_skinOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
-    if (m_skinOnUpdate.isEmpty()) {
-        m_skinOnUpdate = m_pSkinLoader->getDefaultSkinName();
+    if (m_pSkinLoader) {
+        const SkinPointer pSkinOnUpdate = m_pSkinLoader->getConfiguredSkin();
+        if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
+            m_skinNameOnUpdate = pSkinOnUpdate->name();
+        } else {
+            m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
+        }
+        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
+        slotUpdateSchemes();
     }
-    ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinOnUpdate));
-    slotUpdateSchemes();
-    m_bRebootMixxxView = false;
 
-    m_localeOnUpdate = m_pConfig->getValueString(ConfigKey("[Config]", "Locale"));
+    m_localeOnUpdate = m_pConfig->getValue(ConfigKey(kConfigGroup, kLocaleKey));
     ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
-
-    checkBoxScaleFactorAuto->setChecked(m_pConfig->getValue(
-            ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor));
 
     // The spinbox shows a percentage but Mixxx stores a multiplication factor
     // with 1.00 as no scaling, so multiply the stored value by 100.
-    spinBoxScaleFactor->setValue(m_pConfig->getValue(
-                    ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor) * 100);
+    m_dScaleFactor = m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kScaleFactorKey), m_dScaleFactor);
+    spinBoxScaleFactor->setValue(m_dScaleFactor * 100);
+    spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
-            ConfigKey("[Config]", "StartInFullscreen"), m_bStartWithFullScreen));
+            ConfigKey(kConfigGroup, kStartInFullscreenKey), kStartInFullscreenDefault));
+
+    checkBoxHideMenuBar->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kHideMenuBarKey), kHideMenuBarDefault));
 
     loadTooltipPreferenceFromConfig();
 
-    int inhibitsettings = static_cast<int>(m_mixxx->getInhibitScreensaver());
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
+            QVariant::fromValue(m_pScreensaverManager->status())));
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
-    int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
-    ComboBoxSkinconf->setCurrentIndex(index);
-    slotSetSkin(index);
+    if (m_pSkinLoader) {
+        int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
+        ComboBoxSkinconf->setCurrentIndex(index);
+        slotSetSkin(index);
+    }
 
     // Use System locale
     ComboBoxLocale->setCurrentIndex(0);
@@ -314,58 +353,49 @@ void DlgPrefInterface::slotResetToDefaults() {
     // Default to normal size widgets
     // The spinbox shows a percentage with 100% as no scaling.
     spinBoxScaleFactor->setValue(100);
-    if (m_dScaleFactorAuto > 0) {
-        checkBoxScaleFactorAuto->setChecked(true);
-    }
 
     // Don't start in full screen.
-    checkBoxStartFullScreen->setChecked(false);
+    checkBoxStartFullScreen->setChecked(kStartInFullscreenDefault);
+
+    // Always show the menu bar
+    checkBoxHideMenuBar->setChecked(kHideMenuBarDefault);
+    // Also show the menu bar hint again on next start?
+    // Use bool member to set [Config],show_menubar_hint to 1 in slotApply()
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
-        static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
+            QVariant::fromValue(mixxx::preferences::ScreenSaver::On)));
 
+#ifdef MIXXX_USE_QML
+    multiSamplingComboBox->setCurrentIndex(
+            multiSamplingComboBox->findData(QVariant::fromValue(
+                    mixxx::preferences::MultiSamplingMode::Four))); // 4x MSAA
+#endif
+
+#ifdef Q_OS_IOS
+    // Tooltips off everywhere.
+    radioButtonTooltipsOff->setChecked(true);
+#else
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
-}
-
-void DlgPrefInterface::slotSetScaleFactor(double newValue) {
-    // The spinbox shows a percentage, but Mixxx stores a multiplication factor
-    // with 1.00 as no change.
-    newValue /= 100.0;
-    if (m_dScaleFactor != newValue) {
-        m_dScaleFactor = newValue;
-        m_bRebootMixxxView = true;
-    }
-}
-
-void DlgPrefInterface::slotSetScaleFactorAuto(bool newValue) {
-    if (newValue) {
-        if (!m_bUseAutoScaleFactor) {
-            m_bRebootMixxxView = true;
-        }
-    } else {
-        slotSetScaleFactor(newValue);
-    }
-
-    m_bUseAutoScaleFactor = newValue;
-    spinBoxScaleFactor->setEnabled(!newValue);
+#endif
 }
 
 void DlgPrefInterface::slotSetTooltips() {
-    m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ON;
+    m_tooltipMode = mixxx::preferences::Tooltips::On;
     if (radioButtonTooltipsOff->isChecked()) {
-        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_OFF;
+        m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
-        m_tooltipMode = mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY;
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
     }
 }
 
 void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
-    QMessageBox::information(
-        this, tr("Information"),
-        tr("Mixxx must be restarted before the new locale setting will take effect."));
+    QMessageBox::information(this,
+            tr("Information"),
+            tr("Mixxx must be restarted before the new locale, scaling or multi-sampling "
+               "settings will take effect."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -377,20 +407,17 @@ void DlgPrefInterface::slotSetScheme(int) {
             ? ComboBoxSchemeconf->currentText()
             : QString();
 
-    if (m_colorScheme != newScheme) {
-        m_colorScheme = newScheme;
-        m_bRebootMixxxView = true;
-    }
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin,
-            m_colorScheme,
-            m_dDevicePixelRatio));
+    m_colorScheme = newScheme;
+    slotSetSkinPreview();
 }
 
-void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
-    SkinManifest manifest = LegacySkinParser::getSkinManifest(
-            LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
-    QString description = QString::fromStdString(manifest.description());
-    if (manifest.has_description() && !description.isEmpty()) {
+void DlgPrefInterface::slotSetSkinDescription() {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
+    const QString description = m_pSkin->description();
+    if (!description.isEmpty()) {
         skinDescriptionText->show();
         skinDescriptionText->setText(description);
     } else {
@@ -398,84 +425,129 @@ void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
     }
 }
 
-void DlgPrefInterface::slotSetSkin(int) {
-    QString newSkin = ComboBoxSkinconf->currentText();
-    if (newSkin != m_skin) {
-        m_skin = newSkin;
-        m_bRebootMixxxView = newSkin != m_skinOnUpdate;
-        const auto* const pScreen = getScreen();
-        if (pScreen &&
-                skinFitsScreenSize(*pScreen, m_pSkinLoader->getSkinPath(m_skin))) {
-            warningLabel->hide();
-        } else {
-            warningLabel->show();
-        }
-        slotUpdateSchemes();
-        slotSetSkinDescription(m_skin);
+void DlgPrefInterface::slotSetSkinPreview() {
+    if (!m_pSkinLoader) {
+        return;
     }
 
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin,
-            m_colorScheme,
-            m_dDevicePixelRatio));
+    QPixmap preview = m_pSkin->preview(m_colorScheme);
+    preview.setDevicePixelRatio(m_dDevicePixelRatio);
+    skinPreviewLabel->setPixmap(preview.scaled(
+            QSize(640, 360) * m_dDevicePixelRatio,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation));
+}
+
+void DlgPrefInterface::slotSetSkin(int) {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
+    QString newSkinName = ComboBoxSkinconf->currentText();
+    if (newSkinName == m_pSkin->name()) {
+        return;
+    }
+
+    const SkinPointer pNewSkin = m_skins[newSkinName];
+    VERIFY_OR_DEBUG_ASSERT(pNewSkin != nullptr && pNewSkin->isValid()) {
+        return;
+    }
+    m_pSkin = pNewSkin;
+    const auto* const pScreen = getScreen();
+    if (pScreen && m_pSkin->fitsScreenSize(*pScreen)) {
+        warningLabel->hide();
+    } else {
+        warningLabel->show();
+    }
+    slotUpdateSchemes();
+    slotSetSkinDescription();
+    slotSetSkinPreview();
 }
 
 void DlgPrefInterface::slotApply() {
-    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin);
-    m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
-
-    QString locale = ComboBoxLocale->itemData(
-            ComboBoxLocale->currentIndex()).toString();
-    m_pConfig->set(ConfigKey("[Config]", "Locale"), locale);
-
-    m_pConfig->setValue(
-            ConfigKey("[Config]", "ScaleFactorAuto"), m_bUseAutoScaleFactor);
-    if (m_bUseAutoScaleFactor) {
-        m_pConfig->setValue(
-                ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactorAuto);
-    } else {
-        m_pConfig->setValue(ConfigKey("[Config]", "ScaleFactor"), m_dScaleFactor);
+    if (m_pSkinLoader) {
+        m_pConfig->set(ConfigKey(kConfigGroup, kResizableSkinKey), m_pSkin->name());
+        m_pConfig->set(ConfigKey(kConfigGroup, kSchemeKey), m_colorScheme);
     }
 
-    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"),
+    QString locale = ComboBoxLocale->currentData().toString();
+    m_pConfig->set(ConfigKey(kConfigGroup, kLocaleKey), locale);
+
+    double scaleFactor = spinBoxScaleFactor->value() / 100;
+    m_pConfig->setValue(ConfigKey(kConfigGroup, kScaleFactorKey), scaleFactor);
+
+    m_pConfig->set(ConfigKey(kConfigGroup, kStartInFullscreenKey),
             ConfigValue(checkBoxStartFullScreen->isChecked()));
 
-    m_mixxx->setToolTipsCfg(m_tooltipMode);
+    m_pConfig->set(ConfigKey(kConfigGroup, kHideMenuBarKey),
+            ConfigValue(checkBoxHideMenuBar->isChecked()));
+    emit menuBarAutoHideChanged();
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, kTooltipsKey),
+            m_tooltipMode);
+    emit tooltipModeChanged(m_tooltipMode);
 
     // screensaver mode update
-    int screensaverComboBoxState = comboBoxScreensaver->itemData(
-            comboBoxScreensaver->currentIndex()).toInt();
-    int screensaverConfiguredState = static_cast<int>(m_mixxx->getInhibitScreensaver());
+    const auto screensaverComboBoxState =
+            comboBoxScreensaver->currentData().value<mixxx::preferences::ScreenSaver>();
+    const auto screensaverConfiguredState = m_pScreensaverManager->status();
     if (screensaverComboBoxState != screensaverConfiguredState) {
-        m_mixxx->setInhibitScreensaver(
-                static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
+        m_pScreensaverManager->setStatus(screensaverComboBoxState);
     }
 
-    if (locale != m_localeOnUpdate) {
+#ifdef MIXXX_USE_QML
+    mixxx::preferences::MultiSamplingMode multiSampling =
+            multiSamplingComboBox->currentData()
+                    .value<mixxx::preferences::MultiSamplingMode>();
+    m_pConfig->setValue<mixxx::preferences::MultiSamplingMode>(
+            ConfigKey(kPreferencesGroup, kMultiSamplingKey), multiSampling);
+#endif
+
+    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
+#ifdef MIXXX_USE_QML
+            || multiSampling != m_multiSampling
+#endif
+    ) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
+        m_dScaleFactor = scaleFactor;
+#ifdef MIXXX_USE_QML
+        m_multiSampling = multiSampling;
+#endif
     }
 
-    if (m_bRebootMixxxView) {
-        m_mixxx->rebootMixxxView();
+    // load skin/scheme if necessary
+    if (m_pSkin &&
+            (m_pSkin->name() != m_skinNameOnUpdate ||
+                    m_colorScheme != m_colorSchemeOnUpdate)) {
+        // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
+        emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
-        m_skinOnUpdate = m_skin;
+        m_skinNameOnUpdate = m_pSkin->name();
+        m_colorSchemeOnUpdate = m_colorScheme;
     }
-    m_bRebootMixxxView = false;
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
-    mixxx::TooltipsPreference configTooltips = m_mixxx->getToolTipsCfg();
-    switch (configTooltips) {
-        case mixxx::TooltipsPreference::TOOLTIPS_OFF:
-            radioButtonTooltipsOff->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ON:
-            radioButtonTooltipsLibraryAndSkin->setChecked(true);
-            break;
-        case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-            radioButtonTooltipsLibrary->setChecked(true);
-            break;
+    const auto tooltipMode = m_pConfig->getValue<mixxx::preferences::Tooltips>(
+            ConfigKey(kControlsGroup, kTooltipsKey),
+#ifdef Q_OS_IOS
+            mixxx::preferences::Tooltips::Off);
+#else
+            mixxx::preferences::Tooltips::On);
+#endif
+    switch (tooltipMode) {
+    case mixxx::preferences::Tooltips::Off:
+        radioButtonTooltipsOff->setChecked(true);
+        break;
+    case mixxx::preferences::Tooltips::OnlyInLibrary:
+        radioButtonTooltipsLibrary->setChecked(true);
+        break;
+    case mixxx::preferences::Tooltips::On:
+    default:
+        radioButtonTooltipsLibraryAndSkin->setChecked(true);
+        break;
     }
-    m_tooltipMode = configTooltips;
+    m_tooltipMode = tooltipMode;
 }

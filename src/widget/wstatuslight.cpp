@@ -1,12 +1,11 @@
 #include "widget/wstatuslight.h"
 
-#include <QPaintEvent>
-#include <QPixmap>
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QtDebug>
 
 #include "moc_wstatuslight.cpp"
+#include "skin/legacy/skincontext.h"
 
 WStatusLight::WStatusLight(QWidget * parent)
         : WWidget(parent),
@@ -69,7 +68,8 @@ void WStatusLight::setPixmap(int iState,
             setFixedSize(pPixmap->size());
         }
     } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath() << iState;
+        qDebug() << "WStatusLight" << objectName() << "Error loading pixmap"
+                 << source.getPath() << "for state" << iState;
         m_pixmaps[iState].clear();
     }
 }

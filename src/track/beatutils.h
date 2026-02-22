@@ -1,41 +1,50 @@
 #pragma once
 
 #include <QVector>
+#include <optional>
 
-#include "audio/types.h"
-#include "util/math.h"
+#include "audio/frame.h"
+#include "track/bpm.h"
 
 class BeatUtils {
   public:
     struct ConstRegion {
-        double firstBeat;
-        double beatLength;
+        mixxx::audio::FramePos firstBeat;
+        mixxx::audio::FrameDiff_t beatLength;
     };
 
-    static double calculateBpm(const QVector<double>& beats,
+    static mixxx::Bpm calculateBpm(const QVector<mixxx::audio::FramePos>& beats,
             mixxx::audio::SampleRate sampleRate);
 
     static QVector<ConstRegion> retrieveConstRegions(
-            const QVector<double>& coarseBeats,
+            const QVector<mixxx::audio::FramePos>& coarseBeats,
             mixxx::audio::SampleRate sampleRate);
 
-    static double calculateAverageBpm(int numberOfBeats,
+    static mixxx::Bpm calculateAverageBpm(int numberOfBeats,
             mixxx::audio::SampleRate sampleRate,
-            double lowerFrame,
-            double upperFrame);
+            mixxx::audio::FramePos lowerFrame,
+            mixxx::audio::FramePos upperFrame);
 
-    static double makeConstBpm(
+    static mixxx::Bpm makeConstBpm(
             const QVector<ConstRegion>& constantRegions,
             mixxx::audio::SampleRate sampleRate,
-            double* pFirstBeat);
+            mixxx::audio::FramePos* pFirstBeat);
 
-    static double adjustPhase(
-            double firstBeat,
-            double bpm,
+    static mixxx::audio::FramePos adjustPhase(
+            mixxx::audio::FramePos firstBeat,
+            mixxx::Bpm bpm,
             mixxx::audio::SampleRate sampleRate,
-            const QVector<double>& beats);
+            const QVector<mixxx::audio::FramePos>& beats);
 
-    static QVector<double> getBeats(const QVector<ConstRegion>& constantRegions);
+    static QVector<mixxx::audio::FramePos> getBeats(const QVector<ConstRegion>& constantRegions);
 
-    static double roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm);
+    static std::optional<mixxx::Bpm> trySnap(mixxx::Bpm minBpm,
+            mixxx::Bpm centerBpm,
+            mixxx::Bpm maxBpm,
+            double fraction);
+
+    static mixxx::Bpm roundBpmWithinRange(
+            mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm);
 };
+
+Q_DECLARE_TYPEINFO(BeatUtils::ConstRegion, Q_PRIMITIVE_TYPE);

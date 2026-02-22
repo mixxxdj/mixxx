@@ -9,17 +9,17 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup><Size>0me,120f</Size></WidgetGroup>
+      <WidgetGroup><Size>0me,154f</Size></WidgetGroup>
 
       <!-- Spinny -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_spinny</SetVariable>
         <SetVariable name="Text">Spinny</SetVariable>
         <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
       </Template>
 
       <!-- Cover Art -->
-      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_coverart</SetVariable>
         <SetVariable name="Text">Cover Art</SetVariable>
         <SetVariable name="Setting">[Skin],show_coverart</SetVariable>

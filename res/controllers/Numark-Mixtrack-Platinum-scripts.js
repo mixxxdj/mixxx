@@ -50,6 +50,9 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03, MixtrackPlatinum.effects[2]);
 
     // set up two banks of samplers, 4 samplers each
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     MixtrackPlatinum.sampler_all = new components.ComponentContainer();
     MixtrackPlatinum.sampler_all[1] = new MixtrackPlatinum.Sampler(1);
     MixtrackPlatinum.sampler_all[2] = new MixtrackPlatinum.Sampler(5);
@@ -114,12 +117,12 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
 
     // setup vumeter tracking
-    engine.makeConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
-    engine.makeConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel3]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel4]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Main]", "vu_meter_left", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Main]", "vu_meter_right", MixtrackPlatinum.vuCallback);
 };
 
 MixtrackPlatinum.shutdown = function() {
@@ -265,7 +268,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             components.Pot.prototype.input.call(this, channel, control, value, status, group);
         },
         connect: function() {
-            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
             this.focus_connection.trigger();
         },
         disconnect: function() {
@@ -367,7 +370,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         },
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
         },
         disconnect: function() {
             components.Button.prototype.disconnect.call(this);
@@ -396,7 +399,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             }
 
             var button = this;
-            this.flash_timer = engine.beginTimer(time, function() {
+            this.flash_timer = engine.beginTimer(time, () => {
                 if (button.flash_state) {
                     button.send(button.on);
                     button.flash_state = false;
@@ -426,7 +429,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                 engine.setValue(eu.group, "show_parameters", 1);
             }
         }
-    });
+    }.bind(this));
     this.show_focus_connection.trigger();
 
     this.touch_strip = new this.EffectUnitTouchStrip();
@@ -563,7 +566,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         type: components.Button.prototype.types.toggle,
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle);
+            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle.bind(this));
         },
     });
 
@@ -1190,7 +1193,7 @@ MixtrackPlatinum.startScratchTimer = function (deck) {
     if (MixtrackPlatinum.scratch_timer[deck]) return;
 
     MixtrackPlatinum.scratch_tick[deck] = 0;
-    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, function() {
+    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, () => {
         MixtrackPlatinum.scratchTimerCallback(deck);
     });
 };
@@ -1393,7 +1396,7 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
         || engine.getValue('[Channel3]', 'pfl')
         || engine.getValue('[Channel4]', 'pfl'))
     {
-        if (engine.getValue(group, "PeakIndicator")) {
+        if (engine.getValue(group, "peak_indicator")) {
             level = 81;
         }
 
@@ -1410,14 +1413,14 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
             midi.sendShortMsg(0xBF, 0x45, level);
         }
     }
-    else if (group == '[Master]' && control == 'VuMeterL') {
-        if (engine.getValue(group, "PeakIndicatorL")) {
+    else if (group === "[Main]" && control === "vu_meter_left") {
+        if (engine.getValue(group, "peak_indicator_left")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x44, level);
     }
-    else if (group == '[Master]' && control == 'VuMeterR') {
-        if (engine.getValue(group, "PeakIndicatorR")) {
+    else if (group === "[Main]" && control === "vu_meter_right") {
+        if (engine.getValue(group, "peak_indicator_right")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x45, level);

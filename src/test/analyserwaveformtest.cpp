@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
+
 #include <QDir>
 #include <QtDebug>
+#include <vector>
 
-#include "test/mixxxtest.h"
-
+#include "analyzer/analyzertrack.h"
 #include "analyzer/analyzerwaveform.h"
 #include "library/dao/analysisdao.h"
+#include "test/mixxxtest.h"
 #include "track/track.h"
 
 namespace {
@@ -15,13 +17,12 @@ constexpr std::size_t kCanarySize = 1024 * 4;
 constexpr float kMagicFloat = 1234.567890f;
 constexpr float kCanaryFloat = 0.0f;
 constexpr int kChannelCount = 2;
-const QString kReferenceBuffersPath = QStringLiteral("/src/test/reference_buffers/");
+const QString kReferenceBuffersPath = QStringLiteral("reference_buffers/");
 
 class AnalyzerWaveformTest : public MixxxTest {
   protected:
     AnalyzerWaveformTest()
-            : m_aw(config(), QSqlDatabase()),
-              m_canaryBigBuf(nullptr) {
+            : m_aw(config(), QSqlDatabase()) {
     }
 
     void SetUp() override {
@@ -35,7 +36,7 @@ class AnalyzerWaveformTest : public MixxxTest {
         // Memory layout for m_canaryBigBuf looks like
         //   [ canary | big buf | canary ]
 
-        m_canaryBigBuf = new CSAMPLE[kBigBufSize + 2 * kCanarySize];
+        m_canaryBigBuf.resize(kBigBufSize + 2 * kCanarySize);
         for (std::size_t i = 0; i < kCanarySize; i++) {
             m_canaryBigBuf[i] = kCanaryFloat;
         }
@@ -52,7 +53,7 @@ class AnalyzerWaveformTest : public MixxxTest {
             const QString& reference_title) {
         pWaveform->dump();
 
-        QFile f(QDir::currentPath() + kReferenceBuffersPath + reference_title);
+        QFile f(getTestDir().filePath(kReferenceBuffersPath + reference_title));
         bool pass = true;
         // If the file is not there, we will fail and write out the .actual
         // reference file.
@@ -80,7 +81,7 @@ class AnalyzerWaveformTest : public MixxxTest {
             qWarning() << "Buffer does not match" << reference_title
                        << ", actual buffer written to "
                        << "reference_buffers/" + fname_actual;
-            QFile actualFile(QDir::currentPath() + kReferenceBuffersPath + fname_actual);
+            QFile actualFile(getTestDir().filePath(kReferenceBuffersPath + fname_actual));
             ASSERT_TRUE(actualFile.open(QFile::WriteOnly));
             actualFile.write(actual);
             actualFile.close();
@@ -90,18 +91,17 @@ class AnalyzerWaveformTest : public MixxxTest {
     }
 
     void TearDown() override {
-        delete[] m_canaryBigBuf;
     }
 
   protected:
     AnalyzerWaveform m_aw;
     TrackPointer m_pTrack;
-    CSAMPLE* m_canaryBigBuf;
+    std::vector<CSAMPLE> m_canaryBigBuf;
 };
 
 // Basic test to make sure we don't alter the input buffer and don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, canary) {
-    m_aw.initialize(m_pTrack,
+    m_aw.initialize(AnalyzerTrack(m_pTrack),
             m_pTrack->getSampleRate(),
             kBigBufSize / kChannelCount);
     m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize);

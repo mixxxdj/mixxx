@@ -1,7 +1,9 @@
 #pragma once
 
+#include "effects/defs.h"
 #include "widget/wknobcomposed.h"
-#include "effects/effectparameterslot.h"
+
+class EffectsManager;
 
 // This is used for effect parameter knobs with dynamic
 // tooltips, if the knob value is displayed by rotating a
@@ -10,23 +12,20 @@
 // WEffectParameterKnob, which displays one of e.g. 64
 // pixmaps
 class WEffectParameterKnobComposed : public WKnobComposed {
-  Q_OBJECT
+    Q_OBJECT
   public:
-    WEffectParameterKnobComposed(QWidget* pParent, EffectsManager* pEffectsManager) :
-        WKnobComposed(pParent),
-        m_pEffectsManager(pEffectsManager) {
+    WEffectParameterKnobComposed(QWidget* pParent, EffectsManager* pEffectsManager)
+            : WKnobComposed(pParent),
+              m_pEffectsManager(pEffectsManager) {
+        setFocusPolicy(Qt::NoFocus);
     };
 
-    void setupEffectParameterSlot(const ConfigKey& configKey);
+    void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
     void parameterUpdated();
 
   private:
-    // Set the EffectParameterSlot that should be monitored by this
-    // WEffectKnobComposed.
-    void setEffectParameterSlot(EffectParameterSlotPointer pParameterSlot);
-
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };

@@ -22,27 +22,35 @@ Keys KeyFactory::loadKeysFromByteArray(const QString& keysVersion,
 }
 
 // static
-Keys KeyFactory::makeBasicKeys(mixxx::track::io::key::ChromaticKey global_key,
-                               mixxx::track::io::key::Source source) {
+Keys KeyFactory::makeBasicKeys(
+        mixxx::track::io::key::ChromaticKey global_key,
+        mixxx::track::io::key::Source source) {
     KeyMap key_map;
     key_map.set_global_key(global_key);
+    QString global_key_text = KeyUtils::keyToString(
+            global_key, KeyUtils::KeyNotation::ID3v2);
+    key_map.set_global_key_text(global_key_text.toStdString());
     key_map.set_source(source);
     return Keys(key_map);
 }
 
 // static
-Keys KeyFactory::makeBasicKeysFromText(const QString& global_key_text,
-                                       mixxx::track::io::key::Source source) {
+Keys KeyFactory::makeBasicKeysNormalized(
+        const QString& global_key_text,
+        mixxx::track::io::key::Source source) {
+    mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(global_key_text);
+    return KeyFactory::makeBasicKeys(global_key, source);
+}
+
+// static
+Keys KeyFactory::makeBasicKeysKeepText(
+        const QString& global_key_text,
+        mixxx::track::io::key::Source source) {
     KeyMap key_map;
     key_map.set_source(source);
-    mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(
-        global_key_text);
-    if (global_key != mixxx::track::io::key::INVALID) {
-        key_map.set_global_key(global_key);
-    } else {
-        // If we couldn't understand the key, save it as text.
-        key_map.set_global_key_text(global_key_text.toStdString());
-    }
+    key_map.set_global_key_text(global_key_text.toStdString());
+    mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(global_key_text);
+    key_map.set_global_key(global_key);
     return Keys(key_map);
 }
 
@@ -81,16 +89,14 @@ QString KeyFactory::getPreferredSubVersion(
 Keys KeyFactory::makePreferredKeys(
         const KeyChangeList& key_changes,
         const QHash<QString, QString>& extraVersionInfo,
-        const int iSampleRate,
+        const mixxx::audio::SampleRate sampleRate,
         SINT totalFrames) {
-    Q_UNUSED(iSampleRate);
-
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
     if (version == KEY_MAP_VERSION) {
         KeyMap key_map;
-        for (const auto* it = key_changes.constBegin();
+        for (auto it = key_changes.constBegin();
                 it != key_changes.constEnd();
                 ++it) {
             // Key position is in frames. Do not accept fractional frames.
@@ -100,7 +106,14 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_key(it->first);
             pChange->set_frame_position(static_cast<int>(frame));
         }
-        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, totalFrames, iSampleRate));
+
+        mixxx::track::io::key::ChromaticKey global_key =
+                KeyUtils::calculateGlobalKey(
+                        key_changes, totalFrames, sampleRate);
+        key_map.set_global_key(global_key);
+        QString global_key_text = KeyUtils::keyToString(
+                global_key, KeyUtils::KeyNotation::ID3v2);
+        key_map.set_global_key_text(global_key_text.toStdString());
         key_map.set_source(mixxx::track::io::key::ANALYZER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);

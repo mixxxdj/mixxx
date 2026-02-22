@@ -132,7 +132,7 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
 ///
 /// This class includes functions for formatting and parsing SeratoMarkers_
 /// metadata according to the specification:
-/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md
+/// https://github.com/Holzhaus/serato-tags/blob/main/docs/serato_markers_.md
 class SeratoMarkers final {
   public:
     SeratoMarkers() = default;
@@ -168,7 +168,7 @@ class SeratoMarkers final {
     const std::optional<SeratoStoredTrackColor>& getTrackColor() const {
         return m_pTrackColor;
     }
-    void setTrackColor(SeratoStoredTrackColor color) {
+    void setTrackColor(const SeratoStoredTrackColor& color) {
         m_pTrackColor = color;
     }
 

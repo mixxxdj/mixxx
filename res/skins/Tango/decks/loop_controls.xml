@@ -21,7 +21,7 @@ Variables:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/button_2state_right.xml">
+          <Template src="skins:Tango/controls/button_2state_right_display.xml">
             <SetVariable name="TooltipId">beatloop_activate</SetVariable>
             <SetVariable name="ObjectName">LoopActivateButton</SetVariable>
             <SetVariable name="Size">30f,22f</SetVariable>
@@ -29,6 +29,7 @@ Variables:
             <SetVariable name="state_1_icon">loop_on.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,beatloop_activate</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatlooproll_activate</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
 
           <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
@@ -52,7 +53,7 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>f,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+              <Template src="skins:Tango/controls/button_2state_right.xml">
                 <SetVariable name="TooltipId">reloop_toggle</SetVariable>
                 <SetVariable name="ObjectName">ReloopButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
@@ -60,12 +61,11 @@ Variables:
                 <SetVariable name="state_1_icon">reloop_on.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reloop_andstop</SetVariable>
-                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/controls/button_1state_right.xml">
+              <Template src="skins:Tango/controls/button_1state_right.xml">
                 <SetVariable name="TooltipId">loop_in</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
@@ -77,7 +77,7 @@ Variables:
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/controls/button_1state_right.xml">
+              <Template src="skins:Tango/controls/button_1state_right.xml">
                 <SetVariable name="TooltipId">loop_out</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
@@ -86,12 +86,23 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
               </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state.xml">
+                <SetVariable name="TooltipId">loop_anchor</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_icon">loop_anchor_start.svg</SetVariable>
+                <SetVariable name="state_1_icon">loop_anchor_end.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_anchor</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
           <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/button_2state_persist.xml">
+          <Template src="skins:Tango/controls/button_2state_persist.xml">
             <SetVariable name="ObjectName">FixedLoopSizesMiniMaxi</SetVariable>
             <SetVariable name="Size">14f,22me</SetVariable>
             <SetVariable name="ConfigKey">[Tango],decks/loop_sizes</SetVariable>
@@ -102,7 +113,7 @@ Variables:
       </WidgetGroup><!-- /Beatloop controls -->
 
       <!-- Fixed-size beatloop buttons -->
-      <Template src="skin:../Tango/decks/loop_sizes.xml"/>
+      <Template src="skins:Tango/decks/loop_sizes.xml"/>
 
     </Children>
   </WidgetGroup>

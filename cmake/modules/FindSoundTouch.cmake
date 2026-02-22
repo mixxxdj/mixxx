@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2022 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindSoundTouch
 --------------
@@ -50,13 +45,13 @@ endif()
 
 find_path(SoundTouch_INCLUDE_DIR
   NAMES soundtouch/SoundTouch.h
-  PATHS ${PC_SoundTouch_INCLUDE_DIRS}
+  HINTS ${PC_SoundTouch_INCLUDE_DIRS}
   DOC "SoundTouch include directory")
 mark_as_advanced(SoundTouch_INCLUDE_DIR)
 
 find_library(SoundTouch_LIBRARY
   NAMES SoundTouch
-  PATHS ${PC_SoundTouch_LIBRARY_DIRS}
+  HINTS ${PC_SoundTouch_LIBRARY_DIRS}
   DOC "SoundTouch library"
 )
 mark_as_advanced(SoundTouch_LIBRARY)

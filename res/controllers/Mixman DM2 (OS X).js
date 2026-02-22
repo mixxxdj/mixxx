@@ -92,11 +92,11 @@ DM2.wheel = function (channel, control, value, status ) {
 	engine.setValue( "[Channel" + DM2.pitch2deck[channel] + "]", "jog", newValue/512.0 );
 
 // 	if( channel == 0 ) {
-// 		if( engine.getValue("[Channel2]","VuMeter") > 0.6 )
+// 		if( engine.getValue("[Channel2]","vu_meter") > 0.6 )
 // 			print( "*" );
 // 		else
 // 			print( "" );
-// 		print ("playpos: " + engine.getValue("[Channel2]","VuMeter"));
+// 		print ("playpos: " + engine.getValue("[Channel2]","vu_meter"));
 // 	}
 /*	print( "=====DM2:" );
 	print( " - channel: "  + channel  );

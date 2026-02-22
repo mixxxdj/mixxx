@@ -9,14 +9,14 @@
 
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
-#include "track/trackfile.h"
+#include "util/fileinfo.h"
 #include "widget/trackdroptarget.h"
 
 class DragAndDropHelper final {
   public:
     DragAndDropHelper() = delete;
 
-    static QList<TrackFile> supportedTracksFromUrls(
+    static QList<mixxx::FileInfo> supportedTracksFromUrls(
             const QList<QUrl>& urls,
             bool firstOnly,
             bool acceptPlaylists);
@@ -42,13 +42,17 @@ class DragAndDropHelper final {
             const QString& sourceIdentifier);
 
     static void handleTrackDragEnterEvent(
-            QDragEnterEvent* event,
+            QDragEnterEvent* pEvent,
             const QString& group,
             UserSettingsPointer pConfig);
 
     static void handleTrackDropEvent(
-            QDropEvent* event,
+            QDropEvent* pEvent,
             TrackDropTarget& target,
             const QString& group,
             UserSettingsPointer pConfig);
+
+    static void mousePressed(QMouseEvent* pEvent);
+
+    static bool mouseMoveInitiatesDrag(QMouseEvent* pEvent);
 };

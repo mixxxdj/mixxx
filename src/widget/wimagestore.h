@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QHash>
-#include <QImage>
 #include <QSharedPointer>
-#include <unordered_map>
+#include <memory>
 
-#include "skin/legacy/imgsource.h"
 #include "skin/legacy/pixmapsource.h"
-#include "util/memory.h"
+
+class QImage;
+class ImgSource;
 
 class WImageStore {
   public:
@@ -24,6 +24,6 @@ class WImageStore {
     static void deleteImage(QImage* p);
 
     // Dictionary of Images already instantiated
-    static QHash<QString, std::weak_ptr<QImage> > m_dictionary;
+    static QHash<QString, std::weak_ptr<QImage>> m_dictionary;
     static QSharedPointer<ImgSource> m_loader;
 };

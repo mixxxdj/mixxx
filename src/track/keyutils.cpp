@@ -1,62 +1,104 @@
 #include "track/keyutils.h"
 
 #include <QMap>
-#include <QMutexLocker>
 #include <QPair>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QtDebug>
-#include <array>
 
-#include "util/math.h"
+#include "preferences/keydetectionsettings.h"
+#include "util/compatibility/qmutex.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 namespace {
 
+// All of these regular expressions need exact matching.
+// QRegularExpression::anchoredPattern cannot be used because Mixxx supports Qt < 5.15, so
+// instead do what QRegularExpression::anchoredPattern by wrapping each regex in \\A(?: ... )\\z
+
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-const QString s_openKeyPattern = QStringLiteral("^\\s*(1[0-2]|[1-9])([dm])\\s*$");
+const QRegularExpression s_openKeyRegex(QStringLiteral(
+        "\\A(?:^\\s*(1[0-2]|[1-9])([dm])\\s*$)\\z"));
 
 // Lancelot notation, the numbers 1-12 followed by A (minor) or B(I) (major).
 // or "I", "L", "M", "D", "P", "C" for the advanced modes
-const QString s_lancelotKeyPattern = QStringLiteral("^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$");
+const QRegularExpression s_lancelotKeyRegex(
+        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$)\\z"));
 constexpr std::string_view s_lancelotMajorModes = "BILM";
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale mode spec (m = minor, min, maj ..)
 // Note: ## = x exists: https://jadebultitude.com/double-sharp-sign-in-music
-const QString s_keyPattern = QString::fromUtf8(
-        "^\\s*([a-g])([#♯b♭]*) *([a-z]{3}.*|m)?\\s*$");
+const QRegularExpression s_keyRegex(
+        QString::fromUtf8(
+                "\\A(?:^\\s*([a-g])([#♯b♭]*) *([a-z]{3}.*|m)?\\s*$)\\z"),
+        QRegularExpression::CaseInsensitiveOption);
 
 const QString s_sharpSymbol = QString::fromUtf8("♯");
 //static const QString s_flatSymbol = QString::fromUtf8("♭");
 
 const QString s_traditionalKeyNames[] = {
-        QString::fromUtf8("INVALID"),
-        QString::fromUtf8("C"),
-        QString::fromUtf8("D♭"),
-        QString::fromUtf8("D"),
-        QString::fromUtf8("E♭"),
-        QString::fromUtf8("E"),
-        QString::fromUtf8("F"),
-        QString::fromUtf8("F♯/G♭"),
-        QString::fromUtf8("G"),
-        QString::fromUtf8("A♭"),
-        QString::fromUtf8("A"),
-        QString::fromUtf8("B♭"),
-        QString::fromUtf8("B"),
-        QString::fromUtf8("Cm"),
-        QString::fromUtf8("C♯m"),
-        QString::fromUtf8("Dm"),
-        QString::fromUtf8("D♯m/E♭m"),
-        QString::fromUtf8("Em"),
-        QString::fromUtf8("Fm"),
-        QString::fromUtf8("F♯m"),
-        QString::fromUtf8("Gm"),
-        QString::fromUtf8("G♯m"),
-        QString::fromUtf8("Am"),
-        QString::fromUtf8("B♭m"),
-        QString::fromUtf8("Bm")};
+        QStringLiteral(u"INVALID"),
+        QStringLiteral(u"C"),
+        QStringLiteral(u"D♭"),
+        QStringLiteral(u"D"),
+        QStringLiteral(u"E♭"),
+        QStringLiteral(u"E"),
+        QStringLiteral(u"F"),
+        QStringLiteral(u"F♯/G♭"),
+        QStringLiteral(u"G"),
+        QStringLiteral(u"A♭"),
+        QStringLiteral(u"A"),
+        QStringLiteral(u"B♭"),
+        QStringLiteral(u"B"),
+        QStringLiteral(u"Cm"),
+        QStringLiteral(u"C♯m"),
+        QStringLiteral(u"Dm"),
+        QStringLiteral(u"D♯m/E♭m"),
+        QStringLiteral(u"Em"),
+        QStringLiteral(u"Fm"),
+        QStringLiteral(u"F♯m"),
+        QStringLiteral(u"Gm"),
+        QStringLiteral(u"G♯m"),
+        QStringLiteral(u"Am"),
+        QStringLiteral(u"B♭m"),
+        QStringLiteral(u"Bm")};
+
+// ID3v2.3.0 specification (https://id3.org/id3v2.3.0):
+// The 'Initial key' frame contains the musical key in which the sound starts.
+// It is represented as a string with a maximum length of three characters.
+// The ground keys are represented with "A","B","C","D","E", "F" and "G" and halfkeys
+// represented with "b" and "#". Minor is represented as "m". Example "Cbm".
+// Off key is represented with an "o" only.
+const std::array s_IDv3KeyNames = {
+        // these are QStringLiterals because they're used as QStrings below, even though they
+        // only contain ASCII characters
+        QStringLiteral("o"),
+        QStringLiteral("C"),
+        QStringLiteral("Db"),
+        QStringLiteral("D"),
+        QStringLiteral("Eb"),
+        QStringLiteral("E"),
+        QStringLiteral("F"),
+        QStringLiteral("F#"),
+        QStringLiteral("G"),
+        QStringLiteral("Ab"),
+        QStringLiteral("A"),
+        QStringLiteral("Bb"),
+        QStringLiteral("B"),
+        QStringLiteral("Cm"),
+        QStringLiteral("C#m"),
+        QStringLiteral("Dm"),
+        QStringLiteral("Ebm"),
+        QStringLiteral("Em"),
+        QStringLiteral("Fm"),
+        QStringLiteral("F#m"),
+        QStringLiteral("Gm"),
+        QStringLiteral("G#m"),
+        QStringLiteral("Am"),
+        QStringLiteral("Bbm"),
+        QStringLiteral("Bm")};
 
 // Maps an OpenKey number to its major and minor key.
 constexpr ChromaticKey s_openKeyToKeys[][2] = {
@@ -253,7 +295,7 @@ QString KeyUtils::keyDebugName(ChromaticKey key) {
 
 // static
 void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
-    QMutexLocker locker(&s_notationMutex);
+    const auto locker = lockMutex(&s_notationMutex);
     s_notation = notation;
     s_reverseNotation.clear();
 
@@ -266,18 +308,62 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
 }
 
 // static
+int KeyUtils::keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
+    switch (key) {
+    case mixxx::track::io::key::C_MAJOR:
+    case mixxx::track::io::key::A_MINOR:
+        return 1;
+    case mixxx::track::io::key::G_MAJOR:
+    case mixxx::track::io::key::E_MINOR:
+        return 2;
+    case mixxx::track::io::key::D_MAJOR:
+    case mixxx::track::io::key::B_MINOR:
+        return 3;
+    case mixxx::track::io::key::A_MAJOR:
+    case mixxx::track::io::key::F_SHARP_MINOR:
+        return 4;
+    case mixxx::track::io::key::E_MAJOR:
+    case mixxx::track::io::key::C_SHARP_MINOR:
+        return 5;
+    case mixxx::track::io::key::B_MAJOR:
+    case mixxx::track::io::key::G_SHARP_MINOR:
+        return 6;
+    case mixxx::track::io::key::F_SHARP_MAJOR:
+    case mixxx::track::io::key::E_FLAT_MINOR:
+        return 7;
+    case mixxx::track::io::key::D_FLAT_MAJOR:
+    case mixxx::track::io::key::B_FLAT_MINOR:
+        return 8;
+    case mixxx::track::io::key::A_FLAT_MAJOR:
+    case mixxx::track::io::key::F_MINOR:
+        return 9;
+    case mixxx::track::io::key::E_FLAT_MAJOR:
+    case mixxx::track::io::key::C_MINOR:
+        return 10;
+    case mixxx::track::io::key::B_FLAT_MAJOR:
+    case mixxx::track::io::key::G_MINOR:
+        return 11;
+    case mixxx::track::io::key::F_MAJOR:
+    case mixxx::track::io::key::D_MINOR:
+        return 12;
+    default:
+        return 0;
+    }
+}
+
+// static
 QString KeyUtils::keyToString(ChromaticKey key,
                               KeyNotation notation) {
     if (!ChromaticKey_IsValid(key) ||
         key == mixxx::track::io::key::INVALID) {
-        // TODO(rryan): Maybe just the empty string?
-        return "INVALID";
+        return {};
     }
 
     if (notation == KeyNotation::Custom) {
-        // The default value for notation is KeyUtils::KeyNotation::Custom, so this executes when the function is
-        // called without a notation specified after KeyUtils::setNotation has set up s_notation.
-        QMutexLocker locker(&s_notationMutex);
+        // The default value for notation is KeyUtils::KeyNotation::Custom, so
+        // this executes when the function is called without a notation specified
+        // after KeyUtils::setNotation has set up s_notation.
+        const auto locker = lockMutex(&s_notationMutex);
         auto it = s_notation.constFind(key);
         if (it != s_notation.constEnd()) {
             return it.value();
@@ -302,13 +388,15 @@ QString KeyUtils::keyToString(ChromaticKey key,
         return QString::number(number) + (major ? "B" : "A") + " (" + trad + ")";
     } else if (notation == KeyNotation::Traditional) {
         return s_traditionalKeyNames[static_cast<int>(key)];
+    } else if (notation == KeyNotation::ID3v2) {
+        return s_IDv3KeyNames[static_cast<int>(key)];
     }
     return keyDebugName(key);
 }
 
 // static
-QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
-    const mixxx::track::io::key::ChromaticKey globalKey(keys.getGlobalKey());
+QString KeyUtils::formatGlobalKey(const Keys& keys, KeyNotation notation) {
+    const mixxx::track::io::key::ChromaticKey globalKey = keys.getGlobalKey();
     if (globalKey != mixxx::track::io::key::INVALID) {
         return keyToString(globalKey, notation);
     } else {
@@ -333,32 +421,33 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
     // Try using the user's custom notation.
     {
-        QMutexLocker locker(&s_notationMutex);
+        const auto locker = lockMutex(&s_notationMutex);
         auto it = s_reverseNotation.constFind(text);
         if (it != s_reverseNotation.constEnd()) {
             return it.value();
         }
     }
 
-    QRegExp openKeyMatcher(s_openKeyPattern);
-    if (openKeyMatcher.exactMatch(trimmed)) {
+    QRegularExpressionMatch openKeyMatch = s_openKeyRegex.match(trimmed);
+    if (openKeyMatch.hasMatch()) {
         bool ok = false;
-        int openKeyNumber = openKeyMatcher.cap(1).toInt(&ok);
+        int openKeyNumber = openKeyMatch.captured(1).toInt(&ok);
 
         // Regex should mean this never happens.
         if (!ok || openKeyNumber < 1 || openKeyNumber > 12) {
             return mixxx::track::io::key::INVALID;
         }
 
-        bool major = openKeyMatcher.cap(2).compare("d") == 0;
+        bool major = openKeyMatch.captured(2)
+                             .compare("d") == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
 
-    QRegExp lancelotKeyMatcher(s_lancelotKeyPattern);
-    if (lancelotKeyMatcher.exactMatch(trimmed)) {
+    QRegularExpressionMatch lancelotMatch = s_lancelotKeyRegex.match(trimmed);
+    if (lancelotMatch.hasMatch()) {
         bool ok = false;
-        int lancelotNumber = lancelotKeyMatcher.cap(1).toInt(&ok);
+        int lancelotNumber = lancelotMatch.captured(1).toInt(&ok);
 
         // Regex should mean this never happens.
         if (!ok || lancelotNumber < 1 || lancelotNumber > 12) {
@@ -367,24 +456,24 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
-        const QChar lancelotScaleMode = lancelotKeyMatcher.cap(2).at(0);
+        const QChar lancelotScaleMode = lancelotMatch.captured(2).at(0);
         bool major = (s_lancelotMajorModes.find(lancelotScaleMode.toLatin1()) != std::string::npos);
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
 
-    QRegExp keyMatcher(s_keyPattern, Qt::CaseInsensitive);
-    if (keyMatcher.exactMatch(trimmed)) {
+    QRegularExpressionMatch keyMatch = s_keyRegex.match(trimmed);
+    if (keyMatch.hasMatch()) {
         // Take the first letter, lowercase it and subtract 'a' and we get a
         // number between 0-6. Look up the major key associated with that letter
         // from s_letterToMajorKey. Upper-case means major, lower-case means
         // minor. Then apply the sharps or flats to the key.
-        QChar letter = keyMatcher.cap(1).at(0);
+        QChar letter = keyMatch.captured(1).at(0);
         int letterIndex = letter.toLower().toLatin1() - 'a';
         bool major = letter.isUpper();
 
         // Now apply sharps and flats to the letter key.
-        QString adjustments = keyMatcher.cap(2);
+        QString adjustments = keyMatch.captured(2);
         int steps = 0;
         for (const auto* it = adjustments.constBegin();
                 it != adjustments.constEnd();
@@ -392,7 +481,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
             steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 
-        QString scale = keyMatcher.cap(3);
+        QString scale = keyMatch.captured(3);
         // we override major if a scale definition exists
         if (!scale.isEmpty()) {
             if (scale.compare("m", Qt::CaseInsensitive) == 0) {
@@ -431,13 +520,17 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
 // static
 ChromaticKey KeyUtils::keyFromNumericValue(double value) {
-    int value_floored = int(value);
+    int value_floored = static_cast<int>(value);
+    return keyFromNumericValue(value_floored);
+}
 
-    if (!ChromaticKey_IsValid(value_floored)) {
+// static
+ChromaticKey KeyUtils::keyFromNumericValue(int value) {
+    if (!ChromaticKey_IsValid(value)) {
         return mixxx::track::io::key::INVALID;
     }
 
-    return static_cast<ChromaticKey>(value_floored);
+    return static_cast<ChromaticKey>(value);
 }
 
 KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
@@ -447,6 +540,24 @@ KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
         return KeyNotation::Invalid;
     }
     return static_cast<KeyNotation>(value_floored);
+}
+
+KeyUtils::KeyNotation KeyUtils::keyNotationFromString(const QString& notationName) {
+    if (notationName == KEY_NOTATION_CUSTOM) {
+        return KeyUtils::KeyNotation::Custom;
+    } else if (notationName == KEY_NOTATION_OPEN_KEY) {
+        return KeyUtils::KeyNotation::OpenKey;
+    } else if (notationName == KEY_NOTATION_LANCELOT) {
+        return KeyUtils::KeyNotation::Lancelot;
+    } else if (notationName == KEY_NOTATION_TRADITIONAL) {
+        return KeyUtils::KeyNotation::Traditional;
+    } else if (notationName == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
+        return KeyUtils::KeyNotation::OpenKeyAndTraditional;
+    } else if (notationName == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
+        return KeyUtils::KeyNotation::LancelotAndTraditional;
+    } else {
+        return KeyUtils::KeyNotation::Invalid;
+    }
 }
 
 // static
@@ -500,7 +611,7 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-        const KeyChangeList& key_changes, SINT totalFrames, int iSampleRate) {
+        const KeyChangeList& key_changes, SINT totalFrames, mixxx::audio::SampleRate sampleRate) {
     if (key_changes.size() == 1) {
         qDebug() << keyDebugName(key_changes[0].first);
         return key_changes[0].first;
@@ -522,7 +633,7 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     qDebug() << "Key Histogram";
     for (auto it = key_histogram.constBegin();
          it != key_histogram.constEnd(); ++it) {
-        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / iSampleRate;
+        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / sampleRate;
         if (it.value() > max_delta) {
             max_key = it.key();
             max_delta = it.value();
@@ -673,4 +784,41 @@ int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
     } else {
         return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
     }
+}
+
+// static
+QVariant KeyUtils::keyFromKeyTextAndIdFields(
+        const QVariant& keyTextField, const QVariant& keyIdField) {
+    // Helper function used by basetrackcache.cpp and basetracktablemodel.cpp
+    // to determine the Key string from either the LIBRARYTABLE_KEY or the
+    // LIBRARYTABLE_KEY_ID field.
+    //
+    // If we know the semantic key via the LIBRARYTABLE_KEY_ID
+    // column (as opposed to the string representation of the key
+    // currently stored in the DB) then lookup the key and render it
+    // using the user's selected notation.
+    if (keyIdField.isNull()) {
+        // Otherwise, just use the KEY column value as is
+        return keyTextField;
+    }
+    // Convert or clear invalid values
+    VERIFY_OR_DEBUG_ASSERT(keyIdField.canConvert<int>()) {
+        return keyTextField;
+    }
+    bool ok;
+    const auto keyId = keyIdField.toInt(&ok);
+    VERIFY_OR_DEBUG_ASSERT(ok) {
+        return keyTextField;
+    }
+    const auto key = KeyUtils::keyFromNumericValue(keyId);
+    if (key == mixxx::track::io::key::INVALID) {
+        return keyTextField;
+    }
+    // Render the key with the user-provided notation
+    return QVariant{KeyUtils::keyToString(key)};
+}
+
+// static
+QString KeyUtils::keyFromKeyTextAndIdValues(const QString& keyText, const ChromaticKey& keyId) {
+    return keyId == mixxx::track::io::key::INVALID ? keyText : KeyUtils::keyToString(keyId);
 }

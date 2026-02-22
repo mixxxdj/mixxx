@@ -15,15 +15,21 @@
 namespace {
 
 const mixxx::Logger kLogger("LibraryFeature");
+const QString kIconPath = QStringLiteral(":/images/library/ic_library_%1.svg");
 
 } // anonymous namespace
 
 LibraryFeature::LibraryFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig,
+        const QString& iconName)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_iconName(iconName) {
+    if (!m_iconName.isEmpty()) {
+        m_icon = QIcon(kIconPath.arg(m_iconName));
+    }
 }
 
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {

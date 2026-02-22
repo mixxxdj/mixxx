@@ -3,14 +3,13 @@
 #include <QAtomicInt>
 #include <QByteArray>
 #include <QMutex>
-#include <QMutexLocker>
 #include <QSharedPointer>
 #include <QString>
 #include <vector>
 
 #include "audio/signalinfo.h"
 #include "util/class.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qmutex.h"
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};
@@ -32,7 +31,7 @@ class Waveform {
   public:
     enum class SaveState {
         NotSaved = 0,
-        SavePending, 
+        SavePending,
         Saved
     };
 
@@ -46,32 +45,32 @@ class Waveform {
     virtual ~Waveform();
 
     int getId() const {
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         return m_id;
     }
 
     void setId(int id) {
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         m_id = id;
     }
 
     QString getVersion() const {
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         return m_version;
     }
 
     void setVersion(const QString& version) {
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         m_version = version;
     }
 
     QString getDescription() const {
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         return m_description;
     }
 
     void setDescription(const QString& description) {
-        QMutexLocker locker(&m_mutex);
+        const auto locker = lockMutex(&m_mutex);
         m_description = description;
     }
 
@@ -81,7 +80,7 @@ class Waveform {
         return m_saveState;
     }
 
-    // AnalysisDAO needs to be able to change the state to savePending when finished 
+    // AnalysisDAO needs to be able to change the state to savePending when finished
     // so we mark this as const and m_saveState mutable.
     void setSaveState(SaveState eState) const {
         m_saveState = eState;

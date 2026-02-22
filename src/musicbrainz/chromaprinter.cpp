@@ -29,7 +29,7 @@ namespace
 // AcoustID only stores a fingerprint for the first two minutes of a song
 // on their server so we need only a fingerprint of the first two minutes
 // --kain88 July 2012
-const SINT kFingerprintDuration = 120; // in seconds
+    constexpr SINT kFingerprintDuration = 120; // in seconds
 
 QString calcFingerprint(
         mixxx::AudioSourceStereoProxy& audioSourceProxy,
@@ -57,7 +57,7 @@ QString calcFingerprint(
     SampleUtil::convertFloat32ToS16(
             &fingerprintSamples[0],
             sampleBuffer.data(),
-            fingerprintSamples.size());
+            static_cast<SINT>(fingerprintSamples.size()));
 
     qDebug() << "reading file took" << timerReadingFile.elapsed().debugMillisWithUnit();
 

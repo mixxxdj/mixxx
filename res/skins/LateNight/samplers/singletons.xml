@@ -8,7 +8,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
+          <Template src="skins:LateNight/samplers/sampler_mini.xml">
             <SetVariable name="SamplerNum">1</SetVariable>
           </Template>
         </Children>
@@ -24,7 +24,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
+          <Template src="skins:LateNight/samplers/sampler_mini.xml">
             <SetVariable name="SamplerNum">2</SetVariable>
           </Template>
         </Children>
@@ -40,7 +40,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
+          <Template src="skins:LateNight/samplers/sampler_mini.xml">
             <SetVariable name="SamplerNum">3</SetVariable>
           </Template>
         </Children>
@@ -56,7 +56,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler_mini.xml">
+          <Template src="skins:LateNight/samplers/sampler_mini.xml">
             <SetVariable name="SamplerNum">4</SetVariable>
           </Template>
         </Children>
@@ -72,7 +72,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler.xml">
+          <Template src="skins:LateNight/samplers/sampler.xml">
             <SetVariable name="SamplerNum">1</SetVariable>
           </Template>
         </Children>
@@ -88,7 +88,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler.xml">
+          <Template src="skins:LateNight/samplers/sampler.xml">
             <SetVariable name="SamplerNum">2</SetVariable>
           </Template>
         </Children>
@@ -104,7 +104,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler.xml">
+          <Template src="skins:LateNight/samplers/sampler.xml">
             <SetVariable name="SamplerNum">3</SetVariable>
           </Template>
         </Children>
@@ -120,7 +120,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:/samplers/sampler.xml">
+          <Template src="skins:LateNight/samplers/sampler.xml">
             <SetVariable name="SamplerNum">4</SetVariable>
           </Template>
         </Children>

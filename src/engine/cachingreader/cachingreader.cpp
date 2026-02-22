@@ -1,16 +1,12 @@
 #include "engine/cachingreader/cachingreader.h"
 
-#include <QFileInfo>
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "moc_cachingreader.cpp"
-#include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 #include "util/counter.h"
 #include "util/logger.h"
-#include "util/math.h"
 #include "util/sample.h"
 
 namespace {
@@ -20,7 +16,7 @@ mixxx::Logger kLogger("CachingReader");
 // This is the default hint frameCount that is adopted in case of Hint::kFrameCountForward and
 // Hint::kFrameCountBackward count is provided. It matches 23 ms @ 44.1 kHz
 // TODO() Do we suffer cache misses if we use an audio buffer of above 23 ms?
-const SINT kDefaultHintFrames = 1024;
+constexpr SINT kDefaultHintFrames = 1024;
 
 // With CachingReaderChunk::kFrames = 8192 each chunk consumes
 // 8192 frames * 2 channels/frame * 4-bytes per sample = 65 kB.
@@ -37,7 +33,7 @@ const SINT kDefaultHintFrames = 1024;
 // (kNumberOfCachedChunksInMemory = 1, 2, 3, ...) for testing purposes
 // to verify that the MRU/LRU cache works as expected. Even though
 // massive drop outs are expected to occur Mixxx should run reliably!
-const SINT kNumberOfCachedChunksInMemory = 80;
+constexpr SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
 
@@ -119,7 +115,7 @@ void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
 }
 
 void CachingReader::freeAllChunks() {
-    for (const auto& pChunk: qAsConst(m_chunks)) {
+    for (const auto& pChunk : std::as_const(m_chunks)) {
         // We will receive CHUNK_READ_INVALID for all pending chunk reads
         // which should free the chunks individually.
         if (pChunk->getState() == CachingReaderChunkForOwner::READ_PENDING) {
@@ -282,7 +278,9 @@ void CachingReader::process() {
                 // track is already loading! In this case the TRACK_LOADED will
                 // be the very next status update.
                 if (!m_state.testAndSetRelease(STATE_TRACK_UNLOADING, STATE_IDLE)) {
-                    DEBUG_ASSERT(atomicLoadRelaxed(m_state) == STATE_TRACK_LOADING);
+                    DEBUG_ASSERT(
+                            atomicLoadRelaxed(m_state) == STATE_TRACK_LOADING ||
+                            atomicLoadRelaxed(m_state) == STATE_IDLE);
                 }
             }
         }
@@ -291,19 +289,30 @@ void CachingReader::process() {
 
 CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
     // Check for bad inputs
-    VERIFY_OR_DEBUG_ASSERT(
-            // Refuse to read from an invalid position
-            (startSample % CachingReaderChunk::kChannels == 0) &&
-            // Refuse to read from an invalid number of samples
-            (numSamples % CachingReaderChunk::kChannels == 0) && (numSamples >= 0)) {
+    // Refuse to read from an invalid position
+    VERIFY_OR_DEBUG_ASSERT(startSample % CachingReaderChunk::kChannels == 0) {
         kLogger.critical()
                 << "Invalid arguments for read():"
-                << "startSample =" << startSample
-                << "numSamples =" << numSamples
-                << "reverse =" << reverse;
+                << "startSample =" << startSample;
+        return ReadResult::UNAVAILABLE;
+    }
+    // Refuse to read from an invalid number of samples
+    VERIFY_OR_DEBUG_ASSERT(numSamples % CachingReaderChunk::kChannels == 0) {
+        kLogger.critical()
+                << "Invalid arguments for read():"
+                << "numSamples =" << numSamples;
+        return ReadResult::UNAVAILABLE;
+    }
+    VERIFY_OR_DEBUG_ASSERT(numSamples >= 0) {
+        kLogger.critical()
+                << "Invalid arguments for read():"
+                << "numSamples =" << numSamples;
         return ReadResult::UNAVAILABLE;
     }
     VERIFY_OR_DEBUG_ASSERT(buffer) {
+        kLogger.critical()
+                << "Invalid arguments for read():"
+                << "buffer =" << buffer;
         return ReadResult::UNAVAILABLE;
     }
 
@@ -528,6 +537,9 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         	hintFrameCount = kDefaultHintFrames;
             if (hintFrame < 0) {
             	hintFrameCount += hintFrame;
+                if (hintFrameCount <= 0) {
+                    continue;
+                }
                 hintFrame = 0;
             }
         }

@@ -2560,7 +2560,7 @@
         <outputs>
             <output>
                 <group>[Channel3]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB1</status>
                 <midino>0x53</midino>
                 <on>0x01</on>
@@ -2568,7 +2568,7 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB1</status>
                 <midino>0x54</midino>
                 <on>0x01</on>
@@ -2576,7 +2576,7 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB1</status>
                 <midino>0x55</midino>
                 <on>0x01</on>
@@ -2584,7 +2584,7 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB1</status>
                 <midino>0x56</midino>
                 <on>0x01</on>
@@ -2592,7 +2592,7 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB1</status>
                 <midino>0x57</midino>
                 <on>0x01</on>
@@ -2600,7 +2600,7 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB1</status>
                 <midino>0x58</midino>
                 <on>0x01</on>
@@ -2608,7 +2608,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB0</status>
                 <midino>0x53</midino>
                 <on>0x01</on>
@@ -2616,7 +2616,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB0</status>
                 <midino>0x54</midino>
                 <on>0x01</on>
@@ -2624,7 +2624,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB0</status>
                 <midino>0x55</midino>
                 <on>0x01</on>
@@ -2632,7 +2632,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB0</status>
                 <midino>0x56</midino>
                 <on>0x01</on>
@@ -2640,7 +2640,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB0</status>
                 <midino>0x57</midino>
                 <on>0x01</on>
@@ -2648,7 +2648,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB0</status>
                 <midino>0x58</midino>
                 <on>0x01</on>
@@ -2656,7 +2656,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB0</status>
                 <midino>0x59</midino>
                 <on>0x01</on>
@@ -2664,7 +2664,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB3</status>
                 <midino>0x53</midino>
                 <on>0x01</on>
@@ -2672,7 +2672,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB3</status>
                 <midino>0x54</midino>
                 <on>0x01</on>
@@ -2680,7 +2680,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB3</status>
                 <midino>0x55</midino>
                 <on>0x01</on>
@@ -2688,7 +2688,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB3</status>
                 <midino>0x56</midino>
                 <on>0x01</on>
@@ -2696,7 +2696,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB3</status>
                 <midino>0x57</midino>
                 <on>0x01</on>
@@ -2704,7 +2704,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB3</status>
                 <midino>0x58</midino>
                 <on>0x01</on>
@@ -2712,7 +2712,7 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB1</status>
                 <midino>0x59</midino>
                 <on>0x01</on>
@@ -2720,7 +2720,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB2</status>
                 <midino>0x53</midino>
                 <on>0x01</on>
@@ -2728,7 +2728,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB2</status>
                 <midino>0x54</midino>
                 <on>0x01</on>
@@ -2736,7 +2736,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB2</status>
                 <midino>0x55</midino>
                 <on>0x01</on>
@@ -2744,7 +2744,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB2</status>
                 <midino>0x56</midino>
                 <on>0x01</on>
@@ -2752,7 +2752,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB2</status>
                 <midino>0x57</midino>
                 <on>0x01</on>
@@ -2760,7 +2760,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>VuMeter</key>
+                <key>vu_meter</key>
                 <status>0xB2</status>
                 <midino>0x58</midino>
                 <on>0x01</on>
@@ -2768,7 +2768,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB2</status>
                 <midino>0x59</midino>
                 <on>0x01</on>
@@ -2776,7 +2776,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB3</status>
                 <midino>0x59</midino>
                 <on>0x01</on>

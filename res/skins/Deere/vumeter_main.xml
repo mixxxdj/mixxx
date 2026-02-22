@@ -1,0 +1,34 @@
+<!DOCTYPE template>
+<!-- Main level meter -->
+<Template>
+  <WidgetGroup>
+    <ObjectName>MainVu</ObjectName>
+    <Layout>vertical</Layout>
+    <MinimumSize>28,60</MinimumSize>
+    <MaximumSize>28,300</MaximumSize>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>main_VuMeter_Group</ObjectName>
+        <SizePolicy>f,me</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:vumeter_v.xml">
+            <SetVariable name="group">[Main]</SetVariable>
+            <SetVariable name="side">_left</SetVariable>
+            <SetVariable name="tooltip_meter">main_VuMeterL</SetVariable>
+            <SetVariable name="tooltip_clip">main_peak_indicator_left</SetVariable>
+          </Template>
+          <Template src="skin:vumeter_v.xml">
+            <SetVariable name="group">[Main]</SetVariable>
+            <SetVariable name="side">_right</SetVariable>
+            <SetVariable name="tooltip_meter">main_VuMeterR</SetVariable>
+            <SetVariable name="tooltip_clip">main_peak_indicator_right</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

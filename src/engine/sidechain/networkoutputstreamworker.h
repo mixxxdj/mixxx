@@ -2,8 +2,11 @@
 
 #include <QSharedPointer>
 
+#include "audio/types.h"
 #include "util/types.h"
-#include "util/fifo.h"
+
+template<class DataType>
+class FIFO;
 
 /*
  * States:
@@ -52,7 +55,8 @@ class NetworkOutputStreamWorker {
     virtual void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo);
     virtual QSharedPointer<FIFO<CSAMPLE>> getOutputFifo();
 
-    void startStream(double samplerate, int numOutputChannels);
+    void startStream(mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount numOutputChannels);
     void stopStream();
 
     virtual bool threadWaiting();
@@ -83,17 +87,17 @@ protected:
     void incRunCount();
 
 private:
-    double m_sampleRate;
-    int m_numOutputChannels;
+  mixxx::audio::SampleRate m_sampleRate;
+  mixxx::audio::ChannelCount m_numOutputChannels;
 
-    int m_workerState;
-    int m_functionCode;
-    int m_runCount;
+  int m_workerState;
+  int m_functionCode;
+  int m_runCount;
 
-    qint64 m_streamStartTimeUs;
-    qint64 m_streamFramesWritten;
-    int m_writeOverflowCount;
-    bool m_outputDrift;
+  qint64 m_streamStartTimeUs;
+  qint64 m_streamFramesWritten;
+  int m_writeOverflowCount;
+  bool m_outputDrift;
 };
 
 typedef QSharedPointer<NetworkOutputStreamWorker> NetworkOutputStreamWorkerPtr;

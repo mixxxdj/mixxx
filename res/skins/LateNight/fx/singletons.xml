@@ -122,20 +122,20 @@
             <RightClickIsPushButton>false</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode_active.svg</Pressed>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode_active.svg</Pressed>
             </State>
             <State>
               <Number>1</Number>
-              <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode.svg</Unpressed>
-              <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode_active.svg</Pressed>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_mixmode_active.svg</Pressed>
             </State>
             <Connection>
               <ConfigKey>[<Variable name="FxRack_FxUnit"/>],mix_mode</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
-          <Template src="skin:/controls/button_2state.xml">
+          <Template src="skins:LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
             <SetVariable name="ObjectName">PflButton</SetVariable>
             <SetVariable name="Size">26f,26f</SetVariable>
@@ -148,13 +148,31 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
+    <ObjectName>FxUnit<Variable name="FxUnit"/>_PresetButton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>MixmodePflContainer</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectChainPresetButton>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Size>22f,22f</Size>
+            <ObjectName>EffectChainSelector</ObjectName>
+          </EffectChainPresetButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
     <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
     <Children>
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/controls/knob.xml">
+          <Template src="skins:LateNight/controls/knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="ObjectName">SuperKnob</SetVariable>
             <SetVariable name="KnobBg">small</SetVariable>
@@ -177,7 +195,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/controls/knob.xml">
+          <Template src="skins:LateNight/controls/knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="ObjectName">DryWetKnob</SetVariable>
             <SetVariable name="KnobBg">small</SetVariable>
@@ -202,7 +220,7 @@
         <MaximumSize>220,</MaximumSize>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/fx/slot_controls.xml">
+          <Template src="skins:LateNight/fx/slot_controls.xml">
             <SetVariable name="FxNum">1</SetVariable>
           </Template>
         </Children>
@@ -218,7 +236,7 @@
         <MaximumSize>220,</MaximumSize>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/fx/slot_controls.xml">
+          <Template src="skins:LateNight/fx/slot_controls.xml">
             <SetVariable name="FxNum">2</SetVariable>
           </Template>
         </Children>
@@ -234,7 +252,7 @@
         <MaximumSize>220,</MaximumSize>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:/fx/slot_controls.xml">
+          <Template src="skins:LateNight/fx/slot_controls.xml">
             <SetVariable name="FxNum">3</SetVariable>
           </Template>
         </Children>

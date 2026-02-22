@@ -1,12 +1,13 @@
 #include <gtest/gtest.h>
-#include <taglib/textidentificationframe.h>
-#include <taglib/tstring.h>
+#include <textidentificationframe.h>
+#include <tstring.h>
 
 #include <QDir>
 #include <QtDebug>
+#include <memory>
 
+#include "test/mixxxtest.h"
 #include "track/serato/markers.h"
-#include "util/memory.h"
 
 namespace {
 
@@ -61,7 +62,7 @@ class SeratoMarkersTest : public testing::Test {
         dir.setFilter(QDir::Files);
         dir.setNameFilters(QStringList() << "*.octet-stream");
 
-        QFileInfoList fileList = dir.entryInfoList();
+        const QFileInfoList fileList = dir.entryInfoList();
         EXPECT_FALSE(fileList.isEmpty());
         for (const QFileInfo& fileInfo : fileList) {
             qDebug() << "--- File:" << fileInfo.fileName();
@@ -177,17 +178,21 @@ TEST_F(SeratoMarkersTest, ParseEntry) {
 }
 
 TEST_F(SeratoMarkersTest, ParseMarkersDataMP3) {
-    parseMarkersDataInDirectory(QDir("src/test/serato/data/mp3/markers_"),
-            mixxx::taglib::FileType::MP3);
+    parseMarkersDataInDirectory(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("serato/data/mp3/markers_"))),
+            mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoMarkersTest, ParseMarkersDataMP4) {
-    parseMarkersDataInDirectory(QDir("src/test/serato/data/mp4/markers_"),
+    parseMarkersDataInDirectory(
+            QDir(MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("serato/data/mp4/markers_"))),
             mixxx::taglib::FileType::MP4);
 }
 
 TEST_F(SeratoMarkersTest, ParseEmptyDataMP3) {
-    parseEmptyMarkersData(mixxx::taglib::FileType::MP3);
+    parseEmptyMarkersData(mixxx::taglib::FileType::MPEG);
 }
 
 TEST_F(SeratoMarkersTest, ParseEmptyDataMP4) {

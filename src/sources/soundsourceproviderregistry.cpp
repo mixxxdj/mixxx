@@ -1,6 +1,7 @@
 #include "sources/soundsourceproviderregistry.h"
 
 #include "util/logger.h"
+#include "util/make_const_iterator.h"
 
 namespace mixxx {
 
@@ -12,25 +13,24 @@ void insertRegistration(
         QList<SoundSourceProviderRegistration>* pRegistrations,
         SoundSourceProviderRegistration&& registration) {
     DEBUG_ASSERT(pRegistrations);
-    QList<SoundSourceProviderRegistration>::iterator listIter(
-            pRegistrations->begin());
+    auto listIter = pRegistrations->cbegin();
     // Perform a linear search through the list & insert
-    while (pRegistrations->end() != listIter) {
+    while (pRegistrations->cend() != listIter) {
         // Priority comparison with <=: New registrations will be inserted
         // before existing registrations with equal priority, but after
         // existing registrations with higher priority.
         if (listIter->getProviderPriority() <= registration.getProviderPriority()) {
-            listIter = pRegistrations->insert(listIter, std::move(registration));
-            DEBUG_ASSERT(pRegistrations->end() != listIter);
-            return; // done
-        } else {
-            ++listIter; // continue loop
+            listIter = constInsert(
+                    pRegistrations,
+                    listIter,
+                    std::move(registration));
+            DEBUG_ASSERT(pRegistrations->cend() != listIter);
+            return;
         }
+        ++listIter;
     }
-    if (pRegistrations->end() == listIter) {
-        // List was empty or registration has the lowest priority
-        pRegistrations->append(std::move(registration));
-    }
+    // List was empty or registration has the lowest priority
+    pRegistrations->append(std::move(registration));
 }
 
 } // anonymous namespace
@@ -63,48 +63,48 @@ int SoundSourceProviderRegistry::registerProvider(
             return 0;
         }
     }
-    const QStringList supportedFileExtensions(
-            pProvider->getSupportedFileExtensions());
-    if (supportedFileExtensions.isEmpty()) {
+    const QStringList supportedFileTypes(
+            pProvider->getSupportedFileTypes());
+    if (supportedFileTypes.isEmpty()) {
         kLogger.warning()
                 << "SoundSource provider"
                 << displayName
                 << "does not support any file extensions";
         return 0; // abort registration
     }
-    for (const auto& fileExtension : supportedFileExtensions) {
+    for (const auto& fileType : supportedFileTypes) {
         const auto priority =
-                pProvider->getPriorityHint(fileExtension);
+                pProvider->getPriorityHint(fileType);
         kLogger.debug()
-                << "Registering file extension"
-                << fileExtension
+                << "Registering file type"
+                << fileType
                 << "for provider"
                 << displayName
                 << "with priority"
                 << priority;
         SoundSourceProviderRegistration registration(pProvider, priority);
-        QList<SoundSourceProviderRegistration>& registrationsForFileExtension =
-                m_registrationListsByFileExtension[fileExtension];
+        QList<SoundSourceProviderRegistration>& registrationsForFileType =
+                m_registrationListsByFileType[fileType];
         insertRegistration(
-                &registrationsForFileExtension,
+                &registrationsForFileType,
                 std::move(registration));
     }
     m_providersByDisplayName.insert(displayName, pProvider);
     DEBUG_ASSERT(m_providersByDisplayName.count(displayName) == 1);
-    return supportedFileExtensions.size();
+    return supportedFileTypes.size();
 }
 
 QList<SoundSourceProviderRegistration>
-SoundSourceProviderRegistry::getRegistrationsForFileExtension(
-        const QString& fileExtension) const {
-    auto i = m_registrationListsByFileExtension.constFind(fileExtension);
-    if (m_registrationListsByFileExtension.constEnd() != i) {
+SoundSourceProviderRegistry::getRegistrationsForFileType(
+        const QString& fileType) const {
+    auto i = m_registrationListsByFileType.constFind(fileType);
+    if (m_registrationListsByFileType.constEnd() != i) {
         DEBUG_ASSERT(!i.value().isEmpty());
         return i.value();
     } else {
         kLogger.debug()
                 << "No provider(s) registered for file extension"
-                << fileExtension;
+                << fileType;
         return QList<SoundSourceProviderRegistration>();
     }
 }

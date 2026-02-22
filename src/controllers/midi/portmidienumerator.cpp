@@ -2,7 +2,7 @@
 
 #include <portmidi.h>
 
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include "controllers/midi/portmidicontroller.h"
 #include "moc_portmidienumerator.cpp"
@@ -16,18 +16,90 @@ bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
     // In developer mode we show the MIDI Through Port, otherwise ignore it
     // since it routinely causes trouble.
     return CmdlineArgs::Instance().getDeveloper() ||
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
             !QLatin1String(deviceInfo.name)
-#else
-            !QString::fromLatin1(deviceInfo.name)
-#endif
                      .startsWith(kMidiThroughPortPrefix, Qt::CaseInsensitive);
+}
+
+// Some platforms format MIDI device names as "deviceName MIDI ###" where
+// ### is the instance # of the device. Therefore we want to link two
+// devices that have an equivalent "deviceName" and ### section.
+const QRegularExpression kMidiDeviceNameRegex(QStringLiteral("^(.*) MIDI (\\d+)( .*)?$"));
+
+const QRegularExpression kInputRegex(QStringLiteral("^(.*) in( \\d+)?( .*)?$"),
+        QRegularExpression::CaseInsensitiveOption);
+const QRegularExpression kOutputRegex(QStringLiteral("^(.*) out( \\d+)?( .*)?$"),
+        QRegularExpression::CaseInsensitiveOption);
+
+// This is a broad pattern that matches a text blob followed by a numeral
+// potentially followed by non-numeric text. The non-numeric requirement is
+// meant to avoid corner cases around devices with names like "Hercules RMX
+// 2" where we would potentially confuse the number in the device name as
+// the ordinal index of the device.
+const QRegularExpression kDeviceNameRegex(QStringLiteral("^(.*) (\\d+)( [^0-9]+)?$"));
+
+bool namesMatchRegexes(const QRegularExpression& kInputRegex,
+        const QString& input_name,
+        const QRegularExpression& kOutputRegex,
+        const QString& output_name) {
+    QRegularExpressionMatch inputMatch = kInputRegex.match(input_name);
+    if (inputMatch.hasMatch()) {
+        QString inputDeviceName = inputMatch.captured(1);
+        QString inputDeviceIndex = inputMatch.captured(2);
+        QRegularExpressionMatch outputMatch = kOutputRegex.match(output_name);
+        if (outputMatch.hasMatch()) {
+            QString outputDeviceName = outputMatch.captured(1);
+            QString outputDeviceIndex = outputMatch.captured(2);
+            if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
+                outputDeviceIndex == inputDeviceIndex) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool namesMatchMidiPattern(const QString& input_name,
+        const QString& output_name) {
+    return namesMatchRegexes(kMidiDeviceNameRegex, input_name, kMidiDeviceNameRegex, output_name);
+}
+
+bool namesMatchInOutPattern(const QString& input_name,
+        const QString& output_name) {
+    return namesMatchRegexes(kInputRegex, input_name, kOutputRegex, output_name);
+}
+
+bool namesMatchPattern(const QString& input_name,
+        const QString& output_name) {
+    return namesMatchRegexes(kDeviceNameRegex, input_name, kDeviceNameRegex, output_name);
+}
+
+bool namesMatchAllowableEdgeCases(const QString& input_name,
+        const QString& output_name) {
+    // Mac OS 10.12 & Korg Kaoss DJ 1.6:
+    // Korg Kaoss DJ has input 'KAOSS DJ CONTROL' and output 'KAOSS DJ SOUND'.
+    // This means it doesn't pass the shouldLinkInputToOutput test. Without an
+    // output linked, the MIDI output for the device fails, as the device is
+    // NULL in PortMidiController
+    if (input_name == "KAOSS DJ CONTROL" && output_name == "KAOSS DJ SOUND") {
+        return true;
+    }
+    // Ableton Push on Windows
+    // Shows 2 different devices for MIDI input and output.
+    if (input_name == "MIDIIN2 (Ableton Push)" && output_name == "MIDIOUT2 (Ableton Push)") {
+        return true;
+    }
+
+    // Novation Launchpad X (macOS)
+    if (input_name == "Launchpad X LPX DAW Out" && output_name == "Launchpad X LPX DAW In") {
+        return true;
+    }
+
+    return false;
 }
 
 } // namespace
 
-PortMidiEnumerator::PortMidiEnumerator(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig) {
+PortMidiEnumerator::PortMidiEnumerator() {
     PmError err = Pm_Initialize();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
@@ -46,97 +118,6 @@ PortMidiEnumerator::~PortMidiEnumerator() {
     if (err != pmNoError) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
     }
-}
-
-bool namesMatchMidiPattern(const QString& input_name,
-        const QString& output_name) {
-    // Some platforms format MIDI device names as "deviceName MIDI ###" where
-    // ### is the instance # of the device. Therefore we want to link two
-    // devices that have an equivalent "deviceName" and ### section.
-    QRegExp deviceNamePattern("^(.*) MIDI (\\d+)( .*)?$");
-
-    int inputMatch = deviceNamePattern.indexIn(input_name);
-    if (inputMatch == 0) {
-        QString inputDeviceName = deviceNamePattern.cap(1);
-        QString inputDeviceIndex = deviceNamePattern.cap(2);
-        int outputMatch = deviceNamePattern.indexIn(output_name);
-        if (outputMatch == 0) {
-            QString outputDeviceName = deviceNamePattern.cap(1);
-            QString outputDeviceIndex = deviceNamePattern.cap(2);
-            if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
-                outputDeviceIndex == inputDeviceIndex) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-bool namesMatchInOutPattern(const QString& input_name,
-        const QString& output_name) {
-    QString basePattern = "^(.*) %1 (\\d+)( .*)?$";
-    QRegExp inputPattern(basePattern.arg("in"));
-    QRegExp outputPattern(basePattern.arg("out"));
-
-    int inputMatch = inputPattern.indexIn(input_name);
-    if (inputMatch == 0) {
-        QString inputDeviceName = inputPattern.cap(1);
-        QString inputDeviceIndex = inputPattern.cap(2);
-        int outputMatch = outputPattern.indexIn(output_name);
-        if (outputMatch == 0) {
-            QString outputDeviceName = outputPattern.cap(1);
-            QString outputDeviceIndex = outputPattern.cap(2);
-            if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
-                outputDeviceIndex == inputDeviceIndex) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-bool namesMatchPattern(const QString& input_name,
-        const QString& output_name) {
-    // This is a broad pattern that matches a text blob followed by a numeral
-    // potentially followed by non-numeric text. The non-numeric requirement is
-    // meant to avoid corner cases around devices with names like "Hercules RMX
-    // 2" where we would potentially confuse the number in the device name as
-    // the ordinal index of the device.
-    QRegExp deviceNamePattern("^(.*) (\\d+)( [^0-9]+)?$");
-
-    int inputMatch = deviceNamePattern.indexIn(input_name);
-    if (inputMatch == 0) {
-        QString inputDeviceName = deviceNamePattern.cap(1);
-        QString inputDeviceIndex = deviceNamePattern.cap(2);
-        int outputMatch = deviceNamePattern.indexIn(output_name);
-        if (outputMatch == 0) {
-            QString outputDeviceName = deviceNamePattern.cap(1);
-            QString outputDeviceIndex = deviceNamePattern.cap(2);
-            if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
-                outputDeviceIndex == inputDeviceIndex) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-bool namesMatchAllowableEdgeCases(const QString& input_name,
-        const QString& output_name) {
-    // Mac OS 10.12 & Korg Kaoss DJ 1.6:
-    // Korg Kaoss DJ has input 'KAOSS DJ CONTROL' and output 'KAOSS DJ SOUND'.
-    // This means it doesn't pass the shouldLinkInputToOutput test. Without an
-    // output linked, the MIDI output for the device fails, as the device is
-    // NULL in PortMidiController
-    if (input_name == "KAOSS DJ CONTROL" && output_name == "KAOSS DJ SOUND") {
-        return true;
-    }
-    // Ableton Push on Windows
-    // Shows 2 different devices for MIDI input and output.
-    if (input_name == "MIDIIN2 (Ableton Push)" && output_name == "MIDIOUT2 (Ableton Push)") {
-        return true;
-    }
-    return false;
 }
 
 bool shouldLinkInputToOutput(const QString& input_name,
@@ -279,8 +260,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
                 new PortMidiController(inputDeviceInfo,
                         outputDeviceInfo,
                         inputDevIndex,
-                        outputDevIndex,
-                        m_pConfig);
+                        outputDevIndex);
         m_devices.push_back(currentDevice);
     }
     return m_devices;

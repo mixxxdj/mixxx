@@ -9,7 +9,7 @@ include(BundleUtilities)
 
 #fixup_bundle tries to copy system libraries without this. Wtf?
 function(gp_resolved_file_type_override file type)
-  if(file MATCHES "^(/usr/lib)")
+  if(file MATCHES "^(/usr/lib)" OR file MATCHES "^(/Library/Frameworks)")
     set(type "system" PARENT_SCOPE)
   endif()
 endfunction()
@@ -23,16 +23,23 @@ if(DEFINED APPLE_CODESIGN_IDENTITY AND DEFINED APPLE_CODESIGN_ENTITLEMENTS)
       message(STATUS "Ad-hoc signing bundle without hardened runtime")
       execute_process(COMMAND
           codesign --verbose=4 --deep --force
+          --entitlements "${APPLE_CODESIGN_ENTITLEMENTS}"
           --sign "${APPLE_CODESIGN_IDENTITY}"
           "${PATH_TO_SIGN}"
+          RESULT_VARIABLE CODESIGN_EXIT_CODE
       )
     else()
+      message(STATUS "Signing bundle with hardened runtime and identity ${APPLE_CODESIGN_IDENTITY}")
       execute_process(COMMAND
           codesign --verbose=4 --deep --force --options runtime
           --entitlements "${APPLE_CODESIGN_ENTITLEMENTS}"
           --sign "${APPLE_CODESIGN_IDENTITY}"
           "${PATH_TO_SIGN}"
+          RESULT_VARIABLE CODESIGN_EXIT_CODE
       )
+    endif()
+    if(NOT CODESIGN_EXIT_CODE EQUAL 0)
+      message(FATAL_ERROR "Signing ${PATH_TO_SIGN} failed")
     endif()
   endforeach()
 else()

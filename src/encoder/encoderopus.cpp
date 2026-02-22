@@ -1,18 +1,15 @@
 #include "encoder/encoderopus.h"
 
-#include <stdlib.h>
-
 #include <QByteArray>
 #include <QMapIterator>
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
-#endif
 #include <QtGlobal>
 
+#include "encoder/encodercallback.h"
 #include "encoder/encoderopussettings.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "util/logger.h"
+#include "util/samplebuffer.h"
 
 namespace {
 // From libjitsi's Opus encoder:
@@ -23,7 +20,7 @@ constexpr int kMaxOpusBufferSize = 1+1275;
 constexpr int kOpusFrameMs = 60;
 constexpr int kOpusChannelCount = 2;
 // Opus only supports 48 and 96 kHz samplerates
-constexpr mixxx::audio::SampleRate kMasterSamplerate = mixxx::audio::SampleRate(48000);
+constexpr mixxx::audio::SampleRate kMainSampleRate = mixxx::audio::SampleRate(48000);
 
 const mixxx::Logger kLogger("EncoderOpus");
 
@@ -65,11 +62,7 @@ int getSerial() {
 
     int serial;
     do {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
         serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-        serial = qrand();
-#endif
     } while (prevSerial == serial);
 
     prevSerial = serial;
@@ -79,8 +72,8 @@ int getSerial() {
 } // namespace
 
 //static
-mixxx::audio::SampleRate EncoderOpus::getMasterSamplerate() {
-    return kMasterSamplerate;
+mixxx::audio::SampleRate EncoderOpus::getMainSampleRate() {
+    return kMainSampleRate;
 }
 
 //static
@@ -96,7 +89,6 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
     : m_bitrate(0),
       m_bitrateMode(0),
       m_channels(0),
-      m_samplerate(0),
       m_readRequired(0),
       m_pCallback(pCallback),
       m_fifoBuffer(EngineSideChain::SIDECHAIN_BUFFER_SIZE * kOpusChannelCount),
@@ -116,11 +108,7 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
     // the Live Broadcasting implementation
 
     m_opusComments.insert("ENCODER", "mixxx/libopus");
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     int serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-    int serial = qrand();
-#endif
     ogg_stream_init(&m_oggStream, serial);
 }
 
@@ -148,29 +136,29 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(int samplerate, QString* pUserErrorMessage) {
+int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
 
-    if (samplerate != kMasterSamplerate) {
-        kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
+    if (sampleRate != kMainSampleRate) {
+            kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
 
-        const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
+            const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
 
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-        props->setType(DLG_WARNING);
-        props->setTitle(QObject::tr("Encoder"));
-        props->setText(invalidSamplerateMessage);
-        props->setKey(invalidSamplerateMessage);
-        ErrorDialogHandler::instance()->requestErrorDialog(props);
-        return -1;
+            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+            props->setType(DLG_WARNING);
+            props->setTitle(QObject::tr("Encoder"));
+            props->setText(invalidSamplerateMessage);
+            props->setKey(invalidSamplerateMessage);
+            ErrorDialogHandler::instance()->requestErrorDialog(props);
+            return -1;
     }
-    m_samplerate = samplerate;
-    DEBUG_ASSERT(m_samplerate == 8000 || m_samplerate == 12000 ||
-            m_samplerate == 16000 || m_samplerate == 24000 ||
-            m_samplerate == 48000);
+    m_sampleRate = sampleRate;
+    DEBUG_ASSERT(m_sampleRate == 8000 || m_sampleRate == 12000 ||
+            m_sampleRate == 16000 || m_sampleRate == 24000 ||
+            m_sampleRate == 48000);
 
     int createResult = 0;
-    m_pOpus = opus_encoder_create(m_samplerate, m_channels, OPUS_APPLICATION_AUDIO, &createResult);
+    m_pOpus = opus_encoder_create(m_sampleRate, m_channels, OPUS_APPLICATION_AUDIO, &createResult);
 
     if (createResult != OPUS_OK) {
         kLogger.warning() << "opus_encoder_create failed:" << opusErrorString(createResult);
@@ -197,7 +185,7 @@ int EncoderOpus::initEncoder(int samplerate, QString* pUserErrorMessage) {
         opus_encoder_ctl(m_pOpus, OPUS_SET_VBR_CONSTRAINT(0)); // Unconstrained VBR
     }
 
-    m_readRequired = m_channels * m_samplerate * kOpusFrameMs / 1000;
+    m_readRequired = m_channels * m_sampleRate * kOpusFrameMs / 1000;
     m_pFifoChunkBuffer = std::make_unique<mixxx::SampleBuffer>(m_readRequired);
     initStream();
 
@@ -231,7 +219,7 @@ void EncoderOpus::pushHeaderPacket() {
     // - Mapping family: 1 byte
     // - Channel mapping table: ignored
     // Total: 19 bytes
-    const int frameSize = 19;
+    constexpr int frameSize = 19;
     QByteArray frame;
 
     // Magic signature (8 bytes)
@@ -253,7 +241,7 @@ void EncoderOpus::pushHeaderPacket() {
 
     // Sample rate (4 bytes, little endian)
     for (int x = 0; x < 4; x++) {
-        unsigned char samplerateByte = (m_samplerate >> (x*8)) & 0xFF;
+        unsigned char samplerateByte = (m_sampleRate >> (x * 8)) & 0xFF;
         frame.append(samplerateByte);
     }
 

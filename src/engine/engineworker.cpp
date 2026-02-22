@@ -2,6 +2,7 @@
 
 #include "engine/engineworkerscheduler.h"
 #include "moc_engineworker.cpp"
+#include "util/assert.h"
 
 EngineWorker::EngineWorker()
     : m_pScheduler(nullptr) {

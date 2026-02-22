@@ -1,14 +1,10 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QSortFilterProxyModel>
-
 #include "preferences/usersettings.h"
-#include "library/browse/browsetablemodel.h"
-#include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 
 class RecordingManager;
+class FolderTreeModel;
 
 class RecordingFeature final : public LibraryFeature {
     Q_OBJECT
@@ -19,12 +15,11 @@ class RecordingFeature final : public LibraryFeature {
     ~RecordingFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -36,7 +31,6 @@ class RecordingFeature final : public LibraryFeature {
 
   private:
     RecordingManager* const m_pRecordingManager;
-    const QIcon m_icon;
 
-    FolderTreeModel m_childModel;
+    FolderTreeModel* m_pSidebarModel;
 };

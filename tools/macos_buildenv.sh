@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Ignored in case of a source call, but needed for bash specific sourcing detection
+
 set -o pipefail
 
 # shellcheck disable=SC2091
@@ -15,13 +17,45 @@ realpath() {
     cd "${OLDPWD}" || exit 1
 }
 
-# some hackery is required to be compatible with both bash and zsh
-THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
-[ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
+# Get script file location, compatible with bash and zsh
+if [ -n "$BASH_VERSION" ]; then
+  THIS_SCRIPT_NAME="${BASH_SOURCE[0]}"
+elif [ -n "$ZSH_VERSION" ]; then
+  # shellcheck disable=SC2296
+  THIS_SCRIPT_NAME="${(%):-%N}"
+else
+  THIS_SCRIPT_NAME="$0"
+fi
+
+HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
+
+if [ "$HOST_ARCH" = "x86_64" ]; then
+    if [ -n "${BUILDENV_ARM64}" ]; then
+        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
+        BUILDENV_BRANCH="2.5-rel"
+        BUILDENV_NAME="mixxx-deps-2.5-arm64-osx-min1100-release-40c29ff"
+        BUILDENV_SHA256="b76685e77f681baf8fdc5037297b0f16d323a405d09ce276d8844304530278e1"
+    else
+        if [ -n "${BUILDENV_RELEASE}" ]; then
+            VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
+            BUILDENV_BRANCH="2.5-rel"
+            BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-release-40c29ff"
+            BUILDENV_SHA256="a9b7dd2cb9ab00db6d05ac1f05aab933ed0ab2697f71db1a1bad70305befcf1b"
+        else
+            VCPKG_TARGET_TRIPLET="x64-osx-min1100"
+            BUILDENV_BRANCH="2.5"
+            BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1100-c15790e"
+            BUILDENV_SHA256="0252293436efed1b043d5c6ee384a9502ca0ade712eff95b2c0d2199d94598bb"
+        fi
+    fi
+else
+    echo "ERROR: Unsupported architecture detected: $HOST_ARCH"
+    echo "Please refer to the following guide to manually build the vcpkg environment:"
+    echo "https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-macOS-arm64"
+    exit 1
+fi
 
 MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
-
-read -r -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/build_environment"
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
@@ -35,16 +69,18 @@ case "$1" in
         ;;
 
     setup)
-        # Minimum required by Qt 5.12
-        MACOSX_DEPLOYMENT_TARGET=10.12
-
         BUILDENV_PATH="${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
-                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
-                curl "https://downloads.mixxx.org/dependencies/buildserver/2.3.x-macosx/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
-                OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.tar.gz"|cut -f 1 -d' ')
+                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip"
+                http_code=$(curl -sI -w "%{http_code}" "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o /dev/null)
+                if [ "$http_code" -ne 200 ]; then
+                    echo "Downloading  failed with HTTP status code: $http_code"
+                    exit 1
+                fi
+                curl "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
+                OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"
                 else
@@ -54,9 +90,10 @@ case "$1" in
                     exit 1
                 fi
                 echo ""
-                echo "Extracting ${BUILDENV_NAME}.tar.gz..."
-                tar xf "${BUILDENV_PATH}.tar.gz" -C "${BUILDENV_BASEPATH}" && \
-                echo "Successfully extracted ${BUILDENV_NAME}.tar.gz"
+                echo "Extracting ${BUILDENV_NAME}.zip..."
+                unzip "${BUILDENV_PATH}.zip" -d "${BUILDENV_BASEPATH}" && \
+                echo "Successfully extracted ${BUILDENV_NAME}.zip" && \
+                rm "${BUILDENV_PATH}.zip"
             else
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, run the command below to download it."
                 echo "source ${THIS_SCRIPT_NAME} setup"
@@ -66,50 +103,14 @@ case "$1" in
             echo "Build environment found: ${BUILDENV_PATH}"
         fi
 
-        export SDKROOT="${BUILDENV_BASEPATH}/MacOSX10.13.sdk"
-        if [ -d "${SDKROOT}" ]; then
-            if [ "$1" != "--profile" ]; then
-                echo "macOS 10.13 SDK found: ${SDKROOT}"
-            fi
-        else
-            echo "macOS 10.13 SDK not found, downloading it..."
-            curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/11.3/MacOSX10.13.sdk.tar.xz" -o "${SDKROOT}.tar.xz"
-            OBSERVED_SHA256=$(shasum -a 256 "${SDKROOT}.tar.xz"|cut -f 1 -d' ')
-            EXPECTED_SHA256="1d2984acab2900c73d076fbd40750035359ee1abe1a6c61eafcd218f68923a5a"
-            if [[ "$OBSERVED_SHA256" == "$EXPECTED_SHA256" ]]; then
-                echo "Download matched expected SHA256 sum $EXPECTED_SHA256"
-            else
-                echo "ERROR: Download did not match expected SHA256 checksum!"
-                echo "Expected $EXPECTED_SHA256"
-                echo "Got $OBSERVED_SHA256"
-                exit 1
-            fi
-            echo "Extracting MacOSX10.13.sdk.tar.xz..."
-            tar xf "${SDKROOT}.tar.xz" -C "${BUILDENV_BASEPATH}" && \
-            echo "Successfully extacted MacOSX10.13.sdk.tar.xz"
-            rm "${SDKROOT}.tar.xz"
-        fi
-
-        Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
-        [ -z "${Qt5_DIR}" ] && echo "Failed to locate Qt5_DIR!" >&2
-        QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
-        [ -z "${QT_QPA_PLATFORM_PLUGIN_PATH}" ] && echo "Failed to locate QT_QPA_PLATFORM_PLUGIN_PATH" >&2
-        export CC="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
-        export CXX="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-        export PATH="${BUILDENV_PATH}/bin:${PATH}"
-        export CMAKE_PREFIX_PATH="${BUILDENV_PATH}"
-        export Qt5_DIR
-        export QT_QPA_PLATFORM_PLUGIN_PATH
+        export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
+        export CMAKE_GENERATOR=Ninja
+        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
 
         echo_exported_variables() {
-            echo "CC=${CC}"
-            echo "CXX=${CXX}"
-            echo "SDKROOT=${SDKROOT}"
-            echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
-            echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
-            echo "Qt5_DIR=${Qt5_DIR}"
-            echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
-            echo "PATH=${PATH}"
+            echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
+            echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
+            echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then
@@ -118,6 +119,8 @@ case "$1" in
             echo ""
             echo "Exported environment variables:"
             echo_exported_variables
+            echo "You can now configure cmake from the command line in an EMPTY build directory via:"
+            echo "cmake -DCMAKE_TOOLCHAIN_FILE=${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ${MIXXX_ROOT}"
         fi
         ;;
     *)

@@ -1,15 +1,13 @@
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
-
 #include "waveform/renderers/waveformrenderbeat.h"
 
-#include "control/controlobject.h"
+#include <QPainter>
+
 #include "track/track.h"
+#include "util/painterscope.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "util/painterscope.h"
+
+class QPaintEvent;
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -20,7 +18,7 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
+    m_beatColor = QColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 }
 
@@ -40,12 +38,21 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (alpha == 0) {
         return;
     }
+#ifdef MIXXX_USE_QOPENGL
+    // Using alpha transparency with drawLines causes a graphical issue when
+    // drawing with QPainter on the QOpenGLWindow: instead of individual lines
+    // a large rectangle encompassing all beatlines is drawn.
+    m_beatColor.setAlphaF(1.f);
+#else
     m_beatColor.setAlphaF(alpha/100.0);
+#endif
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
+
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     const double firstDisplayedPosition =
             m_waveformRenderer->getFirstDisplayedPosition();
@@ -56,12 +63,14 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //          << "firstDisplayedPosition" << firstDisplayedPosition
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
-    std::unique_ptr<mixxx::BeatIterator> it(trackBeats->findBeats(
-            firstDisplayedPosition * trackSamples,
-            lastDisplayedPosition * trackSamples));
+    const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(
+            firstDisplayedPosition * trackSamples);
+    const auto endPosition = mixxx::audio::FramePos::fromEngineSamplePos(
+            lastDisplayedPosition * trackSamples);
+    auto it = trackBeats->iteratorFrom(startPosition);
 
     // if no beat do not waste time saving/restoring painter
-    if (!it || !it->hasNext()) {
+    if (it == trackBeats->cend() || *it > endPosition) {
         return;
     }
 
@@ -79,12 +88,12 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     int beatCount = 0;
 
-    while (it->hasNext()) {
-        double beatPosition = it->next();
+    for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
+        double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
-        xBeatPoint = qRound(xBeatPoint);
+        xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {

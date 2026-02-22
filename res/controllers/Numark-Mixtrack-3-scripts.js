@@ -4,25 +4,25 @@
  **********************************************************************/
 // TrackEndWarning: "true": when you reach the end of the track,
 // the jog wheel Button will flash. "false": No flash of Jog Wheel Button
-var TrackEndWarning = true;
+const TrackEndWarning = engine.getSetting("TrackEndWarning") === "true";
 
 //iCutEnabled: iCut mode will automatically cut your track with the cross fader
 // when SHIFT enabled and scratching with the jog wheel
-var iCutEnabled = true;
+const iCutEnabled = engine.getSetting("iCutEnabled") === "true";
 
 //activate PFL of deck on track load
-var smartPFL = true;
+const smartPFL = engine.getSetting("smartPFL") === "true";
 
 //Disable Play on Sync button Double Press
-var noPlayOnSyncDoublePress = false;
+const noPlayOnSyncDoublePress = engine.getSetting("noPlayOnSyncDoublePress") === "true";
 
 // Shift+Filter control behavior
 // true (default) - FX parameter 4 (when the FX is focused)
 // false - Channel Gain
-var ShiftFilterFX4 = true;
+const ShiftFilterFX4 = engine.getSetting("ShiftFilterFX4") === "true";
 
 // allow pitch bend with wheel when wheel is not active
-var PitchBendOnWheelOff = true;
+const PitchBendOnWheelOff = engine.getSetting("PitchBendOnWheelOff") === "true";
 
 /**************************
  *  scriptpause
@@ -312,9 +312,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount == 1
 
         // permanent timer
-        this.flashTimer = engine.beginTimer(num_ms_on + num_ms_off, function() {
-            this.flashOnceOn(false);
-        });
+        this.flashTimer = engine.beginTimer(num_ms_on + num_ms_off, ()=>this.flashOnceOn(false));
     }
 
     if (flashCount > 1) {
@@ -322,9 +320,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function() {
-            this.stopflash(relight);
-        }, true);
+        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(relight), true);
     }
 };
 
@@ -371,9 +367,7 @@ LED.prototype.flashOnceOn = function(relight) {
     sendShortMsg(this.control, this.midino, this.valueon);
     pauseScript(scriptpause);
     this.flashOnceDuration = this.num_ms_on;
-    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, function() {
-        this.flashOnceOff(relight);
-    }, true);
+    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, ()=>this.flashOnceOff(relight), true);
 };
 
 // private :call back function (called in flashOnceOn() )
@@ -428,7 +422,7 @@ SingleDoubleBtn.prototype.buttonDown = function(channel, control, value, status,
     this.group = group;
 
     if (this.buttonTimer === 0) { // first press
-        this.buttonTimer = engine.beginTimer(this.doublePressTimeOut, this.buttonDecide, true);
+        this.buttonTimer = engine.beginTimer(this.doublePressTimeOut, this.buttonDecide.bind(this), true);
         this.buttonCount = 1;
     } else { // 2nd press (before timer's out)
         engine.stopTimer(this.buttonTimer);
@@ -492,7 +486,7 @@ LongShortBtn.prototype.buttonDown = function(channel, control, value, status, gr
     this.status = status;
     this.group = group;
     this.buttonLongPress = false;
-    this.buttonLongPressTimer = engine.beginTimer(this.longPressThreshold, this.buttonAssertLongPress, true);
+    this.buttonLongPressTimer = engine.beginTimer(this.longPressThreshold, this.buttonAssertLongPress.bind(this), true);
 };
 
 LongShortBtn.prototype.buttonUp = function() {
@@ -582,11 +576,11 @@ LongShortDoubleBtn.prototype.buttonDown = function(channel, control, value, stat
         this.buttonLongPress = false;
 
         this.buttonLongPressTimer = engine.beginTimer(
-            this.longPressThreshold, this.buttonAssertLongPress, true
+            this.longPressThreshold, this.buttonAssertLongPress.bind(this), true
         );
 
         this.buttonTimer = engine.beginTimer(
-            this.doublePressTimeOut, this.buttonAssert1Press, true
+            this.doublePressTimeOut, this.buttonAssert1Press.bind(this), true
         );
 
     } else if (this.buttonCount === 1) { // 2nd press (before short timer's out)
@@ -895,6 +889,9 @@ NumarkMixtrack3.init = function(id, debug) {
         NumarkMixtrack3.decks["D" + i] = new NumarkMixtrack3.deck(i);
     }
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     // initialize 8 samplers
     for (var i = 1; i <= 8; i++) {
         NumarkMixtrack3.samplers["S" + i] = new NumarkMixtrack3.sampler(i);
@@ -975,7 +972,7 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         "hotcue_3_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_4_enabled": "NumarkMixtrack3.OnHotcueChange",
         "track_samples": "NumarkMixtrack3.OnTrackLoaded",
-        "VuMeter": "NumarkMixtrack3.OnVuMeterChange",
+        "vu_meter": "NumarkMixtrack3.OnVuMeterChange",
         "playposition": "NumarkMixtrack3.OnPlaypositionChange",
         "volume": "NumarkMixtrack3.OnVolumeChange",
         "pfl": "NumarkMixtrack3.OnPFLStatusChange",
@@ -1081,24 +1078,34 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
 };
 
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
-    var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.
-        D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
+    const shifted = (
+        NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
+        NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
+    );
 
     if (value === ON) {
-	    if (shifted) {
-	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-	        engine.setValue("[Library]", "GoToItem", true);
-	    } else {
-	        // Browse push : maximize/minimize library view
-	        if (value === ON) {
-	            script.toggleControl("[Master]", "maximize_library");
-	        }
-	    }
+        if (engine.getSetting("libraryMode") === "focus") {
+            if (shifted) {
+                // SHIFT + BROWSE push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            } else {
+                // Browse push : expand sidebar item or load track when in track table
+                engine.setValue("[Library]", "GoToItem", true);
+            }
+        } else { // Classic mode
+            if (shifted) {
+                // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+                engine.setValue("[Library]", "GoToItem", true);
+            } else {
+                // Browse push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            }
+        }
     }
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
-    var shifted = (
+    const shifted = (
         NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
         NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
     );
@@ -1106,11 +1113,20 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3
     var nval = (value > 0x40 ? value - 0x80 : value);
 
-    // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
-    if (shifted) {
-        engine.setValue("[Playlist]", "SelectPlaylist", nval);
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+    if (engine.getSetting("libraryMode") === "focus") {
+        // SHIFT+Turn BROWSE Knob : change focus between search, track table, and sidebar
+        if (shifted) {
+            engine.setValue("[Library]", "MoveFocus", nval);
+        } else {
+            engine.setValue("[Library]", "MoveVertical", nval);
+        }
+    } else { // Classic mode
+        // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
+        if (shifted) {
+            engine.setValue("[Playlist]", "SelectPlaylist", nval);
+        } else {
+            engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+        }
     }
 };
 

@@ -6,11 +6,12 @@
 #include <QList>
 
 #include "preferences/usersettings.h"
-#include "engine/sidechain/sidechainworker.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/fifo.h"
 #include "util/mutex.h"
 #include "util/types.h"
+
+class SideChainWorker;
 
 class EngineSideChain : public QThread, public AudioDestination {
     Q_OBJECT
@@ -32,7 +33,7 @@ class EngineSideChain : public QThread, public AudioDestination {
     // Thread-safe, blocking.
     void addSideChainWorker(SideChainWorker* pWorker);
 
-    static const int SIDECHAIN_BUFFER_SIZE = 65536;
+    static constexpr int SIDECHAIN_BUFFER_SIZE = 65536;
 
   private:
     void run() override;

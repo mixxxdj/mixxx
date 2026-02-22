@@ -1,9 +1,15 @@
 #pragma once
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
+#include "util/parented_ptr.h"
 
-class ControlProxy;
-
+/// This type of control is used for blinking buttons such as the "play" or
+/// "cue" button and makes buttons that using the same blink interval to light
+/// up at the same time in the UI and on controllers.
+//
+/// Requires `ControlIndicatorTimer` to be initialized first.
 class ControlIndicator : public ControlObject {
     Q_OBJECT
   public:
@@ -17,24 +23,19 @@ class ControlIndicator : public ControlObject {
     ControlIndicator(const ConfigKey& key);
     virtual ~ControlIndicator();
 
-    void setBlinkValue(enum BlinkValue bv);
+    void setBlinkValue(enum BlinkValue newBlinkValue);
 
   signals:
     void blinkValueChanged();
 
   private slots:
-    void slotGuiTick50ms(double cpuTime);
     void slotBlinkValueChanged();
+    void slotValueChanged(double value) {
+        set(value);
+    };
 
   private:
-    void toggle(double duration);
-    // set() is private, use setBlinkValue instead
-    // it must be called from the GUI thread only to a void
-    // race condition by toggle()
-    void set(double value) { ControlObject::set(value); };
-
-    enum BlinkValue m_blinkValue;
-    double m_nextSwitchTime;
-    ControlProxy* m_pCOTGuiTickTime;
-    ControlProxy* m_pCOTGuiTick50ms;
+    std::atomic<BlinkValue> m_blinkValue;
+    parented_ptr<ControlProxy> m_pCOIndicator250millis;
+    parented_ptr<ControlProxy> m_pCOIndicator500millis;
 };

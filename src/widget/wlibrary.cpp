@@ -1,20 +1,18 @@
 #include "widget/wlibrary.h"
 
-#include <QMutexLocker>
+#include <QKeyEvent>
 #include <QtDebug>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/libraryview.h"
 #include "moc_wlibrary.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 #include "widget/wtracktableview.h"
 
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-          m_mutex(QMutex::Recursive),
-#endif
+          m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_trackTableBackgroundColorOpacity(kDefaultTrackTableBackgroundColorOpacity),
           m_bShowButtonText(true) {
 }
@@ -34,74 +32,129 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
             kMaxTrackTableBackgroundColorOpacity);
 }
 
-bool WLibrary::registerView(const QString& name, QWidget* view) {
-    QMutexLocker lock(&m_mutex);
+bool WLibrary::registerView(const QString& name, QWidget* pView) {
+    //qDebug() << "WLibrary::registerView" << name;
+    const auto lock = lockMutex(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;
     }
-    if (dynamic_cast<LibraryView*>(view) == nullptr) {
-        qDebug() << "WARNING: Attempted to register a view with WLibrary "
-                 << "that does not implement the LibraryView interface. "
+    if (dynamic_cast<LibraryView*>(pView) == nullptr) {
+        qDebug() << "WARNING: Attempted to register view" << name << "with WLibrary "
+                 << "which does not implement the LibraryView interface. "
                  << "Ignoring.";
         return false;
     }
-    addWidget(view);
-    m_viewMap[name] = view;
+    addWidget(pView);
+    m_viewMap[name] = pView;
     return true;
 }
 
 void WLibrary::switchToView(const QString& name) {
-    QMutexLocker lock(&m_mutex);
+    const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
-    WTrackTableView* ttView = qobject_cast<WTrackTableView*>(
+    LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
             currentWidget());
 
-    if (ttView != nullptr){
-        //qDebug("trying to save position");
-        ttView->saveCurrentVScrollBarPos();
-    }
-
-    QWidget* widget = m_viewMap.value(name, nullptr);
-    if (widget != nullptr) {
-        LibraryView * lview = dynamic_cast<LibraryView*>(widget);
-        if (lview == nullptr) {
-            qDebug() << "WARNING: Attempted to register a view with WLibrary "
-                     << "that does not implement the LibraryView interface. "
+    QWidget* pWidget = m_viewMap.value(name, nullptr);
+    if (pWidget != nullptr) {
+        LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
+        if (pLibraryView == nullptr) {
+            qDebug() << "WARNING: Attempted to switch to view" << name << "with WLibrary "
+                     << "which does not implement the LibraryView interface. "
                      << "Ignoring.";
             return;
         }
-        if (currentWidget() != widget) {
+        if (currentWidget() != pWidget) {
+            if (pOldLibrartView) {
+                pOldLibrartView->saveCurrentViewState();
+            }
             //qDebug() << "WLibrary::setCurrentWidget" << name;
-            setCurrentWidget(widget);
-            lview->onShow();
+            setCurrentWidget(pWidget);
+            pLibraryView->onShow();
+            pLibraryView->restoreCurrentViewState();
         }
+    }
+}
 
-        WTrackTableView* ttWidgetView = qobject_cast<WTrackTableView*>(
-                widget);
-
-        if (ttWidgetView != nullptr){
-            qDebug("trying to restore position");
-            ttWidgetView->restoreCurrentVScrollBarPos();
-        }
+void WLibrary::pasteFromSidebar() {
+    QWidget* pCurrent = currentWidget();
+    LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
+    if (pView) {
+        pView->pasteFromSidebar();
     }
 }
 
 void WLibrary::search(const QString& name) {
-    QMutexLocker lock(&m_mutex);
-    QWidget* current = currentWidget();
-    LibraryView* view = dynamic_cast<LibraryView*>(current);
-    if (view == nullptr) {
-        qDebug() << "WARNING: Attempted to register a view with WLibrary "
-          << "that does not implement the LibraryView interface. Ignoring.";
+    auto lock = lockMutex(&m_mutex);
+    QWidget* pCurrent = currentWidget();
+    LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
+    if (pView == nullptr) {
+        qDebug() << "WARNING: Attempted to search in view" << name << "with WLibrary "
+                 << "which does not implement the LibraryView interface. Ignoring.";
         return;
     }
     lock.unlock();
-    view->onSearch(name);
+    pView->onSearch(name);
 }
 
 LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
+}
+
+WTrackTableView* WLibrary::getCurrentTrackTableView() const {
+    QWidget* pCurrent = currentWidget();
+    WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
+    if (!pTracksView) {
+        // This view is not a tracks view, but possibly a special library view
+        // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
+        pTracksView = pCurrent->findChild<WTrackTableView*>();
+    }
+    return pTracksView; // might still be nullptr
+}
+
+bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
+    // qDebug() << "WLibrary::isTrackInCurrentView" << trackId;
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return false;
+    }
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
+    if (!pTracksView) {
+        return false;
+    }
+
+    return pTracksView->isTrackInCurrentView(trackId);
+}
+
+void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
+    // qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
+    if (!trackId.isValid()) {
+        return;
+    }
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
+    if (!pTracksView) {
+        return;
+    }
+    if (pTracksView->isTrackInCurrentView(trackId)) {
+        pTracksView->selectTrack(trackId);
+        pTracksView->setFocus();
+    }
+}
+
+void WLibrary::saveCurrentViewState() const {
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
+    if (!pTracksView) {
+        return;
+    }
+    pTracksView->slotSaveCurrentViewState();
+}
+
+void WLibrary::restoreCurrentViewState() const {
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
+    if (!pTracksView) {
+        return;
+    }
+    pTracksView->slotRestoreCurrentViewState();
 }
 
 bool WLibrary::event(QEvent* pEvent) {
@@ -109,4 +162,11 @@ bool WLibrary::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QStackedWidget::event(pEvent);
+}
+
+void WLibrary::keyPressEvent(QKeyEvent* pEvent) {
+    if (pEvent->key() == Qt::Key_Left && pEvent->modifiers() & Qt::ControlModifier) {
+        emit setLibraryFocus(FocusWidget::Sidebar);
+    }
+    QStackedWidget::keyPressEvent(pEvent);
 }

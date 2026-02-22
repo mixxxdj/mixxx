@@ -5,7 +5,7 @@
 #include <QSet>
 #include <memory>
 
-#include "library/relocatedtrack.h"
+#include "library/dao/directorydao.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
@@ -15,6 +15,7 @@
 class LibraryScanner;
 class TrackCollection;
 class ExternalTrackCollection;
+class RelocatedTrack;
 
 // Manages Mixxx's internal database of tracks as well as external track collections.
 //
@@ -36,7 +37,7 @@ class TrackCollectionManager: public QObject,
             deleteTrackFn_t deleteTrackForTestingFn = nullptr);
     ~TrackCollectionManager() override;
 
-    TrackCollection* internalCollection() {
+    TrackCollection* internalCollection() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_pInternalCollection;
     }
@@ -46,6 +47,25 @@ class TrackCollectionManager: public QObject,
         return m_externalCollections;
     }
 
+    TrackPointer getTrackById(
+            TrackId trackId) const;
+    TrackPointer getTrackByRef(
+            const TrackRef& trackRef) const;
+    QList<TrackId> resolveTrackIdsFromUrls(
+            const QList<QUrl>& urls,
+            bool addMissing) const;
+    QList<TrackId> resolveTrackIdsFromLocations(
+            const QList<QString>& locations) const;
+
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const;
+#endif // __EXTRA_METADATA__
+
     bool hideTracks(const QList<TrackId>& trackIds) const;
     bool unhideTracks(const QList<TrackId>& trackIds) const;
     void hideAllTracks(const QDir& rootDir) const;
@@ -53,9 +73,10 @@ class TrackCollectionManager: public QObject,
     void purgeTracks(const QList<TrackRef>& trackRefs) const;
     void purgeAllTracks(const QDir& rootDir) const;
 
-    bool addDirectory(const QString& dir) const;
-    bool removeDirectory(const QString& dir) const;
-    void relocateDirectory(const QString& oldDir, const QString& newDir) const;
+    DirectoryDAO::AddResult addDirectory(const mixxx::FileInfo& newDir) const;
+    DirectoryDAO::RemoveResult removeDirectory(const mixxx::FileInfo& oldDir) const;
+    DirectoryDAO::RelocateResult relocateDirectory(
+            const QString& oldDir, const QString& newDir) const;
 
     TrackPointer getOrAddTrack(
             const TrackRef& trackRef,
@@ -64,9 +85,12 @@ class TrackCollectionManager: public QObject,
     // Save the track in both the internal database and external collections.
     // Export of metadata is deferred until the track is evicted from the
     // cache to prevent file corruption due to concurrent access.
-    // Returns true if the track was dirty and has been saved, otherwise
-    // false.
-    bool saveTrack(const TrackPointer& pTrack);
+    enum class SaveTrackResult {
+        Saved,
+        Skipped, // e.g. unmodified or missing/deleted tracks
+        Failed,
+    };
+    SaveTrackResult saveTrack(const TrackPointer& pTrack) const;
 
   signals:
     void libraryScanStarted();
@@ -89,10 +113,10 @@ class TrackCollectionManager: public QObject,
         Immediate,
         Deferred,
     };
-    void saveTrack(
+    SaveTrackResult saveTrack(
             Track* pTrack,
-            TrackMetadataExportMode mode);
-    void exportTrackMetadata(
+            TrackMetadataExportMode mode) const;
+    ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             TrackMetadataExportMode mode) const;
 

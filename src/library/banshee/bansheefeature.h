@@ -1,17 +1,10 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 #include "library/banshee/bansheedbconnection.h"
-
 
 class BansheePlaylistModel;
 
@@ -24,9 +17,8 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static void prepareDbPath(UserSettingsPointer pConfig);
 
     QVariant title() override;
-    QIcon getIcon() override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -36,7 +28,7 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) override;
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     QStringList m_playlists;
 
     //a new DB connection for the worker thread
@@ -49,8 +41,8 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
-    QIcon m_icon;
 
     static QString m_databaseFile;
 

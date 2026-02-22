@@ -9,6 +9,7 @@ namespace {
 void assertEndPosition(
         CueType type,
         std::optional<double> endPositionMillis) {
+    Q_UNUSED(endPositionMillis);
     switch (type) {
     case CueType::HotCue:
     case CueType::MainCue:
@@ -16,7 +17,7 @@ void assertEndPosition(
         break;
     case CueType::Loop:
     case CueType::Jump:
-    case CueType::AudibleSound:
+    case CueType::N60dBSound:
         DEBUG_ASSERT(endPositionMillis);
         break;
     case CueType::Intro:
@@ -42,17 +43,17 @@ CueInfo::CueInfo()
 
 CueInfo::CueInfo(
         CueType type,
-        std::optional<double> startPositionMillis,
-        std::optional<double> endPositionMillis,
-        std::optional<int> hotCueIndex,
-        const QString& label,
-        mixxx::RgbColor::optional_t color,
+        const std::optional<double>& startPositionMillis,
+        const std::optional<double>& endPositionMillis,
+        const std::optional<int>& hotCueIndex,
+        QString label,
+        const mixxx::RgbColor::optional_t& color,
         CueFlags flags)
         : m_type(type),
           m_startPositionMillis(startPositionMillis),
           m_endPositionMillis(endPositionMillis),
           m_hotCueIndex(hotCueIndex),
-          m_label(label),
+          m_label(std::move(label)),
           m_color(color),
           m_flags(flags) {
     assertEndPosition(type, endPositionMillis);
@@ -66,7 +67,7 @@ void CueInfo::setType(CueType type) {
     m_type = type;
 }
 
-void CueInfo::setStartPositionMillis(std::optional<double> positionMillis) {
+void CueInfo::setStartPositionMillis(const std::optional<double>& positionMillis) {
     m_startPositionMillis = positionMillis;
 }
 
@@ -74,7 +75,7 @@ std::optional<double> CueInfo::getStartPositionMillis() const {
     return m_startPositionMillis;
 }
 
-void CueInfo::setEndPositionMillis(std::optional<double> positionMillis) {
+void CueInfo::setEndPositionMillis(const std::optional<double>& positionMillis) {
     m_endPositionMillis = positionMillis;
     assertEndPosition(m_type, m_endPositionMillis);
 }
@@ -103,7 +104,7 @@ RgbColor::optional_t CueInfo::getColor() const {
     return m_color;
 }
 
-void CueInfo::setColor(RgbColor::optional_t color) {
+void CueInfo::setColor(const RgbColor::optional_t& color) {
     m_color = color;
 }
 
@@ -144,8 +145,8 @@ QDebug operator<<(QDebug debug, const CueType& cueType) {
     case CueType::Outro:
         debug << "CueType::Outro";
         break;
-    case CueType::AudibleSound:
-        debug << "CueType::AudibleSound";
+    case CueType::N60dBSound:
+        debug << "CueType::N60dBSound";
         break;
     }
     return debug;

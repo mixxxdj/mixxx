@@ -3,10 +3,8 @@
 #include <QDialog>
 #include <QFile>
 #include <QSortFilterProxyModel>
-#include <QTimerEvent>
 
-#include "control/controlmodel.h"
-#include "control/controlobject.h"
+#include "control/controlsortfiltermodel.h"
 #include "dialog/ui_dlgdevelopertoolsdlg.h"
 #include "preferences/usersettings.h"
 #include "util/statmodel.h"
@@ -26,8 +24,7 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
 
   private:
     UserSettingsPointer m_pConfig;
-    ControlModel m_controlModel;
-    QSortFilterProxyModel m_controlProxyModel;
+    ControlSortFilterModel m_controlProxyModel;
 
     StatModel m_statModel;
     QSortFilterProxyModel m_statProxyModel;

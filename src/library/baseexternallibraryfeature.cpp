@@ -6,6 +6,8 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/crate.h"
+#include "library/treeitem.h"
 #include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
 #include "widget/wlibrarysidebar.h"
@@ -18,9 +20,10 @@ const mixxx::Logger kLogger("BaseExternalLibraryFeature");
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()) {
+        UserSettingsPointer pConfig,
+        const QString& iconName)
+        : LibraryFeature(pLibrary, pConfig, iconName),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     m_pAddToAutoDJAction = make_parented<QAction>(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction,
             &QAction::triggered,
@@ -39,11 +42,17 @@ BaseExternalLibraryFeature::BaseExternalLibraryFeature(
             this,
             &BaseExternalLibraryFeature::slotAddToAutoDJReplace);
 
-    m_pImportAsMixxxPlaylistAction = make_parented<QAction>(tr("Import Playlist"), this);
+    m_pImportAsMixxxPlaylistAction = make_parented<QAction>(tr("Import as Playlist"), this);
     connect(m_pImportAsMixxxPlaylistAction,
             &QAction::triggered,
             this,
             &BaseExternalLibraryFeature::slotImportAsMixxxPlaylist);
+
+    m_pImportAsMixxxCrateAction = make_parented<QAction>(tr("Import as Crate"), this);
+    connect(m_pImportAsMixxxCrateAction,
+            &QAction::triggered,
+            this,
+            &BaseExternalLibraryFeature::slotImportAsMixxxCrate);
 }
 
 void BaseExternalLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -67,6 +76,7 @@ void BaseExternalLibraryFeature::onRightClickChild(
     menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
     menu.addAction(m_pImportAsMixxxPlaylistAction);
+    menu.addAction(m_pImportAsMixxxCrateAction);
     menu.exec(globalPos);
 }
 
@@ -100,7 +110,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotImportAsMixxxPlaylist() row:" << m_lastRightClickedIndex.data();
 
     QList<TrackId> trackIds;
     QString playlist;
@@ -113,41 +123,76 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 
     int playlistId = playlistDao.createUniquePlaylist(&playlist);
 
-    if (playlistId != -1) {
+    if (playlistId != kInvalidPlaylistId) {
         playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     } else {
         // Do not change strings here without also changing strings in
-        // src/library/baseplaylistfeature.cpp
+        // src/library/trackset/baseplaylistfeature.cpp
         QMessageBox::warning(nullptr,
                 tr("Playlist Creation Failed"),
                 tr("An unknown error occurred while creating playlist: ") + playlist);
     }
 }
 
-// This is a common function for all external Librarys copied to Mixxx DB
+void BaseExternalLibraryFeature::slotImportAsMixxxCrate() {
+    // qDebug() << "slotImportAsMixxxCrate() row:" << m_lastRightClickedIndex.data();
+
+    QList<TrackId> trackIds;
+    QString playlist;
+    appendTrackIdsFromRightClickIndex(&trackIds, &playlist);
+    if (trackIds.isEmpty()) {
+        return;
+    }
+
+    Crate crate;
+    crate.setName(playlist);
+
+    CrateId crateId;
+
+    if (m_pTrackCollection->insertCrate(crate, &crateId)) {
+        m_pTrackCollection->addCrateTracks(crateId, trackIds);
+    } else {
+        QMessageBox::warning(nullptr,
+                tr("Crate Creation Failed"),
+                tr("Could not create crate, it most likely already exists: ") + playlist);
+    }
+}
+
+// This is a common function for all external libraries copied to Mixxx DB
 void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         QList<TrackId>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
 
-    DEBUG_ASSERT(pPlaylist);
-    *pPlaylist = m_lastRightClickedIndex.data().toString();
-    std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
-            createPlaylistModelForPlaylist(*pPlaylist));
-
-    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
-                "could not initialize a playlist model for playlist:" << *pPlaylist;
+    const auto* pTreeItem = static_cast<TreeItem*>(
+            m_lastRightClickedIndex.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
         return;
     }
 
-    pPlaylistModelToAdd->setSort(pPlaylistModelToAdd->fieldIndex(
-            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    DEBUG_ASSERT(pPlaylist);
+    *pPlaylist = pTreeItem->getLabel();
+    const std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd =
+            createPlaylistModelForPlaylist(pTreeItem->getData());
+
+    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+        qDebug() << "BaseExternalLibraryFeature::"
+                    "appendTrackIdsFromRightClickIndex "
+                    "could not initialize a playlist model for "
+                    "playlist:"
+                 << *pPlaylist;
+        return;
+    }
+
+    pPlaylistModelToAdd->setSort(
+            pPlaylistModelToAdd->fieldIndex(
+                    ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
     pPlaylistModelToAdd->select();
 
     // Copy Tracks
-    int rows = pPlaylistModelToAdd->rowCount();
+    const int rows = pPlaylistModelToAdd->rowCount();
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistModelToAdd->index(i, 0);
         VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
@@ -157,7 +202,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (!trackId.isValid()) {
             kLogger.warning()
                     << "Failed to add track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
             continue;
@@ -165,7 +210,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "Adding track"
-                    << pPlaylistModelToAdd->getTrackLocation(index)
+                    << pPlaylistModelToAdd->getTrackUrl(index)
                     << "to playlist"
                     << *pPlaylist;
         }
@@ -175,7 +220,6 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
 
 std::unique_ptr<BaseSqlTableModel>
 BaseExternalLibraryFeature::createPlaylistModelForPlaylist(
-        const QString& playlist) {
-    Q_UNUSED(playlist);
+        const QVariant&) {
     return {};
 }

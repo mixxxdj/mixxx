@@ -15,12 +15,11 @@ class TrackRefTest : public testing::Test {
     // if only the default constructor is used. This workaround was
     // needed for LLVM version 7.0.2 (clang-700.1.81).
     TrackRefTest()
-      : m_tempFile("TrackRefTest.tmp"),
-        m_tempFileDir(QDir::tempPath()),
-        m_tempFileName(m_tempFile.fileName()),
-        m_tempFileInfo(m_tempFileDir, m_tempFileName),
-        m_validTrackId(123),
-        m_invalidTrackId() {
+            : m_tempFile("TrackRefTest.tmp"),
+              m_tempFileDir(QDir::tempPath()),
+              m_tempFileName(m_tempFile.fileName()),
+              m_tempFileInfo(m_tempFileDir, m_tempFileName),
+              m_validTrackId(QVariant(123)) {
     }
 
     virtual void SetUp() {
@@ -31,17 +30,17 @@ class TrackRefTest : public testing::Test {
     virtual void TearDown() {
     }
 
-    static void verifyFileInfo(const TrackRef& actual, const TrackFile& trackFile) {
+    static void verifyFileInfo(const TrackRef& actual, const mixxx::FileInfo& fileInfo) {
         EXPECT_TRUE(actual.hasLocation());
-        EXPECT_EQ(trackFile.location(), actual.getLocation());
+        EXPECT_EQ(fileInfo.location(), actual.getLocation());
         EXPECT_TRUE(actual.hasCanonicalLocation());
-        EXPECT_EQ(trackFile.canonicalLocation(), actual.getCanonicalLocation());
+        EXPECT_EQ(fileInfo.canonicalLocation(), actual.getCanonicalLocation());
     }
 
     const QTemporaryFile m_tempFile;
     const QDir m_tempFileDir;
     const QString m_tempFileName;
-    const TrackFile m_tempFileInfo;
+    const mixxx::FileInfo m_tempFileInfo;
     const TrackId m_validTrackId;
     const TrackId m_invalidTrackId;
 };

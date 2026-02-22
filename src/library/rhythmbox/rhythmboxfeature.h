@@ -1,18 +1,15 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
-#include <QXmlStreamReader>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/treeitemmodel.h"
-#include "library/trackcollection.h"
+#include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
+class QXmlStreamReader;
+class BaseTrackCache;
 
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -22,9 +19,8 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     QVariant title() override;
-    QIcon getIcon() override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
     // processes the music collection
     TreeItem* importMusicCollection();
     // processes the playlist entries
@@ -37,7 +33,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
 
   protected:
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
-            const QString& playlist) override;
+            const QVariant& playlist_name) override;
 
   private:
     // Removes all rows from a given table
@@ -57,9 +53,9 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
 
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;
-    QIcon m_icon;
 };

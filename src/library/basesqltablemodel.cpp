@@ -28,11 +28,13 @@ const bool sDebug = false;
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-const int kIdColumn = 0;
-const int kMaxSortColumns = 3;
+constexpr int kIdColumn = 0;
+constexpr int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
+
+const QString kModelName = "table:";
 
 } // anonymous namespace
 
@@ -40,27 +42,13 @@ BaseSqlTableModel::BaseSqlTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace)
-        : BaseTrackTableModel(
-                  settingsNamespace,
-                  pTrackCollectionManager,
-                  parent),
+        : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
           m_bInitialized(false) {
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
-}
-
-void BaseSqlTableModel::initHeaderProperties() {
-    BaseTrackTableModel::initHeaderProperties();
-    // Add playlist columns
-    setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION,
-            tr("#"),
-            30);
-    setHeaderProperties(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
-            tr("Timestamp"),
-            80);
 }
 
 void BaseSqlTableModel::initSortColumnMapping() {
@@ -123,6 +111,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::TimesPlayed)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
     m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
+    m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Rating)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
     m_columnIndexBySortColumnId[static_cast<int>(
@@ -140,6 +131,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -159,15 +153,18 @@ void BaseSqlTableModel::clearRows() {
         beginRemoveRows(QModelIndex(), 0, m_rowInfo.size() - 1);
         m_rowInfo.clear();
         m_trackIdToRows.clear();
+        m_trackPosToRow.clear();
         endRemoveRows();
     }
     DEBUG_ASSERT(m_rowInfo.isEmpty());
     DEBUG_ASSERT(m_trackIdToRows.isEmpty());
+    DEBUG_ASSERT(m_trackPosToRow.isEmpty());
 }
 
 void BaseSqlTableModel::replaceRows(
         QVector<RowInfo>&& rows,
-        TrackId2Rows&& trackIdToRows) {
+        TrackId2Rows&& trackIdToRows,
+        TrackPos2Row&& trackPosToRows) {
     // NOTE(uklotzde): Use r-value references for parameters here, because
     // conceptually those parameters should replace the corresponding internal
     // member variables. Currently Qt4/5 doesn't support move semantics and
@@ -177,12 +174,16 @@ void BaseSqlTableModel::replaceRows(
     // its container types in the future this code becomes even more efficient.
     DEBUG_ASSERT(rows.empty() == trackIdToRows.empty());
     DEBUG_ASSERT(rows.size() >= trackIdToRows.size());
+    if (hasPositionColumn()) {
+        DEBUG_ASSERT(rows.size() == trackPosToRows.size());
+    }
     if (rows.isEmpty()) {
         clearRows();
     } else {
         beginInsertRows(QModelIndex(), 0, rows.size() - 1);
         m_rowInfo = rows;
         m_trackIdToRows = trackIdToRows;
+        m_trackPosToRow = trackPosToRows;
         endInsertRows();
     }
 }
@@ -231,7 +232,7 @@ void BaseSqlTableModel::select() {
     }
 
     // Remove all the rows from the table after(!) the query has been
-    // executed successfully. See Bug #1090888.
+    // executed successfully. See issue #6782.
     // TODO(rryan) we could edit the table in place instead of clearing it?
     clearRows();
 
@@ -241,32 +242,39 @@ void BaseSqlTableModel::select() {
     QVector<RowInfo> rowInfos;
     QSet<TrackId> trackIds;
     int idColumn = -1;
+    int posColumn = -1;
     while (query.next()) {
         QSqlRecord sqlRecord = query.record();
 
         if (idColumn < 0) {
             idColumn = sqlRecord.indexOf(m_idColumn);
         }
-        VERIFY_OR_DEBUG_ASSERT(idColumn >= 0) {
+
+        if (posColumn == -1 && hasPositionColumn()) {
+            posColumn = sqlRecord.indexOf(PLAYLISTTABLE_POSITION);
+        }
+
+        // TODO(XXX): Can we get rid of the hard-coded assumption that
+        // the the first column always contains the id?
+        DEBUG_ASSERT(idColumn == kIdColumn);
+
+        VERIFY_OR_DEBUG_ASSERT(idColumn != -1) {
             qCritical()
                     << "ID column not available in database query results:"
                     << m_idColumn;
             return;
         }
-        // TODO(XXX): Can we get rid of the hard-coded assumption that
-        // the the first column always contains the id?
-        DEBUG_ASSERT(idColumn == kIdColumn);
 
         TrackId trackId(sqlRecord.value(idColumn));
         trackIds.insert(trackId);
 
         RowInfo rowInfo;
         rowInfo.trackId = trackId;
-        // current position defines the ordering
-        rowInfo.order = rowInfos.size();
-        rowInfo.metadata.reserve(sqlRecord.count());
+        rowInfo.row = rowInfos.size();
+
+        rowInfo.columnValues.reserve(sqlRecord.count());
         for (int i = 0; i < m_tableColumns.size(); ++i) {
-            rowInfo.metadata.push_back(sqlRecord.value(i));
+            rowInfo.columnValues.push_back(sqlRecord.value(i));
         }
         rowInfos.push_back(rowInfo);
     }
@@ -291,9 +299,9 @@ void BaseSqlTableModel::select() {
             // separate removed tracks (order == -1) from present tracks (order ==
             // 0). Otherwise we sort by the order that filterAndSort returned to us.
             if (m_trackSourceOrderBy.isEmpty()) {
-                rowInfo.order = m_trackSortOrder.contains(rowInfo.trackId) ? 0 : -1;
+                rowInfo.row = m_trackSortOrder.contains(rowInfo.trackId) ? 0 : -1;
             } else {
-                rowInfo.order = m_trackSortOrder.value(rowInfo.trackId, -1);
+                rowInfo.row = m_trackSortOrder.value(rowInfo.trackId, -1);
             }
         }
     }
@@ -310,8 +318,7 @@ void BaseSqlTableModel::select() {
     trackIdToRows.reserve(rowInfos.size());
     for (int i = 0; i < rowInfos.size(); ++i) {
         const RowInfo& rowInfo = rowInfos[i];
-
-        if (rowInfo.order == -1) {
+        if (rowInfo.row == -1) {
             // We've reached the end of valid rows. Resize rowInfo to cut off
             // this and all further elements.
             rowInfos.resize(i);
@@ -323,15 +330,27 @@ void BaseSqlTableModel::select() {
     // number of total rows returned by the query
     DEBUG_ASSERT(trackIdToRows.size() <= rowInfos.size());
 
-    // We're done! Issue the update signals and replace the master maps.
+    TrackPos2Row trackPosToRows;
+    if (hasPositionColumn()) {
+        // We expect as many positions as we have rows
+        trackPosToRows.reserve(rowInfos.size());
+        for (int i = 0; i < rowInfos.size(); ++i) {
+            const RowInfo& rowInfo = rowInfos[i];
+            trackPosToRows.insert(rowInfo.getPosition(posColumn), i);
+        }
+        DEBUG_ASSERT(trackPosToRows.size() == rowInfos.size());
+    }
+
+    // We're done! Issue the update signals and replace the main maps.
     replaceRows(
             std::move(rowInfos),
-            std::move(trackIdToRows));
+            std::move(trackIdToRows),
+            std::move(trackPosToRows));
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
 
-    qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
-             << m_rowInfo.size();
+    qDebug() << this << "select() returned" << m_rowInfo.size()
+             << "results in" << time.elapsed().debugMillisWithUnit();
 }
 
 void BaseSqlTableModel::setTable(QString tableName,
@@ -356,7 +375,7 @@ void BaseSqlTableModel::setTable(QString tableName,
         // It's important that this not be a direct connection, or else the UI
         // might try to update while a cache operation is in progress, and that
         // will hit the cache again and cause dangerous reentry cycles
-        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // See https://github.com/mixxxdj/mixxx/issues/7569
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
@@ -389,29 +408,26 @@ const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
-    if (sDebug) {
-        qDebug() << this << "setSearch" << searchText;
+void BaseSqlTableModel::setExtraFilter(const QString& extraFilter) {
+    // Note: don't use SQL strings as extraFilter, this will cause issues in
+    // BaseTrackCache::filterAndSort() which is responsible for adding/removing
+    // dirty tracks from the view.
+    if (m_currentSearchFilter != extraFilter) {
+        m_currentSearchFilter = extraFilter;
     }
-
-    bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
-    bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
-    bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
-
-    if (!searchIsDifferent && (filterDisabled || !searchFilterIsDifferent)) {
-        // Do nothing if the filters are no different.
-        return;
-    }
-
-    m_currentSearch = searchText;
-    m_currentSearchFilter = extraFilter;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
+void BaseSqlTableModel::setSearch(const QString& searchText) {
+    if (m_currentSearch != searchText) {
+        m_currentSearch = searchText;
+    }
+}
+
+void BaseSqlTableModel::search(const QString& searchText) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
-    setSearch(searchText, extraFilter);
+    setSearch(searchText);
     select();
 }
 
@@ -521,7 +537,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
         bool first = true;
-        for (const SortColumn& sc : qAsConst(m_sortColumns)) {
+        for (const SortColumn& sc : std::as_const(m_sortColumns)) {
             QString sort_field;
             if (sc.m_column < m_tableColumns.size()) {
                 if (sc.m_column == kIdColumn) {
@@ -603,11 +619,25 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
         // column or a source column.
         int sourceTableIndex = m_trackSource->fieldIndex(fieldName);
         if (sourceTableIndex > -1) {
-            // Subtract one from the fieldIndex() result to account for the id column
+            // Subtract one from the fieldIndex() because the id column is in both
             return m_tableColumns.size() + sourceTableIndex - 1;
         }
     }
     return tableIndex;
+}
+
+int BaseSqlTableModel::endFieldIndex() const {
+    // Subtract one to remove the id column which is in both
+    return m_tableColumns.size() + (m_trackSource ? m_trackSource->endFieldIndex() - 1 : 0);
+}
+
+QString BaseSqlTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName + m_tableName;
+    }
+    return kModelName + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
 }
 
 QVariant BaseSqlTableModel::rawValue(
@@ -635,13 +665,13 @@ QVariant BaseSqlTableModel::rawValue(
             return previewDeckTrackId() == trackId;
         }
 
-        const QVector<QVariant>& columns = rowInfo.metadata;
+        const QVector<QVariant>& columnValues = rowInfo.columnValues;
         if (sDebug) {
             qDebug() << "Returning table-column value"
-                    << columns.at(column)
-                    << "for column" << column;
+                     << columnValues.at(column)
+                     << "for column" << column;
         }
-        return columns[column];
+        return columnValues[column];
     }
 
     // Otherwise, return the information from the track record cache for the
@@ -692,7 +722,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         pTrack->setYear(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
-        pTrack->setGenre(value.toString());
+        updateTrackGenre(pTrack.get(), value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
         pTrack->setComposer(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
@@ -721,29 +751,29 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         StarRating starRating = value.value<StarRating>();
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
-        pTrack->setKeyText(value.toString(),
+        pTrack->setKeyText(
+                value.toString(),
                 mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
-        VERIFY_OR_DEBUG_ASSERT(false) {
-            qWarning() << "Column"
-                       << columnNameForFieldIndex(column)
-                       << "is not editable!";
-        }
+        qWarning() << "Column"
+                   << columnNameForFieldIndex(column)
+                   << "is not editable!";
+        DEBUG_ASSERT(false);
         return false;
     }
     return true;
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
+    return m_pTrackCollectionManager->getTrackById(getTrackId(index));
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
     if (index.isValid()) {
-        return TrackId(index.sibling(index.row(), fieldIndex(m_idColumn)).data());
+        return TrackId(getFieldVariant(index, m_idColumn));
     } else {
         return TrackId();
     }
@@ -753,41 +783,36 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
         return QString();
     }
-    QString nativeLocation =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION))
-                    .data()
-                    .toString();
+    QString nativeLocation = getFieldString(
+            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     return QDir::fromNativeSeparators(nativeLocation);
+}
+
+QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {
+    const QString trackLocation = getTrackLocation(index);
+    DEBUG_ASSERT(trackLocation.trimmed() == trackLocation);
+    if (trackLocation.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(trackLocation);
 }
 
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     CoverInfo coverInfo;
-    coverInfo.hash =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_HASH))
-                    .data()
-                    .toUInt();
-    coverInfo.type = static_cast<CoverInfo::Type>(
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_TYPE))
-                    .data()
-                    .toInt());
-    coverInfo.source = static_cast<CoverInfo::Source>(
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_SOURCE))
-                    .data()
-                    .toInt());
-    coverInfo.coverLocation =
-            index.sibling(index.row(),
-                         fieldIndex(ColumnCache::
-                                         COLUMN_LIBRARYTABLE_COVERART_LOCATION))
-                    .data()
-                    .toString();
-    coverInfo.trackLocation = getTrackLocation(index);
+    coverInfo.setImageDigest(
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST).toByteArray(),
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH).toUInt());
+    coverInfo.color = mixxx::RgbColor::fromQVariant(
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR));
+    if (coverInfo.hasCacheKey()) {
+        coverInfo.type = static_cast<CoverInfo::Type>(
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE).toInt());
+        coverInfo.source = static_cast<CoverInfo::Source>(
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE).toInt());
+        coverInfo.coverLocation = getFieldString(
+                index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION);
+        coverInfo.trackLocation = getTrackLocation(index);
+    }
     return coverInfo;
 }
 
@@ -796,13 +821,13 @@ void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
 
-    const int numColumns = columnCount();
+    const int lastColumn = columnCount() - 1;
     for (const auto& trackId : trackIds) {
         const auto rows = getTrackRows(trackId);
         for (int row : rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
-            QModelIndex bottomRight = index(row, numColumns);
+            QModelIndex bottomRight = index(row, lastColumn);
             emit dataChanged(topLeft, bottomRight);
         }
     }
@@ -819,7 +844,59 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
-    select(); //Repopulate the data model.
+
+    QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
+    removeTrackRows(tracksRemovedSet);
+}
+
+void BaseSqlTableModel::removeTrackRows(const QSet<TrackId>& trackIdsToRemove) {
+    // This is called after hiding, purging or removing tracks from a track set.
+    // The purpose is to keep the tracks view constant after after these
+    // operations by avoiding pointless/confusing re-sorting of the model,
+    // which happens when we call select(), which rebuilds the row cache.
+    // We assume metadata of remaining tracks hasn't changed, we can simply
+    // remove the respective track rows.
+
+    // However, if this is a playlist model, track removal likely also changes
+    // the tracks' positions in the playlist. We need to get the tracks' new
+    // positions from the database, so let's do a select().
+    // FIXME Update position without re-sorting
+    if (hasPositionColumn()) {
+        select();
+        return;
+    }
+
+    // For other models we can now remove all track rows.
+    QVector<RowInfo> rowInfos = m_rowInfo;
+    TrackId2Rows trackIdToRows;
+    TrackPos2Row trackPosToRows; // remains empty
+
+    QMutableListIterator<RowInfo> it(rowInfos);
+    while (it.hasNext()) {
+        const RowInfo& rowInfo = it.next();
+        if (trackIdsToRemove.contains(rowInfo.trackId)) {
+            it.remove();
+        }
+    }
+
+    // Recreate TrackId2Rows, taken from select()
+    trackIdToRows.reserve(rowInfos.size());
+    for (int i = 0; i < rowInfos.size(); ++i) {
+        const RowInfo& rowInfo = rowInfos[i];
+        if (rowInfo.row == -1) {
+            // We've reached the end of valid rows. Resize rowInfo to cut off
+            // this and all further elements.
+            rowInfos.resize(i);
+            break;
+        }
+        trackIdToRows[rowInfo.trackId].push_back(i);
+    }
+
+    clearRows();
+    replaceRows(
+            std::move(rowInfos),
+            std::move(trackIdToRows),
+            std::move(trackPosToRows));
 }
 
 QList<TrackRef> BaseSqlTableModel::getTrackRefs(
@@ -827,8 +904,8 @@ QList<TrackRef> BaseSqlTableModel::getTrackRefs(
     QList<TrackRef> trackRefs;
     trackRefs.reserve(indices.size());
     foreach (QModelIndex index, indices) {
-        trackRefs.append(TrackRef::fromFileInfo(
-                TrackFile(getTrackLocation(index)),
+        trackRefs.append(TrackRef::fromFilePath(
+                getTrackLocation(index),
                 getTrackId(index)));
     }
     return trackRefs;

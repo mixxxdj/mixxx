@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QObject>
-
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
@@ -16,19 +14,19 @@ class QuantizeControl : public EngineControl {
     QuantizeControl(const QString& group, UserSettingsPointer pConfig);
     ~QuantizeControl() override;
 
-    void setCurrentSample(const double dCurrentSample,
-            const double dTotalSamples, const double dTrackSampleRate) override;
-    void notifySeek(double dNewPlaypos) override;
+    void setFrameInfo(mixxx::audio::FramePos currentPosition,
+            mixxx::audio::FramePos trackEndPosition,
+            mixxx::audio::SampleRate sampleRate) override;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private:
     // Update positions of previous and next beats from beatgrid.
-    void lookupBeatPositions(double dCurrentSample);
+    void lookupBeatPositions(mixxx::audio::FramePos position);
     // Update position of the closest beat based on existing previous and
     // next beat values.  Usually callers will call lookupBeatPositions first.
-    void updateClosestBeat(double dCurrentSample);
-    void playPosChanged(double dNewPlaypos);
+    void updateClosestBeat(mixxx::audio::FramePos position);
+    void playPosChanged(mixxx::audio::FramePos position);
 
     ControlPushButton* m_pCOQuantizeEnabled;
     ControlObject* m_pCONextBeat;

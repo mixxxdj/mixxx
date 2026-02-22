@@ -2,22 +2,18 @@
 
 #include <QtDebug>
 
-const int kiRotaryFilterMaxLen = 50;
+constexpr int kiRotaryFilterMaxLen = 50;
 
 Rotary::Rotary()
-    : m_iFilterPos(0),
-      m_dCalibration(1.0),
-      m_dLastValue(0.0),
-      m_iCalibrationCount(0) {
-    m_iFilterLength = kiRotaryFilterMaxLen;
-    m_pFilter = new double[m_iFilterLength];
+        : m_iFilterLength(kiRotaryFilterMaxLen),
+          m_iFilterPos(0),
+          m_pFilter(m_iFilterLength),
+          m_dCalibration(1.0),
+          m_dLastValue(0.0),
+          m_iCalibrationCount(0) {
     for (int i = 0; i < m_iFilterLength; ++i) {
         m_pFilter[i] = 0.;
     }
-}
-
-Rotary::~Rotary() {
-    delete [] m_pFilter;
 }
 
 /* Note: There's probably a bug in this function (or this class) somewhere.

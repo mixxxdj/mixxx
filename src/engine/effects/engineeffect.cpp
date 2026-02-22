@@ -1,42 +1,49 @@
 #include "engine/effects/engineeffect.h"
 
+#include "effects/backends/effectsbackendmanager.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
+namespace {
+
+// Used during initialization where the SoundSevice is not set up
+constexpr auto kInitalSampleRate = mixxx::audio::SampleRate(96000);
+
+} // namespace
+
 EngineEffect::EngineEffect(EffectManifestPointer pManifest,
-                           const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                           EffectsManager* pEffectsManager,
-                           EffectInstantiatorPointer pInstantiator)
+        EffectsBackendManagerPointer pBackendManager,
+        const QSet<ChannelHandleAndGroup>& activeInputChannels,
+        const QSet<ChannelHandleAndGroup>& registeredInputChannels,
+        const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
         : m_pManifest(pManifest),
-          m_parameters(pManifest->parameters().size()),
-          m_pEffectsManager(pEffectsManager) {
+          m_pProcessor(pBackendManager->createProcessor(pManifest)),
+          m_parameters(pManifest->parameters().size()) {
     const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
         EffectManifestParameterPointer param = parameters.at(i);
-        EngineEffectParameter* pParameter =
-                new EngineEffectParameter(param);
+        EngineEffectParameterPointer pParameter(new EngineEffectParameter(param));
         m_parameters[i] = pParameter;
         m_parametersById[param->id()] = pParameter;
     }
 
-    for (const ChannelHandleAndGroup& inputChannel :
-            pEffectsManager->registeredInputChannels()) {
+    for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
         ChannelHandleMap<EffectEnableState> outputChannelMap;
-        for (const ChannelHandleAndGroup& outputChannel :
-                pEffectsManager->registeredOutputChannels()) {
+        for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
             outputChannelMap.insert(outputChannel.handle(), EffectEnableState::Disabled);
         }
         m_effectEnableStateForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
 
-    // Creating the processor must come last.
-    m_pProcessor = pInstantiator->instantiate(this, pManifest);
-    //TODO: get actual configuration of engine
-    const mixxx::EngineParameters bufferParameters(
-          mixxx::audio::SampleRate(96000),
-          MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-    m_pProcessor->initialize(activeInputChannels, pEffectsManager, bufferParameters);
+    m_pProcessor->loadEngineEffectParameters(m_parametersById);
+
+    // At this point the SoundDevice is not set up so we use the kInitalSampleRate.
+    const mixxx::EngineParameters engineParameters(
+            kInitalSampleRate,
+            kMaxEngineFrames);
+    m_pProcessor->initialize(activeInputChannels, registeredOutputChannels, engineParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
 
@@ -44,105 +51,88 @@ EngineEffect::~EngineEffect() {
     if (kEffectDebugOutput) {
         qDebug() << debugString() << "destroyed";
     }
-    delete m_pProcessor;
     m_parametersById.clear();
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        EngineEffectParameter* pParameter = m_parameters.at(i);
-        m_parameters[i] = NULL;
-        delete pParameter;
+    m_parameters.clear();
+}
+
+void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
+    if (m_pProcessor->hasStatesForInputChannel(inputChannel)) {
+        // already initialized for this input channel
+        return;
     }
+
+    // At this point the SoundDevice is not set up so we use the kInitalSampleRate.
+    const mixxx::EngineParameters engineParameters(
+            kInitalSampleRate,
+            kMaxEngineFrames);
+    m_pProcessor->initializeInputChannel(inputChannel, engineParameters);
 }
 
-EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferParameters) {
-    if (!m_pProcessor) {
-        return new EffectState(bufferParameters);
-    }
-    return m_pProcessor->createState(bufferParameters);
-}
-
-void EngineEffect::loadStatesForInputChannel(const ChannelHandle* inputChannel,
-    EffectStatesMap* pStatesMap) {
-    if (kEffectDebugOutput) {
-        qDebug() << "EngineEffect::loadStatesForInputChannel" << this
-                 << "loading states for input" << *inputChannel;
-    }
-    m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
-}
-
-// Called from the main thread for garbage collection after an input channel is disabled
-void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
-    m_pProcessor->deleteStatesForInputChannel(inputChannel);
-}
-
-bool EngineEffect::processEffectsRequest(EffectsRequest& message,
-                                         EffectsResponsePipe* pResponsePipe) {
-    EngineEffectParameter* pParameter = nullptr;
+bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
+        EffectsResponsePipe* pResponsePipe) {
+    EngineEffectParameterPointer pParameter;
     EffectsResponse response(message);
 
     switch (message.type) {
-        case EffectsRequest::SET_EFFECT_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
-                         << "enabled" << message.SetEffectParameters.enabled;
-            }
+    case EffectsRequest::SET_EFFECT_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
+                     << "enabled" << message.SetEffectParameters.enabled;
+        }
 
-            for (auto& outputMap : m_effectEnableStateForChannelMatrix) {
-                for (auto& enableState : outputMap) {
-                    if (enableState != EffectEnableState::Disabled
-                        && !message.SetEffectParameters.enabled) {
-                        enableState = EffectEnableState::Disabling;
+        for (auto& outputMap : m_effectEnableStateForChannelMatrix) {
+            for (auto& enableState : outputMap) {
+                if (enableState != EffectEnableState::Disabled &&
+                        !message.SetEffectParameters.enabled) {
+                    enableState = EffectEnableState::Disabling;
                     // If an input is not routed to the chain, and the effect gets
                     // a message to disable, then the effect gets the message to enable,
                     // process() will not have executed, so the enableState will still be
                     // DISABLING instead of DISABLED.
-                    } else if ((enableState == EffectEnableState::Disabled ||
-                               enableState == EffectEnableState::Disabling)
-                               && message.SetEffectParameters.enabled) {
-                        enableState = EffectEnableState::Enabling;
-                    }
+                } else if ((enableState == EffectEnableState::Disabled ||
+                                   enableState ==
+                                           EffectEnableState::Disabling) &&
+                        message.SetEffectParameters.enabled) {
+                    enableState = EffectEnableState::Enabling;
                 }
             }
+        }
 
+        response.success = true;
+        pResponsePipe->writeMessage(response);
+        return true;
+        break;
+    case EffectsRequest::SET_PARAMETER_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
+                     << "parameter" << message.SetParameterParameters.iParameter
+                     << "value" << message.value;
+        }
+        pParameter = m_parameters.value(
+                message.SetParameterParameters.iParameter, EngineEffectParameterPointer());
+        if (pParameter) {
+            pParameter->setValue(message.value);
             response.success = true;
-            pResponsePipe->writeMessage(response);
-            return true;
-            break;
-        case EffectsRequest::SET_PARAMETER_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
-                         << "parameter" << message.SetParameterParameters.iParameter
-                         << "minimum" << message.minimum
-                         << "maximum" << message.maximum
-                         << "default_value" << message.default_value
-                         << "value" << message.value;
-            }
-            pParameter = m_parameters.value(
-                message.SetParameterParameters.iParameter, NULL);
-            if (pParameter) {
-                pParameter->setMinimum(message.minimum);
-                pParameter->setMaximum(message.maximum);
-                pParameter->setDefaultValue(message.default_value);
-                pParameter->setValue(message.value);
-                response.success = true;
-            } else {
-                response.success = false;
-                response.status = EffectsResponse::NO_SUCH_PARAMETER;
-            }
-            pResponsePipe->writeMessage(response);
-            return true;
-        default:
-            break;
+        } else {
+            response.success = false;
+            response.status = EffectsResponse::NO_SUCH_PARAMETER;
+        }
+        pResponsePipe->writeMessage(response);
+        return true;
+    default:
+        break;
     }
     return false;
 }
 
 bool EngineEffect::process(const ChannelHandle& inputHandle,
-                           const ChannelHandle& outputHandle,
-                           const CSAMPLE* pInput, CSAMPLE* pOutput,
-                           const unsigned int numSamples,
-                           const unsigned int sampleRate,
-                           const EffectEnableState chainEnableState,
-                           const GroupFeatureState& groupFeatures) {
+        const ChannelHandle& outputHandle,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
+        const unsigned int numSamples,
+        const mixxx::audio::SampleRate sampleRate,
+        const EffectEnableState chainEnableState,
+        const GroupFeatureState& groupFeatures) {
     // Compute the effective enable state from the combination of the effect's state
     // for the channel and the state passed from the EngineEffectChain.
 
@@ -160,7 +150,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     // internal buffer for the channel when it gets the intermediate disabling signal.
 
     EffectEnableState effectiveEffectEnableState =
-        m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
+            m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
 
     // If the EngineEffect is fully disabled, do not let
     // intermediate enabling/disabling signals from the chain override
@@ -190,13 +180,17 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
-        const mixxx::EngineParameters bufferParameters(
-              mixxx::audio::SampleRate(sampleRate),
-              numSamples / mixxx::kEngineChannelCount);
+        const mixxx::EngineParameters engineParameters(
+                sampleRate,
+                numSamples / mixxx::kEngineChannelCount);
 
-        m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
-                              bufferParameters,
-                              effectiveEffectEnableState, groupFeatures);
+        m_pProcessor->process(inputHandle,
+                outputHandle,
+                pInput,
+                pOutput,
+                engineParameters,
+                effectiveEffectEnableState,
+                groupFeatures);
 
         processingOccured = true;
 

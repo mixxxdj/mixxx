@@ -8,18 +8,7 @@
 #endif
 
 #include <cmath>
-
-int util_fpclassify(float x) {
-    return std::fpclassify(x);
-}
-
-int util_isfinite(float x) {
-    return std::isfinite(x);
-}
-
-int util_isnormal(float x) {
-    return std::isnormal(x);
-}
+#include <limits>
 
 int util_isnan(float x) {
     return std::isnan(x);
@@ -29,15 +18,11 @@ int util_isinf(float x) {
     return std::isinf(x);
 }
 
-int util_fpclassify(double x) {
-    return std::fpclassify(x);
-}
-
-int util_isfinite(double x) {
+bool util_isfinite(double x) {
     return std::isfinite(x);
 }
 
-int util_isnormal(double x) {
+bool util_isnormal(double x) {
     return std::isnormal(x);
 }
 
@@ -47,4 +32,20 @@ int util_isnan(double x) {
 
 int util_isinf(double x) {
     return std::isinf(x);
+}
+
+float util_float_infinity() {
+    return std::numeric_limits<double>::infinity();
+}
+
+double util_double_infinity() {
+    return std::numeric_limits<double>::infinity();
+}
+
+float util_float_nan() {
+    return std::numeric_limits<double>::quiet_NaN();
+}
+
+double util_double_nan() {
+    return std::numeric_limits<double>::quiet_NaN();
 }

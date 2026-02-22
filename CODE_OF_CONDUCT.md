@@ -31,7 +31,7 @@ they are doing - politely bringing their behavior to their attention is
 encouraged.
 
 If you are uncomfortable speaking up, or feel that your concerns are not being
-duly considered, you can email community@mixxx.org to request involvement
+duly considered, you can email <community@mixxx.org> to request involvement
 from a community manager. You may also email any of the community managers
 directly. All concerns shared with community managers will be kept
 confidential. In cases where a public response is deemed necessary, the

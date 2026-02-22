@@ -4,7 +4,7 @@
 #define ENCODING_WAVE "WAV"
 #define ENCODING_FLAC "FLAC"
 #define ENCODING_AIFF "AIFF"
-#define ENCODING_OGG  "OGG"
+#define ENCODING_OGG "OGG"
 #define ENCODING_MP3 "MP3"
 #define ENCODING_OPUS "Opus"
 #define ENCODING_AAC "AAC"
@@ -29,8 +29,8 @@
 
 // Byte conversions. Slightly rounded to leave enough room to add
 // closing frames by the encoder. All sizes are in bytes.
-#define SIZE_650MB  Q_UINT64_C(680000000)
-#define SIZE_700MB  Q_UINT64_C(730000000)
-#define SIZE_1GB    Q_UINT64_C(1070000000)
-#define SIZE_2GB    Q_UINT64_C(2140000000)
-#define SIZE_4GB    Q_UINT64_C(4280000000)
+#define SIZE_650MB Q_UINT64_C(680000000)
+#define SIZE_700MB Q_UINT64_C(730000000)
+#define SIZE_1GB Q_UINT64_C(1070000000)
+#define SIZE_2GB Q_UINT64_C(2140000000)
+#define SIZE_4GB Q_UINT64_C(4280000000)

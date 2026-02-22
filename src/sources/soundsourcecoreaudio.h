@@ -55,22 +55,24 @@ class SoundSourceCoreAudio
 class SoundSourceProviderCoreAudio : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
-    static const QStringList kSupportedFileExtensions;
+    static const QStringList kSupportedFileTypes;
 
     QString getDisplayName() const override {
-        return kDisplayName;
+        return kDisplayName + QChar(' ') + getVersionString();
     }
 
-    QStringList getSupportedFileExtensions() const override {
-        return kSupportedFileExtensions;
+    QStringList getSupportedFileTypes() const override {
+        return kSupportedFileTypes;
     }
 
     SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const override;
+            const QString& supportedFileType) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceCoreAudio>(url);
     }
+
+    QString getVersionString() const;
 };
 
 } // namespace mixxx

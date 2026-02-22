@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "analyzer/analyzer.h"
 #include "preferences/replaygainsettings.h"
 
@@ -21,7 +23,7 @@ class AnalyzerGain : public Analyzer {
         return rgSettings.isAnalyzerEnabled(1);
     }
 
-    bool initialize(TrackPointer pTrack,
+    bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;
@@ -30,8 +32,7 @@ class AnalyzerGain : public Analyzer {
 
   private:
     ReplayGainSettings m_rgSettings;
-    CSAMPLE* m_pLeftTempBuffer;
-    CSAMPLE* m_pRightTempBuffer;
+    std::vector<CSAMPLE> m_pLeftTempBuffer;
+    std::vector<CSAMPLE> m_pRightTempBuffer;
     ReplayGain* m_pReplayGain;
-    SINT m_bufferSize;
 };

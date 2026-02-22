@@ -13,28 +13,13 @@
 // * Find a use for snap / master / other unused buttons?
 
 
-// ==== Friendly User Configuration ====
-// The Remix Slot buttons can have two possible functions:
-// 1. Sample launchers: pressing the buttons activates sample players in Mixxx
-// 2. Loop Roll: Holding the buttons activates a short loop, and when the button is
-//    released playback will resume where the track would have been without the loop.
-// To choose sample launching, set the word in quotes below to SAMPLES, all caps.  For
-// rolls, change the word to LOOPROLLS (no space).
-RemixSlotButtonAction = "SAMPLES";
-// The Cue button, when Shift is also held, can have two possible functions:
-// 1. "REWIND": seeks to the very start of the track.
-// 2. "REVERSEROLL": performs a temporary reverse or "censor" effect, where the track
-//    is momentarily played in reverse until the button is released.
-ShiftCueButtonAction = "REWIND";
-
-
 TraktorS4MK2 = new function() {
     this.controller = new HIDController();
     // TODO: Decide if these should be part of this.controller instead.
     this.partial_packet = Object();
     this.divisor_map = Object();
-    this.RemixSlotButtonAction = RemixSlotButtonAction;
-    this.ShiftCueButtonAction = ShiftCueButtonAction;
+    this.RemixSlotButtonAction = engine.getSetting("remixSlotButtonAction");
+    this.ShiftCueButtonAction = engine.getSetting("shiftCueButtonAction");
 
     // When true, packets will not be sent to the controller.  Good for doing mass updates.
     this.controller.freeze_lights = false;
@@ -373,14 +358,14 @@ TraktorS4MK2.registerOutputPackets = function() {
 
 
 
-    Output1.addOutput("[Channel1]", "PeakIndicator", 0x0F, "B");
-    Output1.addOutput("[Channel2]", "PeakIndicator", 0x17, "B");
-    Output1.addOutput("[Channel3]", "PeakIndicator", 0x07, "B");
-    Output1.addOutput("[Channel4]", "PeakIndicator", 0x1F, "B");
+    Output1.addOutput("[Channel1]", "peak_indicator", 0x0F, "B");
+    Output1.addOutput("[Channel2]", "peak_indicator", 0x17, "B");
+    Output1.addOutput("[Channel3]", "peak_indicator", 0x07, "B");
+    Output1.addOutput("[Channel4]", "peak_indicator", 0x1F, "B");
 
     Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
     Output1.addOutput("[Master]", "!quantize", 0x31, "B");
-    Output1.addOutput("[InternalClock]", "sync_master", 0x30, "B");
+    Output1.addOutput("[InternalClock]", "sync_leader", 0x30, "B");
     Output1.addOutput("[Recording]", "status", 0x34, "B");
 
     this.controller.registerOutputPacket(Output1);
@@ -466,8 +451,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     Output3.addOutput("[Channel2]", "pfl", 0x19, "B");
     Output3.addOutput("[Channel4]", "pfl", 0x1A, "B");
 
-    Output3.addOutput("[Master]", "PeakIndicatorL", 0x3B, "B");
-    Output3.addOutput("[Master]", "PeakIndicatorR", 0x3C, "B");
+    Output3.addOutput("[Main]", "peak_indicator_left", 0x3B, "B");
+    Output3.addOutput("[Main]", "peak_indicator_right", 0x3C, "B");
 
     Output3.addOutput("deck1", "!deckLight", 0x13, "B");
     Output3.addOutput("deck1", "LoadSelectedTrack", 0x14, "B");
@@ -525,12 +510,12 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkChannelOutput("[Channel2]", "track_samples", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[Channel3]", "track_samples", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[Channel4]", "track_samples", TraktorS4MK2.outputChannelCallback);
-    TraktorS4MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel3]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel4]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel1]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel2]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel3]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel4]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "peak_indicator_left", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "peak_indicator_right", TraktorS4MK2.outputChannelCallbackDark);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS4MK2.outputChannelCallback);
@@ -550,7 +535,7 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2_Effect3]", "enabled", TraktorS4MK2.outputChannelCallback);
 
     TraktorS4MK2.linkChannelOutput("[PreviewDeck1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
-    TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_master", TraktorS4MK2.outputChannelCallback);
+    TraktorS4MK2.linkChannelOutput("[InternalClock]", "sync_leader", TraktorS4MK2.outputChannelCallback);
 
     if (TraktorS4MK2.RemixSlotButtonAction === "SAMPLES") {
         TraktorS4MK2.linkChannelOutput("[Sampler1]", "play_indicator", TraktorS4MK2.outputChannelCallback);
@@ -571,10 +556,10 @@ TraktorS4MK2.registerOutputPackets = function() {
     engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
 
     // VU meters get special attention
-    engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel2]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel3]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel4]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel1]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel2]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel3]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel4]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
 
     engine.connectControl("[Channel1]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
     engine.connectControl("[Channel2]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
@@ -679,7 +664,7 @@ TraktorS4MK2.lightDeck = function(group) {
 };
 
 TraktorS4MK2.pointlessLightShow = function() {
-    var packets = [Object(), Object(), Object()];
+    const packets = [[], [], []];
 
     packets[0].length = 52;
     packets[1].length = 62;
@@ -708,6 +693,9 @@ TraktorS4MK2.pointlessLightShow = function() {
 };
 
 TraktorS4MK2.init = function(id) {
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
     TraktorS4MK2.pointlessLightShow();
     TraktorS4MK2.registerInputPackets();
     TraktorS4MK2.registerOutputPackets();
@@ -723,7 +711,7 @@ TraktorS4MK2.init = function(id) {
 
     TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
 
-    TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_master"), "[InternalClock]", "sync_master");
+    TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_leader"), "[InternalClock]", "sync_leader");
     TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
     TraktorS4MK2.controller.setOutput("deck1", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
     TraktorS4MK2.controller.setOutput("deck2", "!on_air", engine.getValue("[Recording]", "status")*0x7F);
@@ -1060,7 +1048,7 @@ TraktorS4MK2.jogTouchHandler = function(field) {
             TraktorS4MK2.finishJogTouch(field.group);
         } else {
             TraktorS4MK2.controller.wheelTouchInertiaTimer[field.group] = engine.beginTimer(
-                inertiaTime, "TraktorS4MK2.finishJogTouch(\"" + field.group + "\")", true);
+                inertiaTime, () => { TraktorS4MK2.finishJogTouch(field.group); }, true);
         }
     }
 };
@@ -1092,7 +1080,7 @@ TraktorS4MK2.finishJogTouch = function(group) {
         } else {
             // Check again soon.
             TraktorS4MK2.controller.wheelTouchInertiaTimer[group] = engine.beginTimer(
-                100, "TraktorS4MK2.finishJogTouch(\"" + group + "\")", true);
+                100, () => { TraktorS4MK2.finishJogTouch(group); }, true);
         }
     }
 };
@@ -1239,8 +1227,8 @@ TraktorS4MK2.snapHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    library_maximized = engine.getValue("[Master]", "maximize_library");
-    engine.setValue("[Master]", "maximize_library", !library_maximized);
+    library_maximized = engine.getValue("[Skin]", "show_maximized_library");
+    engine.setValue("[Skin]", "show_maximized_library", !library_maximized);
 };
 
 TraktorS4MK2.FXButtonHandler = function(field) {
@@ -1652,6 +1640,9 @@ TraktorS4MK2.onLoopEnabledChanged = function(value, group, key) {
 
 TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
     var deck = TraktorS4MK2.resolveDeckIfActive(group);
+    if (deck === undefined) {
+        return;
+    }
     //deal with single digit values
     if (value.toString().length === 1) {
         TraktorS4MK2.sendLoopSizeMessage(deck, "", value, false, false);
@@ -1762,6 +1753,9 @@ TraktorS4MK2.pregainResetHandler = function(field) {
 
 TraktorS4MK2.lightSlipAuto = function(group) {
     var decknum = TraktorS4MK2.resolveDeckIfActive(group);
+    if (decknum === undefined) {
+        return;
+    }
     if (TraktorS4MK2.controller.autoSlipMode[group] === 1) {
         print(decknum);
         TraktorS4MK2.controller.setOutput(decknum, "!remix", 0x7F, !TraktorS4MK2.controller.freeze_lights);

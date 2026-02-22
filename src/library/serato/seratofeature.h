@@ -9,18 +9,16 @@
 // Most of the groundwork for this has been done here:
 //
 //      https://github.com/Holzhaus/serato-tags
-//      https://github.com/Holzhaus/serato-tags/blob/master/scripts/database_v2.py
+//      https://github.com/Holzhaus/serato-tags/blob/main/scripts/database_v2.py
 
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QStringListModel>
-#include <QtConcurrentRun>
-#include <fstream>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/baseexternaltrackmodel.h"
-#include "library/serato/seratoplaylistmodel.h"
-#include "library/treeitemmodel.h"
+#include "util/parented_ptr.h"
+
+class SeratoPlaylistModel;
+class BaseTrackCache;
 
 class SeratoFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -29,12 +27,11 @@ class SeratoFeature : public BaseExternalLibraryFeature {
     ~SeratoFeature() override;
 
     QVariant title() override;
-    QIcon getIcon() override;
     static bool isSupported();
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -49,9 +46,9 @@ class SeratoFeature : public BaseExternalLibraryFeature {
   private:
     QString formatRootViewHtml() const;
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
-            const QString& playlist) override;
+            const QVariant& data) override;
 
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     SeratoPlaylistModel* m_pSeratoPlaylistModel;
 
     QFutureWatcher<QList<TreeItem*>> m_databasesFutureWatcher;
@@ -61,5 +58,4 @@ class SeratoFeature : public BaseExternalLibraryFeature {
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
-    QIcon m_icon;
 };

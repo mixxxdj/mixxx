@@ -2,10 +2,15 @@
 
 #include <QLocale>
 #include <QTime>
-#include <QtDebug>
+#include <QTimer>
 
 #include "moc_wtime.cpp"
-#include "util/cmdlineargs.h"
+#include "skin/legacy/skincontext.h"
+
+namespace {
+static constexpr short s_iSecondInterval = 100;
+static constexpr short s_iMinuteInterval = 1000;
+} // namespace
 
 WTime::WTime(QWidget* parent)
         : WLabel(parent),
@@ -32,19 +37,24 @@ void WTime::setTimeFormat(const QDomNode& node, const SkinContext& context) {
     if (context.hasNodeSelectString(node, "CustomFormat", &customFormat)) {
         // set the time format to the custom format
         m_sTimeFormat = customFormat;
+        // if seconds are to be displayed, use the seconds refresh interval explicitly
+        if (customFormat.contains(QStringLiteral("ss"), Qt::CaseInsensitive)) {
+            m_interval = s_iSecondInterval;
+        }
     } else {
         // check if seconds should be shown
         QString secondsFormat = context.selectString(node, "ShowSeconds");
-        // long format is equivalent to showing seconds
-        QLocale::FormatType format;
         if(secondsFormat == "true" || secondsFormat == "yes") {
-            format = QLocale::LongFormat;
+            // Note: don't use QLocale::LongFormat since that would not only show
+            // seconds but also append other locale-dependent info, eg. time zone
+            // or AM/PM.
+            // Use 'h' (not 'hh') to omit leading zeros.
             m_interval = s_iSecondInterval;
+            m_sTimeFormat = QStringLiteral("h:mm:ss");
         } else {
-            format = QLocale::ShortFormat;
             m_interval = s_iMinuteInterval;
+            m_sTimeFormat = QLocale().timeFormat(QLocale::ShortFormat);
         }
-        m_sTimeFormat = QLocale().timeFormat(format);
     }
 }
 

@@ -6,7 +6,6 @@
 
 #include "analyzer/constants.h"
 #include "util/assert.h"
-#include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
@@ -27,7 +26,7 @@ AnalyzerQueenMaryKey::AnalyzerQueenMaryKey()
 AnalyzerQueenMaryKey::~AnalyzerQueenMaryKey() {
 }
 
-bool AnalyzerQueenMaryKey::initialize(int samplerate) {
+bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
     m_prevKey = mixxx::track::io::key::INVALID;
     m_resultKeys.clear();
     m_currentFrame = 0;
@@ -42,17 +41,17 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
                                 // 8 = normal chroma overlap
         int decimationFactor;
 
-        Config(double _sampleRate, float _tuningFrequency) :
-            sampleRate(_sampleRate),
-            tuningFrequency(_tuningFrequency),
-            hpcpAverage(10),
-            medianAverage(10),
-            frameOverlapFactor(1),
-            decimationFactor(8) {
+        Config(mixxx::audio::SampleRate _sampleRate, float _tuningFrequency)
+                : sampleRate(_sampleRate.toDouble()),
+                  tuningFrequency(_tuningFrequency),
+                  hpcpAverage(10),
+                  medianAverage(10),
+                  frameOverlapFactor(1),
+                  decimationFactor(8) {
         }
     };
 
-    GetKeyMode::Config config(samplerate, kTuningFrequencyHertz);
+    GetKeyMode::Config config(sampleRate, kTuningFrequencyHertz);
     m_pKeyMode = std::make_unique<GetKeyMode>(config);
     size_t windowSize = m_pKeyMode->getBlockSize();
     size_t stepSize = m_pKeyMode->getHopSize();
@@ -61,8 +60,9 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
             windowSize, stepSize, [this](double* pWindow, size_t) {
                 int iKey = m_pKeyMode->process(pWindow);
 
-                VERIFY_OR_DEBUG_ASSERT(ChromaticKey_IsValid(iKey)) {
+                if (!ChromaticKey_IsValid(iKey)) {
                     qWarning() << "No valid key detected in analyzed window:" << iKey;
+                    DEBUG_ASSERT(!"iKey is invalid");
                     return false;
                 }
                 const auto key = static_cast<ChromaticKey>(iKey);
@@ -76,7 +76,7 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
             });
 }
 
-bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, const int iLen) {
+bool AnalyzerQueenMaryKey::processSamples(const CSAMPLE* pIn, SINT iLen) {
     DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     if (!m_pKeyMode) {
         return false;

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QLabel>
-#include <QEvent>
 
 #include "widget/wbasewidget.h"
-#include "skin/legacy/skincontext.h"
+
+class QDomNode;
+class SkinContext;
 
 class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT
@@ -24,6 +25,7 @@ class WLabel : public QLabel, public WBaseWidget {
 
     int getHighlight() const;
     void setHighlight(int highlight);
+    QSize sizeHint() const override;
 
   signals:
     void highlightChanged(int highlight);
@@ -41,4 +43,5 @@ class WLabel : public QLabel, public WBaseWidget {
     Qt::TextElideMode m_elideMode;
     double m_scaleFactor;
     int m_highlight;
+    int m_widthHint;
 };

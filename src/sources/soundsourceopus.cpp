@@ -2,7 +2,6 @@
 
 #include <QFileInfo>
 
-#include "audio/streaminfo.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -71,13 +70,13 @@ class OggOpusFileOwner {
 const QString SoundSourceProviderOpus::kDisplayName = QStringLiteral("Xiph.org libopusfile");
 
 //static
-const QStringList SoundSourceProviderOpus::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderOpus::kSupportedFileTypes = {
         QStringLiteral("opus"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderOpus::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;
@@ -91,122 +90,6 @@ SoundSourceOpus::SoundSourceOpus(const QUrl& url)
 
 SoundSourceOpus::~SoundSourceOpus() {
     close();
-}
-
-std::pair<MetadataSource::ImportResult, QDateTime>
-SoundSourceOpus::importTrackMetadataAndCoverImage(
-        TrackMetadata* pTrackMetadata,
-        QImage* pCoverArt) const {
-    auto const imported =
-            MetadataSourceTagLib::importTrackMetadataAndCoverImage(
-                    pTrackMetadata, pCoverArt);
-    if (imported.first == ImportResult::Succeeded) {
-        // Done if the default implementation in the base class
-        // supports Opus files.
-        return imported;
-    }
-
-    // Beginning with version 1.9.0 TagLib supports the Opus format.
-    // Until this becomes the minimum version required by Mixxx tags
-    // in .opus files must also be parsed using opusfile. The following
-    // code should removed as soon as it is no longer needed!
-    //
-    // NOTE(uklotzde): The following code has been found in SoundSourceOpus
-    // and will not be improved. We are aware of its shortcomings like
-    // the lack of proper error handling.
-
-    // From opus/opusfile.h
-    // On Windows, this string must be UTF-8 (to allow access to
-    // files whose names cannot be represented in the current
-    // MBCS code page).
-    // All other systems use the native character encoding.
-#ifdef _WIN32
-    QByteArray qBAFilename = getLocalFileName().toUtf8();
-#else
-    QByteArray qBAFilename = QFile::encodeName(getLocalFileName());
-#endif
-
-    int errorCode = 0;
-    OggOpusFileOwner pOggOpusFile(
-            op_open_file(qBAFilename.constData(), &errorCode));
-    if (!pOggOpusFile || (errorCode != 0)) {
-        kLogger.warning()
-                << "Opening of OggOpusFile failed with error"
-                << errorCode
-                << ":"
-                << getLocalFileName();
-        // We couldn't do any better , so just return the (unsuccessful)
-        // result from the base class.
-        return imported;
-    }
-
-    // Cast to double is required for duration with sub-second precision
-    const double dTotalFrames = op_pcm_total(pOggOpusFile, -1);
-    const auto duration = Duration::fromMicros(
-            static_cast<qint64>(1000000 * dTotalFrames / kSampleRate));
-    pTrackMetadata->setStreamInfo(audio::StreamInfo{
-            audio::SignalInfo{
-                    audio::ChannelCount(op_channel_count(pOggOpusFile, -1)),
-                    kSampleRate,
-            },
-            audio::Bitrate(op_bitrate(pOggOpusFile, -1) / 1000),
-            duration,
-    });
-
-#ifndef TAGLIB_HAS_OPUSFILE
-    const OpusTags* l_ptrOpusTags = op_tags(pOggOpusFile, -1);
-    bool hasDate = false;
-    for (int i = 0; i < l_ptrOpusTags->comments; ++i) {
-        QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
-        QString l_STag = l_SWholeTag.left(l_SWholeTag.indexOf("="));
-        QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
-
-        if (!l_STag.compare("ARTIST")) {
-            pTrackMetadata->refTrackInfo().setArtist(l_SPayload);
-        } else if (!l_STag.compare("ALBUM")) {
-            pTrackMetadata->refAlbumInfo().setTitle(l_SPayload);
-        } else if (!l_STag.compare("BPM")) {
-            pTrackMetadata->refTrackInfo().setBpm(Bpm(l_SPayload.toDouble()));
-        } else if (!l_STag.compare("DATE")) {
-            // Prefer "DATE" over "YEAR"
-            pTrackMetadata->refTrackInfo().setYear(l_SPayload.trimmed());
-            // Avoid to overwrite "DATE" with "YEAR"
-            hasDate |= !pTrackMetadata->getTrackInfo().getYear().isEmpty();
-        } else if (!hasDate && !l_STag.compare("YEAR")) {
-            pTrackMetadata->refTrackInfo().setYear(l_SPayload.trimmed());
-        } else if (!l_STag.compare("GENRE")) {
-            pTrackMetadata->refTrackInfo().setGenre(l_SPayload);
-        } else if (!l_STag.compare("TRACKNUMBER")) {
-            pTrackMetadata->refTrackInfo().setTrackNumber(l_SPayload);
-        } else if (!l_STag.compare("COMPOSER")) {
-            pTrackMetadata->refTrackInfo().setComposer(l_SPayload);
-        } else if (!l_STag.compare("ALBUMARTIST")) {
-            pTrackMetadata->refAlbumInfo().setArtist(l_SPayload);
-        } else if (!l_STag.compare("TITLE")) {
-            pTrackMetadata->refTrackInfo().setTitle(l_SPayload);
-        } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            bool gainRatioValid = false;
-            double gainRatio = ReplayGain::ratioFromString(l_SPayload, &gainRatioValid);
-            if (gainRatioValid) {
-                ReplayGain trackGain(pTrackMetadata->getTrackInfo().getReplayGain());
-                trackGain.setRatio(gainRatio);
-                pTrackMetadata->refTrackInfo().setReplayGain(trackGain);
-            }
-        } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
-            bool gainRatioValid = false;
-            double gainRatio = ReplayGain::ratioFromString(l_SPayload, &gainRatioValid);
-            if (gainRatioValid) {
-                ReplayGain albumGain(pTrackMetadata->getAlbumInfo().getReplayGain());
-                albumGain.setRatio(gainRatio);
-                pTrackMetadata->refAlbumInfo().setReplayGain(albumGain);
-            }
-        }
-    }
-#endif // TAGLIB_HAS_OPUSFILE
-
-    return std::make_pair(
-            ImportResult::Succeeded,
-            QFileInfo(getLocalFileName()).lastModified());
 }
 
 SoundSource::OpenResult SoundSourceOpus::tryOpen(

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QObject>
-#include <QScopedPointer>
 #include <QString>
 #include <QThread>
 #include <future>
 
 #include "track/track_decl.h"
 
-class QFileInfo;
+namespace mixxx {
+class FileInfo;
+} // namespace mixxx
 
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs
@@ -71,8 +71,8 @@ class TrackExportWorker : public QThread {
     // exists, will emit an overwrite request signal to ask how to proceed.
     // On unrecoverable error, sets the error message and stops the export
     // process entirely.
-    void copyFile(const QFileInfo& source_fileinfo,
-                  const QString& dest_filename);
+    void copyFile(const mixxx::FileInfo& source_fileinfo,
+            const QString& dest_filename);
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
