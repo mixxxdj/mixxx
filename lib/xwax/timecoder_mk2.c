@@ -2,6 +2,7 @@
 #include <debug.h>
 #include <errno.h>
 #include <limits.h>
+#include <lut_mk2.h>
 #include <math.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -157,6 +158,12 @@ int lut_store_mk2(struct timecode_def *def, const char *lut_dir_path)
         goto error_fopen;
     }
 
+    size = fwrite(def->lut_mk2.hdr, sizeof(struct lut_mk2_header), 1, fp);
+    if (!size) {
+        perror("fwrite");
+        goto error;
+    }
+
     for (slots_written = 0; slots_written < def->length; slots_written++) {
         slot = &def->lut_mk2.slot[slots_written];
 
@@ -213,6 +220,7 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
         return -1;
     }
 
+    struct lut_mk2_header *hdr;
     struct slot_mk2 *slot;
 
     const size_t hashes = 1 << 16;
@@ -235,7 +243,8 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
 
     /* Compute the expected file size */
 
-    lut_size = def->length * sizeof(struct slot_mk2) +
+    lut_size = sizeof(struct lut_mk2_header) +
+               def->length * sizeof(struct slot_mk2) +
                (hashes + 1) * sizeof(slot_no_t);
 
     fprintf(stdout, "Loading LUT from %s\n", path);
@@ -261,12 +270,8 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
 
     rewind(fp);
 
-    /* Check if the sizes match */
-
-    if (lut_size != (size_t)fsize) {
-        fprintf(stderr,
-           "LUT size mismatch: (file: %ldKb, expected: %zuKb). Regenerating...\n",
-            fsize / 1024, lut_size / 1024);
+    if (fsize < sizeof(struct lut_mk2_header)) {
+        fprintf(stderr, "Cached LUT file is corrupted. Regenerating....\n");
         goto error;
     }
 
@@ -275,6 +280,32 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path)
     ret = lut_init_mk2(&def->lut_mk2, def->length);
     if (ret) {
         fprintf(stderr, "Couldn't initialise LUT\n");
+        goto error;
+    }
+
+    hdr = def->lut_mk2.hdr;
+    hdr->major = 0;
+    hdr->minor = 0;
+
+    size = fread(hdr, sizeof(struct lut_mk2_header), 1, fp);
+    if (!size) {
+        perror("fread lut_mk2_header");
+        goto error;
+    }
+
+    if (hdr->magic != MIXXX_LUT_MAGIC || hdr->major != MIXXX_LUT_MAJOR || hdr->minor != MIXXX_LUT_MINOR) {
+        fprintf(stderr,
+            "LUT version mismatch: (file: v%u.%u, expected: v%u.%u). Regenerating...\n",
+            hdr->major, hdr->minor, MIXXX_LUT_MAJOR, MIXXX_LUT_MINOR);
+        goto error;
+    }
+
+    /* Check if the sizes match */
+
+    if (lut_size != (size_t)fsize) {
+        fprintf(stderr,
+           "LUT size mismatch: (file: %ldKb, expected: %zuKb). Regenerating...\n",
+            fsize / 1024, lut_size / 1024);
         goto error;
     }
 
