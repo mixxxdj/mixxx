@@ -44,7 +44,7 @@ TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     mixxx::audio::FramePos nextBeatPosition;
     mixxx::audio::FrameDiff_t beatLengthFrames;
     double beatPercentage;
-    EXPECT_TRUE(BpmControl::getBeatContext(pBeats,
+    EXPECT_TRUE(pBeats->getContext(
             mixxx::audio::kStartFramePos,
             &prevBeatPosition,
             &nextBeatPosition,
