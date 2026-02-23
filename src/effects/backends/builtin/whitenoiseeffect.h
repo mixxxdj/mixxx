@@ -20,7 +20,7 @@ class WhiteNoiseGroupState final : public EffectState {
               m_noiseBuffer(bufferParameters.samplesPerBuffer()),
               m_filteredBuffer(bufferParameters.samplesPerBuffer()) {
     }
-    
+
     CSAMPLE_GAIN previous_gain;
     double previous_q;
     std::random_device rs;

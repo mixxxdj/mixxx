@@ -108,19 +108,28 @@ void WhiteNoiseEffect::processChannel(
             if (drywet_deadzoned < 0.5f + drywet_deadzone) {
                 drywet_deadzoned = 0.5f;
             } else {
-                drywet_deadzoned = map_value(drywet_deadzoned, 0.5f + drywet_deadzone, 1.0f, 0.5f, 1.0f);
+                drywet_deadzoned = map_value(drywet_deadzoned,
+                        0.5f + drywet_deadzone,
+                        1.0f,
+                        0.5f,
+                        1.0f);
             }
         } else {
             if (drywet_deadzoned > 0.5f - drywet_deadzone) {
                 drywet_deadzoned = 0.5f;
             } else {
-                drywet_deadzoned = map_value(drywet_deadzoned, 0.0f, 1.0f - drywet_deadzone, 0.0f, 1.0f);
+                drywet_deadzoned = map_value(drywet_deadzoned,
+                        0.0f,
+                        1.0f - drywet_deadzone,
+                        0.0f,
+                        1.0f);
             }
         }
     }
 
     // Get the master gain value
-    CSAMPLE_GAIN gain = (CSAMPLE_GAIN)volume_interpolation.parameterToValue(std::min(max_gain, std::abs(drywet_deadzoned - 0.5f) * 4.0f));
+    CSAMPLE_GAIN gain = (CSAMPLE_GAIN)volume_interpolation.parameterToValue(
+            std::min(max_gain, std::abs(drywet_deadzoned - 0.5f) * 4.0f));
 
     if (gain > 0.0001 || gs.previous_gain > 0.0001) {
         RampingValue<CSAMPLE_GAIN> gain_ramping_value(
