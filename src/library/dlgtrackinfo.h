@@ -112,6 +112,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateTrackMetadataFields();
     void updateSpinBpmFromBeats();
     void updateBpmEditControls();
+    void updateBpmScaleButtonLabels();
 
     const UserSettingsPointer m_pUserSettings;
 
