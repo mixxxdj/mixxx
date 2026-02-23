@@ -146,6 +146,13 @@ QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappi
     return m_pMapping->getSettings();
 }
 
+QString BulkController::getSharedDataNamespace() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->sharedDataNamespace();
+}
+
 #ifdef MIXXX_USE_QML
 QList<LegacyControllerMapping::QMLModuleInfo> BulkController::getMappingModules() {
     if (!m_pMapping) {

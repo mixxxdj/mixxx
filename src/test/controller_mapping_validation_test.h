@@ -138,6 +138,17 @@ class FakeController : public Controller {
         return {};
     }
 
+    QString getSharedDataNamespace() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->sharedDataNamespace();
+#ifdef __HID
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->sharedDataNamespace();
+#endif
+        }
+        return {};
+    }
+
 #ifdef MIXXX_USE_QML
     QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override {
         if (m_pMidiMapping) {

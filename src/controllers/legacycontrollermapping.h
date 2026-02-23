@@ -34,6 +34,7 @@ class LegacyControllerMapping {
             : m_bDirty(other.m_bDirty),
               m_productInfo(other.m_productInfo),
               m_deviceId(other.m_deviceId),
+              m_sharedDataNamespace(other.m_sharedDataNamespace),
               m_filePath(other.m_filePath),
               m_name(other.m_name),
               m_author(other.m_author),
@@ -246,6 +247,15 @@ class LegacyControllerMapping {
         return m_deviceId;
     }
 
+    void setSharedDataNamespace(QString sharedDataNamespace) {
+        m_sharedDataNamespace = std::move(sharedDataNamespace);
+        setDirty(true);
+    }
+
+    const QString& sharedDataNamespace() const {
+        return m_sharedDataNamespace;
+    }
+
     void setFilePath(const QString& filePath) {
         m_filePath = filePath;
         setDirty(true);
@@ -372,6 +382,7 @@ class LegacyControllerMapping {
     QSet<ProductInfo> m_productInfo;
 
     QString m_deviceId;
+    QString m_sharedDataNamespace;
     QString m_filePath;
     QString m_name;
     QString m_author;

@@ -3,6 +3,7 @@
 #include <QElapsedTimer>
 
 #include "controllers/controllermappinginfo.h"
+#include "controllers/controllershareddata.h"
 #include "controllers/legacycontrollermapping.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
@@ -53,6 +54,7 @@ class Controller : public QObject {
 
     virtual QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() = 0;
     virtual QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() = 0;
+    virtual QString getSharedDataNamespace() = 0;
 #ifdef MIXXX_USE_QML
     virtual QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() = 0;
     virtual QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() = 0;
@@ -88,6 +90,10 @@ class Controller : public QObject {
 
     inline std::shared_ptr<ControllerScriptEngineLegacy> getScriptEngine() const {
         return m_pScriptEngineLegacy;
+    }
+
+    void setSharedData(std::shared_ptr<ControllerSharedData> pSharedData) {
+        m_pSharedData = std::move(pSharedData);
     }
 
     virtual bool matchMapping(const MappingInfo& mapping) = 0;
@@ -193,6 +199,7 @@ class Controller : public QObject {
     /// Controllers have multiple ownership over an engine.
     /// A ControllerScriptEngine must not own a controller.
     std::shared_ptr<ControllerScriptEngineLegacy> m_pScriptEngineLegacy;
+    std::shared_ptr<ControllerSharedData> m_pSharedData;
 
     // Verbose and unique description of device type, defaults to empty
     QString m_sDeviceCategory;

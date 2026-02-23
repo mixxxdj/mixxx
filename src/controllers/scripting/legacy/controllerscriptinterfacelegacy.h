@@ -10,6 +10,7 @@
 class ControllerScriptEngineLegacy;
 class ControlObjectScript;
 class ScriptConnection;
+class SharedDataConnection;
 class ConfigKey;
 
 /// ControllerScriptInterfaceLegacy is the legacy API for controller scripts to interact
@@ -59,6 +60,18 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE QObject* getPlayer(const QString& group);
     Q_INVOKABLE double getValue(const QString& group, const QString& name);
     Q_INVOKABLE void setValue(const QString& group, const QString& name, double newValue);
+
+    // Shared Data API
+    Q_INVOKABLE QJSValue getSharedValue(
+            const QString& entity, const QString& key);
+    Q_INVOKABLE void setSharedValue(
+            const QString& entity,
+            const QString& key,
+            const QJSValue& value);
+    Q_INVOKABLE QJSValue makeSharedValueConnection(
+            const QString& entity,
+            const QString& key,
+            const QJSValue& callback);
     Q_INVOKABLE double getParameter(const QString& group, const QString& name);
     Q_INVOKABLE void setParameter(const QString& group, const QString& name, double newValue);
     Q_INVOKABLE double getParameterForValue(
@@ -118,8 +131,19 @@ class ControllerScriptInterfaceLegacy : public QObject {
     /// Execute a ScriptConnection's JS callback
     void triggerScriptConnection(const ScriptConnection& conn);
 
+    /// Disconnect and remove a SharedDataConnection JS callback
+    bool removeSharedDataConnection(const SharedDataConnection& conn);
+    /// Execute a SharedDataConnection JS callback with current value
+    void triggerSharedDataConnection(const SharedDataConnection& conn);
+
     /// Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent* event);
+
+  private slots:
+    void onSharedDataUpdated(const QString& entity,
+            const QString& key,
+            const QVariant& value,
+            QObject* sender);
 
   private:
     QJSValue makeConnectionInternal(const QString& group,
@@ -156,4 +180,8 @@ class ControllerScriptInterfaceLegacy : public QObject {
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
     const RuntimeLoggingCategory m_logger;
+
+    QList<SharedDataConnection> m_sharedDataConnections;
+
+    friend class ControllerSharedDataTest;
 };

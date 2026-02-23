@@ -370,6 +370,13 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     QString deviceId = controller.attribute("id", "");
     mapping->setDeviceId(deviceId);
 
+    // Parse the shared data namespace. If defined, this enables the shared
+    // data API for controllers using this mapping.
+    QString sharedDataNs = controller.attribute("sharedDataNamespace", "");
+    if (!sharedDataNs.isEmpty()) {
+        mapping->setSharedDataNamespace(sharedDataNs);
+    }
+
     // See TODO in LegacyControllerMapping::DeviceDirection - `direction` should
     // only be used as a workaround till the bulk integration gets refactored
     QString deviceDirection = controller.attribute("direction", "").toLower();
@@ -601,6 +608,9 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
     controller.setAttribute("id", rootDeviceName(mapping.deviceId()));
+    if (!mapping.sharedDataNamespace().isEmpty()) {
+        controller.setAttribute("sharedDataNamespace", mapping.sharedDataNamespace());
+    }
     switch (static_cast<LegacyControllerMapping::DeviceDirection>(
             mapping.getDeviceDirection().toInt())) {
     case LegacyControllerMapping::DeviceDirection::Incoming:
