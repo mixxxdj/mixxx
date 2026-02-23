@@ -16,12 +16,14 @@ EngineEffectChain::EngineEffectChain(const QString& group,
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 
+    // We may need to add inputs later on, eg. when skins request more samplers,
+    // which means we need to append to m_chainStatusForChannelMatrix.
+    // Let's store the output map so we can reuse it, eg. in enableForInputChannel()
+    for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
+        m_outputChannelMap.insert(outputChannel.handle(), ChannelStatus());
+    }
     for (const ChannelHandleAndGroup& inputChannel : registeredInputChannels) {
-        ChannelHandleMap<ChannelStatus> outputChannelMap;
-        for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
-            outputChannelMap.insert(outputChannel.handle(), ChannelStatus());
-        }
-        m_chainStatusForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
+        m_chainStatusForChannelMatrix.insert(inputChannel.handle(), m_outputChannelMap);
     }
 }
 
@@ -144,7 +146,16 @@ bool EngineEffectChain::enableForInputChannel(ChannelHandle inputHandle) {
     if (kEffectDebugOutput) {
         qDebug() << "EngineEffectChain::enableForInputChannel" << this << inputHandle;
     }
+
+    if (m_chainStatusForChannelMatrix[inputHandle].isEmpty()) {
+        // Apparently a request to enable an unregistered input.
+        // ChannelHandleMap's operator[] does maybeExpand(), so we now have an
+        // inputHandle key and we can assign our outputmap to it.
+        // Now request the map reference again and we're ready to roll...
+        m_chainStatusForChannelMatrix[inputHandle] = m_outputChannelMap;
+    }
     auto& outputMap = m_chainStatusForChannelMatrix[inputHandle];
+
     for (auto&& outputChannelStatus : outputMap) {
         DEBUG_ASSERT(outputChannelStatus.enableState != EffectEnableState::Enabled);
         outputChannelStatus.enableState = EffectEnableState::Enabling;
