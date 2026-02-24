@@ -10,6 +10,8 @@ struct ewma_filter {
 };
 
 void ewma_init(struct ewma_filter *f, const double alpha);
+void ewma_init_adaptive(struct ewma_filter *f, double k, double f_carrier,
+    double fs);
 int ewma(struct ewma_filter *f, const int x);
 
 struct differentiator {
