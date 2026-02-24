@@ -1384,11 +1384,14 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
 #ifdef MIXXX_USE_QOPENGL
     // QOpenGLWindow inside createWindowContainer causes synchronous Wayland
     // compositor buffer reallocation on every resize event, making splitter
-    // drag extremely slow. Running under XWayland (QT_QPA_PLATFORM=xcb)
-    // avoids this. See https://github.com/mixxxdj/mixxx/issues/16013
+    // drag and UI resizing extremely slow. This affects both waveforms and spinny
+    // widgets. Running under XWayland (QT_QPA_PLATFORM=xcb) avoids this issue.
+    // See https://github.com/mixxxdj/mixxx/issues/16013
     if (QGuiApplication::platformName() == QLatin1String("wayland")) {
-        qWarning() << "Wayland detected with OpenGL waveforms: waveform resize"
-                      " may be slow. Set QT_QPA_PLATFORM=xcb to use XWayland.";
+        qWarning() << "Wayland detected with OpenGL waveforms and spinny widgets: UI resize"
+                      " will be extremely slow. To fix this, run Mixxx with XWayland by setting"
+                      " QT_QPA_PLATFORM=xcb in your environment or .desktop launcher file."
+                      " See https://github.com/mixxxdj/mixxx/issues/16013 for details.";
     }
 #endif
 
