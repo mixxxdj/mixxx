@@ -25,6 +25,25 @@ void ewma_init(struct ewma_filter *f, const double alpha)
 }
 
 /*
+ * Initializes the exponential weighted moving average filter.
+ * Takes the carrier frequency and sampling rate into account.
+ */
+
+void ewma_init_adaptive(struct ewma_filter *f, double k, double f_carrier,
+    double fs)
+{
+    if (!f) {
+        errno = EINVAL;
+        perror(__func__);
+        return;
+    }
+
+    double tau = k / f_carrier; /* fraction of carrier frequency */
+    f->alpha = 1.0 - exp(-1.0 / (fs * tau));
+    f->y_old = 0.0;
+}
+
+/*
  * Computes an exponential weighted moving average with the possibility to weight newly added
  * values with a factor alpha.
  */
