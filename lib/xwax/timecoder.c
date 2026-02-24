@@ -831,8 +831,11 @@ static void process_sample(struct timecoder *tc,
     else if (tc->freq < 0.0)
         forwards = false;
 
-    if (tc->def->flags & SWITCH_PHASE)
+    if (tc->def->flags & SWITCH_PHASE) {
+        tc->pitch = -tc->pitch;
+        tc->freq = -tc->freq;
         forwards = !forwards;
+    }
 
     if (forwards != tc->forwards) /* direction has changed */
         tc->forwards = forwards;
