@@ -1386,12 +1386,14 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     // compositor buffer reallocation on every resize event, making splitter
     // drag and UI resizing extremely slow. This affects both waveforms and spinny
     // widgets. Running under XWayland (QT_QPA_PLATFORM=xcb) avoids this issue.
-    // See https://github.com/mixxxdj/mixxx/issues/16013
+    // See https://github.com/mixxxdj/mixxx/issues/16013 and #14492
     if (QGuiApplication::platformName() == QLatin1String("wayland")) {
         qWarning() << "Wayland detected with OpenGL waveforms and spinny widgets: UI resize"
-                      " will be extremely slow. To fix this, run Mixxx with XWayland by setting"
-                      " QT_QPA_PLATFORM=xcb in your environment or .desktop launcher file."
-                      " See https://github.com/mixxxdj/mixxx/issues/16013 for details.";
+                      " will be extremely slow and may cause sticky mouse issues (mouse key not releasing)."
+                      " To fix this, run Mixxx with XWayland by setting QT_QPA_PLATFORM=xcb in your"
+                      " environment or .desktop launcher file."
+                      " See https://github.com/mixxxdj/mixxx/issues/16013 and"
+                      " https://github.com/mixxxdj/mixxx/issues/14492 for details.";
     }
 #endif
 
