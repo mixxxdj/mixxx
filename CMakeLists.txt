@@ -1728,6 +1728,11 @@ add_library(
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
   src/widget/findonwebmenuservices/findonwebmenulastfm.cpp
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
+  src/widget/findonwebmenuservices/findonwebmenuwikipedia.cpp
+  src/widget/findonwebmenuservices/findonwebmenuyoutubemusic.cpp
+  src/widget/findonwebmenuservices/findonwebmenuspotify.cpp
+  src/widget/findonwebmenuservices/findonwebmenugenius.cpp
+  src/widget/findonwebmenuservices/findonwebmenutunebat.cpp
   src/widget/hexspinbox.cpp
   src/widget/hotcuedrag.cpp
   src/widget/paintable.cpp
