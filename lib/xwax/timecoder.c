@@ -490,8 +490,10 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     /* Compute the factor the scale up the derivative to the original level */
     tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
 
-    mk2_subcode_init(&tc->upper_bitstream);
-    mk2_subcode_init(&tc->lower_bitstream);
+    if (tc->def->flags & TRAKTOR_MK2) {
+        mk2_subcode_init(&tc->upper_bitstream);
+        mk2_subcode_init(&tc->lower_bitstream);
+    }
 }
 
 /*
