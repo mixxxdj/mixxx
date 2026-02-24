@@ -183,7 +183,7 @@ These are issues frequently raised by Mixxx reviewers:
 
 ## Project Structure (Key Directories)
 
-```
+```text
 src/                    # C++ source code
   engine/               # Audio engine (real-time thread)
   controllers/          # Controller backend (MIDI, HID)

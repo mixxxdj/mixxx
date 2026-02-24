@@ -72,7 +72,7 @@ ctest  # run tests (Google Test)
 
 ## Project Layout
 
-```
+```text
 src/          C++ source (engine/, controllers/, library/, mixer/, effects/, qml/, preferences/, util/, test/)
 res/          Resources (controllers/ JS/XML, skins/, qml/)
 cmake/        CMake modules
