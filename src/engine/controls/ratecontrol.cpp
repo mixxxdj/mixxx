@@ -1,4 +1,4 @@
-#include "engine/controls/ratecontrol.h"
+﻿#include "engine/controls/ratecontrol.h"
 
 #include <QtDebug>
 
@@ -578,7 +578,34 @@ void RateControl::processTempRate(const std::size_t bufferSamples) {
                 DEBUG_ASSERT(false);
             }
         }
-    } else if (m_bTempStarted) {
+    } 
+    //Exponential added here 
+ else if (m_eRateRampMode == RampMode::Exponential) {
+        if (!m_bTempStarted) {
+            m_bTempStarted = true;
+        }
+
+        const double sampleRate = m_pSampleRate.get();
+        if (sampleRate <= 0.0) {
+            return;
+        }
+
+        const double tau = m_spinTime * sampleRate;
+        const double alpha = 1.0 - exp(-static_cast<double>(bufferSamples) / tau);
+
+        double target = 0.0;
+
+        // Spin DOWN → go to stop
+        if (rampDirection == RampDirection::Down ||
+                rampDirection == RampDirection::DownSmall) {
+            target = -1.0;
+        }
+
+        // Spin UP → return to normal speed (0.0 temp rate)
+        m_tempRateRatio += (target - m_tempRateRatio) * alpha;
+    }
+
+    else if (m_bTempStarted) {
         m_bTempStarted = false;
         resetRateTemp();
     }

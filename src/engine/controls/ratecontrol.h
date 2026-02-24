@@ -36,7 +36,8 @@ public:
 
   enum class RampMode {
       Stepping = 0, // pitch takes a temporary step up/down a certain amount
-      Linear = 1    // pitch moves up/down in a progressively linear fashion
+      Linear = 1,   // pitch moves up/down in a progressively linear fashion
+      Exponential = 2 // vinyl style spin-up / spin-down curve
   };
 
   void setBpmControl(BpmControl* bpmcontrol);
@@ -174,4 +175,8 @@ private:
   double m_tempRateRatio;
   // Speed for temporary rate change
   double m_dRateTempRampChange;
+
+  // Vinyl-style brake & spin-up timing
+  double m_brakeTime = 0.8;
+  double m_spinTime = 0.5;
 };
