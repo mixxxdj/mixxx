@@ -1,13 +1,14 @@
 #include "encoder/encodermp3.h"
 
-#include <limits.h>
-
-#include <QObject>
-#include <QtDebug>
+#include <id3v2tag.h>
 
 #include "audio/types.h"
 #include "encoder/encodercallback.h"
 #include "encoder/encodermp3settings.h"
+
+namespace {
+constexpr size_t kHeaderPadding = 10000;
+} // namespace
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number
@@ -134,9 +135,54 @@ void EncoderMp3::flush() {
         numBytes = lame_get_lametag_frame(
                 m_lameFlags, m_bufferOut, m_bufferOutSize);
     }
-    // Write the lame/xing header.
+
+    TagLib::ID3v2::Tag id3Tag;
+
+    // Ideally, we should shift the file content forward to insert the header
+    // (ID3v2 & Xing frame) dynamically, but `EncoderCallback` doesn't support
+    // that so we use the static header padding and truncate the tracklist if
+    // too long
+    if (!m_metaDataTitle.isEmpty()) {
+        id3Tag.setTitle(QStringToTString(m_metaDataTitle));
+    }
+    if (!m_metaDataArtist.isEmpty()) {
+        id3Tag.setArtist(QStringToTString(m_metaDataArtist));
+    }
+    if (!m_metaDataAlbum.isEmpty()) {
+        id3Tag.setAlbum(QStringToTString(m_metaDataAlbum));
+    }
+    qsizetype tracklistMaxByteSize = kHeaderPadding -
+            id3Tag.render().size();
+    DEBUG_ASSERT(tracklistMaxByteSize > 0);
+
+    TagLib::String trackList;
+    qsizetype currentTracklistByteSize = 0;
+
+    for (const auto& track : getTrackList()) {
+        if (!trackList.isEmpty()) {
+            trackList += "\n";
+            currentTracklistByteSize += 1;
+        }
+        auto tagTrack = QStringToTString(track);
+        currentTracklistByteSize += tagTrack.data(TagLib::String::Type::UTF8).size();
+        // ellipse + 1 since we need a byte for the NULL terminator
+        if (currentTracklistByteSize > tracklistMaxByteSize - 4) {
+            trackList += "…";
+            break;
+        } else {
+            trackList += tagTrack;
+        }
+    }
+    id3Tag.setComment(trackList);
+
+    TagLib::ByteVector id3Buffer = id3Tag.render();
+
     m_pCallback->seek(0);
-    m_pCallback->write(nullptr, m_bufferOut, 0, static_cast<int>(numBytes));
+    // Write the lame/xing header.
+    m_pCallback->write(reinterpret_cast<const unsigned char*>(id3Buffer.data()),
+            m_bufferOut,
+            static_cast<int>(id3Buffer.size()),
+            static_cast<int>(numBytes));
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) {
@@ -176,6 +222,13 @@ void EncoderMp3::initStream() {
 
     m_bufferIn[0] = (float *)malloc(m_bufferOutSize * sizeof(float));
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
+
+    // Add a static header padding, which will be filled one termination
+    QByteArray headerPad(kHeaderPadding, 0);
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(headerPad.constData()),
+            0,
+            headerPad.size());
 }
 
 int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate,
@@ -234,17 +287,7 @@ int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate,
 
     lame_set_quality(m_lameFlags, 2);
 
-    //ID3 Tag if fields are not NULL
-    id3tag_init(m_lameFlags);
-    if (!m_metaDataTitle.isEmpty()) {
-        id3tag_set_title(m_lameFlags, m_metaDataTitle.toLatin1().constData());
-    }
-    if (!m_metaDataArtist.isEmpty()) {
-        id3tag_set_artist(m_lameFlags, m_metaDataArtist.toLatin1().constData());
-    }
-    if (!m_metaDataAlbum.isEmpty()) {
-        id3tag_set_album(m_lameFlags,m_metaDataAlbum.toLatin1().constData());
-    }
+    // ID3 tag will be written during flushing
 
     int ret = lame_init_params(m_lameFlags);
     if (ret < 0) {
@@ -257,8 +300,15 @@ int EncoderMp3::initEncoder(mixxx::audio::SampleRate sampleRate,
     return 0;
 }
 
-void EncoderMp3::updateMetaData(const QString& artist, const QString& title, const QString& album) {
-    m_metaDataTitle = title;
-    m_metaDataArtist = artist;
-    m_metaDataAlbum = album;
+void EncoderMp3::updateMetaData(const QString& artist,
+        const QString& title,
+        const QString& album,
+        std::chrono::seconds timecode) {
+    if (m_bufferOut == nullptr) {
+        m_metaDataTitle = title;
+        m_metaDataArtist = artist;
+        m_metaDataAlbum = album;
+    } else {
+        addToTracklist(artist, title, timecode);
+    }
 }

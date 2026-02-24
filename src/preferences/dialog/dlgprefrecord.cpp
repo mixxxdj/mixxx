@@ -12,6 +12,7 @@
 
 namespace {
 constexpr bool kDefaultCueEnabled = true;
+constexpr bool kDefaultTracklistAsComment = true;
 constexpr bool kDefaultCueFileAnnotationEnabled = false;
 } // anonymous namespace
 
@@ -84,6 +85,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
+    updateTracklistAsComment();
 
     CheckBoxUseCueFileAnnotation->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "cue_file_annotation_enabled"),
@@ -166,6 +168,7 @@ void DlgPrefRecord::slotApply() {
     saveMetaData();
     saveEncoding();
     saveUseCueFile();
+    saveTracklistAsComment();
     saveUseCueFileAnnotation();
     saveSplitSize();
     saveChannelMode(); // saving channel preference (Mono/Stereo) to the config
@@ -211,6 +214,7 @@ void DlgPrefRecord::slotUpdate() {
     // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
+    updateTracklistAsComment();
 
     slotToggleCueEnabled();
     loadChannelMode(); // Load recording channel mode (Mono/Stereo) to keep the
@@ -241,6 +245,7 @@ void DlgPrefRecord::slotResetToDefaults() {
 
     // Sets 'Create a CUE file' checkbox value
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
+    updateTracklistAsComment();
 
     // Sets 'Enable File Annotation in CUE file' checkbox value
     CheckBoxUseCueFileAnnotation->setChecked(kDefaultCueFileAnnotationEnabled);
@@ -338,6 +343,8 @@ void DlgPrefRecord::setupEncoderUI() {
     if (m_selFormat.internalName == ENCODING_MP3) {
         updateTextQuality();
     }
+
+    updateTracklistAsComment();
 }
 
 // This is to load the recording channel mode (Mono/Stereo) from config
@@ -397,6 +404,19 @@ void DlgPrefRecord::updateTextCompression() {
                     m_selFormat, m_pConfig);
     int quality = settings->getCompressionValues().at(SliderCompression->value());
     TextCompression->setText(QString::number(quality));
+}
+
+void DlgPrefRecord::updateTracklistAsComment() {
+    CheckBoxTracklistAsComment->blockSignals(true);
+    if (m_selFormat.internalName == ENCODING_MP3 || m_selFormat.internalName == ENCODING_WAVE) {
+        CheckBoxTracklistAsComment->setEnabled(true);
+        CheckBoxTracklistAsComment->setChecked(m_pConfig->getValue(
+                ConfigKey(RECORDING_PREF_KEY, "tracklist_as_comment"), kDefaultTracklistAsComment));
+    } else {
+        CheckBoxTracklistAsComment->setEnabled(false);
+        CheckBoxTracklistAsComment->setChecked(false);
+    }
+    CheckBoxTracklistAsComment->blockSignals(true);
 }
 
 void DlgPrefRecord::slotGroupChanged() {
@@ -493,6 +513,11 @@ void DlgPrefRecord::slotToggleCueEnabled() {
 void DlgPrefRecord::saveUseCueFile() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"),
             ConfigValue(CheckBoxRecordCueFile->isChecked()));
+}
+
+void DlgPrefRecord::saveTracklistAsComment() {
+    m_pConfig->setValue(ConfigKey(RECORDING_PREF_KEY, "tracklist_as_comment"),
+            CheckBoxTracklistAsComment->isChecked());
 }
 
 void DlgPrefRecord::saveUseCueFileAnnotation() {
