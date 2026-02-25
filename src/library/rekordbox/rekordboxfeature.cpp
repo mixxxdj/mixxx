@@ -4,6 +4,7 @@
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
 
+#include <QFile>
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
@@ -15,6 +16,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
+#include "library/coverart.h"
 #include "library/queryutil.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
@@ -97,7 +99,13 @@ bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
             "    rating INTEGER,"
             "    analyze_path TEXT UNIQUE,"
             "    device TEXT,"
-            "    color INTEGER"
+            "    color INTEGER,"
+            "    coverart_type INTEGER,"
+            "    coverart_source INTEGER,"
+            "    coverart_location TEXT,"
+            "    coverart_color INTEGER,"
+            "    coverart_digest BLOB,"
+            "    coverart_hash INTEGER"
             ");");
 
     if (!query.exec()) {
@@ -359,6 +367,7 @@ void insertTrack(
         QMap<uint32_t, QString>& albumsMap,
         QMap<uint32_t, QString>& genresMap,
         QMap<uint32_t, QString>& keysMap,
+        const QMap<uint32_t, QString>& artworkMap,
         const QString& devicePath,
         const QString& device,
         int audioFilesCount) {
@@ -397,6 +406,44 @@ void insertTrack(
     query.bindValue(":color",
             mixxx::RgbColor::toQVariant(
                     colorFromID(static_cast<int>(track->color_id()))));
+
+    QVariant coverartType;
+    QVariant coverartSource;
+    QVariant coverartLocation;
+    QVariant coverartColor;
+    QVariant coverartDigest;
+    QVariant coverartHash;
+
+    const auto artworkIt = artworkMap.constFind(static_cast<uint32_t>(track->artwork_id()));
+    if (artworkIt != artworkMap.constEnd()) {
+        const QString artworkRelPath = *artworkIt;
+        const QString artworkPath = devicePath + artworkRelPath;
+
+        if (QFile::exists(artworkPath)) {
+            QImage image(artworkPath);
+            if (!image.isNull()) {
+                CoverInfoRelative coverInfo;
+                coverInfo.type = CoverInfoRelative::FILE;
+                coverInfo.source = CoverInfoRelative::GUESSED;
+                coverInfo.coverLocation = artworkPath;
+                coverInfo.setImageDigest(image);
+
+                coverartType = static_cast<int>(coverInfo.type);
+                coverartSource = static_cast<int>(coverInfo.source);
+                coverartLocation = coverInfo.coverLocation;
+                coverartColor = mixxx::RgbColor::toQVariant(coverInfo.color);
+                coverartDigest = coverInfo.imageDigest();
+                coverartHash = coverInfo.legacyHash();
+            }
+        }
+    }
+
+    query.bindValue(":coverart_type", coverartType);
+    query.bindValue(":coverart_source", coverartSource);
+    query.bindValue(":coverart_location", coverartLocation);
+    query.bindValue(":coverart_color", coverartColor);
+    query.bindValue(":coverart_digest", coverartDigest);
+    query.bindValue(":coverart_hash", coverartHash);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -508,13 +555,14 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     // Attempt was made to also recover HISTORY
     // playlists (which are found on removable Rekordbox devices), however
     // they didn't appear to contain valid row_ref_t structures.
-    constexpr int totalTables = 8;
+    constexpr int totalTables = 9;
 
     rekordbox_pdb_t::page_type_t tableOrder[totalTables] = {
             rekordbox_pdb_t::PAGE_TYPE_KEYS,
             rekordbox_pdb_t::PAGE_TYPE_GENRES,
             rekordbox_pdb_t::PAGE_TYPE_ARTISTS,
             rekordbox_pdb_t::PAGE_TYPE_ALBUMS,
+            rekordbox_pdb_t::PAGE_TYPE_ARTWORK,
             rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES,
             rekordbox_pdb_t::PAGE_TYPE_TRACKS,
             rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_TREE,
@@ -524,6 +572,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     QMap<uint32_t, QString> genresMap;
     QMap<uint32_t, QString> artistsMap;
     QMap<uint32_t, QString> albumsMap;
+    QMap<uint32_t, QString> artworkMap;
     QMap<uint32_t, QString> playlistNameMap;
     QMap<uint32_t, bool> playlistIsFolderMap;
     QMap<uint32_t, QMap<uint32_t, uint32_t>> playlistTreeMap;
@@ -569,6 +618,12 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                                         rowRef->body());
                                         albumsMap[album->id()] = getText(album->name());
                                     } break;
+                                    case rekordbox_pdb_t::PAGE_TYPE_ARTWORK: {
+                                        auto* artwork =
+                                                static_cast<rekordbox_pdb_t::artwork_row_t*>(
+                                                        rowRef->body());
+                                        artworkMap[artwork->id()] = getText(artwork->path());
+                                    } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES: {
                                         auto* playlistEntry =
                                                 static_cast<rekordbox_pdb_t::playlist_entry_row_t*>(
@@ -589,6 +644,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                                 albumsMap,
                                                 genresMap,
                                                 keysMap,
+                                                artworkMap,
                                                 devicePath,
                                                 device,
                                                 audioFilesCount);
