@@ -1,406 +1,612 @@
-var DDJ200 = {
-    fourDeckMode: false,
-    vDeckNo: [0, 1, 2],
-    vDeck: {},
-    shiftPressed: {left: false, right: false},
-    jogCounter: 0
+/*
+
+DDJ-200 Midi Overview:
+Deck n = 0/1:                                   Midi in         Midi out
+                                                (to PC)         (from PC)
+    Jog (Platter)   rotate      Vinyl mode on   Bn  22      hh      -           result = value - 64
+                                Vinyl mode off  Bn  23      hh      -           result = value - 64
+                                shift           Bn  29      hh      -           result = value - 64
+    Jog (Platter)   touch                       9n  36      hh      -           OFF=0x00, ON=0x7F
+                                shift           9n  67      hh      -           OFF=0x00, ON=0x7F
+    Jog (Side)      rotate      normal/shift    Bn  21      hh      -           result = value - 64
+    Beat Sync       press                       9n  58      hh  [midi in]       OFF=0x00, ON=0x7F
+                    long press                  9n  5C      hh      -           OFF=0x00, ON=0x7F
+                    press       shift           9n  60      hh  [midi in]       OFF=0x00, ON=0x7F
+    Tempo           slide       normal/shift    Bn  00/20   xx      -           MSB / LSB
+    Play/Pause      press                       9n  0B  hh      [midi in]       OFF=0x00, ON=0x7F
+                    press       shift           9n  47  hh      [midi in]       OFF=0x00, ON=0x7F
+    Cue             press                       9n  0C  hh      [midi in]       OFF=0x00, ON=0x7F
+                    press       shift           9n  48  hh      [midi in]       OFF=0x00, ON=0x7F
+    Shift           press                       9n  3F  hh          -           OFF=0x00, ON=0x7F
+    EQ Hi           rotate                      Bn  07/27   xx      -           MSB / LSB
+    EQ Mid          rotate                      Bn  0B/2B   xx      -           MSB / LSB
+    EQ Low          rotate                      Bn  0F/2F   xx      -           MSB / LSB
+    Color Fx CH1    rotate                      B6  17/37   xx      -           MSB / LSB
+    Color Fx CH2    rotate                      B6  18/38   xx      -           MSB / LSB
+    Master Cue      press                       96  63      hh  [midi in]       OFF=0x00, ON=0x7F
+                    press       shift           96  78      hh  [midi in]       OFF=0x00, ON=0x7F
+    Cue (Headpho)   press                       9n  54      hh  [midi in]       OFF=0x00, ON=0x7F
+                    press       shift           9n  68      hh  [midi in]       OFF=0x00, ON=0x7F
+    Ch Fader        slide                       Bn  13/33   xx      -           MSB / LSB
+    Crossfader      slide                       B6  1F/3F   xx      -           MSB / LSB
+    both above      zero->notzero   shift       9n  66  hh      [midi in]       OFF=0x00, ON=0x7F (PLAY message for fader start)
+                    notzero->zero   shift       9n  52  hh      [midi in]       OFF=0x00, ON=0x7F (CUE message for fader start)
+    TransitionFX    press                       96  59  hh      [midi in]       OFF=0x00, ON=0x7F
+                    press           shift       96  5A  hh      [midi in]       OFF=0x00, ON=0x7F
+
+    Deck1 PAD p=7, Deck1 SHIFT PAD p=8, Deck2 PAD p=9, Deck2 SHIFT PAD p=A
+    PAD 1           press                       9p  00  hh      [midi in]       OFF=0x00, ON=0x7F
+    PAD 2           press                       9p  01  hh      [midi in]       OFF=0x00, ON=0x7F
+    PAD 3           press                       9p  02  hh      [midi in]       OFF=0x00, ON=0x7F
+    PAD 4           press                       9p  03  hh      [midi in]       OFF=0x00, ON=0x7F
+    PAD 5           press                       9p  04  hh      [midi in]       OFF=0x00, ON=0x7F
+    PAD 6           press                       9p  05  hh      [midi in]       OFF=0x00, ON=0x7F
+    PAD 7           press                       9p  06  hh      [midi in]       OFF=0x00, ON=0x7F
+    PAD 8           press                       9p  07  hh      [midi in]       OFF=0x00, ON=0x7F
+
+    Loaded Deck1                                none            9F 00 7F        blinking PADs 1-4 followed by PADs 5-8
+    Loaded Deck2                                none            9F 01 7F        blinking PADs 1-4 followed by PADs 5-8
+    Viny Mode on/off                            none            9n 17 hh        OFF=0x00, ON=0x7F (default ON)
+*/
+
+// eslint-disable-next-line no-var
+var DDJ200 = { };
+
+components.Component.prototype.shiftOffset = 1;
+components.Component.prototype.shiftChannel = true;
+components.Component.prototype.sendShifted = true;
+
+DDJ200.PadMode = class extends components.ComponentContainer {
+    constructor(options) {
+        super(options);
+        // this is a workaround for components, forEachComponent only iterates
+        // over ownProperties, so these have to constructed by the constructor here
+        // instead of being merged by the ComponentContainer constructor
+        this.pads = Array(8).fill(undefined);
+    }
+    constructPads(constructPad) {
+        this.pads = this.pads.map((_, padIndex) => constructPad(padIndex));
+    }
+};
+
+DDJ200.PadModeContainers = {
+    Hotcue: class extends DDJ200.PadMode {
+        constructor(deckOffset, group) {
+            super();
+
+            super.constructPads(i => new components.HotcueButton({
+                midi: [0x97 + deckOffset, i],
+                number: i + 1,
+                group,
+                outConnect: false,
+            })
+            );
+
+            this.indicatorStyle = 0;
+        }
+    },
+    Loop: class extends DDJ200.PadMode {
+        constructor(deckOffset, group) {
+            super();
+
+            const theContainer = this;
+            this.currentBaseLoopSize = parseInt(engine.getSetting("defaultLoopRootSize"));
+
+            super.constructPads(i => new components.Component({
+                midi: [0x97 + deckOffset, i],
+                unshift: function() {
+                    this.inKey = "beatloop_activate";
+                },
+                shift: function() {
+                    this.inKey = "beatlooproll_activate";
+                },
+                on: 0x7F,
+                off: 0x00,
+                group,
+                outConnect: false,
+                loopSize: Math.pow(2, theContainer.currentBaseLoopSize + i),
+                input: function(_channel, _control, value, _status, _mode) {
+                    if (value) {
+                        const loopEnabled = engine.getValue(this.group, "loop_enabled");
+                        const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
+                        engine.setValue(this.group, "beatloop_size", this.loopSize);
+                        if (matchingLoopSize || !loopEnabled) {
+                            engine.setValue(this.group, this.inKey, true);
+                        };
+                    };
+                },
+                outKey: null, // hack to get Component constructor to call connect()
+                connect: function() {
+                    this.connections[0] = engine.makeConnection(this.group, "beatloop_size", this.output.bind(this));
+                    this.connections[1] = engine.makeConnection(this.group, "loop_enabled", this.output.bind(this));
+                },
+                outValueScale: function(value) {
+                    if (value) {
+                        const loopEnabled = engine.getValue(this.group, "loop_enabled");
+                        const matchingLoopSize = (engine.getValue(this.group, "beatloop_size") === this.loopSize);
+                        return (matchingLoopSize && loopEnabled) ? this.on : this.off;
+                    }
+                    return this.off;
+                },
+            })
+            );
+            this.indicatorStyle = 1;
+        }
+    },
+    Effect: class extends DDJ200.PadMode {
+        constructor(deckOffset, group) {
+            super();
+
+            super.constructPads(i => {
+                if (i < 4) {
+                    return new components.SamplerButton({
+                        midi: [0x97 + deckOffset, i],
+                        number: deckOffset * 2 + i + 1,
+                    });
+                } else if (i < 7) {
+                    return new components.Button({
+                        midi: [0x97 + deckOffset, i],
+                        group: `[EffectRack1_EffectUnit${script.deckFromGroup(group)}_Effect${i - 3}]`,
+                        inKey: "enabled",
+                        outKey: "loaded",
+                        outConnect: false,
+                        type: components.Button.prototype.types.toggle,
+                        unshift: function() {
+                            if (this.connections) {
+                                this.disconnect();
+                                this.group = this.group.replace("EffectUnit3", "EffectUnit1").replace("EffectUnit4", "EffectUnit2");
+                                this.connect();
+                                this.trigger();
+                            }
+                        },
+                        shift: function() {
+                            this.disconnect();
+                            this.group = this.group.replace("EffectUnit1", "EffectUnit3").replace("EffectUnit2", "EffectUnit4");
+                            this.connect();
+                            this.trigger();
+                        },
+                    });
+                } else {
+                    return new components.Button({
+                        midi: [0x97 + deckOffset, i],
+                        group,
+                        outConnect: false,
+                        indicateButtonPress: function(value) {
+                            this.output(value, null, null);
+                        },
+                        inSetValue: function(value) {
+                            if (value) {
+                                bpm.tapButton(script.deckFromGroup(this.group));
+                            };
+                            this.indicateButtonPress(value);
+                        },
+                    });
+                };
+            });
+            this.indicatorStyle = "indicator_500ms";
+        }
+    },
+    Jump: class extends DDJ200.PadMode {
+        constructor(deckOffset, group) {
+            super();
+
+            const theContainer = this;
+            this.currentBaseBeatJumpSize = parseInt(engine.getSetting("defaultBeatJumpRootSize"));
+
+            super.constructPads(i => new components.Component({
+                midi: [0x97 + deckOffset, i],
+                unshift: function() {
+                    this.inKey = "beatjump_forward";
+                },
+                shift: function() {
+                    this.inKey = "beatjump_backward";
+                },
+                on: 0x7F,
+                off: 0x00,
+                group,
+                outConnect: false,
+                beatJumpSize: Math.pow(2, theContainer.currentBaseBeatJumpSize + i),
+                input: function(_channel, _control, value, _status, _mode) {
+                    engine.setValue(this.group, "beatjump_size", this.beatJumpSize);
+                    engine.setValue(this.group, this.inKey, value);
+                },
+                outKey: null, // hack to get Component constructor to call connect()
+                connect: function() {
+                    this.connections[0] = engine.makeConnection(this.group, "beatjump_forward", this.output.bind(this));
+                    this.connections[1] = engine.makeConnection(this.group, "beatjump_backward", this.output.bind(this));
+                },
+                outValueScale: function(value) {
+                    if (value) {
+                        const matchingJumpSize = (engine.getValue(this.group, "beatjump_size") === this.beatJumpSize);
+                        return (matchingJumpSize) ? this.on : this.off;
+                    }
+                    return this.off;
+                },
+            })
+            );
+            this.indicatorStyle = "indicator_250ms";
+        }
+    },
+};
+
+DDJ200.DoubleRingBuffer = class {
+    constructor(indexableUnshifted, indexableShifted) {
+        this.indexable = [indexableUnshifted, indexableShifted];
+        this.index = 0;
+        this.isShifted = false;
+    };
+    swapIndexable() {
+        this.isShifted = !this.isShifted;
+        this.index = 0;
+    }
+    current() {
+        return this.indexable[this.isShifted?1:0][this.index];
+    };
+    next() {
+        this.index = script.posMod(this.index + 1, this.indexable[this.isShifted?1:0].length);
+    };
+};
+
+DDJ200.PadModeContainers.ModeSelector = class extends components.ComponentContainer {
+    constructor(group) {
+        super();
+        const deckOffset = (((script.deckFromGroup(group) - 1) % 2) * 2);
+
+        this.choosenPadInstance = new DDJ200.PadModeContainers.Hotcue(deckOffset, group);
+        this.padInstancesBuffer = new DDJ200.DoubleRingBuffer(
+            [this.choosenPadInstance, new DDJ200.PadModeContainers.Loop(deckOffset, group), new DDJ200.PadModeContainers.Effect(deckOffset, group)],
+            [new DDJ200.PadModeContainers.Jump(deckOffset, group)]
+        );
+    }
+
+    setPads(newPadInstance) {
+        if (newPadInstance === this.choosenPadInstance) {
+            return;
+        }
+        this.choosenPadInstance.forEachComponent(function(component) {
+            component.disconnect();
+        });
+        this.choosenPadInstance = newPadInstance;
+        this.choosenPadInstance.forEachComponent(function(component) {
+            component.connect();
+            component.trigger();
+        });
+    }
+
+    changePadMode(isShifted) {
+        if (isShifted !== this.padInstancesBuffer.isShifted) {
+            this.padInstancesBuffer.swapIndexable();
+        } else {
+            this.padInstancesBuffer.next();
+        };
+        this.setPads(this.padInstancesBuffer.current());
+    }
+
+    setCurrentDeckHelper(padInstance, newGroup) {
+        padInstance.forEachComponent(function(component) {
+            if (padInstance === this.choosenPadInstance) {
+                component.disconnect();
+            }
+            if (component.group === undefined) {
+                component.group = newGroup;
+            } else {
+                const anyChannelRegEx = /\[Channel\d+([\]_])/;
+                component.group = component.group.replace(anyChannelRegEx, `${newGroup.slice(0, -1)}$1`);
+            }
+            if (padInstance === this.choosenPadInstance) {
+                component.connect();
+                component.trigger();
+            }
+        });
+    }
+
+    setCurrentDeck(newGroup) {
+        this.padInstancesBuffer.indexable[0].forEach(padInstance => {
+            this.setCurrentDeckHelper(padInstance, newGroup);
+        });
+        this.padInstancesBuffer.indexable[1].forEach(padInstance => {
+            this.setCurrentDeckHelper(padInstance, newGroup);
+        });
+    }
+
+    input(channel, control, value, status, group) {
+        this.choosenPadInstance.pads[control].input(channel, control, value, status, group);
+    }
 };
 
 DDJ200.init = function() {
-    for (var i = 1; i <= 4; i++) {
+    this.decks = new components.ComponentContainer({
+        left: new DDJ200.Deck([1, 3], 1),
+        right: new DDJ200.Deck([2, 4], 2),
+    });
 
-        // create associative arrays for 4 virtual decks
-        this.vDeck[i] = {
-            syncEnabled: false,
-            volMSB: 0,
-            rateMSB: 0,
-            jogEnabled: true,
-        };
-
-        var vgroup = "[Channel" + i + "]";
-
-        // run updateDeckLeds after every track load to set LEDs accordingly
-        engine.makeConnection(vgroup, "track_loaded", function(ch, vgroup) {
-            DDJ200.updateDeckLeds(vgroup);
-        });
-
-        // run switchPlayLED after play/pause track to set LEDs accordingly
-        engine.makeConnection(vgroup, "play", function(ch, vgroup) {
-            var vDeckNo = script.deckFromGroup(vgroup);
-            var d = (vDeckNo % 2) ? 0 : 1;
-            DDJ200.switchPlayLED(d, ch);
-        });
-
-        // run switchSyncLED after sync toggle to set LEDs accordingly
-        engine.makeConnection(vgroup, "sync_enabled", function(ch, vgroup) {
-            var vDeckNo = script.deckFromGroup(vgroup);
-            var d = (vDeckNo % 2) ? 0 : 1;
-            DDJ200.switchSyncLED(d, ch);
-        });
-
-        // listen to changes on hotcues
-        for (var j = 1; j <= 8; j++) {
-            // run switchPadLED after every hotcue update
-            engine.makeConnection(vgroup, "hotcue_" + j + "_enabled", function(ch, vgroup, control) {
-                var pad = Number(control.split("_")[1]);
-                var vDeckNo = script.deckFromGroup(vgroup);
-                var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
-                DDJ200.switchPadLED(d, pad, ch);
-            });
+    this.headMixButton = new components.Component({
+        midi: [0x96, 0x63],
+        key: "headMix",
+        group: "[Master]",
+        on: 0x7F,
+        off: 0x00,
+        inValueScale: function(value) {
+            if (value) {
+                return (this.inGetValue() >= 0) ? -1 : 1;
+            }
+            return this.inGetValue();
+        },
+        outValueScale: function(value) {
+            return value >= 0 ? this.on : this.off;
+        },
+        indicateDeck: function(show_4decks, _group, _control) {
+            if (!show_4decks) {
+                DDJ200.decks.left.setCurrentDeck("[Channel1]");
+                DDJ200.decks.right.setCurrentDeck("[Channel2]");
+                DDJ200.decks.forEachComponentContainer(deck => {
+                    if (deck.syncButton.blinkConnection) {
+                        deck.syncButton.blinkConnection.disconnect();
+                        deck.syncButton.send(deck.syncButton.off);
+                    };
+                }, false);
+            };
+        },
+        shiftedInput: function(_channel, _control, value, _status, _g) {
+            if (value) {
+                engine.setValue("[Skin]", "show_4decks", !engine.getValue("[Skin]", "show_4decks"));
+            };
+        },
+        shutdown: function() {
+            this.send(this.off);
         }
+    });
+    engine.makeConnection("[Skin]", "show_4decks", this.headMixButton.indicateDeck);
 
-        // set Pioneer CDJ cue mode for all decks
-        engine.setValue(vgroup, "cue_cdj", true);
-    }
 
-    DDJ200.LEDsOff();
+    this.transFxButton = new components.Button({
+        midi: [0x96, 0x59],
+        shiftChannel: false,
+        shiftControl: true,
+        shiftOffset: 1,
 
-    // start with focus on library for selecting tracks (delay seems required)
-    engine.beginTimer(500, () => {
-        engine.setValue("[Library]", "MoveFocus", 1);
-    }, true);
+        input: function(_channel, control, value, _status, _g) {
+            if (value) {
+                DDJ200.decks.forEachComponentContainer(deck => {
+                    deck.padUnit.changePadMode((control === 0x5A));
+                }, false);
+                this.indicatePadMode();
+            };
+        },
+        indicatorStyle: function() {
+            // use left Deck as reference for selected padInstance
+            return DDJ200.decks.left.padUnit.choosenPadInstance.indicatorStyle;
+        },
+        blinkConnection: undefined,
+        indicatePadMode: function() {
+            if (this.blinkConnection) {
+                this.blinkConnection.disconnect();
+            };
+            if (this.indicatorStyle() === "indicator_250ms" || this.indicatorStyle() === "indicator_500ms") {
+                this.blinkConnection = engine.makeConnection("[App]", this.indicatorStyle(), function(value, _group, _control) {
+                    DDJ200.transFxButton.send(DDJ200.transFxButton.on * value);
+                });
+            } else {
+                this.blinkConnection = undefined;
+                this.send(this.on * this.indicatorStyle());
+            };
+        },
+    });
+
+    this.shutdown = function() {
+        DDJ200.headMixButton.shutdown();
+        DDJ200.transFxButton.shutdown();
+        DDJ200.decks.shutdown();
+        engine.setValue("[Channel3]", "volume", 0);
+        engine.setValue("[Channel4]", "volume", 0);
+    };
 
     // query the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x0a, 0x00, 0x03, 0x01, 0xf7], 12);
+
+    // reset start volume of channels 3 and 4 (can't be read from 2-deck controller)
+    engine.setValue("[Channel3]", "volume", 0);
+    engine.setValue("[Channel4]", "volume", 0);
+
+    // start with focus on library for selecting tracks (delay seems required)
+    engine.beginTimer(500, function() {
+        engine.setValue("[Library]", "MoveFocus", 1);
+    }, true);
 };
 
-DDJ200.shutdown = function() {
-    DDJ200.LEDsOff();
-};
+DDJ200.Deck = class extends components.Deck {
+    constructor(deckNumbers, midiChannel) {
+        super(deckNumbers);
 
-DDJ200.LEDsOff = function() {                         // turn off LED buttons:
+        const theDeck = this;
+        this.padUnit = new DDJ200.PadModeContainers.ModeSelector(this.currentDeck);
 
-    for (var i = 0; i <= 1; i++) {
-        midi.sendShortMsg(0x96 + i, 0x63, 0x00);      // set headphone master
-        midi.sendShortMsg(0x90 + i, 0x54, 0x00);      // pfl headphone
-        midi.sendShortMsg(0x90 + i, 0x58, 0x00);      // beat sync
-        midi.sendShortMsg(0x90 + i, 0x0B, 0x00);      // play
-        midi.sendShortMsg(0x90 + i, 0x0C, 0x00);      // cue
-        for (var j = 0; j <= 8; j++) {
-            midi.sendShortMsg(0x97 + 2 * i, j, 0x00); // hotcue
-        }
-    }
-};
+        this.jogWheel = new components.JogWheelBasic({
+            wheelResolution: 128, // how many ticks per revolution the jogwheel has
+            alpha: 1 / 8, // alpha-filter
+            beta: 1 / 8 / 32,
+            rpm: 33 + 1 / 3,
+            inValueScale: function(value) {
+                return value - 64;
+            },
+            inKey: "jog",
+            jogCounter: 0,
+            deck: deckNumbers[0],
+            inputSeek: function(_channel, _control, value, _status, _group) {
+                if ((engine.getSetting("useLeftShiftAsLibraryScroll") && DDJ200.decks.left.shiftButton.pressed) ||
+                    (engine.getSetting("useRightShiftAsLibraryScroll") && DDJ200.decks.right.shiftButton.pressed)) {
+                    this.jogCounter += this.inValueScale(value);
+                    if (this.jogCounter > 9) {
+                        engine.setValue("[Library]", "MoveDown", true);
+                        this.jogCounter = 0;
+                    } else if (this.jogCounter < -9) {
+                        engine.setValue("[Library]", "MoveUp", true);
+                        this.jogCounter = 0;
+                    };
+                } else {
+                    const group = `[Channel${this.deck}]`; // fix for wrong group
+                    const oldPos = engine.getValue(group, "playposition");
+                    // Since ‘playposition’ is normalized to unity, we need to scale by
+                    // song duration in order for the jog wheel to cover the same amount
+                    // of time given a constant turning angle.
+                    const duration = engine.getValue(group, "duration");
+                    const newPos = Math.max(0, oldPos + (this.inValueScale(value) * 0.2 / duration));
 
-DDJ200.updateDeckLeds = function(vgroup) {
-    // set LEDs (hotcues, etc.) for the loaded deck
-    // if controller is switched to this deck
-    var vDeckNo = script.deckFromGroup(vgroup);
-    var deckNo = (vDeckNo % 2) ? 1 : 2;
-    if (vDeckNo === DDJ200.vDeckNo[deckNo]) {
-        DDJ200.switchLEDs(vDeckNo);
-    }
-};
+                    engine.setValue(group, "playposition", newPos); // Strip search
+                };
+            },
+        });
 
-DDJ200.LoadSelectedTrack = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var deckNo = script.deckFromGroup(group);
-        var vDeckNo = DDJ200.vDeckNo[deckNo];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        script.triggerControl(vgroup, "LoadSelectedTrack", true);
-    }
-};
-
-DDJ200.browseTracks = function(value) {
-    DDJ200.jogCounter += value - 64;
-    if (DDJ200.jogCounter > 9) {
-        engine.setValue("[Library]", "MoveDown", true);
-        DDJ200.jogCounter = 0;
-    } else if (DDJ200.jogCounter < -9) {
-        engine.setValue("[Library]", "MoveUp", true);
-        DDJ200.jogCounter = 0;
-    }
-};
-
-DDJ200.shiftLeft = function() {
-    // toggle shift left pressed variable
-    DDJ200.shiftPressed["left"] = ! DDJ200.shiftPressed["left"];
-};
-
-DDJ200.shiftRight = function() {
-    // toggle shift right pressed variable
-    DDJ200.shiftPressed["right"] = ! DDJ200.shiftPressed["right"];
-};
-
-DDJ200.jog = function(channel, control, value, status, group) {
-    // For a control that centers on 0x40 (64):
-    // Convert value down to +1/-1
-    // Register the movement
-    if (DDJ200.shiftPressed["left"]) {
-        DDJ200.browseTracks(value);
-    } else {
-        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        if (DDJ200.vDeck[vDeckNo]["jogEnabled"]) {
-            var vgroup = "[Channel" + vDeckNo + "]";
-            engine.setValue(vgroup, "jog", value - 64);
-        }
-    }
-};
-
-DDJ200.scratch = function(channel, control, value, status, group) {
-    // For a control that centers on 0x40 (64):
-    // Convert value down to +1/-1
-    // Register the movement
-    engine.scratchTick(DDJ200.vDeckNo[script.deckFromGroup(group)],
-        value - 64);
-};
-
-DDJ200.touch = function(channel, control, value, status, group) {
-    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-    if (value) {
-        // enable scratch
-        var alpha = 1.0 / 8;
-        engine.scratchEnable(vDeckNo, 128, 33 + 1 / 3, alpha, alpha / 32);
-        // disable jog not to prevent track alignment
-        DDJ200.vDeck[vDeckNo].jogEnabled = false;
-    } else {
-        // enable jog after 900 ms again
-        engine.beginTimer(900, () => {
-            DDJ200.vDeck[vDeckNo].jogEnabled = true;
-        }, true);
-        // disable scratch
-        engine.scratchDisable(vDeckNo);
-    }
-};
-
-DDJ200.seek = function(channel, control, value, status, group) {
-    var oldPos = engine.getValue(group, "playposition");
-    // Since ‘playposition’ is normalized to unity, we need to scale by
-    // song duration in order for the jog wheel to cover the same amount
-    // of time given a constant turning angle.
-    var duration = engine.getValue(group, "duration");
-    var newPos = Math.max(0, oldPos + ((value - 64) * 0.2 / duration));
-
-    var deckNo = script.deckFromGroup(group);
-    var vgroup = "[Channel" + DDJ200.vDeckNo[deckNo] + "]";
-    engine.setValue(vgroup, "playposition", newPos); // Strip search
-};
-
-DDJ200.headmix = function(channel, control, value) {
-    // toggle headMix knob between -1 to 1
-    if (value) { // do nothing if button is released, i.e. value === 0
-        var masterMixEnabled = (engine.getValue("[Master]", "headMix") > 0);
-        engine.setValue("[Master]", "headMix", masterMixEnabled ? -1 : 1);
-        midi.sendShortMsg(0x96, 0x63, masterMixEnabled ? 0 : 0x7F); // set LED
-    }
-};
-
-DDJ200.toggleFourDeckMode = function(channel, control, value) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        DDJ200.fourDeckMode = !DDJ200.fourDeckMode;
-        if (DDJ200.fourDeckMode) {
-            midi.sendShortMsg(0x90, 0x54, 0x00);
-            midi.sendShortMsg(0x91, 0x54, 0x00);
-        } else {
-            DDJ200.vDeckNo[1] = 1;
-            DDJ200.vDeckNo[2] = 2;
-            DDJ200.switchLEDs(1); // set LEDs of controller deck
-            DDJ200.switchLEDs(2); // set LEDs of controller deck
-        }
-    }
-};
-
-DDJ200.play = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        var playing = engine.getValue(vgroup, "play");
-        engine.setValue(vgroup, "play", ! playing);
-        if (engine.getValue(vgroup, "play") === playing) {
-            engine.setValue(vgroup, "play", !playing);
-        }
-        midi.sendShortMsg(status, 0x0B, engine.getValue(vgroup, "play") ? 0x7F : 0);
-    }
-};
-
-DDJ200.syncEnabled = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        var syncEnabled = ! engine.getValue(vgroup, "sync_enabled");
-        DDJ200.vDeck[vDeckNo]["syncEnabled"] = syncEnabled;
-        engine.setValue(vgroup, "sync_enabled", syncEnabled);
-        midi.sendShortMsg(status, control, 0x7F * syncEnabled); // set LED
-    }
-};
-
-DDJ200.rateMSB = function(channel, control, value, status, group) {
-    // store most significant byte value of rate
-    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-    DDJ200.vDeck[vDeckNo]["rateMSB"] = value;
-};
-
-DDJ200.rateLSB = function(channel, control, value, status, group) {
-    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-    var vgroup = "[Channel" + vDeckNo + "]";
-    // calculate rate value from its most and least significant bytes
-    var rateMSB = DDJ200.vDeck[vDeckNo]["rateMSB"];
-    var rate = 1 - (((rateMSB << 7) + value) / 0x1FFF);
-    engine.setValue(vgroup, "rate", rate);
-};
-
-DDJ200.volumeMSB = function(channel, control, value, status, group) {
-    // store most significant byte value of volume
-    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-    DDJ200.vDeck[vDeckNo]["volMSB"] = value;
-};
-
-DDJ200.volumeLSB = function(channel, control, value, status, group) {
-    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-    var vgroup = "[Channel" + vDeckNo + "]";
-    // calculate volume value from its most and least significant bytes
-    var volMSB = DDJ200.vDeck[vDeckNo]["volMSB"];
-    var vol = ((volMSB << 7) + value) / 0x3FFF;
-    //var vol = ((volMSB << 7) + value); // use for linear correction
-    //vol = script.absoluteNonLin(vol, 0, 0.25, 1, 0, 0x3FFF);
-    engine.setValue(vgroup, "volume", vol);
-};
-
-DDJ200.eq = function(channel, control, value, status, group) {
-    var val = script.absoluteNonLin(value, 0, 1, 4);
-    var eq = (control === 0x0B) ? 2 : 1;
-    if (control === 0x07) {
-        eq = 3;
-    }
-    var deckNo = group.substring(24, 25);
-    // var deckNo = group.match("hannel.")[0].substring(6); // more general
-    // var deckNo = script.deckFromGroup(group); // working after fix
-    // https://github.com/mixxxdj/mixxx/pull/3178 only
-    var vDeckNo = DDJ200.vDeckNo[deckNo];
-    var vgroup = group.replace("Channel" + deckNo, "Channel" + vDeckNo);
-    engine.setValue(vgroup, "parameter" + eq, val);
-};
-
-DDJ200.super1 = function(channel, control, value, status, group) {
-    var val = script.absoluteNonLin(value, 0, 0.5, 1);
-    var deckNo = group.substring(26, 27);
-    //var deckNo = group.match("hannel.")[0].substring(6); // more general
-    //var deckNo = script.deckFromGroup(group); // working after fix
-    // https://github.com/mixxxdj/mixxx/pull/3178 only
-    var vDeckNo = DDJ200.vDeckNo[deckNo];
-    var vgroup = group.replace("Channel" + deckNo, "Channel" + vDeckNo);
-    engine.setValue(vgroup, "super1", val);
-};
-
-DDJ200.cueDefault = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        if (!DDJ200.vDeck[vDeckNo]["jogEnabled"]) {  // if jog top is touched
-            engine.setValue(vgroup, "cue_set", true);
-        } else {
-            engine.setValue(vgroup, "cue_gotoandplay", true);
-        }
-        var cueSet = (engine.getValue(vgroup, "cue_point") !== -1);
-        midi.sendShortMsg(status, 0x0C, 0x7F * cueSet);      // set cue LED
-        midi.sendShortMsg(status, 0x0B, 0x7F *               // set play LED
-                          engine.getValue(vgroup, "play"));
-    }
-};
-
-DDJ200.cueGotoandstop = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        engine.setValue(vgroup, "cue_gotoandstop", true);
-        //engine.setValue(vgroup, "start_stop", true); // go to start if preferred
-        midi.sendShortMsg(status, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
-    }
-};
-
-DDJ200.hotcueNActivate = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        var hotcue = "hotcue_" + (control + 1);
-        engine.setValue(vgroup, hotcue + "_activate", true);
-        midi.sendShortMsg(status, control,
-            0x7F * engine.getValue(vgroup, hotcue + "_enabled"));
-        var deckNo = script.deckFromGroup(group);
-        midi.sendShortMsg(0x90 + deckNo - 1, 0x0B, 0x7F *
-            engine.getValue(vgroup, "play")); // set play LED
-    }
-};
-
-DDJ200.hotcueNClear = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        engine.setValue(vgroup, "hotcue_" + (control + 1) + "_clear", true);
-        midi.sendShortMsg(status-1, control, 0x00);        // set hotcue LEDs
-    }
-};
-
-DDJ200.pfl = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        var deckNo = script.deckFromGroup(group);
-        var vDeckNo = DDJ200.vDeckNo[deckNo];
-        var vgroup = "[Channel" + vDeckNo + "]";
-        var pfl = ! engine.getValue(vgroup, "pfl");
-        engine.setValue(vgroup, "pfl", pfl);
-        if (!DDJ200.fourDeckMode) {
-            midi.sendShortMsg(status, 0x54, 0x7F * pfl);  // switch pfl LED
-        }
-    }
-};
-
-DDJ200.switchLEDs = function(vDeckNo) {
-    // set LEDs of controller deck 1 or 2 according to virtual deck
-    var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
-    var vgroup = "[Channel" + vDeckNo + "]";
-    DDJ200.switchPlayLED(d, engine.getValue(vgroup, "play"));
-    midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
-                      (engine.getValue(vgroup, "cue_point") !== -1));
-    DDJ200.switchSyncLED(d, engine.getValue(vgroup, "sync_enabled"));
-    if (!DDJ200.fourDeckMode) {
-        midi.sendShortMsg(0x90 + d, 0x54,
-            0x7F * engine.getValue(vgroup, "pfl"));
-    }
-
-    for (var i = 1; i <= 8; i++) {
-        var isButtonEnabled = engine.getValue(vgroup, "hotcue_" + i + "_enabled");
-        DDJ200.switchPadLED(d, i, isButtonEnabled);
-    }
-};
-
-DDJ200.switchPlayLED = function(deck, enabled) {
-    midi.sendShortMsg(0x90 + deck, 0x0B, 0x7F * enabled);
-};
-
-DDJ200.switchSyncLED = function(deck, enabled) {
-    midi.sendShortMsg(0x90 + deck, 0x58, 0x7F * enabled);
-};
-
-DDJ200.switchPadLED = function(deck, pad, enabled) {
-    midi.sendShortMsg(0x97 + 2 * deck, pad - 1, 0x7F * enabled);
-};
-
-DDJ200.toggleDeck = function(channel, control, value, status, group) {
-    if (value) { // only if button pressed, not releases, i.e. value === 0
-        if (DDJ200.shiftPressed["left"]) {
-            // left shift + pfl 1/2 does not toggle decks but loads track
-            DDJ200.LoadSelectedTrack(channel, control, value, status, group);
-        } else if (DDJ200.fourDeckMode) { //right shift + pfl 1/2 toggles
-            var deckNo = script.deckFromGroup(group);
-            var vDeckNo;
-            var led = 0x7F;
-            if (deckNo === 1) {
-                // toggle virtual deck of controller deck 1
-                DDJ200.vDeckNo[1] = 4 - DDJ200.vDeckNo[1];
-                if (DDJ200.vDeckNo[1] === 1) {
-                    led = 0;
+        this.shiftButton = new components.Button({
+            pressed: 0,
+            clickTime: 0,
+            input: function(_channel, _control, value, _status, _g) {
+                this.pressed = value;
+                if (value) {
+                    if (engine.getValue("[Skin]", "show_4decks") && ((Date.now() - this.clickTime) < 500)) { // double-click
+                        this.clickTime = 0;
+                        theDeck.toggle();
+                        theDeck.syncButton.indicateDeck();
+                    } else {
+                        this.clickTime = Date.now();
+                        if (theDeck.bothShift()) {
+                            engine.setValue("[Library]", "MoveFocusForward", true);
+                        }
+                    }
+                    DDJ200.decks.shift();
+                } else {
+                    DDJ200.decks.unshift();
                 }
-                vDeckNo = DDJ200.vDeckNo[1];
-            } else { // deckNo === 2
-                // toggle virtual deck of controller deck 2
-                DDJ200.vDeckNo[2] = 6 - DDJ200.vDeckNo[2];
-                if (DDJ200.vDeckNo[2] === 2) {
-                    led = 0;
-                }
-                vDeckNo = DDJ200.vDeckNo[2];
-            }
-            midi.sendShortMsg(status, 0x54, led); // toggle virtual deck LED
-            DDJ200.switchLEDs(vDeckNo); // set LEDs of controller deck
+            },
+        });
+
+        this.syncButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x58],
+            key: "sync_enabled",
+            shiftChannel: false,
+            shiftControl: true,
+            shiftOffset: 8,
+            input: function(_channel, _control, value, _status, _g) {
+                if (value) {
+                    if (this.inGetValue() === 0) {
+                        engine.setValue(this.group, "beatsync", 1);
+                    } else {
+                        this.inSetValue(0);
+                    };
+                };
+            },
+            inputLongPress: function(_channel, _control, value, _status, _g) {
+                if (value) {
+                    this.inSetValue(1);
+                };
+            },
+            indicateDeck: function() {
+                if (theDeck.currentDeck === "[Channel3]" || theDeck.currentDeck === "[Channel4]") {
+                    this.blinkConnection = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
+                        theDeck.syncButton.send(theDeck.syncButton.on * value);
+                    });
+                } else if (this.blinkConnection) {
+                    this.blinkConnection.disconnect();
+                    theDeck.syncButton.send(theDeck.syncButton.off);
+                };
+            },
+            shiftedInput: function(_channel, _control, value, _status, _g) {
+                if (value) {
+                    const currentRange = engine.getValue(this.group, "rateRange");
+                    engine.setValue(this.group, "rateRange", (currentRange > 0.9) ? 0.1 : currentRange + 0.1);
+                };
+            },
+        });
+
+        this.playButton = new components.PlayButton({
+            midi: [0x8F + midiChannel, 0x0B],
+            shiftChannel: false,
+            shiftControl: true,
+            shiftOffset: 0x3C,
+        });
+
+        this.cueButton = new components.CueButton({
+            midi: [0x8F + midiChannel, 0x0C],
+            shiftChannel: false,
+            shiftControl: true,
+            shiftOffset: 0x3C,
+        });
+
+        this.faderStartButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x66],
+            key: "cue_gotoandplay",
+            input: function(channel, control, value, status, _g) {
+                console.warn("faderStart");
+                // according the manual:
+                // Playback starts from the cue point
+                // When no cue point is set, playback starts from the beginning of the track.
+                components.Button.prototype.input.call(this, channel, control, value, status, _g);
+            },
+        });
+
+        this.faderStopButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x52],
+            // according the manual:
+            // the track instantly jumps back to the cue point and playback pauses
+            key: "cue_gotoandstop",
+        });
+
+        this.pflButton = new components.Button({
+            midi: [0x8F + midiChannel, 0x54],
+            sendShifted: false,
+            key: "pfl",
+            type: components.Button.prototype.types.toggle,
+        });
+
+        this.loadTrack = new components.Button({
+            midi: [0x8F + midiChannel, 0x68],
+            sendShifted: false,
+            inKey: "LoadSelectedTrack",
+        });
+
+        this.volume = new components.Pot({
+            inKey: "volume",
+        });
+
+        this.rate = new components.Pot({
+            inKey: "rate",
+            invert: 1,
+        });
+
+        this.eqKnob = [];
+        for (let i = 0; i < 3; i++) {
+            this.eqKnob[i] = new components.Pot({
+                group: `[EqualizerRack1_${this.currentDeck}_Effect1]`,
+                inKey: `parameter${i + 1}`,
+            });
+        };
+
+        if (engine.getSetting("useSuperAsGain")) {
+            this.super1 = new components.Pot({
+                group: theDeck.currentDeck,
+                inKey: "pregain",
+            });
+        } else {
+            this.super1 = new components.Pot({
+                group: `[QuickEffectRack1_${this.currentDeck}]`,
+                inKey: "super1",
+            });
         }
+
+        // this is required, otherwise there is one connection too much per Component
+        this.forEachComponent(function(component) {
+            if (component.group === undefined) {
+                component.group = this.currentDeck;
+            };
+        });
+    }
+
+    setCurrentDeck(newGroup) {
+        this.padUnit.setCurrentDeck(newGroup);
+        super.setCurrentDeck(newGroup);
+    }
+
+    bothShift() {
+        return (DDJ200.decks.left.shiftButton.pressed && DDJ200.decks.right.shiftButton.pressed);
     }
 };

@@ -1,959 +1,969 @@
-<?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.0.0+">
-    <info>
-        <name>Pioneer DDJ-200</name>
-        <author>Dan Giddins, Frank.Breitling at gmx.de</author>
-        <description>2-deck USB and Bluetooth MIDI controller with support for 4-deck mode.</description>
-        <forum>https://mixxx.discourse.group/t/pioneer-ddj-200-mapping/18259</forum>
-        <manual>pioneer_ddj_200</manual>
-    </info>
-    <controller id="DDJ-200">
-        <scriptfiles>
-            <file functionprefix="DDJ200" filename="Pioneer-DDJ-200-scripts.js"/>
-        </scriptfiles>
-        <controls>
-            <control>
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <description>Master crossfader</description>
-                <status>0xB6</status>
-                <midino>0x1F</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <description>Master crossfader</description>
-                <status>0xB6</status>
-                <midino>0x3F</midino>
-                <options>
-                    <soft-takeover/>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Master]</group>
-                <key>DDJ200.headmix</key>
-                <description>Headphones master as headMix knob</description>
-                <status>0x96</status>
-                <midino>0x63</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DDJ200.toggleFourDeckMode</key>
-                <description>Headphones master + shift</description>
-                <status>0x96</status>
-                <midino>0x78</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.shiftLeft</key>
-                <description>Deck 1: Shift pressed</description>
-                <status>0x90</status>
-                <midino>0x3F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.shiftRight</key>
-                <description>Deck 2: Shift pressed</description>
-                <status>0x91</status>
-                <midino>0x3F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.pfl</key>
-                <description>Deck 1: Headphone listen (pfl) button</description>
-                <status>0x90</status>
-                <midino>0x54</midino>
-                <options>
-                     <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.toggleDeck</key>
-                <description>Deck 1: Headphone (pfl) + shift</description>
-                <status>0x90</status>
-                <midino>0x68</midino>
-                <options>
-                     <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.pfl</key>
-                <description>Deck 2: Headphone listen (pfl) button</description>
-                <status>0x91</status>
-                <midino>0x54</midino>
-                <options>
-                     <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.toggleDeck</key>
-                <description>Deck 2: Headphone (pfl) + shift</description>
-                <status>0x91</status>
-                <midino>0x68</midino>
-                <options>
-                     <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.syncEnabled</key>
-                <description>Deck 1: Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
-                <status>0x90</status>
-                <midino>0x58</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.syncEnabled</key>
-                <description>Deck 2: Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
-                <status>0x91</status>
-                <midino>0x58</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.seek</key>
-                <description>Deck 2: Seek</description>
-                <status>0xB1</status>
-                <midino>0x29</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.seek</key>
-                <description>Deck 1: Seek</description>
-                <status>0xB0</status>
-                <midino>0x29</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[AutoDJ]</group>
-                <key>enabled</key>
-                <description>Toggle Auto DJ On/Off</description>
-                <status>0x96</status>
-                <midino>0x59</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[AutoDJ]</group>
-                <key>fade_now</key>
-                <description>Trigger the transition to the next track</description>
-                <status>0x96</status>
-                <midino>0x5A</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.touch</key>
-                <description>Deck 2: Touch</description>
-                <status>0x91</status>
-                <midino>0x36</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.touch</key>
-                <description>Deck 1: Touch</description>
-                <status>0x90</status>
-                <midino>0x36</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-
-            <control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <!--key>parameter1</key-->
-                <key>DDJ200.eq</key>
-                <description>Deck 1: Adjust Low EQ</description>
-                <status>0xB0</status>
-                <midino>0x0F</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <!--control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
-                <description>Deck 1: Adjust Low EQ</description>
-                <status>0xB0</status>
-                <midino>0x2F</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control-->
-            <control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <!--key>parameter2</key-->
-                <key>DDJ200.eq</key>
-                <description>Deck 1: Adjust Mid EQ</description>
-                <status>0xB0</status>
-                <midino>0x0B</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <!--control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
-                <description>Deck 1: Adjust Mid EQ</description>
-                <status>0xB0</status>
-                <midino>0x2B</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control-->
-            <control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>DDJ200.eq</key>
-                <!--key>parameter3</key-->
-                <description>Deck 1: Adjust High EQ</description>
-                <status>0xB0</status>
-                <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <!--control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
-                <description>Deck 1: Adjust High EQ</description>
-                <status>0xB0</status>
-                <midino>0x27</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control-->
-
-            <control>
-                <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>DDJ200.super1</key>
-                <description>Super Knob (msb): control linked effect</description>
-                <status>0xB6</status>
-                <midino>0x17</midino>
-                <!--midino>lsb: 0x37</midino-->
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <!--key>parameter1</key-->
-                <key>DDJ200.eq</key>
-                <description>Deck 2: Adjust Low EQ</description>
-                <status>0xB1</status>
-                <midino>0x0F</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <!--control>
-                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
-                <description>Deck 2: Adjust Low EQ</description>
-                <status>0xB1</status>
-                <midino>0x2F</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control-->
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <!--key>parameter2</key-->
-                <key>DDJ200.eq</key>
-                <description>Deck 2: Adjust Mid EQ</description>
-                <status>0xB1</status>
-                <midino>0x0B</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <!--control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
-                <description>Deck 2: Adjust Mid EQ</description>
-                <status>0xB1</status>
-                <midino>0x2B</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control-->
-            <control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <!--key>parameter3</key-->
-                <key>DDJ200.eq</key>
-                <description>Deck 2: Adjust High EQ</description>
-                <status>0xB1</status>
-                <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <!--control>
-                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
-                <description>Deck 2: Adjust High EQ</description>
-                <status>0xB1</status>
-                <midino>0x27</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control-->
-
-            <control>
-                <group>[QuickEffectRack1_[Channel2]]</group>
-                <key>DDJ200.super1</key>
-                <description>Quick Effect: Quick Effect Super Knob (control linked effect parameters)</description>
-                <status>0xB6</status>
-                <midino>0x18</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <key>bpm_tap</key>
-                <description>Deck 1: BPM tap button</description>
-                <status>0x90</status>
-                <midino>0x60</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>bpm_tap</key>
-                <description>Deck 2: BPM tap button</description>
-                <status>0x91</status>
-                <midino>0x60</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <!--key>volume</key-->
-                <key>DDJ200.volumeMSB</key>
-                <description>Deck 1: Volume Fader</description>
-                <status>0xB0</status>
-                <midino>0x13</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.volumeLSB</key>
-                <description>Deck 1: Volume Fader</description>
-                <status>0xB0</status>
-                <midino>0x33</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-lsb/-->
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.volumeMSB</key>
-                <description>Deck 2: Volume Fader</description>
-                <status>0xB1</status>
-                <midino>0x13</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.volumeLSB</key>
-                <description>Deck 2: Volume Fader</description>
-                <status>0xB1</status>
-                <midino>0x33</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-lsb/-->
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.play</key>
-                <description>Deck 1: Play button</description>
-                <status>0x90</status>
-                <midino>0x0B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.play</key>
-                <description>Deck 2: Play button</description>
-                <status>0x91</status>
-                <midino>0x0B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <!--key>cue_default</key-->
-                <key>DDJ200.cueDefault</key>
-                <description>Deck 1: Cue button</description>
-                <status>0x90</status>
-                <midino>0x0C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.cueDefault</key>
-                <description>Deck 2:  Cue button</description>
-                <status>0x91</status>
-                <midino>0x0C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.cueGotoandstop</key>
-                <description>Deck 1: Go to cue point and stop</description>
-                <status>0x90</status>
-                <midino>0x48</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.cueGotoandstop</key>
-                <description>Deck 2: Go to cue point and stop</description>
-                <status>0x91</status>
-                <midino>0x48</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.rateMSB</key>
-                <description>Deck 1: Playback speed control</description>
-                <status>0xB0</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                    <soft-takeover/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.rateLSB</key>
-                <description>Deck 1: Playback speed control</description>
-                <status>0xB0</status>
-                <midino>0x20</midino>
-                <options>
-                    <soft-takeover/>
-                    <script-binding/>
-                    <!--fourteen-bit-lsb/-->
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.rateMSB</key>
-                <description>Deck 2: Playback speed control</description>
-                <status>0xB1</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-msb/-->
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.rateLSB</key>
-                <description>Deck 2: Playback speed control</description>
-                <status>0xB1</status>
-                <midino>0x20</midino>
-                <options>
-                    <script-binding/>
-                    <!--fourteen-bit-lsb/-->
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.jog</key>
-                <description>Deck 2: Jog</description>
-                <status>0xB1</status>
-                <midino>0x21</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.jog</key>
-                <description>Deck 1: Jog</description>
-                <status>0xB0</status>
-                <midino>0x21</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.scratch</key>
-                <description>Deck 2: Scratch</description>
-                <status>0xB1</status>
-                <midino>0x22</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.scratch</key>
-                <description>Deck 1: Scratch</description>
-                <status>0xB0</status>
-                <midino>0x22</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-
-            <control>
-                <group>[Channel2]</group>
-                <key>cue_set</key>
-                <description>Deck 2: Set cue point</description>
-                <status>0x91</status>
-                <midino>0x47</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>cue_set</key>
-                <description>Deck 1: Set cue point</description>
-                <status>0x90</status>
-                <midino>0x47</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-
-<!-- ##### Hotcues ##### -->
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 1, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 2, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 3, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 4, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x03</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 5, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x04</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 6, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 7, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 8, Deck 1: Set, preview, jump to</description>
-                <status>0x97</status>
-                <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 1, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 2, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 3, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 4, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x03</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 5, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x04</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 6, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 7, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNActivate</key>
-                <description>Hotcue 8, Deck 2: Set, preview, jump to</description>
-                <status>0x99</status>
-                <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel1]</group>
-                <!--key>hotcue_1_clear</key-->
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 1, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 2, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 3, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 4, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x03</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 5, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x04</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 6, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 7, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 8, Deck 1: Clear</description>
-                <status>0x98</status>
-                <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-
-            <control>
-                <group>[Channel2]</group>
-                <!--key>hotcue_1_clear</key-->
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 1, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 2, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 3, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 4, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x03</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 5, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x04</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 6, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 7, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJ200.hotcueNClear</key>
-                <description>Hotcue 8, Deck 2: Clear</description>
-                <status>0x9A</status>
-                <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-        </controls>
-
-
-        <outputs>
-            <!--output>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <description>Deck 1: Headphone listen (pfl) LED</description>
-                <status>0x90</status>
-                <midino>0x54</midino>
-                <on>0x7F</on>
-                <off>0x00</off>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>pfl</key>
-                <description>Deck 2: Headphone listen (pfl) LED</description>
-                <status>0x91</status>
-                <midino>0x54</midino>
-                <on>0x7F</on>
-                <off>0x00</off>
-                <minimum>0.5</minimum>
-            </output-->
-          </outputs>
-      </controller>
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.5.3+">
+  <info>
+    <name>Pioneer DDJ-200</name>
+    <author>Rene (mixxx at absorb.it), Dan Giddins, Frank.Breitling at gmx.de, Geovanni Pacheco</author>
+    <description>2-deck USB and Bluetooth MIDI controller with support for 4-deck mode.</description>
+    <forum>https://mixxx.discourse.group/t/new-mapping-for-pioneer-ddj-200/31164</forum>
+    <manual>pioneer_ddj_200</manual>
+  </info>
+  <settings>
+    <option
+      variable="defaultLoopRootSize"
+      type="enum"
+      label="Loop size of the smallest Pad in Loop Padmode">
+      <!-- values are actually exponents 2**n-->
+      <value label="1/32">-5</value>
+      <value label="1/16">-4</value>
+      <value label="1/8">-3</value>
+      <value label="1/4" default="true">-2</value>
+      <value label="1/2">-1</value>
+      <value label="1">0</value>
+      <value label="2">1</value>
+      <value label="4">2</value>
+      <value label="8">3</value>
+      <value label="16">4</value>
+      <value label="32">5</value>
+      <value label="64">6</value>
+      <value label="128">7</value>
+      <description>This specifies the smallest loop size, the larger loopsizes are automatically available on the other pads.</description>
+    </option>
+    <option
+      variable="defaultBeatJumpRootSize"
+      type="enum"
+      label="Jump size of the smallest Pad in BeatJump Padmode">
+      <!-- values are actually exponents 2**n-->
+      <value label="1/32">-5</value>
+      <value label="1/16">-4</value>
+      <value label="1/8">-3</value>
+      <value label="1/4">-2</value>
+      <value label="1/2">-1</value>
+      <value label="1" default="true">0</value>
+      <value label="2">1</value>
+      <value label="4">2</value>
+      <value label="8">3</value>
+      <value label="16">4</value>
+      <value label="32">5</value>
+      <value label="64">6</value>
+      <value label="128">7</value>
+      <description>This specifies the smallest jump size, the larger jumpsizes are automatically available on the other pads.</description>
+    </option>
+    <option variable="useSuperAsGain"
+      type="boolean"
+      label="Use Quick Effect Controller Button as Gain Knob"
+      default="false">
+      <description>
+        There is no hardware "Gain" knob on the Pioneer DDJ-200. When enabled, the "Quick Effect" knob can be used to control the gain of the respective deck instead.
+      </description>
+    </option>
+    <option variable="useLeftShiftAsLibraryScroll"
+      type="boolean"
+      label="Use Left Shift and Jog Wheel (Top) to scroll through Library"
+      default="false">
+      <description>
+        Usually pressing shift will allow you to scratch through your track faster. When enabled, the Left Shift together with Jog Wheel (top) can be used to scroll through your library.
+      </description>
+    </option>
+    <option variable="useRightShiftAsLibraryScroll"
+      type="boolean"
+      label="Use Right Shift and Jog Wheel (Top) to scroll through Library"
+      default="false">
+      <description>
+        Usually pressing shift will allow you to scratch through your track faster. When enabled, the Right Shift together with Jog Wheel (top) can be used to scroll through your library.
+      </description>
+    </option>
+  </settings>
+  <controller id="DDJ-200 ALT">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js" />
+      <file functionprefix="DDJ200" filename="Pioneer-DDJ-200-scripts.js" />
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.shiftButton.input</key>
+        <description>Deck 1: Shift pressed</description>
+        <status>0x90</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.shiftButton.input</key>
+        <description>Deck 2: Shift pressed</description>
+        <status>0x91</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <description>Master crossfader</description>
+        <status>0xB6</status>
+        <midino>0x1F</midino>
+        <options>
+          <soft-takeover />
+          <fourteen-bit-msb />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <description>Master crossfader</description>
+        <status>0xB6</status>
+        <midino>0x3F</midino>
+        <options>
+          <soft-takeover />
+          <fourteen-bit-lsb />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>DDJ200.headMixButton.input</key>
+        <description>Headphones master as headMix knob</description>
+        <status>0x96</status>
+        <midino>0x63</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>DDJ200.headMixButton.shiftedInput</key>
+        <description>Headphones master + shift</description>
+        <status>0x96</status>
+        <midino>0x78</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.pflButton.input</key>
+        <description>Deck 1: Headphone listen (pfl) button</description>
+        <status>0x90</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.loadTrack.input</key>
+        <description>Deck 1: Headphone (pfl) + shift</description>
+        <status>0x90</status>
+        <midino>0x68</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.pflButton.input</key>
+        <description>Deck 2: Headphone listen (pfl) button</description>
+        <status>0x91</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.loadTrack.input</key>
+        <description>Deck 2: Headphone (pfl) + shift</description>
+        <status>0x91</status>
+        <midino>0x68</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.syncButton.input</key>
+        <description>Deck 1: Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.syncButton.input</key>
+        <description>Deck 2: Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
+        <status>0x91</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.syncButton.inputLongPress</key>
+        <description>Deck 1: Long Press to enable permanent sync</description>
+        <status>0x90</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.syncButton.inputLongPress</key>
+        <description>Deck 2: Long Press to enable permanent sync</description>
+        <status>0x91</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.syncButton.shiftedInput</key>
+        <description>Deck 1: Shift Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
+        <status>0x90</status>
+        <midino>0x60</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.syncButton.shiftedInput</key>
+        <description>Deck 2: Shift Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</description>
+        <status>0x91</status>
+        <midino>0x60</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.jogWheel.inputSeek</key>
+        <description>Deck 1: Seek</description>
+        <status>0xB0</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.jogWheel.inputSeek</key>
+        <description>Deck 2: Seek</description>
+        <status>0xB1</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[AutoDJ]</group>
+        <key>DDJ200.transFxButton.input</key>
+        <description>Change Pad mode</description>
+        <status>0x96</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[AutoDJ]</group>
+        <key>DDJ200.transFxButton.input</key>
+        <description>Change Pad mode</description>
+        <status>0x96</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.jogWheel.inputTouch</key>
+        <description>Deck 1: Touch</description>
+        <status>0x90</status>
+        <midino>0x36</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.jogWheel.inputTouch</key>
+        <description>Deck 2: Touch</description>
+        <status>0x91</status>
+        <midino>0x36</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>DDJ200.decks.left.eqKnob[0].input</key>
+        <description>Deck 1: Adjust Low EQ</description>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>DDJ200.decks.left.eqKnob[1].input</key>
+        <description>Deck 1: Adjust Mid EQ</description>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>DDJ200.decks.left.eqKnob[2].input</key>
+        <description>Deck 1: Adjust High EQ</description>
+        <status>0xB0</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>DDJ200.decks.left.super1.input</key>
+        <description>Super Knob (msb): control linked effect</description>
+        <status>0xB6</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>DDJ200.decks.right.eqKnob[0].input</key>
+        <description>Deck 2: Adjust Low EQ</description>
+        <status>0xB1</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>DDJ200.decks.right.eqKnob[1].input</key>
+        <description>Deck 2: Adjust Mid EQ</description>
+        <status>0xB1</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>DDJ200.decks.right.eqKnob[2].input</key>
+        <description>Deck 2: Adjust High EQ</description>
+        <status>0xB1</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>DDJ200.decks.right.super1.input</key>
+        <description>Quick Effect: Quick Effect Super Knob (control linked effect parameters)</description>
+        <status>0xB6</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.volume.inputMSB</key>
+        <description>Deck 1: Volume Fader</description>
+        <status>0xB0</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.volume.inputLSB</key>
+        <description>Deck 1: Volume Fader</description>
+        <status>0xB0</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.volume.inputMSB</key>
+        <description>Deck 2: Volume Fader</description>
+        <status>0xB1</status>
+        <midino>0x13</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.volume.inputLSB</key>
+        <description>Deck 2: Volume Fader</description>
+        <status>0xB1</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.playButton.input</key>
+        <description>Deck 1: Play button</description>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.playButton.input</key>
+        <description>Deck 2: Play button</description>
+        <status>0x91</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.faderStartButton.input</key>
+        <description>Deck 1: Shift and Fader start</description>
+        <status>0x90</status>
+        <midino>0x66</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.faderStartButton.input</key>
+        <description>Deck 2: Shift and Fader start</description>
+        <status>0x91</status>
+        <midino>0x66</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.cueButton.input</key>
+        <description>Deck 1: Cue button</description>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.cueButton.input</key>
+        <description>Deck 2: Cue button</description>
+        <status>0x91</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.faderStopButton.input</key>
+        <description>Deck 1: Shift and Fader stop</description>
+        <status>0x90</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.faderStopButton.input</key>
+        <description>Deck 2: Shift and Fader stop</description>
+        <status>0x91</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.cueButton.input</key>
+        <description>Deck 1: Go to cue point and stop</description>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.cueButton.input</key>
+        <description>Deck 2: Go to cue point and stop</description>
+        <status>0x91</status>
+        <midino>0x48</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.rate.inputMSB</key>
+        <description>Deck 1: Playback speed control</description>
+        <status>0xB0</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+          <soft-takeover />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.rate.inputLSB</key>
+        <description>Deck 1: Playback speed control</description>
+        <status>0xB0</status>
+        <midino>0x20</midino>
+        <options>
+          <soft-takeover />
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.rate.inputMSB</key>
+        <description>Deck 2: Playback speed control</description>
+        <status>0xB1</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.rate.inputLSB</key>
+        <description>Deck 2: Playback speed control</description>
+        <status>0xB1</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.jogWheel.inputWheel</key>
+        <description>Deck 1: Jog</description>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.jogWheel.inputWheel</key>
+        <description>Deck 2: Jog</description>
+        <status>0xB1</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.jogWheel.inputWheel</key>
+        <description>Deck 2: Scratch</description>
+        <status>0xB1</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.jogWheel.inputWheel</key>
+        <description>Deck 1: Scratch</description>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.jogWheel.inputWheel</key>
+        <description>Deck 2: Scratch</description>
+        <status>0xB1</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.jogWheel.inputWheel</key>
+        <description>Deck 1: Scratch</description>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.playButton.input</key>
+        <description>Deck 1: Shift Play</description>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.playButton.input</key>
+        <description>Deck 2: Shift Play</description>
+        <status>0x91</status>
+        <midino>0x47</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- ##### Hotcues ##### -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 1, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 2, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 3, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 4, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 5, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 6, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 7, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 8, Deck 1: Set, preview, jump to</description>
+        <status>0x97</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 1, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 2, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 3, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 4, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 5, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 6, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 7, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 8, Deck 2: Set, preview, jump to</description>
+        <status>0x99</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 1, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 2, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 3, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 4, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 5, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 6, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 7, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DDJ200.decks.left.padUnit.input</key>
+        <description>Hotcue 8, Deck 1: Clear</description>
+        <status>0x98</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 1, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x00</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 2, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 3, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x02</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 4, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 5, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 6, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x05</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 7, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DDJ200.decks.right.padUnit.input</key>
+        <description>Hotcue 8, Deck 2: Clear</description>
+        <status>0x9A</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+    </controls>
+  </controller>
 </MixxxControllerPreset>
