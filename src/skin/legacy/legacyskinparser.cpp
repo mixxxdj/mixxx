@@ -631,6 +631,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         parseSingletonDefinition(node);
     } else if (nodeName == "SingletonContainer") {
         result = wrapWidget(parseStandardWidget<WSingletonContainer>(node));
+    } else if (nodeName == "Window") {
+        result = wrapWidget(parseWindow(node));
     } else {
         SKIN_WARNING(node,
                 *m_pContext,
@@ -749,6 +751,22 @@ QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
     pGroup->Init();
     parseChildren(node, pGroup);
     return pGroup;
+}
+
+QWidget* LegacySkinParser::parseWindow(const QDomElement& node) {
+    WWidgetGroup* pWindow = new WWidgetGroup(m_pParent);
+    pWindow->setWindowFlags(Qt::Window);
+    pWindow->setWindowTitle("Mixxx Library");
+    pWindow->show();
+    setupBaseWidget(node, pWindow);
+    setupWidget(node, pWindow->toQWidget());
+    pWindow->setup(node, *m_pContext);
+    // Note: if we call setupConnections earlier and it sets the visible property
+    // to true, the style is not applied correctly
+    setupConnections(node, pWindow);
+    pWindow->Init();
+    parseChildren(node, pWindow);
+    return nullptr;
 }
 
 QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
