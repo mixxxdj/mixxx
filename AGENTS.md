@@ -20,7 +20,7 @@ ctest  # run tests (Google Test)
 
 ### C++ Conventions
 
-- 4 spaces, never tabs. 80-col soft limit.
+- 4 spaces, never tabs. 100-col hard limit, 80-col soft limit.
 - Classes: `CamelCase`. Methods: `camelBack()`. Members: `m_prefix`. Pointers: `pPrefix`. Constants: `kPascalCase`. Enums: `enum class CamelCase`.
 - CO/setting keys: `snake_case`.
 - K&R braces. Always braces on control flow bodies.
@@ -30,8 +30,9 @@ ctest  # run tests (Google Test)
 - `VERIFY_OR_DEBUG_ASSERT(cond) { recovery; }` for defensive checks.
 - `override` on all virtual overrides; omit redundant `virtual`.
 - `QStringLiteral("...")` for string literals.
+- tr("...") for strings that will need translation.
 - No `goto`. No `Q_UNUSED` (use unnamed params instead). No C-style enums.
-- `///` doc comments in headers. `// TODO(username)` for TODOs.
+- `///` doc comments in headers. `// TODO(username)` or `// TODO(issue URL)` for TODOs.
 - Wrap new code in `namespace mixxx {}`. Anonymous namespace for file-local helpers in .cpp.
 - Non-const ref out-params: use pointers, not references (legacy convention).
 - Lambdas: use carefully — they get extra review scrutiny for lifetime/control-flow issues.
@@ -50,7 +51,7 @@ ctest  # run tests (Google Test)
 - One branch per feature/bugfix. Every commit must build.
 - Small commits. Imperative commit messages, 72-char wrap, describe what + why.
 - Bug fixes → stable branch (e.g. `2.5`). Features → `main`.
-- Don't rebase without reviewer agreement. Use `--fixup` commits, squash before merge.
+- Don't rebase without reviewer agreement. Use `--fixup` commits, only squash before merge if requested.
 - Post before/after screenshots for GUI changes.
 - Keep PRs focused — no unrelated formatting, config, or refactoring changes mixed in.
 
