@@ -96,6 +96,217 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.5.5" type="development" date="2026-02-23" timestamp="1771867075">
+      <description>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Search: fix 'not' operator
+   #15923
+   #15918
+  </li>
+  <li>
+   Rhythmbox: fix imports
+   #15798
+   #15770
+  </li>
+  <li>
+   WTrackMenu: warn before opening more than 10 tracks in file browser
+   #15828
+   #15819
+  </li>
+  <li>
+   Fix "dataChanged() called with an invalid index range" warning
+   #15937
+   #14610
+  </li>
+ </ul>
+ <p>
+  Effects
+ </p>
+ <ul>
+  <li>
+   White Noise: remove DC offset
+   #15979
+  </li>
+  <li>
+   White Noise: improve gain responds
+   #15949
+  </li>
+  <li>
+   Echo: fix out of bounds read
+   #15985
+  </li>
+  <li>
+   QuickEffect: fix crackling noise when switching
+   #15796
+   #15794
+  </li>
+ </ul>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Numark Mixtrack 3: update scripts
+   #14180
+  </li>
+  <li>
+   Pioneer CDJ-350: fix incorrect name in controller mapping
+   #15683
+  </li>
+  <li>
+   Reloop Beatmix 2/4: implement shift+jog wheel seek
+   #15575
+   #12334
+  </li>
+  <li>
+   Traktor Kontrol Z1: fix crossfader cut
+   #14451
+   #14450
+   #15945
+  </li>
+  <li>
+   Traktor S4Mk2: check for deck undefined
+   #14445
+  </li>
+ </ul>
+ <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Restore common-hid-packet-parser global symbol exceptions for eslint
+   #15961
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   Fix scratching with keylock enabled and mapping using scracht2
+   #15845
+  </li>
+  <li>
+   AudioUnit: fix crash due to off-by-one error in parameter syncing
+   #15919
+  </li>
+  <li>
+   FX units: resolve issue preventing use on all samplers
+   #15971
+  </li>
+  <li>
+   AutoDJ: fix wrong use of [Auto DJ] -&gt; [AutoDJ]
+   #16009
+  </li>
+ </ul>
+ <p>
+  Preferences
+ </p>
+ <ul>
+  <li>
+   Interface: use main window screen to detect if skin fits
+   #15824
+   #15823
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Time widget: make ShowSeconds only show seconds, no extra locale info
+   #15805
+  </li>
+  <li>
+   Search related menu: fix search click trigger
+   #15912
+  </li>
+  <li>
+   Tracks: avoid re-sorting table when purging/hiding tracks
+   #15872
+   #12565
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Add Flatpak packaging files
+   #15695
+   #15922
+  </li>
+  <li>
+   Fail early if not running from Visual Studio environment
+   #14623
+  </li>
+  <li>
+   Make Debian non-free optional
+   #15895
+  </li>
+  <li>
+   Debian: remove 'qml6-module-qtquick-nativestyle
+   #15771
+  </li>
+ </ul>
+ <p>
+  Miscellaneous
+ </p>
+ <ul>
+  <li>
+   Bump actions/cache from 4 to 5
+   #15756
+  </li>
+  <li>
+   Bump actions/upload-artifact from 5.0.0 to 6.0.0
+   #15755
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.5.10 to 1.0.0
+   #15884
+  </li>
+  <li>
+   Bump jwlawson/actions-setup-cmake from 2.0 to 2.1
+   #15907
+  </li>
+  <li>
+   Fix
+   mixxx-test
+   build to find
+   mad.h
+   #15803
+  </li>
+  <li>
+   Disable GitHub cache for VCPKG buildenv to save buildtime
+   #15981
+  </li>
+  <li>
+   CI: fix issues related to workflow refactor into modular actions
+   #15750
+  </li>
+  <li>
+   (Belated) Happy New Year 2026!
+   #15852
+  </li>
+  <li>
+   Retire Ubuntu Plucky Puffin 25.04
+   #15926
+  </li>
+  <li>
+   chore(deps): bump azure/trusted-signing-action from 1.0.0 to 1.1.0
+   #15990
+  </li>
+  <li>
+   Num deck streamline
+   #14112
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.5.4" type="stable" date="2025-12-14" timestamp="1765670400">
       <description>
  <p>
