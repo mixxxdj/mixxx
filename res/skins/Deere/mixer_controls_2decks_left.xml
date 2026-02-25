@@ -11,7 +11,80 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <Template src="skin:mixer_column_eq_left.xml"/>
-      <Template src="skin:mixer_column_volume_gain.xml"/>
+      
+      <!-- Fader column with gain/mute above -->
+      <WidgetGroup>
+        <ObjectName>DeckMixer_Column2</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,me</SizePolicy>
+        <Children>
+          <!-- Gain knob and mute button above fader -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <!-- mute button on outside edge (left) -->
+              <PushButton>
+                <TooltipId>mute</TooltipId>
+                <Size>15f,20f</Size>
+                <ObjectName>EQKillButton</ObjectName>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,mute</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </PushButton>
+              <!-- Gain knob on inside -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>40f,-1</Size>
+                <MinimumSize>40,34</MinimumSize>
+                <MaximumSize>40,46</MaximumSize>
+                <Children>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="TooltipId">pregain</SetVariable>
+                    <SetVariable name="control">pregain</SetVariable>
+                    <SetVariable name="color">green</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          
+          <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+          
+          <SliderComposed>
+            <TooltipId>channel_volume</TooltipId>
+            <SizePolicy>me,me</SizePolicy>
+            <MinimumSize>40,50</MinimumSize>
+            <MaximumSize>40,150</MaximumSize>
+            <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
+            <Horizontal>false</Horizontal>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </SliderComposed>
+          
+          <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_faders</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      
       <Template src="skin:mixer_column_pfl_levels.xml"/>
     </Children>
   </WidgetGroup>
