@@ -126,7 +126,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     mixxx::BeatsPointer m_pBeatsClone;
     bool m_trackHasBeatMap;
 
-    bool m_bpmLocked{false};
+    bool m_bpmLocked;
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 

@@ -44,6 +44,7 @@ DlgTrackInfo::DlgTrackInfo(
         : QDialog(nullptr),
           m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
+          m_bpmLocked(false),
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
@@ -144,8 +145,6 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotBpmClear);
 
-    // connect to clicked() instead of toggled() since button
-    // is no longer checkable. The lock state is tracked by m_bpmLocked.
     connect(bpmLock,
             &QPushButton::clicked,
             this,
@@ -660,10 +659,7 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     updateKeyText();
 
-    // Apply the staged BPM lock state to the track.
-    // This is deferred from slotBpmLockClicked so that it behaves
-    // like all other beat modifications — only committed on Apply.
-    m_pLoadedTrack->setBpmLocked(m_bpmLocked);
+    m_trackRecord.setBpmLocked(m_bpmLocked);
 
     // Update the cached track
     //
@@ -720,7 +716,6 @@ void DlgTrackInfo::slotBpmClear() {
     bpmTap->setEnabled(true);
 }
 
-// The actual lock change is applied in saveTrack().
 void DlgTrackInfo::slotBpmLockClicked() {
     if (!m_pLoadedTrack) {
         return;

@@ -737,9 +737,6 @@
           <property name="toolTip">
            <string>Lock or unlock the BPM and beatgrid for this track.</string>
           </property>
-          <property name="text">
-           <string>Lock BPM</string>
-          </property>
          </widget>
         </item>
        <item>
