@@ -84,11 +84,11 @@ Description:
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
                   <Template src="skins:Tango/controls/knob_textless.xml">
-                    <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+                    <SetVariable name="TooltipId">talkover_ducking_strength</SetVariable>
                     <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
                     <SetVariable name="Size">30f,30f</SetVariable>
                     <SetVariable name="group">[Mixer]</SetVariable>
-                    <SetVariable name="ConfigKey">talkover_duck_strength</SetVariable>
+                    <SetVariable name="ConfigKey">talkover_ducking_strength</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
                   </Template>
 

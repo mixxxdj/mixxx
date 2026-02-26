@@ -172,7 +172,7 @@ mc3000.headphone_gain = function(channel, control, value, status, group) {
     engine.setValue("[Mixer]", "headphone_gain", value/127*5);
 }
 mc3000.masterBalance = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "balance", (value-64)/64);
+    engine.setValue("[Mixer]", "balance", (value-64)/64);
 }
 mc3000.mainGain = function(channel, control, value, status, group) {
     engine.setValue("[Mixer]", "main_gain", value/127*5);

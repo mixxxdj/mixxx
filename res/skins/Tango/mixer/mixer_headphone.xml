@@ -60,7 +60,7 @@ Description:
                     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                     <KnobCenterYOffset>2.000</KnobCenterYOffset>
                     <Connection>
-                      <ConfigKey>[Mixer],headphones_gain</ConfigKey>
+                      <ConfigKey>[Mixer],headphone_gain</ConfigKey>
                     </Connection>
                   </KnobComposed>
                 </Children>
