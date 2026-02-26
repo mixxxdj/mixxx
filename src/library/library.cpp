@@ -341,12 +341,16 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
-    // Setup the sources view
+    pSidebarWidget->setup(m_pConfig);
     pSidebarWidget->setModel(m_pSidebarModel);
     connect(m_pSidebarModel,
             &SidebarModel::selectIndex,
             pSidebarWidget,
             &WLibrarySidebar::selectIndex);
+    connect(m_pSidebarModel,
+            &SidebarModel::saveScrollPosition,
+            pSidebarWidget,
+            &WLibrarySidebar::saveScrollPosition);
     connect(pSidebarWidget,
             &WLibrarySidebar::pressed,
             m_pSidebarModel,
@@ -601,6 +605,8 @@ void Library::slotCreateCrate() {
 }
 
 void Library::onSkinLoadFinished() {
+    // Try to restore last selection, fallback to default if not found
+    m_pSidebarModel->restoreLastSelection();
     // Enable the default selection when a new skin is loaded.
     m_pSidebarModel->activateDefaultSelection();
 }

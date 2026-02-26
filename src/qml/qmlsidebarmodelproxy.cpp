@@ -57,7 +57,7 @@ void QmlSidebarModelProxy::activate(const QModelIndex& index) {
 }
 
 QmlSidebarModelProxy::QmlSidebarModelProxy(QObject* parent)
-        : SidebarModel(parent),
+        : SidebarModel(nullptr, parent),
           m_tracklist(nullptr) {
 }
 QmlSidebarModelProxy::~QmlSidebarModelProxy() = default;
