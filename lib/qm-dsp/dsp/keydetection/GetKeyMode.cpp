@@ -23,28 +23,105 @@
 #include "maths/MathUtilities.h"
 #include "base/Pitch.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include <cstring>
 #include <cstdlib>
 
-static const int kBinsPerOctave = 36;
+namespace {
+
+constexpr int kBinsPerOctave = 36;
+const double kBandwithFactor = std::pow(2, 1.0 / kBinsPerOctave);
 
 // Chords profile
-static double MajProfile[kBinsPerOctave] = {
+double MajProfile[kBinsPerOctave] = {
     0.0384, 0.0629, 0.0258, 0.0121, 0.0146, 0.0106, 0.0364, 0.0610, 0.0267,
     0.0126, 0.0121, 0.0086, 0.0364, 0.0623, 0.0279, 0.0275, 0.0414, 0.0186, 
     0.0173, 0.0248, 0.0145, 0.0364, 0.0631, 0.0262, 0.0129, 0.0150, 0.0098,
     0.0312, 0.0521, 0.0235, 0.0129, 0.0142, 0.0095, 0.0289, 0.0478, 0.0239
 };
 
-static double MinProfile[kBinsPerOctave] = { 
+double MinProfile[kBinsPerOctave] = {
     0.0375, 0.0682, 0.0299, 0.0119, 0.0138, 0.0093, 0.0296, 0.0543, 0.0257,
     0.0292, 0.0519, 0.0246, 0.0159, 0.0234, 0.0135, 0.0291, 0.0544, 0.0248,
     0.0137, 0.0176, 0.0104, 0.0352, 0.0670, 0.0302, 0.0222, 0.0349, 0.0164,
     0.0174, 0.0297, 0.0166, 0.0222, 0.0401, 0.0202, 0.0175, 0.0270, 0.0146
 };
-//
+
+double safeLog(double x) {
+    return std::log(std::max(x, 1e-12));
+};
+
+double getGaussianPeak(double* pChromaBuffer, int peakBin) {
+    double y0s = 0.0;
+    double y1s = 0.0;
+    double y2s = 0.0;
+    for (int i = 0; i < kBinsPerOctave / 3; ++i) {
+        y0s += pChromaBuffer[i * 3];
+        y1s += pChromaBuffer[i * 3 + 1];
+        y2s += pChromaBuffer[i * 3 + 2];
+    }
+
+    // std::cout << "getGaussianPeak 1: " << y0s << " " << y1s << " " << y2s << " " << peakBin << std::endl;
+
+    int modPeak = peakBin  % 3; // 1 for 440 Hz
+    double y0;
+    double y1;
+    double y2;
+    if (y0s > y1s && y0s > y2s) {
+        y0 = y2s;
+        y1 = y0s;
+        y2 = y1s;
+        if (modPeak == 1) {
+            peakBin -= 1;
+        } else if (modPeak == 2) {
+            peakBin += 1;
+        }
+    } else if (y1s > y0s && y1s > y2s) {
+        y0 = y0s;
+        y1 = y1s;
+        y2 = y2s;
+        if (modPeak == 0) {
+            peakBin += 1;
+        } else if (modPeak == 2) {
+            peakBin -= 1;
+        }
+    } else {
+        y0 = y1s;
+        y1 = y2s;
+        y2 = y0s;
+        if (modPeak == 0) {
+            peakBin -= 1;
+        } else if (modPeak == 1) {
+            peakBin -= 1;
+        }
+    }
+
+    // std::cout << "getGaussianPeak 1: " << y0 << " " << y1 << " " << y2 << std::endl;
+
+    y0 = safeLog(y0 * kBandwithFactor);
+    y1 = safeLog(y1);
+    y2 = safeLog(y2 / kBandwithFactor);
+
+    // std::cout << "getGaussianPeak 2: " << y0 << " " << y1 << " " << y2 << std::endl;
+
+    double denom = (y0 - 2.0 * y1 + y2);
+    if (denom == 0) {
+        return peakBin;
+    }
+    double gausianPeak = peakBin + (y0 - y2) / (2 * denom);
+
+    // Handle under and overflow for [-0.5...35.5[
+    if (gausianPeak < -0.5) {
+        gausianPeak+= kBinsPerOctave;
+    } else if (gausianPeak >= kBinsPerOctave - 0.5) {
+        gausianPeak -= kBinsPerOctave;
+    }
+    return gausianPeak;
+}
+
+} // namespace
     
 
 //////////////////////////////////////////////////////////////////////
@@ -59,6 +136,7 @@ GetKeyMode::GetKeyMode(Config config) :
     m_decimatedBuffer(0),
     m_chromaBuffer(0),
     m_meanHPCP(0),
+    m_meanNormHPCP(0),
     m_majCorr(0),
     m_minCorr(0),
     m_medianFilterBuffer(0),
@@ -74,11 +152,12 @@ GetKeyMode::GetKeyMode(Config config) :
         chromaConfig.FS = 1;
     }
 
-    // Set C3 (= MIDI #48) as our base:
+    // Set C3 (= MIDI #48) 130,8 Hz as our base:
     // This implies that key = 1 => Cmaj, key = 12 => Bmaj, key = 13 => Cmin, etc.
     const float centsOffset = -12.0f / kBinsPerOctave * 100; // 3 bins per note, start with the first
     chromaConfig.min =
         Pitch::getFrequencyForPitch( 48, centsOffset, config.tuningFrequency );
+    // Set C7 (= MIDI #96) 2093 Hz
     chromaConfig.max =
         Pitch::getFrequencyForPitch( 96, centsOffset, config.tuningFrequency );
 
@@ -115,6 +194,7 @@ GetKeyMode::GetKeyMode(Config config) :
            sizeof(double) * kBinsPerOctave * m_chromaBufferSize);
     
     m_meanHPCP = new double[kBinsPerOctave];
+    m_meanNormHPCP = new double[kBinsPerOctave];
     
     m_majCorr = new double[kBinsPerOctave];
     m_minCorr = new double[kBinsPerOctave];
@@ -130,10 +210,10 @@ GetKeyMode::GetKeyMode(Config config) :
         m_minProfileNorm[i] = MinProfile[i] - mMin;
     }
 
-    m_medianFilterBuffer = new int[ m_medianWinSize ];
+    m_medianFilterBuffer = new double[ m_medianWinSize ];
     memset( m_medianFilterBuffer, 0, sizeof(int)*m_medianWinSize);
     
-    m_sortedBuffer = new int[ m_medianWinSize ];
+    m_sortedBuffer = new double[ m_medianWinSize ];
     memset( m_sortedBuffer, 0, sizeof(int)*m_medianWinSize);
     
     m_decimator = new Decimator( m_chromaFrameSize * m_decimationFactor,
@@ -150,6 +230,7 @@ GetKeyMode::~GetKeyMode()
     delete [] m_decimatedBuffer;
     delete [] m_chromaBuffer;
     delete [] m_meanHPCP;
+    delete [] m_meanNormHPCP;
     delete [] m_majCorr;
     delete [] m_minCorr;
     delete [] m_majProfileNorm;
@@ -190,18 +271,14 @@ double GetKeyMode::krumCorr( const double *pDataNorm, const double *pProfileNorm
     return retVal;
 }
 
-int GetKeyMode::process(double *pcmData)
+double GetKeyMode::process(double *pcmData)
 {
-    int key;
-    int j, k;
-
     m_decimator->process(pcmData, m_decimatedBuffer);
-
     m_chrPointer = m_chroma->process(m_decimatedBuffer);
 
     // populate hpcp values
     int cbidx;
-    for (j = 0;j < kBinsPerOctave;j++ ) {
+    for (int j = 0; j < kBinsPerOctave; j++ ) {
         cbidx = (m_bufferIndex * kBinsPerOctave) + j;
         m_chromaBuffer[ cbidx ] = m_chrPointer[j];
     }
@@ -217,9 +294,9 @@ int GetKeyMode::process(double *pcmData)
     }
 
     // calculate mean
-    for (k = 0; k < kBinsPerOctave; k++) {
+    for (int k = 0; k < kBinsPerOctave; k++) {
         double mnVal = 0.0;
-        for (j = 0; j < m_chromaBufferFilling; j++) {
+        for (int j = 0; j < m_chromaBufferFilling; j++) {
             mnVal += m_chromaBuffer[ k + (j * kBinsPerOctave) ];
         }
 
@@ -228,16 +305,16 @@ int GetKeyMode::process(double *pcmData)
 
     // Normalize for zero average
     double mHPCP = MathUtilities::mean(m_meanHPCP, kBinsPerOctave);
-    for (k = 0; k < kBinsPerOctave; k++) {
-        m_meanHPCP[k] -= mHPCP;
+    for (int k = 0; k < kBinsPerOctave; k++) {
+        m_meanNormHPCP[k] = m_meanHPCP[k] - mHPCP;
     }
 
-    for (k = 0; k < kBinsPerOctave; k++) {
+    for (int k = 0; k < kBinsPerOctave; k++) {
         // The cromagram and the major and minor profiles have the
         // center of C at bin 1. We want to have the correlation for C result
         // also at 1. To achieve this we have to shift by one:
-        m_majCorr[k] = krumCorr(m_meanHPCP, m_majProfileNorm, (int)k - 1, kBinsPerOctave);
-        m_minCorr[k] = krumCorr(m_meanHPCP, m_minProfileNorm, (int)k - 1, kBinsPerOctave);
+        m_majCorr[k] = krumCorr(m_meanNormHPCP, m_majProfileNorm, (int)k - 1, kBinsPerOctave);
+        m_minCorr[k] = krumCorr(m_meanNormHPCP, m_minProfileNorm, (int)k - 1, kBinsPerOctave);
     }
 
     // m_MajCorr[1] is C center  1 / 3 + 1 = 1
@@ -247,8 +324,18 @@ int GetKeyMode::process(double *pcmData)
     int maxMajBin = MathUtilities::getMax(m_majCorr, kBinsPerOctave, &maxMaj);
     double maxMin;
     int maxMinBin = MathUtilities::getMax(m_minCorr, kBinsPerOctave, &maxMin);
-    int maxBin = (maxMaj > maxMin) ? maxMajBin : (maxMinBin + kBinsPerOctave);
-    key = maxBin / 3 + 1;
+    double key;
+    if (maxMaj > maxMin) {
+        // we have a Major key, stored with an offset of 1 (0 = invalid)
+        double peak = getGaussianPeak(m_meanHPCP, maxMajBin);
+        key = (peak - 1) / 3 + 1;
+    } else {
+        // we have a minor key, stored with an offset of 13
+        double peak = getGaussianPeak(m_meanHPCP, maxMinBin);
+        key = (peak - 1) / 3 + 13;
+    }
+
+    // std::cout << "Key: " << key << std::endl;
 
     // Median filtering
 
@@ -257,33 +344,24 @@ int GetKeyMode::process(double *pcmData)
         m_medianBufferFilling = m_medianWinSize;
     }
 
-    // shift median buffer
-    for (k = 1; k < m_medianWinSize; k++ ) {
-        m_medianFilterBuffer[ k - 1 ] = m_medianFilterBuffer[ k ];
-    }
+    // rotate right
+    std::rotate(m_medianFilterBuffer, m_medianFilterBuffer + m_medianWinSize - 1, m_medianFilterBuffer + m_medianWinSize);
 
     // write new key value into median buffer
-    m_medianFilterBuffer[ m_medianWinSize - 1 ] = key;
+    m_medianFilterBuffer[0] = key;
 
     // copy median into sorting buffer, reversed
-    int ijx = 0;
-    for (k = 0; k < m_medianWinSize; k++) {
-        m_sortedBuffer[k] = m_medianFilterBuffer[m_medianWinSize - 1 - ijx];
-        ijx++;
-    }
+    std::copy(m_medianFilterBuffer, m_medianFilterBuffer + m_medianBufferFilling, m_sortedBuffer);
+    const std::size_t medianIndex = m_medianBufferFilling / 2;
 
-    qsort(m_sortedBuffer, m_medianBufferFilling, sizeof(int),
-          MathUtilities::compareInt);
+    std::nth_element(
+        m_sortedBuffer,
+        m_sortedBuffer + medianIndex,
+        m_sortedBuffer + m_medianBufferFilling
+    );
 
-    int sortlength = m_medianBufferFilling;
-    int midpoint = (int)ceil((double)sortlength / 2);
-
-    if (midpoint <= 0) {
-        midpoint = 1;
-    }
-
-    key = m_sortedBuffer[midpoint-1];
-
+    key = m_sortedBuffer[medianIndex];
+    // std::cout << "Key Filtered: " << key << std::endl;
     return key;
 }
 
