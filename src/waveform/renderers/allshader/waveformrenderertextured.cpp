@@ -215,8 +215,14 @@ void WaveformRendererTextured::createFrameBuffers() {
             static_cast<int>(
                     m_waveformRenderer->getHeight() * devicePixelRatio);
 
+    const QSize newSize(bufferWidth, bufferHeight);
+    if (m_framebuffer && m_framebufferSize == newSize) {
+        return;
+    }
+
     m_framebuffer = std::make_unique<QOpenGLFramebufferObject>(bufferWidth,
             bufferHeight);
+    m_framebufferSize = newSize;
 
     if (!m_framebuffer->isValid()) {
         qWarning() << "WaveformRendererTextured::createFrameBuffer - frame buffer not valid";
@@ -225,6 +231,8 @@ void WaveformRendererTextured::createFrameBuffers() {
 
 void WaveformRendererTextured::initializeGL() {
     m_textureRenderedWaveformCompletion = 0;
+    m_framebufferSize = QSize();
+    m_pendingResize = false;
 
     if (!m_frameShaderProgram) {
         m_frameShaderProgram = std::make_unique<QOpenGLShaderProgram>();
@@ -270,7 +278,7 @@ void WaveformRendererTextured::onSetTrack() {
 }
 
 void WaveformRendererTextured::resizeGL(int, int) {
-    createFrameBuffers();
+    m_pendingResize = true;
 }
 
 void WaveformRendererTextured::slotWaveformUpdated() {
@@ -283,6 +291,15 @@ void WaveformRendererTextured::slotWaveformUpdated() {
 }
 
 void WaveformRendererTextured::paintGL() {
+    if (m_pendingResize) {
+        // Skip FBO reallocation on the paintGL call immediately triggered by
+        // resizeGL (OpenGLWindow::resizeGL calls paintGL synchronously). The
+        // next vsync-driven paintGL will reallocate at the settled size.
+        m_pendingResize = false;
+    } else {
+        createFrameBuffers();
+    }
+
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
         return;
