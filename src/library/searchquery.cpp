@@ -3,6 +3,7 @@
 #include <QLocale>
 #include <QRegularExpression>
 
+#include "library/basetracktablemodel.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/crateschema.h"
@@ -900,8 +901,18 @@ DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
 
 QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
     // Try ISO format first (YYYY-MM-DD)
+    // This is used by the "New" filter of the Analyze feature
     QDate date = QDate::fromString(dateStr, Qt::ISODate);
+
     if (!date.isValid()) {
+        // Try user date format set in library preferences
+        const QString dateFormat = BaseTrackTableModel::dateFormat();
+        date = QDate::fromString(dateStr, dateFormat);
+    }
+
+    if (!date.isValid()) {
+        // Maybe custom user format is too esoteric, or user picked
+        // their locale's format.
         // Fall back to locale-specific short format
 #if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
         date = QLocale().toDate(dateStr, QLocale::ShortFormat);
@@ -917,7 +928,6 @@ QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
         date = date.addYears(100);
     }
 
-    // Return local date/time, don't convert to UTC, yet
     return QDateTime(date, QTime(0, 0)).toUTC();
 }
 
