@@ -3,10 +3,14 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  id-token: write
+  pull-requests: write
+
 jobs:
-  softfix:
-    name: Softfix action
-    if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/softfix')
+  command:
+    name: PR command
+    if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/')
     runs-on: ubuntu-latest
     steps:
       - name: Check if commenter is maintainer
@@ -39,8 +43,18 @@ jobs:
       #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
       #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
       - name: Softfix
-        if: steps.check-maintainer.outputs.result == 'true'
+        if: steps.check-maintainer.outputs.result == 'true' &&
+          github.event.issue.pull_request != '' &&
+          startsWith(github.event.comment.body, '/softfix')
         uses: daschuer/softfix@v4
         env:
           # PAT setup with content:write and pull_request:write
           GITHUB_TOKEN: ${{ secrets.MIXXX_SOFTFIX_PAT }}
+      # No need to use a custom PAT here as we don't require subsequent CI runs
+      - name: Check CLA
+        if: steps.check-maintainer.outputs.result == 'true' &&
+          github.event.issue.pull_request != '' &&
+          startsWith(github.event.comment.body, '/check-cla')
+        uses: ./.github/actions/cla-checked
+        with:
+          pr-number: ${{ github.event.issue.pull_request.number }}
