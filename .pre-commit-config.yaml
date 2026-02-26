@@ -81,7 +81,11 @@ repos:
           - "@eslint/js"
           - typescript-eslint
           - eslint-plugin-jsdoc@^v50.4.3
-          - eslint-plugin-diff@^2.0.3
+          # Since 2.1.1, there is a breaking change that requires to fetch the PR base ref
+          # ("use fetched origin ref for guessed branch", https://github.com/paleite/eslint-plugin-diff/commit/e1fd847240c51a39099fffd2e4f297b23bad95c1).
+          # instead of using the branching ref as pre-commit allows (HEAD^1).
+          # We stick to this version to circumvent unnecessary deep repo fetch.
+          - eslint-plugin-diff@2.1.0
         exclude: ^res/translations/.*\.ts$
   - repo: local
     hooks:
