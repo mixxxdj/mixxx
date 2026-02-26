@@ -71,7 +71,7 @@ TEST_F(HeaderViewStateTest, BadHeaderState) {
 }
 
 TEST_F(HeaderViewStateTest, EmptyHeaderState) {
-    HeaderViewState view_state(mixxx::library::HeaderViewState());
+    HeaderViewState view_state{mixxx::library::HeaderViewState()};
     ASSERT_FALSE(view_state.healthy());
     QString saved = view_state.saveState();
     HeaderViewState loaded(saved);
@@ -121,6 +121,6 @@ TEST_F(HeaderViewStateTest, SortIndicatorNotShownRoundTrip) {
 }
 
 TEST_F(HeaderViewStateTest, EmptyStringDeserialization) {
-    HeaderViewState view_state(QString());
+    HeaderViewState view_state{QString()};
     ASSERT_FALSE(view_state.healthy());
 }
