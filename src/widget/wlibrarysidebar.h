@@ -16,6 +16,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     explicit WLibrarySidebar(QWidget* parent = nullptr);
 
     void contextMenuEvent(QContextMenuEvent* pEvent) override;
+    void startDrag(Qt::DropActions actions) override;
     void dragMoveEvent(QDragMoveEvent* pEvent) override;
     void dragEnterEvent(QDragEnterEvent* pEvent) override;
     void dragLeaveEvent(QDragLeaveEvent* pEvent) override;

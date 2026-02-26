@@ -1,6 +1,8 @@
 #include "widget/wlibrarysidebar.h"
 
 #include <QHeaderView>
+#include <QPainter>
+#include <QStyleOption>
 #include <QUrl>
 #include <QtDebug>
 
@@ -20,7 +22,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
     //Drag and drop setup
-    setDragEnabled(false);
+    setDragEnabled(true);
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
     setAcceptDrops(true);
@@ -42,6 +44,69 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* pEvent) {
     pEvent->accept();
     emit rightClicked(pEvent->globalPos(), clickedIndex);
     //}
+}
+
+void WLibrarySidebar::startDrag(Qt::DropActions actions) {
+    // Both with startDrag() and/or mimeData() Qt takes care of initiating the
+    // drag correctly the native way, ie. no need for
+    // DragAndDropHelper::mouseMoveInitiatesDrag()
+    // Note: we could also use SidebarModel::mimeData() to populate the mimedata
+    // but then we couldn't style the drag cursor, see below.
+    const QModelIndexList selected = selectedIndexes();
+    VERIFY_OR_DEBUG_ASSERT(selected.size() == 1) {
+        return;
+    }
+    SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
+        return;
+    }
+
+    const QModelIndex index = selected.first();
+
+    // Collect urls from the LibraryFeature item, empty for root items and
+    // special nodes like Quick Links
+    const QList<QUrl> urls = pSidebarModel->collectTrackUrls(index);
+    // Note: if we'd return here if urls are empty, which would essentially
+    // prohibit dragging root items, a drag move would only move the sidebar
+    // selection -- BUT that wouldn't activate the newly selected item.
+    // So, for consistent and predictable drag UI/UX, we just continue, and let
+    // dragEnterEvent(), dragMoveEvent() and dropEvent() ignore the events.
+
+    QDrag* pDrag = new QDrag(this);
+    auto mimeData = std::make_unique<QMimeData>();
+    mimeData->setUrls(urls);
+    pDrag->setMimeData(mimeData.release());
+
+    // Note: even though it's no-op, we don't prohibit dragging root items
+    // via item flags (SidebarModel::flags) in order to get a consistent DnD UX.
+    // And for child items only we also attach a pixmap to the cursor that looks
+    // like the item, with the display name truncated to 20 characters so the
+    // cursor is not too wide.
+    if (index.internalPointer() != pSidebarModel) { // child items
+        QString displayName = index.data(Qt::DisplayRole).toString();
+        displayName.truncate(20);
+        QFontMetrics fm(font());
+        const QSize txtSize = fm.size(0, displayName);
+        const QSize frameSize = txtSize + QSize(6, 6);
+
+        QPixmap textPx(frameSize);
+        textPx.fill(Qt::transparent);
+
+        QPainter painter(&textPx);
+        painter.setRenderHint(QPainter::Antialiasing);
+        // Draw background and text with the current palette
+        QStyleOption option;
+        option.initFrom(this);
+        painter.setOpacity(0.5);
+        painter.setBrush(option.palette.highlight());
+        painter.drawRect(0, 0, frameSize.width(), frameSize.height());
+        painter.setPen(option.palette.highlightedText().color());
+        painter.setOpacity(0.9);
+        painter.drawText(QRect(3, 3, txtSize.width(), txtSize.height()), displayName);
+        pDrag->setPixmap(textPx);
+    }
+
+    pDrag->exec(actions);
 }
 
 /// Drag enter event, happens when a dragged item enters the track sources view
@@ -105,13 +170,6 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     }
 
     const QList<QUrl> urls = pEvent->mimeData()->urls();
-    // Drag and drop within this widget
-    if ((pEvent->source() == this) && (pEvent->possibleActions() & Qt::MoveAction)) {
-        // Do nothing.
-        m_lastDragMoveAccepted = false;
-        pEvent->ignore();
-        return;
-    }
 
     SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
     VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
@@ -153,14 +211,9 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
         pEvent->ignore();
         return;
     }
-    // Drag and drop within this widget
-    if ((pEvent->source() == this) && (pEvent->possibleActions() & Qt::MoveAction)) {
-        // Do nothing.
-        pEvent->ignore();
-        return;
-    }
-    // Drag-and-drop from an external application (eg. a file manager) or the
-    // track table widget onto the sidebar.
+    // Drag and drop within this widget, from an external application
+    // (eg. a file manager) or from the track table widget.
+
     // Reset the selected items (if you had anything highlighted, it clears it)
     // this->selectionModel()->clear();
     SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
@@ -178,7 +231,7 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
     // pEvent->source() will return NULL if something is dropped from
     // a different application
     const QList<QUrl> urls = pEvent->mimeData()->urls();
-    if (pSidebarModel->dropAccept(destIndex, urls, pEvent->source())) {
+    if (pSidebarModel->dropAccept(destIndex, urls)) {
         pEvent->acceptProposedAction();
     } else {
         pEvent->ignore();

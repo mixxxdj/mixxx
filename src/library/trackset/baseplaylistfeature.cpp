@@ -190,6 +190,41 @@ void BasePlaylistFeature::connectPlaylistDAO() {
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 }
 
+QList<QUrl> BasePlaylistFeature::collectTrackUrls(const QModelIndex& index) {
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (item == nullptr) {
+        return {};
+    }
+
+    bool ok = false;
+    int playlistId = item->getData().toInt(&ok);
+    if (!ok || playlistId == kInvalidPlaylistId) {
+        return {};
+    }
+
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
+                    m_pLibrary->trackCollectionManager(),
+                    "mixxx.db.model.playlist_drag");
+
+    pPlaylistTableModel->selectPlaylist(playlistId);
+    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
+                                         ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
+    pPlaylistTableModel->select();
+
+    int rows = pPlaylistTableModel->rowCount();
+    QList<QUrl> trackUrls;
+    QModelIndexList indices;
+    indices.reserve(rows);
+    for (int i = 0; i < rows; ++i) {
+        const QModelIndex trackIndex = pPlaylistTableModel->index(i, 0);
+        indices.push_back(trackIndex);
+        trackUrls.push_back(pPlaylistTableModel->getTrackUrl(trackIndex));
+    }
+    return trackUrls;
+}
+
 int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
