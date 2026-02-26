@@ -62,6 +62,7 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_pConfig(pConfig),
           m_paInitialized(false),
           m_config(this),
+          m_prevAPIWasPulse(false),
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0),
@@ -191,7 +192,17 @@ void SoundManager::closeDevices(
             return;
         }
         // Sync mode, legacy - we sleep the current thread for 5 seconds
-        QThread::sleep(kSleepSecondsAfterClosingDevice);
+        // NOTE(ronso0) Is apparently only required for Pulse.
+        // Apparently the PulseAudio API string may vary across PortAudio versions,
+        // eg. "PulseAudio", "ALSA (via PulseAudio)", so we simply test if the
+        // previous API string contains "pulse"
+        // See discussion in https://github.com/mixxxdj/mixxx/issues/14290
+        // And original Pulse bugs
+        // https://github.com/mixxxdj/mixxx/issues/770
+        // https://github.com/mixxxdj/mixxx/issues/8284
+        if (!m_prevAPIWasPulse) {
+            QThread::sleep(kSleepSecondsAfterClosingDevice);
+        }
     } else if (!closed)
 #endif
     {
@@ -737,6 +748,8 @@ void SoundManager::closeActiveConfig(bool async) {
 
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
+    const QString prevAPIStr = m_config.getAPI();
+    m_prevAPIWasPulse = prevAPIStr.contains(QStringLiteral("pulse"), Qt::CaseInsensitive);
     m_config = config;
     checkConfig();
 
