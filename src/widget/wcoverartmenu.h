@@ -6,6 +6,8 @@
 #include "library/export/coverartcopyworker.h"
 
 class QAction;
+class QLabel;
+class QWidgetAction;
 
 // This class implements a context-menu with all CoverArt user actions. Callers
 // must call setCoverArt before calling exec or popup. This class does
@@ -15,7 +17,7 @@ class QAction;
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
-    explicit WCoverArtMenu(QWidget *parent = nullptr);
+    explicit WCoverArtMenu(QWidget* parent = nullptr);
     ~WCoverArtMenu() override;
 
     void setCoverArt(const CoverInfo& coverInfo);
@@ -33,10 +35,17 @@ class WCoverArtMenu : public QMenu {
     void slotCoverArtCopyFailed(const QString& errorMessage);
     void slotCoverArtUpdated(const CoverInfoRelative& coverInfo);
     void slotFinished();
+    void slotCoverFound(const QObject* requester,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap);
 
   private:
     void createActions();
 
+    static constexpr int kCoverPreviewSize = 96;
+
+    QWidgetAction* m_pCoverPreviewAction;
+    QLabel* m_pCoverLabel;
     QAction* m_pChange;
     QAction* m_pReload;
     QAction* m_pUnset;
