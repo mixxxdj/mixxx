@@ -71,8 +71,6 @@ DlgPrefWaveform::DlgPrefWaveform(
         }
         waveformTypeComboBox->addItem(types[i].getDisplayName(), types[i].getType());
     }
-    // Sort the combobox items alphabetically
-    waveformTypeComboBox->model()->sort(0);
 
     // Populate zoom options.
     for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
