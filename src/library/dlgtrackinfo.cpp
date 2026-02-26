@@ -44,7 +44,6 @@ DlgTrackInfo::DlgTrackInfo(
         : QDialog(nullptr),
           m_pUserSettings(std::move(pUserSettings)),
           m_pTrackModel(trackModel),
-          m_bpmLocked(false),
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
@@ -474,17 +473,16 @@ void DlgTrackInfo::updateSpinBpmFromBeats() {
 void DlgTrackInfo::updateBpmEditControls() {
     bpmLock->setText(m_bpmLocked ? tr("Unlock BPM") : tr("Lock BPM"));
 
-    const bool editingEnabled = !m_bpmLocked;
-    bpmConst->setEnabled(editingEnabled && m_trackHasBeatMap);
-    spinBpm->setEnabled(editingEnabled && !m_trackHasBeatMap);
-    bpmTap->setEnabled(editingEnabled && !m_trackHasBeatMap);
-    bpmDouble->setEnabled(editingEnabled);
-    bpmHalve->setEnabled(editingEnabled);
-    bpmTwoThirds->setEnabled(editingEnabled);
-    bpmThreeFourth->setEnabled(editingEnabled);
-    bpmFourThirds->setEnabled(editingEnabled);
-    bpmThreeHalves->setEnabled(editingEnabled);
-    bpmClear->setEnabled(editingEnabled);
+    bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
+    spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+    bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+    bpmDouble->setEnabled(!m_bpmLocked);
+    bpmHalve->setEnabled(!m_bpmLocked);
+    bpmTwoThirds->setEnabled(!m_bpmLocked);
+    bpmThreeFourth->setEnabled(!m_bpmLocked);
+    bpmFourThirds->setEnabled(!m_bpmLocked);
+    bpmThreeHalves->setEnabled(!m_bpmLocked);
+    bpmClear->setEnabled(!m_bpmLocked);
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
