@@ -73,6 +73,23 @@ DlgPrefWaveform::DlgPrefWaveform(
     }
     // Sort the combobox items alphabetically
     waveformTypeComboBox->model()->sort(0);
+    const auto moveWaveformTypeToIndex = [&](WaveformWidgetType::Type type, int targetIndex) {
+        const int idx = waveformTypeComboBox->findData(type);
+        if (idx < 0 || idx == targetIndex) {
+            return;
+        }
+        const QString name = waveformTypeComboBox->itemText(idx);
+        const QVariant data = waveformTypeComboBox->itemData(idx);
+        waveformTypeComboBox->removeItem(idx);
+        waveformTypeComboBox->insertItem(targetIndex, name, data);
+    };
+
+    moveWaveformTypeToIndex(WaveformWidgetType::Simple, 0);
+    moveWaveformTypeToIndex(WaveformWidgetType::Filtered, 1);
+    moveWaveformTypeToIndex(WaveformWidgetType::HSV, 2);
+    moveWaveformTypeToIndex(WaveformWidgetType::RGB, 3);
+    moveWaveformTypeToIndex(WaveformWidgetType::Stacked, 4);
+    moveWaveformTypeToIndex(WaveformWidgetType::VSyncTest, 5);
 
     // Populate zoom options.
     for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
