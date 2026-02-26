@@ -7,6 +7,7 @@
 namespace {
 
 constexpr CSAMPLE kDuckThreshold = 0.1f;
+const QString kLegacyGroup = QStringLiteral("[Master]");
 
 } // namespace
 
@@ -22,8 +23,7 @@ EngineTalkoverDucking::EngineTalkoverDucking(
 
     m_pDuckStrength = new ControlPotmeter(
             ConfigKey(m_group, QStringLiteral("talkover_ducking_strength")), 0.0, 1.0);
-    m_pDuckStrength->addAlias(ConfigKey(
-            QStringLiteral("[Master]"), QStringLiteral("duckStrength")));
+    m_pDuckStrength->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("duckStrength")));
     m_pDuckStrength->set(
             m_pConfig->getValue<double>(
                     ConfigKey(m_group, QStringLiteral("duckStrength")), 90) /
@@ -44,7 +44,7 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pTalkoverDucking = new ControlPushButton(
             ConfigKey(m_group, QStringLiteral("talkover_ducking_mode")));
     m_pTalkoverDucking->addAlias(
-            ConfigKey(QStringLiteral("[Master]"), QStringLiteral("talkoverDucking")));
+            ConfigKey(kLegacyGroup, QStringLiteral("talkoverDucking")));
     m_pTalkoverDucking->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pTalkoverDucking->set(
             m_pConfig->getValue<double>(
