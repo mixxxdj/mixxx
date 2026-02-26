@@ -28,8 +28,8 @@ const ConfigKey kLastSelectedChildConfigKey = ConfigKey("[Library]", "last_selec
 SidebarModel::SidebarModel(UserSettingsPointer pConfig, QObject* parent)
         : QAbstractItemModel(parent),
           m_iDefaultSelectedIndex(0),
-          m_pConfig(pConfig),
           m_pressedUntilClickedTimer(new QTimer(this)),
+          m_pConfig(pConfig),
           m_saveTimer(new QTimer(this)) {
     m_pressedUntilClickedTimer->setSingleShot(true);
     connect(m_pressedUntilClickedTimer,
@@ -623,4 +623,120 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
         }
     }
     emit selectIndex(ind, scrollTo);
+}
+
+void SidebarModel::scheduleSelectionSave(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return;
+    }
+    m_pendingSelection = index;
+    m_saveTimer->stop();
+    m_saveTimer->start(3000);
+}
+
+void SidebarModel::performSave() {
+    if (m_pendingSelection.isValid()) {
+        saveSelectionToConfig(m_pendingSelection);
+        emit saveScrollPosition();
+    }
+}
+
+void SidebarModel::saveSelectionToConfig(const QModelIndex& index) {
+    if (!index.isValid() || !m_pConfig) {
+        return;
+    }
+
+    TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+        return;
+    }
+
+    LibraryFeature* pFeature = pTreeItem->feature();
+    VERIFY_OR_DEBUG_ASSERT(pFeature) {
+        return;
+    }
+
+    // Save feature icon name for robust matching
+    QString featureIconName = pFeature->iconName();
+    m_pConfig->setValue(kLastSelectedFeatureConfigKey, featureIconName);
+
+    // Save child data if it's a child item
+    if (index.parent().isValid()) {
+        QVariant childData = index.data(DataRole);
+        if (childData.isValid()) {
+            m_pConfig->set(kLastSelectedChildConfigKey, ConfigValue(childData.toString()));
+        } else {
+            m_pConfig->set(kLastSelectedChildConfigKey, ConfigValue());
+        }
+    } else {
+        // Root feature selected - clear child data
+        m_pConfig->set(kLastSelectedChildConfigKey, ConfigValue());
+    }
+}
+
+void SidebarModel::restoreLastSelection() {
+    if (!m_pConfig) {
+        return;
+    }
+
+    QString savedFeatureIcon = m_pConfig->getValue(kLastSelectedFeatureConfigKey);
+    if (savedFeatureIcon.isEmpty()) {
+        return;
+    }
+
+    QString savedChildDataStr = m_pConfig->getValue(kLastSelectedChildConfigKey);
+    QVariant savedChildData;
+    if (!savedChildDataStr.isEmpty()) {
+        // Try to convert to int first (for playlist/crate IDs), fallback to string
+        bool ok;
+        int intValue = savedChildDataStr.toInt(&ok);
+        if (ok) {
+            savedChildData = intValue;
+        } else {
+            savedChildData = savedChildDataStr;
+        }
+    }
+
+    // Find the feature by icon name
+    LibraryFeature* pTargetFeature = nullptr;
+    int featureIndex = -1;
+    for (int i = 0; i < m_sFeatures.size(); ++i) {
+        if (m_sFeatures[i]->iconName() == savedFeatureIcon) {
+            pTargetFeature = m_sFeatures[i];
+            featureIndex = i;
+            break;
+        }
+    }
+
+    if (!pTargetFeature) {
+        return;
+    }
+
+    QModelIndex targetIndex = index(featureIndex, 0);
+    
+    // If we have child data, try to find the matching child
+    if (savedChildData.isValid() && pTargetFeature->sidebarModel()) {
+        QAbstractItemModel* pChildModel = pTargetFeature->sidebarModel();
+        const QModelIndexList matches = pChildModel->match(
+                pChildModel->index(0, 0),
+                DataRole,
+                savedChildData,
+                1,
+                Qt::MatchExactly);
+        
+        VERIFY_OR_DEBUG_ASSERT(!matches.isEmpty() && matches.first().isValid()) {
+            // Child not found, select feature root
+            emit selectIndex(targetIndex, true);
+            return;
+        }
+        
+        // Translate child index to sidebar index
+        QModelIndex childIndex = matches.first();
+        TreeItem* pTreeItem = static_cast<TreeItem*>(childIndex.internalPointer());
+        if (pTreeItem) {
+            targetIndex = createIndex(childIndex.row(), childIndex.column(), pTreeItem);
+        }
+    }
+
+    emit selectIndex(targetIndex, true);
 }
