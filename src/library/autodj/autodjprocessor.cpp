@@ -55,6 +55,7 @@ DeckAttributes::DeckAttributes(int index,
     m_outroStartPos.connectValueChanged(this, &DeckAttributes::slotOutroStartPositionChanged);
     m_outroEndPos.connectValueChanged(this, &DeckAttributes::slotOutroEndPositionChanged);
     m_rateRatio.connectValueChanged(this, &DeckAttributes::slotRateChanged);
+    m_orientation.connectValueChanged(this, &DeckAttributes::slotOrientationChanged);
 }
 
 DeckAttributes::~DeckAttributes() {
@@ -100,6 +101,11 @@ void DeckAttributes::slotPlayerEmpty() {
 void DeckAttributes::slotRateChanged(double v) {
     Q_UNUSED(v);
     emit rateChanged(this);
+}
+
+void DeckAttributes::slotOrientationChanged(double v) {
+    Q_UNUSED(v);
+    emit orientationChanged(this);
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
@@ -532,6 +538,16 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &DeckAttributes::rateChanged,
                 this,
                 &AutoDJProcessor::playerRateChanged);
+
+        connect(pLeftDeck,
+                &DeckAttributes::orientationChanged,
+                this,
+                &AutoDJProcessor::playerOrientationChanged);
+        connect(pRightDeck,
+                &DeckAttributes::orientationChanged,
+                this,
+                &AutoDJProcessor::playerOrientationChanged);
+
         connect(m_pAutoDJTableModel,
                 &PlaylistTableModel::firstTrackChanged,
                 this,
@@ -1675,6 +1691,19 @@ void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
         return;
     }
     calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
+}
+
+void AutoDJProcessor::playerOrientationChanged(DeckAttributes* pAttributes) {
+    if constexpr (sDebug) {
+        qDebug() << this << "playerOrientationChanged" << pAttributes->group;
+    }
+
+    if (m_eState != ADJ_DISABLED) {
+        // Disable and Enable auto DJ.  We will likely fail to enable auto DJ
+        // but that will pop up an error to explain the situation to the user.
+        toggleAutoDJ(false);
+        toggleAutoDJ(true);
+    }
 }
 
 void AutoDJProcessor::playlistFirstTrackChanged() {
