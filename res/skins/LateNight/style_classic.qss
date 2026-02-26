@@ -88,11 +88,20 @@ WLibrary,
 WTrackProperty:hover,
 WTrackProperty:hover[selected="false"],
 WTrackProperty:hover[selected="true"],
-#BpmTapContainer:hover {
+#BpmTapContainer:hover,
+#BpmTapSelectButton,
+#BpmEditSelectButton {
   background-color: #151517;
   border-radius: 1px;
   }
-  #BpmTap[pressed="true"] {
+  #BpmTapSelectButton {
+    image: url(skins:LateNight/classic/buttons/btn__bpm_select_tap.svg) no-repeat center center;
+  }
+  #BpmEditSelectButton {
+    border-left: 0px;
+    image: url(skins:LateNight/classic/buttons/btn__bpm_select_edit.svg) no-repeat left top;
+  }
+  #BpmTapButton[pressed="true"] {
    border: 1px solid #7d350d;
   }
 
@@ -287,16 +296,14 @@ WSearchLineEdit,
   }
 
 WBeatSpinBox,
-#spinBoxTransition  {
+WBpmEditor QDoubleSpinBox,
+#spinBoxTransition,
+#spinBoxRecentDays {
   selection-color: #000;
   selection-background-color: #d2d2d2;
   }
-  WBeatSpinBox:focus  {
-    selection-color: #000;
-    selection-background-color: #d2d2d2;
-  }
   WBeatSpinBox:focus,
-  #spinBoxTransition:focus {
+  WBpmEditor QDoubleSpinBox:focus  {
     background-color: #000;
   }
 
@@ -604,7 +611,7 @@ WLibrary {
 /************** RateControls ********************************************/
 
 #RateContainer {
-  padding: 4px 0px 0px 0px;
+  padding: 2px 0px 0px 0px;
   }
 
   #RateText {
@@ -612,8 +619,8 @@ WLibrary {
     margin: 0px;
   }
 
-  #SyncBox {
-    margin: 2px 1px 1px 2px;
+  #BpmTapSyncContainer {
+    margin: 0px 2px 1px 2px;
   }
 
   #RateControls {
@@ -627,34 +634,50 @@ WLibrary {
 
 /********************** Loop Controls / AutoDJ spinbox ************************/
 
+WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
+#spinBoxTransition,
+#spinBoxRecentDays {
+  background-color: #0f0f0f;
+  }
   WBeatSpinBox {
     border-width: 2px 19px 2px 2px;
     border-image: url(skins:LateNight/classic/buttons/spinbox_elevated_border.svg) 2 19 2 2;
     margin: 1px 0px 0px 1px;
     padding: 0px -17px 2px 1px;
-    background-color: #0f0f0f;
     }
     WBeatSpinBox:focus {
       border-image: url(skins:LateNight/classic/buttons/spinbox_elevated_border_focus.svg) 2 19 2 2;
     }
 
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     border-width: 3px 19px 2px 3px;
     border-image: url(skins:LateNight/classic/buttons/spinbox_embedded_border.svg) 3 19 2 3;
-    width: 24px;
     height: 19px;
     padding: 0px -15px 0px 0px;
     margin: 0px 2px 3px 5px;
-    background-color: #0f0f0f;
     }
-    #spinBoxTransition:focus {
+  #spinBoxTransition {
+    width: 24px;
+    }
+  #spinBoxRecentDays {
+    width: 45px;
+    }
+    #spinBoxTransition:focus,
+    #spinBoxRecentDays:focus {
       border-image: url(skins:LateNight/classic/buttons/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
+    }
+    #spinBoxRecentDays:disabled {
+      color: #494949;
     }
 
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   #spinBoxTransition::up-button,
-  #spinBoxTransition::down-button {
+  #spinBoxTransition::down-button,
+  #spinBoxRecentDays::up-button,
+  #spinBoxRecentDays::down-button {
     subcontrol-origin: content;
     position: relative;
     /* as with spinbox: border is added to size. */
@@ -662,37 +685,93 @@ WLibrary {
     padding: 0px;
     }
     WBeatSpinBox::up-button,
-    #spinBoxTransition::up-button {
+    #spinBoxTransition::up-button,
+    #spinBoxRecentDays::up-button {
       height: 11px;
       subcontrol-position: top right;
       image: url(skins:LateNight/classic/buttons/spinbox_up.svg) no-repeat;
       }
       WBeatSpinBox::up-button:pressed,
-      #spinBoxTransition::up-button:pressed {
+      #spinBoxTransition::up-button:pressed,
+      #spinBoxRecentDays::up-button:pressed {
         image: url(skins:LateNight/classic/buttons/spinbox_up_pressed.svg) no-repeat;
       }
       WBeatSpinBox::up-button {
         margin: -1px 0px 0px 0px;
         }
-      #spinBoxTransition::up-button {
+      #spinBoxTransition::up-button,
+      #spinBoxRecentDays::up-button {
         margin: -2px -3px 0px 0px;
         }
     WBeatSpinBox::down-button,
-    #spinBoxTransition::down-button {
+    #spinBoxTransition::down-button,
+    #spinBoxRecentDays::down-button {
       height: 11px;
       subcontrol-position: bottom right;
       image: url(skins:LateNight/classic/buttons/spinbox_down.svg) no-repeat;
       }
       WBeatSpinBox::down-button:pressed,
-      #spinBoxTransition::down-button:pressed {
+      #spinBoxTransition::down-button:pressed,
+      #spinBoxRecentDays::down-button:pressed {
         image: url(skins:LateNight/classic/buttons/spinbox_down_pressed.svg) no-repeat;
       }
       WBeatSpinBox::down-button {
         margin: 0px 0px -2px 0px;
         }
-      #spinBoxTransition::down-button {
+      #spinBoxTransition::down-button,
+      #spinBoxRecentDays::down-button {
         margin: 0px -3px -1px 0px;
         }
+
+
+WBpmEditor {
+  padding: 0px;
+  margin: 0px;
+  border: none;
+}
+WBpmEditor QDoubleSpinBox,
+WBpmEditor QDoubleSpinBox:focus {
+  border-image: none;
+  border: 1px solid #d08e00;
+  border-radius: 2px;
+  margin: 0px;
+  /* top/bottom padding is required to make room for the buttons! */
+  padding: 2px 0px 16px 0px;
+  font-size: 14px/14px;
+}
+WBpmEditor QDoubleSpinBox QLineEdit {
+  text-align: center;
+}
+
+WBpmEditor QDoubleSpinBox::up-button,
+WBpmEditor QDoubleSpinBox::down-button {
+  subcontrol-origin: padding;
+  subcontrol-position: bottom;
+  position: absolute;
+  height: 16px;
+  width: 30px;
+  background-color: #171719;
+}
+WBpmEditor QDoubleSpinBox::up-button {
+  image: url(skins:LateNight/classic/buttons/btn__bpm_spinbox_plus.svg) no-repeat;
+  bottom: 0px;
+  left: 30px;
+  right: 0px;
+  }
+  WBpmEditor QDoubleSpinBox::up-button:pressed {
+    image: url(skins:LateNight/classic/buttons/btn__bpm_spinbox_plus_pressed.svg) no-repeat;
+  }
+WBpmEditor QDoubleSpinBox::down-button {
+  bottom: 0px;
+  left: 0px;
+  right: 30px;
+  image: url(skins:LateNight/classic/buttons/btn__bpm_spinbox_minus.svg) no-repeat;
+  }
+  WBpmEditor QDoubleSpinBox::down-button:pressed {
+    image: url(skins:LateNight/classic/buttons/btn__bpm_spinbox_minus_pressed.svg) no-repeat;
+  }
+
+
 
 
 
@@ -1214,7 +1293,10 @@ WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox:!editable,
 #fadeModeCombobox:!editable:on,
 #fadeModeCombobox QAbstractScrollArea,
-WBeatSpinBox, #spinBoxTransition,
+WBeatSpinBox,
+#spinBoxTransition,
+#spinBoxRecentDays,
+WBpmEditor QDoubleSpinBox,
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton {
   color: #888;
@@ -1640,7 +1722,6 @@ QPushButton#pushButtonAnalyze:checked {
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
 WPushButton#PlaySampler[displayValue="0"],
-WPushButton#BpmTap[displayValue="0"],
 WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
@@ -2116,8 +2197,28 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton,
-#CueSavedLoopButton {
+#CueDeleteButton {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__delete.svg);
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  It's a tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  qproperty-iconSize: 18px;
+  /* has no effect
+  padding: 0px; */
+}
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
+}
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+
+#CueStandardButton, #CueSavedLoopButton, #CueSavedJumpButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   It's a tall button, about the same height as cue number + label edit box */
@@ -2125,17 +2226,42 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   height: 42px;
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  /* has no effect
+  padding: 0px; */
 }
 #CueDeleteButton {
   image: url(skins:LateNight/classic/buttons/btn__delete.svg);
 }
+#CueStandardButton {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__beats_hotcues_later.svg);
+}
 #CueSavedLoopButton {
   image: url(skins:LateNight/classic/buttons/btn__loop.svg);
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__loop.svg);
 }
-#CueDeleteButton:pressed,
+#CueSavedJumpButton[direction="impossible"], #CueSavedJumpButton[direction="forward"] {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__beatjump_right.svg);
+}
+#CueSavedJumpButton[direction="backward"] {
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__beatjump_left.svg);
+}
+
 #CueSavedLoopButton:pressed,
 #CueSavedLoopButton:checked {
   background-color: #db0000;
+  outline: none;
+  image: url(skins:LateNight/classic/buttons/btn__loop_active.svg);
+}
+
+#CueSavedJumpButton:pressed, WCueMenuPopup #CueSavedJumpButton:checked,
+  #CueStandardButton:pressed, WCueMenuPopup #CueStandardButton:checked {
+  background-color: #db0000;
+  outline: none;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
   outline: none;
 }
 
@@ -2254,13 +2380,23 @@ WLibrary QPlainTextEdit,
 #LibraryBPMSpinBox,
 /* Track label inline editor in decks and samplers */
 WTrackPropertyEditor,
-WTrackProperty[selected="true"] {
+WTrackProperty[selected="true"],
+#BpmTapSelectButton, #BpmEditSelectButton {
   color: #ddd;
   background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
   border: 1px solid #5E4507;
 }
+#BpmTapSelectButton {
+  border-right: 0px;
+}
+#BpmTapButton {
+  border: 1px solid #5E4507;
+  }
+  #BpmTapButton:pressed {
+    border: 1px solid #d08e00;
+  }
 
 /* Entire BPM cell */
 /* Lock icon at the left */

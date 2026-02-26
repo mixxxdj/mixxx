@@ -169,6 +169,34 @@ void WMainMenuBar::initialize() {
 
     pLibraryMenu->addSeparator();
 
+    QString searchHereTitle = tr("Search in Current View...");
+    QString searchHereText = tr("Search for tracks in the current library view");
+    auto* pSearchHere = new QAction(searchHereTitle, this);
+    pSearchHere->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_SearchInCurrentView"),
+            tr("Ctrl+f"))));
+    pSearchHere->setShortcutContext(Qt::ApplicationShortcut);
+    pSearchHere->setStatusTip(searchHereText);
+    pSearchHere->setWhatsThis(buildWhatsThis(searchHereTitle, searchHereText));
+    connect(pSearchHere, &QAction::triggered, this, &WMainMenuBar::searchInCurrentView);
+    pLibraryMenu->addAction(pSearchHere);
+
+    QString searchAllTitle = tr("Search in Tracks Library...");
+    QString searchAllText =
+            tr("Search in the internal track collection under \"Tracks\" in "
+               "the library");
+    auto* pSearchAll = new QAction(searchAllTitle, this);
+    pSearchAll->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_SearchInAllTracks"),
+            tr("Ctrl+Shift+F"))));
+    pSearchAll->setShortcutContext(Qt::ApplicationShortcut);
+    pSearchAll->setStatusTip(searchAllText);
+    pSearchAll->setWhatsThis(buildWhatsThis(searchAllText, searchAllText));
+    connect(pSearchAll, &QAction::triggered, this, &WMainMenuBar::searchInAllTracks);
+    pLibraryMenu->addAction(pSearchAll);
+
+    pLibraryMenu->addSeparator();
+
     QString createPlaylistTitle = tr("Create &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     auto* pLibraryCreatePlaylist = new QAction(createPlaylistTitle, this);
@@ -346,6 +374,20 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary,
             ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")));
     pViewMenu->addAction(pViewMaximizeLibrary);
+
+    pViewMenu->addSeparator();
+
+    QString autoDJTitle = tr("Show Auto DJ");
+    QString autoDJText = tr("Switch to the Auto DJ view.");
+    auto* pViewAutoDJ = new QAction(autoDJTitle, this);
+    pViewAutoDJ->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowAutoDJ"),
+            tr("Ctrl+9", "Menubar|View|Show Auto DJ"))));
+    pViewAutoDJ->setStatusTip(autoDJText);
+    pViewAutoDJ->setWhatsThis(buildWhatsThis(autoDJTitle, autoDJText));
+    pViewAutoDJ->setCheckable(false);
+    connect(pViewAutoDJ, &QAction::triggered, this, &WMainMenuBar::showAutoDJ);
+    pViewMenu->addAction(pViewAutoDJ);
 
     pViewMenu->addSeparator();
 

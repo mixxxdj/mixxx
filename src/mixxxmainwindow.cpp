@@ -11,7 +11,7 @@
 #include <QGLFormat>
 #endif
 
-#ifdef __LINUX__
+#if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #endif
@@ -446,6 +446,12 @@ void MixxxMainWindow::initialize() {
     if (CmdlineArgs::Instance().getStartAutoDJ()) {
         qDebug("Enabling Auto DJ from CLI flag.");
         ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+        // Switch to Auto DJ feature
+        auto* pLibrary = m_pCoreServices->getLibrary().get();
+        // Note: auto-scroll is disabled but that doesn't really matter here
+        // because the sidebar is still in its initial state (top feature visible,
+        // AutoDj is second from the top by default, all features collapsed).
+        pLibrary->showAutoDJ();
     }
 }
 
@@ -961,6 +967,16 @@ void MixxxMainWindow::connectMenuBar() {
 
     if (m_pCoreServices->getLibrary()) {
         connect(m_pMenuBar,
+                &WMainMenuBar::searchInCurrentView,
+                m_pCoreServices->getLibrary().get(),
+                &Library::slotSearchInCurrentView,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::searchInAllTracks,
+                m_pCoreServices->getLibrary().get(),
+                &Library::slotSearchInAllTracks,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
                 &WMainMenuBar::createCrate,
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreateCrate,
@@ -969,6 +985,11 @@ void MixxxMainWindow::connectMenuBar() {
                 &WMainMenuBar::createPlaylist,
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreatePlaylist,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::showAutoDJ,
+                m_pCoreServices->getLibrary().get(),
+                &Library::showAutoDJ,
                 Qt::UniqueConnection);
     }
 
@@ -1235,29 +1256,30 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
             result.numRediscoveredTracks == 0) {
         summary += tr("No changes detected.") +
                 QStringLiteral("<br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     } else {
         if (result.numNewTracks != 0) {
-            summary += tr("%1 new tracks found").arg(QString::number(result.numNewTracks)) +
+            summary += tr("%n new track(s) found", nullptr, result.numNewTracks) +
                     QStringLiteral("<br>");
         }
         if (result.numMovedTracks != 0) {
-            summary += tr("%1 moved tracks detected").arg(QString::number(result.numMovedTracks)) +
+            summary += tr("%n moved track(s) detected", nullptr, result.numMovedTracks) +
                     QStringLiteral("<br>");
         }
         if (result.numNewMissingTracks != 0) {
-            summary += tr("%1 tracks are missing (%2 total)")
-                               .arg(QString::number(result.numNewMissingTracks),
-                                       QString::number(result.numMissingTracks));
+            summary += tr("%n track(s) missing (%1 total)",
+                    nullptr,
+                    result.numNewMissingTracks);
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
-                    tr("%1 tracks have been rediscovered")
-                            .arg(QString::number(result.numRediscoveredTracks));
+                    tr("%n track(s) rediscovered",
+                            nullptr,
+                            result.numRediscoveredTracks);
         }
         summary += QStringLiteral("<br><br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     }
     QMessageBox* pMsg = new QMessageBox();
@@ -1388,28 +1410,38 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 
 /// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
-    // Always show tooltips if Ctrl is held down
-    if (event->type() == QEvent::ToolTip &&
-            !QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+    if (event->type() == QEvent::ToolTip) {
+        // Always show tooltips if Ctrl is held down
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips for cue type buttons in the Cue menu
+        if (QLatin1String(obj->metaObject()->className()) == "CueMenuPushButton") {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips in Preferences
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
-                QLatin1String(activeWindow->metaObject()->className()) !=
+                QLatin1String(activeWindow->metaObject()->className()) ==
                         "DlgPreferences") {
-            // return true for no tool tips
-            switch (m_toolTipsCfg) {
-            case mixxx::preferences::Tooltips::OnlyInLibrary:
-                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
-                    return true;
-                }
-                break;
-            case mixxx::preferences::Tooltips::On:
-                break;
-            case mixxx::preferences::Tooltips::Off:
-                return true;
-            default:
-                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return QMainWindow::eventFilter(obj, event);
+        }
+
+        // For all other we follow the tooltip sett8ing.
+        // Return true for no tool tips
+        switch (m_toolTipsCfg) {
+        case mixxx::preferences::Tooltips::OnlyInLibrary:
+            if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                 return true;
             }
+            break;
+        case mixxx::preferences::Tooltips::On:
+            break;
+        case mixxx::preferences::Tooltips::Off:
+            return true;
+        default:
+            DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return true;
         }
     } else if (event->type() == QEvent::WindowStateChange) {
 #ifndef __APPLE__

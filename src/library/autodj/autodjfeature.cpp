@@ -23,12 +23,6 @@
 #include "widget/wlibrarysidebar.h"
 
 namespace {
-
-const QString kViewName = QStringLiteral("Auto DJ");
-
-} // namespace
-
-namespace {
 constexpr int kMaxRetrieveAttempts = 3;
 
     int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
@@ -55,6 +49,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
+          m_viewName(Library::kAutoDJViewName),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig) {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(this,
@@ -152,7 +147,7 @@ void AutoDJFeature::bindLibraryWidget(
             m_pLibrary,
             m_pAutoDJProcessor,
             keyboard);
-    libraryWidget->registerView(kViewName, m_pAutoDJView);
+    libraryWidget->registerView(m_viewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
             this,
@@ -196,7 +191,7 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit switchToView(kViewName);
+    emit switchToView(m_viewName);
     emit disableSearch();
     emit enableCoverArtDisplay(true);
 }

@@ -14,6 +14,7 @@
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/scripting/controllerscriptenginebase.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemixer.h"
@@ -40,15 +41,12 @@
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 
-#include "controllers/scripting/controllerscriptenginebase.h"
 #include "qml/qmlconfigproxy.h"
-#include "qml/qmlcontrolproxy.h"
-#include "qml/qmldlgpreferencesproxy.h"
-#include "qml/qmleffectslotproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
 #include "qml/qmlplayermanagerproxy.h"
-#include "qml/qmlplayerproxy.h"
+#include "qml/qmlpreferencesproxy.h"
+#include "qml/qmlsoundmanagerproxy.h"
 #endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
@@ -67,8 +65,11 @@
 #include "util/sandbox.h"
 #endif
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && defined(__X11__)
 #include <X11/XKBlib.h>
+#endif
+#if defined(Q_OS_ANDROID)
+#include <QtCore/private/qandroidextras_p.h>
 #endif
 
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -122,7 +123,7 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
 
 #endif
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && defined(__X11__)
 QLocale localeFromXkbSymbol(const QString& xkbLayout) {
     // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
     static const QMap<QString, QLocale> xkbToLocaleMap = {
@@ -272,7 +273,7 @@ QString getCurrentXkbLayoutName() {
 // to "ibus engine". QGuiApplication::inputMethod() does not work with GNOME and XFCE
 // https://bugreports.qt.io/browse/QTBUG-137302
 inline QLocale inputLocale() {
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && defined(__X11__)
     QString layoutName = getCurrentXkbLayoutName();
     if (!layoutName.isEmpty()) {
         qDebug() << "Keyboard Layout from XKB:" << layoutName;
@@ -629,6 +630,44 @@ void CoreServices::initialize(QApplication* pApp) {
         if (!dir.exists()) {
             dir.mkpath(".");
         }
+#elif defined(Q_OS_ANDROID)
+        // if(QOperatingSystemVersion::current() <
+        // QOperatingSystemVersion(QOperatingSystemVersion::Android, 11)) {
+        //     qDebug() << "it is less then Android 11 - ALL FILES permission
+        //     isn't possible!";
+        // }
+        QString fd;
+        jboolean value = QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+        if (value == false) {
+            qDebug() << "requesting ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+            QJniObject ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION =
+                    QJniObject::getStaticObjectField(
+                            "android/provider/Settings",
+                            "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
+                            "Ljava/lang/String;");
+            QJniObject intent("android/content/Intent",
+                    "(Ljava/lang/String;)V",
+                    ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION.object());
+            QJniObject jniPath = QJniObject::fromString(
+                    QStringLiteral("package:%1").arg(ANDROID_PACKAGE_NAME));
+            QJniObject jniUri =
+                    QJniObject::callStaticObjectMethod("android/net/Uri",
+                            "parse",
+                            "(Ljava/lang/String;)Landroid/net/Uri;",
+                            jniPath.object<jstring>());
+            QJniObject jniResult = intent.callObjectMethod("setData",
+                    "(Landroid/net/Uri;)Landroid/content/Intent;",
+                    jniUri.object<jobject>());
+            QtAndroidPrivate::startActivity(intent, 0);
+        } else {
+            qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+        }
+        fd = "/storage/emulated/0/Music/";
+        QDir dir = fd;
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
 #else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
@@ -728,6 +767,8 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_isInitialized = true;
 
+    ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
+
 #ifdef MIXXX_USE_QML
     initializeQMLSingletons();
 }
@@ -746,6 +787,10 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+    mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
+    mixxx::qml::QmlControllerManagerProxy::registerManager(
+            getControllerManager(),
+            CmdlineArgs::Instance().getControllerPreviewScreens());
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
@@ -867,9 +912,12 @@ void CoreServices::finalize() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+    mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
+    mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

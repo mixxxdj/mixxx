@@ -40,12 +40,15 @@ WEffectSelector::indicator:unchecked,
 WBeatSpinBox,
 #spinBoxTransition::up-button,
 #spinBoxTransition::down-button,
+#spinBoxRecentDays::up-button,
+#spinBoxRecentDays::down-arrow,
 #fadeModeCombobox,
 #fadeModeCombobox::down-arrow {
   color: #060613;
   background-color: #998A3C;
 }
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   background-color: #7b6f38;
 }
   #MainMenu QMenu::separator,
@@ -144,14 +147,27 @@ WEffectSelector::indicator:unchecked:selected,
 	border: 0px solid #f8ba54;
 }
 
-#CueDeleteButton {
+#CueDeleteButton,
+  #CueStandardButton,
+  #CueSavedLoopButton,
+  #CueSavedJumpButton {
   background-color: #cdbb5d;
 }
-#CueSavedLoopButton {
-  background-color: #cdbb5d;
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #54fd05;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
 }
 #CueLabelEdit {
   background-color: #706633;

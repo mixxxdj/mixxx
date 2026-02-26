@@ -33,8 +33,9 @@ namespace allshader {
 
 WaveformRendererStem::WaveformRendererStem(
         WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererAbstract::PositionSource type,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_splitStemTracks(false),
           m_outlineOpacity(0.15f),
@@ -47,6 +48,11 @@ void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
 bool WaveformRendererStem::init() {
+    m_pStemGain.clear();
+    m_pStemMute.clear();
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        return true;
+    }
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         QString stemGroup = EngineDeck::getGroupForStem(m_waveformRenderer->getGroup(), stemIdx);
         m_pStemGain.emplace_back(
@@ -218,7 +224,7 @@ bool WaveformRendererStem::preprocessInner() {
                 }
 
                 // Cast to float
-                float max = static_cast<float>(u8max);
+                float max = static_cast<float>(u8max) * allGain;
 
                 // Apply the gains
                 if (layerIdx) {

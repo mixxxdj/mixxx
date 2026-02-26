@@ -3,6 +3,9 @@
 #include <QAtomicInt>
 #include <QThread>
 #include <optional>
+#ifdef Q_OS_ANDROID
+#include <QJniObject>
+#endif
 
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
@@ -34,10 +37,15 @@ class BulkReader : public QThread {
 class BulkController : public Controller {
     Q_OBJECT
   public:
+#ifndef Q_OS_ANDROID
     BulkController(
             libusb_context* context,
             libusb_device_handle* handle,
             struct libusb_device_descriptor* desc);
+#else
+    BulkController(
+            const QJniObject& usbDevice);
+#endif
     ~BulkController() override;
 
     QString mappingExtension() override;
@@ -78,6 +86,14 @@ class BulkController : public Controller {
         return m_interfaceNumber;
     }
 
+    uint8_t getInEndpointAddr() const {
+        return m_inEndpointAddr;
+    }
+
+    uint8_t getOutEndpointAddr() const {
+        return m_outEndpointAddr;
+    }
+
     bool isMappable() const override {
         // On raw USB transfer level, there isn't any information about mappable controls
         return false;
@@ -100,6 +116,10 @@ class BulkController : public Controller {
 
     libusb_context* m_context;
     libusb_device_handle *m_phandle;
+#ifdef Q_OS_ANDROID
+    QJniObject m_androidUsbDevice;
+    QJniObject m_androidConnection;
+#endif
 
     // Local copies of things we need from desc
 

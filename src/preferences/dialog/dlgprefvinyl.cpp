@@ -43,6 +43,9 @@ DlgPrefVinyl::DlgPrefVinyl(
         box->addItem(MIXXX_VINYL_SERATOCD);
         box->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
         box->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2CD);
         box->addItem(MIXXX_VINYL_MIXVIBESDVS);
         box->addItem(MIXXX_VINYL_MIXVIBES7INCH);
         box->addItem(MIXXX_VINYL_PIONEERA);
@@ -247,6 +250,12 @@ int DlgPrefVinyl::getDefaultLeadIn(const QString& vinyl_type) const {
         return MIXXX_VINYL_TRAKTORSCRATCHSIDEA_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
         return MIXXX_VINYL_TRAKTORSCRATCHSIDEB_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK2CD_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_MIXVIBESDVS) {
         return MIXXX_VINYL_MIXVIBESDVS_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_MIXVIBES7INCH) {

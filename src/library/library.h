@@ -16,6 +16,7 @@
 #include "util/parented_ptr.h"
 
 class AnalysisFeature;
+class AutoDJFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
@@ -98,9 +99,16 @@ class Library: public QObject {
     void setRowHeight(int rowHeight);
     void setEditMetadataSelectedClick(bool enable);
 
+    /// Switches to the internal track collection view
+    /// and focuses the search box.
+    void searchTracksInCollection();
+
     /// Triggers a new search in the internal track collection
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
+    void showAutoDJ();
+
+    static const QString kAutoDJViewName;
 
     bool requestAddDir(const QString& directory);
     bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
@@ -126,6 +134,8 @@ class Library: public QObject {
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    void slotSearchInCurrentView();
+    void slotSearchInAllTracks();
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
     void slotRestoreCurrentViewState() const;
@@ -184,15 +194,15 @@ class Library: public QObject {
 
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
-    const static QString m_sAutoDJViewName;
     WLibrary* m_pLibraryWidget;
-    MixxxLibraryFeature* m_pMixxxLibraryFeature;
-    PlaylistFeature* m_pPlaylistFeature;
-    CrateFeature* m_pCrateFeature;
-    AnalysisFeature* m_pAnalysisFeature;
-    BrowseFeature* m_pBrowseFeature;
+    parented_ptr<MixxxLibraryFeature> m_pMixxxLibraryFeature;
+    parented_ptr<AutoDJFeature> m_pAutoDJFeature;
+    parented_ptr<PlaylistFeature> m_pPlaylistFeature;
+    parented_ptr<CrateFeature> m_pCrateFeature;
+    parented_ptr<BrowseFeature> m_pBrowseFeature;
+    parented_ptr<AnalysisFeature> m_pAnalysisFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;
-    QScopedPointer<ControlObject> m_pKeyNotation;
+    std::unique_ptr<ControlObject> m_pKeyNotation;
 };

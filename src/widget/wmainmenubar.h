@@ -67,6 +67,9 @@ class WMainMenuBar : public QMenuBar {
 #ifdef __ENGINEPRIME__
     void exportLibrary();
 #endif
+    void searchInCurrentView();
+    void searchInAllTracks();
+    void showAutoDJ();
     void menubarAutoHideChanged(bool autohide);
     void showAbout();
     void showKeywheel(bool visible);

@@ -13,7 +13,7 @@
 class QWidget;
 class ControlProxy;
 
-class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
+class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg {
     Q_OBJECT
   public:
     enum class TrackDoubleClickAction : int {
@@ -67,6 +67,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotBpmRangeSelected(int index);
     void slotBpmColumnPrecisionChanged(int bpmPrecision);
     void slotSeratoMetadataExportClicked(bool);
+    void slotDateFormatIndexChanged(int index);
+    void slotDateFormatChanged(const QString& text);
 
   private:
     void populateDirList();
@@ -74,6 +76,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void resetLibraryFont();
     void updateSearchLineEditHistoryOptions();
     void setSeratoMetadataEnabled(bool shouldSyncTrackMetadata);
+    void updateDateFormatPreview(const QString& format);
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;
@@ -83,4 +86,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     int m_iOriginalTrackTableRowHeight;
     // Listen to rate range changes in order to update the fuzzy BPM range
     parented_ptr<ControlProxy> m_pRateRangeDeck1;
+
+    QString m_lastCustomDateFormat;
 };

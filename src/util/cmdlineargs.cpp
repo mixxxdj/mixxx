@@ -1,5 +1,6 @@
 #include "util/cmdlineargs.h"
 
+#include <qglobal.h>
 #include <stdio.h>
 #ifndef __WINDOWS__
 #include <unistd.h>
@@ -69,10 +70,12 @@ CmdlineArgs::CmdlineArgs()
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
           m_logMaxFileSize(mixxx::kLogMaxFileSizeDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see #8090
+#if defined(__LINUX__) || defined(__BSD__)
 #ifdef MIXXX_SETTINGS_PATH
           m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH))
-#elif defined(__LINUX__)
+#else
 #error "We are not ready to switch to XDG folders under Linux"
+#endif
 #elif defined(Q_OS_IOS)
           // On iOS we intentionally use a user-accessible subdirectory of the sandbox
           // documents directory rather than the default app data directory. Specifically
@@ -280,11 +283,29 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     parser.addOption(developer);
 
 #ifdef MIXXX_USE_QML
-    const QCommandLineOption qml(QStringLiteral("qml"),
-            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
-                                      "Loads experimental QML GUI instead of legacy QWidget skin")
-                            : QString());
+    const QCommandLineOption qml(QStringLiteral("new-ui"),
+            forUserFeedback
+                    ? QCoreApplication::translate("CmdlineArgs",
+                              "Loads the highly unstable 3.0 Mixxx interface, "
+                              "based on QML. You need to use a new setting "
+                              "profile, or run with "
+                              "'allow-dangerous-data-corruption-risk' to use "
+                              "with the current one. We highly recommend "
+                              "backing up your data if you do so.")
+                    : QString());
+    QCommandLineOption qmlDeprecated(
+            QStringLiteral("qml"));
+    qmlDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(qmlDeprecated);
     parser.addOption(qml);
+    const QCommandLineOption awareOfRisk(
+            QStringLiteral("allow-dangerous-data-corruption-risk"),
+            forUserFeedback
+                    ? QCoreApplication::translate("CmdlineArgs",
+                              "Force Mixxx to load an unstable version with an "
+                              "existing user profile from a stable version")
+                    : QString());
+    parser.addOption(awareOfRisk);
 #endif
     const QCommandLineOption safeMode(QStringLiteral("safe-mode"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -459,6 +480,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_developer = parser.isSet(developer);
 #ifdef MIXXX_USE_QML
     m_qml = parser.isSet(qml);
+    if (parser.isSet(qmlDeprecated)) {
+        m_qml |= true;
+        qWarning() << "The argument '--qml' is deprecated and will be soon "
+                      "removed. Please use '--new-ui' instead!";
+    }
+    m_awareOfRisk = parser.isSet(awareOfRisk);
 #endif
     m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
     m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);

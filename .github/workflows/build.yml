@@ -31,6 +31,10 @@ on:
         required: false
       MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD:
         required: false
+      ANDROID_SIGNING_KEYSTORE_BASE64:
+        required: false
+      ANDROID_SIGNING_PASSWORD:
+        required: false
       NETLIFY_BUILD_HOOK:
         required: false
       RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
@@ -168,11 +172,36 @@ jobs:
             artifacts_path: build/*.msi
             artifacts_slug: windows-winarm
             arch: arm64
+          - name: Android 15 arm64
+            os: ubuntu-24.04
+            # DBUILD_TESTING=OFF: error: OpenMP support and version of OpenMP (31, 40 or 45) differs
+            cmake_args: >-
+              -DBULK=ON
+              -DQT6=ON
+              -DQML=ON
+              -DHID=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-android
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-linux-release
+              -DCMAKE_SYSTEM_NAME=Android
+              -DBUILD_TESTING=OFF
+              -DBUILD_BENCH=OFF
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/android_buildenv.sh
+            artifacts_name: Android 15 APK
+            artifacts_path: build/android-build/build/outputs/apk/release/*.apk
+            artifacts_slug: android-15
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            crosscompile: true
+            arch: arm64
 
     env:
       # macOS codesigning
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+      # Android signing
+      ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+      ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
@@ -267,6 +296,33 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
+      - name: "[android] Setup signing key"
+        if: startsWith(matrix.artifacts_slug, 'android')
+        run: |
+          if [ -z "${ANDROID_SIGNING_KEYSTORE_BASE64}" ]; then
+            # If no signing key is available (e.g running on a fork), generate a temporary key
+            keytool \
+              -genkey \
+              -keystore mixxx.keystore \
+              -alias mixxx \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 365 \
+              -keypass mixxxandroid \
+              -storepass mixxxandroid \
+              -dname "CN=${{ github.actor }}"
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=mixxxandroid" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=mixxxandroid" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
+          else
+            echo "${{ env.ANDROID_SIGNING_KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/mixxx.keystore
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
+          fi
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
@@ -299,6 +355,29 @@ jobs:
           ${{ matrix.compiler_cache }} --zero-stats
           ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
+
+      # Remove unused pre-installed software as the runner runs out of space otherwise
+      # Currently freeing up about 17.7G, ~20%
+      - name: "[android] Free up disk space"
+        if: startsWith(matrix.artifacts_slug, 'android')
+        run: |
+          sudo apt-get autoremove -y && sudo apt-get clean
+          sudo rm -rf /home/packer                 # Free up 677M
+          sudo rm -rf /opt/az                      # Free up 649M
+          sudo rm -rf /opt/google                  # Free up 378M
+          sudo rm -rf /opt/hostedtoolcache/CodeQL  # Free up 1.6G
+          sudo rm -rf /opt/hostedtoolcache/go      # Free up 808M
+          sudo rm -rf /opt/hostedtoolcache/node    # Free up 532M
+          sudo rm -rf /opt/hostedtoolcache/PyPy    # Free up 520M
+          sudo rm -rf /opt/hostedtoolcache/Python  # Free up 1.5G
+          sudo rm -rf /opt/microsoft               # Free up 781M
+          sudo rm -rf /opt/pipx                    # Free up 499M
+          sudo rm -rf /usr/lib/google-cloud-sdk    # Free up 957M
+          sudo rm -rf /usr/local/julia1.11.7       # Free up 996M
+          sudo rm -rf /usr/local/share/powershell  # Free up 1.3G
+          sudo rm -rf /usr/share/dotnet            # Free up 3.4G
+          sudo rm -rf /usr/share/swift             # Free up 3.2G
+          sudo rm -rf /usr/local/share/vcpkg       # Size unknown, but obvious duplicate
 
       - name: "Create build directory"
         run: mkdir build
@@ -410,7 +489,7 @@ jobs:
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
@@ -482,6 +561,15 @@ jobs:
           --dest-url 'https://downloads.mixxx.org'
           ${{ matrix.artifacts_path }}
 
+      # TODO create a F-droid repo?
+      # - name: fdroid nightly
+      #   run: |
+      #     sudo add-apt-repository ppa:fdroid/fdroidserver
+      #     sudo apt-get update
+      #     sudo apt-get install apksigner fdroidserver --no-install-recommends
+      #     export DEBUG_KEYSTORE=$
+      #     fdroid nightly --archive-older 10
+
       # Warning: do not move this step before restoring caches or it will break caching due to
       # https://github.com/actions/cache/issues/531
       - name: "[Windows] Install rsync and openssh"
@@ -535,9 +623,9 @@ jobs:
           ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
-      - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
+      - name: "[Android/macOS/Windows] Upload build to downloads.mixxx.org"
         # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: runner.os != 'Linux' && inputs.publish && env.SSH_AUTH_SOCK != null
+        if: startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:

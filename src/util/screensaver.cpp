@@ -26,6 +26,10 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #  include "util/mac.h"
 #elif defined(Q_OS_IOS)
 #include "util/screensaverios.h"
+#elif defined(Q_OS_ANDROID)
+#include <android/api-level.h>
+#include <android/log.h>
+#define HAS_XWINDOW_SCREENSAVER 0
 #elif defined(_WIN32)
 #  include <windows.h>
 #elif defined(__LINUX__)
@@ -36,7 +40,8 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #  include <X11/extensions/scrnsaver.h>
 #endif
 
-#if defined(__LINUX__) || (defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND)
+#if (defined(__LINUX__) && defined(__X11__)) || \
+        (defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND)
 #  define None XNone
 #  define Window XWindow
 #  include <X11/Xlib.h>
@@ -146,7 +151,7 @@ void ScreenSaverHelper::uninhibitInternal()
     s_enabled = false;
 }
 
-#elif defined(Q_OS_LINUX)
+#elif (defined(Q_OS_LINUX) && defined(__X11__))
 const char *SCREENSAVERS[][4] = {
     // org.freedesktop.ScreenSaver is the standard. should work for gnome and kde too, 
     // but I add their specific names too
@@ -345,6 +350,52 @@ void ScreenSaverHelper::triggerUserActivity() {
 void ScreenSaverHelper::inhibitInternal() {
 }
 void ScreenSaverHelper::uninhibitInternal() {
+}
+#elif defined(Q_OS_ANDROID)
+
+QJniObject ScreenSaverHelper::s_wakeLock = {};
+// Screensavers are not supported
+void ScreenSaverHelper::triggerUserActivity() {
+}
+void ScreenSaverHelper::inhibitInternal() {
+    if (!ScreenSaverHelper::s_wakeLock.isValid()) {
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+        QJniObject POWER_SERVICE =
+                QJniObject::getStaticObjectField(
+                        "android/content/Context",
+                        "POWER_SERVICE",
+                        "Ljava/lang/String;");
+        auto powerService = context.callObjectMethod("getSystemService",
+                "(Ljava/lang/String;)Ljava/lang/Object;",
+                POWER_SERVICE.object());
+        if (!powerService.isValid()) {
+            qDebug() << "powerService invalid";
+            return;
+        }
+
+        jint FULL_WAKE_LOCK =
+                QJniObject::getStaticField<jint>(
+                        "android/os/PowerManager",
+                        "FULL_WAKE_LOCK");
+        ScreenSaverHelper::s_wakeLock =
+                powerService.callObjectMethod("newWakeLock",
+                        "(ILjava/lang/String;)Landroid/os/PowerManager$WakeLock;",
+                        FULL_WAKE_LOCK,
+                        QJniObject::fromString("Mixxx").object<jstring>());
+        if (!ScreenSaverHelper::s_wakeLock.isValid()) {
+            __android_log_print(ANDROID_LOG_WARN, "mixxx", "powerService wakeLock invalid");
+            qWarning() << "ScreenSaverHelper::inhibitInternal - wakeLock invalid";
+            return;
+        }
+    }
+    ScreenSaverHelper::s_wakeLock.callMethod<void>("acquire");
+}
+void ScreenSaverHelper::uninhibitInternal() {
+    // QNativeInterface::QAndroidApplication::runOnAndroidMainThread([]() {
+    if (ScreenSaverHelper::s_wakeLock.isValid()) {
+        ScreenSaverHelper::s_wakeLock.callMethod<void>("release");
+    }
+    // }).waitForFinished();
 }
 #else
 void ScreenSaverHelper::triggerUserActivity()

@@ -51,7 +51,9 @@ using namespace mixxx::library::prefs;
 
 // This is the name which we use to register the WTrackTableView with the
 // WLibrary
-const QString Library::m_sTrackViewName = QString("WTrackTableView");
+const QString Library::m_sTrackViewName = QStringLiteral("WTrackTableView");
+
+const QString Library::kAutoDJViewName = QStringLiteral("Auto DJ");
 
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
@@ -70,14 +72,9 @@ Library::Library(
           m_pSidebarModel(make_parented<SidebarModel>(this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
           m_pLibraryWidget(nullptr),
-          m_pMixxxLibraryFeature(nullptr),
-          m_pPlaylistFeature(nullptr),
-          m_pCrateFeature(nullptr),
-          m_pAnalysisFeature(nullptr) {
+          m_pKeyNotation(std::make_unique<ControlObject>(
+                  mixxx::library::prefs::kKeyNotationConfigKey)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
-
-    m_pKeyNotation.reset(
-            new ControlObject(mixxx::library::prefs::kKeyNotationConfigKey));
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
@@ -86,7 +83,7 @@ Library::Library(
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(
+    m_pMixxxLibraryFeature = make_parented<MixxxLibraryFeature>(
             this,
             m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
@@ -98,9 +95,10 @@ Library::Library(
             Qt::DirectConnection /* signal-to-signal */);
 #endif
 
-    addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
+    m_pAutoDJFeature = make_parented<AutoDJFeature>(this, m_pConfig, pPlayerManager);
+    addFeature(m_pAutoDJFeature);
 
-    m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
+    m_pPlaylistFeature = make_parented<PlaylistFeature>(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
 #ifdef __ENGINEPRIME__
     connect(m_pPlaylistFeature,
@@ -115,7 +113,7 @@ Library::Library(
             Qt::DirectConnection);
 #endif
 
-    m_pCrateFeature = new CrateFeature(this, m_pConfig);
+    m_pCrateFeature = make_parented<CrateFeature>(this, m_pConfig);
     addFeature(m_pCrateFeature);
 #ifdef __ENGINEPRIME__
     connect(m_pCrateFeature,
@@ -130,7 +128,7 @@ Library::Library(
             Qt::DirectConnection);
 #endif
 
-    m_pBrowseFeature = new BrowseFeature(
+    m_pBrowseFeature = make_parented<BrowseFeature>(
             this, m_pConfig, pRecordingManager);
     connect(m_pBrowseFeature,
             &BrowseFeature::scanLibrary,
@@ -150,7 +148,7 @@ Library::Library(
 
     addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
 
-    m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
+    m_pAnalysisFeature = make_parented<AnalysisFeature>(this, m_pConfig);
     connect(m_pPlaylistFeature,
             &PlaylistFeature::analyzeTracks,
             m_pAnalysisFeature,
@@ -745,13 +743,34 @@ void Library::setEditMetadataSelectedClick(bool enabled) {
     emit setSelectedClick(enabled);
 }
 
+void Library::slotSearchInCurrentView() {
+    m_pLibraryControl->setLibraryFocus(FocusWidget::Searchbar, Qt::ShortcutFocusReason);
+}
+
+void Library::slotSearchInAllTracks() {
+    searchTracksInCollection();
+}
+
+void Library::searchTracksInCollection() {
+    VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
+        return;
+    }
+    m_pMixxxLibraryFeature->selectAndActivate();
+    m_pLibraryControl->setLibraryFocus(FocusWidget::Searchbar, Qt::ShortcutFocusReason);
+}
+
 void Library::searchTracksInCollection(const QString& query) {
     VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
         return;
     }
     m_pMixxxLibraryFeature->searchAndActivate(query);
-    emit switchToView(m_sTrackViewName);
-    m_pSidebarModel->activateDefaultSelection();
+}
+
+void Library::showAutoDJ() {
+    m_pAutoDJFeature->activate();
+    emit switchToView(kAutoDJViewName);
+    // Select it but don't scroll there
+    m_pSidebarModel->slotFeatureSelect(m_pAutoDJFeature, QModelIndex(), false);
 }
 
 #ifdef __ENGINEPRIME__

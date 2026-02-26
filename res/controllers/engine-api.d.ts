@@ -1,3 +1,7 @@
+declare interface QtSlot<F extends (...args: any[]) => void> {
+    connect(callback: F): void;
+}
+
 /** ScriptConnectionJSProxy */
 
 declare interface ScriptConnection {
@@ -30,9 +34,96 @@ declare interface ScriptConnection {
     readonly isConnected: boolean;
 }
 
+/** JavascriptPlayerProxy */
+
+declare interface Player {
+    /** Track's artist or empty string if no track is loaded */
+    readonly artist: string;
+    /** Track's title or empty string if no track is loaded */
+    readonly title: string;
+    /** Track's album or empty string if no track is loaded */
+    readonly album: string;
+    /** Track's album artist or empty string if no track is loaded */
+    readonly albumArtist: string;
+    /** Track's genre or empty string if no track is loaded */
+    readonly genre: string;
+    /** Track's composer or empty string if no track is loaded */
+    readonly composer: string;
+    /** Track's grouping or empty string if no track is loaded */
+    readonly grouping: string;
+    /** Track's year of release or empty string if no track is loaded */
+    readonly year: string;
+    /** Track's number or empty string if no track is loaded */
+    readonly trackNumber: string;
+    /** Total number of tracks in track's album or empty string if no track is loaded */
+    readonly trackTotal: string;
+
+    /** Emitted when the track is unloaded from the player. */
+    trackUnloaded: QtSlot<() => void>;
+
+    /**
+     * Emitted with the new track's artist when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    artistChanged: QtSlot<(newArtist: string) => void>;
+    /**
+     * Emitted with the new track title when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    titleChanged: QtSlot<(newTitle: string) => void>;
+    /**
+     * Emitted with the new track album when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    albumChanged: QtSlot<(newAlbum: string) => void>;
+    /**
+     * Emitted with the new track album artist when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    albumArtistChanged: QtSlot<(newAlbumArtist: string) => void>;
+    /**
+     * Emitted with the new track genre when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    genreChanged: QtSlot<(newGenre: string) => void>;
+    /**
+     * Emitted with the new track's composer when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    composerChanged: QtSlot<(newComposer: string) => void>;
+    /**
+     * Emitted with the new track's grouping when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    groupingChanged: QtSlot<(newGrouping: string) => void>;
+    /**
+     * Emitted with the new track year of release when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    yearChanged: QtSlot<(newYear: string) => void>;
+    /**
+     * Emitted with the new track number when a new track is loaded
+     * to the player or when the current track's metadata change.
+     */
+    trackNumberChanged: QtSlot<(newTrackNumber: string) => void>;
+    /**
+     * Emitted with the new number of track in track's album when a new track
+     * is loaded to the player or when the current track's metadata change.
+     */
+    trackTotalChanged: QtSlot<(newTrackTotal: string) => void>;
+}
+
 /** ControllerScriptInterfaceLegacy */
 
 declare namespace engine {
+    /**
+     * Obtain the player associated with this deck.
+     * @param group The midi group for this deck; e.g. '[Channel1]' for deck 1.
+     * @returns The player providing track information and signals, or undefined
+     *          if not player associated with this group was found.
+     */
+    function getPlayer(group: string): Player | undefined;
+
     type SettingValue = string | number | boolean;
     /**
      * Gets the value of a controller setting

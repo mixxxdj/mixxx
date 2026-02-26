@@ -16,6 +16,7 @@
 #ifndef __MACAPPSTORE__
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
+#include "effects/backends/builtin/autogaincontroleffect.h"
 #include "effects/backends/builtin/autopaneffect.h"
 #include "effects/backends/builtin/compressoreffect.h"
 #include "effects/backends/builtin/distortioneffect.h"
@@ -64,6 +65,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<DistortionEffect>();
     registerEffect<GlitchEffect>();
     registerEffect<CompressorEffect>();
+    registerEffect<AutoGainControlEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(

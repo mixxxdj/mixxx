@@ -241,6 +241,15 @@
                 </description>
             </option>
             <option
+                variable="filterIsFirstQuickEffect"
+                type="boolean"
+                default="false"
+                label="Assign the first QuickEffect to the :hwbtn:`FILTER` button instead of button :hwbtn:`1`">
+                <description>
+                    This option is useful if you are used to Filter being the primary quickeffect and have it at the top of your QuickEfect list.
+                </description>
+            </option>
+            <option
                 variable="defaultPadLayout"
                 type="enum"
                 label="Default Pad Layout">

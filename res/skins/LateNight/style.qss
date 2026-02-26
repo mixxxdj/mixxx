@@ -13,6 +13,7 @@ WTrackProperty,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -481,14 +482,9 @@ WSpinny { /*
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
-#BpmRateTapContainer {
-  margin: 1px;
-}
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-}
-#RateSliderBoxCompactSync {
   margin-left: 5px;
 }
 
@@ -498,6 +494,18 @@ WTrackProperty[selected="false"] {
   border: 0px solid transparent;
   border-radius: 1px;
 }
+
+#BpmClickOverlay,
+#BpmTapButton,
+#BpmTapButton:focus {
+  background-color: transparent;
+}
+WBpmEditor,
+#BpmClickOverlay {
+  border: none;
+}
+
+
 /************** Decks  ********************************************************/
 
 

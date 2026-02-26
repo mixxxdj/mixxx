@@ -106,6 +106,10 @@ class LibraryFeature : public QObject {
     const UserSettingsPointer m_pConfig;
 
   public slots:
+    /// Pretend that the user has clicked on a tree item belonging
+    /// to this LibraryFeature by updating both the library view
+    /// and the sidebar selection.
+    void selectAndActivate(const QModelIndex& index = QModelIndex());
     // called when you single click on the root item
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
@@ -161,7 +165,7 @@ class LibraryFeature : public QObject {
     // emit this signal if the foreign music collection has been imported/parsed.
     void featureLoadingFinished(LibraryFeature*s);
     // emit this signal to select pFeature
-    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
+    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index, bool scrollTo = true);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);

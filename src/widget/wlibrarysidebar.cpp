@@ -375,8 +375,8 @@ void WLibrarySidebar::focusInEvent(QFocusEvent* pEvent) {
     QTreeView::focusInEvent(pEvent);
 }
 
-void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    //qDebug() << "WLibrarySidebar::selectIndex" << index;
+void WLibrarySidebar::selectIndex(const QModelIndex& index, bool scrollToIndex) {
+    // qDebug() << "WLibrarySidebar::selectIndex" << index << scrollToIndex;
     if (!index.isValid()) {
         return;
     }
@@ -389,8 +389,18 @@ void WLibrarySidebar::selectIndex(const QModelIndex& index) {
         expand(index.parent());
     }
     setSelectionModel(pModel);
+    if (!scrollToIndex) {
+        // With auto-scroll enabled, setCurrentIndex() would scroll there.
+        // Disable (and re-enable if we don't want to scroll, e.g. when selecting
+        // AutoDJ from the menubar or during startup
+        setAutoScroll(false);
+    }
     setCurrentIndex(index);
-    scrollTo(index);
+    if (scrollToIndex) {
+        scrollTo(index);
+    } else {
+        setAutoScroll(true);
+    }
 }
 
 /// Selects a child index from a feature and ensures visibility

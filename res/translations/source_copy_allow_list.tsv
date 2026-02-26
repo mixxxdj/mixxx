@@ -170,7 +170,7 @@ ca,de,el,en_CA,en_GB,es*,fr_CA,fr_CI,hu,it,nl,pt*,sl,sv	Res
 *	<i>FPS: %0/%1</i>
 *	\u276f
 *	\u276e
-de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi,sq_AL,pt,pt_PT	Album
+de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi,sq_AL,pt*	Album
 de,da,fr,lb,ms,nl,oc,sv	Genre
 de,it,pl	Bitrate:
 es,es_419,es_AR,es_CO,es_MX,ca,es_ES	Error:
@@ -213,8 +213,8 @@ hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	G#m
 hu,bs,de,eo,eu,fr,hr,it,lb,lt,lv,nb,nl,pt_PT,ro,sk,sv,vi	Min
 hu,bs,de,eu,fr,hr,it,lb,nl,ro,sk,sv,vi	Max
 pt,pt_BR,ca,de,fr,it,nl,pl,pt_PT,sl,sv	Tremolo
-pt_BR,da,de,id,it,nl,pt,ro	Mixer
-pt_BR,de,it,nl,pt_PT,pt	Reloop
+pt_BR,da,de,id,it,nl,pt*,ro	Mixer
+pt_BR,de,it,nl,pt*	Reloop
 de,es*,nl,pt_BR,vi	Hotcues
 de,es*	Hotcues %1-%2
 nl,pl	Hotcue index
@@ -275,12 +275,12 @@ nl	Intro start
 nl	Type:
 nl	Equalizer Plugin
 nl,sv,vi	Reverb
-nl	Encoder
+nl,it	Encoder
 it,nl,pl,ro,vi	Downsampling
 it,nl	32 bits float
-nl	Queen Mary Key Detector
+nl,it	Queen Mary Key Detector
 it	Pitch
-it,nl	Hot cues
+it,nl,zh*	Hot cues
 it	&File
 it,nl	database
 sn	Key
@@ -329,8 +329,8 @@ fr	Question
 fr	Microphone
 fr	%1 minutes
 fr,it	Bypass Fr.
-fr	Gain 1
-fr	Gain 2
+fr,sv	Gain 1
+fr,sv	Gain 2
 fr,it,ru,es*	Queen Mary University London
 fr,nl	Distortion
 fr,de	Ratio (:1)
@@ -351,16 +351,16 @@ it	Fine
 it	Deck Equalizers
 it,nl,es*	Lead-In
 it	Frame rate
-it,nl,pt_BR,pt	Caching
+it,nl,pt*	Caching
 it,nl	skin
-it	decks
+it,es*	decks
 de	Timer (Fallback)
 de,fr,it,nl,pl,sv,es*	Outro
 de,nl	Loops
 el,pt_BR	Tool tips
 el,es*,eu,id,it,lb,nb,pt*,tr	Scratching
 es*,fr,it,nl,pt*,sq_AL	&Ok
-es*,pt_BR	Switch
+es*,pt_BR,sv	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
 fr,it,nl,zh*	 pt
@@ -371,7 +371,7 @@ nl	Audio Buffer
 nl,sv	OpenGL Direct Rendering
 nl,zh*	Hard Clip
 nl,zh*	Hard
-sv	(status text)
+sv,de	(status text)
 da	Input
 de,nl	Moog Filter
 de,fr,it,nl,pt*,ro,sv	Phaser
@@ -384,7 +384,7 @@ de,it,nl,es*	Drive
 de,fr,it,pl	Passthrough
 de,it,nl	Glitch
 de,it	Beatgrids
-de,nl,pt_BR,pt_PT,ro,vi,pl	Sampler
+de,nl,pt_BR,pt_PT,ro,vi	Sampler
 de,es*,it,nl,pt_BR,ro,vi	Hotcue
 de	Loop-In Marker
 de	Loop-Out Marker
@@ -448,13 +448,23 @@ nl,sq_AL,es*,pl,sv	PID:
 nl	Lossy
 nl	Lossless
 nl	Top
-nl	OpenGL Status
+nl,de	OpenGL Status
 nl	Stem Label
 nl	Stem Mute
 sq_AL,sv	Artist + Album
-sq_AL	Off
+sq_AL,it	Off
 de	Attack (ms)
 de	Attack
+fr,it,sl	Ctrl+f
+fr,sl	Ctrl+Shift+F
+it	Mixxx %1.%2 Development Team
 it	Okay
+sv	Decay
+sv	Kill Low
+sv	Kill Mid
+sv	Kill High
+tr	Mount
 vi	Samplerate
 fr,sl	Stem
+fr	Gain (dB)
+sl,sv	AGC

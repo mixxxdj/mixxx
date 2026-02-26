@@ -18,8 +18,12 @@ class WaveformMarkSet {
         QString markAlign;
         QString text;
         QString pixmapPath;
+        QString endPixmapPath;
         QString iconPath;
+        QString endIconPath;
         QColor color;
+        float enabledOpacity;
+        float disabledOpacity;
     };
 
     WaveformMarkSet();

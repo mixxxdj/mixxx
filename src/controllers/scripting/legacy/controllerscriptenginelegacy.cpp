@@ -1,5 +1,8 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 
+#include <qloggingcategory.h>
+
+#include <QThread>
 #include <memory>
 
 #ifdef MIXXX_USE_QML
@@ -11,12 +14,9 @@
 #include <algorithm>
 #endif
 
-#include "control/controlobject.h"
 #include "controllers/controller.h"
-#include "controllers/scripting/colormapperjsproxy.h"
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "errordialoghandler.h"
-#include "mixer/playermanager.h"
 #include "moc_controllerscriptenginelegacy.cpp"
 #ifdef MIXXX_USE_QML
 #include "qml/qmlmixxxcontrollerscreen.h"
@@ -54,6 +54,9 @@ ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
 }
 
 void ControllerScriptEngineLegacy::watchFilePath(const QString& path) {
+#ifdef __ANDROID__
+    return;
+#endif
     if (m_fileWatcher.files().contains(path) || m_fileWatcher.directories().contains(path)) {
         qCDebug(m_logger) << "File" << path << "is already being watch for controller auto-reload";
         return;
@@ -358,7 +361,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             watchFilePath(path);
             auto pQmlEngine = std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine);
             pQmlEngine->addImportPath(path);
-            qCWarning(m_logger) << pQmlEngine->importPathList();
+            qCDebug(m_logger) << "The QML import path is" << pQmlEngine->importPathList();
         }
     } else if (!m_modules.isEmpty()) {
         qCWarning(m_logger) << "Controller mapping has QML library definitions but no "

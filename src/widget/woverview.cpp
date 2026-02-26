@@ -45,6 +45,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_type(OverviewType::RGB),
+          m_stereo(true),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -96,6 +97,13 @@ WOverview::WOverview(
             this);
     m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeControlChanged);
     slotTypeControlChanged(m_pTypeControl->get());
+
+    m_pStereoControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("overview_stereo_mode"),
+            this);
+    m_pStereoControl->connectValueChanged(this, &WOverview::slotStereoControlChanged);
+    slotStereoControlChanged(m_pStereoControl->get());
 
     m_pMinuteMarkersControl = make_parented<ControlProxy>(
             QStringLiteral("[Waveform]"),
@@ -462,6 +470,18 @@ void WOverview::slotTypeControlChanged(double v) {
     slotWaveformSummaryUpdated();
 }
 
+void WOverview::slotStereoControlChanged(double v) {
+    bool stereo = v > 0;
+    if (stereo == m_stereo) {
+        return;
+    }
+
+    m_stereo = stereo;
+    // Enforce generation of the new stereo/mono source image
+    m_waveformSourceImage = QImage();
+    slotWaveformSummaryUpdated();
+}
+
 void WOverview::slotMinuteMarkersChanged(bool /*unused*/) {
     update();
 }
@@ -483,7 +503,8 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
             int hotcueNumber = currentCue->getHotCue();
             if ((currentCue->getType() == mixxx::CueType::HotCue ||
-                        currentCue->getType() == mixxx::CueType::Loop) &&
+                        currentCue->getType() == mixxx::CueType::Loop ||
+                        currentCue->getType() == mixxx::CueType::Jump) &&
                     hotcueNumber != Cue::kNoHotCue) {
                 // Prepend the hotcue number to hotcues' labels
                 QString newLabel = currentCue->getLabel();
@@ -731,6 +752,10 @@ void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
 }
 
 void WOverview::drawAxis(QPainter* pPainter) {
+    if (!m_stereo) {
+        return;
+    }
+
     PainterScope painterScope(pPainter);
     pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
     if (m_orientation == Qt::Horizontal) {
@@ -775,7 +800,7 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
 
     if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
         const QRect sourceRect(0,
-                static_cast<int>(diffGain),
+                (m_stereo ? 1 : 2) * static_cast<int>(diffGain),
                 m_waveformSourceImage.width(),
                 m_waveformSourceImage.height() -
                         2 * static_cast<int>(diffGain));
@@ -825,14 +850,20 @@ void WOverview::drawMinuteMarkers(QPainter* pPainter) {
         if (m_orientation == Qt::Horizontal) {
             line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
             pPainter->drawLine(line);
-            line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
-            pPainter->drawLine(line);
+            // Draw bottom markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
+                pPainter->drawLine(line);
+            }
         } else {
             // untested, best effort basis
             line.setLine(0.0, currentMarkerXPos, markerHeight, currentMarkerXPos);
             pPainter->drawLine(line);
-            line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
-            pPainter->drawLine(line);
+            // Draw right markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
+                pPainter->drawLine(line);
+            }
         }
     }
 }
@@ -888,18 +919,21 @@ void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
     if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
             (m_analyzerProgress < kAnalyzerProgressDone)) {
         PainterScope painterScope(pPainter);
-        pPainter->setPen(QPen(m_playPosColor, 3 * m_scaleFactor));
+        double penWidth = 3 * m_scaleFactor;
+        pPainter->setPen(QPen(m_playPosColor, penWidth));
 
         if (m_analyzerProgress > kAnalyzerProgressNone) {
             if (m_orientation == Qt::Horizontal) {
+                double y = m_stereo ? height() / 2 : height() - penWidth / 2;
                 pPainter->drawLine(QLineF(width() * m_analyzerProgress,
-                        height() / 2,
+                        y,
                         width(),
-                        height() / 2));
+                        y));
             } else {
-                pPainter->drawLine(QLineF(width() / 2,
+                double x = m_stereo ? width() / 2 : width() - penWidth / 2;
+                pPainter->drawLine(QLineF(x,
                         height() * m_analyzerProgress,
-                        width() / 2,
+                        x,
                         height()));
             }
         }
@@ -993,6 +1027,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 offset + static_cast<float>(samplePosition) * gain,
                 0.0f,
                 static_cast<float>(width()));
+        float markStartPosition = markPosition;
         pMark->m_linePosition = markPosition;
 
         QLineF line;
@@ -1008,15 +1043,22 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         QRectF rect;
         double sampleEndPosition = pMark->getSampleEndPosition();
         if (sampleEndPosition > 0) {
-            const float markEndPosition = math_clamp(
+            float markEndPosition = math_clamp(
                     offset + static_cast<float>(sampleEndPosition) * gain,
                     0.0f,
                     static_cast<float>(width()));
 
+            // If it's a Jump cue, end is later than start for a forward jump,
+            // so swap positions in this case to get a valid rect for
+            // painting the range.
+            if (pMark->isJump() &&
+                    markEndPosition < markStartPosition) {
+                std::swap(markStartPosition, markEndPosition);
+            }
             if (m_orientation == Qt::Horizontal) {
-                rect.setCoords(markPosition, 0, markEndPosition, height());
+                rect.setCoords(markStartPosition, 0, markEndPosition, height());
             } else {
-                rect.setCoords(0, markPosition, width(), markEndPosition);
+                rect.setCoords(0, markStartPosition, width(), markEndPosition);
             }
         }
 
@@ -1027,9 +1069,18 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         pPainter->drawLine(line);
 
         if (rect.isValid()) {
-            QColor loopColor = pMark->fillColor();
-            loopColor.setAlphaF(0.5f);
-            pPainter->fillRect(rect, loopColor);
+            QColor rangeColor = pMark->fillColor();
+            // Less opacity for inactive jump cues to not unnecessarily obstruct
+            // the waveform image.
+            // TODO Use played color for forward jumps to clarify we'll skip that region?
+            if (pMark->getType() == mixxx::CueType::Jump && pMark->isActive()) {
+                rangeColor.setAlphaF(0.5f);
+            } else {
+                rangeColor.setAlphaF(0.2f);
+            }
+            // TODO Instead of uniform painting, use different types of gradients
+            // loops, jump, intro/outro
+            pPainter->fillRect(rect, rangeColor);
         }
 
         if (!pMark->m_text.isEmpty()) {
@@ -1450,21 +1501,24 @@ bool WOverview::drawNextPixmapPart() {
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     } else if (m_type == OverviewType::HSV) {
         waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     }
 
     m_waveformImageScaled = QImage();
