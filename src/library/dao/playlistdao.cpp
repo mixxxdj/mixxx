@@ -13,7 +13,8 @@
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
-        : m_pAutoDJProcessor(nullptr) {
+        : m_currentHistoryPlaylist(kInvalidPlaylistId),
+          m_pAutoDJProcessor(nullptr) {
 }
 
 void PlaylistDAO::initialize(const QSqlDatabase& database) {
@@ -277,19 +278,35 @@ bool PlaylistDAO::deleteUnlockedPlaylists(QStringList&& idStringList) {
 }
 
 bool PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
-        PlaylistDAO::HiddenType type, int minNumberOfTracks) {
+        PlaylistDAO::HiddenType type,
+        int minNumberOfTracks,
+        bool skipCurrHistory) {
+    // Note: this slot is also called after purging tracks in order to delete
+    // now empty history playlists.
+    // Though, if the current History is now also empty, we must not delete that!
+    // Else the following session log is lost -- or rather not recorded in the
+    // first place since the id passed to appendTrackToPlaylist() does not exist
+    // anymore.
+    // skipCurrHistory prevents that.
     VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
         return false; // nothing to do, probably unintended invocation
     }
 
     QSqlQuery query(m_database);
-    query.prepare(QStringLiteral(
+    QString queryString = QStringLiteral(
             "SELECT id FROM Playlists  "
             "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
             "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
-            "Playlists.hidden = :hidden AND Playlists.locked = 0"));
+            "Playlists.hidden = :hidden AND Playlists.locked = 0");
+    if (skipCurrHistory) {
+        queryString.append(QStringLiteral(" AND Playlists.ID != :currHistoryId"));
+    }
+    query.prepare(queryString);
     query.bindValue(":hidden", static_cast<int>(type));
     query.bindValue(":length", minNumberOfTracks);
+    if (skipCurrHistory) {
+        query.bindValue(":currHistoryId", m_currentHistoryPlaylist);
+    }
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
@@ -299,6 +316,11 @@ bool PlaylistDAO::deleteAllUnlockedPlaylistsWithFewerTracks(
     while (query.next()) {
         idStringList.append(query.value(0).toString());
     }
+
+    if (idStringList.isEmpty()) {
+        return false;
+    }
+
     qInfo() << "Prepared deletion of" << idStringList.size() << "playlists of type" << type
             << "that contain fewer than" << minNumberOfTracks << "tracks";
 
@@ -405,9 +427,29 @@ bool PlaylistDAO::removeTracksFromPlaylist(int playlistId, int startIndex) {
     return true;
 }
 
+bool PlaylistDAO::playlistExists(const int playlistId) const {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("SELECT id FROM Playlists WHERE id = :id"));
+    query.bindValue(":id", playlistId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    if (query.next()) {
+        // id is guaranteed to be unique, so we can return here
+        return true;
+    }
+    // not found
+    return false;
+}
+
 bool PlaylistDAO::appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId) {
     // qDebug() << "PlaylistDAO::appendTracksToPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
+    DEBUG_ASSERT(playlistExists(playlistId));
 
     // Start the transaction
     ScopedTransaction transaction(m_database);
@@ -991,7 +1033,8 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<TrackId>& trackIds, bool
     transaction.commit();
 
     // We may now have empty history playlists. Remove them.
-    deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_LOG, 1);
+    // Note: does not delete current History playlist.
+    deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_LOG, 1, true);
 
     // update the sidebar
     emit playlistContentChanged(playlistIds);
