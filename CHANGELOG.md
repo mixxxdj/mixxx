@@ -622,6 +622,93 @@
 * README: add link to OS-specific build instructions [#14779](https://github.com/mixxxdj/mixxx/pull/14779)
 * Improve debug output for missing WWidget pixmaps [#14473](https://github.com/mixxxdj/mixxx/pull/14473)
 
+## [2.5.5](https://github.com/mixxxdj/mixxx/milestone/53) (Unreleased)
+
+### Library
+
+* Search: fix 'not' operator
+  [#15923](https://github.com/mixxxdj/mixxx/pull/15923)
+  [#15918](https://github.com/mixxxdj/mixxx/issues/15918)
+* Rhythmbox: fix imports
+  [#15798](https://github.com/mixxxdj/mixxx/pull/15798)
+  [#15770](https://github.com/mixxxdj/mixxx/pull/15770)
+* WTrackMenu: warn before opening more than 10 tracks in file browser
+  [#15828](https://github.com/mixxxdj/mixxx/pull/15828)
+  [#15819](https://github.com/mixxxdj/mixxx/issues/15819)
+* Fix "dataChanged() called with an invalid index range" warning
+  [#15937](https://github.com/mixxxdj/mixxx/pull/15937)
+  [#14610](https://github.com/mixxxdj/mixxx/issues/14610)
+
+### Effects
+
+* White Noise: remove DC offset  [#15979](https://github.com/mixxxdj/mixxx/pull/15979)
+* White Noise: improve gain responds [#15949](https://github.com/mixxxdj/mixxx/pull/15949)
+* Echo: fix out of bounds read [#15985](https://github.com/mixxxdj/mixxx/pull/15985)
+* QuickEffect: fix crackling noise when switching
+  [#15796](https://github.com/mixxxdj/mixxx/pull/15796)
+  [#15794](https://github.com/mixxxdj/mixxx/issues/15794)
+
+### Controller Mappings
+
+* Numark Mixtrack 3: update scripts [#14180](https://github.com/mixxxdj/mixxx/pull/14180)
+* Pioneer CDJ-350: fix incorrect name in controller mapping [#15683](https://github.com/mixxxdj/mixxx/pull/15683)
+* Reloop Beatmix 2/4: implement shift+jog wheel seek
+  [#15575](https://github.com/mixxxdj/mixxx/pull/15575)
+  [#12334](https://github.com/mixxxdj/mixxx/issues/12334)
+* Traktor Kontrol Z1: fix crossfader cut
+  [#14451](https://github.com/mixxxdj/mixxx/pull/14451)
+  [#14450](https://github.com/mixxxdj/mixxx/issues/14450)
+  [#15945](https://github.com/mixxxdj/mixxx/pull/15945)
+* Traktor S4Mk2: check for deck undefined [#14445](https://github.com/mixxxdj/mixxx/pull/14445)
+
+### Controller Backend
+
+* Restore common-hid-packet-parser global symbol exceptions for eslint [#15961](https://github.com/mixxxdj/mixxx/pull/15961)
+
+### Engine
+
+* Fix scratching with keylock enabled and mapping using scracht2 [#15845](https://github.com/mixxxdj/mixxx/pull/15845)
+* AudioUnit: fix crash due to off-by-one error in parameter syncing [#15919](https://github.com/mixxxdj/mixxx/pull/15919)
+* FX units: resolve issue preventing use on all samplers [#15971](https://github.com/mixxxdj/mixxx/pull/15971)
+* AutoDJ: fix wrong use of [Auto DJ] -> [AutoDJ] [#16009](https://github.com/mixxxdj/mixxx/pull/16009)
+
+### Preferences
+
+* Interface: use main window screen to detect if skin fits
+  [#15824](https://github.com/mixxxdj/mixxx/pull/15824)
+  [#15823](https://github.com/mixxxdj/mixxx/issues/15823)
+
+### Skins
+
+* Time widget: make ShowSeconds only show seconds, no extra locale info [#15805](https://github.com/mixxxdj/mixxx/pull/15805)
+* Search related menu: fix search click trigger [#15912](https://github.com/mixxxdj/mixxx/pull/15912)
+* Tracks: avoid re-sorting table when purging/hiding tracks
+  [#15872](https://github.com/mixxxdj/mixxx/pull/15872)
+  [#12565](https://github.com/mixxxdj/mixxx/issues/12565)
+
+### Target support
+
+* Add Flatpak packaging files
+  [#15695](https://github.com/mixxxdj/mixxx/pull/15695)
+  [#15922](https://github.com/mixxxdj/mixxx/pull/15922)
+* Fail early if not running from Visual Studio environment [#14623](https://github.com/mixxxdj/mixxx/pull/14623)
+* Make Debian non-free optional [#15895](https://github.com/mixxxdj/mixxx/pull/15895)
+* Debian: remove 'qml6-module-qtquick-nativestyle [#15771](https://github.com/mixxxdj/mixxx/pull/15771)
+
+### Miscellaneous
+
+* Bump actions/cache from 4 to 5 [#15756](https://github.com/mixxxdj/mixxx/pull/15756)
+* Bump actions/upload-artifact from 5.0.0 to 6.0.0 [#15755](https://github.com/mixxxdj/mixxx/pull/15755)
+* Bump azure/trusted-signing-action from 0.5.10 to 1.0.0 [#15884](https://github.com/mixxxdj/mixxx/pull/15884)
+* Bump jwlawson/actions-setup-cmake from 2.0 to 2.1 [#15907](https://github.com/mixxxdj/mixxx/pull/15907)
+* Fix `mixxx-test` build to find `mad.h` [#15803](https://github.com/mixxxdj/mixxx/pull/15803)
+* Disable GitHub cache for VCPKG buildenv to save buildtime [#15981](https://github.com/mixxxdj/mixxx/pull/15981)
+* CI: fix issues related to workflow refactor into modular actions [#15750](https://github.com/mixxxdj/mixxx/pull/15750)
+* (Belated) Happy New Year 2026! [#15852](https://github.com/mixxxdj/mixxx/pull/15852)
+* Retire Ubuntu Plucky Puffin 25.04 [#15926](https://github.com/mixxxdj/mixxx/pull/15926)
+* chore(deps): bump azure/trusted-signing-action from 1.0.0 to 1.1.0 [#15990](https://github.com/mixxxdj/mixxx/pull/15990)
+* Num deck streamline [#14112](https://github.com/mixxxdj/mixxx/pull/14112)
+
 ## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (2025-12-14)
 
 ### Controller Mappings
