@@ -63,6 +63,10 @@
 #include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 
+#ifdef __STEM_CONVERSION__
+#include "stems/stemconversionmanager.h"
+#endif
+
 #ifdef __APPLE__
 #include "util/sandbox.h"
 #endif
@@ -584,6 +588,10 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pScreensaverManager.get(),
             &ScreensaverManager::slotCurrentPlayingDeckChanged);
 
+#ifdef __STEM_CONVERSION__
+    m_pStemConversionManager = std::make_shared<StemConversionManager>(this);
+#endif
+
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
     Clipboard::createInstance();
@@ -882,6 +890,11 @@ void CoreServices::finalize() {
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     CLEAR_AND_CHECK_DELETED(m_pSoundManager);
+
+#ifdef __STEM_CONVERSION__
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting StemConversionManager";
+    CLEAR_AND_CHECK_DELETED(m_pStemConversionManager);
+#endif
 
     // ControllerManager depends on Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
