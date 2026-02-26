@@ -751,7 +751,7 @@
         }
 
         const deck = options.deck;
-        const group = script.deckFromGroup(options.group);
+        const deckFromGroup = script.deckFromGroup(options.group);
         delete options.deck;
         delete options.group;
 
@@ -762,7 +762,7 @@
         Object.defineProperties(this, {
             deck: {
                 get: () => this._deck,
-                set: (value) => {
+                set: value => {
                     if (Number.isInteger(value) && value > 0) {
                         this._deck = value;
                         this.reset();
@@ -770,13 +770,9 @@
                 },
             },
             group: {
-                get: () => `[Channel${deck}]`,
+                get: () => `[Channel${this.deck}]`,
                 set: value => {
-                    const deck = script.deckFromGroup(value);
-                    if (deck > 0) {
-                        this._deck = deck;
-                        this.reset();
-                    }
+                    this.deck = script.deckFromGroup(value);
                 },
             }
         });
@@ -784,9 +780,13 @@
         this.deck = deck;
 
         if (!this.deck) {
-            this.group = group;  // try setting deck from group
+            this.deck = deckFromGroup;  // try setting deck from group
         }
 
+        if (!Number.isInteger(this.deck)) {
+            console.warn("missing deck or group");
+            return;
+        }
         if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
