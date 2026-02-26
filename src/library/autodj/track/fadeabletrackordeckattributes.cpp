@@ -7,6 +7,5 @@ FadeableTrackOrDeckAttributes::FadeableTrackOrDeckAttributes()
         : startPos(AutoDJConstants::kKeepPosition),
           fadeBeginPos(1.0),
           fadeEndPos(1.0),
-          fadeDurationSeconds(0.0),
           isFromDeck(false) {
 }

@@ -10,6 +10,5 @@ class FadeableTrackOrDeckAttributes : public TrackOrDeckAttributes {
     double startPos;     // Set in toDeck nature
     double fadeBeginPos; // set in fromDeck nature
     double fadeEndPos;   // set in fromDeck nature
-    double fadeDurationSeconds;
     bool isFromDeck;
 };

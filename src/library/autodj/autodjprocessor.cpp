@@ -1442,12 +1442,6 @@ void AutoDJProcessor::calculateTransitionImpl(
         }
     }
 
-    // A negative startPos (and therefore fadeDuration) indicates
-    // that there is silence between the tracks instead of an overlap.
-    fromTrack.fadeDurationSeconds =
-            (fromTrack.fadeEndPos - fromTrack.fadeBeginPos) +
-            math_max(0.0, toTrack.startPos);
-
     // The positions are expected to be a fraction of the track length.
     fromTrack.fadeBeginPos /= fromDeckDuration;
     fromTrack.fadeEndPos /= fromDeckDuration;
