@@ -10,14 +10,18 @@
 #include <QtQuick/QSGRectangleNode>
 #include <QtQuick/QSGTexture>
 #include <QtQuick/QSGTextureProvider>
+#include <algorithm>
 #include <cmath>
 
+#include "library/library.h"
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlwaveformdisplay.cpp"
 #include "qml/qmlplayerproxy.h"
+#include "qmllibraryproxy.h"
 #include "rendergraph/context.h"
 #include "rendergraph/node.h"
 #include "util/assert.h"
+#include "waveform/visualplayposition.h"
 
 using namespace allshader;
 
@@ -32,7 +36,22 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
         : QQuickItem(parent),
           WaveformWidgetRenderer(),
           m_syncInterval(kDefaultSyncInternalMs),
-          m_pPlayer(nullptr) {
+          m_pPlayer(nullptr),
+          m_pTrack(nullptr),
+          m_visualPlayPosition(QSharedPointer<VisualPlayPosition>::create()) {
+    m_visualPlayPosition->set(0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            SlipModeState::Disabled,
+            false,
+            false,
+            false,
+            0.0,
+            0.0,
+            0.0,
+            0.0);
     setFlag(QQuickItem::ItemHasContents, true);
 
     connect(this,
@@ -49,9 +68,80 @@ QmlWaveformDisplay::~QmlWaveformDisplay() {
 }
 
 void QmlWaveformDisplay::componentComplete() {
-    qDebug() << "QmlWaveformDisplay ready for group" << getGroup() << "with"
-             << m_waveformRenderers.count() << "renderer(s)";
+    if (!getGroup().isEmpty()) {
+        qDebug() << "QmlWaveformDisplay ready for group" << getGroup() << "with"
+                 << m_waveformRenderers.count() << "renderer(s)";
+    } else if (m_pTrack && m_pTrack->internal()) {
+        qDebug() << "QmlWaveformDisplay ready for track" << m_pTrack->internal().get() << "with"
+                 << m_waveformRenderers.count() << "renderer(s)";
+    } else {
+        qWarning() << "QmlWaveformDisplay initialised with neither a track nor a group!";
+    }
     QQuickItem::componentComplete();
+}
+
+double QmlWaveformDisplay::getPosition() const {
+    return m_visualPlayPosition->getEnginePlayPos();
+}
+
+void QmlWaveformDisplay::setPosition(double value) {
+    if (!m_pTrack || !m_pTrack->internal()) {
+        return;
+    }
+    m_visualPlayPosition->set(std::clamp(value, 0.0, 1.0),
+            1.0,
+            static_cast<int>(1024) /
+                    (m_pTrack->internal()->getBitrate() *
+                            m_pTrack->internal()->getDuration()),
+            0.0,
+            0.0,
+            SlipModeState::Disabled,
+            false,
+            false,
+            false,
+            0,
+            0,
+            m_pTrack->internal()->getDuration(),
+            1024 / mixxx::kEngineChannelOutputCount /
+                    m_pTrack->internal()->getSampleRate() * 1000000.0);
+    update();
+}
+
+void QmlWaveformDisplay::setStaticTrack(QmlTrackProxy* track) {
+    m_pTrack = track;
+    if (!m_pTrack) {
+        if (!m_pPlayer) {
+            setCurrentTrack(nullptr);
+        }
+        return;
+    }
+    if (!track->internal()) {
+        return;
+    }
+    if (!track->internal()->getWaveform()) {
+        emit QmlLibraryProxy::get() -> analyzeTracks({track->internal()->getId()});
+    }
+    setVisualPlayPosition(m_visualPlayPosition);
+    m_visualPlayPosition->set(0.0,
+            1.0,
+            static_cast<int>(1024) /
+                    (m_pTrack->internal()->getBitrate() *
+                            m_pTrack->internal()->getDuration()),
+            0.0,
+            0.0,
+            SlipModeState::Disabled,
+            false,
+            false,
+            false,
+            0,
+            0,
+            m_pTrack->internal()->getDuration(),
+            1024 / mixxx::kEngineChannelOutputCount /
+                    m_pTrack->internal()->getSampleRate() * 1000000.0);
+    setCurrentTrack(track->internal());
+    emit trackChanged(track);
+    emit groupChanged("");
+    update();
 }
 
 void QmlWaveformDisplay::slotWindowChanged(QQuickWindow* window) {
@@ -64,9 +154,20 @@ void QmlWaveformDisplay::slotWindowChanged(QQuickWindow* window) {
     m_timer.restart();
 }
 
+void QmlWaveformDisplay::setOptions(mixxx::qml::WaveformRendererSignalBaseOptions options) {
+    m_options = options;
+    emit optionsChanged(options);
+    m_rendererStack.clear();
+
+    m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+}
+
 std::chrono::microseconds QmlWaveformDisplay::fromTimerToNextSync(const PerformanceTimer& timer) {
     // TODO @m0dB probably better to use a singleton instead of deriving QmlWaveformDisplay from
     // ISyncTimeProvider and have each keep track of this.
+    if (m_pTrack) {
+        return m_syncInterval;
+    }
     return m_syncInterval + std::chrono::microseconds(m_timer.difference(timer).toIntegerMicros());
 }
 
@@ -121,14 +222,12 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
             if (!pQmlRenderer->isSupported()) {
                 qDebug() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
             }
-            auto renderer = pQmlRenderer->create(this);
-#ifdef __STEM__
-            VERIFY_OR_DEBUG_ASSERT(renderer.renderer) {
-#else
-            // It is expected for the stem renderer to return a null value in
+            auto renderer = pQmlRenderer->create(this, m_options);
+            // FIXME Some renderer will return nullptr till
+            // WaveformRendererTextured is supported (#14990)
+            // It is also expected for the stem renderer to return a null value in
             // case STEM are not enabled.
             if (!renderer.renderer) {
-#endif
                 continue;
             }
             addRenderer(renderer.renderer);
@@ -180,6 +279,7 @@ void QmlWaveformDisplay::setPlayer(QmlPlayerProxy* pPlayer) {
     m_pPlayer = pPlayer;
 
     if (m_pPlayer != nullptr) {
+        setGroup(m_pPlayer->internalTrackPlayer()->getGroup());
         setCurrentTrack(m_pPlayer->internalTrackPlayer()->getLoadedTrack());
         connect(m_pPlayer->internalTrackPlayer(),
                 &BaseTrackPlayer::newTrackLoaded,
@@ -288,6 +388,9 @@ QmlWaveformRendererFactory* QmlWaveformDisplay::renderers_at(
         return nullptr;
     }
     QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
+    VERIFY_OR_DEBUG_ASSERT(pWaveform) {
+        return nullptr;
+    }
     pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     return pWaveform->m_waveformRenderers.at(index);
 }
