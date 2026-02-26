@@ -106,4 +106,18 @@
         <file>shaders/rgbsignal.frag</file>
         <file>shaders/stackedsignal.frag</file>
     </qresource>
+    <qresource prefix="/keyboard">
+        <file>keyboard/en_US.kbd.cfg</file>
+        <file>keyboard/rekordbox.kbd.cfg</file>
+        <file>keyboard/serato.kbd.cfg</file>
+        <file>keyboard/traktor.kbd.cfg</file>
+        <file>keyboard/virtualdj.kbd.cfg</file>
+        <file>keyboard/ableton.kbd.cfg</file>
+        <file>keyboard/flstudio.kbd.cfg</file>
+        <file>keyboard/logicpro.kbd.cfg</file>
+        <file>keyboard/protools.kbd.cfg</file>
+        <file>keyboard/laptop.kbd.cfg</file>
+        <file>keyboard/standard_pro.kbd.cfg</file>
+        <file>keyboard/laptop_v2.kbd.cfg</file>
+    </qresource>
 </RCC>

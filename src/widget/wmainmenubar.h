@@ -50,6 +50,7 @@ class WMainMenuBar : public QMenuBar {
     void onNewSkinLoaded();
     void onDeveloperToolsHidden();
     void onDeveloperToolsShown();
+    void onVisualKeyboardHidden();
     void onFullScreenStateChange(bool fullscreen);
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
@@ -73,6 +74,7 @@ class WMainMenuBar : public QMenuBar {
     void menubarAutoHideChanged(bool autohide);
     void showAbout();
     void showKeywheel(bool visible);
+    void showVisualKeyboard(bool visible);
     void showPreferences();
     void toggleDeveloperTools(bool toggle);
     void toggleFullScreen(bool toggle);
@@ -112,6 +114,7 @@ class WMainMenuBar : public QMenuBar {
 
     UserSettingsPointer m_pConfig;
     QAction* m_pViewKeywheel;
+    QAction* m_pViewVisualKeyboard;
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;

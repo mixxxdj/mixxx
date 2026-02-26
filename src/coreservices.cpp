@@ -811,15 +811,22 @@ void CoreServices::initializeKeyboard() {
     }
 
     // Read keyboard configuration and set kdbConfig object in WWidget
-    // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
+    // 1. Check user's selected mapping from config
+    QString selectedMapping = pConfig->getValueString(ConfigKey("[Keyboard]", "Mapping"));
+    
+    // 2. Legacy check: Mixxx custom directory for backwards compatibility
+    QString legacyUserKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
 
     // Empty keyboard configuration
     m_pKbdConfigEmpty = std::make_shared<ConfigObject<ConfigValueKbd>>(QString());
 
-    if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard mapping" << userKeyboard;
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
+    QString mappingToLoad;
+    if (!selectedMapping.isEmpty() && QFile::exists(selectedMapping)) {
+        qDebug() << "Found and will use selected keyboard mapping" << selectedMapping;
+        mappingToLoad = selectedMapping;
+    } else if (QFile::exists(legacyUserKeyboard)) {
+        qDebug() << "Found and will use legacy custom keyboard mapping" << legacyUserKeyboard;
+        mappingToLoad = legacyUserKeyboard;
     } else {
         // Default to the locale for the main input method (e.g. keyboard).
         QLocale locale = inputLocale();
@@ -828,7 +835,6 @@ void CoreServices::initializeKeyboard() {
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
-        qDebug() << "Found and will use default keyboard mapping" << defaultKeyboard;
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
@@ -838,8 +844,11 @@ void CoreServices::initializeKeyboard() {
                 defaultKeyboard = "";
             }
         }
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(defaultKeyboard);
+        mappingToLoad = defaultKeyboard;
     }
+    
+    qDebug() << "Keyboard mapping selected for load:" << mappingToLoad;
+    m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(mappingToLoad);
 
     // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
     // initialization into KeyboardEventFilter
@@ -883,8 +892,6 @@ bool CoreServices::initializeDatabase() {
 }
 
 std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
-    // Note: We return here the base class pointer to make the coreservices.h usable
-    // in test classes where header included from dlgpreferences.h are not accessible.
     std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
             getScreensaverManager(),
             nullptr,
@@ -893,7 +900,8 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
-            getLibrary());
+            getLibrary(),
+            getKeyboardEventFilter());
     return pDlgPreferences;
 }
 

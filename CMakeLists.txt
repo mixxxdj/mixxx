@@ -1219,6 +1219,11 @@ add_library(
   src/controllers/dlgprefcontrollers.cpp
   src/controllers/dlgprefcontrollersdlg.ui
   src/controllers/keyboard/keyboardeventfilter.cpp
+  src/controllers/keyboard/keyboardmappingmanager.cpp
+  src/controllers/keyboard/keyboardactionregistry.cpp
+  src/controllers/keyboard/dlgkeyboardvisuallayout.cpp
+  src/controllers/keyboard/dlgkeyboardmappingeditor.cpp
+  src/controllers/dlgprefkeyboard.cpp
   src/controllers/learningutils.cpp
   src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/midi/legacymidicontrollermapping.cpp
@@ -5347,10 +5352,10 @@ set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT
   "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake"
 )
-set(
-  CPACK_DEBIAN_INSTALL_SCRIPT
-  "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake"
-)
+# set(
+#   CPACK_DEBIAN_INSTALL_SCRIPT
+#   "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake"
+# )
 
 set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
 set(
