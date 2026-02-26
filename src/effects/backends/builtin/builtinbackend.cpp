@@ -30,6 +30,8 @@
 #endif
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
+#include "effects/backends/builtin/vocalseparationeffect.h"
+#include "effects/backends/builtin/instrumentalseparationeffect.h"
 
 BuiltInBackend::BuiltInBackend() {
     // Keep this list in a reasonable order
@@ -49,6 +51,9 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<BitCrusherEffect>();
     registerEffect<WhiteNoiseEffect>();
     registerEffect<BalanceEffect>();
+    // Source Separation Effects
+    registerEffect<VocalSeparationEffect>();
+    registerEffect<InstrumentalSeparationEffect>();
     // Fancy effects
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
