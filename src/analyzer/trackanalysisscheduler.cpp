@@ -92,6 +92,7 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
 
 TrackAnalysisScheduler::~TrackAnalysisScheduler() {
     kLogger.debug() << "Destroying";
+    // Here the workers in m_workers are deleted after waiting for the associated thread is finished
 }
 
 void TrackAnalysisScheduler::emitProgressOrFinished() {
