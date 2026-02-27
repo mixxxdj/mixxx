@@ -791,6 +791,42 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         }
     }
 
+    // Start the toDeck early so it is already playing (and not cold-starting)
+    // by the time the crossfader transition begins.  We trigger kEarlyPlaySeconds
+    // before fadeBeginPos and seek the toDeck back by however much time actually
+    // remain until fadeBeginPos at that moment.
+    if (m_eState == ADJ_IDLE && thisDeck->isFromDeck && !otherDeck->loading &&
+            thisDeckPlaying && !otherDeckPlaying &&
+            otherDeck->startPos != kKeepPosition) {
+        const double fromDeckDurationSec = getEndSecond(thisDeck);
+        if (fromDeckDurationSec > 0.0) {
+            constexpr double kEarlyPlaySeconds = 1.0;
+            const double earlyPlayPos =
+                    thisDeck->fadeBeginPos - (kEarlyPlaySeconds / fromDeckDurationSec);
+            if (thisPlayPosition >= earlyPlayPos &&
+                    thisPlayPosition < thisDeck->fadeBeginPos) {
+                const double toDeckDurationSec = getEndSecond(otherDeck);
+                if (toDeckDurationSec > 0.0) {
+                    // Seek the toDeck back by the exact number of seconds remaining
+                    // until fadeBeginPos so that startPos aligns with the fade start,
+                    // regardless of where in the buffer window this callback fired.
+                    const double secondsUntilFade =
+                            (thisDeck->fadeBeginPos - thisPlayPosition) * fromDeckDurationSec;
+                    const double earlyStartPos =
+                            otherDeck->startPos - (secondsUntilFade / toDeckDurationSec);
+                    otherDeck->setPlayPosition(earlyStartPos);
+                    otherDeck->play();
+                    if constexpr (sDebug) {
+                        qDebug() << this << "playerPositionChanged"
+                                 << "early play toDeck at" << earlyStartPos
+                                 << "(" << secondsUntilFade << "s before startPos"
+                                 << otherDeck->startPos << ")";
+                    }
+                }
+            }
+        }
+    }
+
     // If we are past this deck's posThreshold then:
     // - transition into fading mode, play the other deck and fade to it.
     // - check if fading is done and stop the deck
