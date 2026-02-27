@@ -814,6 +814,7 @@ QString YearFilterNode::toSql() const {
 // TODO Convert to DateFilterNode and allow searching for "last_played"
 DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
         : m_operatorQuery(false),
+          m_equalsQuery(false),
           m_operator("=") {
     QDateTime date;
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
