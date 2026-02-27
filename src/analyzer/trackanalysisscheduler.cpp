@@ -228,7 +228,7 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         DEBUG_ASSERT(!trackId.isValid());
         DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         worker.onThreadExit();
-        DEBUG_ASSERT(!worker);
+        DEBUG_ASSERT(!worker.hasThread());
         break;
     default:
         DEBUG_ASSERT(!"Unhandled signal from worker thread");

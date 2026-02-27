@@ -87,7 +87,7 @@ class TrackAnalysisScheduler : public QObject {
         Worker(const Worker&) = delete;
         Worker(Worker&&) = default;
 
-        operator bool() const {
+        bool hasThread() const {
             return static_cast<bool>(m_pThread);
         }
 
