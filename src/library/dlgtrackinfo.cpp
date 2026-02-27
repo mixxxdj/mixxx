@@ -77,6 +77,7 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("replaygain", txtReplayGain);
 
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
@@ -244,6 +245,31 @@ void DlgTrackInfo::init() {
                 txtTrackNumber->setText(txtTrackNumber->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
                         txtTrackNumber->text());
+            });
+    connect(txtReplayGain,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                const QString text = txtReplayGain->text().trimmed();
+                txtReplayGain->setText(text);
+                if (text.isEmpty()) {
+                    return;
+                }
+                mixxx::ReplayGain replayGain =
+                        m_trackRecord.getMetadata().getTrackInfo().getReplayGain();
+                if (text == mixxx::ReplayGain::ratioToString(replayGain.getRatio())) {
+                    return;
+                }
+                bool valid = false;
+                const double ratio = mixxx::ReplayGain::ratioFromString(text, &valid);
+                if (valid) {
+                    replayGain.setRatio(ratio);
+                    m_trackRecord.refMetadata().refTrackInfo().setReplayGain(replayGain);
+                } else {
+                    // Restore the current value on invalid input
+                    txtReplayGain->setText(
+                            mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
+                }
             });
 
     // Import and file browser buttons
@@ -430,6 +456,10 @@ void DlgTrackInfo::updateTrackMetadataFields() {
             m_trackRecord.getMetadata().getTrackInfo().getBpmText());
     displayKeyText();
 
+    txtReplayGain->setText(
+            mixxx::ReplayGain::ratioToString(
+                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+
     // Non-editable fields
     txtDuration->setText(
             m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
@@ -439,9 +469,6 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     } else {
         txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
     }
-    txtReplayGain->setText(
-            mixxx::ReplayGain::ratioToString(
-                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
 
     auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
     if (samplerate.isValid()) {

@@ -571,18 +571,9 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="txtReplayGain">
-            <property name="font">
-             <font>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="textInteractionFlags">
-             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           <widget class="QLineEdit" name="txtReplayGain">
+            <property name="toolTip">
+             <string>ReplayGain value in dB (e.g. -6.0)</string>
             </property>
            </widget>
           </item>
@@ -1062,6 +1053,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtYear</tabstop>
   <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
+  <tabstop>txtReplayGain</tabstop>
   <tabstop>btnColorPicker</tabstop>
   <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
   <tabstop>btnImportMetadataFromFile</tabstop>

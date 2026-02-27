@@ -140,6 +140,7 @@ void DlgTrackInfoMulti::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("replaygain", txtReplayGain);
 
     // QDialog buttons
     connect(btnApply,
@@ -166,6 +167,22 @@ void DlgTrackInfoMulti::init() {
             &QPushButton::clicked,
             this,
             &DlgTrackInfoMulti::slotImportMetadataFromFiles);
+
+    connect(txtReplayGain,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                const QString text = txtReplayGain->text().trimmed();
+                txtReplayGain->setText(text);
+                if (text.isEmpty()) {
+                    return;
+                }
+                bool valid = false;
+                mixxx::ReplayGain::ratioFromString(text, &valid);
+                if (!valid) {
+                    txtReplayGain->clear();
+                }
+            });
 
     connect(btnOpenFileBrowser,
             &QPushButton::clicked,
@@ -422,6 +439,7 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     QSet<double> durations;
     QSet<uint32_t> samplerates;
     QSet<QString> filetypes;
+    QSet<double> replaygainRatios;
 
     for (const auto& rec : std::as_const(m_trackRecords)) {
         titles.insert(rec.getMetadata().getTrackInfo().getTitle());
@@ -452,6 +470,40 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         samplerates.insert(samplerate.isValid() ? samplerate.value() : 0);
 
         filetypes.insert(rec.getFileType());
+
+        const double ratio = rec.getMetadata().getTrackInfo().getReplayGain().getRatio();
+        if (mixxx::ReplayGain::isValidRatio(ratio)) {
+            replaygainRatios.insert(ratio);
+        }
+    }
+
+    // Leave the ReplayGain edit empty by default; show min/avg/max as info
+    txtReplayGain->clear();
+    txtReplayGain->setProperty(kOrigValProp, QString());
+    if (!replaygainRatios.isEmpty()) {
+        QList<double> rgList = replaygainRatios.values();
+        std::sort(rgList.begin(), rgList.end());
+        const double minRatio = rgList.first();
+        const double maxRatio = rgList.last();
+        double sumRatio = 0.0;
+        for (double r : rgList) {
+            sumRatio += r;
+        }
+        const double avgRatio = sumRatio / rgList.size();
+        const int total = m_trackRecords.size();
+        const int withRg = rgList.size();
+        QString info = QStringLiteral("min: %1  avg: %2  max: %3")
+                               .arg(mixxx::ReplayGain::ratioToString(minRatio),
+                                       mixxx::ReplayGain::ratioToString(avgRatio),
+                                       mixxx::ReplayGain::ratioToString(maxRatio));
+        if (withRg < total) {
+            info += QStringLiteral(" (%1/%2 tracks have ReplayGain)")
+                            .arg(withRg)
+                            .arg(total);
+        }
+        lblReplayGainInfo->setText(info);
+    } else {
+        lblReplayGainInfo->setText(tr("No ReplayGain data for selected tracks."));
     }
 
     addValuesToComboBox(txtTitle, titles);
@@ -675,6 +727,9 @@ void DlgTrackInfoMulti::saveTracks() {
     const QString year = validEditText(txtYear);
     const QString key = validEditText(txtKey);
     const QString num = validEditText(txtTrackNumber);
+    // If ReplayGain field is non-empty, apply that value to all tracks.
+    // If empty, do nothing.
+    const QString replaygainText = txtReplayGain->text().trimmed();
     // Check if the Comment has been changed.
     // (same as in validEditText(), just for the QPlainTextEdit)
     QString comment;
@@ -718,6 +773,17 @@ void DlgTrackInfoMulti::saveTracks() {
         }
         if (!num.isNull()) {
             rec.refMetadata().refTrackInfo().setTrackNumber(num);
+        }
+        if (!replaygainText.isEmpty()) {
+            bool valid = false;
+            const double ratio = mixxx::ReplayGain::ratioFromString(
+                    replaygainText, &valid);
+            if (valid) {
+                mixxx::ReplayGain replayGain =
+                        rec.getMetadata().getTrackInfo().getReplayGain();
+                replayGain.setRatio(ratio);
+                rec.refMetadata().refTrackInfo().setReplayGain(replayGain);
+            }
         }
         if (!comment.isNull()) {
             rec.refMetadata().refTrackInfo().setComment(comment);
