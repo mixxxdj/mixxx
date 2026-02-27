@@ -30,7 +30,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     // Editing starts when clicking on an already selected item.
     setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
 
-    //Enable selection by rows and extended selection (ctrl/shift click)
+    // Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 
@@ -41,9 +41,37 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
     // cell.
     setMouseTracking(true);
-    //Work around a Qt bug that lets you make your columns so wide you
-    //can't reach the divider to make them small again.
+
+    // Work around a Qt bug that lets you make your columns so wide you
+    // can't reach the divider to make them small again.
     setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+
+    if (verticalScrollMode() == QAbstractItemView::ScrollPerPixel) {
+        qWarning() << "     .";
+        qWarning() << "     WLibraryTableView: vertical scroll mode is ScrollPerPixel";
+        bool mayHaveAutoScrollBug = false;
+        // If we're on Windows or Linux with Wayland try ScrollPerItem in order to
+        // work around the Qt6 slow auto-scroll regressions
+        // https://github.com/mixxxdj/mixxx/issues/14807
+        // https://github.com/mixxxdj/mixxx/issues/14047
+#ifdef __WINDOWS__
+        qWarning() << "     platform is Windows";
+        mayHaveAutoScrollBug = true;
+#endif
+#ifdef __LINUX__
+        const QString platform = QGuiApplication::platformName().toLower();
+        if (platform.contains(QLatin1String("wayland"))) {
+            qWarning() << "     platform is Linux with Wayland";
+            mayHaveAutoScrollBug = true;
+        }
+#endif
+        if (mayHaveAutoScrollBug) {
+            qWarning() << "     platform may suffer from slow auto-scroll bug";
+            qWarning() << "     set scroll mode ScrollPerItem";
+            setVerticalScrollMode(QAbstractItemView::ScrollPerItem);
+        }
+        qWarning() << "     .";
+    }
 
     verticalHeader()->hide();
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
