@@ -1,0 +1,753 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.0.0+">
+    <info>
+        <name>Reloop Mixtour</name>
+        <author>Rene (mixxx at absorb.it), zfhrp</author>
+        <description>Reloop Mixtour mapping (2-deck with support for 4-deck)</description>
+        <forum>https://mixxx.discourse.group/t/new-mapping-for-reloop-mixtour/33093</forum>
+        <manual>reloop_mixtour</manual>
+    </info>
+  <settings>
+    <option
+      variable="leftControls"
+      type="enum"
+      label="Left Controls will">
+      <value label="be used for Deck 1" default="true">1</value>
+      <value label="be used for Deck 2">2</value>
+      <value label="be used for Deck 3">3</value>
+      <value label="be used for Deck 4">4</value>
+      <value label="follow Deck 1 or 3 selection">0</value>
+      <description>This specifies which Decks the left side of the controller should represent. Usually it will be used for Deck 1, but you can choose to use it for the other Decks as well. Or it can follow the selection of the active Deck (1 or 3) from another controller (if the controller implementation supports deck/mixer highlighting).</description>
+    </option>
+    <option
+      variable="rightControls"
+      type="enum"
+      label="Right Controls will">
+      <value label="be used for Deck 1">1</value>
+      <value label="be used for Deck 2" default="true">2</value>
+      <value label="be used for Deck 3">3</value>
+      <value label="be used for Deck 4">4</value>
+      <value label="follow Deck 2 or 4 selection">0</value>
+      <description>This specifies which Decks the right side of the controller should represent. Usually it will be used for Deck 2, but you can choose to use it for the other Decks as well. Or it can follow the selection of the active Deck (2 or 4) from another controller (if the controller implementation supports deck/mixer highlighting).</description>
+    </option>
+    <option
+      variable="fxButton"
+      type="enum"
+      label="FX Button will activate">
+      <value label="FX 1">1</value>
+      <value label="FX 2">2</value>
+      <value label="FX 3">3</value>
+      <value label="FX 4">4</value>
+      <value label="FX for Deck number" default="true">0</value>
+      <description>This specifies which FX is activated for tehe current Deck when FX button is pressed.</description>
+    </option>
+</settings >
+    <controller id="Reloop Mixtour">
+        <scriptfiles>
+            <file filename="midi-components-0.0.js" />
+            <file filename="Reloop-Mixtour-scripts.js" functionprefix="ReloopMixtour"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Master]</group>
+                <key>ReloopMixtour.shiftButton.input</key>
+                <description>Shift pressed</description>
+                <status>0x90</status>
+                <midino>0x06</midino>
+                <options>
+                <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.mixer.left.gain.input</key>
+                <description>[GAIN] ch1 gain</description>
+                <status>0xB0</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.mixer.right.gain.input</key>
+                <description>[GAIN] ch2 gain</description>
+                <status>0xB1</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>[GAIN]main gain</description>
+                <status>0xB4</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.mixer.left.effect.input</key>
+                <description>[FX]FX</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.mixer.right.effect.input</key>
+                <description>[FX]FX</description>
+                <status>0x91</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>ReloopMixtour.mixer.left.highEq.input</key>
+                <description>[HIGH_EQ]high_eq</description>
+                <status>0xB0</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>ReloopMixtour.mixer.right.highEq.input</key>
+                <description>[HIGH_EQ]high_eq</description>
+                <status>0xB1</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>[HEADPHONE GAIN]headphone gain</description>
+                <status>0xB4</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.load.input</key>
+                <description>[LOAD]load selected track</description>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.load.input</key>
+                <description>Shift [LOAD]</description>
+                <status>0x90</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.load.input</key>
+                <description>[LOAD]load selected track</description>
+                <status>0x91</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.right.load.input</key>
+                <description>Shift [LOAD]</description>
+                <status>0x91</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>ReloopMixtour.mixer.left.midEq.input</key>
+                <description>[MID_EQ]mid_eq</description>
+                <status>0xB0</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>ReloopMixtour.mixer.right.midEq.input</key>
+                <description>[MID_EQ]mid_eq</description>
+                <status>0xB1</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.pfl.input</key>
+                <description>[Headphone]Headphone Listen</description>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.pfl.input</key>
+                <description>[Headphone]Headphone Listen</description>
+                <status>0x91</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control><control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.pfl.input</key>
+                <description>[Headphone]Preview</description>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.pfl.input</key>
+                <description>[Headphone]Preview</description>
+                <status>0x91</status>
+                <midino>0x43</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>ReloopMixtour.mixer.left.lowEq.input</key>
+                <description>[MID_EQ]low_eq</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>ReloopMixtour.mixer.right.lowEq.input</key>
+                <description>[MID_EQ]low_eq</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>ReloopMixtour.mixer.left.fxKnob.input</key>
+                <description>[FX Knob]FX Knob</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding />
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>ReloopMixtour.mixer.right.fxKnob.input</key>
+                <description>[FX Knob]FX Knob</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.mixer.left.volumeFader.input</key>
+                <description>[VOLUME_FADER]Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.mixer.right.volumeFader.input</key>
+                <description>[VOLUME_FADER]Volume Fader</description>
+                <status>0xB1</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.mixer.left.faderStart.input</key>
+                <description>[VOLUME_FADER] 0 -- 1 </description>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.mixer.right.faderStart.input</key>
+                <description>[VOLUME_FADER] 0 -- 1 </description>
+                <status>0x91</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.mixer.left.faderStop.input</key>
+                <description>[VOLUME_FADER] 1 -- 0 </description>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.mixer.right.faderStop.input</key>
+                <description>[VOLUME_FADER] 1 -- 0 </description>
+                <status>0x91</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>[HEADPHONE_MIX]</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>ReloopMixtour.rotarySelector.inputPress</key>
+                <description>[SEEK_PUSH]</description>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>ReloopMixtour.rotarySelector.input</key>
+                <description>[SEEK]</description>
+                <status>0xB0</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>ReloopMixtour.backBtn.input</key>
+                <description>[BACK]</description>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>ReloopMixtour.backBtn.input</key>
+                <description>Shift [BACK]</description>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>ReloopMixtour.rotarySelector.inputPress</key>
+                <description>Shift [SEEK_PUSH]</description>
+                <status>0x90</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>ReloopMixtour.rotarySelector.input</key>
+                <description>Shift [SEEK]</description>
+                <status>0xB0</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>ReloopMixtour.backBtn.input</key>
+                <description>Shift [BACK]</description>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>[CROSSFADER]crossfader</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.loop.input</key>
+                <description>[LOOP]</description>
+                <status>0x90</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.loop.input</key>
+                <description>[LOOP]</description>
+                <status>0x91</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.loop.input</key>
+                <description>[LOOP]</description>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.loop.input</key>
+                <description>[LOOP]</description>
+                <status>0x91</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.cue.input</key>
+                <description>[CUE]cue</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.cue.input</key>
+                <description>[CUE]cue</description>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.cue.input</key>
+                <description>[CUE]cue</description>
+                <status>0x90</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.cue.input</key>
+                <description>[CUE]cue</description>
+                <status>0x91</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.play.input</key>
+                <description>[PLAY]play</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.play.input</key>
+                <description>[PLAY]play</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.play.input</key>
+                <description>[PLAY]play</description>
+                <status>0x90</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.play.input</key>
+                <description>[PLAY]play</description>
+                <status>0x91</status>
+                <midino>0x4B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue1.input</key>
+                <description>[C1] hotcue 1</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue1.input</key>
+                <description>[C1] hotcue 1</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue2.input</key>
+                <description>[C2] hotcue 2</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue2.input</key>
+                <description>[C2] hotcue 2</description>
+                <status>0x91</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue3.input</key>
+                <description>[C3] hotcue 3</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue3.input</key>
+                <description>[C3] hotcue 3</description>
+                <status>0x91</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue4.input</key>
+                <description>[C4] hotcue 4</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue4.input</key>
+                <description>[C4] hotcue 4</description>
+                <status>0x91</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.beatSync.input</key>
+                <description>SYNC button</description>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.beatSync.input</key>
+                <description>[Shift+SYNC]</description>
+                <status>0x90</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.beatSync.input</key>
+                <description>SYNC button</description>
+                <status>0x91</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+             </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.beatSync.input</key>
+                <description>[Shift+SYNC]</description>
+                <status>0x91</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue1.input</key>
+                <description>[Shift+C1]</description>
+                <status>0x90</status>
+                <midino>0x4C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue1.input</key>
+                <description>[Shift+C1]</description>
+                <status>0x91</status>
+                <midino>0x4C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue2.input</key>
+                <description>[Shift+C2]</description>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue2.input</key>
+                <description>[Shift+C2]</description>
+                <status>0x91</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue3.input</key>
+                <description>[Shift+C3]</description>
+                <status>0x90</status>
+                <midino>0x4E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue3.input</key>
+                <description>[Shift+C3]</description>
+                <status>0x91</status>
+                <midino>0x4E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.decks.left.hotcue4.input</key>
+                <description>[Shift+C4]</description>
+                <status>0x90</status>
+                <midino>0x4F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.decks.right.hotcue4.input</key>
+                <description>[Shift+C4]</description>
+                <status>0x91</status>
+                <midino>0x4F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+        </controls>
+    </controller>
+</MixxxControllerPreset>
