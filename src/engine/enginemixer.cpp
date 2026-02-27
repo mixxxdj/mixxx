@@ -225,6 +225,8 @@ EngineMixer::EngineMixer(
     m_pHeadphoneEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headEnabled")));
     m_pHeadphoneEnabled->setReadOnly();
 
+    m_pMainMonoMixdown->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("mono_mixdown")));
+
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
 
