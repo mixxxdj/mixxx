@@ -3239,7 +3239,7 @@ if(APPLE)
       target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework UIKit"
       )
-    elseif()
+    else()
       target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework AppKit"
         "-weak_framework AudioUnit"
