@@ -272,9 +272,10 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
                             .value()));
     if (pChunk->getIndex() == firstSoundIndex) {
         CSAMPLE sampleBuffer[kNumSoundFrameToVerify * mixxx::kEngineChannelCount];
-        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
-        pChunk->readBufferedSampleFrames(sampleBuffer,
-                mixxx::IndexRange::forward(end - 1, kNumSoundFrameToVerify));
+        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value()) + 1;
+        mixxx::IndexRange probeFrameIndexRange =
+                mixxx::IndexRange::between(end - kNumSoundFrameToVerify, end);
+        pChunk->readBufferedSampleFrames(sampleBuffer, probeFrameIndexRange);
         if (AnalyzerSilence::verifyFirstSound(std::span<const CSAMPLE>(sampleBuffer),
                     mixxx::audio::FramePos(1))) {
             qDebug() << "First sound found at the previously stored position";
