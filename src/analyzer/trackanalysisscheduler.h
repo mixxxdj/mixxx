@@ -80,20 +80,20 @@ class TrackAnalysisScheduler : public QObject {
     // that runs the TrackAnalysisScheduler.
     class Worker {
       public:
-        explicit Worker(AnalyzerThread::Pointer thread = AnalyzerThread::NullPointer())
-            : m_thread(std::move(thread)),
-              m_analyzerProgress(kAnalyzerProgressUnknown) {
+        explicit Worker(AnalyzerThread::Pointer pThread = AnalyzerThread::NullPointer())
+                : m_pThread(std::move(pThread)),
+                  m_analyzerProgress(kAnalyzerProgressUnknown) {
         }
         Worker(const Worker&) = delete;
         Worker(Worker&&) = default;
 
         operator bool() const {
-            return static_cast<bool>(m_thread);
+            return static_cast<bool>(m_pThread);
         }
 
         AnalyzerThread* thread() const {
-            DEBUG_ASSERT(m_thread);
-            return m_thread.get();
+            DEBUG_ASSERT(m_pThread);
+            return m_pThread.get();
         }
 
         AnalyzerProgress analyzerProgress() const {
@@ -101,41 +101,41 @@ class TrackAnalysisScheduler : public QObject {
         }
 
         bool submitNextTrack(const AnalyzerTrack& track) {
-            DEBUG_ASSERT(m_thread);
-            return m_thread->submitNextTrack(std::move(track));
+            DEBUG_ASSERT(m_pThread);
+            return m_pThread->submitNextTrack(std::move(track));
         }
 
         void suspendThread() {
-            if (m_thread) {
-                m_thread->suspend();
+            if (m_pThread) {
+                m_pThread->suspend();
             }
         }
 
         void resumeThread() {
-            if (m_thread) {
-                m_thread->resume();
+            if (m_pThread) {
+                m_pThread->resume();
             }
         }
 
         void stopThread() {
-            if (m_thread) {
-                m_thread->stop();
+            if (m_pThread) {
+                m_pThread->stop();
             }
         }
 
         void onAnalyzerProgress(AnalyzerProgress analyzerProgress) {
-            DEBUG_ASSERT(m_thread);
+            DEBUG_ASSERT(m_pThread);
             m_analyzerProgress = analyzerProgress;
         }
 
         void onThreadExit() {
-            DEBUG_ASSERT(m_thread);
-            m_thread.reset();
+            DEBUG_ASSERT(m_pThread);
+            m_pThread.reset();
             m_analyzerProgress = kAnalyzerProgressUnknown;
         }
 
       private:
-        AnalyzerThread::Pointer m_thread;
+        AnalyzerThread::Pointer m_pThread;
         AnalyzerProgress m_analyzerProgress;
     };
 
