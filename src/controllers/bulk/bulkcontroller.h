@@ -10,28 +10,35 @@
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 
+struct bulk_transfer_cb_data;
 struct libusb_device_handle;
+struct libusb_transfer;
 struct libusb_context;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
     Q_OBJECT
   public:
-    BulkReader(libusb_device_handle *handle, unsigned char in_epaddr);
-    virtual ~BulkReader();
+    BulkReader(libusb_device_handle* handle, libusb_context* context, std::uint8_t in_epaddr);
+    ~BulkReader() override;
 
     void stop();
+    void handleTransfer(libusb_transfer* transfer);
 
   signals:
     void incomingData(const QByteArray& data, mixxx::Duration timestamp);
 
   protected:
-    void run();
+    void run() override;
 
   private:
-    libusb_device_handle* m_phandle;
     QAtomicInt m_stop;
-    unsigned char m_in_epaddr;
+
+    libusb_transfer* m_in_transfer;
+    libusb_context* m_context;
+
+    std::unique_ptr<bulk_transfer_cb_data> m_cb_data;
+    std::array<std::uint8_t, 255> m_data;
 };
 
 class BulkController : public Controller {
