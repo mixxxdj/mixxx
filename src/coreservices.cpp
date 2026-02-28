@@ -11,6 +11,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "broadcast/scrobblingmanager.h"
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -602,6 +603,8 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager.get(),
             m_pRecordingManager.get());
 
+    m_pScrobblingManager = std::make_shared<ScrobblingManager>(pConfig, m_pPlayerManager);
+
     OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
     connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
             &TrackDAO::waveformSummaryUpdated,
@@ -893,6 +896,7 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
+            getScrobblingManager(),
             getLibrary());
     return pDlgPreferences;
 }
@@ -918,6 +922,9 @@ void CoreServices::finalize() {
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
     ControllerScriptEngineBase::registerPlayerManager(nullptr);
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ScrobblingManager";
+    CLEAR_AND_CHECK_DELETED(m_pScrobblingManager);
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

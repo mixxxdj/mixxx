@@ -8,11 +8,13 @@
 #include <QScrollArea>
 #include <QtGlobal>
 
+#include "broadcast/scrobblingmanager.h"
 #include "controllers/dlgprefcontrollers.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefmetadata.h"
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
 #include "util/desktophelper.h"
@@ -55,6 +57,7 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
+        [[maybe_unused]] std::shared_ptr<ScrobblingManager> pScrobblingManager,
         std::shared_ptr<Library> pLibrary)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
@@ -205,6 +208,16 @@ DlgPreferences::DlgPreferences(
             tr("Live Broadcasting"),
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
+
+#if defined(__MPRIS__) || defined(__MACOS_MEDIAPLAYER__)
+    // There is no other options at the moment, so excluding this category
+    // entirely if MPRIS and MacOS MediaPlayer are not available.
+    addPageWidget(PreferencesPage(
+                          new DlgPrefMetadata(this, m_pConfig, pScrobblingManager),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Metadata Output"),
+            "ic_preferences_broadcast.svg");
+#endif
 
     addPageWidget(PreferencesPage(
                           new DlgPrefRecord(this, m_pConfig),
