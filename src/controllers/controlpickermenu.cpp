@@ -998,7 +998,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* pEffectsMenu = addSubmenu(tr("Effects"));
     // Deck Quick Effects
     for (int i = 1; i <= iNumDecks; ++i) {
-        const QString deckGroup = PlayerManager::groupForDeck(i);
+        const QString deckGroup = PlayerManager::groupForDeck(i - 1);
         const QString quickEffectGroup = QuickEffectChain::formatEffectChainGroup(deckGroup);
         QMenu* pQuickEffectMenu = addSubmenu(tr("Quick Effects Deck %1").arg(i), pEffectsMenu);
         addControl(quickEffectGroup,
