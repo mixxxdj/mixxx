@@ -486,6 +486,10 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    // Clear widget pointer list and destroy all update connections before we
+    // delete the main widget (ie. all WBaseWidgets) to prevent KeyboardEventFilter
+    // accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
     m_pCentralWidget = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);
@@ -509,7 +513,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     // outside of MixxxMainWindow the parent relationship will directly destroy
     // the WMainMenuBar and this will no longer be a problem.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
-
+    // Clear action pointer list before we delete the menubar
+    // to prevent KeyboardEventFilter accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearMenuBarActions();
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
     // We need to reset the parented pointer here that it does not become a
@@ -800,9 +806,9 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
-    DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
+    DEBUG_ASSERT(m_pCoreServices->getKeyboardEventFilter());
     m_pMenuBar = make_parented<WMainMenuBar>(
-            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
+            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardEventFilter());
     if (m_pCentralWidget) {
         m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
@@ -864,13 +870,6 @@ void MixxxMainWindow::connectMenuBar() {
             Qt::UniqueConnection);
     // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
     m_pMenuBar->onFullScreenStateChange(isFullScreen());
-
-    // Keyboard shortcuts
-    connect(m_pMenuBar,
-            &WMainMenuBar::toggleKeyboardShortcuts,
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::slotOptionsKeyboard,
-            Qt::UniqueConnection);
 
     // Help
     connect(m_pMenuBar,
@@ -1308,6 +1307,8 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
     m_toolTipsCfg = tt;
+    m_pCoreServices->getKeyboardEventFilter()->setShowOnlyKbdShortcuts(
+            tt == mixxx::preferences::Tooltips::OnlyKbdShortcuts);
 #ifdef MIXXX_USE_QOPENGL
     ToolTipQOpenGL::singleton().setActive(
             m_toolTipsCfg == mixxx::preferences::Tooltips::On);
@@ -1329,6 +1330,11 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pMenuBar->onNewSkinAboutToLoad();
 
     if (m_pCentralWidget) {
+        // Clear widget pointer list and destroy all update connections before
+        // we delete the main widget (ie. all WBaseWidgets) to prevent
+        // KeyboardEventFilter accessing dangling pointers, just in case a
+        // shortcuts/tooltip update is triggered while we re/load a skin.
+        m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
         m_pCentralWidget->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pCentralWidget;
@@ -1431,7 +1437,13 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         // Return true for no tool tips
         switch (m_toolTipsCfg) {
         case mixxx::preferences::Tooltips::OnlyInLibrary:
+            // WLibrary's stacked widgets are not derived from WBaseWidget
             if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
+                return true;
+            }
+            break;
+        case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+            if (dynamic_cast<WBaseWidget*>(obj) == nullptr) {
                 return true;
             }
             break;

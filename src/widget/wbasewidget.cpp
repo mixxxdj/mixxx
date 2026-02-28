@@ -1,12 +1,14 @@
 #include "widget/wbasewidget.h"
 
-#include "widget/controlwidgetconnection.h"
 #include "util/cmdlineargs.h"
 #include "util/debug.h"
+#include "widget/controlwidgetconnection.h"
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
         : m_pDisplayConnection(nullptr),
-          m_pWidget(pWidget) {
+          m_pWidget(pWidget),
+          m_showKeyboardShortcuts(false),
+          m_showOnlyKeyboardShortcuts(false) {
 }
 
 WBaseWidget::~WBaseWidget() = default;
@@ -138,13 +140,33 @@ void WBaseWidget::setControlParameterRightUp(double v) {
     }
 }
 
+void WBaseWidget::updateBaseTooltipOptShortcuts() {
+    QString tooltip;
+    if (!m_showOnlyKeyboardShortcuts) {
+        tooltip += m_baseTooltip;
+    }
+    // TODO Construct & localize kbd shortcuts here (somewhere in WBaseWidget
+    // So, in case of OnlyKbdShortcuts, we can show
+    // control (key only): shortcut
+    // Currently, we see to shortcuts but not which controls they trigger.
+    // This is relevant only for the right-click action, thouhg.
+    if (m_showKeyboardShortcuts && !m_shortcutTooltip.isEmpty()) {
+        if (!m_showOnlyKeyboardShortcuts) {
+            tooltip += "\n";
+        }
+        tooltip += m_shortcutTooltip;
+    }
+    m_baseTooltipOptShortcuts = tooltip;
+    m_pWidget->setToolTip(tooltip);
+}
+
 void WBaseWidget::updateTooltip() {
     // If we are in developer mode, expand the tooltip.
     if (CmdlineArgs::Instance().getDeveloper()) {
         QStringList debug;
         fillDebugTooltip(&debug);
 
-        QString base = baseTooltip();
+        const QString base = baseTooltipOptShortcuts();
         if (!base.isEmpty()) {
             debug.append(QStringLiteral("Tooltip: \"%1\"").arg(base));
         }
