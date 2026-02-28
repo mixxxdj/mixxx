@@ -398,9 +398,9 @@ HerculesMk2Hid.define_hid_format = function() {
 
     // master
 
-    c.add_control(pid, "crossfader", "[Mixer]", "fader", 12, 0xff)
-    c.add_control(pid, "joystick_x", "[Mixer]", "fader", 19, 0xff)
-    c.add_control(pid, "joystick_y", "[Mixer]", "fader", 20, 0xff)
+    c.add_control(pid, "crossfader", "[Mixer]", "fader", 12, 0xff);
+    c.add_control(pid, "joystick_x", "[Mixer]", "fader", 19, 0xff);
+    c.add_control(pid, "joystick_y", "[Mixer]", "fader", 20, 0xff);
 
     // headphone cue
 

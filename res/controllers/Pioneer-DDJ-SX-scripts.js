@@ -549,7 +549,7 @@ PioneerDDJSX.autoDJControl = function() {
 
         // Only adjust key when approaching the middle of fading
         if (PioneerDDJSX.autoDJSyncKey) {
-            var diffFader = Math.abs(engine.getValue("[Mixer]", "crossfader") - 0.5);
+            const diffFader = Math.abs(engine.getValue("[Mixer]", "crossfader") - 0.5);
             if (diffFader < 0.25) {
                 nextKey = engine.getValue("[Channel" + next + "]", "key");
                 engine.setValue("[Channel" + prev + "]", "key", nextKey);
@@ -796,7 +796,7 @@ PioneerDDJSX.highResMSB = {
     '[Channel2]': {},
     '[Channel3]': {},
     '[Channel4]': {},
-    '[Mixer]': {},
+    "[Mixer]": {},
     '[Samplers]': {}
 };
 

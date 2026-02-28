@@ -355,8 +355,8 @@ EksOtus.init = function (id) {
     // Link controls and register callbacks
     EksOtus.registerCallbacks();
 
-    engine.softTakeover("[Mixer]","headphone_gain",true);
-    engine.softTakeover("[Mixer]","headphone_mix",true);
+    engine.softTakeover("[Mixer]", "headphone_gain", true);
+    engine.softTakeover("[Mixer]", "headphone_mix", true);
     for (var deck in controller.deckOutputColors) {
         engine.softTakeover("[Channel"+deck+"]","pregain",true);
         engine.softTakeover("[Channel"+deck+"]","volume",true);
@@ -397,8 +397,8 @@ EksOtus.updateLEDs = function(from_timer) {
 
 // Device cleanup function
 EksOtus.shutdown = function() {
-    engine.softTakeover("[Mixer]","headphone_gain",false);
-    engine.softTakeover("[Mixer]","headphone_mix",false);
+    engine.softTakeover("[Mixer]", "headphone_gain", false);
+    engine.softTakeover("[Mixer]", "headphone_mix", false);
     for (var deck in controller.deckOutputColors) {
         engine.softTakeover("[Channel"+deck+"]","pregain",false);
         engine.softTakeover("[Channel"+deck+"]","volume",false);
@@ -642,10 +642,10 @@ EksOtus.headphones = function (field) {
     var controller = EksOtus.controller;
     if (controller.modifiers.get("shift")) {
         value = script.absoluteNonLin(field.value, 0, 1, 5, 0, 65536);
-        engine.setValue("[Mixer]","headphone_gain",value);
+        engine.setValue("[Mixer]", "headphone_gain", value);
     } else {
         value = EksOtus.plusMinus1Scaler(field.group,field.name,field.value);
-        engine.setValue("[Mixer]","headphone_mix",value);
+        engine.setValue("[Mixer]", "headphone_mix", value);
     }
 }
 

@@ -459,7 +459,7 @@ VCI102.init = function(id, debug) {
             engine.connectControl(deck, key, size);
         });
         ["hotcue_1_activate", "hotcue_2_activate", "loop_enabled", "reverse",
-         "play"].forEach(function(key) {
+            "play"].forEach(function(key) {
             engine.connectControl(deck, key, VCI102.slip);
         });
         engine.connectControl(deck, "pfl", headphone_mix);

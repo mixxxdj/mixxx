@@ -207,14 +207,14 @@ HerculesMk4.pfl = function (midino, control, value, status, group) {
         var pfl2=engine.getValue("[Channel2]","pfl");
 
 
-        var actualMixCue=engine.getValue("[Mixer]","headphone_mix");
+        const actualMixCue=engine.getValue("[Mixer]", "headphone_mix");
 
-        if(pfl1==0 && pfl2==0){
+        if (pfl1==0 && pfl2==0) {
             HerculesMk4.antiguoMixCue=actualMixCue;
-            engine.setValue("[Mixer]","headphone_mix",1);
-        }else{
-            if(actualMixCue==1){
-                engine.setValue("[Mixer]","headphone_mix",HerculesMk4.antiguoMixCue);
+            engine.setValue("[Mixer]", "headphone_mix", 1);
+        } else {
+            if (actualMixCue==1) {
+                engine.setValue("[Mixer]", "headphone_mix", HerculesMk4.antiguoMixCue);
             }
         };
     };

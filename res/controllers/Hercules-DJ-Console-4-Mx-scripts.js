@@ -448,7 +448,7 @@ Hercules4Mx.onSongLoaded = function(value, group, control) {
             engine.setParameter("[Channel" + i + "]", "pfl", (deck === i) ? 1 : 0);
         }
 
-        var currentHeadMix = engine.getParameter("[Mixer]", "headphone_mix");
+        const currentHeadMix = engine.getParameter("[Mixer]", "headphone_mix");
         if (currentHeadMix == 1) {
             //Change the headmix if it was to full Mix.
             engine.setParameter("[Mixer]", "headphone_mix", Hercules4Mx.previousHeadMix);
@@ -529,7 +529,7 @@ Hercules4Mx.onPreFaderListen = function(value, group, control) {
         var pfl2 = engine.getParameter("[Channel2]", "pfl");
         var pfl3 = engine.getParameter("[Channel3]", "pfl");
         var pfl4 = engine.getParameter("[Channel4]", "pfl");
-        var currentHeadMix = engine.getParameter("[Mixer]", "headphone_mix");
+        const currentHeadMix = engine.getParameter("[Mixer]", "headphone_mix");
 
         if (pfl1 === 0 && pfl2 === 0 && pfl3 === 0 && pfl4 === 0) {
             // If they are all disabled after switching, move headmix to master.
@@ -639,12 +639,12 @@ Hercules4Mx.onSyncLed = function(value, group, control) {
 
 // only feed the correct levels to each channel of the vumeter
 Hercules4Mx.onVuMeterMainL = function(value) {
-    if (Hercules4Mx.VuMeterL.source === '[Mixer]') {
+    if (Hercules4Mx.VuMeterL.source === "[Mixer]") {
         Hercules4Mx.updateVumeterEvent(Hercules4Mx.VuMeterL, value);
     }
 };
 Hercules4Mx.onVuMeterMainR = function(value) {
-    if (Hercules4Mx.VuMeterR.source === '[Mixer]') {
+    if (Hercules4Mx.VuMeterR.source === "[Mixer]") {
         Hercules4Mx.updateVumeterEvent(Hercules4Mx.VuMeterR, value);
     }
 };

@@ -260,9 +260,9 @@ HileVci100.registerInputs = function() {
     HileVci100.linkFader("deck2_eq2","[Channel2]","filterHigh","eq");
     HileVci100.linkFader("deck2_eq3","[Channel2]","filterMid","eq");
     HileVci100.linkFader("deck2_eq4","[Channel2]","filterLow","eq");
-    HileVci100.linkFader("crossfader","[Mixer]","crossfader");
-    HileVci100.linkFader("deck1_trim","[Mixer]","headphone_gain","master");
-    HileVci100.linkFader("deck2_trim","[Mixer]","headphone_mix","crossfader");
+    HileVci100.linkFader("crossfader", "[Mixer]", "crossfader");
+    HileVci100.linkFader("deck1_trim", "[Mixer]", "headphone_gain", "master");
+    HileVci100.linkFader("deck2_trim", "[Mixer]", "headphone_mix", "crossfader");
 
 };
 

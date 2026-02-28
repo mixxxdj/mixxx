@@ -114,7 +114,7 @@ XoneK2.shutdown = function(id) {
 XoneK2.decksBottomLeftEncoderPress = function (channel, control, value, status) {
     XoneK2.controllers[channel].leftEncoderIsPressed =  (status & 0xF0) === 0x90;
     if (XoneK2.controllers[channel].isShifted && XoneK2.controllers[channel].leftEncoderIsPressed) {
-        script.toggleControl('[Mixer]', 'headphone_split');
+        script.toggleControl("[Mixer]", "headphone_split");
     }
 };
 XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
@@ -128,7 +128,7 @@ XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
             }
             engine.setValue("[InternalClock]", "bpm", bpm);
         } else {
-            var mix = engine.getValue("[Mixer]", "headphone_mix");
+            let mix = engine.getValue("[Mixer]", "headphone_mix");
             if (value === 1) {
                 mix += 1;
             } else {
@@ -137,7 +137,7 @@ XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
             engine.setValue("[Mixer]", "headphone_mix", mix);
         }
     } else {
-        var gain = engine.getValue("[Mixer]", "headphone_gain");
+        let gain = engine.getValue("[Mixer]", "headphone_gain");
         if (value === 1) {
             gain += 0.025;
         } else {
@@ -183,7 +183,7 @@ XoneK2.decksBottomRightEncoder = function (channel, control, value, status) {
         }
         engine.setValue("[InternalClock]", "bpm", bpm);
     } else {
-        var gain = engine.getValue("[Mixer]", "main_gain");
+        let gain = engine.getValue("[Mixer]", "main_gain");
         if (value === 1) {
             gain += 0.025;
         } else {
@@ -895,7 +895,7 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel, twoDeck) {
                     this.valueAtLastEffectSwitch = this.previousValueReceived;
                     // Floor the threshold to ensure that every effect can be selected
                     this.changeThreshold = Math.floor(this.max /
-                        engine.getValue('[App]', 'num_effectsavailable'));
+                        engine.getValue("[App]", "num_effectsavailable"));
 
                     this.input = function (channel, control, value, status, group) {
                         var change = value - this.valueAtLastEffectSwitch;

@@ -99,7 +99,7 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel2]", "duration", "StantonSCS1m.durationChange2");
 
         // Faders
-    engine.connectControl("[Mixer]","crossfader","StantonSCS1m.crossFaderStart");
+    engine.connectControl("[Mixer]", "crossfader", "StantonSCS1m.crossFaderStart");
     engine.connectControl("[Channel1]","volume","StantonSCS1m.ch1FaderStart");
     engine.connectControl("[Channel2]","volume","StantonSCS1m.ch2FaderStart");
 
@@ -336,10 +336,10 @@ StantonSCS1m.cancelButton = function (channel, control, value, status) {
             break;
         case "browse":
             // If the deck is playing and the cross-fader is not completely toward the other deck...
-            if (engine.getValue("[Channel1]","play")==1 && engine.getValue("[Mixer]","crossfader")<1.0) {
+            if (engine.getValue("[Channel1]", "play")==1 && engine.getValue("[Mixer]", "crossfader")<1.0) {
                 // ...light the button red to show acknowledgement of the press but don't load
                 midi.sendShortMsg(0x90+channel,control,64);
-                print ("StantonSCS1m: Not loading into deck 1 because it's playing to the Main output.");
+                print("StantonSCS1m: Not loading into deck 1 because it's playing to the Main output.");
             }
             else {
                 midi.sendShortMsg(0x90+channel,control,127); // Orange
@@ -381,10 +381,10 @@ StantonSCS1m.enterButton = function (channel, control, value, status) {
             break;
         case "browse":
             // If the deck is playing and the cross-fader is not completely toward the other deck...
-            if (engine.getValue("[Channel2]","play")==1 && engine.getValue("[Mixer]","crossfader")>-1.0) {
+            if (engine.getValue("[Channel2]", "play")==1 && engine.getValue("[Mixer]", "crossfader")>-1.0) {
                 // ...light the button red to show acknowledgement of the press but don't load
                 midi.sendShortMsg(0x90+channel,control,64);
-                print ("StantonSCS1m: Not loading into deck 2 because it's playing to the Main output.");
+                print("StantonSCS1m: Not loading into deck 2 because it's playing to the Main output.");
             }
             else {
                 midi.sendShortMsg(0x90+channel,control,127); // Orange

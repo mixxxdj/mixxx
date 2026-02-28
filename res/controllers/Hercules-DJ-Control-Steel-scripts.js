@@ -170,7 +170,7 @@ HerculesSteel.Controls = {
     "Balance" : new HerculesSteel.Control("balance", false),
     "Volume" : new HerculesSteel.Control("volume", false),
     "CrossFader" : new HerculesSteel.Control("crossfader", false),
-    "HeadPhoneMix" : new HerculesSteel.Control("headphone_mix", false),
+    "HeadPhoneMix": new HerculesSteel.Control("headphone_mix", false),
     "FlangerDepth" : new HerculesSteel.Control("lfoDepth", false),
     "FlangerDelay" : new HerculesSteel.Control("lfoDelay", false),
     "FlangerPeriod" : new HerculesSteel.Control("lfoPeriod", false)

@@ -884,22 +884,22 @@ SCS3M.Agent = function(device) {
             modeset(device.left.pitch.mode.absolute);
             watch("[Mixer]", "headphone_mix", patch(device.left.pitch.meter.centerbar));
             expect(device.left.pitch.slide,
-                eqheld.left.engaged() ? reset('[Mixer]', 'headphone_mix') : set('[Mixer]', 'headphone_mix')
+            eqheld.left.engaged() ? reset("[Mixer]", "headphone_mix") : set("[Mixer]", "headphone_mix")
             );
 
             modeset(device.right.pitch.mode.absolute);
             watch("[Mixer]", "balance", patch(device.right.pitch.meter.centerbar));
             expect(device.right.pitch.slide,
-                eqheld.right.engaged() ? reset('[Mixer]', 'balance') : set('[Mixer]', 'balance')
+            eqheld.right.engaged() ? reset("[Mixer]", "balance") : set("[Mixer]", "balance")
             );
 
             modeset(device.left.gain.mode.relative);
             watch("[Mixer]", "headphone_gain", patch(device.left.gain.meter.centerbar));
-            expect(device.left.gain.slide, budge('[Mixer]', 'headphone_gain'));
+            expect(device.left.gain.slide, budge("[Mixer]", "headphone_gain"));
 
             modeset(device.right.gain.mode.relative);
             watch("[Mixer]", "main_gain", patch(device.right.gain.meter.centerbar));
-            expect(device.right.gain.slide, budge('[Mixer]', 'main_gain'));
+            expect(device.right.gain.slide, budge("[Mixer]", "main_gain"));
 
             watch("[Main]", "vu_meter_left", vupatch(device.left.meter.bar));
             watch("[Main]", "vu_meter_right", vupatch(device.right.meter.bar));

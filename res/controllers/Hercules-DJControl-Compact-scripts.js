@@ -2,7 +2,7 @@
 // controller -- no control over which mode is selected for instance.
 
 HercDJCompact = function() {
-   this.group = "[Mixer]";
+    this.group = "[Mixer]";
 };
 
 HercDJCompact.init = function(id) {

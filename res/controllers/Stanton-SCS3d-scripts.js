@@ -199,11 +199,11 @@ StantonSCS3d.modeSignals = {
                                       ["CurrentChannel", "vu_meter", "StantonSCS3d.VUMeterLEDs"],
                                       ["CurrentChannel", "keylock", "StantonSCS3d.B12LED"] ],
                             "vinyl3":[],
-                            "deck":[  ["[Mixer]","balance","StantonSCS3d.pitchLEDs"],
-                                      ["[Mixer]","main_gain","StantonSCS3d.MasterVolumeLEDs"],
-                                      ["[Mixer]","headphone_mix","StantonSCS3d.headMixLEDs"],
-                                      ["[Mixer]","headphone_gain","StantonSCS3d.headVolLEDs"],
-                                      ["[Mixer]","crossfader","StantonSCS3d.crossFaderLEDs"] ],
+                            "deck": [ ["[Mixer]", "balance", "StantonSCS3d.pitchLEDs"],
+                                      ["[Mixer]", "main_gain", "StantonSCS3d.MasterVolumeLEDs"],
+                                      ["[Mixer]", "headphone_mix", "StantonSCS3d.headMixLEDs"],
+                                      ["[Mixer]", "headphone_gain", "StantonSCS3d.headVolLEDs"],
+                                      ["[Mixer]", "crossfader", "StantonSCS3d.crossFaderLEDs"]],
                             "none":[]  // Avoids an error on forced mode changes
                             };
 StantonSCS3d.commonSignals = [  ["CurrentChannel", "rate", "StantonSCS3d.pitchLEDs"],
@@ -476,7 +476,7 @@ StantonSCS3d.pitchAbsolute = function (channel, control, value) {
     // Adjust the master balance if in DECK mode
     if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]=="deck") {
         var newValue = (value-64)/64;
-        engine.setValue("[Mixer]","balance",newValue);
+        engine.setValue("[Mixer]", "balance", newValue);
         return;
     }
 
@@ -536,10 +536,10 @@ StantonSCS3d.gainRelative = function (channel, control, value) {
         midi.sendShortMsg(byte1,0x07,0x15+add);
     }
     else if (currentMode == "deck") { // If in DECK mode, adjust Main Volume
-        var newValue = engine.getValue("[Mixer]","main_gain")+(value-64)/256;
+        let newValue = engine.getValue("[Mixer]", "main_gain")+(value-64)/256;
         if (newValue<0.0) newValue=0.0;
         if (newValue>5.0) newValue=5.0;
-        engine.setValue("[Mixer]","main_gain",newValue);
+        engine.setValue("[Mixer]", "main_gain", newValue);
         return;
     }
 }
@@ -633,7 +633,7 @@ StantonSCS3d.tapButton = function (channel, control, value, status) {
     var byte1 = 0x90 + channel;
     // If in DECK mode, and not in single-deck mode
     if (!StantonSCS3d.singleDeck && StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]=="deck") {
-        engine.setValue("[Mixer]","crossfader",0.0);   // Reset cross-fader to center
+        engine.setValue("[Mixer]", "crossfader", 0.0);   // Reset cross-fader to center
         return;
     }
     if ((status & 0xF0) == 0x90) {    // If button down
@@ -669,7 +669,7 @@ StantonSCS3d.B11 = function (channel, control, value, status) {
                 break;
             case "deck":
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
-                engine.reset("[Mixer]","main_gain");
+                engine.reset("[Mixer]", "main_gain");
                 break;
             case "fx":
             case "loop":
@@ -721,7 +721,7 @@ StantonSCS3d.B12 = function (channel, control, value, status, group) {
         switch (currentMode) {
             case "deck":
                 midi.sendShortMsg(byte1,control,0x01); // Make button red
-                engine.reset("[Mixer]","balance"); // Reset master balance to center
+                engine.reset("[Mixer]", "balance"); // Reset master balance to center
                 break;
             case "fx":
             case "fx2":
@@ -1310,14 +1310,14 @@ StantonSCS3d.S3absolute = function (channel, control, value) {
             engine.setParameter("[EqualizerRack1_[Channel"+StantonSCS3d.deck+"]_Effect1]",
                                 "parameter1",script.absoluteLin(value,0,1));
             break;
-        case "deck": engine.setValue("[Mixer]","headphone_mix",(value-64)/63); break;
+        case "deck": engine.setValue("[Mixer]", "headphone_mix", (value-64)/63); break;
     }
 }
 
 StantonSCS3d.S4absolute = function (channel, control, value) {
     // Adjust the cross-fader if in DECK mode
     if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"] == "deck") {
-        engine.setValue("[Mixer]","crossfader",(value-64)/63);
+        engine.setValue("[Mixer]", "crossfader", (value-64)/63);
         return;
     }
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
@@ -1436,10 +1436,10 @@ StantonSCS3d.S5absolute = function (channel, control, value) {
 StantonSCS3d.S5relative = function (channel, control, value) {
     // Adjust the headphone volume if in DECK mode
     if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]=="deck") {
-        var newValue = engine.getValue("[Mixer]","headphone_gain")+(value-64)/128;
+        let newValue = engine.getValue("[Mixer]", "headphone_gain")+(value-64)/128;
         if (newValue<0.0) newValue=0.0;
         if (newValue>5.0) newValue=5.0;
-        engine.setValue("[Mixer]","headphone_gain",newValue);
+        engine.setValue("[Mixer]", "headphone_gain", newValue);
         return;
     }
 }
@@ -1490,7 +1490,7 @@ StantonSCS3d.S3touch = function (channel, control, value, status) {
                 break;
             case "deck":
                 // Reset only if in single-deck mode
-                if (StantonSCS3d.singleDeck) engine.reset("[Mixer]","headphone_mix");
+            if (StantonSCS3d.singleDeck) { engine.reset("[Mixer]", "headphone_mix"); }
                 break;
         }
     }
@@ -1520,7 +1520,7 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
                 break;
             case "deck":
                 // Reset cross-fader to center if in single-deck mode
-                if (StantonSCS3d.singleDeck) engine.reset("[Mixer]","crossfader");
+            if (StantonSCS3d.singleDeck) { engine.reset("[Mixer]", "crossfader"); }
                 break;
         }
     }
@@ -1539,11 +1539,11 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
                 // If the deck is playing and the cross-fader is not completely toward the other deck...
                 // TODO: Check L/C/R CF assignment or just ask Mixxx itself if this deck is playing to the master
                 if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1 &&
-                    ((StantonSCS3d.deck % 2 != 0 && engine.getValue("[Mixer]","crossfader")<1.0) ||
-                    (StantonSCS3d.deck % 2 == 0 && engine.getValue("[Mixer]","crossfader")>-1.0))) {
+                    ((StantonSCS3d.deck % 2 != 0 && engine.getValue("[Mixer]", "crossfader")<1.0) ||
+                    (StantonSCS3d.deck % 2 == 0 && engine.getValue("[Mixer]", "crossfader")>-1.0))) {
                     // ...light just the red button LEDs to show acknowledgement of the press but don't load
                     StantonSCS3d.sliderButtonLight(channel,"S4",true,true);
-                    print ("StantonSCS3d: Not loading into deck "+StantonSCS3d.deck+" because it's playing to the Main output.");
+                    print(`StantonSCS3d: Not loading into deck ${StantonSCS3d.deck} because it's playing to the Main output.`);
                 }
                 else {
                     StantonSCS3d.sliderButtonLight(channel,"S4",true);
@@ -1572,8 +1572,8 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
                 // ...only if we actually loaded a track.
                 // TODO: Check L/C/R CF assignment or just ask Mixxx itself if this deck is playing to the master
                 if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","play")==1 &&
-                    ((StantonSCS3d.deck % 2 != 0 && engine.getValue("[Mixer]","crossfader")<1.0) ||
-                    (StantonSCS3d.deck % 2 == 0 && engine.getValue("[Mixer]","crossfader")>-1.0))) {
+                    ((StantonSCS3d.deck % 2 != 0 && engine.getValue("[Mixer]", "crossfader")<1.0) ||
+                    (StantonSCS3d.deck % 2 == 0 && engine.getValue("[Mixer]", "crossfader")>-1.0))) {
                     return;
                 }
 
@@ -1625,7 +1625,7 @@ StantonSCS3d.S5touch = function (channel, control, value, status) {
                 break;
             case "deck":
                 // Reset to center only if in single-deck mode
-                if (StantonSCS3d.singleDeck) engine.reset("[Mixer]","headphone_gain");
+                if (StantonSCS3d.singleDeck) { engine.reset("[Mixer]", "headphone_gain"); }
                 break;
         }
     }

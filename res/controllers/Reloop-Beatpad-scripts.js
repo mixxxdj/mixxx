@@ -812,14 +812,14 @@ AutoCut.prototype.FaderCut = function(jogValue) {
         if (this.deckNum == 1) {
             direction = -direction;
         } // else direction is of the good sign
-        engine.setValue('[Mixer]', 'crossfader', direction);
+        engine.setValue("[Mixer]", "crossfader", direction);
     }
 };
 
 AutoCut.prototype.Off = function() {
     if (this.enabled) {
         this.enabled = false;
-        engine.setValue('[Mixer]', 'crossfader', 0);
+        engine.setValue("[Mixer]", "crossfader", 0);
         engine.softTakeover("[Mixer]", "crossfader", true);
     }
 };

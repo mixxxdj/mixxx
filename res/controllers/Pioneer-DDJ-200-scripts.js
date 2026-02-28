@@ -179,7 +179,7 @@ DDJ200.seek = function(channel, control, value, status, group) {
 DDJ200.headmix = function(channel, control, value) {
     // toggle headphone_mix knob between -1 to 1
     if (value) { // do nothing if button is released, i.e. value === 0
-        var masterMixEnabled = (engine.getValue("[Mixer]", "headphone_mix") > 0);
+        const masterMixEnabled = (engine.getValue("[Mixer]", "headphone_mix") > 0);
         engine.setValue("[Mixer]", "headphone_mix", masterMixEnabled ? -1 : 1);
         midi.sendShortMsg(0x96, 0x63, masterMixEnabled ? 0 : 0x7F); // set LED
     }
