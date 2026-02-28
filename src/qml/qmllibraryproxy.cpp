@@ -172,15 +172,8 @@ QmlLibrarySource* QmlLibraryProxy::sources_at(
 }
 
 // Static
-void QmlLibraryProxy::sources_clear(QQmlListProperty<QmlLibrarySource>* pList) {
-    QmlLibraryProxy* pLibrary = static_cast<QmlLibraryProxy*>(pList->object);
-    VERIFY_OR_DEBUG_ASSERT(pLibrary) {
-        return;
-    }
-    return pLibrary->m_pLibrary->trackCollectionManager()
-            ->internalCollection()
-            ->getRootDirectories()
-            .clear();
+void QmlLibraryProxy::sources_clear(QQmlListProperty<QmlLibrarySource>*) {
+    DEBUG_ASSERT(!"unsupported operation");
 }
 
 } // namespace qml

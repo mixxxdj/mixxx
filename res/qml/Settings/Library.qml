@@ -7,7 +7,6 @@ import QtCore
 import Qt5Compat.GraphicalEffects
 import Mixxx 1.0 as Mixxx
 import "." as Setting
-import "../Deck" as DeckComponents
 import "." as SettingComponents
 import ".." as Skin
 import "../Theme"
@@ -146,7 +145,7 @@ Category {
         load();
     }
 
-    label: "Library"
+    label: qsTr("Library")
 
     Component.onCompleted: {
         root.load();
@@ -172,7 +171,7 @@ Category {
                     color: Theme.white
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
-                    text: "Sources"
+                    text: qsTr("Sources")
                 }
             }
             Mixxx.SettingGroup {
@@ -180,7 +179,7 @@ Category {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 implicitHeight: sources.implicitHeight
-                label: "Sources"
+                label: qsTr("Sources")
 
                 GridLayout {
                     id: sources
@@ -215,7 +214,7 @@ Category {
                                     color: Theme.white
                                     font.pixelSize: 14
                                     font.weight: Font.DemiBold
-                                    text: 'Music Directory'
+                                    text: qsTr('Music Directory')
                                 }
                                 FolderDialog {
                                     id: addDialog
@@ -238,7 +237,7 @@ Category {
                                     activeColor: "#999999"
                                     backgroundColor: "#3F3F3F"
                                     opacity: enabled ? 1.0 : 0.5
-                                    text: "Add"
+                                    text: qsTr("Add")
 
                                     onPressed: addDialog.open()
                                 }
@@ -297,7 +296,7 @@ Category {
                                             anchors.rightMargin: 8
 
                                             Text {
-                                                text: 'Icon'
+                                                text: qsTr("Icon")
                                                 width: 160
                                             }
                                             Text {
@@ -328,7 +327,7 @@ Category {
                                                 activeColor: "#999999"
                                                 backgroundColor: "#3F3F3F"
                                                 opacity: enabled ? 1.0 : 0.5
-                                                text: modelData.relink ? "Save to proceed" : "Relink"
+                                                text: modelData.relink ? qsTr("Save to proceed") : qsTr("Relink")
                                                 visible: selected && modelData.trackCount !== undefined && !Mixxx.Library.scanner.running
 
                                                 onPressed: {
@@ -357,7 +356,7 @@ Category {
                                                     anchors.centerIn: parent
                                                     backgroundColor: "#7D3B3B"
                                                     opacity: enabled ? 1.0 : 0.5
-                                                    text: "Remove"
+                                                    text: qsTr("Remove")
                                                     visible: !removeButton.confirming
 
                                                     onPressed: {
@@ -409,18 +408,18 @@ Category {
                                                 font.weight: Font.Medium
                                                 text: {
                                                     if (modelData.relink) {
-                                                        return `Save to relink to ${modelData.relink}`;
+                                                        return qsTr(`Save to relink to ${modelData.relink}`);
                                                     } else if (modelData.deleting !== undefined) {
                                                         let action = {
-                                                            0: "keep already imported tracks",
-                                                            1: "hide imported tracks",
-                                                            2: "purge imported tracks"
+                                                            0: qsTr("keep already imported tracks"),
+                                                            1: qsTr("hide imported tracks"),
+                                                            2: qsTr("purge imported tracks")
                                                         }[modelData.deleting] || 'perform an unknown action';
-                                                        return `Save to delete and ${action}`;
+                                                        return qsTr(`Save to delete and ${action}`);
                                                     } else if (modelData.trackCount !== undefined && modelData.totalMinute !== undefined) {
-                                                        return `${modelData.trackCount} tracks, ${modelData.totalMinute} minutes`;
+                                                        return qsTr(`${modelData.trackCount} tracks, ${modelData.totalMinute} minutes`);
                                                     } else {
-                                                        return 'Save to import new folder';
+                                                        return qsTr('Save to import new folder');
                                                     }
                                                 }
                                                 visible: !selected && !Mixxx.Library.scanner.running
@@ -443,7 +442,7 @@ Category {
 
                                 color: Theme.white
                                 font.pixelSize: 14
-                                text: "File scanning..."
+                                text: qsTr("File scanning...")
 
                                 anchors {
                                     bottom: parent.bottom
@@ -452,7 +451,7 @@ Category {
                                 }
                                 Connections {
                                     function onProgress(currentPath) {
-                                        scanProgress.text = `File scanning: ${currentPath}`;
+                                        scanProgress.text = qsTr(`File scanning: ${currentPath}`);
                                     }
 
                                     target: Mixxx.Library.scanner
@@ -462,7 +461,7 @@ Category {
                                 activeColor: "#999999"
                                 backgroundColor: Mixxx.Library.scanner.cancelling ? "#999999" : "#3a60be"
                                 enabled: !Mixxx.Library.scanner.cancelling
-                                text: "Cancel"
+                                text: qsTr("Cancel")
 
                                 onPressed: {
                                     Mixxx.Library.scanner.cancel();
@@ -542,7 +541,7 @@ Category {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 implicitHeight: metadataColumn.height
-                label: "Metadata"
+                label: qsTr("Metadata")
 
                 Column {
                     id: metadataColumn
@@ -554,7 +553,7 @@ Category {
                         color: Theme.white
                         font.pixelSize: 14
                         font.weight: Font.DemiBold
-                        text: "Metadata"
+                        text: qsTr("Metadata")
                     }
                     Item {
                         anchors.left: parent.left
@@ -584,7 +583,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Synchronise metadata with file"
+                                    label: qsTr("Synchronise metadata with file")
 
                                     Text {
                                         anchors.fill: parent
@@ -613,7 +612,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Synchronise metadata with Serato library"
+                                    label: qsTr("Synchronise metadata with Serato library")
 
                                     Text {
                                         anchors.fill: parent
@@ -642,7 +641,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Prefer relative path on playlist export"
+                                    label: qsTr("Prefer relative path on playlist export")
 
                                     Text {
                                         anchors.fill: parent
@@ -676,7 +675,7 @@ Category {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 implicitHeight: historyColumn.height
-                label: "History"
+                label: qsTr("History")
 
                 Column {
                     id: historyColumn
@@ -688,7 +687,7 @@ Category {
                         color: Theme.white
                         font.pixelSize: 14
                         font.weight: Font.DemiBold
-                        text: "History"
+                        text: qsTr("History")
                     }
                     Item {
                         anchors.left: parent.left
@@ -718,7 +717,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Track duplicate distance"
+                                    label: qsTr("Track duplicate distance")
 
                                     Text {
                                         anchors.fill: parent
@@ -740,7 +739,7 @@ Category {
                                     min: 1
                                     precision: 0
                                     realValue: 2
-                                    suffix: value > 1 ? " tracks" : " track"
+                                    suffix: value > 1 ? qsTr(" tracks") : qsTr(" track")
 
                                     onValueChanged: root.dirty = true
                                 }
@@ -750,7 +749,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Delete history playlist with less than"
+                                    label: qsTr("Delete history playlist with less than")
 
                                     Text {
                                         anchors.fill: parent
@@ -772,7 +771,7 @@ Category {
                                     min: 1
                                     precision: 0
                                     realValue: 2
-                                    suffix: value > 1 ? " tracks" : " track"
+                                    suffix: value > 1 ? qsTr(" tracks") : qsTr(" track")
 
                                     onValueChanged: root.dirty = true
                                 }
@@ -787,7 +786,7 @@ Category {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 implicitHeight: searchColumn.height
-                label: "Search"
+                label: qsTr("Search")
 
                 Column {
                     id: searchColumn
@@ -799,7 +798,7 @@ Category {
                         color: Theme.white
                         font.pixelSize: 14
                         font.weight: Font.DemiBold
-                        text: "Search"
+                        text: qsTr("Search")
                     }
                     Item {
                         anchors.left: parent.left
@@ -829,7 +828,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Search completion"
+                                    label: qsTr("Search completion")
 
                                     Text {
                                         anchors.fill: parent
@@ -858,7 +857,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Search history keyboard shortcuts"
+                                    label: qsTr("Search history keyboard shortcuts")
 
                                     Text {
                                         anchors.fill: parent
@@ -887,7 +886,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Search-as-you-type timeout"
+                                    label: qsTr("Search-as-you-type timeout")
 
                                     Text {
                                         anchors.fill: parent
@@ -907,7 +906,7 @@ Category {
                                     markers: [0.1, 0.5, 1, 5, 10]
                                     max: 10
                                     min: 0.1
-                                    suffix: "sec"
+                                    suffix: qsTr("sec")
                                     value: 0.3
 
                                     onValueChanged: root.dirty = true
@@ -918,7 +917,7 @@ Category {
 
                                 Mixxx.SettingParameter {
                                     Layout.fillWidth: true
-                                    label: "Pitch slider for fuzz BPM search"
+                                    label: qsTr("Pitch slider for fuzz BPM search")
 
                                     Text {
                                         anchors.fill: parent
@@ -962,7 +961,7 @@ Category {
             anchors.left: parent.left
             backgroundColor: "#7D3B3B"
             opacity: enabled ? 1.0 : 0.5
-            text: "Reset"
+            text: qsTr("Reset")
 
             onPressed: {
                 root.reset();
@@ -984,7 +983,7 @@ Category {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
                 opacity: enabled ? 1.0 : 0.5
-                text: "Cancel"
+                text: qsTr("Cancel")
                 visible: root.dirty
 
                 onPressed: {
@@ -996,7 +995,7 @@ Category {
                 backgroundColor: root.dirty ? "#3a60be" : "#3F3F3F"
                 enabled: root.dirty
                 opacity: enabled ? 1.0 : 0.5
-                text: "Save"
+                text: qsTr("Save")
 
                 onPressed: {
                     errorMessage.text = "";
