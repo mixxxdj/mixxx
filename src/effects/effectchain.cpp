@@ -219,6 +219,16 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pChainPreset) {
     setControlLoadedPresetIndex(presetIndex());
 }
 
+void EffectChain::resetToDefault() {
+    m_pControlChainEnabled->set(true);
+    if (m_presetName.isEmpty() || !presetIndex()) {
+        // If no preset is selected, reset the super knob to a mid position, as it is by default.
+        setSuperParameter(0.5, true);
+        return;
+    }
+    setSuperParameter(m_pControlChainSuperParameter->defaultValue(), true);
+}
+
 bool EffectChain::isEmpty() {
     for (const auto& pEffectSlot : std::as_const(m_effectSlots)) {
         if (pEffectSlot->isLoaded()) {

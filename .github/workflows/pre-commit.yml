@@ -65,14 +65,14 @@ jobs:
 
       - name: "Upload patch artifact"
         if: failure() && env.UPLOAD_PATCH_FILE != null
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ env.UPLOAD_PATCH_FILE }}
           path: ${{ env.UPLOAD_PATCH_FILE }}
 
       - name: "Upload pre-commit.log"
         if: failure() && env.UPLOAD_PATCH_FILE == null
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: pre-commit.log
           path: /github/home/.cache/pre-commit/pre-commit.log

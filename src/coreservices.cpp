@@ -46,6 +46,7 @@
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
 #include "qml/qmlplayermanagerproxy.h"
+#include "qml/qmlpreferencesproxy.h"
 #include "qml/qmlsoundmanagerproxy.h"
 #endif
 #include "soundio/soundmanager.h"
@@ -759,7 +760,9 @@ void CoreServices::initialize(QApplication* pApp) {
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
-    for (int i = 0; i < (int)m_pPlayerManager->numDecks() && i < musicFiles.count(); ++i) {
+    const int numTracks = std::min(m_pPlayerManager->numberOfDecks(),
+            static_cast<int>(musicFiles.count()));
+    for (int i = 0; i < numTracks; ++i) {
         if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
@@ -788,6 +791,9 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
     mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
+    mixxx::qml::QmlControllerManagerProxy::registerManager(
+            getControllerManager(),
+            CmdlineArgs::Instance().getControllerPreviewScreens());
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
@@ -911,6 +917,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
     mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
+    mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif

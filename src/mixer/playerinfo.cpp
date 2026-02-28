@@ -14,10 +14,16 @@ constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 
+const QString kAppGroup = QStringLiteral("[App]");
+const QString kMasterGroup = QStringLiteral("[Master]");
+
 } // namespace
 
 PlayerInfo::PlayerInfo()
-        : m_pCOxfader(new ControlProxy("[Master]","crossfader", this)),
+        : m_xfader(kMasterGroup, QStringLiteral("crossfader")),
+          m_numDecks(kAppGroup, QStringLiteral("num_decks")),
+          m_numSamplers(kAppGroup, QStringLiteral("num_samplers")),
+          m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
           m_currentlyPlayingDeck(-1) {
     startTimer(kPlayingDeckUpdateIntervalMillis);
 }
@@ -135,7 +141,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     CSAMPLE_GAIN xfl, xfr;
     // TODO: supply correct parameters to the function. If the hamster style
     // for the crossfader is enabled, the result is currently wrong.
-    EngineXfader::getXfadeGains(m_pCOxfader->get(),
+    EngineXfader::getXfadeGains(m_xfader.get(),
             1.0,
             0.0,
             MIXXX_XFADER_ADDITIVE,
@@ -143,7 +149,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             &xfl,
             &xfr);
 
-    for (int i = 0; i < (int)PlayerManager::numDecks(); ++i) {
+    for (int i = 0; i < numDecks(); ++i) {
         DeckControls* pDc = getDeckControls(i);
 
         if (pDc->m_play.get() == 0.0) {
@@ -213,4 +219,16 @@ void PlayerInfo::clearControlCache() {
         delete m_deckControlList[i];
     }
     m_deckControlList.clear();
+}
+
+int PlayerInfo::numDecks() const {
+    return static_cast<int>(m_numDecks.get());
+}
+
+int PlayerInfo::numPreviewDecks() const {
+    return static_cast<int>(m_numPreviewDecks.get());
+}
+
+int PlayerInfo::numSamplers() const {
+    return static_cast<int>(m_numSamplers.get());
 }

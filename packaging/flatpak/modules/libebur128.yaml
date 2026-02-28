@@ -1,0 +1,19 @@
+name: libebur128
+buildsystem: cmake-ninja
+config-opts:
+  - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+sources:
+  - type: archive
+    url: https://github.com/jiixyj/libebur128/archive/refs/tags/v1.2.6.tar.gz
+    sha256: baa7fc293a3d4651e244d8022ad03ab797ca3c2ad8442c43199afe8059faa613
+    x-checker-data:
+      type: anitya
+      project-id: 7316
+      stable-only: true
+      url-template: https://github.com/jiixyj/libebur128/archive/refs/tags/v$version.tar.gz
+cleanup:
+  - /include
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/libebur128 COPYING

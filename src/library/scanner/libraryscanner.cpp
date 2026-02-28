@@ -3,6 +3,7 @@
 #include "library/coverartutils.h"
 #include "library/library_decl.h"
 #include "library/queryutil.h"
+#include "library/scanner/importfilestask.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/scannertask.h"
@@ -103,6 +104,8 @@ LibraryScanner::LibraryScanner(
           m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
+          m_numRelocatedTracks(0),
+          m_pProgressDlg(std::make_unique<LibraryScannerDlg>()),
           m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
@@ -118,35 +121,34 @@ LibraryScanner::LibraryScanner(
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
 
-    m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this,
             &LibraryScanner::progressLoading,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(this,
             &LibraryScanner::progressHashing,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(this,
             &LibraryScanner::scanStarted,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotScanStarted);
     connect(this,
             &LibraryScanner::scanFinished,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotScanFinished);
-    connect(m_pProgressDlg.data(),
+    connect(m_pProgressDlg.get(),
             &LibraryScannerDlg::scanCancelled,
             this,
             &LibraryScanner::slotCancel,
             Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::progressVerifyTracksOutside,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(&m_trackDao,
             &TrackDAO::progressCoverArt,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdateCover);
 }
 
@@ -203,7 +205,6 @@ void LibraryScanner::slotStartScan() {
     // Store number of existing tracks so we can calculate the number
     // of missing tracks in slotFinishUnhashedScan().
     m_previouslyMissingTracks = m_trackDao.getAllMissingTrackLocations();
-    m_numPreviouslyExistingTracks = m_trackDao.getAllExistingTrackLocations().size();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegularExpression coverExtensionFilter =
@@ -553,6 +554,21 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
         m_pool.clear();
         return;
     }
+
+    // Fetch number of files to be processed and add them to the total tasks
+    // for the progress dialog to set the value of the progress bar later on.
+    // Note that there may also be an unknown number of tasks for files
+    // outside the library directories. We deal with that in DlgLibraryScanProgress.
+    ImportFilesTask* pFileTask = qobject_cast<ImportFilesTask*>(pTask);
+    if (pFileTask) {
+        // Track and cover files
+        int numFiles = pFileTask->numFilesToImport();
+        m_pProgressDlg->addQueuedTasks(numFiles);
+    } else {
+        // RecursiveScanDirectoryTask, queues exactly one directory
+        m_pProgressDlg->addQueuedTasks(1);
+    }
+
     m_scannerGlobal->getTaskWatcher().watchTask();
     connect(pTask,
             &ScannerTask::queueTask,
@@ -574,17 +590,6 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
             &ScannerTask::addNewTrack,
             this,
             &LibraryScanner::slotAddNewTrack);
-
-    // Progress signals.
-    // Pass directly to the main thread
-    connect(pTask,
-            &ScannerTask::progressLoading,
-            this,
-            &LibraryScanner::progressLoading);
-    connect(pTask,
-            &ScannerTask::progressHashing,
-            this,
-            &LibraryScanner::progressHashing);
 
     m_pool.start(pTask);
 }

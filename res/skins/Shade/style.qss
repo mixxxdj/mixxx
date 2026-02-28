@@ -71,7 +71,8 @@ WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),
 that's why we do it in another way here */
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   selection-color: #eee;
   selection-background-color: #060613;
   }
@@ -80,13 +81,15 @@ that's why we do it in another way here */
   }
 
 WBeatSpinBox::up-button,
-#spinBoxTransition::up-button {
+#spinBoxTransition::up-button,
+#spinBoxRecentDays::up-button {
   border-left: 1px solid #060613;
   image: url(skin:/btn/btn_spin_up.png) no-repeat;
 }
 
 WBeatSpinBox::down-button,
-#spinBoxTransition::down-button {
+#spinBoxTransition::down-button,
+#spinBoxRecentDays::down-button {
   border-left: 1px solid #060613;
   image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
@@ -96,7 +99,9 @@ WBeatSpinBox::down-button {
 }
 
 #spinBoxTransition::up-button,
-#spinBoxTransition::down-button {
+#spinBoxTransition::down-button,
+#spinBoxRecentDays::up-button,
+#spinBoxRecentDays::down-button {
   height: 10px;
 }
 
@@ -142,7 +147,9 @@ WEffectSelector::indicator:unchecked,
 #MainMenu::item,
 WBeatSpinBox,
 #spinBoxTransition:up-button,
-#spinBoxTransition:down-button {
+#spinBoxTransition:down-button,
+#spinBoxRecentDays:up-button,
+#spinBoxRecentDays:down-button {
   color: #000;
   background-color: #8D98A3;
   }
@@ -151,9 +158,13 @@ WBeatSpinBox,
     color: #000;
     background-color: #99a0a4;
   }
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     color: #000;
     background-color: #72777a;
+  }
+  #spinBoxRecentDays:disabled {
+    color: #333;
   }
 /* hovered items */
 #MainMenu::item:selected,
@@ -249,7 +260,8 @@ WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryFeatureControls QPushButton:enabled,
 WBeatSpinBox,
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   font-size: 13px;
   }
 WEffectSelector QAbstractScrollArea,
@@ -576,7 +588,9 @@ WLibrarySidebar {
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
-WLibrarySidebar::item:!selected:focus {
+WLibrarySidebar::item:!selected:focus,
+/* This, in conjunction with the c++ counterpart, styles only items hovered while dragging */
+WLibrarySidebar[dragHover="true"]::item:hover {
   outline: none;
   border: 1px solid white;
 }
@@ -996,16 +1010,21 @@ WLibrary { margin: 2px 3px 0px 0px; }
       min-width: 40px;
       max-width: 40px;
     }
-  #spinBoxTransition {
-    width: 32px;
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     height: 20px;
     padding: 0px;
-    margin-left: 3px;
     margin: 0px 0px 2px 1px;
   /* omitting the border definition miraculously makes the spinbox grow */
   /* 0px border OTOH makes the spinbox shrink disproportionately
     border: 0px; */
     border: 0px;
+  }
+  #spinBoxTransition {
+    width: 32px;
+  }
+  #spinBoxRecentDays {
+    width: 45px;
   }
 
   #LibraryFeatureControls QPushButton:!enabled {

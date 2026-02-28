@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.7.0" type="development" date="2025-11-30" timestamp="1764501526">
+    <release version="2.7.0" type="development" date="2026-02-17" timestamp="1771353064">
       <description>
 </description>
     </release>
-    <release version="2.6.0" type="development" date="2025-11-30" timestamp="1764501526">
+    <release version="2.6.0" type="development" date="2026-02-17" timestamp="1771353064">
       <description>
  <p>
   STEM file support
@@ -111,8 +111,19 @@
    #13044
   </li>
   <li>
-   Add stem controls
+   Add stem controls and waveforms
    #13086
+   #14951
+   #14870
+   #15494
+   #14769
+   #15386
+   #15383
+   #15656
+   #15317
+   #15384
+   #15686
+   #15668
   </li>
   <li>
    Add analyser support for stem
@@ -139,11 +150,6 @@
   <li>
    Add stem files to the taglib lookup table
    #13612
-  </li>
-  <li>
-   Stem controls for LateNight
-   #13537
-   #14745
   </li>
   <li>
    Fix: make "stem_group,mute" a powerwindow button
@@ -182,6 +188,35 @@
    Fix: use generic way to get the group on stem waveform renderer
    #14291
   </li>
+  <li>
+   Fix: reset the STEM Quick FX on track load when enabled
+   #15743
+  </li>
+  <li>
+   Allow pre-mastered stream not to match stem streams properties
+   #15246
+   #14572
+  </li>
+  <li>
+   Fix: clone states when cloning a deck
+   #15501
+   #15093
+   #15510
+  </li>
+  <li>
+   Fix: reset stem color correctly
+   #15494
+   #14769
+  </li>
+  <li>
+   Fix: skip stem count assert on secondary decks
+   #15655
+   #15593
+  </li>
+  <li>
+   Name Stem QuickEffect chains node like deck QuickEffects in effects.xml
+   #15530
+  </li>
  </ul>
  <p>
   Library
@@ -198,6 +233,9 @@
   <li>
    Add overview column with small waveform
    #14140
+   #15368
+   #15366
+   #15431
   </li>
   <li>
    Add a rebindable keyboard shortcut for editing items as a replacement for F2
@@ -226,9 +264,11 @@
    #13392
   </li>
   <li>
-   Library scan: log summary and show popup
+   Library scan: log summary and show popup (opt-out)
    #13427
    #10720
+   #15089
+   #15085
   </li>
   <li>
    Search: add BPM lock filter
@@ -261,6 +301,86 @@
    #14091
    #8960
   </li>
+  <li>
+   Scan dialog: add progress bar, plus some improvements
+   #15517
+  </li>
+  <li>
+   Update to libdjinterop 0.27.0
+   #15958
+   #15696
+  </li>
+  <li>
+   Library: enable drag'n'drop of directories
+   #15688
+   #5100
+  </li>
+  <li>
+   Search: add
+   directory
+   filter
+   #15701
+  </li>
+  <li>
+   Search: add filter shortcuts, eg. t|title, a|artist, cm|comment, y|year
+   #15115
+   #15101
+  </li>
+  <li>
+   Search: add constant BPM filter
+   bpm:const
+   #14642
+   #11064
+  </li>
+  <li>
+   Search: fix 'not' operator
+   #15923
+   #15918
+  </li>
+  <li>
+   Library: also apply library font size(!) to tracks header
+   #15392
+   #15476
+  </li>
+  <li>
+   Rhythmbox: fix imports
+   #15798
+   #15770
+  </li>
+  <li>
+   WTrackMenu: warn before opening more than 10 tracks in file browser
+   #15828
+   #15819
+  </li>
+  <li>
+   Key delegate: apply 'played' color
+   #15839
+  </li>
+  <li>
+   Track Info dialog: restore column stretching
+   #15037
+  </li>
+  <li>
+   Computer feature: mention constraints of file view/model
+   #14934
+  </li>
+  <li>
+   Fix "dataChanged() called with an invalid index range" warning
+   #15937
+   #14610
+  </li>
+  <li>
+   Fix: use correct Hidden settings namespace
+   #15120
+  </li>
+  <li>
+   Engine DJ: add support for playlists export
+   #14741
+  </li>
+  <li>
+   Fix: display rediscovered tracks
+   #15938
+  </li>
  </ul>
  <p>
   Effects
@@ -275,6 +395,19 @@
    Fix: prevent quickFX model out of bound
    #13668
   </li>
+  <li>
+   WhiteNoise: enhance leveling
+   #15979
+  </li>
+  <li>
+   WhiteNoise: improve ramp logic
+   #15949
+  </li>
+  <li>
+   QuickEffect: fix crackling noise when switching
+   #15796
+   #15794
+  </li>
  </ul>
  <p>
   Waveforms
@@ -285,6 +418,11 @@
    #13220
    #6428
    #13226
+   #15277
+   #14801
+   #15272
+   #15349
+   #15338
   </li>
   <li>
    Add minute markers on horizontal waveform overview
@@ -296,6 +434,9 @@
   <li>
    Add slip waveform to Textured/'High details' type
    #14039
+   #13422
+   #15837
+   #15834
   </li>
   <li>
    Disable textured waveforms when using OpenGL ES
@@ -327,9 +468,30 @@
    #14461
    #14726
    #14706
+   #14953
+   #14262
+   #14461
+   #14470
+   #14464
+   #14453
+   #14469
+   #14467
+   #15846
+   #15103
+   #15797
+   #15968
+   #15967
+   #15841
+   #15834
+   #15507
+   #14546
+   #14952
+   #14317
+   #15419
+   #15374
   </li>
   <li>
-   Improve apperrance of marks on the waveforms
+   Improve appearance of marks on the waveforms
    #13969
   </li>
   <li>
@@ -359,13 +521,15 @@
    #13946
   </li>
   <li>
-   Fix invalid slip render marker
-   #13422
-  </li>
-  <li>
    Fix waveform marker image alignment
    #14656
    #14037
+  </li>
+  <li>
+   Fix: unify scaling of scrolling waveforms
+   #15324
+   #15808
+   #15788
   </li>
  </ul>
  <p>
@@ -391,20 +555,85 @@
  </p>
  <ul>
   <li>
-   Behringer DDM4000 &amp; BCR2000: Remove XML input declarations from mapping
+   Behringer DDM4000 &amp; BCR2000: remove XML input declarations from mapping
    #14285
   </li>
   <li>
-   Hercules DJ Control Starlight: Add EffectChain superknob control
+   Hercules DJControl Inpulse 500: add new mapping
+   #14316
+  </li>
+  <li>
+   Hercules DJControl Starlight: add EffectChain superknob control
    #14126
   </li>
   <li>
-   Numark Mixtrack 3: Update scripts
-   #14193
+   Midi Fighter Spectra: add stems layer
+   #14932
   </li>
   <li>
-   Traktor S3: Small updates and fixes
+   Midi Fighter Twister: add stems layer
+   #14931
+  </li>
+  <li>
+   Numark Mixstream Pro: add support
+   #15732
+  </li>
+  <li>
+   Numark Mixtrack 3: update scripts
+   #14193
+   #14180
+  </li>
+  <li>
+   Numark Mixtrack Platinum: add stems support
+   #15768
+  </li>
+  <li>
+   Numark NS4FX: add new mapping
+   #15829
+   #15948
+   #15894
+  </li>
+  <li>
+   Pioneer CDJ-350: fix incorrect name in controller mapping
+   #15683
+  </li>
+  <li>
+   Pioneer DDJ-FLX4: fix obsolete hotcue status keys
+   #15555
+  </li>
+  <li>
+   Pioneer DDJ-FLX4: implement Key Shift
+   #15674
+  </li>
+  <li>
+   Pioneer DDJ-FLX4: support for stems
+   #15528
+  </li>
+  <li>
+   Reloop Beatmix 2/4: implement shift+jog wheel seek
+   #15575
+   #12334
+  </li>
+  <li>
+   Traktor Kontrol Z1: fix crossfader cut
+   #14451
+   #14450
+  </li>
+  <li>
+   Traktor S3: small updates and fixes
    #14340
+  </li>
+  <li>
+   Traktor S4Mk2: check for deck undefined
+   #14445
+  </li>
+  <li>
+   Traktor S4Mk3: add controller setting color
+   #15650
+  </li>
+  <li>
+   Traktor S4Mk3: various improvements
+   #15216
   </li>
  </ul>
  <p>
@@ -486,6 +715,36 @@
    #13425
    #14106
   </li>
+  <li>
+   Controller engine: add convenience functions
+   isBrakeActive()
+   ,
+   isSpinbackActive()
+   and
+   isSoftStartActive()
+   #14925
+  </li>
+  <li>
+   ControllerRenderingEngine: fix deadlock with mappings with display controllers
+   #15524
+  </li>
+  <li>
+   Restore common-hid-packet-parser global symbol exceptions for eslint
+   #15961
+  </li>
+  <li>
+   ControllerRenderingEngine: add OpenGL ES for controller screen rendering
+   #15566
+  </li>
+  <li>
+   Fix changing stem group for deck in ComponentsJS
+   #14928
+   #14764
+  </li>
+  <li>
+   Fix an unused parameter warning
+   #15313
+  </li>
  </ul>
  <p>
   Engine
@@ -511,6 +770,47 @@
   <li>
    Fix: revert to max. 36 hotcues, fix one-off issue
    #14753
+  </li>
+  <li>
+   QueenMaryBeats: detection speed up
+   #15127
+   #15067
+  </li>
+  <li>
+   QueenMaryBeats: clamp the beat count value
+   #15657
+  </li>
+  <li>
+   QueenMaryBeats: fix offset issue
+   #15076
+  </li>
+  <li>
+   RateControl: initialize
+   m_pVCEnabled
+   with nullptr for samplers
+   #15303
+   #15288
+  </li>
+  <li>
+   Fix: document libFLAC 1.5
+   FLAC__STREAM_DECODER_ERROR_STATUS_MISSING_FRAME
+   #14876
+  </li>
+  <li>
+   Fix: soundsourceflac.cpp flac api version and missing error
+   #15295
+  </li>
+  <li>
+   chore: remove unused/undefined declared members from BaseTrackCache
+   #14965
+  </li>
+  <li>
+   Changed audio engine to switch to linear scaler upon entering scratching mode
+   #15845
+  </li>
+  <li>
+   AudioUnit: fix crash due to off-by-one error in parameter syncing
+   #15919
   </li>
  </ul>
  <p>
@@ -554,6 +854,40 @@
    Library, Track Search: Fix accidental use of wrong preference controls
    #13592
   </li>
+  <li>
+   Controller: strip leading whitespaces for mapping name display
+   #15844
+  </li>
+  <li>
+   Interface: use main window screen to detect if skin fits
+   #15824
+   #15823
+  </li>
+  <li>
+   Stats: convert ns to ms and add spacing for readability
+   #14978
+   #14908
+  </li>
+  <li>
+   Controller: add Stem controls to control picker / menu
+   #15158
+  </li>
+  <li>
+   Controller: add reload button to refresh mapping list
+   #15627
+  </li>
+  <li>
+   Control learning: fix deck offset for stem controls
+   #15714
+  </li>
+  <li>
+   Controller: fix the tabs display for QML=OFF
+   #15027
+  </li>
+  <li>
+   Controller: add missing layout
+   #14606
+  </li>
  </ul>
  <p>
   Skins
@@ -591,6 +925,60 @@
   <li>
    Tooltips: Fix cue mode setting location
    #14045
+  </li>
+  <li>
+   Latenight, Tango and Deere: Add STEM controls
+   #15492
+   #15310
+   #15309
+   #14752
+   #15877
+   #15876
+   #15885
+   #15878
+   #13537
+   #14745
+   #15493
+   #14242
+   #15535
+   #15533
+  </li>
+  <li>
+   Tracks: avoid re-sorting table when purging/hiding tracks
+   #15872
+   #12565
+  </li>
+  <li>
+   Tracks: confirm dialog for Auto DJ queue replace action
+   #15149
+   #14956
+  </li>
+  <li>
+   Tracks: add track drop indicator line
+   #15228
+  </li>
+  <li>
+   Tracks: align ReplayGain right
+   #15144
+   #14997
+  </li>
+  <li>
+   Update cue &amp; play indicators on paused decks when switching cue mode
+   #14930
+   #9928
+  </li>
+  <li>
+   Time widget: make ShowSeconds only show seconds, no extra locale info
+   #15805
+   #15804
+  </li>
+  <li>
+   EngineVuMeter: fix constructor
+   #14811
+  </li>
+  <li>
+   Overview scale options
+   #14463
   </li>
  </ul>
  <p>
@@ -630,6 +1018,10 @@
    on iOS
    #14375
   </li>
+  <li>
+   QML: disable to fix link failure and avoid undefined behaviour
+   #14772
+  </li>
  </ul>
  <p>
   Target support
@@ -645,7 +1037,7 @@
    #13880
   </li>
   <li>
-   Debiam: Add missing qt6-declarative-private-dev and qt6-base-private-dev package
+   Debian: Add missing qt6-declarative-private-dev and qt6-base-private-dev package
    #13904
   </li>
   <li>
@@ -676,6 +1068,98 @@
    Windows and macOS: Update to Qt 6.8.3 (requires MSVC 2022)
    #14655
   </li>
+  <li>
+   Retire Ubuntu Jammy 22.04
+   #14784
+  </li>
+  <li>
+   Allow any taglib
+   #14694
+  </li>
+  <li>
+   Add Flatpak packaging files
+   #15695
+   #15922
+  </li>
+  <li>
+   Update to latest VCPKG with the sleef backport
+   #15783
+  </li>
+  <li>
+   VCPKG update for 2.6
+   #14815
+  </li>
+  <li>
+   Remove 'qml6-module-qtquick-nativestyle'
+   #15771
+   #15440
+  </li>
+  <li>
+   chore: replace deprecated
+   QImage::mirror
+   with
+   QImage::flip
+   from Qt6.9
+   #14954
+  </li>
+  <li>
+   Never render into an invalid OpenGL Window
+   #15951
+   #15942
+  </li>
+  <li>
+   Fail early if not running from Visual Studio environment
+   #14623
+  </li>
+  <li>
+   Fail verbose when Chromaprint is missing
+   #14548
+  </li>
+  <li>
+   Move download, SHA256 check and unzip of Windows buildenv from windows_buildenv.bat to CMakelists.txt
+   #13306
+  </li>
+  <li>
+   Install ucrtbased.dll in debug mode
+   #14579
+  </li>
+  <li>
+   Fix: Resolve the warning for redundant Czech desktop entry fields
+   #15720
+  </li>
+  <li>
+   Fix setting of BUNDLE_DIRS
+   #14550
+  </li>
+  <li>
+   Fix WiX error log file generation in GitHub workflow
+   #15045
+  </li>
+  <li>
+   Make Debian non-free optional
+   #15895
+  </li>
+  <li>
+   MacOS: don't install already installed Ninja
+   #14499
+  </li>
+  <li>
+   MacOS: Use same CMake internal buildenv download/unzip as for Windows
+   #15033
+  </li>
+  <li>
+   MacOS: String comparison fix for zsh
+   #15568
+  </li>
+  <li>
+   Fix qt 6.10 warnings
+   #15719
+   #15698
+  </li>
+  <li>
+   Follow Ubuntu libstdc++6 and libgcc-s1 updates
+   #15275
+  </li>
  </ul>
  <p>
   Misc Refactorings
@@ -694,6 +1178,14 @@
    #13368
   </li>
   <li>
+   Bump actions/cache from 4 to 5
+   #15756
+  </li>
+  <li>
+   Bump actions/checkout from 4 to 5
+   #15186
+  </li>
+  <li>
    Bump actions/checkout from 4.1.6 to 4.1.7
    #13386
   </li>
@@ -710,12 +1202,24 @@
    #13810
   </li>
   <li>
-   Bump azure/trusted-signing-action from 0.3.20 to 0.4.0
-   #13500
+   Bump actions/checkout from 5 to 6
+   #15670
   </li>
   <li>
-   Bump azure/trusted-signing-action from 0.4.0 to 0.5.0
-   #13809
+   Bump actions/github-script from 7 to 8
+   #15334
+  </li>
+  <li>
+   Bump actions/labeler from 5.0.0 to 6.0.1
+   #15332
+  </li>
+  <li>
+   Bump actions/stale from 9 to 10
+   #15333
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.3.3 to 4.6.0
+   #14167
   </li>
   <li>
    Bump actions/upload-artifact from 4.3.4 to 4.3.5
@@ -738,6 +1242,44 @@
    #13765
   </li>
   <li>
+   Bump actions/upload-artifact from 4.6.0 to 4.6.1
+   #14406
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.6.1 to 4.6.2
+   #14517
+  </li>
+  <li>
+   Bump actions/upload-artifact from 4.6.2 to 5.0.0
+   #15539
+  </li>
+  <li>
+   Bump actions/upload-artifact from 5.0.0 to 6.0.0
+   #15755
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.3.20 to 0.4.0
+   #13500
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.4.0 to 0.5.0
+   #13809
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.5.0 to 0.5.1
+   #14168
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.5.1 to 0.5.9
+   #15094
+   #15239
+   #15509
+  </li>
+  <li>
+   Bump azure/trusted-signing-action from 0.5.10 to 1.0.0
+   #15884
+  </li>
+  <li>
    Bump coverallsapp/github-action from 2.3.0 to 2.3.1
    #13766
   </li>
@@ -750,20 +1292,24 @@
    #13811
   </li>
   <li>
-   Bump actions/upload-artifact from 4.3.3 to 4.6.0
-   #14167
-  </li>
-  <li>
-   Bump azure/trusted-signing-action from 0.5.0 to 0.5.1
-   #14168
-  </li>
-  <li>
    Bump coverallsapp/github-action from 2.3.4 to 2.3.6
    #14246
   </li>
   <li>
-   Bump actions/upload-artifact from 4.6.0 to 4.6.1
-   #14406
+   Bump coverallsapp/github-action from 2.3.6 to 2.3.7
+   #15669
+  </li>
+  <li>
+   Bump jwlawson/actions-setup-cmake from 2.0 to 2.1
+   #15907
+  </li>
+  <li>
+   Bump peter-evans/repository-dispatch from 3 to 4
+   #15458
+  </li>
+  <li>
+   Update Sign executables step to support trusted-signing-action v0.5.10
+   #15557
   </li>
   <li>
    chore: update the donate button label
@@ -1079,10 +1625,129 @@
    qmlwaveform: Fix moc in Qt 6.9.0
    #14649
   </li>
+  <li>
+   Add automation to help with release branch syncing
+   #15111
+   #15052
+   #15049
+   #14971
+   #14881
+   #14875
+   #14422
+   #15634
+   #15649
+  </li>
+  <li>
+   Chore: disable broken/slow benchmark
+   #15658
+   #15508
+   #14846
+  </li>
+  <li>
+   CI: refactor workflow into modular actions
+   #14964
+   #15291
+   #15046
+   #15551
+   #15034
+  </li>
+  <li>
+   /softfix
+   PR command
+   #14966
+   #14607
+  </li>
+  <li>
+   Rerun CI when the base branch is changed
+   #14564
+  </li>
+  <li>
+   Remove all VCPKG_DEFAULT_HOST_TRIPLET entries from build.yml
+   #15029
+   #15022
+  </li>
+  <li>
+   CMake find modules required for the new VCPKG environment
+   #14547
+  </li>
+  <li>
+   Fix
+   mixxx-test
+   build to find
+   mad.h
+   #15803
+  </li>
+  <li>
+   Fix segfault in mixxx-test when __HID__ is not defined
+   #14988
+  </li>
+  <li>
+   Windows_buildenv.bat: remove stray command
+   #15237
+  </li>
+  <li>
+   Add a MMutexLockerDebug to trace Multithreading
+   #14428
+  </li>
+  <li>
+   Unitttests: Reduce number of iterations in globalTrackCacheTest.concurrentDelete
+   #15287
+   #14833
+   #14919
+  </li>
+  <li>
+   Remove accidentally committed "backup" file
+   #14456
+  </li>
+  <li>
+   (Belated) Happy New Year 2026!
+   #15852
+  </li>
+  <li>
+   Install msys2 if not preinstalled like on Windows-11-arm
+   #14836
+  </li>
+  <li>
+   Logging: remove redundant class names
+   #15496
+   #15860
+  </li>
+  <li>
+   Don't hardcode the limit of parallel compiler threads for GitHub runners
+   #14760
+  </li>
+  <li>
+   Fix destruction race
+   #14922
+  </li>
+  <li>
+   Fix network device debug
+   #15171
+  </li>
+  <li>
+   Fix pre-commit of 2.6 branch
+   #15853
+  </li>
+  <li>
+   Num deck streamline
+   #14112
+  </li>
+  <li>
+   Pre-Commit: Run Prettier for d.ts files
+   #15914
+  </li>
+  <li>
+   README: add link to OS-specific build instructions
+   #14779
+  </li>
+  <li>
+   Improve debug output for missing WWidget pixmaps
+   #14473
+  </li>
  </ul>
 </description>
     </release>
-    <release version="2.5.4" type="development" date="2025-11-30" timestamp="1764501526">
+    <release version="2.5.4" type="stable" date="2025-12-14" timestamp="1765670400">
       <description>
  <p>
   Controller Mappings
@@ -1107,6 +1772,10 @@
    Reloop Beatmix 2/4: fix overriding persisted fx routing
    #15574
    #14917
+  </li>
+  <li>
+   Traktor S4Mk3: don't stop scratch mode if platter is being held
+   #15570
   </li>
   <li>
    Components JogwheelBasic: Disable scratching when leaving
@@ -1208,10 +1877,20 @@
    Analyze view: avoid listing tracks that don't match the 'New' filter
    #15597
    #14873
+   #15693
   </li>
   <li>
-   Traktor feature: fixes to Traktor collection importer
+   Traktor feature: fixes to Traktor and Rekordbox collection importer
    #15645
+   #15671
+  </li>
+  <li>
+   Fix possible crash and other issues with Rekordbox USB
+   #15745
+   #13624
+   #13309
+   #10672
+   #11373
   </li>
  </ul>
  <p>
@@ -1347,6 +2026,16 @@
    Update Keyboard SVG
    #15635
   </li>
+  <li>
+   SoundSourceFFmpeg: Fix opening files with non ASCII characters
+   #15700
+   #15681
+  </li>
+  <li>
+   Fix possible crash due to division by zereo in waveform code
+   #15738
+   #15737
+  </li>
  </ul>
 </description>
     </release>
@@ -1414,6 +2103,10 @@
   <li>
    Reverb effect: Fix memory leak
    #15262
+  </li>
+  <li>
+   create Vinyl Control controls and proxies only for main decks
+   #15175
   </li>
  </ul>
  <p>

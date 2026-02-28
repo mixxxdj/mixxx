@@ -71,9 +71,9 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
             this,
             &MprisPlayer::slotPlayingTrackChanged);
 
-    for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
+    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         auto attributes = std::make_unique<DeckAttributes>(i,
-                m_pPlayerManager->getDeck(i));
+                m_pPlayerManager->getDeckBase(i));
         connect(attributes.get(),
                 &DeckAttributes::playChanged,
                 this,

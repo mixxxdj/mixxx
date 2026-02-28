@@ -1,5 +1,5 @@
 declare interface QtSlot<F extends (...args: any[]) => void> {
-    connect(callback: F): void
+    connect(callback: F): void;
 }
 
 /** ScriptConnectionJSProxy */
@@ -38,79 +38,79 @@ declare interface ScriptConnection {
 
 declare interface Player {
     /** Track's artist or empty string if no track is loaded */
-    readonly artist: string
+    readonly artist: string;
     /** Track's title or empty string if no track is loaded */
-    readonly title: string
+    readonly title: string;
     /** Track's album or empty string if no track is loaded */
-    readonly album: string
+    readonly album: string;
     /** Track's album artist or empty string if no track is loaded */
-    readonly albumArtist: string
+    readonly albumArtist: string;
     /** Track's genre or empty string if no track is loaded */
-    readonly genre: string
+    readonly genre: string;
     /** Track's composer or empty string if no track is loaded */
-    readonly composer: string
+    readonly composer: string;
     /** Track's grouping or empty string if no track is loaded */
-    readonly grouping: string
+    readonly grouping: string;
     /** Track's year of release or empty string if no track is loaded */
-    readonly year: string
+    readonly year: string;
     /** Track's number or empty string if no track is loaded */
-    readonly trackNumber: string
+    readonly trackNumber: string;
     /** Total number of tracks in track's album or empty string if no track is loaded */
-    readonly trackTotal: string
+    readonly trackTotal: string;
 
     /** Emitted when the track is unloaded from the player. */
-    trackUnloaded: QtSlot<() => void>
+    trackUnloaded: QtSlot<() => void>;
 
     /**
      * Emitted with the new track's artist when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    artistChanged: QtSlot<(newArtist: string) => void>
+    artistChanged: QtSlot<(newArtist: string) => void>;
     /**
      * Emitted with the new track title when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    titleChanged: QtSlot<(newTitle: string) => void>
+    titleChanged: QtSlot<(newTitle: string) => void>;
     /**
      * Emitted with the new track album when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    albumChanged: QtSlot<(newAlbum: string) => void>
+    albumChanged: QtSlot<(newAlbum: string) => void>;
     /**
      * Emitted with the new track album artist when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    albumArtistChanged: QtSlot<(newAlbumArtist: string) => void>
+    albumArtistChanged: QtSlot<(newAlbumArtist: string) => void>;
     /**
      * Emitted with the new track genre when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    genreChanged: QtSlot<(newGenre: string) => void>
+    genreChanged: QtSlot<(newGenre: string) => void>;
     /**
      * Emitted with the new track's composer when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    composerChanged: QtSlot<(newComposer: string) => void>
+    composerChanged: QtSlot<(newComposer: string) => void>;
     /**
      * Emitted with the new track's grouping when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    groupingChanged: QtSlot<(newGrouping: string) => void>
+    groupingChanged: QtSlot<(newGrouping: string) => void>;
     /**
      * Emitted with the new track year of release when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    yearChanged: QtSlot<(newYear: string) => void>
+    yearChanged: QtSlot<(newYear: string) => void>;
     /**
      * Emitted with the new track number when a new track is loaded
      * to the player or when the current track's metadata change.
      */
-    trackNumberChanged: QtSlot<(newTrackNumber: string) => void>
+    trackNumberChanged: QtSlot<(newTrackNumber: string) => void>;
     /**
      * Emitted with the new number of track in track's album when a new track
      * is loaded to the player or when the current track's metadata change.
      */
-    trackTotalChanged: QtSlot<(newTrackTotal: string) => void>
+    trackTotalChanged: QtSlot<(newTrackTotal: string) => void>;
 }
 
 /** ControllerScriptInterfaceLegacy */
@@ -122,7 +122,7 @@ declare namespace engine {
      * @returns The player providing track information and signals, or undefined
      *          if not player associated with this group was found.
      */
-    function getPlayer(group: string): Player | undefined
+    function getPlayer(group: string): Player | undefined;
 
     type SettingValue = string | number | boolean;
     /**
@@ -211,7 +211,7 @@ declare namespace engine {
      */
     function getDefaultParameter(group: string, name: string): number;
 
-    type CoCallback = (value: number, group: string, name: string) => void
+    type CoCallback = (value: number, group: string, name: string) => void;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -251,7 +251,6 @@ declare namespace engine {
      * @deprecated Use {@link engine.makeConnection} instead
      */
     function connectControl(group: string, name: string, callback: CoCallback, disconnect?: boolean): ScriptConnection | boolean | undefined;
-
 
     /**
      * Triggers the execution of all connected callback functions, with the actual value of a control.
@@ -421,6 +420,7 @@ declare namespace engine {
      */
     function isSoftStartActive(deck: number): bool;
 
+    // prettier-ignore
     enum Charset {
         ASCII,          // American Standard Code for Information Interchange (7-Bit)
         UTF_8,          // Unicode Transformation Format (8-Bit)
@@ -457,5 +457,5 @@ declare namespace engine {
      * @param targetCharset The charset to encode the string into.
      * @returns The converted String as an array of bytes. Will return an empty buffer on conversion error or unavailable charset.
      */
-    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer
+    function convertCharset(targetCharset: Charset, value: string): ArrayBuffer;
 }
