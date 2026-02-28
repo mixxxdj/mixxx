@@ -13,10 +13,12 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
         LibraryScanner* pScanner,
         const ScannerGlobalPointer& scannerGlobal,
         const mixxx::FileAccess&& dirAccess,
-        bool scanUnhashed)
+        bool scanUnhashed,
+        bool recursive)
         : ScannerTask(pScanner, scannerGlobal),
           m_dirAccess(std::move(dirAccess)),
-          m_scanUnhashed(scanUnhashed) {
+          m_scanUnhashed(scanUnhashed),
+          m_recursive(recursive) {
 }
 
 void RecursiveScanDirectoryTask::run() {
@@ -71,6 +73,11 @@ void RecursiveScanDirectoryTask::run() {
                 }
             }
         } else {
+            if (!m_recursive) {
+                // We don't want to decent into sub directories
+                // This triggered by the incoming dir file watcher, which is not recursive.
+                continue;
+            }
             // File is a directory
             if (m_scannerGlobal->directoryBlacklisted(currentFile)) {
                 // Skip blacklisted directories like the iTunes Album
@@ -126,7 +133,8 @@ void RecursiveScanDirectoryTask::run() {
                             m_pScanner,
                             m_scannerGlobal,
                             mixxx::FileAccess(dirInfo, m_dirAccess.token()),
-                            m_scanUnhashed));
+                            m_scanUnhashed,
+                            m_recursive));
         }
     }
     setSuccess(true);

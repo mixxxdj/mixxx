@@ -723,6 +723,10 @@ void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
     slotLoadLocationToPlayer(location, groupForDeck(deck - 1), false);
 }
 
+void PlayerManager::slotPreview(const QString& location) {
+    slotLoadLocationToPlayer(location, groupForPreviewDeck(0), true);
+}
+
 void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
     slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1), false);
 }
