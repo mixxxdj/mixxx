@@ -8,7 +8,6 @@
     </info>
     <controller id="PIONEER">
         <scriptfiles>
-            <file filename="lodash.mixxx.js" />
             <file filename="midi-components-0.0.js" />
             <file functionprefix="PioneerDDJSB" filename="Pioneer-DDJ-SB-scripts.js"/>
         </scriptfiles>
