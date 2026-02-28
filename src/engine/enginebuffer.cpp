@@ -1,4 +1,4 @@
-#include "engine/enginebuffer.h"
+﻿#include "engine/enginebuffer.h"
 
 #include <QtDebug>
 
@@ -810,6 +810,9 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
+        // trigger spin-up here
+    
+        m_pRateControl->setRateRampMode(RateControl::RampMode::Exponential);
         if (m_quantize.toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
@@ -817,6 +820,12 @@ void EngineBuffer::slotControlPlayRequest(double v) {
         ) {
             requestSyncPhase();
         }
+    }
+
+    // Spin-DOWN: playing ? stopped
+    if (oldPlay && !verifiedPlay) {
+        //  trigger spin-down here
+        m_pRateControl->setRateRampMode(RateControl::RampMode::Exponential);
     }
 
     // set and confirm must be called here in any case to update the widget toggle state
@@ -855,7 +864,9 @@ void EngineBuffer::slotControlJumpToStartAndStop(double v)
 
 void EngineBuffer::slotControlStop(double v)
 {
+  //Exponential added here for Switch to vinyl brake mode → slow natural stop
     if (v > 0.0) {
+        m_pRateControl->setRateRampMode(RateControl::RampMode::Exponential);
         m_playButton->set(0);
     }
 }
