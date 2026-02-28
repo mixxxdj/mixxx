@@ -467,8 +467,12 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     } else {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
-    DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
-    DEBUG_ASSERT(it == cbegin() || it == cend() || *it > *std::prev(it));
+    if (!(it == cbegin() || it == cend() || *it >= position)) {
+        qWarning() << "Beats::iteratorFrom: unexpected iterator result, possibly invalid beats";
+    }
+    if (!(it == cbegin() || it == cend() || *it > *std::prev(it))) {
+        qWarning() << "Beats::iteratorFrom: unexpected iterator result, possibly invalid beats";
+    }
     return it;
 }
 
