@@ -151,11 +151,9 @@ PlayerManager::~PlayerManager() {
     m_samplers.clear();
     m_microphones.clear();
     m_auxiliaries.clear();
-
-    if (m_pTrackAnalysisScheduler) {
-        m_pTrackAnalysisScheduler->stop();
-        m_pTrackAnalysisScheduler.reset();
-    }
+    // We need to delete m_pTrackAnalysisScheduler here immediately synchronously,
+    // waiting for pending threads to have finished, to not killthem during exit
+    delete m_pTrackAnalysisScheduler.release();
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
