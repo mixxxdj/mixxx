@@ -878,6 +878,7 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
 
         components.Button.call(this);
     };
+
     this.EffectButton.prototype = new components.Button({
         unshift: function() {
             this.key = "enabled";
@@ -923,33 +924,33 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
     this.enableButtons = new components.ComponentContainer({
         unshift: function() {
             components.ComponentContainer.prototype.unshift.call(this); // call super.unshift()
-    
-            this.updateLeds = function() {
-                // Update the LED state of each button when toggling shift off
-                // to reflect the current state of enabled effects
-                this.forEachComponent(function(button) {
-                    var isOn = engine.getValue(button.group, "enabled");
-                    button.send(isOn);
-                });
-            };
             this.updateLeds();
         },
         shift: function() {
             components.ComponentContainer.prototype.shift.call(this); // call super.shift();
-            
-            this.updateLeds = function() {
-                // Update the LED state of each button when toggling shift on
-                // to reflect the current state of enabled effects
+            this.updateLeds();
+        },
+        updateLeds: function() {
+            console.error("UPDATE LEDS:", this.isShifted);
+            if (this.isShifted) {
+                // Update the LED state of each button to reflect the current state of focused effects
                 var focusedEffect = engine.getValue(eu.group, "focused_effect");
                 
+                console.error("SHIFTTTTTT");
                 this.forEachComponent(function(button) {
                     var isOn = button.buttonNumber == focusedEffect;
                     button.send(isOn);
                 });
-            };
-            this.updateLeds();
+            } else {
+                // Update the LED state of each button to reflect the current state of enabled effects
+                this.forEachComponent(function(button) {
+                    var isOn = engine.getValue(button.group, "enabled");
+                    button.send(isOn);
+                });
+            }
         },
     });
+
     for (var i = 1; i <= 3; i++) {
         this.enableButtons[i] = new this.EffectButton(i);
 
