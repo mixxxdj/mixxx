@@ -11,8 +11,7 @@ PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
-        : m_valid{false},
-          m_key{key},
+        : m_key{key},
           m_noTransport{false} {
 }
 
@@ -52,8 +51,7 @@ void VisualPlayPosition::set(
     data.m_audioBufferMicroS = audioBufferMicroS;
 
     // Atomic write
-    m_data.setValue(data);
-    m_valid.store(true);
+    m_data.push(data);
 }
 
 double VisualPlayPosition::calcOffsetAtNextVSync(
@@ -74,19 +72,19 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
         // The positive offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
-        const int maxOffset = static_cast<int>(
+        const int maxOffsetMicros = static_cast<int>(
                 data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
 
         // The minimum offset is limited to -data.m_callbackEntrytoDac to avoid a more
         // negative value indicating an outdated request that is no longer valid anyway.
         // This is probably caused by a vsync problem.
-        const int minOffset = -data.m_callbackEntrytoDac;
+        const int minOffsetMicros = -data.m_callbackEntrytoDac;
 
         // Calculate the offset in micros for the position of the sample that will be transferred
         // to the DAC when the next display frame is displayed
-        int offset = refToVSync - data.m_callbackEntrytoDac;
-        if (offset < minOffset) {
-            offset = minOffset;
+        int offsetMicros = refToVSync - data.m_callbackEntrytoDac;
+        if (offsetMicros < minOffsetMicros) {
+            offsetMicros = minOffsetMicros;
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
                            << m_key << "outdated position request (offset < minOffset)";
@@ -95,11 +93,11 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
                          << data.m_callbackEntrytoDac;
                 m_noTransport = true;
             }
-        } else if (offset > maxOffset) {
-            offset = maxOffset;
+        } else if (offsetMicros > maxOffsetMicros) {
+            offsetMicros = maxOffsetMicros;
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
-                           << m_key << "no transport (offset > maxOffset)";
+                           << m_key << "no transport (offsetMicros > maxOffsetMicros)";
                 qDebug() << m_key << "refToVSync:" << refToVSync
                          << "data.m_callbackEntrytoDac:"
                          << data.m_callbackEntrytoDac;
@@ -114,14 +112,14 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
             m_noTransport = false;
         }
         // Apply the offset proportional to m_positionStep
-        return data.m_positionStep * static_cast<double>(offset) / data.m_audioBufferMicroS;
+        return static_cast<double>(offsetMicros) / data.m_audioBufferMicroS;
     }
     return 0.0;
 }
 
 double VisualPlayPosition::determinePlayPosInLoopBoundries(
-        const VisualPlayPositionData& data, const double& offset) {
-    double interpolatedPlayPos = data.m_playPos + offset * data.m_playRate;
+        const VisualPlayPositionData& data, const double& offsetSteps) {
+    double interpolatedPlayPos = data.m_playPos + offsetSteps * data.m_playRate;
 
     if (data.m_loopEnabled) {
         double loopSize = data.m_loopEndPos - data.m_loopStartPos;
@@ -161,46 +159,49 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
     return interpolatedPlayPos;
 }
 
-double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
-    if (m_valid.load()) {
-        const VisualPlayPositionData data = m_data.getValue();
-        const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
-
-        return determinePlayPosInLoopBoundries(data, offset);
-    }
-    return -1;
-}
-
 void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
         double* pPlayPosition,
         double* pSlipPosition) {
-    if (m_valid.load()) {
-        const VisualPlayPositionData data = m_data.getValue();
-        const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
-
-        double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offset);
-        *pPlayPosition = interpolatedPlayPos;
-
-        if (data.m_slipModeState == SlipModeState::Running) {
-            *pSlipPosition = data.m_slipPos + offset * data.m_slipRate;
-        } else {
-            *pSlipPosition = interpolatedPlayPos;
+    VisualPlayPositionData data;
+    std::size_t i = 0;
+    double offsetBuffers = 0;
+    for (; i < 3; ++i) {
+        // Find buffer that is currently in the DAC
+        if (m_data.getAt(i, &data)) {
+            offsetBuffers = calcOffsetAtNextVSync(pVSyncThread, data);
+            if (offsetBuffers > -1) {
+                break;
+            }
         }
+    }
+    if (i >= 3) {
+        // No valid data available e.g, track ejected
+        return;
+    }
+
+    const double offsetSteps = data.m_positionStep * offsetBuffers;
+    double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offsetSteps);
+    *pPlayPosition = interpolatedPlayPos;
+
+    if (data.m_slipModeState == SlipModeState::Running) {
+        *pSlipPosition = data.m_slipPos + offsetSteps * data.m_slipRate;
+    } else {
+        *pSlipPosition = interpolatedPlayPos;
     }
 }
 
 double VisualPlayPosition::getEnginePlayPos() {
-    if (m_valid.load()) {
-        VisualPlayPositionData data = m_data.getValue();
+    VisualPlayPositionData data;
+    if (m_data.getAt(0, &data)) {
         return data.m_playPos;
     } else {
-        return -1;
+        return 0;
     }
 }
 
 void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds) {
-    if (m_valid.load()) {
-        VisualPlayPositionData data = m_data.getValue();
+    VisualPlayPositionData data;
+    if (m_data.getAt(0, &data)) {
         *pPlayPosition = data.m_playPos;
         *pTempoTrackSeconds = data.m_tempoTrackSeconds;
     } else {
