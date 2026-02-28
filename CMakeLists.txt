@@ -5159,6 +5159,7 @@ if(VINYLCONTROL)
       lib/xwax/filters.c
       lib/xwax/ringbuffer.c
       lib/xwax/pitch_kalman.c
+      lib/xwax/fmatrix.c
   )
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)

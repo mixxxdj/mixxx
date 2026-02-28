@@ -30,6 +30,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include "complex.h"
 #include "debug.h"
 #include "filters.h"
 #include "timecoder.h"
@@ -380,51 +381,55 @@ void mk2_subcode_init(struct mk2_subcode *sc)
     sc->avg_slope = INT_MAX/2;
     sc->bit = U128_ZERO;
 
-    sc->readings = rb_alloc(5, sizeof(int));
+    sc->readings = rb_alloc(3, sizeof(int));
     if (!sc->readings) {
         perror(__func__);
         return;
     }
 
     /* Initialise smoothing filters */
-    ema_init(&sc->ema_reading, 0.01);
-    ema_init(&sc->ema_slope, 0.01);
+    ewma_init(&sc->ewma_reading, 0.01);
+    ewma_init(&sc->ewma_slope, 0.01);
 }
-
-/*
- * Initialise filter values for the MK2 demodulation
- */
-
-static void init_mk2_channel(struct timecoder_channel *ch)
-{
-    ch->mk2.deriv_scaled = INT_MAX/2;
-    ch->mk2.rms = INT_MAX/2;
-    ch->mk2.rms_deriv = 0;
-
-    ch->mk2.delayline = rb_alloc(5, sizeof(int));
-    if (!ch->mk2.delayline) {
-        perror(__func__);
-        return;
-    }
-
-    ema_init(&ch->mk2.ema_filter, 3e-1);
-    derivative_init(&ch->mk2.differentiator);
-    rms_init(&ch->mk2.rms_filter, 1e-3);
-    rms_init(&ch->mk2.rms_deriv_filter, 1e-3);
-}
-
 
 /*
  * Initialise filter values for one channel
  */
 
-static void init_channel(struct timecode_def *def, struct timecoder_channel *ch)
+static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
+    unsigned int sample_rate)
 {
     ch->positive = false;
     ch->zero = 0;
 
-    if (def->flags & TRAKTOR_MK2)
-        init_mk2_channel(ch);
+    ch->deriv = INT_MAX/2;
+    ch->rms = INT_MAX/2;
+    ch->rms_deriv = 0;
+
+    ch->delayline = rb_alloc(5, sizeof(int));
+    if (!ch->delayline) {
+        perror(__func__);
+        return;
+    }
+
+    ch->delayline_deriv = rb_alloc(5, sizeof(int));
+    if (!ch->delayline_deriv) {
+        perror(__func__);
+        return;
+    }
+
+    ewma_init_adaptive(&ch->ewma_filter, 5e-2, def->resolution, sample_rate);
+    derivative_init(&ch->differentiator);
+
+    rms_init(&ch->rms_filter, 1e-3);
+    rms_init(&ch->rms_deriv_filter, 1e-3);
+
+    size_t window = (size_t)ceil(sample_rate / def->resolution);
+    if (window % 2 == 0)
+        window++;
+    ch->savgol_filter = savgol_create(window, 2);
+
+    rhpf_init(&ch->rumble_filter, sample_rate, 50 * (def->resolution / 1000));
 }
 
 /*
@@ -455,29 +460,37 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
-    init_channel(tc->def, &tc->primary);
-    init_channel(tc->def, &tc->secondary);
+    init_channel(tc->def, &tc->primary, sample_rate);
+    init_channel(tc->def, &tc->secondary, sample_rate);
 
     tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
 
-    tc->quadrant = 0;
-    tc->last_quadrant = 0;
-    tc->direction_changed = false;
+    tc->dphi = 0.0;
+    tc->freq = 0.0;
+    tc->pitch = 0.0;
 
     if (tc->use_legacy_pitch_filter) {
-        pitch_init(&tc->pitch, tc->dt);
+        pitch_init(&tc->pitch_filter, tc->dt);
     } else {
-        pitch_kalman_init(&tc->pitch_kalman,
-                          tc->dt,
-                          KALMAN_COEFFS(1e-8, 10.0), /* stable mode */
-                          KALMAN_COEFFS(1e-4, 1e-1), /* adjust mode */
-                          KALMAN_COEFFS(1e-3, 1e-2), /* reactive mode */
-                          KALMAN_COEFFS(1e-1, 1e-4), /* scratch mode */
-                          6e-4, /* adjust threshold */
-                          25e-4, /* reactive threshold */
-                          40e-4, /* scratch threshold */
-                          false);
+        if (tc->def->flags & TRAKTOR_MK2) {
+            pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
+                              KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
+                              KALMAN_COEFFS(0.0135, 8e-6), /* scratch mode */
+                              15, /* threshold */
+                              false);
+        } else {
+            pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
+                              KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
+                              KALMAN_COEFFS(0.0235, 1e-5), /* scratch mode */
+                              5, /* threshold */
+                              false);
+        }
     }
+
+    tc->ref_level = INT_MAX;
+    tc->bitstream = 0;
+    tc->timecode = 0;
+    tc->valid_counter = 0;
 
     tc->ref_level = INT_MAX;
     tc->bitstream = 0;
@@ -486,9 +499,6 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->timecode_ticker = 0;
 
     tc->mon = NULL;
-
-    /* Compute the factor the scale up the derivative to the original level */
-    tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
 
     if (tc->def->flags & TRAKTOR_MK2) {
         mk2_subcode_init(&tc->upper_bitstream);
@@ -504,12 +514,16 @@ void timecoder_clear(struct timecoder *tc)
 {
     assert(tc->mon == NULL);
 
+    rb_free(tc->primary.delayline);
+    rb_free(tc->secondary.delayline);
+
     if (tc->def->flags & TRAKTOR_MK2) {
-        rb_free(tc->primary.mk2.delayline);
-        rb_free(tc->secondary.mk2.delayline);
         rb_free(tc->upper_bitstream.readings);
         rb_free(tc->lower_bitstream.readings);
     }
+
+    savgol_destroy(tc->primary.savgol_filter);
+    savgol_destroy(tc->secondary.savgol_filter);
 }
 
 /*
@@ -580,6 +594,13 @@ static inline void update_monitor(struct timecoder *tc, signed int x, signed int
 
     if (!tc->mon)
         return;
+
+    /* Only draw the monitor if the signal level is greater -40 dB */
+
+    if (tc->dB < -40.0) {
+        x = 0.0;
+        y = 0.0;
+    }
 
     size = tc->mon_size;
     ref = tc->ref_level;
@@ -660,56 +681,77 @@ static void process_bitstream(struct timecoder *tc, signed int m)
 }
 
 /*
- * Compare the last quadrant we were in to the new one and return the
- * correct displacement for the pitch filter model.
- *
- * A full revolution of the carrier has the length of 1.0 / tc->def->resolution,
- * which is also the sample rate of the timecode (not the audio). One quadrant
- * corresponds to 1/4 * revolution, which is the time between two zero
- * crossings. Hence we multiply this quantity by displacement in quadrants.
+ * Computes the phase difference of a given sine-cosine pair using
+ * complex number theory in Q0.31 for max efficiency.
  */
 
-static double quantize_phase(struct timecoder *tc)
+static inline double phase_difference(const int *cos0, const int *sin0,
+                                      const int *cos1, const int *sin1)
 {
-    unsigned diff = ((tc->quadrant - tc->last_quadrant) % 4);
-    static unsigned long long direction_change_counter = 0;
-    const unsigned int forwards_diff = (tc->def->flags & SWITCH_PHASE) ? 1 : 3;
-    const unsigned int backwards_diff = (tc->def->flags & SWITCH_PHASE) ? 3 : 1;
+    struct complex_q31 z0 = { .re = *cos0, .im = *sin0 };
+    struct complex_q31 z1 = { .re = *cos1, .im = *sin1 };
+    struct complex_q31 z1_conj = complex_q31_conj(z1);
+    struct complex_q62 product = complex_q31_mul(z0, z1_conj);
 
-    /* Check for a displacement of four quadrants */
-    if (diff == 0 && !tc->direction_changed) {
-        return 1.0 / tc->def->resolution;
-    }
-    
-    /* Check for a displacement of three quadrants */
-    if ((tc->forwards && diff == forwards_diff) || (!tc->forwards && diff == backwards_diff)) {
-        return (3.0 / tc->def->resolution) / 4.0;
-    }
-    
-    /* Check for a displacement of two quadrants  */
-    if (diff == 2) {
-        return (1.0 / tc->def->resolution) / 2.0;
-    }
-    
-    return (1.0 / tc->def->resolution) / 4.0;
+    return atan2((double)product.im, (double)product.re);
 }
 
 /*
- * Track the quadrature phase of the pitch counter on the unit circle
+ * Various processing of the carrier wave needed for pitch detection.
  *
- * There are four zero crossings in a whole cycle. In between are the four
- * quadrants of the sine and cosine, which are in quadrature.
+ * Pushes samples into a delayline, computes the derivative, filters it and
+ * computes RMS values.
+ * Afterards the upscaled derivative can by processed by the pitch detection
+ * algorithm.
  */
 
-static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
+void process_carrier(struct timecoder *tc, signed int primary,
+    signed int secondary)
 {
-    tc->last_quadrant = tc->quadrant;
-    tc->direction_changed = direction_changed;
+    if (!tc) {
+        errno = -EINVAL;
+        perror(__func__);
+        return;
+    }
 
-    bool pos = tc->primary.swapped ? tc->primary.positive : tc->secondary.positive;
-    bool add = tc->secondary.swapped ? 0b1 : 0b0;
+    /* Push the samples into the ringbuffer */
 
-    tc->quadrant = (!pos << 1) | add;
+    rb_push(tc->primary.delayline, &primary);
+    rb_push(tc->secondary.delayline, &secondary);
+
+    primary = rhpf_process(&tc->primary.rumble_filter, primary);
+    secondary = rhpf_process(&tc->secondary.rumble_filter, secondary);
+
+    /* Compute the discrete derivative */
+    tc->primary.deriv = derivative(&tc->primary.differentiator,
+        primary);
+    tc->secondary.deriv = derivative(&tc->secondary.differentiator,
+        secondary);
+
+    tc->primary.deriv = ewma(&tc->primary.ewma_filter, tc->primary.deriv);
+    tc->secondary.deriv = ewma(&tc->secondary.ewma_filter, tc->secondary.deriv);
+
+    tc->primary.deriv_decoder = tc->primary.deriv;
+    tc->secondary.deriv_decoder = tc->secondary.deriv;
+
+    tc->primary.deriv = savgol(tc->primary.savgol_filter, tc->primary.deriv);
+    tc->secondary.deriv = savgol(tc->secondary.savgol_filter, tc->secondary.deriv);
+
+    /* Compute the smoothed RMS value */
+    tc->primary.rms = rms(&tc->primary.rms_filter, primary);
+    tc->secondary.rms = rms(&tc->secondary.rms_filter, secondary);
+
+    /* Compute the smoothed RMS value for the derivative */
+    tc->primary.rms_deriv =
+        rms(&tc->primary.rms_deriv_filter, tc->primary.deriv);
+    tc->secondary.rms_deriv =
+        rms(&tc->secondary.rms_deriv_filter, tc->secondary.deriv);
+
+    tc->dB = 20 * log10((double)tc->secondary.rms / INT_MAX);
+
+    /* Push the derivative samples into the ringbuffer */
+    rb_push(tc->primary.delayline_deriv, &tc->primary.deriv);
+    rb_push(tc->secondary.delayline_deriv, &tc->secondary.deriv);
 }
 
 /*
@@ -723,68 +765,54 @@ static void process_sample(struct timecoder *tc,
 			   signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
-        mk2_process_carrier(tc, primary, secondary);
-
-        detect_zero_crossing(&tc->primary, tc->primary.mk2.deriv_scaled, tc->zero_alpha,
+        detect_zero_crossing(&tc->primary, tc->primary.deriv_decoder, tc->zero_alpha,
                 tc->threshold);
-        detect_zero_crossing(&tc->secondary, tc->secondary.mk2.deriv_scaled, tc->zero_alpha,
+        detect_zero_crossing(&tc->secondary, tc->secondary.deriv_decoder, tc->zero_alpha,
                 tc->threshold);
-
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
     }
 
-    /* If an axis has been crossed, use the direction of the crossing
-     * to work out the direction of the vinyl */
+    if (tc->dB > -40.0) {
+        tc->dphi =
+            phase_difference((int*)rb_at(tc->primary.delayline_deriv, 0),
+                             (int*)rb_at(tc->secondary.delayline_deriv, 0),
+                             (int*)rb_at(tc->primary.delayline_deriv, 1),
+                             (int*)rb_at(tc->secondary.delayline_deriv, 1));
 
-    if (tc->primary.swapped || tc->secondary.swapped) {
-        bool forwards;
+        double ddphi = 0.0; /* Derivative of the phase difference */
 
-        if (tc->primary.swapped) {
-            forwards = (tc->primary.positive != tc->secondary.positive);
+        if (tc->use_legacy_pitch_filter) {
+            pitch_dt_observation(&tc->pitch_filter, tc->dphi);
+            ddphi = tc->pitch_filter.v;
         } else {
-            forwards = (tc->primary.positive == tc->secondary.positive);
+            pitch_kalman_update(&tc->pitch_kalman_filter, tc->dphi);
+            ddphi = tc->pitch_kalman_filter.Xk[1];
         }
 
-        if (tc->def->flags & SWITCH_PHASE)
-	    forwards = !forwards;
-
-        track_quadrature_phase(tc, forwards != tc->forwards);
-
-        if (forwards != tc->forwards) { /* direction has changed */
-            tc->forwards = forwards;
-            tc->valid_counter = 0;
-        }
+        tc->freq = ddphi / (2.0 * M_PI);
+        tc->pitch = (tc->freq / tc->def->resolution);
+    } else {
+        tc->freq = 0.0;
+        tc->pitch = 0.0;
     }
 
-    /*
-     * If any axis has been crossed, register movement using the pitch
-     * counters. This occurs four time per cycle of the sinusoid.
-     */
+    bool forwards;
+    if (tc->freq >= 0.0)
+        forwards = true;
+    else
+        forwards = false;
 
-    if (!tc->primary.swapped && !tc->secondary.swapped) {
-        if (tc->use_legacy_pitch_filter)
-            pitch_dt_observation(&tc->pitch, 0.0);
-        else
-            pitch_kalman_update(&tc->pitch_kalman, 0.0);
-    } else {
-        double dx;
+    if (tc->def->flags & SWITCH_PHASE) {
+        tc->pitch = -tc->pitch;
+        tc->freq = -tc->freq;
+        forwards = !forwards;
+    }
 
-        /*
-         * Assumption: We usually advance by a quarter rotation,
-         * unless we skip zero crossings. In this case the new quadrature
-         * tracker calculates the correct displacement for the pitch filter.
-         */
-
-        dx = quantize_phase(tc);
-        if (!tc->forwards)
-            dx = -dx;
-
-        if (tc->use_legacy_pitch_filter)
-            pitch_dt_observation(&tc->pitch, dx);
-        else
-            pitch_kalman_update(&tc->pitch_kalman, dx);
+    if (forwards != tc->forwards) { /* direction has changed */
+        tc->forwards = forwards;
+        tc->valid_counter = 0;
     }
 
     /* If we have crossed the primary channel in the right polarity,
@@ -793,7 +821,7 @@ static void process_sample(struct timecoder *tc,
     if (tc->def->flags & TRAKTOR_MK2) {
         if (tc->secondary.swapped)
         {
-            int reading = *(int*)rb_at(tc->secondary.mk2.delayline, 3);
+            int reading = *(int *)rb_at(tc->secondary.delayline, 2);
             mk2_process_timecode(tc, reading);
         }
     } else {
@@ -865,18 +893,20 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
             secondary = left;
         }
 
+        process_carrier(tc, primary, secondary);
+
         if (tc->def->flags & TRAKTOR_MK2) {
             process_sample(tc, primary, secondary);
 
-            /* 
+            /*
              * Display the derivative in the monitor. Since the signal is not
              * a perfect ring on the x-y-plane, but jumps up and down a bit,
              * it looks to small in the scope. Therefore a multiplication by
              * two is necessary.
              */
 
-            update_monitor(tc, tc->primary.mk2.deriv_scaled * 2,
-                    tc->secondary.mk2.deriv_scaled * 2);
+            update_monitor(tc, tc->primary.deriv * 2,
+                    tc->secondary.deriv * 2);
         } else {
             process_sample(tc, primary, secondary);
             update_monitor(tc, left, right);
