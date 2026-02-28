@@ -13,47 +13,105 @@
 #include "util/time.h"
 #include "util/trace.h"
 
-BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
+struct bulk_transfer_cb_data {
+    BulkReader* reader;
+};
+
+static void transferFinishedCb(libusb_transfer* transfer) {
+    bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
+    cb_data->reader->handleTransfer(transfer);
+}
+
+BulkReader::BulkReader(libusb_device_handle* handle,
+        libusb_context* context,
+        std::uint8_t in_epaddr)
         : QThread(),
-          m_phandle(handle),
           m_stop(0),
-          m_in_epaddr(in_epaddr) {
+          m_context(context) {
+    m_in_transfer = libusb_alloc_transfer(0);
+
+    m_cb_data = std::make_unique<bulk_transfer_cb_data>(this);
+
+    libusb_fill_bulk_transfer(m_in_transfer,
+            handle,
+            in_epaddr,
+            m_data.data(),
+            m_data.size(),
+            transferFinishedCb,
+            m_cb_data.get(),
+            100);
+
+    libusb_submit_transfer(m_in_transfer);
 }
 
 BulkReader::~BulkReader() {
+    if (m_in_transfer) {
+        auto status = m_in_transfer->status;
+
+        qDebug() << "BulkReader waiting for libusb_transfer termination";
+        while (true) {
+            if (status == LIBUSB_TRANSFER_CANCELLED ||
+                    status == LIBUSB_TRANSFER_COMPLETED ||
+                    status == LIBUSB_TRANSFER_TIMED_OUT ||
+                    status == LIBUSB_TRANSFER_ERROR ||
+                    status == LIBUSB_TRANSFER_NO_DEVICE) {
+                break;
+            }
+        }
+
+        qDebug() << "Stopping BulkReader";
+        libusb_free_transfer(m_in_transfer);
+    }
+}
+
+void BulkReader::handleTransfer(libusb_transfer* transfer) {
+    std::optional<Trace> trace;
+
+    switch (transfer->status) {
+    case LIBUSB_TRANSFER_COMPLETED:
+    case LIBUSB_TRANSFER_TIMED_OUT:
+        trace.emplace("BulkReader process packet");
+        if (transfer->actual_length > 0) {
+            QByteArray byteArray(reinterpret_cast<char*>(transfer->buffer),
+                    transfer->actual_length);
+            emit incomingData(byteArray, mixxx::Time::elapsed());
+        }
+        if (!m_stop) {
+            libusb_submit_transfer(transfer);
+        }
+        break;
+    case LIBUSB_TRANSFER_CANCELLED:
+        trace.emplace("BulkReader transfer cancelled");
+        break;
+    case LIBUSB_TRANSFER_ERROR:
+        trace.emplace("BulkReader transfer error");
+        break;
+    case LIBUSB_TRANSFER_NO_DEVICE:
+    case LIBUSB_TRANSFER_STALL:
+        trace.emplace("BulkReader transfer stall");
+        break;
+    case LIBUSB_TRANSFER_OVERFLOW:
+        trace.emplace("BulkReader transfer overflow");
+        break;
+    }
 }
 
 void BulkReader::stop() {
     m_stop = 1;
+
+    if (m_in_transfer) {
+        qDebug() << "Cancelling bulk transfer";
+        libusb_cancel_transfer(m_in_transfer);
+    }
 }
 
 void BulkReader::run() {
     m_stop = 0;
-    unsigned char data[255];
 
-    while (m_stop.loadAcquire() == 0) {
-        // Blocked polling: The only problem with this is that we can't close
-        // the device until the block is released, which means the controller
-        // has to send more data
-        //result = hid_read_timeout(m_pHidDevice, data, 255, -1);
-
-        // This relieves that at the cost of higher CPU usage since we only
-        // block for a short while (500ms)
-        int transferred;
-        int result;
-
-        result = libusb_bulk_transfer(m_phandle,
-                                      m_in_epaddr,
-                                      data, sizeof(data),
-                                      &transferred, 500);
-        Trace timeout("BulkReader timeout");
-        if (result >= 0) {
-            Trace process("BulkReader process packet");
-            //qDebug() << "Read" << result << "bytes, pointer:" << data;
-            QByteArray byteArray(reinterpret_cast<char*>(data), transferred);
-            emit incomingData(byteArray, mixxx::Time::elapsed());
-        }
+    while (!m_stop.loadAcquire()) {
+        libusb_handle_events(m_context);
     }
+
     qDebug() << "Stopped Reader";
 }
 
@@ -314,7 +372,7 @@ int BulkController::open(const QString& resourcePath) {
                  << "doesn't require reading the data. Ignoring BulkReader "
                     "setup.";
     } else {
-        m_pReader = new BulkReader(m_phandle, m_inEndpointAddr);
+        m_pReader = new BulkReader(m_phandle, m_context, m_inEndpointAddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
         connect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
