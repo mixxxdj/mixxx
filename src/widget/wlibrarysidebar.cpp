@@ -1,11 +1,13 @@
 #include "widget/wlibrarysidebar.h"
 
 #include <QHeaderView>
+#include <QScrollBar>
 #include <QUrl>
 #include <QtDebug>
 
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
+#include "preferences/usersettings.h"
 #include "util/defs.h"
 #include "util/dnd.h"
 
@@ -16,10 +18,10 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
           WBaseWidget(this),
           m_lastDragMoveAccepted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
-    //Set some properties
+    // Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    //Drag and drop setup
+    // Drag and drop setup
     setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
@@ -29,6 +31,31 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+}
+
+WLibrarySidebar::~WLibrarySidebar() {
+    saveScrollPosition();
+}
+
+void WLibrarySidebar::setup(UserSettingsPointer pConfig) {
+    m_pConfig = pConfig;
+}
+
+void WLibrarySidebar::saveScrollPosition() {
+    if (m_pConfig) {
+        m_pConfig->setValue(
+                ConfigKey(QStringLiteral("[Library]"), QStringLiteral("SidebarScrollPosition")),
+                verticalScrollBar()->value());
+    }
+}
+
+void WLibrarySidebar::restoreScrollPosition() {
+    if (m_pConfig) {
+        int scrollPos = m_pConfig->getValue(
+                ConfigKey(QStringLiteral("[Library]"), QStringLiteral("SidebarScrollPosition")),
+                0);
+        verticalScrollBar()->setValue(scrollPos);
+    }
 }
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* pEvent) {
@@ -225,7 +252,7 @@ void WLibrarySidebar::toggleSelectedItem() {
 bool WLibrarySidebar::isLeafNodeSelected() {
     QModelIndex index = selectedIndex();
     if (index.isValid()) {
-        if(!index.model()->hasChildren(index)) {
+        if (!index.model()->hasChildren(index)) {
             return true;
         }
         const SidebarModel* pSidebarModel = qobject_cast<const SidebarModel*>(index.model());
