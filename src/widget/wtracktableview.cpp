@@ -85,6 +85,14 @@ WTrackTableView::~WTrackTableView() {
     if (pHeader) {
         pHeader->saveHeaderState();
     }
+    // QAbstractItemView::setItemDelegateForColumn() does not take ownership of
+    // delegates, so we must delete them explicitly. The final set of delegates
+    // (from the last loadTrackModel() call) is never replaced, so they would
+    // otherwise be leaked on exit. See https://github.com/mixxxdj/mixxx/issues/16055
+    const int numColumns = model() ? model()->columnCount() : 0;
+    for (int i = 0; i < numColumns; ++i) {
+        delete itemDelegateForColumn(i);
+    }
 }
 #ifdef __LINUX__
 void WTrackTableView::currentChanged(
