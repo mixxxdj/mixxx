@@ -13,15 +13,6 @@
 #include "util/time.h"
 #include "util/trace.h"
 
-struct bulk_transfer_cb_data {
-    BulkReader* reader;
-};
-
-static void transferFinishedCb(libusb_transfer* transfer) {
-    bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
-    cb_data->reader->handleTransfer(transfer);
-}
-
 BulkReader::BulkReader(libusb_device_handle* handle,
         libusb_context* context,
         std::uint8_t in_epaddr)

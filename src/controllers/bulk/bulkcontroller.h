@@ -1,5 +1,7 @@
 #pragma once
 
+#include <libusb.h>
+
 #include <QAtomicInt>
 #include <QThread>
 #include <optional>
@@ -22,8 +24,12 @@ class BulkReader : public QThread {
     BulkReader(libusb_device_handle* handle, libusb_context* context, std::uint8_t in_epaddr);
     ~BulkReader() override;
 
+    static void transferFinishedCb(libusb_transfer* transfer) {
+        bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
+        cb_data->reader->handleTransfer(transfer);
+    }
+
     void stop();
-    void handleTransfer(libusb_transfer* transfer);
 
   signals:
     void incomingData(const QByteArray& data, mixxx::Duration timestamp);
@@ -37,8 +43,14 @@ class BulkReader : public QThread {
     libusb_transfer* m_in_transfer;
     libusb_context* m_context;
 
-    std::unique_ptr<bulk_transfer_cb_data> m_cb_data;
     std::array<std::uint8_t, 255> m_data;
+
+    struct bulk_transfer_cb_data {
+        BulkReader* reader;
+    };
+
+    std::unique_ptr<bulk_transfer_cb_data> m_cb_data;
+    void handleTransfer(libusb_transfer* transfer);
 };
 
 class BulkController : public Controller {
