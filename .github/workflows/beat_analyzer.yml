@@ -1,0 +1,108 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: Beat Analyzer
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        required: true
+      previous_snapshot:
+        type: string
+        default: ""
+      publish_report:
+        type: boolean
+        default: false
+    outputs:
+      report:
+        value: ${{ jobs.report.outputs.report }}
+      snapshot:
+        value: ${{ jobs.report.outputs.snapshot }}
+
+permissions:
+  contents: read #  to fetch code (actions/checkout)
+
+jobs:
+  report:
+    name: Generate the beat analyzer report
+    runs-on: ubuntu-latest
+    outputs:
+      report: ${{ steps.benchmark.outputs.report }}
+      snapshot: ${{ steps.benchmark.outputs.snapshot }}
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Install dependencies
+        run: |
+          sudo pip3 install protobuf
+          tools/debian_buildenv.sh setup
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: "Set up GitHub cache for dataset"
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/benchmark
+            build
+          key: benchmark-analyzer-data-${{ inputs.branch }}
+          restore-keys: |
+            benchmark-analyzer-data-${{ inputs.branch }}
+            benchmark-analyzer-data
+
+      - name: Configure
+        run: |
+          cmake \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DQT6=ON \
+            -DOPTIMIZE=On \
+            -DBATTERY=OFF \
+            -DBROADCAST=OFF \
+            -DBULK=OFF \
+            -DHID=OFF \
+            -DLILV=ON \
+            -DOPUS=ON \
+            -DQTKEYCHAIN=OFF \
+            -DVINYLCONTROL=OFF \
+            -DFFMPEG=ON \
+            -DKEYFINDER=ON \
+            -DLOCALECOMPARE=ON \
+            -DMAD=ON \
+            -DMODPLUG=ON \
+            -DWAVPACK=ON \
+            ..
+        env:
+          LD: clang++
+          CC: clang
+          CXX: clang++
+      - name: Build
+        run: cmake --build . -j $(nproc)
+        working-directory: build
+      - name: "Run benchmark"
+        id: benchmark
+        run: |
+          PREVIOUS_SNAPSHOT_ARG=''
+          if [ -n "PREVIOUS_SNAPSHOT"]; then
+            echo "${PREVIOUS_SNAPSHOT}" > /tmp/previous_snapshot.json
+            PREVIOUS_SNAPSHOT_ARG='/tmp/previous_snapshot.json'
+          fi
+          mkdir report
+          python3 tools/analyzer_benchmark.py ./tools/analyzer_free_dataset.csv $GITHUB_STEP_SUMMARY report/snapshot.json $PREVIOUS_SNAPSHOT_ARG
+          echo "report=$(base64 -w0 $GITHUB_STEP_SUMMARY)" >> $GITHUB_OUTPUT
+          echo "snapshot=$(base64 -w0 /tmp/snapshot.json)" >> $GITHUB_OUTPUT
+          cp $GITHUB_STEP_SUMMARY report/report.md
+        env:
+          PREVIOUS_SNAPSHOT: ${{ inputs.previous_snapshot }}
+          DOWNLOAD_FOLDER: /tmp/benchmark
+          MIXXX_TEST_PATH: ./build/mixxx-test
+      - name: "Upload report"
+        if: ${{ inputs.publish_report }}
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: Beat analyzer report
+          path: report/
