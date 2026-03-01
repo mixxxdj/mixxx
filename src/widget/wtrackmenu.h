@@ -55,14 +55,14 @@ class WTrackMenu : public QMenu {
         FileBrowser = 1 << 11,
         Properties = 1 << 12,
         SearchRelated = 1 << 13,
-        UpdateReplayGainFromPregain = 1 << 14,
+        UpdateReplayGain = 1 << 14,
         SelectInLibrary = 1 << 15,
         Analyze = 1 << 16,
         FindOnWeb = 1 << 17,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
-                Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
+                Properties | SearchRelated | UpdateReplayGain | SelectInLibrary |
                 FindOnWeb
     };
     Q_DECLARE_FLAGS(Features, Feature)
@@ -81,7 +81,7 @@ class WTrackMenu : public QMenu {
             WTrackMenu::Feature::RemoveFromDisk |
             WTrackMenu::Feature::FileBrowser |
             WTrackMenu::Feature::Properties |
-            WTrackMenu::Feature::UpdateReplayGainFromPregain |
+            WTrackMenu::Feature::UpdateReplayGain |
             WTrackMenu::Feature::FindOnWeb |
             WTrackMenu::Feature::SelectInLibrary};
 
