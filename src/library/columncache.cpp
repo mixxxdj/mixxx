@@ -189,8 +189,9 @@ ColumnCache::ColumnCache() {
     m_pKeyNotationCP = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
+    // Used in BaseTrackTableModel() along with a later setColumns() call.
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
-    // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
+    // again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
     // KeyUtils::CUSTOM as Mixxx is starting.
 }
 
@@ -240,6 +241,10 @@ void ColumnCache::setColumns(QStringList columns) {
 }
 
 void ColumnCache::slotSetKeySortOrder(double notationValue) {
+    if (m_columnsByIndex.isEmpty()) {
+        // we are not caching columns yet
+        return;
+    }
     const int keyColumnIndex = m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY];
     if (keyColumnIndex < 0) {
         return;
