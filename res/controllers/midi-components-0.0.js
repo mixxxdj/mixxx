@@ -130,14 +130,18 @@
         disconnect: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
-                    conn.disconnect();
+                    if (conn !== undefined) {
+                        conn.disconnect();
+                    }
                 });
             }
         },
         trigger: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
-                    conn.trigger();
+                    if (conn !== undefined) {
+                        conn.trigger();
+                    }
                 });
             }
         },

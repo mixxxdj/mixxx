@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QObject>
+#include <QtGlobal>
+
 #include "control/controlindicatortimer.h"
 #include "controllers/controller.h"
 #include "controllers/controllermappinginfoenumerator.h"
@@ -69,7 +71,7 @@ class FakeController : public Controller {
         if (this->m_bMidiMapping == true) {
             return new FakeMidiControllerJSProxy();
         }
-#ifdef __HID
+#ifdef __HID__
         if (this->m_bHidMapping == true) {
             return new FakeHidControllerJSProxy();
         }
@@ -84,7 +86,7 @@ class FakeController : public Controller {
     DataRepresentationProtocol getDataRepresentationProtocol() const override {
         if (m_bMidiMapping) {
             return DataRepresentationProtocol::MIDI;
-#ifdef __HID
+#ifdef __HID__
         } else if (m_bHidMapping) {
             return DataRepresentationProtocol::HID;
 #endif
@@ -98,14 +100,14 @@ class FakeController : public Controller {
         if (pMidiMapping) {
             m_bMidiMapping = true;
             m_pMidiMapping = pMidiMapping;
-#ifdef __HID
+#ifdef __HID__
             m_bHidMapping = false;
             m_pHidMapping = nullptr;
 #endif
             return;
         }
 
-#ifdef __HID
+#ifdef __HID__
         auto pHidMapping = std::dynamic_pointer_cast<LegacyHidControllerMapping>(pMapping);
         if (pHidMapping) {
             m_bMidiMapping = false;
@@ -119,7 +121,7 @@ class FakeController : public Controller {
     QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override {
         if (m_pMidiMapping) {
             return m_pMidiMapping->getScriptFiles();
-#ifdef __HID
+#ifdef __HID__
         } else if (m_pHidMapping) {
             return m_pHidMapping->getScriptFiles();
 #endif
@@ -130,7 +132,7 @@ class FakeController : public Controller {
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override {
         if (m_pMidiMapping) {
             return m_pMidiMapping->getSettings();
-#ifdef __HID
+#ifdef __HID__
         } else if (m_pHidMapping) {
             return m_pHidMapping->getSettings();
 #endif
@@ -142,7 +144,7 @@ class FakeController : public Controller {
     QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override {
         if (m_pMidiMapping) {
             return m_pMidiMapping->getModules();
-#ifdef __HID
+#ifdef __HID__
         } else if (m_pHidMapping) {
             return m_pHidMapping->getModules();
 #endif
@@ -153,7 +155,7 @@ class FakeController : public Controller {
     QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override {
         if (m_pMidiMapping) {
             return m_pMidiMapping->getInfoScreens();
-#ifdef __HID
+#ifdef __HID__
         } else if (m_pHidMapping) {
             return m_pHidMapping->getInfoScreens();
 #endif
@@ -216,7 +218,7 @@ class FakeController : public Controller {
 
     bool m_bMidiMapping;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
-#ifdef __HID
+#ifdef __HID__
     bool m_bHidMapping;
     std::shared_ptr<LegacyHidControllerMapping> m_pHidMapping;
 #endif
@@ -231,15 +233,19 @@ class PlayerManager;
 
 // We can't inherit from LibraryTest because that creates a key_notation control object that is also
 // created by the Library object itself. The duplicated CO creation causes a debug assert.
-class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourceProviderRegistration {
+class MappingTestFixture
+        : public MixxxDbTest,
+          SoundSourceProviderRegistration,
+          public ::testing::WithParamInterface<std::string> {
   public:
-    LegacyControllerMappingValidationTest()
+    MappingTestFixture()
             : MixxxDbTest(true) {
     }
 
   protected:
     void SetUp() override;
     void TearDown() override;
+#ifdef MIXXX_USE_QML
 
     TrackPointer getOrAddTrackByLocation(
             const QString& trackLocation) const {
@@ -255,9 +261,7 @@ class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourcePro
     std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;
     std::shared_ptr<Library> m_pLibrary;
+#endif
 
-    bool testLoadMapping(const MappingInfo& mapping);
-
-    QDir m_mappingPath;
-    QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
+    bool testLoadMapping(const QString& mapping);
 };
