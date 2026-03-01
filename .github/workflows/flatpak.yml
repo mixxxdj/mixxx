@@ -1,0 +1,149 @@
+name: Flatpak
+on:
+  workflow_call:
+    inputs:
+      update_repo:
+        type: boolean
+        default: false
+      run_id:
+        type: string
+        required: true
+      commit_summary:
+        type: string
+        required: true
+      channel:
+        type: string
+        required: true
+    secrets:
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY:
+        required: false
+      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+        required: false
+
+env:
+  EXPIRY_POLICY: >-
+    {
+      "beta": "30 days",
+      "alpha": "14 days",
+      "testing": "7 days"
+    }
+
+jobs:
+  publish-flatpak:
+    name: Publish Flatpak
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Set up SSH Agent"
+        shell: bash
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_HOST: downloads-hostgator.mixxx.org
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+          mkdir -p "${HOME}/.ssh"
+          cat >> "${HOME}/.ssh/known_hosts" <<EOF
+          ${SSH_HOST} ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDQtz9VUh6ZindK6DiHQ108KUVI8yQX/PQSUSrMZJ0kWD56yi/mzpZ9Q6hB9E2Gd94CmoDQwnAHQiV6k8461Qv4wGK1ykFwsUG3iOXm/gPOP1Sd1u6GI9SF/ixh/a+WatzzjdC8Y8c0BuuYufV7/Hox6IHvoVsrRWQQwXcK/tpCOzgwgUBzoDxhmS5lFtTfOK6JIOcXbOFmiKWzBVnXCawBKZBEeajkvyTqhLCCu7xbhqXIsBP/UTMeFNsyzIqvJvqHgEm5MPo04PtX1Myvnzv15/cT23PQDGNKANCrMSrUAWtqSFMZdWSehS2R0BbCJ1TJIgsG1Zc+BBDL8vYOesm8TpkXvUdMKWSuptEawYMDORQgjXerTHtsYzvpYNAV4Cm0ajJXngjM926++F1PvlvXs7sLhhOVzVTELgJYwiqFZcIBEdR8jgEkwLQ9Goig0h8lFJpcIket0pmFPTytzrev3gyWnymdZ9ScIo4wEmnwAKNGVMFArZ7O3Ckx/qXAyb8=
+          ${SSH_HOST} ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBC/q8hYkss2z4UhT43JRDq+yaUcE3P6VlmfQZWw/49GjwT+VbIuFmej3iLFn1y3YkzPLKYf+BVcXQixZGKNpKrA=
+          ${SSH_HOST} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBJR4dlJQ4NmvJj63YZmxhcUOVkmTITCfCwrCiGRaNe4
+          EOF
+          echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
+
+      - name: Check out repository
+        if: ${{ inputs.update_repo }}
+        uses: actions/checkout@v6
+
+      - name: "Prepare"
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak ostree
+          # Download rsync wrapper to safely update ostree
+          wget https://raw.githubusercontent.com/ostreedev/ostree-releng-scripts/621f7637ba6b8e0a8b761ce643c16a1511d04f6b/rsync-repos
+          chmod +x rsync-repos
+
+      - name: "Download bundles"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          gh --repo mixxxdj/mixxx run download $RUN_ID --pattern 'Flatpak *' -D bundles
+          find bundles/ -name *.flatpak -exec mv {} bundles/ \;
+          find bundles/ -mindepth 1 -type d -delete
+          if [ ! `find bundles/ -name '*x86_64.flatpak | wc -l` -eq 1 ]; then
+            echo "At least a x86_64 build is expected. Current bundles:"
+            find bundles/ -type f
+            exit 1
+          fi
+          version=$(find bundles/ -name '*x86_64.flatpak' | cut -d- -f 2- | rev | cut -d- -f 2- | rev)
+          echo "VERSION=${version}" >> $GITHUB_ENV
+
+      - name: "[Ubuntu] Import PPA GPG key"
+        run: gpg --import <(echo "${RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY}")
+        env:
+          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
+      - name: "Import bundle to repo"
+        env:
+          GPG_KEY_ID: rryan@mixxx.org
+          COMMIT_SUMMARY: ${{ inputs.commit_summary }}
+          CHANNEL: ${{ inputs.channel }}
+        shell: bash
+        run: |
+          set -x
+
+          function import_to_repo {
+            file=$1
+            id=$2
+            arch=$3
+            type=$4
+
+            flatpak build-import-bundle -v --gpg-sign=$GPG_KEY_ID repo.tmp "$file"
+            checksum=$(ostree --repo=repo.tmp rev-parse "${type}/${id}/${arch}/master")
+            ostree --repo=repo pull --depth=-1 --mirror "upstream:${type}/${id}/${arch}/${CHANNEL}" || true
+            ostree --repo=repo pull-local repo.tmp "${checksum}"
+            ostree --repo=repo commit -b "${type}/${id}/${arch}/${CHANNEL}" -s "$COMMIT_SUMMARY" "--add-metadata-string=version=$VERSION" "--tree=ref=${checksum}"
+          }
+
+          # Prepare local repos
+          ostree --repo=repo.tmp init --mode=archive-z2
+          ostree --repo=repo init --mode=archive-z2
+
+          # Hook publish repo to the remote
+          ostree --repo=repo remote add --no-gpg-verify upstream https://downloads.mixxx.org/flatpak/
+
+          for arch in "x86_64" "aarch64"; do
+            import_to_repo "bundles/Mixxx-${VERSION}-${arch}.flatpak" org.mixxx.Mixxx ${arch} app
+            if [ -f "bundles/Mixxx-${VERSION}-${arch}.Debug.flatpak" ]; then
+              import_to_repo "bundles/Mixxx-${VERSION}-${arch}.Debug.flatpak" org.mixxx.Mixxx.Debug ${arch} runtime
+            else
+              echo "No debug extension for ${arch}"
+            fi
+          done
+
+      - name: "Update the repo manifest"
+        if: ${{ inputs.update_repo }}
+        shell: bash
+        run: |
+          cp packaging/flatpak/repo.flatpakrepo repo/repo.flatpakrepo
+
+      - name: "Cleanup old builds"
+        if: ${{ env.EXPIRY != null }}
+        shell: bash
+        env:
+          EXPIRY: ${{ fromJSON(env.EXPIRY_POLICY)[github.ref_name] }}
+        run: |
+          ostree --repo=repo prune --refs-only --keep-younger-than="$EXPIRY ago"
+
+      - name: "Push the updated repo"
+        env:
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+        shell: bash
+        run: |
+          ostree --repo=repo summary -u
+          flatpak build-update-repo repo
+          ./rsync-repos --src "repo/" --dest "${SSH_USER}@${SSH_HOST}:public_html/downloads/flatpak" --rsync-opts "--verbose --recursive --checksum --times --delay-updates"
+
+      # TODO we could also publish a .flatpakref file to allow one-click install a version and publish this as a comment to the PR.

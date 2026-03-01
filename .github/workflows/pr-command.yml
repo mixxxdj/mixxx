@@ -2,12 +2,18 @@ name: Softfix workflow
 on:
   issue_comment:
     types: [created]
+  push:
+    branches:
+      - chore/prepare-flatpak-ci
 
 jobs:
-  softfix:
-    name: Softfix action
-    if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/softfix')
-    runs-on: ubuntu-latest
+  prepare:
+    if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/')
+    runs-on: ubuntu-slim
+    outputs:
+      allowed: ${{ steps.check-maintainer.outputs.result }}
+      latest-build-id: "21939142014"
+      # latest-build-id: ${{ steps.latest-build-id.outputs.result }}
     steps:
       - name: Check if commenter is maintainer
         id: check-maintainer
@@ -20,10 +26,25 @@ jobs:
               username: context.payload.comment.user.login
             });
 
-            const isMaintainer = ['admin', 'write'].includes(response.data.permission);
+            const isMaintainer = ['admin', 'write'].includes(response.data.prepare);
             return isMaintainer;
+      - name: Find latest build ID
+        id: latest-build-id
+        if: ${{ startsWith(github.event.comment.body, '/publish-flatpak') }}
+        env:
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          runId=$(gh --repo mixxxdj/mixxx pr checks ${PR_NUMBER} --jq . --json workflow,name,link | jq '.[] | select(.name | test("^build / Flatpak")) | .link' -r | rev | cut -d/ -f 3 | rev | uniq)
+          echo "result=${runId}" >> "${GITHUB_ENV}"
+
+  softfix:
+    needs:
+      - prepare
+    if: needs.prepare.outputs.allowed == 'true' && startsWith(github.event.comment.body, '/softfix')
+    name: Softfix action
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout repository
-        if: steps.check-maintainer.outputs.result == 'true'
         uses: actions/checkout@v6
       # Using an app is the recommended way to allow recursive operations.
       # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
@@ -39,8 +60,20 @@ jobs:
       #     private-key: ${{ secrets.MIXXX_BOT_APP_PRIVATE_KEY }}
       #     app-id: ${{ vars.MIXXX_BOT_APP_ID }}
       - name: Softfix
-        if: steps.check-maintainer.outputs.result == 'true'
         uses: daschuer/softfix@v4
         env:
           # PAT setup with content:write and pull_request:write
           GITHUB_TOKEN: ${{ secrets.MIXXX_SOFTFIX_PAT }}
+
+  publish-flatpak:
+    needs:
+      - prepare
+    if: always() # needs.prepare.outputs.allowed == 'true' && startsWith(github.event.comment.body, '/publish-flatpak')
+    uses: ./.github/workflows/flatpak.yml
+    with:
+      run_id: ${{ needs.prepare.outputs.latest-build-id }}
+      commit_summary: Snapshot build from build ${{ needs.prepare.outputs.latest-build-id }} from ${{ github.event.issue.pull_request.url }}
+      channel: testing
+    secrets:
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
