@@ -206,9 +206,8 @@ void BaseSqlTableModel::select() {
     //     return;
     // }
 
-    if (sDebug) {
-        qDebug() << this << "select()";
-    }
+    qWarning() << "-----------------------------------------------------------";
+    qWarning() << this << "select()";
 
     PerformanceTimer time;
     time.start();
@@ -352,8 +351,9 @@ void BaseSqlTableModel::select() {
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
 
-    qDebug() << this << "select() returned" << m_rowInfo.size()
-             << "results in" << time.elapsed().debugMillisWithUnit();
+    qWarning() << "returned" << m_rowInfo.size()
+               << "results in" << time.elapsed().debugMillisWithUnit();
+    qWarning() << "-----------------------------------------------------------";
 }
 
 void BaseSqlTableModel::setTable(QString tableName,
