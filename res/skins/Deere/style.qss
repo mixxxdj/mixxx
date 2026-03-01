@@ -105,20 +105,39 @@
   background-color: #222;
 }
 
-#Deck1, #Deck3 {
+#Deck1[highlight_input_allow="0"], #Deck3[highlight_input_allow="0"] {
   border-width: 0px 2.5px 5px 0px;
   border-style: solid;
   border-color: #222;
 }
 
-#Deck2, #Deck4 {
+#Deck2[highlight_input_allow="0"], #Deck4[highlight_input_allow="0"] {
   border-width: 0px 0px 5px 2.5px;
   border-style: solid;
   border-color: #222;
 }
 
-#Deck3, #Deck4 {
+#Deck3[highlight_input_allow="0"], #Deck4[highlight_input_allow="0"] {
   border-top-width: 0;
+}
+
+#Deck1[highlight_input_allow="1"], #Deck3[highlight_input_allow="1"] {
+  border-width: 1px 2.5px 5px 1px;
+  border-style: solid;
+  border-color: #222;
+}
+
+#Deck2[highlight_input_allow="1"], #Deck4[highlight_input_allow="1"] {
+  border-width: 1px 1px 5px 2.5px;
+  border-style: solid;
+  border-color: #222;
+}
+
+#Deck1[highlight_input_allow="1"][highlight_deck="1"],
+#Deck2[highlight_input_allow="1"][highlight_deck="1"],
+#Deck3[highlight_input_allow="1"][highlight_deck="1"],
+#Deck4[highlight_input_allow="1"][highlight_deck="1"] {
+    border-color: #FF6600;
 }
 
 #Sampler {
@@ -947,6 +966,22 @@ WOverview #PassthroughLabel {
   background-color: #333;
 }
 
+#Waveforms[highlight_input_allow="1"] #Waveform1[highlight_waveform="0"],
+#Waveforms[highlight_input_allow="1"] #Waveform2[highlight_waveform="0"],
+#Waveforms[highlight_input_allow="1"] #Waveform3[highlight_waveform="0"],
+#Waveforms[highlight_input_allow="1"] #Waveform4[highlight_waveform="0"]
+{
+  border: 1px solid #333;
+}
+#Waveforms[highlight_input_allow="1"] #Waveform1[highlight_waveform="1"],
+#Waveforms[highlight_input_allow="1"] #Waveform2[highlight_waveform="1"],
+#Waveforms[highlight_input_allow="1"] #Waveform3[highlight_waveform="1"],
+#Waveforms[highlight_input_allow="1"] #Waveform4[highlight_waveform="1"]
+{
+  border: 1px solid #FF6600;
+}
+
+
 #WaveformZoomContainer {
   background-color: #333333;
   padding: 1px;
@@ -1497,6 +1532,13 @@ WNumberRate {
   padding: 0px 5px;
   qproperty-layoutAlignment: 'AlignHCenter';  /*
   background-color: #911661; */
+}
+
+#MixerStrip_4Decks[highlight_input_allow="1"] {
+  border: 1px solid #333333;
+}
+#MixerStrip_4Decks[highlight_input_allow="1"][highlight_mixer="1"] {
+  border: 1px solid #FF6600;
 }
 
 #ButtonContainer {

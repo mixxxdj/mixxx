@@ -326,6 +326,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.")
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
+    add("highlight_input_allow")
+            << tr("Allow external Controller to highlight elements of the Frontend.")
+            << tr("Dependent on the Skin this might change the layout a little bit.")
+            << tr("Only works if controller implementation supports this feature.");
+
     QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
     QString pitchAffected = tr("If keylock is disabled, pitch is also affected.");
 

@@ -484,6 +484,33 @@ Description:
             </Children>
           </WidgetGroup><!-- /Library -->
 
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,12f</Size>
+          </WidgetGroup>
+
+          <!-- Highlighting -->
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>External Highlighting</Text>
+            <Size>180min,23f</Size>
+          </Label>
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">highlight_input_allow</SetVariable>
+                <SetVariable name="Text">Allow Highlighting</SetVariable>
+                <SetVariable name="Setting">[Skin],highlight_input_allow</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Highlighting -->
+
           <!-- push the settings up, required with Qt6 -->
           <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
 
