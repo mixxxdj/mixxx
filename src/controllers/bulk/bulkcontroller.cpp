@@ -61,6 +61,7 @@ BulkReader::~BulkReader() {
 
         qDebug() << "Stopping BulkReader";
         libusb_free_transfer(m_in_transfer);
+        m_in_transfer = nullptr;
     }
 }
 
