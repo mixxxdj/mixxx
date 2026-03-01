@@ -39,6 +39,7 @@ KERNEL=="hidraw*", ATTRS{idVendor}=="0944", TAG+="uaccess"
 KERNEL=="hidraw*", ATTRS{idVendor}=="17cc", TAG+="uaccess"
 # First generation Native Instruments controllers can be accessed through USB Bulk endpoints through libusb
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="17cc", TAG+="uaccess"
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="17cc", MODE="0666", TAG+="uaccess"
 # Nintendo Co., Ltd
 KERNEL=="hidraw*", ATTRS{idVendor}=="057e", TAG+="uaccess"
 # Pioneer Corp.
