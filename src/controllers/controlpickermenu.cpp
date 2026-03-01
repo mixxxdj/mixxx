@@ -292,6 +292,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("3/4 BPM"),
             tr("Multiply current BPM by 0.75"),
             pBpmMenu);
+    addDeckAndSamplerControl("beats_set_fourfifths",
+            tr("4/5 BPM"),
+            tr("Multiply current BPM by 0.8"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_fivefourths",
+            tr("5/4 BPM"),
+            tr("Multiply current BPM by 1.25"),
+            pBpmMenu);
     addDeckAndSamplerControl("beats_set_fourthirds",
             tr("4/3 BPM"),
             tr("Multiply current BPM by 1.333"),

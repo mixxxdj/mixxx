@@ -775,22 +775,6 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
             </widget>
            </item>
            <item row="2" column="0">
-            <widget class="QPushButton" name="bpmDouble">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Sets the BPM to 200% of the current value.</string>
-             </property>
-             <property name="text">
-              <string>Double BPM</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
             <widget class="QPushButton" name="bpmHalve">
              <property name="minimumSize">
               <size>
@@ -806,7 +790,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="2" column="1">
             <widget class="QPushButton" name="bpmTwoThirds">
              <property name="minimumSize">
               <size>
@@ -822,8 +806,8 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QPushButton" name="bpmThreeFourth">
+           <item row="3" column="0">
+            <widget class="QPushButton" name="bpmThreeFourths">
              <property name="minimumSize">
               <size>
                <width>125</width>
@@ -838,8 +822,8 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
-            <widget class="QPushButton" name="bpmThreeHalves">
+           <item row="3" column="1">
+            <widget class="QPushButton" name="bpmFourFifths">
              <property name="minimumSize">
               <size>
                <width>125</width>
@@ -847,10 +831,26 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
               </size>
              </property>
              <property name="toolTip">
-              <string>Sets the BPM to 150% of the current value.</string>
+              <string>Sets the BPM to 80% of the current value.</string>
              </property>
              <property name="text">
-              <string>3/2 BPM</string>
+              <string>4/5 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="bpmFiveFourths">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 125% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>5/4 BPM</string>
              </property>
             </widget>
            </item>
@@ -867,6 +867,38 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
              <property name="text">
               <string>4/3 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="bpmThreeHalves">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 150% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>3/2 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QPushButton" name="bpmDouble">
+             <property name="minimumSize">
+              <size>
+               <width>125</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Sets the BPM to 200% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>Double BPM</string>
              </property>
             </widget>
            </item>
@@ -1069,12 +1101,14 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmConst</tabstop>
   <tabstop>bpmTap</tabstop>
-  <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
-  <tabstop>bpmThreeFourth</tabstop>
+  <tabstop>bpmThreeFourths</tabstop>
+  <tabstop>bpmFourFifths</tabstop>
+  <tabstop>bpmFiveFourths</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>bpmDouble</tabstop>
   <tabstop>bpmClear</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>

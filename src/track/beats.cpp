@@ -651,9 +651,6 @@ std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
 std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
     double scaleFactor = 1.0;
     switch (scale) {
-    case BpmScale::Double:
-        scaleFactor = 2.0;
-        break;
     case BpmScale::Halve:
         scaleFactor = 0.5;
         break;
@@ -663,11 +660,20 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
     case BpmScale::ThreeFourths:
         scaleFactor *= 3.0 / 4;
         break;
+    case BpmScale::FourFifths:
+        scaleFactor *= 4.0 / 5;
+        break;
+    case BpmScale::FiveFourths:
+        scaleFactor *= 5.0 / 4;
+        break;
     case BpmScale::FourThirds:
         scaleFactor *= 4.0 / 3;
         break;
     case BpmScale::ThreeHalves:
         scaleFactor *= 3.0 / 2;
+        break;
+    case BpmScale::Double:
+        scaleFactor = 2.0;
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");

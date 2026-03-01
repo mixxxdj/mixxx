@@ -121,23 +121,29 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotCancel);
 
     // BPM edit buttons
-    connect(bpmDouble, &QPushButton::clicked, this, [this] {
-        slotBpmScale(mixxx::Beats::BpmScale::Double);
-    });
     connect(bpmHalve, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::Halve);
     });
     connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
     });
-    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+    connect(bpmThreeFourths, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
+    });
+    connect(bpmFourFifths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FourFifths);
+    });
+    connect(bpmFiveFourths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FiveFourths);
     });
     connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
     });
     connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
+    });
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Double);
     });
     connect(bpmClear,
             &QPushButton::clicked,
