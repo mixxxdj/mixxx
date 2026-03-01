@@ -236,10 +236,10 @@ jobs:
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.21.x"
+          cmake-version: "3.22.x"
 
       - name: "[Windows] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.2
+        uses: jwlawson/actions-setup-cmake@v2.1
         # Ubuntu 24.04 should use the CMake version from the repos.
         # On windows-11-arm this action installs the x64 version which has unwanted side effects
         if: matrix.os == 'windows-2022'

@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.21)
+# Minimum version is aligned with the current Qt's minimum requirements via VCPKG
+cmake_minimum_required(VERSION 3.22)
 # lint_cmake: -readability/wonkycase
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
