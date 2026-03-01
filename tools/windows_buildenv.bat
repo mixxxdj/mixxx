@@ -41,8 +41,8 @@ IF /I "%PLATFORM%"=="arm64" (
     ) ELSE (
         SET BUILDENV_BRANCH=2.7
         SET VCPKG_TARGET_TRIPLET=arm64-windows
-        SET BUILDENV_NAME=mixxx-deps-2.7-arm64-windows-32e784aa
-        SET BUILDENV_SHA256=e2bffea4c6c8ab872e9903cb1eaa2a62437b978918e0fb93fccaf5ff2e51d874
+        SET BUILDENV_NAME=mixxx-deps-2.7-arm64-windows-0ef543ab
+        SET BUILDENV_SHA256=e0a5d168790601ee4170f533b8e54f6c7cabe219d9956bc034a5e2c69d2944c1
     )
 ) ELSE IF /I "%PLATFORM%"=="x64" (
     IF DEFINED BUILDENV_RELEASE (

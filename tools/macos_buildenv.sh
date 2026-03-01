@@ -46,8 +46,8 @@ if [ "$HOST_ARCH" = "x86_64" ]; then
 	    if [ -n "${BUILDENV_RELEASE}" ]; then
 	        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
 	        BUILDENV_BRANCH="2.7-rel"
-	        BUILDENV_NAME="mixxx-deps-2.7-x64-osx-rel-4ddb048b"
-	        BUILDENV_SHA256="1759835f292885e1204d85360b89e4a3ecf7858a2805cabf9c1f65a3b339efb4"
+	        BUILDENV_NAME="mixxx-deps-2.7-x64-osx-rel-a4db5de0"
+	        BUILDENV_SHA256="0a95df0d0b0dac7149484661c6c952e50b2cb2f7c22359e1def041e41bd62016"
 	    else
 	        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
 	        BUILDENV_BRANCH="2.7"
