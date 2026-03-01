@@ -71,51 +71,27 @@ std::span<T> subspanClamped(
     return in.subspan(std::min(offset, in.size()));
 }
 
-constexpr std::size_t framesPerBeat(
-        mixxx::audio::SampleRate sampleRate, double bpm) {
-    return static_cast<std::size_t>(
-            static_cast<double>(sampleRate) * 60.0 / bpm);
-}
-
-/// Returns the sub-span of output starting at the next downbeat,
-/// or empty if no beat falls within this buffer.
-std::span<CSAMPLE> syncedNoteOutput(
-        double beatFractionBufferEnd,
-        std::optional<GroupFeatureBeatLength> beatLengthAndScratch,
-        const mixxx::EngineParameters& engineParameters,
-        std::span<CSAMPLE> output) {
-    if (!beatLengthAndScratch.has_value() ||
-            beatLengthAndScratch->scratch_rate == 0.0) {
-        return {};
-    }
-
-    const double beatLength = beatLengthAndScratch->seconds *
-            engineParameters.sampleRate() /
-            beatLengthAndScratch->scratch_rate;
-
-    const bool needsPreviousBeat = beatLength < 0;
-    const double beatToBufferEndFrames = std::abs(beatLength) *
-            (needsPreviousBeat ? (1.0 - beatFractionBufferEnd)
-                               : beatFractionBufferEnd);
-    const std::size_t beatToBufferEndSamples =
-            static_cast<std::size_t>(beatToBufferEndFrames) *
-            mixxx::kEngineChannelOutputCount;
-
-    if (beatToBufferEndSamples <= output.size()) {
-        return output.last(beatToBufferEndSamples);
-    }
-    return {};
-}
-
-std::span<CSAMPLE> unsyncedNoteOutput(
-        mixxx::audio::SampleRate sampleRate,
+/// Returns the sub-span where the next note should start given a fixed
+/// period. Works for all modes — period is derived from BPM or beat_length
+/// and scaled by the Measure knob before being passed in.
+std::span<CSAMPLE> noteOutputAtPeriod(
         std::size_t framesSinceLastNote,
-        double bpm,
+        std::size_t notePeriodFrames,
         std::span<CSAMPLE> output) {
-    const std::size_t offset =
-            framesSinceLastNote % framesPerBeat(sampleRate, bpm);
+    const std::size_t offset = framesSinceLastNote % notePeriodFrames;
     return subspanClamped(
             output, offset * mixxx::kEngineChannelOutputCount);
+}
+
+/// Converts the Measure knob value to a beat multiplier.
+/// Positive N  → N notes per beat  → period = 1/N beats
+/// Zero or -1  → 1 note per beat   → period = 1 beat
+/// Negative N  → 1 note every N beats → period = N beats
+double beatMultiplierFromMeasure(int measure) {
+    if (measure > 0) {
+        return 1.0 / static_cast<double>(measure);
+    }
+    return static_cast<double>(std::max(1, -measure));
 }
 
 } // namespace
@@ -133,8 +109,8 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     pManifest->setAuthor(QObject::tr("The Mixxx Team"));
     pManifest->setVersion(QStringLiteral("1.0"));
     pManifest->setDescription(QObject::tr(
-            "Plays a piano note on every downbeat so you can match it "
-            "to the track and identify or verify the musical key."));
+            "Plays a piano note at a configurable beat interval so you "
+            "can match it by ear to identify or verify the musical key."));
     pManifest->setEffectRampsFromDry(true);
     // Metaknob maps to gain; neutral position = 0 dB = 24/27 on the scale.
     pManifest->setMetaknobDefault(24.0 / 27.0);
@@ -145,8 +121,10 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     key->setShortName(QObject::tr("Key"));
     key->setDescription(QObject::tr(
             "Musical key of the piano note (12 chromatic steps).\n"
-            "0=C  1=C\u266f/D\u266d  2=D  3=D\u266f/E\u266d  4=E  5=F\n"
-            "6=F\u266f/G\u266d  7=G  8=G\u266f/A\u266d  9=A  10=A\u266f/B\u266d  11=B"));
+            "0=C  1=C\u266f/D\u266d  2=D  3=D\u266f/E\u266d  "
+            "4=E  5=F\n"
+            "6=F\u266f/G\u266d  7=G  8=G\u266f/A\u266d  "
+            "9=A  10=A\u266f/B\u266d  11=B"));
     key->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     key->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     key->setDefaultLinkType(EffectManifestParameter::LinkType::None);
@@ -179,13 +157,29 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     bpm->setDefaultLinkType(EffectManifestParameter::LinkType::None);
     bpm->setRange(60.0, 120.0, 200.0);
 
+    EffectManifestParameterPointer measure = pManifest->addParameter();
+    measure->setId(QStringLiteral("measure"));
+    measure->setName(QObject::tr("Measure"));
+    measure->setShortName(QObject::tr("Meas"));
+    measure->setDescription(QObject::tr(
+            "Controls note frequency relative to the beat.\n"
+            "+N = N notes per beat  |  0 = every beat  "
+            "|  -N = every N beats\n"
+            "e.g. +4 suits 4/4 subdivisions; "
+            "-3 suits 3/4 or 6/8 time."));
+    measure->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
+    measure->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    measure->setDefaultLinkType(EffectManifestParameter::LinkType::None);
+    measure->setRange(-8.0, -4.0, 8.0);
+
     EffectManifestParameterPointer sync = pManifest->addParameter();
     sync->setId(QStringLiteral("sync"));
     sync->setName(QObject::tr("Sync"));
     sync->setShortName(QObject::tr("Sync"));
     sync->setDescription(QObject::tr(
-            "When enabled, the note plays on every detected downbeat.\n"
-            "When disabled, the BPM knob controls the note rate."));
+            "When enabled, note timing locks to the detected beat grid,\n"
+            "scaled by the Measure knob.\n"
+            "When disabled, the BPM and Measure knobs set the note rate."));
     sync->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     sync->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     sync->setRange(0.0, 1.0, 1.0);
@@ -199,7 +193,7 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     gain->setNeutralPointOnScale(24.0 / 27.0);
-    gain->setRange(-24.0, 0.0, 3.0);
+    gain->setRange(-24.0, -5.0, 3.0);
 
     return pManifest;
 }
@@ -209,6 +203,7 @@ void KeyComparisonEffect::loadEngineEffectParameters(
     m_pKeyParameter = parameters.value(QStringLiteral("key"));
     m_pTuningParameter = parameters.value(QStringLiteral("tuning"));
     m_pBpmParameter = parameters.value(QStringLiteral("bpm"));
+    m_pMeasureParameter = parameters.value(QStringLiteral("measure"));
     m_pSyncParameter = parameters.value(QStringLiteral("sync"));
     m_pGainParameter = parameters.value(QStringLiteral("gain"));
 }
@@ -257,10 +252,14 @@ void KeyComparisonEffect::processChannel(
 
     const CSAMPLE_GAIN gain =
             db2ratio(static_cast<float>(m_pGainParameter->value()));
-    const double bpm = m_pBpmParameter->value();
 
-    // Continue playing any remainder of the note started in the previous buffer.
-    // Source offset accounts for pitch so we read at the correct position.
+    const int measure = std::clamp(
+            static_cast<int>(std::round(m_pMeasureParameter->value())),
+            -8,
+            8);
+    const double beatMultiplier = beatMultiplierFromMeasure(measure);
+
+    // Continue playing the tail of the note triggered in the previous buffer.
     const auto sourceOffset = static_cast<std::size_t>(
             static_cast<double>(pGroupState->framesSinceLastNote) *
             pitchRatio);
@@ -271,17 +270,28 @@ void KeyComparisonEffect::processChannel(
             pitchRatio);
     pGroupState->framesSinceLastNote += engineParameters.framesPerBuffer();
 
-    const std::span<CSAMPLE> noteOffset = shouldSync && hasBeatInfo
-            ? syncedNoteOutput(
-                      *groupFeatures.beat_fraction_buffer_end,
-                      groupFeatures.beat_length,
-                      engineParameters,
-                      output)
-            : unsyncedNoteOutput(
-                      engineParameters.sampleRate(),
-                      pGroupState->framesSinceLastNote,
-                      bpm,
-                      output);
+    // Derive note period in frames from either the detected beat grid or BPM,
+    // then scale by beatMultiplier from the Measure knob.
+    std::size_t notePeriodFrames = 0;
+    if (shouldSync && hasBeatInfo) {
+        const double beatSeconds =
+                std::abs(groupFeatures.beat_length->seconds /
+                        groupFeatures.beat_length->scratch_rate);
+        notePeriodFrames = static_cast<std::size_t>(
+                beatSeconds * engineParameters.sampleRate() *
+                beatMultiplier);
+    } else {
+        notePeriodFrames = static_cast<std::size_t>(
+                static_cast<double>(engineParameters.sampleRate()) *
+                60.0 / m_pBpmParameter->value() * beatMultiplier);
+    }
+
+    if (notePeriodFrames == 0) {
+        return;
+    }
+
+    const std::span<CSAMPLE> noteOffset = noteOutputAtPeriod(
+            pGroupState->framesSinceLastNote, notePeriodFrames, output);
 
     if (!noteOffset.empty()) {
         pGroupState->framesSinceLastNote = playPitchedMonoSamplesWithGain(

@@ -19,8 +19,8 @@ class KeyComparisonGroupState final : public EffectState {
     std::size_t framesSinceLastNote = 0;
 };
 
-/// Plays a pitched piano note on every downbeat so the DJ can match it
-/// to the track and identify its musical key.
+/// Plays a pitched piano note at a configurable beat interval so the DJ
+/// can match it by ear to identify the musical key of a track.
 class KeyComparisonEffect
         : public EffectProcessorImpl<KeyComparisonGroupState> {
   public:
@@ -46,6 +46,7 @@ class KeyComparisonEffect
     EngineEffectParameterPointer m_pKeyParameter;
     EngineEffectParameterPointer m_pTuningParameter;
     EngineEffectParameterPointer m_pBpmParameter;
+    EngineEffectParameterPointer m_pMeasureParameter;
     EngineEffectParameterPointer m_pSyncParameter;
     EngineEffectParameterPointer m_pGainParameter;
 
