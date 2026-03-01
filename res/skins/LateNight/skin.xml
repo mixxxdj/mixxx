@@ -25,6 +25,8 @@
   TODO: Remove "persist" attributes throughout the skin and confirm that declaring
   them in the attributes section instead works.
   -->
+<!-- TODO tbazant: hide key & patch controls as well-->
+<!-- TODO tbazant: connect config option with the minimizing functionality-->
 
 <!DOCTYPE skin>
 <skin>
