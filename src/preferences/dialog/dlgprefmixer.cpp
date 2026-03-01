@@ -29,6 +29,9 @@ const ConfigKey kEqsOnlyKey = ConfigKey(kMixerProfile, QStringLiteral("EQsOnly")
 const ConfigKey kSingleEqKey = ConfigKey(kMixerProfile, QStringLiteral("SingleEQEffect"));
 const ConfigKey kEqAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("EqAutoReset"));
 const ConfigKey kGainAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("GainAutoReset"));
+#ifdef __STEM__
+const ConfigKey kStemAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("stem_auto_reset"));
+#endif
 const QString kDefaultMainEqId = QString();
 
 const ConfigKey kHighEqFreqKey = ConfigKey(kMixerProfile, kHighEqFrequency);
@@ -69,13 +72,13 @@ DlgPrefMixer::DlgPrefMixer(
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
-          m_transform(EngineXfader::kTransformDefault),
-          m_cal(0.0),
-          m_mode(kXfaderModeKey),
-          m_curve(kXfaderCurveKey),
-          m_calibration(kXfaderCalibrationKey),
-          m_reverse(kXfaderReverseKey),
-          m_crossfader("[Master]", "crossfader"),
+          m_xFaderCurve(EngineXfader::kTransformDefault),
+          m_xFaderCal(0.0),
+          m_xfModeCO(make_parented<ControlProxy>(kXfaderModeKey, this)),
+          m_xfCurveCO(make_parented<ControlProxy>(kXfaderCurveKey, this)),
+          m_xfReverseCO(make_parented<ControlProxy>(kXfaderReverseKey, this)),
+          m_xfCalibrationCO(make_parented<ControlProxy>(kXfaderCalibrationKey, this)),
+          m_crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
           m_COHiFreq(kHighEqFreqKey),
@@ -92,9 +95,14 @@ DlgPrefMixer::DlgPrefMixer(
           m_eqEffectsOnly(true),
           m_eqAutoReset(false),
           m_gainAutoReset(false),
+#ifdef __STEM__
+          m_stemAutoReset(true),
+#endif
           m_eqBypass(false),
           m_initializing(true),
-          m_updatingMainEQ(false) {
+          m_updatingMainEQ(false),
+          m_applyingDeckEQs(false),
+          m_applyingQuickEffects(false) {
     setupUi(this);
 
     // Update the crossfader curve graph and other settings when the
@@ -102,14 +110,30 @@ DlgPrefMixer::DlgPrefMixer(
     connect(SliderXFader,
             QOverload<int>::of(&QSlider::valueChanged),
             this,
-            &DlgPrefMixer::slotUpdateXFader);
-    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdateXFader);
-    connect(radioButtonConstantPower,
-            &QRadioButton::clicked,
+            &DlgPrefMixer::slotXFaderSliderChanged);
+    connect(SliderXFader, &QSlider::sliderMoved, this, &DlgPrefMixer::slotXFaderSliderChanged);
+    connect(SliderXFader, &QSlider::sliderReleased, this, &DlgPrefMixer::slotXFaderSliderChanged);
+    connect(buttonGroupCrossfaderModes,
+            &QButtonGroup::buttonClicked,
             this,
-            &DlgPrefMixer::slotUpdateXFader);
+            &DlgPrefMixer::slotXFaderModeBoxToggled);
+    connect(checkBoxReverse,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefMixer::slotXFaderReverseBoxToggled);
+
+    m_xfModeCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderModeControlChanged);
+    m_xfCurveCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderCurveControlChanged);
+    m_xfCalibrationCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderCalibrationControlChanged);
+    m_xfReverseCO->connectValueChanged(
+            this, &DlgPrefMixer::slotXFaderReverseControlChanged);
 
     // Don't allow the xfader graph getting keyboard focus
     graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
@@ -124,25 +148,57 @@ DlgPrefMixer::DlgPrefMixer(
     connect(SliderLoEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotLoEqSliderChanged);
 
     connect(CheckBoxEqAutoReset,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotEqAutoResetToggled);
     connect(CheckBoxGainAutoReset,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotGainAutoResetToggled);
+#ifdef __STEM__
+    connect(CheckBoxStemAutoReset,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefMixer::slotStemAutoResetToggled);
+#else
+    CheckBoxStemAutoReset->hide();
+#endif
     connect(CheckBoxBypass,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotBypassEqToggled);
 
     connect(CheckBoxEqOnly,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotEqOnlyToggled);
 
     connect(CheckBoxSingleEqEffect,
-            &QCheckBox::toggled,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
             this,
             &DlgPrefMixer::slotSingleEqToggled);
 
@@ -176,7 +232,6 @@ DlgPrefMixer::DlgPrefMixer(
     m_initializing = false;
 }
 
-// Create EQ & QuickEffect selectors and deck label for each added deck
 void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
         // 1-based for display
@@ -223,13 +278,12 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefMixer::slotEQEffectSelectionChanged);
-        // Update the combobox in case the effect was changed from anywhere else
+        // Update the combobox in case the effect was changed from anywhere else.
+        // This will wipe pending EQ effect changes.
         connect(pEqEffectSlot.data(),
                 &EffectSlot::effectChanged,
                 this,
-                [this]() {
-                    slotPopulateDeckEqSelectors();
-                });
+                &DlgPrefMixer::slotPopulateDeckEqSelectors);
 
         // Create the QuickEffect selector /////////////////////////////////////
         auto pQuickEffectComboBox = make_parented<QComboBox>(this);
@@ -240,20 +294,13 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 this,
                 &DlgPrefMixer::slotQuickEffectSelectionChanged);
         // Update the combobox when the effect was changed in WEffectChainPresetSelector
-        // or with controllers
+        // or with controllers. This will wipe pending QuickEffect changes.
         EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(deckGroup);
         DEBUG_ASSERT(pChain);
-        // TODO(xxx) Connecting the signal to a lambda that capture the parented_ptr
-        // pQuickEffectComboBox and sets the combobox index causes a crash in
-        // applyQuickEffects() even though the signal hasn_t been emitted, yet.
-        // Hence we just capture the deck group and the new preset's name and set
-        // the index in a separate slot for now.
         connect(pChain.data(),
                 &EffectChain::chainPresetChanged,
                 this,
-                [this, deckGroup](const QString& name) {
-                    slotQuickEffectChangedOnDeck(deckGroup, name);
-                });
+                &DlgPrefMixer::slotPopulateQuickEffectSelectors);
 
         // Add the new widgets
         gridLayout_3->addWidget(pLabel, deckNo, 0);
@@ -277,6 +324,10 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
 }
 
 void DlgPrefMixer::slotPopulateDeckEqSelectors() {
+    if (m_applyingDeckEQs) {
+        return;
+    }
+
     m_ignoreEqQuickEffectBoxSignals = true; // prevents a recursive call
 
     const QList<EffectManifestPointer> pManifestList = getDeckEqManifests();
@@ -339,6 +390,9 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
 }
 
 void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
+    if (m_applyingQuickEffects) {
+        return;
+    }
     m_ignoreEqQuickEffectBoxSignals = true;
 
     QList<EffectChainPresetPointer> presetList =
@@ -424,12 +478,12 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
         for (int deck = 1; deck < m_deckEqEffectSelectors.size(); ++deck) {
             auto* eqBox = m_deckEqEffectSelectors[deck];
             eqBox->setEnabled(!m_eqBypass);
-            slotPopulateDeckEqSelectors();
 
             auto* quickBox = m_deckQuickEffectSelectors[deck];
             quickBox->setEnabled(true);
-            slotPopulateQuickEffectSelectors();
         }
+        slotPopulateDeckEqSelectors();
+        slotPopulateQuickEffectSelectors();
     }
 }
 
@@ -467,10 +521,12 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxSingleEqEffect->setChecked(true);
     CheckBoxEqAutoReset->setChecked(false);
     CheckBoxGainAutoReset->setChecked(false);
+#ifdef __STEM__
+    CheckBoxStemAutoReset->setChecked(true);
+#endif
 
     setDefaultShelves();
     comboBoxMainEq->setCurrentIndex(0); // '---' no EQ
-    slotApply();
 }
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
@@ -505,23 +561,8 @@ void DlgPrefMixer::slotQuickEffectSelectionChanged(int effectIndex) {
     }
 }
 
-/// The Quick Effect was changed via the GUI or controls, update the combobox
-void DlgPrefMixer::slotQuickEffectChangedOnDeck(const QString& deckGroup,
-        const QString& presetName) {
-    int deck;
-    if (PlayerManager::isDeckGroup(deckGroup, &deck)) {
-        deck -= 1; // decks indices are 0-based
-        auto* pBox = m_deckQuickEffectSelectors[deck];
-        VERIFY_OR_DEBUG_ASSERT(pBox) {
-            return;
-        }
-        pBox->blockSignals(true);
-        pBox->setCurrentIndex(pBox->findText(presetName));
-        pBox->blockSignals(false);
-    }
-}
-
 void DlgPrefMixer::applyDeckEQs() {
+    m_applyingDeckEQs = true;
     m_ignoreEqQuickEffectBoxSignals = true;
 
     for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
@@ -561,9 +602,11 @@ void DlgPrefMixer::applyDeckEQs() {
         }
     }
     m_ignoreEqQuickEffectBoxSignals = false;
+    m_applyingDeckEQs = false;
 }
 
 void DlgPrefMixer::applyQuickEffects() {
+    m_applyingQuickEffects = true;
     m_ignoreEqQuickEffectBoxSignals = true;
 
     for (int deck = 0; deck < m_deckQuickEffectSelectors.size(); deck++) {
@@ -594,6 +637,7 @@ void DlgPrefMixer::applyQuickEffects() {
         }
     }
     m_ignoreEqQuickEffectBoxSignals = false;
+    m_applyingQuickEffects = false;
 }
 
 void DlgPrefMixer::slotHiEqSliderChanged() {
@@ -683,19 +727,7 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
 }
 
 void DlgPrefMixer::slotApply() {
-    // xfader //////////////////////////////////////////////////////////////////
-    m_mode.set(m_xFaderMode);
-    m_curve.set(m_transform);
-    m_calibration.set(m_cal);
-    if (checkBoxReverse->isChecked() != m_xFaderReverse) {
-        m_reverse.set(checkBoxReverse->isChecked());
-        double position = m_crossfader.get();
-        m_crossfader.set(0.0 - position);
-        m_xFaderReverse = checkBoxReverse->isChecked();
-    }
-    m_pConfig->set(kXfaderModeKey, ConfigValue(m_xFaderMode));
-    m_pConfig->set(kXfaderCurveKey, ConfigValue(QString::number(m_transform)));
-    m_pConfig->set(kXfaderReverseKey, ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
+    applyXFader();
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
     m_pConfig->set(kEnableEqsKey, ConfigValue(m_eqBypass ? 0 : 1));
@@ -703,10 +735,28 @@ void DlgPrefMixer::slotApply() {
     m_pConfig->set(kEqsOnlyKey, ConfigValue(m_eqEffectsOnly ? 1 : 0));
     m_pConfig->set(kEqAutoResetKey, ConfigValue(m_eqAutoReset ? 1 : 0));
     m_pConfig->set(kGainAutoResetKey, ConfigValue(m_gainAutoReset ? 1 : 0));
+#ifdef __STEM__
+    m_pConfig->set(kStemAutoResetKey, ConfigValue(m_stemAutoReset ? 1 : 0));
+#endif
     applyDeckEQs();
     applyQuickEffects();
 
     storeEqShelves();
+}
+
+void DlgPrefMixer::applyXFader() {
+    m_xfModeCO->set(m_xFaderMode);
+    m_xfCurveCO->set(m_xFaderCurve);
+    m_xfCalibrationCO->set(m_xFaderCal);
+    if (m_xFaderReverse != m_xfReverseCO->toBool()) {
+        double position = m_crossfader.get();
+        m_crossfader.set(0.0 - position);
+    }
+    m_xfReverseCO->set(m_xFaderReverse ? 1.0 : 0.0);
+
+    m_pConfig->setValue(kXfaderModeKey, m_xFaderMode);
+    m_pConfig->setValue(kXfaderCurveKey, m_xFaderCurve);
+    m_pConfig->setValue(kXfaderReverseKey, m_xFaderReverse);
 }
 
 void DlgPrefMixer::storeEqShelves() {
@@ -718,29 +768,7 @@ void DlgPrefMixer::storeEqShelves() {
     m_pConfig->set(kLowEqFreqPreciseKey, ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
 
-// Update the widgets with values from config / EffectsManager
 void DlgPrefMixer::slotUpdate() {
-    // xfader //////////////////////////////////////////////////////////////////
-    m_transform = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
-
-    // Range SliderXFader 0 .. 100
-    double sliderVal = RescalerUtils::oneByXToLinear(
-            m_transform - EngineXfader::kTransformMin + 1,
-            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
-            SliderXFader->minimum(),
-            SliderXFader->maximum());
-    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
-
-    m_xFaderMode = m_pConfig->getValueString(kXfaderModeKey).toInt();
-    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
-        radioButtonConstantPower->setChecked(true);
-    } else {
-        radioButtonAdditive->setChecked(true);
-    }
-
-    m_xFaderReverse = m_pConfig->getValueString(kXfaderReverseKey).toInt() == 1;
-    checkBoxReverse->setChecked(m_xFaderReverse);
-
     slotUpdateXFader();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
@@ -764,6 +792,11 @@ void DlgPrefMixer::slotUpdate() {
 
     m_gainAutoReset = m_pConfig->getValue<bool>(kGainAutoResetKey, false);
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
+
+#ifdef __STEM__
+    m_stemAutoReset = m_pConfig->getValue(kStemAutoResetKey, true);
+    CheckBoxStemAutoReset->setChecked(m_stemAutoReset);
+#endif
 
     QString eqBaypassCfg = m_pConfig->getValueString(kEnableEqsKey);
     m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1" || eqBaypassCfg.isEmpty());
@@ -802,8 +835,62 @@ void DlgPrefMixer::slotUpdate() {
     updateMainEQ();
 }
 
-// Draw the crossfader curve graph. Only needs to get drawn when a change
-// has been made.
+void DlgPrefMixer::slotUpdateXFader() {
+    // Read values from config only on first update if the xfader curve controls
+    // are still at their default values. This should detect if controller mappings
+    // (or skin attributes) have changed the xfader controls.
+    // Else and on later calls, always read the current state from controls.
+    if (m_initializing &&
+            m_xfCurveCO->get() == m_xfCurveCO->getDefault() &&
+            m_xfCalibrationCO->get() == m_xfCalibrationCO->getDefault() &&
+            m_xfModeCO->get() == m_xfModeCO->getDefault() &&
+            m_xfReverseCO->get() == m_xfReverseCO->getDefault()) {
+        m_xFaderCurve = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
+        // "xFaderCalibration" is not stored in the config and it's not expsoed
+        // with a slider here. Each time the slider is touched it's calculated
+        // to get us a smooth curve for ConstPower mode. And hos no effect for
+        // Additive mode.
+        // TODO This also means custom values set by controller mappings are
+        // wiped on shutdown.
+        m_xFaderCal = EngineXfader::getPowerCalibration(m_xFaderCurve);
+        m_xFaderMode = m_pConfig->getValue<int>(kXfaderModeKey);
+        m_xFaderReverse = m_pConfig->getValue<bool>(kXfaderReverseKey);
+    } else {
+        // Update xfader from controls
+        // deactivated for now. resolve dupe debug etc.
+        // slotXFaderControlChanged();
+        m_xFaderCurve = m_xfCurveCO->get();
+        m_xFaderCal = m_xfCalibrationCO->get();
+        m_xFaderMode = static_cast<int>(m_xfModeCO->get());
+        m_xFaderReverse = static_cast<bool>(m_xfReverseCO->get());
+    }
+
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::updateXFaderWidgets() {
+    const QSignalBlocker signalBlocker(this);
+
+    // Range SliderXFader 0 .. 100
+    double sliderVal = RescalerUtils::oneByXToLinear(
+            m_xFaderCurve - EngineXfader::kTransformMin + 1,
+            EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
+            SliderXFader->minimum(),
+            SliderXFader->maximum());
+    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
+
+    // Same here
+    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
+        radioButtonConstantPower->setChecked(true);
+    } else {
+        radioButtonAdditive->setChecked(true);
+    }
+
+    checkBoxReverse->setChecked(m_xFaderReverse);
+
+    drawXfaderDisplay();
+}
+
 void DlgPrefMixer::drawXfaderDisplay() {
     // Initialize or clear scene
     if (m_pxfScene) {
@@ -865,10 +952,10 @@ void DlgPrefMixer::drawXfaderDisplay() {
     for (int x = 1; x <= pointCount + 1; x++) {
         CSAMPLE_GAIN gainL, gainR;
         EngineXfader::getXfadeGains((-1. + (xfadeStep * (x - 1))),
-                m_transform,
-                m_cal,
+                m_xFaderCurve,
+                m_xFaderCal,
                 m_xFaderMode,
-                checkBoxReverse->isChecked(),
+                m_xFaderReverse,
                 &gainL,
                 &gainR);
 
@@ -895,26 +982,68 @@ void DlgPrefMixer::drawXfaderDisplay() {
     graphicsViewXfader->repaint();
 }
 
-void DlgPrefMixer::slotUpdateXFader() {
-    if (radioButtonAdditive->isChecked()) {
-        m_xFaderMode = MIXXX_XFADER_ADDITIVE;
-    } else {
-        m_xFaderMode = MIXXX_XFADER_CONSTPWR;
-    }
+void DlgPrefMixer::slotXFaderReverseBoxToggled() {
+    m_xFaderReverse = checkBoxReverse->isChecked();
+}
 
-    // m_transform is in the range of 1 to 1000 while 50 % slider results
+void DlgPrefMixer::slotXFaderSliderChanged() {
+    // m_xFaderCurve is in the range of 1 to 1000 while 50 % slider results
     // to ~2, which represents a medium rounded fader curve.
-    double transform = RescalerUtils::linearToOneByX(
-                               SliderXFader->value(),
-                               SliderXFader->minimum(),
-                               SliderXFader->maximum(),
-                               EngineXfader::kTransformMax) -
+    double curve = RescalerUtils::linearToOneByX(
+                           SliderXFader->value(),
+                           SliderXFader->minimum(),
+                           SliderXFader->maximum(),
+                           EngineXfader::kTransformMax) -
             1 + EngineXfader::kTransformMin;
     // Round to 4 decimal places to avoid round-trip offsets with default 1.0
-    m_transform = std::round(transform * 10000) / 10000;
-    m_cal = EngineXfader::getPowerCalibration(m_transform);
+    m_xFaderCurve = std::round(curve * 10000) / 10000;
+    // If the curve has been changed in the GUI we fetch the engine value for
+    // calibration which gives us a smooth curve.
+    // This wipes any previous value set by controller mappings for example.
+    m_xFaderCal = EngineXfader::getPowerCalibration(m_xFaderCurve);
+    drawXfaderDisplay();
+}
+
+void DlgPrefMixer::slotXFaderModeBoxToggled() {
+    m_xFaderMode = radioButtonConstantPower->isChecked()
+            ? MIXXX_XFADER_CONSTPWR
+            : MIXXX_XFADER_ADDITIVE;
 
     drawXfaderDisplay();
+}
+
+void DlgPrefMixer::slotXFaderCurveControlChanged(double v) {
+    if (v == m_xFaderCurve) {
+        return;
+    }
+    m_xFaderCurve = v;
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::slotXFaderCalibrationControlChanged(double v) {
+    if (v == m_xFaderCal) {
+        return;
+    }
+    m_xFaderCal = v;
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::slotXFaderModeControlChanged(double v) {
+    int mode = static_cast<int>(v);
+    if (mode == m_xFaderMode) {
+        return;
+    }
+    m_xFaderMode = mode;
+    updateXFaderWidgets();
+}
+
+void DlgPrefMixer::slotXFaderReverseControlChanged(double v) {
+    bool reverse = v > 0;
+    if (reverse == m_xFaderReverse) {
+        return;
+    }
+    m_xFaderReverse = reverse;
+    updateXFaderWidgets();
 }
 
 void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
@@ -924,6 +1053,12 @@ void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
 void DlgPrefMixer::slotGainAutoResetToggled(bool checked) {
     m_gainAutoReset = checked;
 }
+
+#ifdef __STEM__
+void DlgPrefMixer::slotStemAutoResetToggled(bool checked) {
+    m_stemAutoReset = checked;
+}
+#endif
 
 void DlgPrefMixer::slotBypassEqToggled(bool checked) {
     m_eqBypass = checked;

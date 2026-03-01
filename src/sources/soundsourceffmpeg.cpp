@@ -290,7 +290,7 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
     // Open input file and allocate/initialize AVFormatContext
     const int avformat_open_input_result =
             avformat_open_input(
-                    &pavInputFormatContext, fileName.toLocal8Bit().constData(), nullptr, nullptr);
+                    &pavInputFormatContext, fileName.toUtf8().constData(), nullptr, nullptr);
     if (avformat_open_input_result != 0) {
         DEBUG_ASSERT(avformat_open_input_result < 0);
         kLogger.warning().noquote()
@@ -392,12 +392,12 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 list.append("mp4");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mov,mp4,m4a,3gp,3g2,mj2")) {
-                list.append("mov");
+                list.append("mov"); // QuickTime File Format video/quicktime
                 list.append("mp4");
                 list.append("m4a");
-                list.append("3gp");
-                list.append("3g2");
-                list.append("mj2");
+                list.append("3gp"); // 3GPP file format audio/3gpp
+                list.append("3g2"); // 3GPP2 file format audio/3gpp2
+                list.append("mj2"); // Motion JPEG 2000 video/mj2
                 continue;
             } else if (!strcmp(pavInputFormat->name, "opus") ||
                     !strcmp(pavInputFormat->name, "libopus")) {
@@ -426,7 +426,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 continue;
             } else if (!strcmp(pavInputFormat->name, "wma") ||
                     !strcmp(pavInputFormat->name, "xwma")) {
-                list.append("wma");
+                list.append("wma"); // Windows Media Audio audio/x-ms-wma
                 continue;
             */
                 ///////////////////////////////////////////////////////////
@@ -434,22 +434,22 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 ///////////////////////////////////////////////////////////
                 /*
             } else if (!strcmp(pavInputFormat->name, "ac3")) {
-                list.append("ac3");
+                list.append("ac3"); // AC-3 Compressed Audio (Dolby Digital), Revision A audio/ac3
                 continue;
             } else if (!strcmp(pavInputFormat->name, "caf")) {
-                list.append("caf");
+                list.append("caf"); // Apple Lossless
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mpc")) {
-                list.append("mpc");
+                list.append("mpc"); // Musepack encoded audio audio/musepack
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mpeg")) {
                 list.append("mpeg");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tak")) {
-                list.append("tak");
+                list.append("tak"); // Tom's lossless Audio Kompressor audio/x-tak
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tta")) {
-                list.append("tta");
+                list.append("tta"); // True Audio, version 2
                 continue;
             */
             }
@@ -548,9 +548,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     // Find the best stream
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(59, 0, 100) // FFmpeg 5.0
     const AVCodec* pDecoder = nullptr;
+    const AVCodec* pAacDecoder = nullptr;
 #else
     // https://github.com/FFmpeg/FFmpeg/blob/dd17c86aa11feae2b86de054dd0679cc5f88ebab/doc/APIchanges#L175
     AVCodec* pDecoder = nullptr;
+    AVCodec* pAacDecoder = nullptr;
 #endif
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
@@ -577,6 +579,29 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return SoundSource::OpenResult::Aborted;
     }
     DEBUG_ASSERT(pDecoder);
+
+    if (pDecoder->id == AV_CODEC_ID_AAC ||
+            pDecoder->id == AV_CODEC_ID_AAC_LATM) {
+        // We only allow AAC decoders that pass our seeking tests
+        if (std::strcmp(pDecoder->name, "aac") != 0 && std::strcmp(pDecoder->name, "aac_at") != 0) {
+            pAacDecoder = avcodec_find_decoder_by_name("aac");
+            if (pAacDecoder) {
+                pDecoder = pAacDecoder;
+            } else {
+                kLogger.warning()
+                        << "Internal aac decoder not found in your FFmpeg "
+                           "build."
+                        << "To enable AAC support, please install an FFmpeg "
+                           "version with the internal aac decoder enabled."
+                           "Note 1: The libfdk_aac decoder is no working properly "
+                           "with Mixxx, FFmpeg's internal AAC decoder does."
+                        << "Note 2: AAC decoding may be subject to patent "
+                           "restrictions, depending on your country.";
+            }
+        }
+    }
+
+    kLogger.debug() << "using decoder:" << pDecoder->long_name;
 
     // Select audio stream for decoding
     AVStream* pavStream = m_pavInputFormatContext->streams[av_find_best_stream_result];
@@ -606,12 +631,20 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         // A dedicated number of channels for the output signal
         // has been requested. Forward this to FFmpeg to avoid
         // manual resampling or post-processing after decoding.
+        const int requestChannels = std::min(
+                static_cast<int>(params.getSignalInfo().getChannelCount()),
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+                pavStream->codecpar->ch_layout.nb_channels
+#else
+                av_get_channel_layout_nb_channels(pavStream->codecpar->channel_layout)
+#endif
+        );
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
         av_channel_layout_default(&pavCodecContext->ch_layout,
-                params.getSignalInfo().getChannelCount());
+                requestChannels);
 #else
         pavCodecContext->request_channel_layout =
-                av_get_default_channel_layout(params.getSignalInfo().getChannelCount());
+                av_get_default_channel_layout(requestChannels);
 #endif
     }
 

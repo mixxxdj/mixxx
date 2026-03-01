@@ -23,29 +23,29 @@ Variables:
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="state_1_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
     </State>
     <State>
       <Number>2</Number>
       <Text><Variable name="state_2_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
     </State>
     <State>
       <Number>4</Number>
       <Text><Variable name="state_3_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
-      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
-      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>

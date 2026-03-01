@@ -27,11 +27,12 @@
  */
 
 (function(global) {
+    const NO_TIMER = 0;
     const Component = function(options) {
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
         } else {
-            _.assign(this, options);
+            Object.assign(this, options);
         }
 
         if (typeof this.unshift === "function") {
@@ -176,6 +177,9 @@
         // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
+        triggerOnRelease: false,
+        isLongPressed: false,
+        longPressTimer: NO_TIMER,
         isPress: function(channel, control, value, _status) {
             return value > 0;
         },
@@ -192,15 +196,17 @@
                     this.isLongPressed = false;
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
+                    } else if (this.triggerOnRelease) {
+                        this.trigger();
                     }
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                     this.isLongPressed = false;
                 }
@@ -257,15 +263,15 @@
                         engine.setValue(this.group, "beatsync", 1);
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
-                            this.longPressTimer = 0;
+                            this.longPressTimer = NO_TIMER;
                         }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
                 } else {
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                 }
             };
@@ -481,8 +487,7 @@
                 if (this.max === Component.prototype.max) {
                     this.max = (1 << 14) - 1;
                 }
-                value = (value << 7) + (this._firstLSB ? this._firstLSB : 0);
-                this.input(channel, control, value, status, group);
+                this.input(channel, control, (value << 7) + (this._firstLSB ? this._firstLSB : 0), status, group);
             }
             this.MSB = value;
         },
@@ -651,6 +656,10 @@
             // Unset isShifted for each ComponentContainer recursively
             this.isShifted = false;
         },
+        /**
+         * @param newLayer Layer to apply to this
+         * @param reconnectComponents Whether components should be reconnected or not
+         */
         applyLayer: function(newLayer, reconnectComponents) {
             if (reconnectComponents !== false) {
                 reconnectComponents = true;
@@ -661,7 +670,7 @@
                 });
             }
 
-            _.merge(this, newLayer);
+            Object.assign(this, newLayer);
 
             if (reconnectComponents === true) {
                 this.forEachComponent(function(component) {
@@ -699,13 +708,14 @@
         setCurrentDeck: function(newGroup) {
             this.currentDeck = newGroup;
             this.reconnectComponents(function(component) {
-                if (component.group === undefined
-                      || component.group.search(script.channelRegEx) !== -1) {
+                if (component.group === undefined) {
                     component.group = newGroup;
-                } else if (component.group.search(script.eqRegEx) !== -1) {
-                    component.group = "[EqualizerRack1_" + newGroup + "_Effect1]";
-                } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                    component.group = "[QuickEffectRack1_" + newGroup + "]";
+                } else {
+                    // Match the channel anywhere it might appear in the group
+                    // whether it includes the closing brace or is part of
+                    // another group name such as "Channel1_Stem1".
+                    const anyChannelRegEx = /\[Channel\d+([\]_])/;
+                    component.group = component.group.replace(anyChannelRegEx, `${newGroup.slice(0, -1)}$1`);
                 }
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
@@ -733,46 +743,80 @@
     });
 
     const JogWheelBasic = function(options) {
+        if (options.deck !== undefined && options.group !== undefined) {
+            console.warn(
+                "options.deck and option.group are both set; " +
+                "options.deck will take priority"
+            );
+        }
+
+        const deck = options.deck;
+        const group = script.deckFromGroup(options.group);
+        delete options.deck;
+        delete options.group;
+
         Component.call(this, options);
 
-        // TODO 2.4: replace lodash polyfills with Number.isInteger/isFinite
+        this._deck = undefined;
 
-        if (!_.isInteger(this.deck)) {
-            console.warn("missing scratch deck");
-            return;
+        Object.defineProperties(this, {
+            deck: {
+                get: () => this._deck,
+                set: (value) => {
+                    if (Number.isInteger(value) && value > 0) {
+                        this._deck = value;
+                        this.reset();
+                    }
+                },
+            },
+            group: {
+                get: () => `[Channel${deck}]`,
+                set: value => {
+                    const deck = script.deckFromGroup(value);
+                    if (deck > 0) {
+                        this._deck = deck;
+                        this.reset();
+                    }
+                },
+            }
+        });
+
+        this.deck = deck;
+
+        if (!this.deck) {
+            this.group = group;  // try setting deck from group
         }
-        if (this.deck <= 0) {
-            console.warn("invalid deck number: " + this.deck);
-            return;
-        }
-        if (!_.isInteger(this.wheelResolution)) {
+
+        if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
         }
-        if (!_.isFinite(this.alpha)) {
+        if (!Number.isFinite(this.alpha)) {
             console.warn("missing alpha scratch parameter value");
             return;
         }
-        if (!_.isFinite(this.beta)) {
+        if (!Number.isFinite(this.beta)) {
             this.beta = this.alpha / 32;
         }
-        if (!_.isFinite(this.rpm)) {
+        if (!Number.isFinite(this.rpm)) {
             this.rpm = 33 + 1/3;
         }
-        if (this.group === undefined) {
-            this.group = "[Channel" + this.deck + "]";
-        }
+
         this.inKey = "jog";
     };
 
     JogWheelBasic.prototype = new Component({
-        vinylMode: true,
+        _vinylMode: true, // private, accessible via setters defined below
         isPress: Button.prototype.isPress,
         inValueScale: function(value) {
             // default implementation for converting signed ints
             return value < 0x40 ? value : value - (this.max + 1);
         },
         inputWheel: function(_channel, _control, value, _status, _group) {
+            if (!this.deck) {
+                return;
+            }
+
             value = this.inValueScale(value);
             if (engine.isScratching(this.deck)) {
                 engine.scratchTick(this.deck, value);
@@ -781,6 +825,10 @@
             }
         },
         inputTouch: function(channel, control, value, status, _group) {
+            if (!this.deck) {
+                return;
+            }
+
             if (this.isPress(channel, control, value, status) && this.vinylMode) {
                 engine.scratchEnable(this.deck,
                     this.wheelResolution,
@@ -795,13 +843,20 @@
             throw "Called wrong input handler for " + status + ": " + control + ".\n" +
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
-        // this is needed for features such as "deck switching" that work
-        // by changing the component group. It is assumed they call `connect`
-        // afterwards.
-        connect: function() {
-            Component.prototype.connect.call(this);
-            this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
-        }
+        reset() {},
+    });
+    Object.defineProperty(JogWheelBasic.prototype, "vinylMode", {
+        get() {
+            return this._vinylMode;
+        },
+        set(vinylMode) {
+            // Disable scratching immediately when disabling vinylMode in case
+            // the touch surface malfunctions
+            if (!vinylMode && engine.isScratching(this.deck)) {
+                engine.scratchDisable(this.deck);
+            }
+            this._vinylMode = vinylMode;
+        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
@@ -1137,8 +1192,6 @@
 
         this.effectFocusButton = new Button({
             group: this.group,
-            longPressed: false,
-            longPressTimer: 0,
             pressedWhenParametersHidden: false,
             previouslyFocusedEffect: 0,
             startEffectFocusChooseMode: function() {
@@ -1164,9 +1217,10 @@
                 this.input = function(channel, control, value, status, _group) {
                     const showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                            this.startEffectFocusChooseMode.bind(this),
-                            true);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
+                            this.startEffectFocusChooseMode();
+                            this.longPressTimer = NO_TIMER;
+                        }, true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
                                 engine.setValue(this.group, "show_parameters", 1);
@@ -1176,8 +1230,9 @@
                             this.pressedWhenParametersHidden = true;
                         }
                     } else {
-                        if (this.longPressTimer) {
+                        if (this.longPressTimer !== NO_TIMER) {
                             engine.stopTimer(this.longPressTimer);
+                            this.longPressTimer = NO_TIMER;
                         }
 
                         if (eu.focusChooseModeActive) {

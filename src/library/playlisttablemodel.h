@@ -21,7 +21,9 @@ class PlaylistTableModel final : public TrackSetTableModel {
     bool appendTrack(TrackId trackId);
     void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
     void removeTrack(const QModelIndex& index);
-    void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
+    void shuffleTracks(const QModelIndexList& shuffle = QModelIndexList(),
+            const QModelIndex& exclude = QModelIndex());
+    void orderTracksByCurrPos();
 
     bool isColumnInternal(int column) final;
     bool isColumnHiddenByDefault(int column) final;
@@ -35,6 +37,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
     /// Get the total duration of all tracks referenced by the given model indices
     mixxx::Duration getTotalDuration(const QModelIndexList& indices);
+    const QList<int> getSelectedPositions(const QModelIndexList& indices) const override;
 
     Capabilities getCapabilities() const final;
 
@@ -42,6 +45,9 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
+
+  signals:
+    void firstTrackChanged();
 
   private:
     void initSortColumnMapping() override;

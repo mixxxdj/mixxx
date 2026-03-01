@@ -4,6 +4,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
@@ -32,8 +33,7 @@ BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
-    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    QString location = QDir::fromNativeSeparators(nativeLocation);
+    QString location = getTrackLocation(index);
 
     if (location.isEmpty()) {
         // Track is lost
@@ -49,26 +49,34 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     // saved with the metadata from iTunes. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
     if (pTrack && !track_already_in_library) {
-        QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
+        QString artist = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
         pTrack->setArtist(artist);
 
-        QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
+        QString title = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
         pTrack->setTitle(title);
 
-        QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
+        QString album = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
         pTrack->setAlbum(album);
 
-        QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
+        QString year = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
         pTrack->setYear(year);
 
-        QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
+        QString genre = getFieldString(index, ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
         updateTrackGenre(pTrack.get(), genre);
 
-        float bpm = index.sibling(
-                index.row(), fieldIndex("bpm")).data().toString().toFloat();
+        float bpm = getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_BPM).toFloat();
         pTrack->trySetBpm(bpm);
     }
     return pTrack;
+}
+
+QString BaseExternalPlaylistModel::resolveLocation(const QString& nativeLocation) const {
+    return QDir::fromNativeSeparators(nativeLocation);
+}
+
+QString BaseExternalPlaylistModel::getTrackLocation(const QModelIndex& index) const {
+    QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return resolveLocation(nativeLocation);
 }
 
 TrackId BaseExternalPlaylistModel::getTrackId(const QModelIndex& index) const {
@@ -82,7 +90,7 @@ TrackId BaseExternalPlaylistModel::getTrackId(const QModelIndex& index) const {
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
+            (PlayerInfo::instance().numPreviewDecks() == 0 &&
                     column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW));
 }
 
@@ -91,6 +99,10 @@ Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex& index) const {
 }
 
 void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
+    VERIFY_OR_DEBUG_ASSERT(!playlist_path.isEmpty()) {
+        return;
+    }
+
     QSqlQuery finder_query(m_database);
     finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
     finder_query.bindValue(":name", playlist_path);
@@ -135,8 +147,8 @@ void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
                             playlistIdNumber);
     // The ordering of columns is relevant (see below)!
     auto playlistViewColumns = QStringList{
-            QStringLiteral("track_id"),
-            QStringLiteral("position"),
+            PLAYLISTTRACKSTABLE_TRACKID,
+            PLAYLISTTRACKSTABLE_POSITION,
             QStringLiteral("'' AS ") + LIBRARYTABLE_PREVIEW};
     const auto queryString =
             QStringLiteral(
@@ -170,7 +182,8 @@ TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) cons
         // The external table has foreign Track IDs, so we need to compare
         // by location
         for (int row = 0; row < rowCount(); ++row) {
-            QString nativeLocation = index(row, fieldIndex("location")).data().toString();
+            QString nativeLocation = getFieldString(index(row, 0),
+                    ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
             QString location = QDir::fromNativeSeparators(nativeLocation);
             if (location == pTrack->getLocation()) {
                 return TrackId(index(row, 0).data());
@@ -185,7 +198,8 @@ TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
             Capability::AddToAutoDJ |
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
-            Capability::LoadToSampler;
+            Capability::LoadToSampler |
+            Capability::Sorting;
 }
 
 QString BaseExternalPlaylistModel::modelKey(bool noSearch) const {

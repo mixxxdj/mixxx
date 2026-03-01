@@ -13,6 +13,7 @@ WTrackProperty,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -30,7 +31,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
 WTrackTableViewHeader,
 WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
-  as "Open Sans".
+  as "Open Sans" and we need to set the `font-weight`.
   On Windows however, the semi-bold variant is identified as
   "Open Sans Semibold", so look for that first. */
   font-family: "Open Sans Semibold", "Open Sans";
@@ -172,14 +173,40 @@ WSearchLineEdit::item:selected,
 }
 
   WLibrarySidebar QMenu::indicator,
-  WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator,
   WEffectChainPresetButton QMenu QCheckBox::indicator {
+    /* Note that the border is added to the base size of 0.7em x 0.7em
+       set in default.qss */
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;
     /* remove OS focus indicator */
     outline: none;
+  }
+  WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    width: 13px;
+    height: 13px;
+  }
+  /* disabled menu item and checkbox */
+  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    background-color: #222;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+    border: 0px;
+    background-color: transparent;
+    image: url(skins:LateNight/palemoon/buttons/btn__search.svg);
+    margin-left: 2px;
+  }
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    background-color: transparent;
+  }
+
+  WSearchRelatedTracksMenu #SearchSelectedAction::indicator:disabled {
+    image: url(skins:LateNight/palemoon/buttons/btn__search_disabled.svg);
   }
 
 /************** font sizes / alignment ****************************************/
@@ -288,19 +315,24 @@ WRecordingDuration {
 }
 
 WTrackTableViewHeader::item {
-  /* Don't set a font size to pick up the system font size. */
   border-bottom: 1px solid #000;
   }
-  WTrackTableViewHeader::section {
+/* This is now set in c++ WTrackTableViewHeader::paintSection()
+   which also works around a Qt bug with the sort indicator */
+/*WTrackTableViewHeader::section {
     height: 1.1em;
     border: 0;
     padding: 0.1em;
-  }
-  WTrackTableViewHeader::up-arrow,
+  }*/
+  /*WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
     width: 0.8em;
-    padding: 0 0.15em;
-  }
+    padding: 0 0.3em;
+  }*/
+  /*WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
+    padding: 0 1px;
+  }*/
 
 /* Prevent OS-style checkbox from being rendered underneath the custom style. */
 #LibraryBPMButton::item,
@@ -373,6 +405,13 @@ WOverview QLabel {
 
 
 
+/************** Waveforms *****************************************************/
+
+#StemChannel_ControlContainer {
+  margin: 0px 3px 0px 2px;
+}
+
+
 /************** Decks *********************************************************/
 
 #DeckRows12345 {
@@ -443,14 +482,9 @@ WSpinny { /*
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
-#BpmRateTapContainer {
-  margin: 1px;
-}
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-}
-#RateSliderBoxCompactSync {
   margin-left: 5px;
 }
 
@@ -460,6 +494,18 @@ WTrackProperty[selected="false"] {
   border: 0px solid transparent;
   border-radius: 1px;
 }
+
+#BpmClickOverlay,
+#BpmTapButton,
+#BpmTapButton:focus {
+  background-color: transparent;
+}
+WBpmEditor,
+#BpmClickOverlay {
+  border: none;
+}
+
+
 /************** Decks  ********************************************************/
 
 
@@ -631,8 +677,14 @@ WEffectChainPresetSelector {
     padding: 0px -1px 0px -5px;
     margin: 0px;
     text-align: right;
+  }
+  WEffectChainPresetSelector#StemQuickEffectSelector {
+    padding: 0px -5px 0px 2px;
+    margin: 0px;
+    text-align: left;
     }
-    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down {
+    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down,
+    WEffectChainPresetSelector#StemQuickEffectSelector::drop-down {
       subcontrol-origin: margin;
       subcontrol-position: right center;
     }

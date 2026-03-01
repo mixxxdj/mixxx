@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindShoutidjc
 ---------
@@ -50,13 +45,16 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Shoutidjc QUIET shout-idjc)
 endif()
 
-find_path(Shoutidjc_INCLUDE_DIR
+find_path(
+  Shoutidjc_INCLUDE_DIR
   NAMES shoutidjc/shout.h
   HINTS ${PC_Shout_INCLUDE_DIRS}
-  DOC "Shout include directory")
+  DOC "Shout include directory"
+)
 mark_as_advanced(Shoutidjc_INCLUDE_DIR)
 
-find_library(Shoutidjc_LIBRARY
+find_library(
+  Shoutidjc_LIBRARY
   NAMES shout-idjc
   HINTS ${PC_Shoutidjc_LIBRARY_DIRS}
   DOC "Shoutidjc library"
@@ -82,7 +80,8 @@ if(Shoutidjc_FOUND)
 
   if(NOT TARGET Shoutidjc::Shoutidjc)
     add_library(Shoutidjc::Shoutidjc UNKNOWN IMPORTED)
-    set_target_properties(Shoutidjc::Shoutidjc
+    set_target_properties(
+      Shoutidjc::Shoutidjc
       PROPERTIES
         IMPORTED_LOCATION "${Shoutidjc_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Shoutidjc_CFLAGS_OTHER}"

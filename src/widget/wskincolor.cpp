@@ -2,10 +2,9 @@
 
 #include "skin/legacy/imgloader.h"
 
-QSharedPointer<ImgSource> WSkinColor::loader
-    = QSharedPointer<ImgSource>(new ImgLoader());
+std::shared_ptr<ImgSource> WSkinColor::loader = std::make_shared<ImgLoader>();
 
-void WSkinColor::setLoader(QSharedPointer<ImgSource> ld) {
+void WSkinColor::setLoader(std::shared_ptr<ImgSource> ld) {
     loader = ld;
 }
 

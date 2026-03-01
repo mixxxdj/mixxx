@@ -119,11 +119,48 @@
        </widget>
       </item>
 
+
+      <item row="3" column="0" colspan="3">
+       <widget class="QCheckBox" name="CheckBoxUseCueFileAnnotation">
+        <property name="toolTip">
+         <string>This will include the filepath for each track in the CUE file.
+This option makes the CUE file less portable and can reveal personal
+information from filepaths (i.e. username)</string>
+        </property>
+        <property name="text">
+         <string>Enable File Annotation in CUE file</string>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item>
 
-   <item row="1" column="0" colspan="3">
+	<item row="1" column="0" colspan="3">
+		<widget class="QGroupBox" name="groupBoxAudio">
+			<property name="title">
+				<string>Audio</string>
+			</property>
+			<layout class="QGridLayout" name="gridLayoutAudio">
+				<item row="0" column="0">
+					<widget class="QLabel" name="recordingMainOutputModeLabel">
+						<property name="text">
+							<string>Channels</string>
+						</property>
+						<property name="buddy">
+							<cstring>recordingMainOutputModeComboBox</cstring>
+						</property>
+					</widget>
+				</item>
+				<item row="0" column="1" colspan="2">
+					<widget class="QComboBox" name="recordingMainOutputModeComboBox"/>
+				</item>
+			</layout>
+		</widget>
+	</item>
+
+	<item row="2" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxFileformat">
      <property name="title">
       <string>Output File Format</string>
@@ -286,7 +323,7 @@
     </widget>
    </item>
 
-   <item row="2" column="0" colspan="3">
+   <item row="3" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxTags">
      <property name="title">
       <string>Tags</string>
@@ -386,6 +423,7 @@
   <tabstop>PushButtonBrowseRecordings</tabstop>
   <tabstop>comboBoxSplitting</tabstop>
   <tabstop>CheckBoxRecordCueFile</tabstop>
+  <tabstop>CheckBoxUseCueFileAnnotation</tabstop>
   <tabstop>SliderCompression</tabstop>
   <tabstop>SliderQuality</tabstop>
   <tabstop>LineEditTitle</tabstop>

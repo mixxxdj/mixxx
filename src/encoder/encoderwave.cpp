@@ -62,12 +62,10 @@ static sf_count_t  sf_f_tell (void *user_data)
     return pCallback->tell();
 }
 
-
-
-
 EncoderWave::EncoderWave(EncoderCallback* pCallback)
         : m_pCallback(pCallback),
-          m_pSndfile(nullptr) {
+          m_pSndfile(nullptr),
+          m_channels(2) {
     m_sfInfo.frames = 0;
     m_sfInfo.samplerate = 0;
     m_sfInfo.channels = 0;
@@ -129,6 +127,19 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
                     << radio << ". reverting to PCM 16bits";
             break;
     }
+
+    // Read channel mode from settings
+    switch (settings.getChannelMode()) {
+    case EncoderSettings::ChannelMode::MONO:
+        m_channels = 1;
+        break;
+    case EncoderSettings::ChannelMode::STEREO:
+        m_channels = 2;
+        break;
+    case EncoderSettings::ChannelMode::AUTOMATIC:
+        m_channels = 2;
+        break;
+    }
 }
 
 // call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
@@ -136,9 +147,8 @@ void EncoderWave::flush() {
     sf_write_sync(m_pSndfile);
 }
 
-
-void EncoderWave::encodeBuffer(const CSAMPLE *pBuffer, const int iBufferSize) {
-    sf_write_float(m_pSndfile, pBuffer, iBufferSize);
+void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
+    sf_write_float(m_pSndfile, pBuffer, bufferSize);
 }
 
 /* Originally called from enginebroadcast.cpp to update metadata information
@@ -194,12 +204,13 @@ void EncoderWave::initStream() {
     }
 }
 
-int EncoderWave::initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) {
+int EncoderWave::initEncoder(mixxx::audio::SampleRate sampleRate,
+        QString* pUserErrorMessage) {
     Q_UNUSED(pUserErrorMessage);
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = sampleRate;
-    m_sfInfo.channels = 2;
+    m_sfInfo.channels = m_channels;
     m_sfInfo.frames = 0;
     m_sfInfo.sections = 0;
     m_sfInfo.seekable = 0;

@@ -10,6 +10,7 @@
 #include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 
@@ -81,7 +82,11 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
             &DlgAnalysis::loadTrackToPlayer,
             this,
             [=, this](TrackPointer track, const QString& group) {
-                emit loadTrackToPlayer(track, group, false);
+                emit loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        mixxx::StemChannelSelection(),
+#endif
+                        false);
             });
     connect(m_pAnalysisView,
             &DlgAnalysis::analyzeTracks,
@@ -156,6 +161,14 @@ void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks)
                 &TrackAnalysisScheduler::finished,
                 this,
                 &AnalysisFeature::onTrackAnalysisSchedulerFinished);
+        // Forward the signal to be picked up by Library.
+        // Used by WOverview to render the re-analysis progress of loaded tracks.
+        // This is the equivalent to PlayerManager's progress signal fired for
+        // analysis triggered by loading a track.
+        connect(m_pTrackAnalysisScheduler.get(),
+                &TrackAnalysisScheduler::trackProgress,
+                this,
+                &AnalysisFeature::trackProgress);
 
         emit analysisActive(true);
     }
@@ -223,10 +236,11 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
 }
 
 bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
-                    urls,
-                    !pSource);
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
     QList<AnalyzerScheduledTrack> tracks;
     for (auto trackId : trackIds) {
         tracks.append(trackId);
@@ -235,6 +249,6 @@ bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     return tracks.size() > 0;
 }
 
-bool AnalysisFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url);
+bool AnalysisFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, false);
 }

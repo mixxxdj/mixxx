@@ -8,7 +8,7 @@ namespace {
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
 constexpr unsigned int kVuUpdateRate = 30; // in Hz (1/s), fits to display frame rate
-constexpr int kPeakDuration = 500; // in ms
+constexpr int kPeakDuration = 500;         // in ms
 
 // Smoothing Factors
 // Must be from 0-1 the lower the factor, the more smoothing that is applied
@@ -17,36 +17,44 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 
 } // namespace
 
-EngineVuMeter::EngineVuMeter(const QString& group, const QString& legacyGroup)
+EngineVuMeter::EngineVuMeter(const QString& group,
+        const QString& legacyGroup,
+        bool createLegacyAliases)
         : m_vuMeter(ConfigKey(group, QStringLiteral("vu_meter"))),
           m_vuMeterLeft(ConfigKey(group, QStringLiteral("vu_meter_left"))),
           m_vuMeterRight(ConfigKey(group, QStringLiteral("vu_meter_right"))),
           m_peakIndicator(ConfigKey(group, QStringLiteral("peak_indicator"))),
-          m_peakIndicatorLeft(ConfigKey(group, QStringLiteral("peak_indicator_left"))),
-          m_peakIndicatorRight(ConfigKey(group, QStringLiteral("peak_indicator_right"))),
+          m_peakIndicatorLeft(
+                  ConfigKey(group, QStringLiteral("peak_indicator_left"))),
+          m_peakIndicatorRight(
+                  ConfigKey(group, QStringLiteral("peak_indicator_right"))),
           m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")) {
-    const QString& aliasGroup = legacyGroup.isEmpty() ? group : legacyGroup;
-    m_vuMeter.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeter"))),
-            m_vuMeterLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterL"))),
-            m_vuMeterRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterR"))),
-            m_peakIndicator.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicator"))),
-            m_peakIndicatorLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorL"))),
-            m_peakIndicatorRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorR"))),
-            // Initialize the calculation:
-            reset();
+    if (createLegacyAliases) {
+        const QString& aliasGroup = legacyGroup.isEmpty() ? group : legacyGroup;
+        m_vuMeter.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeter")));
+        m_vuMeterLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterL")));
+        m_vuMeterRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterR")));
+        m_peakIndicator.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicator")));
+        m_peakIndicatorLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorL")));
+        m_peakIndicatorRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorR")));
+    }
+    // Initialize the calculation:
+    reset();
 }
 
-void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
+void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
 
     const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
 
     SampleUtil::CLIP_STATUS clipped = SampleUtil::sumAbsPerChannel(&fVolSumL,
-            &fVolSumR, pIn, iBufferSize);
+            &fVolSumR,
+            pIn,
+            bufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    m_samplesCalculated += static_cast<unsigned int>(iBufferSize / 2);
+    m_samplesCalculated += static_cast<unsigned int>(bufferSize / 2);
 
     // Are we ready to update the VU meter?:
     if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
@@ -81,7 +89,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_peakIndicatorLeft.set(1.0);
-        m_peakDurationL = kPeakDuration * sampleRate / iBufferSize / 2000;
+        m_peakDurationL = static_cast<int>(kPeakDuration * sampleRate / bufferSize / 2000);
     } else if (m_peakDurationL <= 0) {
         m_peakIndicatorLeft.set(0.0);
     } else {
@@ -90,7 +98,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_peakIndicatorRight.set(1.0);
-        m_peakDurationR = kPeakDuration * sampleRate / iBufferSize / 2000;
+        m_peakDurationR = static_cast<int>(kPeakDuration * sampleRate / bufferSize / 2000);
     } else if (m_peakDurationR <= 0) {
         m_peakIndicatorRight.set(0.0);
     } else {
@@ -103,18 +111,17 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
                     : 0.0);
 }
 
-void EngineVuMeter::doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume)
-{
+void EngineVuMeter::doSmooth(CSAMPLE& currentVolume, CSAMPLE newVolume) {
     if (currentVolume > newVolume) {
         currentVolume -= kDecaySmoothing * (currentVolume - newVolume);
     } else {
         currentVolume += kAttackSmoothing * (newVolume - currentVolume);
     }
     if (currentVolume < 0) {
-        currentVolume=0;
+        currentVolume = 0;
     }
     if (currentVolume > 1.0) {
-        currentVolume=1.0;
+        currentVolume = 1.0;
     }
 }
 

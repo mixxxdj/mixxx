@@ -1,27 +1,25 @@
 #pragma once
 
-#include "proto/keys.pb.h"
+#include <optional>
+
+struct GroupFeatureBeatLength {
+    // Beat length adjusted by the rate slider
+    double seconds;
+    // Rate change by temporary actions like scratching
+    // and not the rate slider.
+    double scratch_rate;
+};
 
 /// GroupFeatureState communicates metadata about EngineChannels to EffectProcessors.
 struct GroupFeatureState {
-    GroupFeatureState()
-            : has_beat_length_sec(false),
-              beat_length_sec(0.0),
-              has_beat_fraction(false),
-              beat_fraction(0.0),
-              has_gain(false),
-              gain(1.0) {
-    }
+    GroupFeatureState() = default;
 
-    // The beat length in seconds.
-    bool has_beat_length_sec;
-    double beat_length_sec;
+    std::optional<GroupFeatureBeatLength> beat_length;
 
-    // Fraction (0.0 to 1.0) of the current positions transition from the
-    // previous beat to the next beat.
-    bool has_beat_fraction;
-    double beat_fraction;
+    // Beat fraction (0.0 to 1.0) of the position at the buffer end.
+    // Previous beat is in the current or earlier buffer. The next beat
+    // in the next or later buffer.
+    std::optional<double> beat_fraction_buffer_end;
 
-    bool has_gain;
-    double gain;
+    std::optional<double> gain;
 };

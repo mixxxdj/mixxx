@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QStringListModel>
-#include <QtSql>
 #include <QXmlStreamReader>
 #include <QFuture>
 #include <QtConcurrentRun>
@@ -49,7 +48,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
 
   private:
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
-            const QString& playlist) override;
+            const QVariant& data) override;
     TreeItem* importLibrary(const QString& file);
     // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
@@ -58,8 +57,8 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     // processes a particular playlist
     void parsePlaylistEntries(QXmlStreamReader& xml,
             const QString& playlist_path,
-            QSqlQuery query_insert_into_playlist,
-            QSqlQuery query_insert_into_playlisttracks);
+            QSqlQuery* pQueryInsertIntoPlaylist,
+            QSqlQuery* pQueryInsertIntoPlaylistTracks);
     void clearTable(const QString& table_name);
     static QString getTraktorMusicDatabase();
     // private fields

@@ -5,12 +5,15 @@
 
 #include <QMutex>
 #include <QtGlobal>
+
 #include <algorithm>
+#include <limits>
 
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/assert.h"
+#include "util/fpclassify.h"
 
 AudioUnitEffectGroupState::AudioUnitEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
@@ -142,7 +145,7 @@ void AudioUnitEffectGroupState::render(AudioUnit _Nonnull audioUnit,
 
 AudioUnitEffectProcessor::AudioUnitEffectProcessor(
         AVAudioUnitComponent* _Nullable component)
-        : m_manager(component) {
+        : m_pManager(AudioUnitManager::create(component)) {
 }
 
 void AudioUnitEffectProcessor::loadEngineEffectParameters(
@@ -157,7 +160,7 @@ void AudioUnitEffectProcessor::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState,
         const GroupFeatureState&) {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     if (!audioUnit) {
         qWarning()
                 << "Cannot process channel before Audio Unit is instantiated";
@@ -175,15 +178,16 @@ void AudioUnitEffectProcessor::processChannel(
 }
 
 void AudioUnitEffectProcessor::syncParameters() {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     DEBUG_ASSERT(audioUnit != nil);
 
     m_lastValues.reserve(m_parameters.size());
 
     int i = 0;
     for (auto parameter : m_parameters) {
-        if (m_lastValues.size() < i) {
-            m_lastValues.push_back(NAN);
+        if (m_lastValues.size() <= i) {
+            static_assert(sizeof(AudioUnitParameterValue) == sizeof(float));
+            m_lastValues.push_back(util_float_nan());
         }
         DEBUG_ASSERT(m_lastValues.size() >= i);
 
@@ -210,7 +214,7 @@ void AudioUnitEffectProcessor::syncParameters() {
 
 void AudioUnitEffectProcessor::syncStreamFormat(
         const mixxx::EngineParameters& parameters) {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_pManager->getAudioUnit();
     DEBUG_ASSERT(audioUnit != nil);
 
     if (parameters.sampleRate() != m_lastSampleRate ||

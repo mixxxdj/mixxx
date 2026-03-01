@@ -11,30 +11,27 @@
 // rendered.
 class WaveformMarkSet {
   public:
+    struct DefaultMarkerStyle {
+        QString positionControl;
+        QString visibilityControl;
+        QString textColor;
+        QString markAlign;
+        QString text;
+        QString pixmapPath;
+        QString endPixmapPath;
+        QString iconPath;
+        QString endIconPath;
+        QColor color;
+        float enabledOpacity;
+        float disabledOpacity;
+    };
+
     WaveformMarkSet();
     virtual ~WaveformMarkSet();
 
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
-
-    template<typename Receiver, typename Slot>
-    void connectSamplePositionChanged(Receiver receiver, Slot slot) const {
-        for (const auto& pMark : std::as_const(m_marks)) {
-            if (pMark->isValid()) {
-                pMark->connectSamplePositionChanged(receiver, slot);
-            }
-        }
-    };
-
-    template<typename Receiver, typename Slot>
-    void connectSampleEndPositionChanged(Receiver receiver, Slot slot) const {
-        for (const auto& pMark : std::as_const(m_marks)) {
-            if (pMark->isValid()) {
-                pMark->connectSampleEndPositionChanged(receiver, slot);
-            }
-        }
-    };
 
     template<typename Receiver, typename Slot>
     void connectVisibleChanged(Receiver receiver, Slot slot) const {
@@ -58,7 +55,7 @@ class WaveformMarkSet {
         return m_marksToRender.cend();
     }
 
-    // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
+    // hotCue must be valid (>= 0 and < kMaxNumberOfHotcues)
     WaveformMarkPointer getHotCueMark(int hotCue) const;
     WaveformMarkPointer getDefaultMark() const;
     WaveformMarkPointer findHoveredMark(QPoint point, Qt::Orientation orientation) const;
@@ -67,11 +64,20 @@ class WaveformMarkSet {
 
     void setBreadth(float breadth);
 
-  private:
     void clear() {
         m_marks.clear();
         m_marksToRender.clear();
     }
+
+    void addMark(WaveformMarkPointer pMark) {
+        m_marks.push_back(pMark);
+    }
+
+    void setDefault(const QString& group,
+            const DefaultMarkerStyle& model,
+            const WaveformSignalColors& signalColors = {});
+
+  private:
     WaveformMarkPointer m_pDefaultMark;
     QList<WaveformMarkPointer> m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track

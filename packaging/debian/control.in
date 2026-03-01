@@ -11,9 +11,20 @@ Build-Depends: debhelper (>= 11),
                qtkeychain-qt6-dev,
                qt6-declarative-private-dev,
                qt6-base-private-dev,
+               qt6-multimedia-dev,
+               qml6-module-qt5compat-graphicaleffects,
+               qml6-module-qtmultimedia,
+               qml6-module-qtqml-workerscript,
+               qml6-module-qtquick-controls,
+               qml6-module-qtquick-layouts,
+               qml6-module-qtquick-shapes,
+               qml6-module-qtquick-templates,
+               qml6-module-qtquick-window,
+               qml6-module-qtquick-dialogs,
+               qml6-module-qt-labs-qmlmodels,
+               qml6-module-qt-labs-folderlistmodel,
                libqt6core5compat6-dev,
                libqt6opengl6-dev,
-               libqt6shadertools6-dev,
                libqt6sql6-sqlite,
                libqt6svg6-dev,
                cmake (>= 3.13),
@@ -24,6 +35,7 @@ Build-Depends: debhelper (>= 11),
                libogg-dev,
                libsndfile1-dev,
                libasound2-dev,
+               libavformat-dev,
                libvorbis-dev,
                libfaad-dev,
                libportmidi-dev,
@@ -62,6 +74,7 @@ Package: mixxx
 Section: @CPACK_DEBIAN_PACKAGE_SECTION@
 Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, @CPACK_DEBIAN_PACKAGE_DEPENDS@
+Recommends: @CPACK_DEBIAN_PACKAGE_RECOMMENDS@
 Suggests: @CPACK_DEBIAN_PACKAGE_SUGGESTS@
 Replaces: mixxx-data
 Description: @CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED@

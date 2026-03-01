@@ -13,7 +13,7 @@ Item {
     implicitWidth: 56
     implicitHeight: 26
 
-    Skin.Slider {
+    Skin.Fader {
         id: orientationSlider
 
         anchors.fill: parent
@@ -28,7 +28,7 @@ Item {
         stepSize: 1
         value: control.value
         orientation: Qt.Horizontal
-        snapMode: Slider.SnapOnRelease
+        snapMode: Fader.SnapOnRelease
         onMoved: {
             // The slider's `value` is not updated until after the move ended.
             const val = valueAt(visualPosition);

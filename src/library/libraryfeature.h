@@ -12,6 +12,9 @@
 #include "library/dao/trackdao.h"
 #include "library/treeitemmodel.h"
 #include "track/track_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class KeyboardEventFilter;
 class Library;
@@ -58,13 +61,13 @@ class LibraryFeature : public QObject {
         Q_UNUSED(pSource);
         return false;
     }
-    virtual bool dragMoveAccept(const QUrl& url) {
-        Q_UNUSED(url);
+    virtual bool dragMoveAccept(const QList<QUrl>& urls) {
+        Q_UNUSED(urls);
         return false;
     }
-    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
         Q_UNUSED(index);
-        Q_UNUSED(url);
+        Q_UNUSED(urls);
         return false;
     }
 
@@ -103,6 +106,10 @@ class LibraryFeature : public QObject {
     const UserSettingsPointer m_pConfig;
 
   public slots:
+    /// Pretend that the user has clicked on a tree item belonging
+    /// to this LibraryFeature by updating both the library view
+    /// and the sidebar selection.
+    void selectAndActivate(const QModelIndex& index = QModelIndex());
     // called when you single click on the root item
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
@@ -135,7 +142,16 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play = false);
+#else
+    void loadTrackToPlayer(TrackPointer pTrack,
+            const QString& group,
+            bool play = false);
+#endif
     /// saves the scroll, selection and current state of the library model
     void saveModelState();
     /// restores the scroll, selection and current state of the library model
@@ -149,7 +165,7 @@ class LibraryFeature : public QObject {
     // emit this signal if the foreign music collection has been imported/parsed.
     void featureLoadingFinished(LibraryFeature*s);
     // emit this signal to select pFeature
-    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
+    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index, bool scrollTo = true);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);

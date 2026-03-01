@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindChromaprint
 ---------------
@@ -50,14 +45,17 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Chromaprint QUIET libchromaprint)
 endif()
 
-find_path(Chromaprint_INCLUDE_DIR
+find_path(
+  Chromaprint_INCLUDE_DIR
   NAMES chromaprint.h
   HINTS ${PC_Chromaprint_INCLUDE_DIRS}
   PATH_SUFFIXES chromaprint
-  DOC "Chromaprint include directory")
+  DOC "Chromaprint include directory"
+)
 mark_as_advanced(Chromaprint_INCLUDE_DIR)
 
-find_library(Chromaprint_LIBRARY
+find_library(
+  Chromaprint_LIBRARY
   NAMES chromaprint chromaprint_p
   HINTS ${PC_Chromaprint_LIBRARY_DIRS}
   DOC "Chromaprint library"
@@ -82,7 +80,8 @@ if(Chromaprint_FOUND)
 
   if(NOT TARGET Chromaprint::Chromaprint)
     add_library(Chromaprint::Chromaprint UNKNOWN IMPORTED)
-    set_target_properties(Chromaprint::Chromaprint
+    set_target_properties(
+      Chromaprint::Chromaprint
       PROPERTIES
         IMPORTED_LOCATION "${Chromaprint_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Chromaprint_CFLAGS_OTHER}"
@@ -92,13 +91,17 @@ if(Chromaprint_FOUND)
     if(Chromaprint_IS_STATIC)
       if(WIN32)
         # used in chomaprint.h to set dllexport for Windows
-        set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS
-          CHROMAPRINT_NODLL
+        set_property(
+          TARGET Chromaprint::Chromaprint
+          APPEND
+          PROPERTY INTERFACE_COMPILE_DEFINITIONS CHROMAPRINT_NODLL
         )
       endif()
-      find_package(FFTW REQUIRED)
-      set_property(TARGET Chromaprint::Chromaprint APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        FFTW::FFTW
+      find_package(FFTW3 REQUIRED)
+      set_property(
+        TARGET Chromaprint::Chromaprint
+        APPEND
+        PROPERTY INTERFACE_LINK_LIBRARIES FFTW3::fftw3
       )
     endif()
   endif()

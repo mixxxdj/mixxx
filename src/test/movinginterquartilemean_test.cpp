@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
-#include <QDebug>
-
 #include "util/movinginterquartilemean.h"
+
+#include <benchmark/benchmark.h>
+#include <gtest/gtest.h>
+
+#include <QDebug>
+#include <random>
 
 namespace {
 
@@ -109,4 +112,28 @@ TEST_F(MovingInterquartileMeanTest, doubles9) {
     }
 }
 
+void BM_MovingIQM_Insertion(benchmark::State& state) {
+    std::mt19937 gen; // explicitly don't seed for reproducibility
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+    // first quarter of the test will be plain insertion
+    // the remaining three quarters will evict the oldest value
+    std::size_t num_iters = state.range(0) * 4;
+    for (auto _ : state) {
+        MovingInterquartileMean iqm(state.range(0));
+        for (double i = 0; i < num_iters; ++i) {
+            benchmark::DoNotOptimize(iqm.insert(dis(gen)));
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * num_iters);
+}
+
+BENCHMARK(BM_MovingIQM_Insertion)
+        ->RangeMultiplier(2)
+        ->Range(1 << 1, 1 << 10)
+        // the benchmark is so slow, it usually only gets a single iteration
+        // each, so manually force a couple more
+        ->Repetitions(100)
+        // don't spam the output with the individual repetition data
+        ->DisplayAggregatesOnly()
+        ->Unit(benchmark::kMicrosecond);
 }  // namespace

@@ -20,7 +20,6 @@ CachingReaderChunk::CachingReaderChunk(
         mixxx::SampleBuffer::WritableSlice sampleBuffer)
         : m_index(kInvalidChunkIndex),
           m_sampleBuffer(std::move(sampleBuffer)) {
-    DEBUG_ASSERT(m_sampleBuffer.length() == kSamples);
 }
 
 void CachingReaderChunk::init(SINT index) {
@@ -49,17 +48,30 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
         mixxx::SampleBuffer::WritableSlice tempOutputBuffer) {
     DEBUG_ASSERT(m_index != kInvalidChunkIndex);
     const auto sourceFrameIndexRange = frameIndexRange(pAudioSource);
-    mixxx::AudioSourceStereoProxy audioSourceProxy(
-            pAudioSource,
-            tempOutputBuffer);
-    DEBUG_ASSERT(
-            audioSourceProxy.getSignalInfo().getChannelCount() ==
-            kChannels);
-    m_bufferedSampleFrames =
-            audioSourceProxy.readSampleFrames(
-                    mixxx::WritableSampleFrames(
-                            sourceFrameIndexRange,
-                            mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
+
+    if (pAudioSource->getSignalInfo().getChannelCount() %
+                    mixxx::audio::ChannelCount::stereo() !=
+            0) {
+        // This happens if the audio source only contain a mono channel, or an
+        // odd number of channel
+        mixxx::AudioSourceStereoProxy audioSourceProxy(
+                pAudioSource,
+                tempOutputBuffer);
+        DEBUG_ASSERT(
+                audioSourceProxy.getSignalInfo().getChannelCount() ==
+                mixxx::audio::ChannelCount::stereo());
+        m_bufferedSampleFrames =
+                audioSourceProxy.readSampleFrames(
+                        mixxx::WritableSampleFrames(
+                                sourceFrameIndexRange,
+                                mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
+    } else {
+        m_bufferedSampleFrames =
+                pAudioSource->readSampleFrames(
+                        mixxx::WritableSampleFrames(
+                                sourceFrameIndexRange,
+                                mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
+    }
     DEBUG_ASSERT(m_bufferedSampleFrames.frameIndexRange().empty() ||
             m_bufferedSampleFrames.frameIndexRange().isSubrangeOf(sourceFrameIndexRange));
     return m_bufferedSampleFrames.frameIndexRange();
@@ -67,16 +79,20 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
 
 mixxx::IndexRange CachingReaderChunk::readBufferedSampleFrames(
         CSAMPLE* sampleBuffer,
+        mixxx::audio::ChannelCount channelCount,
         const mixxx::IndexRange& frameIndexRange) const {
     DEBUG_ASSERT(m_index != kInvalidChunkIndex);
     const auto copyableFrameIndexRange =
             intersect(frameIndexRange, m_bufferedSampleFrames.frameIndexRange());
     if (!copyableFrameIndexRange.empty()) {
-        const SINT dstSampleOffset =
-                frames2samples(copyableFrameIndexRange.start() - frameIndexRange.start());
-        const SINT srcSampleOffset =
-                frames2samples(copyableFrameIndexRange.start() - m_bufferedSampleFrames.frameIndexRange().start());
-        const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
+        const SINT dstSampleOffset = frames2samples(
+                copyableFrameIndexRange.start() - frameIndexRange.start(),
+                channelCount);
+        const SINT srcSampleOffset = frames2samples(
+                copyableFrameIndexRange.start() -
+                        m_bufferedSampleFrames.frameIndexRange().start(),
+                channelCount);
+        const SINT sampleCount = frames2samples(copyableFrameIndexRange.length(), channelCount);
         SampleUtil::copy(
                 sampleBuffer + dstSampleOffset,
                 m_bufferedSampleFrames.readableData(srcSampleOffset),
@@ -87,20 +103,26 @@ mixxx::IndexRange CachingReaderChunk::readBufferedSampleFrames(
 
 mixxx::IndexRange CachingReaderChunk::readBufferedSampleFramesReverse(
         CSAMPLE* reverseSampleBuffer,
+        mixxx::audio::ChannelCount channelCount,
         const mixxx::IndexRange& frameIndexRange) const {
     DEBUG_ASSERT(m_index != kInvalidChunkIndex);
     const auto copyableFrameIndexRange =
             intersect(frameIndexRange, m_bufferedSampleFrames.frameIndexRange());
     if (!copyableFrameIndexRange.empty()) {
-        const SINT dstSampleOffset =
-                frames2samples(copyableFrameIndexRange.start() - frameIndexRange.start());
-        const SINT srcSampleOffset =
-                frames2samples(copyableFrameIndexRange.start() - m_bufferedSampleFrames.frameIndexRange().start());
-        const SINT sampleCount = frames2samples(copyableFrameIndexRange.length());
+        const SINT dstSampleOffset = frames2samples(
+                copyableFrameIndexRange.start() - frameIndexRange.start(),
+                channelCount);
+        const SINT srcSampleOffset = frames2samples(
+                copyableFrameIndexRange.start() -
+                        m_bufferedSampleFrames.frameIndexRange().start(),
+                channelCount);
+        const SINT sampleCount = frames2samples(copyableFrameIndexRange.length(), channelCount);
+
         SampleUtil::copyReverse(
                 reverseSampleBuffer - dstSampleOffset - sampleCount,
                 m_bufferedSampleFrames.readableData(srcSampleOffset),
-                sampleCount);
+                sampleCount,
+                channelCount);
     }
     return copyableFrameIndexRange;
 }

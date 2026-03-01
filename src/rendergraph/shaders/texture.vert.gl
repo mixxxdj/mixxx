@@ -1,0 +1,19 @@
+//// GENERATED - EDITS WILL BE OVERWRITTEN
+
+struct buf
+{
+    highp mat4 matrix;
+    highp float alpha;
+};
+
+uniform buf ubuf;
+
+varying highp vec2 vTexcoord;
+attribute highp vec2 texcoord;
+attribute highp vec4 position;
+
+void main()
+{
+    vTexcoord = texcoord;
+    gl_Position = ubuf.matrix * position;
+}

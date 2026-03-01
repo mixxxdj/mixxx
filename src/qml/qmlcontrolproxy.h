@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
+#include <QQmlEngine>
 #include <QQmlParserStatus>
-#include <QtQml>
 #include <memory>
 
 #include "control/controlproxy.h"
@@ -57,6 +57,7 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
 
     /// Reset the control to the default value.
     Q_INVOKABLE void reset();
+    Q_INVOKABLE void trigger();
 
   signals:
     void groupChanged(const QString& group);

@@ -1,6 +1,7 @@
 #include "encoder/encodersndfileflac.h"
 
 #include <QtDebug>
+#include <algorithm>
 
 #include "encoder/encoderflacsettings.h"
 
@@ -13,14 +14,14 @@ void convertFloat32ToIntFormat(int* pDest, const CSAMPLE* pSrc, SINT numSamples,
     if (format & SF_FORMAT_PCM_16) {
         // note: LOOP VECTORIZED"
         for (SINT i = 0; i < numSamples; ++i) {
-            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kFloatToIntConversionFactor,
+            pDest[i] = static_cast<int>(std::clamp(pSrc[i] * kFloatToIntConversionFactor,
                     static_cast<CSAMPLE>(static_cast<int>(INT_MIN & 0xFFFF0000)),
                     static_cast<CSAMPLE>(static_cast<int>(INT_MAX & 0xFFFF0000))));
         }
     } else if (format & SF_FORMAT_PCM_24) {
         // note: LOOP VECTORIZED"
         for (SINT i = 0; i < numSamples; ++i) {
-            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kFloatToIntConversionFactor,
+            pDest[i] = static_cast<int>(std::clamp(pSrc[i] * kFloatToIntConversionFactor,
                     static_cast<CSAMPLE>(static_cast<int>(INT_MIN & 0xFFFFFF00)),
                     static_cast<CSAMPLE>(static_cast<int>(INT_MAX & 0xFFFFFF00))));
         }
@@ -58,11 +59,11 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
     m_compression = static_cast<double>(settings.getCompression()) / 8.0;
 }
 
-void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
+void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     if (m_pClampBuffer) {
-        SINT numSamplesLeft = iBufferSize;
+        SINT numSamplesLeft = bufferSize;
         while (numSamplesLeft > 0) {
-            const SINT numSamplesToWrite = math_min(numSamplesLeft, kEncBufferSize);
+            const SINT numSamplesToWrite = std::min(numSamplesLeft, kEncBufferSize);
             convertFloat32ToIntFormat(m_pClampBuffer.get(),
                     pBuffer,
                     numSamplesToWrite,
@@ -72,7 +73,7 @@ void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const int iBufferS
             numSamplesLeft -= numSamplesToWrite;
         }
     } else {
-        sf_write_float(m_pSndfile, pBuffer, iBufferSize);
+        sf_write_float(m_pSndfile, pBuffer, bufferSize);
     }
 }
 

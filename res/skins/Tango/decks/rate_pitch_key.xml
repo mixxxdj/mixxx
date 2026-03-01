@@ -119,6 +119,7 @@ Variables:
                 <TooltipId>visual_bpm</TooltipId>
                 <Channel><Variable name="chanNum" /></Channel>
                 <NumberOfDigits>1</NumberOfDigits>
+                <Alignment>center</Alignment>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                 </Connection>
@@ -180,12 +181,13 @@ Variables:
 
               <!-- Pitch range indicators: prefix / spacer / range number -->
               <WidgetGroup>
+                <ObjectName>RateDisplayBox</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>vertical</Layout>
                 <Size>50f,-1me</Size>
                 <Children>
                   <WidgetGroup>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>me,max</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- Top range limit + prefix -->
@@ -195,8 +197,9 @@ Variables:
                         <Channel><Variable name="chanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>prefix</Display>
-                        <SizePolicy>me,min</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
+                      <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
                         <ObjectName>RateDisplayTopRate</ObjectName>
@@ -211,7 +214,7 @@ Variables:
                   <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
 
                   <WidgetGroup>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>me,max</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
                       <!-- Bottom range limit + prefix -->
@@ -222,8 +225,9 @@ Variables:
                         <Position>Bottom</Position>
                         <Align>Bottom</Align>
                         <Display>prefix</Display>
-                        <SizePolicy>me,min</SizePolicy>
+                        <SizePolicy>min,min</SizePolicy>
                       </RateRange>
+                      <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
                       <RateRange>
                         <TooltipId>rate_range_display</TooltipId>
                         <ObjectName>RateDisplayBottomRate</ObjectName>

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Qt>
+#include <memory>
+
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
 
@@ -16,32 +19,43 @@ class LegacyControllerSettingsLayoutElement {
     virtual std::unique_ptr<LegacyControllerSettingsLayoutElement> clone() const = 0;
 
     virtual QWidget* build(QWidget* parent) = 0;
+
+    virtual QList<LegacyControllerSettingsLayoutElement*> children() const = 0;
 };
 
 /// @brief This layout element can hold others element. It is also the one used
 /// to represent a `row` in the settings
 class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsLayoutElement {
+#ifdef MIXXX_USE_QML
+    Q_GADGET
+    Q_PROPERTY(Disposition disposition MEMBER m_disposition CONSTANT)
+    Q_PROPERTY(Disposition widgetOrientation MEMBER m_widgetOrientation CONSTANT)
+#endif
   public:
     /// @brief This is a simplified representation of disposition orientation. This used to
     /// define how a container orients its children. This is also used by layout
     /// items to decide how the label should be rendered alongside the input
     /// widget
-    enum Disposition {
+    enum class Disposition {
         HORIZONTAL = 0,
         VERTICAL,
     };
+#ifdef MIXXX_USE_QML
+    Q_ENUM(Disposition);
+#endif
 
     LegacyControllerSettingsLayoutContainer(
-            Disposition disposition = HORIZONTAL,
-            Disposition widgetOrientation = HORIZONTAL)
+            Disposition disposition = Disposition::HORIZONTAL,
+            Disposition widgetOrientation = Disposition::HORIZONTAL)
             : LegacyControllerSettingsLayoutElement(),
               m_disposition(disposition),
               m_widgetOrientation(widgetOrientation) {
     }
     LegacyControllerSettingsLayoutContainer(const LegacyControllerSettingsLayoutContainer& other) {
         m_elements.reserve(other.m_elements.size());
-        for (const auto& e : other.m_elements)
+        for (const auto& e : other.m_elements) {
             m_elements.push_back(e->clone());
+        }
     }
     virtual ~LegacyControllerSettingsLayoutContainer() = default;
 
@@ -55,11 +69,25 @@ class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsL
     /// the right parameters
     /// @param setting The controller setting to add to the layout container
     void addItem(std::shared_ptr<AbstractLegacyControllerSetting> setting);
-    void addItem(std::unique_ptr<LegacyControllerSettingsLayoutContainer>&& container) {
+    void addItem(std::unique_ptr<LegacyControllerSettingsLayoutContainer> container) {
         m_elements.push_back(std::move(container));
     }
 
-    virtual QWidget* build(QWidget* parent) override;
+    QWidget* build(QWidget* parent) override;
+
+    LegacyControllerSettingsLayoutContainer::Disposition disposition() const {
+        return m_disposition;
+    }
+    LegacyControllerSettingsLayoutContainer::Disposition widgetOrientation() const {
+        return m_widgetOrientation;
+    }
+    QList<LegacyControllerSettingsLayoutElement*> children() const override {
+        QList<LegacyControllerSettingsLayoutElement*> elements;
+        for (const auto& element : m_elements) {
+            elements.append(element.get());
+        }
+        return elements;
+    }
 
   protected:
     QBoxLayout* buildLayout(QWidget* parent) const;
@@ -73,7 +101,7 @@ class LegacyControllerSettingsGroup : public LegacyControllerSettingsLayoutConta
   public:
     LegacyControllerSettingsGroup(const QString& label,
             LegacyControllerSettingsLayoutContainer::Disposition disposition =
-                    VERTICAL)
+                    Disposition::VERTICAL)
             : LegacyControllerSettingsLayoutContainer(disposition),
               m_label(label) {
     }
@@ -84,6 +112,12 @@ class LegacyControllerSettingsGroup : public LegacyControllerSettingsLayoutConta
     }
 
     QWidget* build(QWidget* parent) override;
+    LegacyControllerSettingsLayoutContainer::Disposition disposition() const {
+        return m_disposition;
+    }
+    const QString& label() const {
+        return m_label;
+    }
 
   private:
     QString m_label;
@@ -94,7 +128,7 @@ class LegacyControllerSettingsLayoutItem : public LegacyControllerSettingsLayout
     LegacyControllerSettingsLayoutItem(
             std::shared_ptr<AbstractLegacyControllerSetting> setting,
             LegacyControllerSettingsLayoutContainer::Disposition orientation =
-                    LegacyControllerSettingsGroup::HORIZONTAL)
+                    LegacyControllerSettingsGroup::Disposition::HORIZONTAL)
             : LegacyControllerSettingsLayoutElement(),
               m_setting(setting),
               m_preferredOrientation(orientation) {
@@ -106,6 +140,16 @@ class LegacyControllerSettingsLayoutItem : public LegacyControllerSettingsLayout
     }
 
     QWidget* build(QWidget* parent) override;
+
+    QList<LegacyControllerSettingsLayoutElement*> children() const override {
+        return {};
+    }
+    AbstractLegacyControllerSetting* setting() const {
+        return m_setting.get();
+    }
+    LegacyControllerSettingsLayoutContainer::Disposition preferredOrientation() const {
+        return m_preferredOrientation;
+    }
 
   private:
     std::shared_ptr<AbstractLegacyControllerSetting> m_setting;

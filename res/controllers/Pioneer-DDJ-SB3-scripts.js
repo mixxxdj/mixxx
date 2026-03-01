@@ -654,9 +654,8 @@ PioneerDDJSB3.bindDeckControlConnections = function(channelGroup, isUnbinding) {
             "pfl": PioneerDDJSB3.headphoneCueLed,
             "keylock": PioneerDDJSB3.keyLockLed,
             "loop_enabled": PioneerDDJSB3.autoLoopLed,
+            "slip_enabled": PioneerDDJSB3.slipLed,
         };
-
-    controlsToFunctions.slipEnabled = PioneerDDJSB3.slipLed;
 
     for (i = 1; i <= 8; i++) {
         controlsToFunctions["hotcue_" + i + "_enabled"] = PioneerDDJSB3.hotCueLeds;
@@ -771,7 +770,7 @@ PioneerDDJSB3.vinylButton = function(channel, control, value, status, group) {
 
 PioneerDDJSB3.slipButton = function(channel, control, value, status, group) {
     if (value) {
-        script.toggleControl(group, "slipEnabled");
+        script.toggleControl(group, "slip_enabled");
     }
 };
 
@@ -1210,11 +1209,11 @@ PioneerDDJSB3.jogTouch = function(channel, control, value, status, group) {
         } else {
             engine.scratchDisable(deck + 1, true);
 
-            if (engine.getValue(group, "slipEnabled")) {
-                engine.setValue(group, "slipEnabled", false);
+            if (engine.getValue(group, "slip_enabled")) {
+                engine.setValue(group, "slip_enabled", false);
 
                 engine.beginTimer(250, () => {
-                    engine.setValue(group, "slipEnabled", true);
+                    engine.setValue(group, "slip_enabled", true);
                 }, true);
             }
         }
@@ -1416,6 +1415,11 @@ PioneerDDJSB3.EffectUnit = function(unitNumber) {
         },
     });
 
+    this.shiftKnob = new components.Pot({
+        inKey: "super1",
+        group: eu.group
+    });
+
     this.knobSoftTakeoverHandler = engine.makeConnection(eu.group, "focused_effect", function(value) {
         if (value === 0) {
             engine.softTakeoverIgnoreNextValue(eu.group, "mix");
@@ -1538,8 +1542,10 @@ PioneerDDJSB3.Slicer.prototype.generateBeatPositions = function() {
         if (sample < this.trackSamples) {
             var bp = {
                 sample: sample,
-                positionIn: (this.PLAY_POSITION_RANGE * sample - 1) / this.trackSamples,
-                positionOut: (this.PLAY_POSITION_RANGE * nextSample - 1) / this.trackSamples,
+                position: {
+                    in: (this.PLAY_POSITION_RANGE * sample - 1) / this.trackSamples,
+                    out: (this.PLAY_POSITION_RANGE * nextSample - 1) / this.trackSamples,
+                }
             };
 
             this.beatPositions.push(bp);
@@ -1595,7 +1601,7 @@ PioneerDDJSB3.Slicer.prototype.playPositionChange = function(value) {
         for (var i = 0; i < this.beatPositions.length; i++) {
             var beatPosition = this.beatPositions[i];
 
-            if (value >= beatPosition.positionIn && value < beatPosition.positionOut) {
+            if (value >= beatPosition.position.in && value < beatPosition.position.out) {
                 this.currentBeat = i;
                 found = true;
             }

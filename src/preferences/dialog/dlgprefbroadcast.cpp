@@ -3,7 +3,6 @@
 #include <QHeaderView>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QtDebug>
 
 // this is needed to define SHOUT_META_* macros used in version guard
 #include <shoutidjc/shout.h>
@@ -18,18 +17,18 @@
 #include "util/logger.h"
 
 namespace {
-const char* kSettingsGroupHeader = "Settings for %1";
 constexpr int kColumnEnabled = 0;
 constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
 } // namespace
 
-DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
-                                   BroadcastSettingsPointer pBroadcastSettings)
+DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
+        BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
           m_pSettingsModel(new BroadcastSettingsModel()),
-          m_pProfileListSelection(nullptr) {
+          m_pProfileListSelection(nullptr),
+          m_allProfilesValid(true) {
     setupUi(this);
 
 #ifndef __QTKEYCHAIN__
@@ -152,15 +151,27 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              static_cast<int>(BroadcastProfile::EncryptionMode::Disabled));
 
      connect(checkBoxEnableReconnect,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
      connect(checkBoxLimitReconnects,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
      connect(enableCustomMetadata,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+             &QCheckBox::checkStateChanged,
+#else
              &QCheckBox::stateChanged,
+#endif
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
 
@@ -199,27 +210,41 @@ QUrl DlgPrefBroadcast::helpUrl() const {
 }
 
 void DlgPrefBroadcast::applyModel() {
-    if (m_pProfileListSelection) {
-        setValuesToProfile(m_pProfileListSelection);
-    }
     m_pBroadcastSettings->applyModel(m_pSettingsModel);
     updateModel();
 }
 
 void DlgPrefBroadcast::slotApply() {
-    // Make sure the currently selected connection
-    // gets saved as expected
-    setValuesToProfile(m_pProfileListSelection);
+    // Save pending changes to profile
+    if (m_pProfileListSelection) {
+        setValuesToProfile(m_pProfileListSelection);
+    }
 
-    // Check for Icecast connections with identical mountpoints on the same host
+    // Make sure the currently selected connection gets saved as expected.
+    // Reject if the password contains invalid characters.
+    // Reject Icecast connections with identical mountpoints on the same host
+    const QString failedStr = tr("Saving settings failed");
     QMap<QString, QString> mountpoints;
     const QList<BroadcastProfilePtr> broadcastProfiles = m_pSettingsModel->profiles();
     for (const auto& profile : broadcastProfiles) {
+        QString profileName = profile->getProfileName();
+        qWarning() << "--> slotApply()" << profileName;
+        if (!profile->validPassword()) {
+            m_allProfilesValid = false;
+            QMessageBox::warning(this,
+                    failedStr,
+                    tr("The password for '%1' contains invalid characters. "
+                       "Please enter it again.\n\n"
+                       "Note: This can for example be invisible linebreaks "
+                       "when using copy/paste.")
+                            .arg(profileName));
+            return;
+        }
+
         if (profile->getServertype() != BROADCAST_SERVER_ICECAST2) {
             continue;
         }
 
-        QString profileName = profile->getProfileName();
         QString profileMountpoint = profile->getMountpoint();
         bool profileEnabled = profile->getEnabled();
 
@@ -236,8 +261,9 @@ void DlgPrefBroadcast::slotApply() {
                                 profile->getPort()
                         // allow same mountpoint if not both connections are enabled
                         && (profileEnabled && profileWithSameMountpoint->getEnabled())) {
+                    m_allProfilesValid = false;
                     QMessageBox::warning(this,
-                            tr("Action failed"),
+                            failedStr,
                             tr("'%1' has the same Icecast mountpoint as '%2'.\n"
                                "Two source connections to the same server "
                                "that have the same mountpoint can not be enabled "
@@ -251,8 +277,10 @@ void DlgPrefBroadcast::slotApply() {
 
         mountpoints.insert(profileName, profileMountpoint);
     }
+    m_allProfilesValid = true;
 
     applyModel();
+
     bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
     if (!broadcastingEnabled && connectOnApply->isChecked()) {
         m_pBroadcastEnabled->set(true);
@@ -286,15 +314,30 @@ void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
     btnDisconnectAll->setEnabled(enabled);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxEnableReconnectChanged(Qt::CheckState state) {
+    widgetReconnectControls->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxEnableReconnectChanged(int value) {
     widgetReconnectControls->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(Qt::CheckState state) {
+    spinBoxMaximumRetries->setEnabled(state == Qt::Checked);
+#else
 void DlgPrefBroadcast::checkBoxLimitReconnectsChanged(int value) {
     spinBoxMaximumRetries->setEnabled(value);
+#endif
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefBroadcast::enableCustomMetadataChanged(Qt::CheckState state) {
+    const bool value = (state == Qt::Checked);
+#else
 void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
+#endif
     custom_artist->setEnabled(value);
     custom_title->setEnabled(value);
 }
@@ -396,9 +439,8 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     }
 
     // Set groupbox header
-    QString headerText =
-            QString(tr(kSettingsGroupHeader))
-            .arg(profile->getProfileName());
+    //: Settings for broadcast profile, %1 is the profile name placeholder
+    const QString headerText = tr("Settings for %1").arg(profile->getProfileName());
     groupBoxProfileSettings->setTitle(headerText);
 
     rbPasswordCleartext->setChecked(!profile->secureCredentialStorage());
@@ -648,4 +690,8 @@ void DlgPrefBroadcast::onSectionResized() {
     // The last column is automatically resized to fill
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);
+}
+
+bool DlgPrefBroadcast::okayToClose() const {
+    return m_allProfilesValid;
 }

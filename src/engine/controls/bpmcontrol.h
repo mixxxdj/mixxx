@@ -65,7 +65,7 @@ class BpmControl : public EngineControl {
     /// override is used for seeks.
     double updateBeatDistance(mixxx::audio::FramePos playpos);
 
-    void collectFeatures(GroupFeatureState* pGroupFeatures) const;
+    void collectFeatures(GroupFeatureState* pGroupFeatures, double speed) const;
 
     // Calculates contextual information about beats: the previous beat, the
     // next beat, the current beat length, and the beat ratio (how far dPosition
@@ -102,6 +102,7 @@ class BpmControl : public EngineControl {
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
+    void slotTranslateBeatsHalf(double);
     void slotTranslateBeatsMove(double);
 
     void slotBpmTap(double value);
@@ -130,18 +131,18 @@ class BpmControl : public EngineControl {
     friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer
-    PollingControlProxy m_pReverseButton;
+    PollingControlProxy m_reverseButton;
     std::unique_ptr<ControlProxy> m_pRateRatio;
-    PollingControlProxy m_pQuantize;
+    PollingControlProxy m_quantize;
 
     // ControlObjects that come from QuantizeControl
-    PollingControlProxy m_pNextBeat;
-    PollingControlProxy m_pPrevBeat;
+    PollingControlProxy m_nextBeat;
+    PollingControlProxy m_prevBeat;
 
     // ControlObjects that come from LoopingControl
-    PollingControlProxy m_pLoopEnabled;
-    PollingControlProxy m_pLoopStartPosition;
-    PollingControlProxy m_pLoopEndPosition;
+    PollingControlProxy m_loopEnabled;
+    PollingControlProxy m_loopStartPosition;
+    PollingControlProxy m_loopEndPosition;
 
     // The average bpm around the current playposition;
     std::unique_ptr<ControlObject> m_pLocalBpm;
@@ -149,8 +150,10 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pAdjustBeatsSlower;
     std::unique_ptr<ControlPushButton> m_pTranslateBeatsEarlier;
     std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsHalf;
     std::unique_ptr<ControlEncoder> m_pTranslateBeatsMove;
     std::unique_ptr<ControlPushButton> m_pBeatsUndo;
+    std::unique_ptr<ControlObject> m_pBeatsUndoPossible;
 
     std::unique_ptr<ControlPushButton> m_pBeatsHalve;
     std::unique_ptr<ControlPushButton> m_pBeatsTwoThirds;

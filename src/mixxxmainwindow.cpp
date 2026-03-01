@@ -11,8 +11,9 @@
 #include <QGLFormat>
 #endif
 
-#ifdef __LINUX__
-#include <QtDBus>
+#if defined(__LINUX__) && !defined(__ANDROID__)
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
 #endif
 
 #ifdef MIXXX_USE_QOPENGL
@@ -33,10 +34,12 @@
 #endif
 #include "control/controlindicatortimer.h"
 #include "library/library.h"
+#include "library/library_decl.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
+#include "library/library_prefs.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -49,6 +52,7 @@
 #include "util/debug.h"
 #include "util/desktophelper.h"
 #include "util/sandbox.h"
+#include "util/scopedoverridecursor.h"
 #include "util/timer.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -93,10 +97,15 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #ifndef __APPLE__
           m_prevState(Qt::WindowNoState),
 #endif
+          m_noVinylInputDialog(nullptr),
+          m_noPassthroughInputDialog(nullptr),
+          m_noMicInputDialog(nullptr),
+          m_noAuxInputDialog(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
 #endif
+          m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
@@ -117,6 +126,12 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
                 CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref);
     }
 #endif // __LINUX__
+
+    connect(m_pCoreServices.get(),
+            &mixxx::CoreServices::libraryScanSummary,
+            this,
+            &MixxxMainWindow::slotLibraryScanSummaryDlg);
+
     createMenuBar();
     m_pMenuBar->hide();
 
@@ -167,7 +182,6 @@ void MixxxMainWindow::initializeQOpenGL() {
 #endif
 
 void MixxxMainWindow::initialize() {
-    qWarning() << "     $ initialize";
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
@@ -193,6 +207,10 @@ void MixxxMainWindow::initialize() {
             &Library::exportCrate,
             m_pLibraryExporter.get(),
             &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
+    connect(m_pCoreServices->getLibrary().get(),
+            &Library::exportPlaylist,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExportWithInitialPlaylist);
 #endif
 
     // Turn on fullscreen mode
@@ -204,7 +222,6 @@ void MixxxMainWindow::initialize() {
     if ((CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) &&
             // could be we're fullscreen already after setGeomtery(previousGeometry)
             !isFullScreen()) {
-        qWarning() << "     init: go fullscreen";
         showFullScreen();
     }
 
@@ -221,7 +238,7 @@ void MixxxMainWindow::initialize() {
         m_pVisualsManager->addDeck(group);
     }
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfDecksChanged,
+            &PlayerManagerInterface::numberOfDecksChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -230,7 +247,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfSamplersChanged,
+            &PlayerManagerInterface::numberOfSamplersChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -273,7 +290,7 @@ void MixxxMainWindow::initialize() {
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,
@@ -429,6 +446,12 @@ void MixxxMainWindow::initialize() {
     if (CmdlineArgs::Instance().getStartAutoDJ()) {
         qDebug("Enabling Auto DJ from CLI flag.");
         ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+        // Switch to Auto DJ feature
+        auto* pLibrary = m_pCoreServices->getLibrary().get();
+        // Note: auto-scroll is disabled but that doesn't really matter here
+        // because the sidebar is still in its initial state (top feature visible,
+        // AutoDj is second from the top by default, all features collapsed).
+        pLibrary->showAutoDJ();
     }
 }
 
@@ -514,6 +537,8 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(false);
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ControllerManager";
+
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
@@ -521,7 +546,6 @@ MixxxMainWindow::~MixxxMainWindow() {
 }
 
 void MixxxMainWindow::initializeWindow() {
-    qWarning() << "     $ initializeWindow";
     // be sure createMenuBar() is called first
     DEBUG_ASSERT(m_pMenuBar);
 
@@ -555,6 +579,7 @@ void MixxxMainWindow::initializeWindow() {
 
 #ifndef __APPLE__
 void MixxxMainWindow::alwaysHideMenuBarDlg() {
+    // Don't show the dialog if the user unchecked "Ask me again"
     if (!m_pCoreServices->getSettings()->getValue<bool>(
                 kMenuBarHintConfigKey, true)) {
         return;
@@ -737,6 +762,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
 
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
+            m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Output);
             m_pPrefDlg->exec();
             if (m_pPrefDlg->result() == QDialog::Accepted) {
                 return QDialog::Accepted;
@@ -773,8 +799,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 }
 
 void MixxxMainWindow::createMenuBar() {
-    qWarning() << "     $ createMenuBar";
-    ScopedTimer t(u"MixxxMainWindow::createMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
@@ -787,9 +812,8 @@ void MixxxMainWindow::createMenuBar() {
 void MixxxMainWindow::connectMenuBar() {
     // This function might be invoked multiple times on startup
     // so all connections must be unique!
-    qWarning() << "     $ connectMenuBar";
 
-    ScopedTimer t(u"MixxxMainWindow::connectMenuBar");
+    ScopedTimer t(QStringLiteral("MixxxMainWindow::connectMenuBar"));
     connect(this,
             &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
@@ -818,6 +842,14 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotShowKeywheel,
             Qt::UniqueConnection);
+#ifndef __APPLE__
+    // Menubar auto-hide
+    connect(m_pMenuBar,
+            &WMainMenuBar::menubarAutoHideChanged,
+            this,
+            &MixxxMainWindow::slotUpdateMenuBarAltKeyConnection,
+            Qt::UniqueConnection);
+#endif
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -935,6 +967,16 @@ void MixxxMainWindow::connectMenuBar() {
 
     if (m_pCoreServices->getLibrary()) {
         connect(m_pMenuBar,
+                &WMainMenuBar::searchInCurrentView,
+                m_pCoreServices->getLibrary().get(),
+                &Library::slotSearchInCurrentView,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::searchInAllTracks,
+                m_pCoreServices->getLibrary().get(),
+                &Library::slotSearchInAllTracks,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
                 &WMainMenuBar::createCrate,
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreateCrate,
@@ -943,6 +985,11 @@ void MixxxMainWindow::connectMenuBar() {
                 &WMainMenuBar::createPlaylist,
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreatePlaylist,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::showAutoDJ,
+                m_pCoreServices->getLibrary().get(),
+                &Library::showAutoDJ,
                 Qt::UniqueConnection);
     }
 
@@ -956,6 +1003,7 @@ void MixxxMainWindow::connectMenuBar() {
 #endif
 }
 
+/// Enable/disable listening to Alt key press for toggling the menubar.
 #ifndef __APPLE__
 void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     if (!m_pCoreServices->getKeyboardEventFilter() || !m_pMenuBar) {
@@ -963,6 +1011,7 @@ void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
     }
 
     if (m_pCoreServices->getSettings()->getValue<bool>(kHideMenuBarConfigKey, false)) {
+        // with Qt::UniqueConnection we don't need to check whether we're already connected
         connect(m_pCoreServices->getKeyboardEventFilter().get(),
                 &KeyboardEventFilter::altPressedWithoutKeys,
                 m_pMenuBar,
@@ -1052,19 +1101,15 @@ void MixxxMainWindow::slotDeveloperToolsClosed() {
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
-    qWarning() << "     $ slotViewFullScreen" << toggle;
     if (isFullScreen() == toggle) {
-        qWarning() << "     (no-op)";
         return;
     }
 
     // Just switch the window state here. eventFilter() will catch the
     // QWindowStateChangeEvent and inform the menu bar that fullscreen changed.
     if (toggle) {
-        qWarning() << "     > showFullScreen()";
         showFullScreen();
     } else {
-        qWarning() << "     > showNormal()";
         showNormal();
     }
 }
@@ -1076,64 +1121,172 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::warning(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this vinyl control.\n"
-               "Please select an input device in the sound hardware preferences first."),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noVinylInputDialog && m_noVinylInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noVinylInputDialog) {
+        m_noVinylInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this vinyl control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noVinylInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noVinylInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noVinylInputDialog->exec();
+    if (m_noVinylInputDialog->clickedButton() ==
+            m_noVinylInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::warning(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this passthrough control.\n"
-               "Please select an input device in the sound hardware preferences first."),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noPassthroughInputDialog && m_noPassthroughInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noPassthroughInputDialog) {
+        m_noPassthroughInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this passthrough control.\n"
+                   "Please select an input device in the sound hardware preferences first."),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noPassthroughInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noPassthroughInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noPassthroughInputDialog->exec();
+    if (m_noPassthroughInputDialog->clickedButton() ==
+            m_noPassthroughInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::question(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this microphone.\n"
-               "Do you want to select an input device?"),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noMicInputDialog && m_noMicInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noMicInputDialog) {
+        m_noMicInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this microphone.\n"
+                   "Do you want to select an input device?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noMicInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noMicInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noMicInputDialog->exec();
+    if (m_noMicInputDialog->clickedButton() ==
+            m_noMicInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
-    QMessageBox::StandardButton btn = QMessageBox::question(
-            this,
-            VersionStore::applicationName(),
-            tr("There is no input device selected for this auxiliary.\n"
-               "Do you want to select an input device?"),
-            QMessageBox::Ok | QMessageBox::Cancel,
-            QMessageBox::Cancel);
-    if (btn == QMessageBox::Ok) {
+    if (m_noAuxInputDialog && m_noAuxInputDialog->isVisible()) {
+        // Don't show redundant dialogs.
+        // They might be triggered be repeated controller or keyboard and
+        // can lockup the GUI.
+        return;
+    }
+
+    if (!m_noAuxInputDialog) {
+        m_noAuxInputDialog = make_parented<QMessageBox>(
+                QMessageBox::Warning,
+                VersionStore::applicationName(),
+                tr("There is no input device selected for this auxiliary.\n"
+                   "Do you want to select an input device?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                this);
+        m_noAuxInputDialog->setWindowModality(Qt::ApplicationModal);
+        m_noAuxInputDialog->setDefaultButton(QMessageBox::Cancel);
+    }
+    m_noAuxInputDialog->exec();
+    if (m_noAuxInputDialog->clickedButton() ==
+            m_noAuxInputDialog->button(QMessageBox::Ok)) {
         m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
+        m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
 }
 
 void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout;
     about->show();
+}
+
+void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {
+    if (!m_pCoreServices->getSettings()->getValue<bool>(
+                mixxx::library::prefs::kShowScanSummaryConfigKey, true)) {
+        return;
+    }
+
+    // Don't show the report dialog when the scan is run during startup and no
+    // noteworthy changes have been detected.
+    if (result.autoscan &&
+            result.numNewTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        return;
+    }
+
+    QString summary =
+            tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
+    if (result.numNewTracks == 0 &&
+            result.numMovedTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        summary += tr("No changes detected.") +
+                QStringLiteral("<br><b>") +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
+                QStringLiteral("</b>");
+    } else {
+        if (result.numNewTracks != 0) {
+            summary += tr("%n new track(s) found", nullptr, result.numNewTracks) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numMovedTracks != 0) {
+            summary += tr("%n moved track(s) detected", nullptr, result.numMovedTracks) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numNewMissingTracks != 0) {
+            summary += tr("%n track(s) missing (%1 total)",
+                    nullptr,
+                    result.numNewMissingTracks);
+        }
+        if (result.numRediscoveredTracks != 0) {
+            summary += QStringLiteral("<br>") +
+                    tr("%n track(s) rediscovered",
+                            nullptr,
+                            result.numRediscoveredTracks);
+        }
+        summary += QStringLiteral("<br><br><b>") +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
+                QStringLiteral("</b>");
+    }
+    QMessageBox* pMsg = new QMessageBox();
+    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    pMsg->setWindowTitle(tr("Library scan finished"));
+    pMsg->setText(summary);
+    pMsg->show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {
@@ -1163,7 +1316,9 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
 
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
+    m_inRebootMixxxView = true;
 
+    ScopedWaitCursor cursor;
     // safe geometry for later restoration
     const QRect initGeometry = geometry();
 
@@ -1195,6 +1350,7 @@ void MixxxMainWindow::rebootMixxxView() {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
+        m_inRebootMixxxView = false;
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
@@ -1223,6 +1379,7 @@ void MixxxMainWindow::rebootMixxxView() {
         setGeometry(initGeometry);
     }
 
+    m_inRebootMixxxView = false;
     qDebug() << "rebootMixxxView DONE";
 }
 
@@ -1238,7 +1395,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     return m_pCentralWidget != nullptr;
 }
 
-// Try to load default styles that can be overridden by skins
+/// Try to load default styles that can be overridden by skins
 void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
     QFile file(resPath + "/skins/default.qss");
@@ -1251,38 +1408,48 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
     }
 }
 
+/// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        // always show tooltips in the preferences window
+        // Always show tooltips if Ctrl is held down
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips for cue type buttons in the Cue menu
+        if (QLatin1String(obj->metaObject()->className()) == "CueMenuPushButton") {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips in Preferences
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
-                QLatin1String(activeWindow->metaObject()->className()) !=
+                QLatin1String(activeWindow->metaObject()->className()) ==
                         "DlgPreferences") {
-            // return true for no tool tips
-            switch (m_toolTipsCfg) {
-            case mixxx::preferences::Tooltips::OnlyInLibrary:
-                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
-                    return true;
-                }
-                break;
-            case mixxx::preferences::Tooltips::On:
-                break;
-            case mixxx::preferences::Tooltips::Off:
-                return true;
-            default:
-                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return QMainWindow::eventFilter(obj, event);
+        }
+
+        // For all other we follow the tooltip sett8ing.
+        // Return true for no tool tips
+        switch (m_toolTipsCfg) {
+        case mixxx::preferences::Tooltips::OnlyInLibrary:
+            if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                 return true;
             }
+            break;
+        case mixxx::preferences::Tooltips::On:
+            break;
+        case mixxx::preferences::Tooltips::Off:
+            return true;
+        default:
+            DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return true;
         }
     } else if (event->type() == QEvent::WindowStateChange) {
 #ifndef __APPLE__
-        qWarning() << "$ WindowStateChange:" << windowState();
         if (windowState() == m_prevState) {
             // Ignore no-op. This happens if another window is raised above
             // MixxxMianWindow,  e.g. DlgPeferences. In such a case event->oldState()
             // will be Qt::WindowNoState which is wrong anyway, so there is nothing
             // to do internally.
-            qWarning() << "$ WindowStateChange IGNORE";
             return QMainWindow::eventFilter(obj, event);
         }
         m_prevState = windowState();
@@ -1294,8 +1461,6 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         const bool isFullScreenNow = windowState() & Qt::WindowFullScreen;
         if ((isFullScreenNow && !wasFullScreen) ||
                 (!isFullScreenNow && wasFullScreen)) {
-            qWarning() << "$ fullscreen changed, now"
-                       << (isFullScreenNow ? "fullscreen" : "window");
 #ifdef __LINUX__
             // Fix for "No menu bar with ubuntu unity in full screen mode"
             // (issues #6072 and #6689). Before touching anything here, please
@@ -1303,16 +1468,26 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             // Set this attribute instead of calling setNativeMenuBar(false),
             // see https://github.com/mixxxdj/mixxx/issues/11320
             if (m_supportsGlobalMenuBar) {
-                qWarning() << "$ global menu > rebuild";
                 QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
                 createMenuBar();
                 connectMenuBar();
-                // With a global menu we didn't show the menubar auto-hide dialog
-                // during (windowed) startup, so ask now.
-                alwaysHideMenuBarDlg();
+            }
+#endif
+
+#ifndef __APPLE__
+#ifdef __LINUX__
+            // Only show the dialog if we are able to have the menubar in the
+            // main window, only then we're able to hide it.
+            if (!m_supportsGlobalMenuBar || isFullScreenNow)
+#endif
+            {
+                if (!m_inRebootMixxxView) {
+                    alwaysHideMenuBarDlg();
+                }
                 slotUpdateMenuBarAltKeyConnection();
             }
 #endif
+
             // This will toggle the Fullscreen checkbox and hide the menubar if
             // we go fullscreen.
             // Skip this during startup or the launchimage will be shifted
@@ -1376,16 +1551,16 @@ bool MixxxMainWindow::confirmExit() {
     bool playing(false);
     bool playingSampler(false);
     auto pPlayerManager = m_pCoreServices->getPlayerManager();
-    unsigned int deckCount = pPlayerManager->numDecks();
-    unsigned int samplerCount = pPlayerManager->numSamplers();
-    for (unsigned int i = 0; i < deckCount; ++i) {
+    int deckCount = pPlayerManager->numberOfDecks();
+    int samplerCount = pPlayerManager->numberOfSamplers();
+    for (int i = 0; i < deckCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
-    for (unsigned int i = 0; i < samplerCount; ++i) {
+    for (int i = 0; i < samplerCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;

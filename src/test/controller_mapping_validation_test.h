@@ -1,12 +1,14 @@
 #pragma once
 
 #include <QObject>
-
+#include "control/controlindicatortimer.h"
 #include "controllers/controller.h"
 #include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
-#include "test/mixxxtest.h"
+#include "library/trackcollectionmanager.h"
+#include "test/mixxxdbtest.h"
+#include "test/soundsourceproviderregistration.h"
 
 class FakeMidiControllerJSProxy : public ControllerJSProxy {
     Q_OBJECT
@@ -67,40 +69,98 @@ class FakeController : public Controller {
         if (this->m_bMidiMapping == true) {
             return new FakeMidiControllerJSProxy();
         }
+#ifdef __HID
         if (this->m_bHidMapping == true) {
             return new FakeHidControllerJSProxy();
         }
+#endif
         // Bulk mapping
         return new FakeBulkControllerJSProxy();
+    }
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::USB;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        if (m_bMidiMapping) {
+            return DataRepresentationProtocol::MIDI;
+#ifdef __HID
+        } else if (m_bHidMapping) {
+            return DataRepresentationProtocol::HID;
+#endif
+        } else {
+            return DataRepresentationProtocol::USB_BULK_TRANSFER;
+        }
     }
 
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override {
         auto pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
         if (pMidiMapping) {
             m_bMidiMapping = true;
-            m_bHidMapping = false;
             m_pMidiMapping = pMidiMapping;
+#ifdef __HID
+            m_bHidMapping = false;
             m_pHidMapping = nullptr;
+#endif
             return;
         }
 
+#ifdef __HID
         auto pHidMapping = std::dynamic_pointer_cast<LegacyHidControllerMapping>(pMapping);
         if (pHidMapping) {
             m_bMidiMapping = false;
-            m_bHidMapping = true;
             m_pMidiMapping = nullptr;
+            m_bHidMapping = true;
             m_pHidMapping = pHidMapping;
         }
+#endif
     }
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override {
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override {
         if (m_pMidiMapping) {
-            return m_pMidiMapping->clone();
+            return m_pMidiMapping->getScriptFiles();
+#ifdef __HID
         } else if (m_pHidMapping) {
-            return m_pHidMapping->clone();
+            return m_pHidMapping->getScriptFiles();
+#endif
         }
-        return nullptr;
-    };
+        return {};
+    }
+
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getSettings();
+#ifdef __HID
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getSettings();
+#endif
+        }
+        return {};
+    }
+
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getModules();
+#ifdef __HID
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getModules();
+#endif
+        }
+        return {};
+    }
+
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->getInfoScreens();
+#ifdef __HID
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->getInfoScreens();
+#endif
+        }
+        return {};
+    }
+#endif
 
     bool isMappable() const override;
 
@@ -109,6 +169,30 @@ class FakeController : public Controller {
         Q_UNUSED(mapping);
         return false;
     }
+    QString getVendorString() const override {
+        static const QString vendor = "Test Vendor";
+        return vendor;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+
+    QString getProductString() const override {
+        static const QString product = "Test Product";
+        return product;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+
+    QString getSerialNumber() const override {
+        static const QString serialNumber = "123456789";
+        return serialNumber;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
 
   protected:
     void send(const QList<int>& data, unsigned int length) override {
@@ -116,12 +200,13 @@ class FakeController : public Controller {
         Q_UNUSED(length);
     }
 
-    void sendBytes(const QByteArray& data) override {
+    bool sendBytes(const QByteArray& data) override {
         Q_UNUSED(data);
+        return true;
     }
 
-  private slots:
-    int open() override {
+  private:
+    int open(const QString&) override {
         return 0;
     }
 
@@ -129,16 +214,47 @@ class FakeController : public Controller {
         return 0;
     }
 
-  private:
     bool m_bMidiMapping;
-    bool m_bHidMapping;
     std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
+#ifdef __HID
+    bool m_bHidMapping;
     std::shared_ptr<LegacyHidControllerMapping> m_pHidMapping;
+#endif
 };
 
-class LegacyControllerMappingValidationTest : public MixxxTest {
+class EngineMixer;
+class EffectsManager;
+class SoundManager;
+class RecordingManager;
+class Library;
+class PlayerManager;
+
+// We can't inherit from LibraryTest because that creates a key_notation control object that is also
+// created by the Library object itself. The duplicated CO creation causes a debug assert.
+class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourceProviderRegistration {
+  public:
+    LegacyControllerMappingValidationTest()
+            : MixxxDbTest(true) {
+    }
+
   protected:
     void SetUp() override;
+    void TearDown() override;
+
+    TrackPointer getOrAddTrackByLocation(
+            const QString& trackLocation) const {
+        return m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFilePath(trackLocation));
+    }
+
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
+    std::shared_ptr<EngineMixer> m_pEngine;
+    std::shared_ptr<SoundManager> m_pSoundManager;
+    std::shared_ptr<PlayerManager> m_pPlayerManager;
+    std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
+    std::shared_ptr<RecordingManager> m_pRecordingManager;
+    std::shared_ptr<Library> m_pLibrary;
 
     bool testLoadMapping(const MappingInfo& mapping);
 

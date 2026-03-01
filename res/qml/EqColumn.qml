@@ -1,6 +1,8 @@
 import "." as Skin
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
+import QtQuick.Layouts
+import Mixxx 1.0 as Mixxx
 import "Theme"
 
 Column {
@@ -11,39 +13,51 @@ Column {
     spacing: 4
 
     Skin.EqKnob {
-        statusKey: "button_parameter3"
+        knob.color: Theme.eqHighColor
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter3"
-        knob.color: Theme.eqHighColor
+        statusKey: "button_parameter3"
     }
-
     Skin.EqKnob {
-        statusKey: "button_parameter2"
+        knob.color: Theme.eqMidColor
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter2"
-        knob.color: Theme.eqMidColor
+        statusKey: "button_parameter2"
     }
-
     Skin.EqKnob {
+        knob.color: Theme.eqLowColor
         knob.group: "[EqualizerRack1_" + root.group + "_Effect1]"
         knob.key: "parameter1"
         statusKey: "button_parameter1"
-        knob.color: Theme.eqLowColor
     }
-
-    Skin.EqKnob {
-        knob.group: "[QuickEffectRack1_" + root.group + "]"
-        knob.key: "super1"
-        statusGroup: "[QuickEffectRack1_" + root.group + "_Effect1]"
-        statusKey: "enabled"
+    Skin.QuickFxKnob {
+        group: "[QuickEffectRack1_" + root.group + "]"
         knob.arcStyle: ShapePath.DashLine
         knob.arcStylePattern: [2, 2]
         knob.color: Theme.eqFxColor
     }
+    Mixxx.ControlProxy {
+        id: fxSelect
 
-    Skin.OrientationToggleButton {
-        group: root.group
-        key: "orientation"
-        color: Theme.crossfaderOrientationColor
+        group: "[QuickEffectRack1_" + root.group + "]"
+        key: "loaded_chain_preset"
+    }
+    Skin.ComboBox {
+        id: effectSelector
+
+        clip: true
+        currentIndex: fxSelect.value == -1 ? 0 : fxSelect.value
+        font.pixelSize: 10
+        indicator.width: 0
+        model: Mixxx.EffectsManager.quickChainPresetModel
+        popupMaxItem: 8
+        popupWidth: 100
+        spacing: 2
+        textRole: "display"
+        width: parent.width
+
+        onActivated: index => {
+            fxSelect.value = index;
+        }
     }
 }

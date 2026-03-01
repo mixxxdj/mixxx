@@ -9,13 +9,14 @@ struct libusb_context;
 class BulkEnumerator : public ControllerEnumerator {
     Q_OBJECT
   public:
-    explicit BulkEnumerator(UserSettingsPointer pConfig);
+    explicit BulkEnumerator();
     virtual ~BulkEnumerator();
 
     QList<Controller*> queryDevices() override;
 
   private:
     QList<Controller*> m_devices;
+#ifndef __ANDROID__
     libusb_context* m_context;
-    UserSettingsPointer m_pConfig;
+#endif
 };

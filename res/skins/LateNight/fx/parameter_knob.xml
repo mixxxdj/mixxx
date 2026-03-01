@@ -54,6 +54,7 @@
         <EffectUnit><Variable name="FxUnit"/></EffectUnit>
         <Effect><Variable name="FxNum"/></Effect>
         <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+        <Alignment>center</Alignment>
         <Elide>right</Elide>
       </EffectParameterName>
 

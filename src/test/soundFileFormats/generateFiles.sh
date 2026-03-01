@@ -189,9 +189,10 @@ do
                     echo "Generating ${ssize}-bit ${rate}Hz ${channel}-channel ${format} file"
                     sox -V0 1kHzR440HzLReference_32i96kStereo.wav -b "${ssize}" -c "${channel}" -r "${rate}" "test${ssize}bit${friendlyrate}k${friendlychannel}.${format}"
                 fi
-                if [ $? -gt 1 ]
+                ret=$?
+                if [ "$ret" -gt 1 ]
                 then
-                    echo "Error #$?, aborting"
+                    echo "Error #$ret, aborting"
                     exit 1
                 fi
             done

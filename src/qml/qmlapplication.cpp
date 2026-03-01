@@ -1,24 +1,26 @@
 #include "qmlapplication.h"
 
 #include <QQmlEngineExtensionPlugin>
+#include <QQuickStyle>
+#include <QQuickWindow>
+#include <QTextDocument>
 
-#include "control/controlsortfiltermodel.h"
 #include "controllers/controllermanager.h"
+#include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"
+#include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
-#include "qml/qmlconfigproxy.h"
-#include "qml/qmlcontrolproxy.h"
 #include "qml/qmldlgpreferencesproxy.h"
-#include "qml/qmleffectmanifestparametersmodel.h"
-#include "qml/qmleffectslotproxy.h"
-#include "qml/qmleffectsmanagerproxy.h"
-#include "qml/qmllibraryproxy.h"
-#include "qml/qmllibrarytracklistmodel.h"
-#include "qml/qmlplayermanagerproxy.h"
-#include "qml/qmlplayerproxy.h"
-#include "qml/qmlvisibleeffectsmodel.h"
-#include "qml/qmlwaveformoverview.h"
 #include "soundio/soundmanager.h"
+#include "util/versionstore.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/waveformwidgetfactory.h"
+#if defined(Q_OS_ANDROID)
+#include <android/api-level.h>
+#include <android/log.h>
+#include <android/performance_hint.h>
+#endif
+
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
 Q_IMPORT_QML_PLUGIN(Mixxx_ControlsPlugin)
 
@@ -41,17 +43,55 @@ namespace qml {
 
 QmlApplication::QmlApplication(
         QApplication* app,
-        std::shared_ptr<CoreServices> pCoreServices)
-        : m_pCoreServices(pCoreServices),
-          m_mainFilePath(pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
+        const CmdlineArgs& args)
+        : m_pCoreServices(std::make_unique<mixxx::CoreServices>(args, app)),
+          m_visualsManager(std::make_unique<VisualsManager>()),
+          m_mainFilePath(m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
+#if defined(Q_OS_ANDROID)
+          m_perfSession(nullptr),
+#endif
           m_autoReload() {
+    QQuickStyle::setStyle("Basic");
+
     m_pCoreServices->initialize(app);
+
+    QString configVersion = m_pCoreServices->getSettings()->getValue(
+            ConfigKey("[Config]", "Version"), "");
+    if (configVersion == VersionStore::FUTURE_UNSTABLE) {
+        qDebug() << "Generating a new user profile for safe testing with unstable code";
+    } else if (CmdlineArgs::Instance().isAwareOfRisk()) {
+        qCritical() << "Existing user profile detected from" << configVersion
+                    << "but you said you wanted to play with fire!";
+        m_pCoreServices->getSettings()->setValue(
+                ConfigKey("[Config]", "did_run_with_unstable"), true);
+    } else {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.setWindowTitle(tr("Existing user profile detected"));
+        msgBox.setText(
+                tr("Trying to run Mixxx 3.0 with an existing %0 user profile! "
+                   "<br><br>There is <b>serious risks</b> of data loss and "
+                   "corruption.<br>We recommend using a test profile folder "
+                   "with the '--settings-path' argument. <br><br>If you want "
+                   "to continue at your own risk, run Mixxx with the argument "
+                   "'--allow-dangerous-data-corruption-risk'.")
+                        .arg(configVersion));
+
+        QPushButton* continueButton =
+                msgBox.addButton(tr("Ok"), QMessageBox::ActionRole);
+        msgBox.exec();
+        m_pCoreServices.reset();
+        exit(-1);
+    }
+
     SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
     if (result != SoundDeviceStatus::Ok) {
         const int reInt = static_cast<int>(result);
         qCritical() << "Error setting up sound devices:" << reInt;
+#ifndef Q_OS_ANDROID
         exit(reInt);
+#endif
     }
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
@@ -64,24 +104,28 @@ QmlApplication::QmlApplication(
 
     // Since DlgPreferences is only meant to be used in the main QML engine, it
     // follows a strict singleton pattern design
-    QmlDlgPreferencesProxy::s_pInstance = new QmlDlgPreferencesProxy(pDlgPreferences, this);
+    QmlDlgPreferencesProxy::s_pInstance =
+            std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
 
-    // Any uncreateable non-singleton types registered here require arguments
-    // that we don't want to expose to QML directly. Instead, they can be
-    // retrieved by member properties or methods from the singleton types.
-    //
-    // The alternative would be to register their *arguments* in the QML
-    // system, which would improve nothing, or we had to expose them as
-    // singletons to that they can be accessed by components instantiated by
-    // QML, which would also be suboptimal.
-    QmlEffectsManagerProxy::registerEffectsManager(pCoreServices->getEffectsManager());
-    QmlPlayerManagerProxy::registerPlayerManager(pCoreServices->getPlayerManager());
-    QmlConfigProxy::registerUserSettings(pCoreServices->getSettings());
-    QmlLibraryProxy::registerLibrary(pCoreServices->getLibrary());
+    const QStringList visualGroups =
+            m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
+    for (const QString& group : visualGroups) {
+        m_visualsManager->addDeck(group);
+    }
 
+    m_pCoreServices->getPlayerManager()->connect(
+            m_pCoreServices->getPlayerManager().get(),
+            &PlayerManager::numberOfDecksChanged,
+            this,
+            [this](int decks) {
+                for (int i = 0; i < decks; ++i) {
+                    QString group = PlayerManager::groupForDeck(i);
+                    m_visualsManager->addDeckIfNotExist(group);
+                }
+            });
     loadQml(m_mainFilePath);
 
-    pCoreServices->getControllerManager()->setUpDevices();
+    m_pCoreServices->getControllerManager()->setUpDevices();
 
     connect(&m_autoReload,
             &QmlAutoReload::triggered,
@@ -89,15 +133,48 @@ QmlApplication::QmlApplication(
             [this]() {
                 loadQml(m_mainFilePath);
             });
+
+#if defined(Q_OS_ANDROID)
+    APerformanceHintManager* manager = APerformanceHint_getManager();
+    VERIFY_OR_DEBUG_ASSERT(manager) {
+        return;
+    }
+    int32_t thread32 = gettid();
+    m_perfSession = APerformanceHint_createSession(manager, &thread32, 1, 1e9 / 60);
+    VERIFY_OR_DEBUG_ASSERT(m_perfSession) {
+        __android_log_print(ANDROID_LOG_WARN, "mixxx", "unable to create a ADPF session!");
+    }
+    else {
+        APerformanceHint_setPreferPowerEfficiency(m_perfSession, false);
+        __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "ADPF session ready");
+    }
+}
+
+void QmlApplication::slotWindowChanged(QQuickWindow* window) {
+    if (window) {
+        connect(window, &QQuickWindow::afterFrameEnd, this, &QmlApplication::slotFrameSwapped);
+    }
+    m_frameTimer.restart();
+}
+
+void QmlApplication::slotFrameSwapped() {
+    VERIFY_OR_DEBUG_ASSERT(m_perfSession) {
+        return;
+    }
+    auto lastFrameDurationNs = m_frameTimer.elapsed().toIntegerNanos();
+    auto t = std::chrono::steady_clock::now() - std::chrono::steady_clock::time_point{};
+    APerformanceHint_reportActualWorkDuration(m_perfSession,
+            lastFrameDurationNs);
+    m_frameTimer.restart();
+#endif
 }
 
 QmlApplication::~QmlApplication() {
     // Delete all the QML singletons in order to prevent leak detection in CoreService
-    QmlEffectsManagerProxy::registerEffectsManager(nullptr);
-    QmlPlayerManagerProxy::registerPlayerManager(nullptr);
-    QmlConfigProxy::registerUserSettings(nullptr);
-    QmlLibraryProxy::registerLibrary(nullptr);
-    QmlDlgPreferencesProxy::s_pInstance->deleteLater();
+    QmlDlgPreferencesProxy::s_pInstance.reset();
+    m_visualsManager.reset();
+    m_pAppEngine.reset();
+    m_pCoreServices.reset();
 }
 
 void QmlApplication::loadQml(const QString& path) {
@@ -118,6 +195,17 @@ void QmlApplication::loadQml(const QString& path) {
     if (m_pAppEngine->rootObjects().isEmpty()) {
         qCritical() << "Failed to load QML file" << path;
     }
+
+#if defined(Q_OS_ANDROID)
+    for (auto* item : m_pAppEngine->rootObjects()) {
+        auto* pWindow = qobject_cast<QQuickWindow*>(item);
+        if (!pWindow) {
+            continue;
+        }
+        slotWindowChanged(pWindow);
+        break;
+    }
+#endif
 }
 
 } // namespace qml

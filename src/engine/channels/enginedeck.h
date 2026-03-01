@@ -2,14 +2,17 @@
 
 #include <QScopedPointer>
 
-#include "preferences/usersettings.h"
 #include "engine/channels/enginechannel.h"
+#include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
+#include "track/track_decl.h"
+#include "util/samplebuffer.h"
 
 class EnginePregain;
 class EngineBuffer;
 class EngineMixer;
 class ControlPushButton;
+class ControlPotmeter;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
@@ -23,7 +26,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
             bool primaryDeck);
     ~EngineDeck() override;
 
-    void process(CSAMPLE* pOutput, const int iBufferSize) override;
+    void process(CSAMPLE* pOutput, const std::size_t bufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 
     // postProcessLocalBpm() is called on all decks to update the localBpm after
@@ -35,7 +38,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     // Update beat distances, sync modes, and other values that are only known
     // after all other processing is done.
-    void postProcess(const int iBufferSize) override;
+    void postProcess(const std::size_t bufferSize) override;
 
     // TODO(XXX) This hack needs to be removed.
     EngineBuffer* getEngineBuffer() override;
@@ -62,17 +65,47 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;
 
+#ifdef __STEM__
+    // Clone the stem state (gain and volume) from deckToClone to this. Doesn't
+    // check if the loaded track is a stem so this should only be used in case
+    // of stem track
+    void cloneStemState(const EngineDeck* deckToClone);
+    void addStemHandle(const ChannelHandleAndGroup& stemHandleGroup);
+    static QString getGroupForStem(QStringView deckGroup, int stemIdx);
+#endif
+
   signals:
     void noPassthroughInputConfigured();
 
   public slots:
     void slotPassthroughToggle(double v);
     void slotPassthroughChangeRequest(double v);
+#ifdef __STEM__
+    void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer);
+#endif
 
   private:
+#ifdef __STEM__
+    // Process multiple channels and mix them together into the passed buffer
+    void processStem(CSAMPLE* pOutput, const std::size_t bufferSize);
+#endif
+
+    std::vector<ChannelHandleAndGroup> m_stems;
+    std::vector<CSAMPLE_GAIN> m_stemsGainCache;
+
     UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;
     EnginePregain* m_pPregain;
+
+#ifdef __STEM__
+    // Stem buffer used to retrieve all the channel to mix together
+    mixxx::SampleBuffer m_stemBuffer;
+    std::unique_ptr<ControlObject> m_pStemCount;
+    std::vector<std::unique_ptr<ControlPotmeter>> m_stemGain;
+    std::vector<std::unique_ptr<ControlPushButton>> m_stemMute;
+    std::vector<std::unique_ptr<EngineVuMeter>> m_stemVuMeter;
+    bool m_stemClonedState;
+#endif
 
     // Begin vinyl passthrough fields
     QScopedPointer<ControlObject> m_pInputConfigured;

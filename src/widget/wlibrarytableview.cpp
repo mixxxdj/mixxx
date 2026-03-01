@@ -10,6 +10,7 @@
 
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
+#include "widget/wtracktableviewheader.h"
 
 class QFocusEvent;
 
@@ -58,52 +59,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
-}
-
-void WLibraryTableView::moveSelection(int delta) {
-    QAbstractItemModel* pModel = model();
-
-    if (pModel == nullptr) {
-        return;
-    }
-
-    while (delta != 0) {
-        QItemSelectionModel* currentSelection = selectionModel();
-        if (currentSelection->selectedRows().length() > 0) {
-            if (delta > 0) {
-                // i is positive, so we want to move the highlight down
-                int row = currentSelection->selectedRows().last().row();
-                if (row + 1 < pModel->rowCount()) {
-                    selectRow(row + 1);
-                } else {
-                    // we wrap around at the end of the list so it is faster to get
-                    // to the top of the list again
-                    selectRow(0);
-                }
-
-                delta--;
-            } else {
-                // i is negative, so move down
-                int row = currentSelection->selectedRows().first().row();
-                if (row - 1 >= 0) {
-                    selectRow(row - 1);
-                } else {
-                    selectRow(pModel->rowCount() - 1);
-                }
-
-                delta++;
-            }
-        } else {
-            // no selection, so select the first or last element depending on delta
-            if (delta > 0) {
-                selectRow(0);
-                delta--;
-            } else {
-                selectRow(pModel->rowCount() - 1);
-                delta++;
-            }
-        }
-    }
 }
 
 void WLibraryTableView::saveTrackModelState(
@@ -231,6 +186,21 @@ void WLibraryTableView::setTrackTableFont(const QFont& font) {
             "height: %1px;"
             "width: %1px;}")
                           .arg(metrics.height() * 0.7));
+
+    // Apply the font to the header as well.
+    // Note: remember to also apply the font to new headers created in
+    // WTrackTableView::loadTrackModel()
+    // Note: since WTrackTableViewHeader::setFont() does not override
+    // QHeaderView::setFont() we need to cast to WTrackTableViewHeader
+    WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->setFont(font);
+    } else {
+        // _Might_ happen in case we did not yet WTrackTableView::loadTrackModel()
+        // hence might not have a WTrackTableViewHeader yet but still default QHeaderView.
+        // Header height will not be adjusted correctly now, only after loading the model.
+        horizontalHeader()->setFont(font);
+    }
 }
 
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
@@ -319,11 +289,11 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
         // browsing a key-sorted library list requires either a serious workout
         // or the user needs to reach for the mouse or keyboard when moving
         // between 12/C#m/E and 1/G#m/B. This is very similar to
-        // `moveSelection()`, except that it doesn't actually modify the
-        // selection. It simply returns a new cursor that the keyboard event
-        // handler in `QAbstractItemView` uses to either move the cursor, move
-        // the selection, or extend the selection depending on which modifier
-        // keys are held down.
+        // WTrackTableView::moveSelection(), except that it doesn't actually
+        // modify the selection. It simply returns a new cursor that the
+        // keyboard event handler in `QAbstractItemView` uses to either move the
+        // cursor, move the selection, or extend the selection depending on
+        // which modifier keys are held down.
         // Note: Shift modifier prevents wrap-around.
         case QAbstractItemView::MoveUp:
         case QAbstractItemView::MoveDown: {

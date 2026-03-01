@@ -23,6 +23,7 @@ class AnalyzerSilence : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount channelCount,
             SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer pTrack) override;
@@ -46,10 +47,12 @@ class AnalyzerSilence : public Analyzer {
     /// last analysis run and is an indicator for file edits or decoder
     /// changes/issues
     static bool verifyFirstSound(std::span<const CSAMPLE> samples,
-            mixxx::audio::FramePos firstSoundFrame);
+            mixxx::audio::FramePos firstSoundFrame,
+            mixxx::audio::ChannelCount channelCount);
 
   private:
     UserSettingsPointer m_pConfig;
+    mixxx::audio::ChannelCount m_channelCount;
     SINT m_framesProcessed;
     SINT m_signalStart;
     SINT m_signalEnd;

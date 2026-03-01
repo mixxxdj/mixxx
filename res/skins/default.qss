@@ -113,8 +113,6 @@ WEffectChainPresetButton QMenu::separator {
 
 
 /* All menus that have at least one item with a checkbox*/
-WLibrarySidebar QMenu::item,
-WTrackTableViewHeader QMenu::item,
 #CratesMenu::item,
 WEffectChainPresetButton QMenu::item {
 /* padding-right reserves space for the submenu expand arrow
@@ -140,24 +138,35 @@ WEffectChainPresetButton QMenu::item {
 
 /* Icons in those menus (copy, paste, cut, delete) */
 QLineEdit QMenu::icon,
-WLibraryTextBrowser QMenu::icon,
-/* - checkbox in Crate name context menu
-    "[ ] Auto DJ Track Source" */
-WLibrarySidebar QMenu::indicator {
+WLibraryTextBrowser QMenu::icon {
   /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
                 on the indicator itself.
                 positive margin-right pushes icon to the right...
      Qt 5.15.2: needs negative margin-right in order to eliminate the item's
-                padding-left (necessary to avoid text/icon overlap); */
-  margin: 0 -1em 0 0.25em;
+                padding-left (necessary to avoid text/icon overlap);
+     Qt 6     : use style of #MainMenu QMenu::indicator from default-menu-styles-linux.qss
+                Though, this breaks WTrackTableViewHeader QMenu::indicator and
+                WLibrarySidebar QMenu::indicator which obviously require the Qt5 style ¯\_(ツ)_/¯ */
+  margin: 0em -0.1em 0em -1.3em;
+  padding: 0em 0em 0em 2em;
 }
 
-/* items in Crate sub menu */
+
 /* Column checkboxes in the table header menu */
 WTrackTableViewHeader QMenu QCheckBox,
+/* items in Crate sub menu and Search related Tracks menu */
 WTrackMenu QMenu QCheckBox,
 WEffectChainPresetButton QMenu QCheckBox {
   padding: 0.17em 0.6em 0.17em 0.25em;
+}
+
+/* Sidebar with checkbox in Crate name context menu (actually a checkable QAction)
+    "[ ] Auto DJ Track Source" */
+WLibrarySidebar QMenu::item {
+  padding: 0.17em 0.6em 0.17em 0.5em;
+}
+WLibrarySidebar QMenu::indicator {
+  margin: 0em -0.1em 0em 0.3em;
 }
 
 WLibrarySidebar QMenu::indicator,
@@ -166,4 +175,14 @@ WTrackMenu QMenu QCheckBox::indicator,
 WEffectChainPresetButton QMenu QCheckBox::indicator {
   width: 0.7em;
   height: 0.7em;
+}
+
+WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
+  image: url(:/images/ic_magnifier.svg);
+  /* Since this indicator doesn't have a border in the official skins,
+   we increase the size a bit in order to make appear as big as the
+   checkboxes, which also aligns the text with the other checkbox texts.
+   0.8em should work fine for a reasonable range of font sizes. */
+  width: 0.8em;
+  height: 0.8em;
 }

@@ -15,11 +15,13 @@ const QString kRackGroup(QStringLiteral("Group"));
 
 const QString kChainPresetList(QStringLiteral("ChainPresetList"));
 const QString kQuickEffectList(QStringLiteral("QuickEffectPresetList"));
+const QString kStemQuickEffectChainPresets(QStringLiteral("StemQuickEffectChains"));
 const QString kQuickEffectChainPresets(QStringLiteral("QuickEffectChains"));
 const QString kEqualizerEffects(QStringLiteral("EqualizerEffects"));
 const QString kChainPresetName(QStringLiteral("ChainPresetName"));
 
 const QString kVisibleEffects(QStringLiteral("VisibleEffects"));
+const QString kHiddenEffects(QStringLiteral("HiddenEffects"));
 
 const QString kChainsRoot(QStringLiteral("Chains"));
 const QString kChain(QStringLiteral("EffectChain"));

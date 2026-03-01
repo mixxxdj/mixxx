@@ -7,7 +7,7 @@
   <WidgetGroup>
     <ObjectName>SkinSettings</ObjectName>
     <Layout>vertical</Layout>
-    <Size>180f,-1min</Size>
+    <Size>190f,-1min</Size>
     <Children>
       <WidgetGroup>
         <ObjectName>SkinSettingsTop</ObjectName>
@@ -51,7 +51,7 @@
         <Children>
           <Template src="skins:Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="text">Parallel Waveforms</SetVariable>
+            <SetVariable name="text">Parallel Waveforms &amp; Stems</SetVariable>
             <SetVariable name="skinsetting">[Deere],show_parallel_waveforms</SetVariable>
           </Template>
 

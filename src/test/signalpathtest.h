@@ -28,6 +28,9 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
 
 using ::testing::Return;
 using ::testing::_;
@@ -71,6 +74,10 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(
                 QStringLiteral("[App]"), QStringLiteral("num_decks")));
+        m_pNumSamplers = new ControlObject(ConfigKey(
+                QStringLiteral("[App]"), QStringLiteral("num_samplers")));
+        m_pNumPreviewDecks = new ControlObject(ConfigKey(
+                QStringLiteral("[App]"), QStringLiteral("num_preview_decks")));
         m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pEngineMixer = new TestEngineMixer(m_pConfig,
                 m_sMainGroup,
@@ -139,7 +146,21 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         delete m_pEngineMixer;
         delete m_pEffectsManager;
         delete m_pNumDecks;
+        delete m_pNumSamplers;
+        delete m_pNumPreviewDecks;
         PlayerInfo::destroy();
+    }
+
+    void SetUp() override {
+#ifdef __RUBBERBAND__
+        RubberBandWorkerPool::createInstance();
+#endif
+    }
+
+    void TearDown() override {
+#ifdef __RUBBERBAND__
+        RubberBandWorkerPool::destroy();
+#endif
     }
 
     void addDeck(EngineDeck* pDeck) {
@@ -154,7 +175,11 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
             pEngineDeck->getEngineBuffer()->ejectTrack();
         }
-        pDeck->slotLoadTrack(pTrack, false);
+        pDeck->slotLoadTrack(pTrack,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
 
         // Wait for the track to load.
         ProcessBuffer();
@@ -176,19 +201,19 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     // Use tools/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesReference(const CSAMPLE* pBuffer,
-            const int iBufferSize,
+
+    void assertBufferMatchesReference(std::span<const CSAMPLE> buffer,
             const QString& reference_title,
             const double delta = .0001) {
         QFile f(getTestDir().filePath(QStringLiteral("reference_buffers/") + reference_title));
         bool pass = true;
-        int i = 0;
+        std::size_t i = 0;
         // If the file is not there, we will fail and write out the .actual
         // reference file.
         if (f.open(QFile::ReadOnly | QFile::Text)) {
             QTextStream in(&f);
             // Note: We will only compare as many values as there are in the reference file.
-            for (; i < iBufferSize && !in.atEnd(); i += 2) {
+            for (; i < buffer.size() && !in.atEnd(); i += 2) {
                 QStringList line = in.readLine().split(',');
                 if (line.length() != 2) {
                     qWarning() << "Unexpected line length in reference file";
@@ -200,14 +225,14 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
                 ASSERT_TRUE(ok);
                 const double gold_value1 = line[1].toDouble(&ok);
                 ASSERT_TRUE(ok);
-                if (fabs(gold_value0 - pBuffer[i]) > delta) {
+                if (fabs(gold_value0 - buffer[i]) > delta) {
                     qWarning() << "Golden check failed at index" << i << ", "
-                               << gold_value0 << "vs" << pBuffer[i];
+                               << gold_value0 << "vs" << buffer[i];
                     pass = false;
                 }
-                if (fabs(gold_value1 - pBuffer[i + 1]) > delta) {
+                if (fabs(gold_value1 - buffer[i + 1]) > delta) {
                     qWarning() << "Golden check failed at index" << i + 1 << ", "
-                               << gold_value1 << "vs" << pBuffer[i + 1];
+                               << gold_value1 << "vs" << buffer[i + 1];
                     pass = false;
                 }
             }
@@ -222,8 +247,8 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
                     QStringLiteral("reference_buffers/") + fname_actual));
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);
-            for (int i = 0; i < iBufferSize; i += 2) {
-                out << QString("%1,%2\n").arg(pBuffer[i]).arg(pBuffer[i + 1]);
+            for (std::size_t i = 0; i < buffer.size(); i += 2) {
+                out << QString("%1,%2\n").arg(buffer[i]).arg(buffer[i + 1]);
             }
             actual.close();
             EXPECT_TRUE(false);
@@ -242,6 +267,8 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
+    ControlObject* m_pNumSamplers;
+    ControlObject* m_pNumPreviewDecks;
     std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
@@ -265,12 +292,17 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
 class SignalPathTest : public BaseSignalPathTest {
   protected:
-    SignalPathTest() {
+    void SetUp() override {
+        BaseSignalPathTest::SetUp();
         const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
         loadTrack(m_pMixerDeck1, pTrack);
         loadTrack(m_pMixerDeck2, pTrack);
         loadTrack(m_pMixerDeck3, pTrack);
+    }
+
+    void TearDown() override {
+        BaseSignalPathTest::TearDown();
     }
 };

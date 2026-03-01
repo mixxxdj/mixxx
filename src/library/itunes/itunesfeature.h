@@ -40,7 +40,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
 
   private:
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
-            const QString& playlist) override;
+            const QVariant& data) override;
     static QString getiTunesMusicPath();
     std::unique_ptr<ITunesImporter> makeImporter();
     // returns the invisible rootItem for the sidebar model
@@ -51,7 +51,7 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     /// returns the file path.
     QString showOpenDialog();
 
-    bool isMacOSImporterUsed();
+    bool isNativeImporterUsed();
 
     BaseExternalTrackModel* m_pITunesTrackModel;
     BaseExternalPlaylistModel* m_pITunesPlaylistModel;

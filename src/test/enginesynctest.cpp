@@ -671,10 +671,10 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     EXPECT_DOUBLE_EQ(
             120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
-    // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.6),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(0.8),
             ControlObject::get(ConfigKey(m_sGroup2, "rate")));
-    EXPECT_DOUBLE_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    // Leader is currently 192, BPM before sync is 120, so the closer sync should be 96
+    EXPECT_DOUBLE_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 }
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
@@ -1092,8 +1092,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // Make sure playing decks with sync lock enabled do not change tempo when
     // the "Reset Speed/Tempo" preference is set and a track is loaded to another
     // deck with sync lock enabled.
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_SPEED);
 
     // Enable sync on two stopped decks
     auto pButtonSyncEnabled1 =
@@ -1128,8 +1128,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Repeat with RESET_PITCH_AND_SPEED
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
     track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
@@ -1146,8 +1146,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // Even when RESET_NONE is on, sync lock is more important -- do not change
     // the speed of the playing deck.
     EXPECT_TRUE(isSoftLeader(m_sGroup1));
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_NONE));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_NONE);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     track1 = m_pMixerDeck1->loadFakeTrack(false, 124.0);
     ProcessBuffer();
@@ -1163,8 +1163,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(124.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_SPEED
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_SPEED);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(1.5));
@@ -1181,8 +1181,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_PITCH_AND_SPEED
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(1.5));
@@ -2105,8 +2105,8 @@ TEST_F(EngineSyncTest, HalfDoubleEachOther) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 
     // Threshold 1.414 sqrt(2);
-    // 150 / 105 = 1.43
-    // 105 / 75 = 1.40
+    // 150 / 144 = 1.04
+    // 144 / 75 = 1.92
     // expect 75 BPM
 
     mixxx::BeatsPointer pBeats1b = mixxx::Beats::fromConstTempo(
@@ -2120,7 +2120,7 @@ TEST_F(EngineSyncTest, HalfDoubleEachOther) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(0.0);
 
-    EXPECT_DOUBLE_EQ(75.0,
+    EXPECT_DOUBLE_EQ(150,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1.0);
@@ -2141,9 +2141,11 @@ TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {
 }
 
 TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
+    // Turn off quantize for both decks
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 0);
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 0);
     // If we press play on a sync deck, we will only sync phase to a non-sync
     // deck if there are no sync decks and the non-sync deck is playing.
-
     auto pButtonSyncEnabled1 =
             std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
@@ -2596,6 +2598,8 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
 }
 
 TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
+    ControlObject::set(ConfigKey(m_sGroup1, QStringLiteral("quantize")), 0);
+    ControlObject::set(ConfigKey(m_sGroup2, QStringLiteral("quantize")), 0);
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonBeatsync1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync");
     auto pButtonBeatsyncPhase1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync_phase");
@@ -3113,4 +3117,69 @@ TEST_F(EngineSyncTest, BeatContextRounding) {
     EXPECT_NEAR(-0.021112622826908536,
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
             kMaxFloatingPointErrorHighPrecision);
+}
+
+TEST_F(EngineSyncTest, KeepCorrectFactorUponResync) {
+    /* Usecase
+        - load track @ 174bpm in deck 1
+        - load track @ 87 bpm in deck 2
+        - Sync deck 2 to 1, keep 87 BPM on deck 2
+        - adjust rate slider on deck 1 to 184bpm
+        - Sync deck 2 to 1, get 92 BPM on deck 2
+    */
+    m_pMixerDeck1->loadFakeTrack(false, 174.0);
+    m_pMixerDeck2->loadFakeTrack(false, 87.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(174.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(87.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_enabled"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_leader"), 1.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(174.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(87.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(184.0 / 174));
+    ProcessBuffer();
+    EXPECT_NEAR(184.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")), 0.001);
+    EXPECT_NEAR(92.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")), 0.001);
+    EXPECT_NEAR(getRateSliderValue(1.0574),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate")),
+            0.005);
+}
+
+// There is a race condition preventing this usecase to work.
+// https://github.com/mixxxdj/mixxx/issues/13689
+TEST_F(EngineSyncTest, DISABLED_KeepCorrectFactorOnLoad) {
+    /* Usecase
+        - load track @ 174bpm in deck 1 and enable sync leader
+        - enable sync follower on the empty second track
+        - load track @ 87 bpm in deck 2
+        - deck 2 should remain at 87 BPM and rate of 1.0
+    */
+    m_pMixerDeck1->loadFakeTrack(false, 174.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(174.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_enabled"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_leader"), 1.0);
+    ProcessBuffer();
+
+    m_pMixerDeck2->loadFakeTrack(false, 87.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(174.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(87.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(184.0 / 174));
+    ProcessBuffer();
+    EXPECT_NEAR(184.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")), 0.001);
+    EXPECT_NEAR(92.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")), 0.001);
+    EXPECT_NEAR(getRateSliderValue(1.0574),
+            ControlObject::get(ConfigKey(m_sGroup2, "rate")),
+            0.005);
 }

@@ -30,6 +30,8 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
                     kDefaultTrackTableBackgroundColorOpacity),
             kMinTrackTableBackgroundColorOpacity,
             kMaxTrackTableBackgroundColorOpacity);
+
+    m_overviewSignalColors.setup(node, context);
 }
 
 bool WLibrary::registerView(const QString& name, QWidget* pView) {
@@ -53,9 +55,6 @@ void WLibrary::switchToView(const QString& name) {
     const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
-    LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
-            currentWidget());
-
     QWidget* pWidget = m_viewMap.value(name, nullptr);
     if (pWidget != nullptr) {
         LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
@@ -66,8 +65,10 @@ void WLibrary::switchToView(const QString& name) {
             return;
         }
         if (currentWidget() != pWidget) {
-            if (pOldLibrartView) {
-                pOldLibrartView->saveCurrentViewState();
+            LibraryView* pOldLibraryView = dynamic_cast<LibraryView*>(
+                    currentWidget());
+            if (pOldLibraryView) {
+                pOldLibraryView->saveCurrentViewState();
             }
             //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(pWidget);
@@ -106,12 +107,11 @@ WTrackTableView* WLibrary::getCurrentTrackTableView() const {
     QWidget* pCurrent = currentWidget();
     WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
     if (!pTracksView) {
-        // This view is no tracks view, but maybe a special tracks view with a
-        // controls row (DlgAutoDJ, DlgRecording)?
-        // qDebug() << "   view is no tracks view. look for tracks view child";
+        // This view is not a tracks view, but possibly a special library view
+        // with a controls row and a track view (DlgAutoDJ, DlgRecording etc.)?
         pTracksView = pCurrent->findChild<WTrackTableView*>();
     }
-    return pTracksView; // might be nullptr
+    return pTracksView; // might still be nullptr
 }
 
 bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
@@ -128,7 +128,7 @@ bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
 }
 
 void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
-    //qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
+    // qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
     if (!trackId.isValid()) {
         return;
     }
@@ -136,7 +136,10 @@ void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
     if (!pTracksView) {
         return;
     }
-    pTracksView->slotSelectTrack(trackId);
+    if (pTracksView->isTrackInCurrentView(trackId)) {
+        pTracksView->selectTrack(trackId);
+        pTracksView->setFocus();
+    }
 }
 
 void WLibrary::saveCurrentViewState() const {

@@ -102,24 +102,24 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
         return false;
     }
 
-    QDomDocument doc("SamplerBank");
+    QDomDocument doc(QStringLiteral("SamplerBank"));
 
-    QDomElement root = doc.createElement("samplerbank");
+    QDomElement root = doc.createElement(QStringLiteral("samplerbank"));
     doc.appendChild(root);
 
-    for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
-        Sampler* pSampler = m_pPlayerManager->getSampler(i + 1);
+    for (int i = 0; i < m_pPlayerManager->numberOfSamplers(); ++i) {
+        Sampler* pSampler = m_pPlayerManager->getSampler(i);
         if (!pSampler) {
             continue;
         }
-        QDomElement samplerNode = doc.createElement(QString("sampler"));
+        QDomElement samplerNode = doc.createElement(QStringLiteral("sampler"));
 
-        samplerNode.setAttribute("group", pSampler->getGroup());
+        samplerNode.setAttribute(QStringLiteral("group"), pSampler->getGroup());
 
         TrackPointer pTrack = pSampler->getLoadedTrack();
         if (pTrack) {
             QString samplerLocation = pTrack->getLocation();
-            samplerNode.setAttribute("location", samplerLocation);
+            samplerNode.setAttribute(QStringLiteral("location"), samplerLocation);
         }
         root.appendChild(samplerNode);
     }
@@ -207,12 +207,17 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                 int samplerNum;
 
                 if (!group.isEmpty() && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
-                    if (m_pPlayerManager->numSamplers() < (unsigned)samplerNum) {
+                    if (m_pPlayerManager->numberOfSamplers() < samplerNum) {
                         m_pCONumSamplers->set(samplerNum);
                     }
 
                     if (location.isEmpty()) {
-                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group, false);
+                        m_pPlayerManager->slotLoadTrackToPlayer(
+                                TrackPointer(), group,
+#ifdef __STEM__
+                                mixxx::StemChannelSelection(),
+#endif
+                                false);
                     } else {
                         m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
                     }

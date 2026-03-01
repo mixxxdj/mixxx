@@ -1,8 +1,14 @@
 #pragma once
 
+#include <QFuture>
+#include <memory>
+#include <mutex>
+#include <optional>
+
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidiothread.h"
+#include "controllers/hid/hidreportdescriptor.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 
 /// HID controller backend
@@ -17,8 +23,67 @@ class HidController final : public Controller {
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
+
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return m_deviceInfo.getPhysicalTransportProtocol();
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        return DataRepresentationProtocol::HID;
+    }
+    // Note, that for non-USB devices, the VendorString/ProductString can
+    // contain the driver manufacturer, instead of the actual device
+    // manufacturer. The VID/PID is a more reliable way to identify a HID
+    // device.
+    QString getVendorString() const override {
+        return m_deviceInfo.getVendorString();
+    }
+    QString getProductString() const override {
+        return m_deviceInfo.getProductString();
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return m_deviceInfo.getProductId();
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return m_deviceInfo.getVendorId();
+    }
+    QString getSerialNumber() const override {
+        return m_deviceInfo.getSerialNumber();
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return m_deviceInfo.getUsbInterfaceNumber();
+    }
+    uint16_t getUsagePage() const {
+        return m_deviceInfo.getUsagePage();
+    }
+
+    uint16_t getUsage() const {
+        return m_deviceInfo.getUsage();
+    }
+
+    QString getUsagePageDescription() const {
+        return m_deviceInfo.getUsagePageDescription();
+    }
+
+    QString getUsageDescription() const {
+        return m_deviceInfo.getUsageDescription();
+    }
+
+    std::shared_ptr<const hid::reportDescriptor::HidReportDescriptor> getReportDescriptor() const {
+        return m_reportDescriptor;
+    }
+
+    HidIoThread* getHidIoThread() const {
+        return m_pHidIoThread.get();
+    }
 
     bool isMappable() const override {
         if (!m_pMapping) {
@@ -29,19 +94,42 @@ class HidController final : public Controller {
 
     bool matchMapping(const MappingInfo& mapping) override;
 
-  private slots:
-    int open() override;
-    int close() override;
+    // Start fetching the device's HID report descriptor in a background thread.
+    // The fetched raw descriptor is stored inside the DeviceInfo owned by this
+    // HidController instance so it will be available later when the device is
+    // opened for real.
+    void fetchReportDescriptorInBackground();
 
   private:
+    int open(const QString& resourcePath) override;
+    int close() override;
+
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void sendBytes(const QByteArray& data) override;
+    bool sendBytes(const QByteArray& data) override;
 
-    const mixxx::hid::DeviceInfo m_deviceInfo;
+    mixxx::hid::DeviceInfo m_deviceInfo;
+    // These optional members are not set before opening the device
+    std::shared_ptr<hid::reportDescriptor::HidReportDescriptor> m_reportDescriptor;
+    std::optional<bool> m_deviceUsesReportIds;
 
     std::unique_ptr<HidIoThread> m_pHidIoThread;
-    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
+    std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
+
+    // Background thread used to fetch raw HID report descriptor during
+    // enumeration so mapping detection can use it without blocking the startup.
+    QFuture<void> m_reportDescriptorFuture;
+
+    // Protects access to m_reportDescriptor and m_deviceUsesReportIds from
+    // concurrent access between the background fetch thread
+    // and the hid controller thread that opens the device.
+    mutable std::mutex m_reportDescriptorMutex;
+
+    // A persistent lock on m_reportDescriptorMutex, acquired in open() and
+    // released in close(). This prevents the background fetch thread from
+    // modifying the report descriptor while it is being used. When a
+    // unique_lock is reset, it automatically releases the mutex it holds.
+    std::optional<std::unique_lock<std::mutex>> m_reportDescriptorLock;
 
     friend class HidControllerJSProxy;
 };

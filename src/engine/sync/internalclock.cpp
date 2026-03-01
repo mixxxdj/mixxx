@@ -44,8 +44,7 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
 
     m_pSyncLeaderEnabled.reset(
             new ControlPushButton(ConfigKey(m_group, "sync_leader")));
-    m_pSyncLeaderEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncLeaderEnabled->setStates(3);
+    m_pSyncLeaderEnabled->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &InternalClock::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
     m_pSyncLeaderEnabled->addAlias(ConfigKey(m_group, QStringLiteral("sync_master")));
@@ -106,7 +105,7 @@ double InternalClock::getBeatDistance() const {
 
 void InternalClock::updateLeaderBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::updateLeaderBeatDistance" << beatDistance;
+        kLogger.trace() << "updateLeaderBeatDistance" << beatDistance;
     }
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
@@ -124,7 +123,7 @@ mixxx::Bpm InternalClock::getBpm() const {
 
 void InternalClock::updateLeaderBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::setBpm" << bpm;
+        kLogger.trace() << "setBpm" << bpm;
     }
     if (!bpm.isValid()) {
         return;
@@ -135,7 +134,7 @@ void InternalClock::updateLeaderBpm(mixxx::Bpm bpm) {
 
 void InternalClock::updateInstantaneousBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::setInstantaneousBpm" << bpm;
+        kLogger.trace() << "setInstantaneousBpm" << bpm;
     }
     // Do nothing.
     Q_UNUSED(bpm);
@@ -146,7 +145,7 @@ void InternalClock::notifyLeaderParamSource() {
 
 void InternalClock::reinitLeaderParams(double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::reinitLeaderParams" << beatDistance << baseBpm << bpm;
+        kLogger.trace() << "reinitLeaderParams" << beatDistance << baseBpm << bpm;
     }
     if (!bpm.isValid() || !baseBpm.isValid()) {
         return;
@@ -211,13 +210,13 @@ void InternalClock::updateBeatLength(mixxx::audio::SampleRate sampleRate, mixxx:
     updateLeaderBeatDistance(oldBeatDistance);
 }
 
-void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 
-void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize) {
+void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
     updateBeatLength(sampleRate, getBpm());
 
     // stereo samples, so divide by 2

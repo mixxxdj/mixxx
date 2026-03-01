@@ -2,9 +2,14 @@
 
 #include <libusb.h>
 
+#if defined(Q_OS_ANDROID)
+#include "controllers/android.h"
+#endif
+
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
+#include "util/cmdlineargs.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -52,6 +57,7 @@ void BulkReader::run() {
     qDebug() << "Stopped Reader";
 }
 
+#ifndef Q_OS_ANDROID
 static QString get_string(libusb_device_handle* handle, uint8_t id) {
     unsigned char buf[128] = { 0 };
 
@@ -71,7 +77,8 @@ BulkController::BulkController(libusb_context* context,
           m_context(context),
           m_phandle(handle),
           m_inEndpointAddr(0),
-          m_outEndpointAddr(0) {
+          m_outEndpointAddr(0),
+          m_pReader(nullptr) {
     m_vendorId = desc->idVendor;
     m_productId = desc->idProduct;
 
@@ -79,12 +86,36 @@ BulkController::BulkController(libusb_context* context,
     m_product = get_string(handle, desc->iProduct);
     m_sUID = get_string(handle, desc->iSerialNumber);
 
-    setDeviceCategory(tr("USB Controller"));
+    setInputDevice(true);
+    setOutputDevice(true);
+}
+#else
+BulkController::BulkController(const QJniObject& usbDevice)
+        : Controller(QString("%1 %2").arg(
+                  usbDevice.callMethod<jstring>("getProductName").toString(),
+                  usbDevice.callMethod<jstring>("getSerialNumber").toString())),
+          m_context(nullptr),
+          m_phandle(nullptr),
+          m_androidUsbDevice(usbDevice),
+          m_inEndpointAddr(0),
+          m_outEndpointAddr(0),
+          m_pReader(nullptr) {
+    m_vendorId = static_cast<unsigned short>(usbDevice.callMethod<jint>("getVendorId"));
+    m_productId = static_cast<unsigned short>(usbDevice.callMethod<jint>("getProductId"));
+
+    m_manufacturer = usbDevice.callMethod<jstring>("getManufacturerName").toString();
+    m_product = usbDevice.callMethod<jstring>("getProductName").toString();
+    m_sUID = usbDevice.callMethod<jstring>("getSerialNumber").toString();
+    if (m_sUID.isEmpty()) {
+        // Android won't allow reading serial number if permission wasn't
+        // granted previously. Is this an issue?
+        m_sUID = "N/A";
+    }
 
     setInputDevice(true);
     setOutputDevice(true);
-    m_pReader = nullptr;
 }
+#endif
 
 BulkController::~BulkController() {
     if (isOpen()) {
@@ -97,15 +128,39 @@ QString BulkController::mappingExtension() {
 }
 
 void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
+    m_pMutableMapping = pMapping;
+    m_pMapping = downcastAndClone<LegacyHidControllerMapping>(pMapping.get());
 }
 
-std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+QList<LegacyControllerMapping::ScriptFileInfo> BulkController::getMappingScriptFiles() {
     if (!m_pMapping) {
-        return nullptr;
+        return {};
     }
-    return m_pMapping->clone();
+    return m_pMapping->getScriptFiles();
 }
+
+QList<std::shared_ptr<AbstractLegacyControllerSetting>> BulkController::getMappingSettings() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getSettings();
+}
+
+#ifdef MIXXX_USE_QML
+QList<LegacyControllerMapping::QMLModuleInfo> BulkController::getMappingModules() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getModules();
+}
+
+QList<LegacyControllerMapping::ScreenInfo> BulkController::getMappingInfoScreens() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->getInfoScreens();
+}
+#endif
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {
     const QList<ProductInfo>& products = mapping.getProducts();
@@ -130,42 +185,97 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
         return false;
     }
 
-#if defined(__WINDOWS__) || defined(__APPLE__)
     value = product.interface_number.toInt(&ok, 16);
-    if (!ok || m_interfaceNumber != static_cast<unsigned int>(value)) {
+    if (!ok || m_interfaceNumber != value) {
         return false;
     }
-#endif
 
     // Match found
     return true;
 }
 
-int BulkController::open() {
+int BulkController::open(const QString& resourcePath) {
     if (isOpen()) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "already open";
         return -1;
     }
 
     /* Look up endpoint addresses in supported database */
-    int i;
-    for (i = 0; bulk_supported[i].vendor_id; ++i) {
-        if ((bulk_supported[i].vendor_id == m_vendorId) &&
-                (bulk_supported[i].product_id == m_productId)) {
-            m_inEndpointAddr = bulk_supported[i].in_epaddr;
-            m_outEndpointAddr = bulk_supported[i].out_epaddr;
-#if defined(__WINDOWS__) || defined(__APPLE__)
-            m_interfaceNumber = bulk_supported[i].interface_number;
-#endif
-            break;
-        }
-    }
 
-    if (bulk_supported[i].vendor_id == 0) {
+    const bulk_support_lookup* pDevice = std::find_if(
+            std::cbegin(bulk_supported), std::cend(bulk_supported), [this](const auto& dev) {
+                return dev.key.vendor_id == m_vendorId && dev.key.product_id == m_productId;
+            });
+    if (pDevice == std::cend(bulk_supported)) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
+    m_inEndpointAddr = pDevice->endpoints.in_epaddr;
+    m_outEndpointAddr = pDevice->endpoints.out_epaddr;
+    m_interfaceNumber = pDevice->endpoints.interface_number;
 
+#ifdef __ANDROID__
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    QJniObject USB_SERVICE =
+            QJniObject::getStaticObjectField(
+                    "android/content/Context",
+                    "USB_SERVICE",
+                    "Ljava/lang/String;");
+    auto usbManager = context.callObjectMethod("getSystemService",
+            "(Ljava/lang/String;)Ljava/lang/Object;",
+            USB_SERVICE.object());
+    if (!usbManager.isValid()) {
+        qDebug() << "usbManager invalid";
+        return -1;
+    }
+
+    if (!usbManager.callMethod<jboolean>("hasPermission",
+                "(Landroid/hardware/usb/UsbDevice;)Z",
+                m_androidUsbDevice)) {
+        auto pendingIntent = mixxx::android::getIntent();
+        usbManager.callMethod<void>("requestPermission",
+                "(Landroid/hardware/usb/UsbDevice;Landroid/app/"
+                "PendingIntent;)V",
+                m_androidUsbDevice,
+                pendingIntent);
+        // Wait for permission
+        if (!mixxx::android::waitForPermission(m_androidUsbDevice)) {
+            qDebug() << "access to device wasn't granted";
+            return -1;
+        }
+        m_sUID = m_androidUsbDevice.callMethod<jstring>("getSerialNumber").toString();
+    }
+    m_androidConnection = usbManager.callMethod<jobject>("openDevice",
+            "(Landroid/hardware/usb/UsbDevice;)Landroid/hardware/usb/"
+            "UsbDeviceConnection;",
+            m_androidUsbDevice);
+
+    if (!m_androidConnection.isValid()) {
+        qDebug() << "Unable to open BULK device";
+        return -1;
+    }
+
+    auto fileDescriptor = static_cast<intptr_t>(
+            m_androidConnection.callMethod<jint>("getFileDescriptor"));
+
+    // Open device by file descriptor
+    qCInfo(m_logBase) << "Opening BULK device" << getName()
+                      << "by file descriptor"
+                      << fileDescriptor << "and interface"
+                      << m_interfaceNumber;
+
+    libusb_set_option(nullptr, LIBUSB_OPTION_NO_DEVICE_DISCOVERY);
+    libusb_init(&m_context);
+    int error = libusb_wrap_sys_device(nullptr, (intptr_t)fileDescriptor, &m_phandle);
+    if (error < 0) {
+        qCWarning(m_logBase) << "Cannot open interface for" << getName()
+                             << ":" << libusb_error_name(error);
+        libusb_close(m_phandle);
+        return -1;
+    } else {
+        qCDebug(m_logBase) << "Opened interface for" << getName();
+    }
+#else
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == nullptr) {
         m_phandle = libusb_open_device_with_vid_pid(
@@ -176,33 +286,23 @@ int BulkController::open() {
         qCWarning(m_logBase) << "Unable to open USB Bulk device" << getName();
         return -1;
     }
-
-#if defined(__WINDOWS__) || defined(__APPLE__)
-    if (m_interfaceNumber && libusb_kernel_driver_active(m_phandle, m_interfaceNumber) == 1) {
-        qCDebug(m_logBase) << "Found a driver active for" << getName();
-        if (libusb_detach_kernel_driver(m_phandle, 0) == 0)
-            qCDebug(m_logBase) << "Kernel driver detached for" << getName();
-        else {
-            qCWarning(m_logBase) << "Couldn't detach kernel driver for" << getName();
-            libusb_close(m_phandle);
-            return -1;
-        }
+    if (libusb_set_auto_detach_kernel_driver(m_phandle, true) == LIBUSB_ERROR_NOT_SUPPORTED) {
+        qCDebug(m_logBase) << "unable to automatically detach kernel driver for" << getName();
     }
+#endif
 
-    if (m_interfaceNumber) {
-        int ret = libusb_claim_interface(m_phandle, m_interfaceNumber);
-        if (ret < 0) {
+    if (m_interfaceNumber.has_value()) {
+        int error = libusb_claim_interface(m_phandle, *m_interfaceNumber);
+        if (error < 0) {
             qCWarning(m_logBase) << "Cannot claim interface for" << getName()
-                                 << ":" << libusb_error_name(ret);
+                                 << ":" << libusb_error_name(error);
             libusb_close(m_phandle);
             return -1;
         } else {
             qCDebug(m_logBase) << "Claimed interface for" << getName();
         }
     }
-#endif
 
-    setOpen(true);
     startEngine();
 
     if (m_pReader != nullptr) {
@@ -223,7 +323,8 @@ int BulkController::open() {
         // audio directly, like when scratching
         m_pReader->start(QThread::HighPriority);
     }
-
+    applyMapping(resourcePath);
+    setOpen(true);
     return 0;
 }
 
@@ -255,17 +356,21 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
-#if defined(__WINDOWS__) || defined(__APPLE__)
-    if (m_interfaceNumber) {
-        int ret = libusb_release_interface(m_phandle, m_interfaceNumber);
-        if (ret < 0) {
+    if (m_interfaceNumber.has_value()) {
+        int error = libusb_release_interface(m_phandle, *m_interfaceNumber);
+        if (error < 0) {
             qCWarning(m_logBase) << "Cannot release interface for" << getName()
-                                 << ":" << libusb_error_name(ret);
+                                 << ":" << libusb_error_name(error);
         }
     }
-#endif
     qCInfo(m_logBase) << "  Closing device";
     libusb_close(m_phandle);
+
+#ifdef Q_OS_ANDROID
+    if (m_androidConnection.isValid()) {
+        m_androidConnection.callMethod<void>("close");
+    }
+#endif
     m_phandle = nullptr;
     setOpen(false);
     return 0;
@@ -281,13 +386,13 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
     sendBytes(temp);
 }
 
-void BulkController::sendBytes(const QByteArray& data) {
+bool BulkController::sendBytes(const QByteArray& data) {
     VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
             m_pMapping->getDeviceDirection() &
                     LegacyControllerMapping::DeviceDirection::Outgoing) {
         qDebug() << "The mapping for the bulk device" << getName()
                  << "doesn't require sending data. Ignoring sending request.";
-        return;
+        return false;
     }
 
     int ret;
@@ -299,12 +404,15 @@ void BulkController::sendBytes(const QByteArray& data) {
             (unsigned char*)data.constData(),
             data.size(),
             &transferred,
-            0);
+            5000 // Send timeout in milliseconds
+    );
     if (ret < 0) {
         qCWarning(m_logOutput) << "Unable to send data to" << getName()
                                << "serial #" << m_sUID << "-" << libusb_error_name(ret);
-    } else {
+        return false;
+    } else if (CmdlineArgs::Instance().getControllerDebug()) {
         qCDebug(m_logOutput) << transferred << "bytes sent to" << getName()
                              << "serial #" << m_sUID;
     }
+    return true;
 }

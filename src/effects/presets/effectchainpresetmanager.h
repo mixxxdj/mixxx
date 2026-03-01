@@ -9,6 +9,7 @@
 struct EffectsXmlData {
     QHash<QString, EffectManifestPointer> eqEffectManifests;
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
+    QHash<QString, EffectChainPresetPointer> quickStemEffectChainPresets;
     QList<EffectChainPresetPointer> standardEffectChainPresets;
     EffectChainPresetPointer outputChainPreset;
 };
@@ -81,6 +82,8 @@ class EffectChainPresetManager : public QObject {
     EffectsXmlData readEffectsXml(const QDomDocument& doc, const QStringList& deckStrings);
     EffectXmlDataSingleDeck readEffectsXmlSingleDeck(
             const QDomDocument& doc, const QString& deckString);
+    EffectChainPresetPointer readEffectsXmlSingleDeckStem(
+            const QDomDocument& doc, const QString& deckStemString);
     void saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data);
 
   signals:

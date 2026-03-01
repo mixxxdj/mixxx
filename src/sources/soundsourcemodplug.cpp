@@ -85,7 +85,8 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
         bool resetMissingTagMetadata) const {
     if (pTrackMetadata != nullptr) {
         QFile modFile(getLocalFileName());
-        modFile.open(QIODevice::ReadOnly);
+        [[maybe_unused]] auto result = modFile.open(QIODevice::ReadOnly);
+        DEBUG_ASSERT(result);
         const QByteArray fileBuf(modFile.readAll());
         modFile.close();
 
@@ -118,13 +119,14 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
-    ScopedTimer t(u"SoundSourceModPlug::open()");
+    ScopedTimer t(QStringLiteral("SoundSourceModPlug::open()"));
 
     // read module file to byte array
     const QString fileName(getLocalFileName());
     QFile modFile(fileName);
     kLogger.debug() << "Loading ModPlug module " << modFile.fileName();
-    modFile.open(QIODevice::ReadOnly);
+    [[maybe_unused]] auto result = modFile.open(QIODevice::ReadOnly);
+    DEBUG_ASSERT(result);
     m_fileBuf = modFile.readAll();
     modFile.close();
 

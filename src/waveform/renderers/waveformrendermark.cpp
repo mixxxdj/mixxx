@@ -37,17 +37,13 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                     m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
             const double sampleEndPosition = pMark->getSampleEndPosition();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-                // Pixmaps are expected to have the mark stroke at the center,
-                // and preferably have an odd width in order to have the stroke
-                // exactly at the sample position.
-                const int markHalfWidth =
-                        static_cast<int>(image.width() / 2.0 /
-                                m_waveformRenderer->getDevicePixelRatio());
-                const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfWidth;
+                const int markWidth = std::lround(image.width() /
+                        m_waveformRenderer->getDevicePixelRatio());
+                const int drawOffset = std::lround(currentMarkPoint + pMark->getOffset());
 
                 bool visible = false;
                 // Check if the current point needs to be displayed.
-                if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
+                if (drawOffset > -markWidth && drawOffset < m_waveformRenderer->getWidth()) {
                     painter->drawImage(drawOffset, 0, image);
                     visible = true;
                 }
@@ -84,16 +80,15 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                     pMark, drawOffset});
                 }
             } else {
-                const int markHalfHeight =
-                        static_cast<int>(image.height() / 2.0 /
-                                m_waveformRenderer->getDevicePixelRatio());
-                const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfHeight;
+                const int markHeight = std::lroundf(image.height() /
+                        m_waveformRenderer->getDevicePixelRatio());
+                const int drawOffset =
+                        std::lround(static_cast<float>(currentMarkPoint) +
+                                pMark->getOffset());
 
                 bool visible = false;
                 // Check if the current point needs to be displayed.
-                if (currentMarkPoint > -markHalfHeight &&
-                        currentMarkPoint < m_waveformRenderer->getHeight() +
-                                        markHalfHeight) {
+                if (drawOffset > -markHeight && drawOffset < m_waveformRenderer->getHeight()) {
                     painter->drawImage(0, drawOffset, image);
                     visible = true;
                 }
@@ -142,6 +137,16 @@ void WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
     } else {
         pMark->m_pGraphics = std::make_unique<ImageGraphics>(
                 pMark->generateImage(m_waveformRenderer->getDevicePixelRatio())
+                        .transformed(QTransform().rotate(90)));
+    }
+}
+void WaveformRenderMark::updateEndMarkImage(WaveformMarkPointer pMark) {
+    if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+        pMark->m_pEndGraphics = std::make_unique<ImageGraphics>(
+                pMark->generateEndImage(m_waveformRenderer->getDevicePixelRatio()));
+    } else {
+        pMark->m_pEndGraphics = std::make_unique<ImageGraphics>(
+                pMark->generateEndImage(m_waveformRenderer->getDevicePixelRatio())
                         .transformed(QTransform().rotate(90)));
     }
 }

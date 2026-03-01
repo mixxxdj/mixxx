@@ -144,7 +144,6 @@
         <Children>
           <Time>
             <TooltipId>time</TooltipId>
-            <CustomFormat>hh:mm</CustomFormat>
           </Time>
         </Children>
       </WidgetGroup>
@@ -270,14 +269,14 @@
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
-      <Template src="skin:/controls/button_4state_display.xml">
+      <Template src="skins:LateNight/controls/button_4state_display.xml">
         <SetVariable name="ObjectName">BroadcastButton</SetVariable>
         <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
         <SetVariable name="Size">72f,20f</SetVariable>
         <SetVariable name="state_0_text">      ON AIR</SetVariable>
         <SetVariable name="state_1_text">       ...</SetVariable>
         <SetVariable name="state_2_text">      ON AIR</SetVariable>
-        <SetVariable name="state_3_text">       ---</SetVariable>
+        <SetVariable name="state_3_text">      ERROR</SetVariable>
         <SetVariable name="ConfigKey">[Shoutcast],enabled</SetVariable>
         <SetVariable name="ConfigKeyDisp">[Shoutcast],status</SetVariable>
       </Template>

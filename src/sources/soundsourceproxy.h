@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QMimeType>
 
 #include "sources/soundsourceproviderregistry.h"
@@ -100,7 +102,7 @@ class SoundSourceProxy {
     /// while reading.
     static std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
     importTrackMetadataAndCoverImageFromFile(
-            mixxx::FileAccess trackFileAccess,
+            const mixxx::FileAccess& trackFileAccess,
             mixxx::TrackMetadata* pTrackMetadata,
             QImage* pCoverImage,
             bool resetMissingTagMetadata);
@@ -201,6 +203,7 @@ class SoundSourceProxy {
     static QHash<QMimeType, QString> s_fileTypeByMimeType;
 
     friend class TrackCollectionManager;
+    FRIEND_TEST(TrackMetadataExportTest, keepWithespaceKey);
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             const SyncTrackMetadataParams& syncParams);

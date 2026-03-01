@@ -380,7 +380,7 @@ void BiquadFullKillEQEffect::processChannel(
         pState->m_highKill->pauseFilter();
     }
 
-    if (activeFilters == 0) {
+    if (activeFilters == 0 && pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
 

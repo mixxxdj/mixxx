@@ -14,6 +14,8 @@
 #include "util/debug.h"
 #include "util/timer.h"
 
+const QString kSkinsDirName = QStringLiteral("skins");
+
 namespace mixxx {
 namespace skin {
 
@@ -30,20 +32,25 @@ SkinLoader::~SkinLoader() {
     LegacySkinParser::clearSharedGroupStrings();
 }
 
-QList<SkinPointer> SkinLoader::getSkins() const {
-    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+QList<SkinPointer> SkinLoader::getUserSkins() const {
+    return getSkinsFromDir(getUserSkinDir());
+}
+
+QList<SkinPointer> SkinLoader::getSystemSkins() const {
+    return getSkinsFromDir(getSytemSkinDir());
+}
+
+QList<SkinPointer> SkinLoader::getSkinsFromDir(const QDir& dir) const {
     QList<SkinPointer> skins;
-    for (const QDir& dir : skinSearchPaths) {
-        const QList<QFileInfo> fileInfos = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-        for (const QFileInfo& fileInfo : fileInfos) {
-            QDir skinDir(fileInfo.absoluteFilePath());
-            SkinPointer pSkin = skinFromDirectory(skinDir);
-            if (pSkin) {
-                VERIFY_OR_DEBUG_ASSERT(pSkin->isValid()) {
-                    continue;
-                }
-                skins.append(pSkin);
+    const QList<QFileInfo> fileInfos = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QFileInfo& fileInfo : fileInfos) {
+        QDir skinDir(fileInfo.absoluteFilePath());
+        SkinPointer pSkin = skinFromDirectory(skinDir);
+        if (pSkin) {
+            VERIFY_OR_DEBUG_ASSERT(pSkin->isValid()) {
+                continue;
             }
+            skins.append(pSkin);
         }
     }
 
@@ -53,25 +60,38 @@ QList<SkinPointer> SkinLoader::getSkins() const {
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
     QList<QDir> searchPaths;
 
-    // Add user skin path to search paths
-    QDir userSkinsPath(m_pConfig->getSettingsPath());
-    if (userSkinsPath.cd("skins")) {
-        searchPaths.append(userSkinsPath);
+    const auto userSkinDir = getUserSkinDir();
+    if (!userSkinDir.path().isEmpty()) {
+        searchPaths.append(userSkinDir);
     }
 
-    // If we can't find the skins folder then we can't load a skin at all. This
-    // is a critical error in the user's Mixxx installation.
-    QDir skinsPath(m_pConfig->getResourcePath());
-    if (!skinsPath.cd("skins")) {
-        reportCriticalErrorAndQuit("Skin directory does not exist: " +
-                                   skinsPath.absoluteFilePath("skins"));
-    }
-    searchPaths.append(skinsPath);
+    searchPaths.append(getSytemSkinDir());
 
     return searchPaths;
 }
 
+QDir SkinLoader::getUserSkinDir() const {
+    QDir userSkinsPath(m_pConfig->getSettingsPath());
+    if (userSkinsPath.cd(kSkinsDirName)) {
+        return userSkinsPath;
+    }
+    return {};
+}
+
+QDir SkinLoader::getSytemSkinDir() const {
+    // If we can't find the skins folder then we can't load a skin at all. This
+    // is a critical error in the user's Mixxx installation.
+    QDir skinsPath(m_pConfig->getResourcePath());
+    if (!skinsPath.cd(kSkinsDirName)) {
+        reportCriticalErrorAndQuit("Skin directory does not exist: " +
+                skinsPath.absoluteFilePath(kSkinsDirName));
+    }
+    return skinsPath;
+}
+
 SkinPointer SkinLoader::getSkin(const QString& skinName) const {
+    // If there are skins with identical name in both the resource and user
+    // directory, we'll discover the one from the user dir first
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
     for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
@@ -131,7 +151,7 @@ QString SkinLoader::getDefaultSkinName() const {
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         QSet<ControlObject*>* pSkinCreatedControls,
         mixxx::CoreServices* pCoreServices) {
-    ScopedTimer timer(u"SkinLoader::loadConfiguredSkin");
+    ScopedTimer timer(QStringLiteral("SkinLoader::loadConfiguredSkin"));
     SkinPointer pSkin = getConfiguredSkin();
 
     // If we don't have a skin then fail. This makes sense here, because the
@@ -230,22 +250,22 @@ void SkinLoader::setupSpinnyCoverControls() {
     m_pShowCover = make_parented<ControlProxy>("[Skin]", "show_coverart", this);
     m_pSelectBigSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "select_big_spinny_or_cover"), true);
-    m_pSelectBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSelectBigSpinnyCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     // This is 1 if [Skin], show_spinnies == 1 OR [Skin],show_coverart == 1
     m_pShowSpinnyAndOrCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_spinny_or_cover"));
-    m_pShowSpinnyAndOrCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowSpinnyAndOrCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pShowSpinnyAndOrCover->setReadOnly();
     // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 0
     m_pShowSmallSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_small_spinny_or_cover"));
-    m_pShowSmallSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowSmallSpinnyCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pShowSmallSpinnyCover->setReadOnly();
     // This is 1 if [Skin],show_spinny_cover == 1 AND [Skin],select_big_spinny_coverart == 1
     m_pShowBigSpinnyCover = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_big_spinny_or_cover"));
-    m_pShowBigSpinnyCover->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowBigSpinnyCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pShowBigSpinnyCover->setReadOnly();
 
     m_pShowSpinny->connectValueChanged(this, &SkinLoader::updateSpinnyCoverControls);
@@ -285,7 +305,7 @@ void SkinLoader::setupMicDuckingControls() {
     // This is 1 if at least one microphone device is configured
     m_pShowDuckingControls = std::make_unique<ControlPushButton>(
             ConfigKey("[Skin]", "show_ducking_controls"));
-    m_pShowDuckingControls->setButtonMode(ControlPushButton::TOGGLE);
+    m_pShowDuckingControls->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pShowDuckingControls->setReadOnly();
 
     m_pNumMics = make_parented<ControlProxy>(

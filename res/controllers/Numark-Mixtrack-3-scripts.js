@@ -4,25 +4,25 @@
  **********************************************************************/
 // TrackEndWarning: "true": when you reach the end of the track,
 // the jog wheel Button will flash. "false": No flash of Jog Wheel Button
-var TrackEndWarning = true;
+const TrackEndWarning = engine.getSetting("TrackEndWarning") === "true";
 
 //iCutEnabled: iCut mode will automatically cut your track with the cross fader
 // when SHIFT enabled and scratching with the jog wheel
-var iCutEnabled = true;
+const iCutEnabled = engine.getSetting("iCutEnabled") === "true";
 
 //activate PFL of deck on track load
-var smartPFL = true;
+const smartPFL = engine.getSetting("smartPFL") === "true";
 
 //Disable Play on Sync button Double Press
-var noPlayOnSyncDoublePress = false;
+const noPlayOnSyncDoublePress = engine.getSetting("noPlayOnSyncDoublePress") === "true";
 
 // Shift+Filter control behavior
 // true (default) - FX parameter 4 (when the FX is focused)
 // false - Channel Gain
-var ShiftFilterFX4 = true;
+const ShiftFilterFX4 = engine.getSetting("ShiftFilterFX4") === "true";
 
 // allow pitch bend with wheel when wheel is not active
-var PitchBendOnWheelOff = true;
+const PitchBendOnWheelOff = engine.getSetting("PitchBendOnWheelOff") === "true";
 
 /**************************
  *  scriptpause
@@ -288,7 +288,7 @@ LED.prototype.onOff = function(value) {
 //           if not set, it considers it as a switch off (default=false)
 // valueoff : like "value". That permits for instance with two colors (once red(on), once blue(off), once red(on), etc...)
 
-LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relight, valueoff) {
+LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount) {
     // stop pending timers
     this.flashOff();
 
@@ -298,8 +298,6 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
     this.valueon = value;
     this.num_ms_off = num_ms_off;
     this.flashCount = flashCount;
-    this.relight = relight;
-    this.valueoff = valueoff;
 
     // 1st flash
     // This is because the permanent timer below takes
@@ -320,7 +318,9 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(relight), true);
+        if (flashCount > 0) {
+            this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(this.relight), true);
+        }
     }
 };
 
@@ -752,7 +752,7 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs.hotCue2 = new LED(0x90 + j, leds.hotCue2);
     this.LEDs.hotCue3 = new LED(0x90 + j, leds.hotCue3);
     this.LEDs.hotCue4 = new LED(0x90 + j, leds.hotCue4);
-    this.LEDs.cue = new LED(0x90 + j, leds.Cue);
+    this.LEDs.cue = new LED(0x90 + j, leds.cue);
     this.LEDs.sync = new LED(0x90 + j, leds.sync);
     this.LEDs.play = new LED(0x90 + j, leds.play);
     this.LEDs.fx1 = new LED(0x90 + j, leds.fx1);
@@ -971,7 +971,6 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         "hotcue_2_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_3_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_4_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "track_samples": "NumarkMixtrack3.OnTrackLoaded",
         "vu_meter": "NumarkMixtrack3.OnVuMeterChange",
         "playposition": "NumarkMixtrack3.OnPlaypositionChange",
         "volume": "NumarkMixtrack3.OnVolumeChange",
@@ -1078,24 +1077,34 @@ NumarkMixtrack3.PlayButton = function(channel, control, value, status, group) {
 };
 
 NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) {
-    var shifted = (NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.
-        D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
+    const shifted = (
+        NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
+        NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
+    );
 
     if (value === ON) {
-	    if (shifted) {
-	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-	        engine.setValue("[Library]", "GoToItem", true);
-	    } else {
-	        // Browse push : maximize/minimize library view
-	        if (value === ON) {
-	            script.toggleControl("[Skin]", "show_maximized_library");
-	        }
-	    }
+        if (engine.getSetting("libraryMode") === "focus") {
+            if (shifted) {
+                // SHIFT + BROWSE push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            } else {
+                // Browse push : expand sidebar item or load track when in track table
+                engine.setValue("[Library]", "GoToItem", true);
+            }
+        } else { // Classic mode
+            if (shifted) {
+                // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+                engine.setValue("[Library]", "GoToItem", true);
+            } else {
+                // Browse push : maximize/minimize library view
+                script.toggleControl("[Skin]", "show_maximized_library");
+            }
+        }
     }
 };
 
 NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
-    var shifted = (
+    const shifted = (
         NumarkMixtrack3.decks.D1.shiftKey || NumarkMixtrack3.decks.D2.shiftKey ||
         NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey
     );
@@ -1103,11 +1112,20 @@ NumarkMixtrack3.BrowseKnob = function(channel, control, value, status, group) {
     // value = 1 / 2 / 3 ... for positive //value = 1 / 2 / 3
     var nval = (value > 0x40 ? value - 0x80 : value);
 
-    // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
-    if (shifted) {
-        engine.setValue("[Playlist]", "SelectPlaylist", nval);
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+    if (engine.getSetting("libraryMode") === "focus") {
+        // SHIFT+Turn BROWSE Knob : change focus between search, track table, and sidebar
+        if (shifted) {
+            engine.setValue("[Library]", "MoveFocus", nval);
+        } else {
+            engine.setValue("[Library]", "MoveVertical", nval);
+        }
+    } else { // Classic mode
+        // SHIFT+Turn BROWSE Knob : directory mode --> select Play List/Side bar item
+        if (shifted) {
+            engine.setValue("[Playlist]", "SelectPlaylist", nval);
+        } else {
+            engine.setValue("[Playlist]", "SelectTrackKnob", nval);
+        }
     }
 };
 
@@ -1161,7 +1179,6 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
     if (value === DOWN) {
-        deck.LEDs["headphones"].onOff(ON);
         deck.faderstart = false;
 
         if (smartPFL) {
@@ -1174,7 +1191,6 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
         if (deck.shiftKey) {
             // SHIFT + Load = fader start activated
             deck.faderstart = true;
-            deck.LEDs["headphones"].flashOn(250, ON, 250);
 
             if (!deck.trackLoaded()) {
                 engine.setValue(deck.group, "LoadSelectedTrack", true);
@@ -1983,23 +1999,6 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
         }
     } else {
         deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
-    }
-};
-
-NumarkMixtrack3.OnTrackLoaded = function(value, group, control) {
-    var deck = NumarkMixtrack3.deckFromGroup(group);
-
-    if (value !== 0) {
-        if (!deck.faderstart) {
-            // Light up the PFL light indicating that a track is loaded
-            deck.LEDs["headphones"].onOff(ON);
-        } else {
-            // Flash up the PFL light button indicating that a track is loaded with fader start
-            deck.LEDs["headphones"].flashOn(300, ON, 300);
-        }
-    } else {
-        // Switch off the PFL light indicating that a track is ejected
-        deck.LEDs["headphones"].onOff(OFF);
     }
 };
 

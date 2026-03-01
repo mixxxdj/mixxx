@@ -8,7 +8,7 @@ EngineEffectChain::EngineEffectChain(const QString& group,
         const QSet<ChannelHandleAndGroup>& registeredInputChannels,
         const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
         : m_group(group),
-          m_enableState(EffectEnableState::Enabled),
+          m_enableState(true),
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
           m_buffer1(kMaxEngineSamples),
@@ -78,16 +78,11 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     // TODO(rryan): Parameter interpolation.
     m_mixMode = message.SetEffectChainParameters.mix_mode;
     m_dMix = static_cast<CSAMPLE>(message.SetEffectChainParameters.mix);
-
-    if (m_enableState != EffectEnableState::Disabled && !message.SetEffectParameters.enabled) {
-        m_enableState = EffectEnableState::Disabling;
-    } else if (m_enableState == EffectEnableState::Disabled && message.SetEffectParameters.enabled) {
-        m_enableState = EffectEnableState::Enabling;
-    }
+    m_enableState = message.SetEffectParameters.enabled;
     return true;
 }
 
-bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
+bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
@@ -112,9 +107,9 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
     case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
         if (kEffectDebugOutput) {
             qDebug() << debugString() << this << "SET_EFFECT_CHAIN_PARAMETERS"
-                     << "enabled" << message.SetEffectChainParameters.enabled
-                     << "mix" << message.SetEffectChainParameters.mix
-                     << "mix_mode" << static_cast<int>(message.SetEffectChainParameters.mix_mode);
+                     << "enabled =" << message.SetEffectChainParameters.enabled
+                     << "mix =" << message.SetEffectChainParameters.mix
+                     << "mix_mode =" << static_cast<int>(message.SetEffectChainParameters.mix_mode);
         }
         response.success = updateParameters(message);
         break;
@@ -175,7 +170,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
-        const unsigned int numSamples,
+        const std::size_t numSamples,
         const mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         bool fadeout) {
@@ -192,20 +187,25 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
     EffectEnableState effectiveChainEnableState = channelStatus.enableState;
 
-    if (fadeout && channelStatus.enableState == EffectEnableState::Enabled) {
-        // This is the last callback before pause
-        // It can start again without further notice
-        // make use the effect is paused
-        effectiveChainEnableState = EffectEnableState::Disabling;
-    }
-
-    // If the channel is fully disabled, do not let intermediate
-    // enabling/disabling signals from the chain's enable switch override
-    // the channel's state.
-    if (effectiveChainEnableState != EffectEnableState::Disabled) {
-        if (m_enableState != EffectEnableState::Enabled) {
-            effectiveChainEnableState = m_enableState;
+    if (channelStatus.enableState == EffectEnableState::Disabling) {
+        // Disabled via disableForInputChannel().
+        channelStatus.enableState = EffectEnableState::Disabled;
+    } else if (!m_enableState || fadeout) {
+        if (channelStatus.enableState == EffectEnableState::Enabled) {
+            // fadeout is true during the last callback before the track is paused.
+            // The track is ramped to zero to avoid clicks.
+            // It can started again without further notice.
+            // Make sure the effect is paused as well.
+            effectiveChainEnableState = EffectEnableState::Disabling;
+            // Effect will be paused now, ramp up next callback which may happen later
+            // (Enabling is a standby mode).
+            channelStatus.enableState = EffectEnableState::Enabling;
+        } else if (channelStatus.enableState == EffectEnableState::Enabling) {
+            // effect is still disabled
+            effectiveChainEnableState = EffectEnableState::Disabled;
         }
+    } else if (channelStatus.enableState == EffectEnableState::Enabling) {
+        channelStatus.enableState = EffectEnableState::Enabled;
     }
 
     CSAMPLE currentMixKnob = m_dMix;
@@ -287,7 +287,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                         pIntermediateInput,
                         lastCallbackMixKnob,
                         currentMixKnob,
-                        numSamples);
+                        static_cast<int>(numSamples));
             } else {
                 // Dry+Wet mode: output = input + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
@@ -298,33 +298,12 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                         pIntermediateInput,
                         lastCallbackMixKnob,
                         currentMixKnob,
-                        numSamples);
+                        static_cast<int>(numSamples));
             }
         }
     }
 
     channelStatus.oldMixKnob = currentMixKnob;
-
-    // If the EffectProcessors have been sent a signal for the intermediate
-    // enabling/disabling state, set the channel state or chain state
-    // to the fully enabled/disabled state for the next engine callback.
-
-    if (channelStatus.enableState == EffectEnableState::Disabling) {
-        channelStatus.enableState = EffectEnableState::Disabled;
-    } else if (channelStatus.enableState == EffectEnableState::Enabling) {
-        channelStatus.enableState = EffectEnableState::Enabled;
-    }
-
-    if (fadeout && channelStatus.enableState == EffectEnableState::Enabled) {
-        // Effect is paused now, ramp up next callback which may happen later
-        channelStatus.enableState = EffectEnableState::Enabling;
-    }
-
-    if (m_enableState == EffectEnableState::Disabling) {
-        m_enableState = EffectEnableState::Disabled;
-    } else if (m_enableState == EffectEnableState::Enabling) {
-        m_enableState = EffectEnableState::Enabled;
-    }
 
     return processingOccured;
 }

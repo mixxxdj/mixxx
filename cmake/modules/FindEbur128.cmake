@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2024 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindEbur128
 -----------
@@ -48,14 +43,17 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_Ebur128 QUIET libebur128>=1.2.4)
 endif()
 
-find_path(Ebur128_INCLUDE_DIR
+find_path(
+  Ebur128_INCLUDE_DIR
   NAMES ebur128.h
   HINTS ${PC_Ebur128_INCLUDE_DIRS}
   PATH_SUFFIXES ebur128
-  DOC "Ebur128 include directory")
+  DOC "Ebur128 include directory"
+)
 mark_as_advanced(Ebur128_INCLUDE_DIR)
 
-find_library(Ebur128_LIBRARY
+find_library(
+  Ebur128_LIBRARY
   NAMES ebur128
   HINTS ${PC_Ebur128_LIBRARY_DIRS}
   DOC "Ebur128 library"
@@ -80,7 +78,8 @@ if(Ebur128_FOUND)
 
   if(NOT TARGET Ebur128::Ebur128)
     add_library(Ebur128::Ebur128 UNKNOWN IMPORTED)
-    set_target_properties(Ebur128::Ebur128
+    set_target_properties(
+      Ebur128::Ebur128
       PROPERTIES
         IMPORTED_LOCATION "${Ebur128_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Ebur128_CFLAGS_OTHER}"

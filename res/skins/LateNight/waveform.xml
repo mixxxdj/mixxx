@@ -2,6 +2,17 @@
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
   <SetVariable name="BtnType">embedded</SetVariable>
   <SetVariable name="BtnSize">library</SetVariable>
+  <SetVariable name="CoverName">BeatEditCover</SetVariable>
+  <SetVariable name="CoverConfigKey"><Variable name="Group"/>,bpmlock</SetVariable>
+
+  <SetVariable name="KnobBg">regular</SetVariable>
+  <SetVariable name="KnobIndicator">regular</SetVariable>
+  <SetVariable name="ArcRadius">
+    <Variable name="ArcRadiusBig"/>
+  </SetVariable>
+  <SetVariable name="ArcThickness">
+    <Variable name="ArcThicknessBig"/>
+  </SetVariable>
 
   <WidgetGroup>
     <ObjectName>Waveform</ObjectName>
@@ -9,9 +20,150 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
       <WidgetGroup>
+        <RequiresStem>true</RequiresStem>
+        <ObjectName>StemControls</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>240f,0me</Size>
+        <Children>
+          <WidgetGroup>
+            <Size>0me,1me</Size>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <!-- StemControlsInner -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>f,f</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <Size>1f,0min</Size>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <!-- StemControls 4ch -->
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <!-- StemCh1 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">1</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh2 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">2</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh3 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">3</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh4 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:LateNight/stem_channel.xml">
+                        <SetVariable name="StemNum">4</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+              <!-- /StemControls 4ch -->
+
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- /StemControlsInner -->
+
+          <WidgetGroup>
+            <!-- NoStemLabel -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Size>1me,3f</Size>
+              </WidgetGroup>
+              <Label>
+                <SizePolicy>min,me</SizePolicy>
+                <ObjectName>NoStemLabel</ObjectName>
+                <Text>Track has no STEMs</Text>
+              </Label>
+              <WidgetGroup>
+                <Size>1me,3f</Size>
+              </WidgetGroup>
+              <!-- WaveformMinSizeConstrain -->
+              <WidgetGroup>
+                <Size>0f,110f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],keep_consistent_waveform_heights</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- /WaveformMinSizeConstrain -->
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- /NoStemLabel -->
+
+          <WidgetGroup>
+            <Size>1me,1me</Size>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- StemControls -->
+
+
+      <WidgetGroup>
         <ObjectName>WaveformBox<Variable name="ChanNum"/></ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <Size>me,30min</Size>
         <Children>
           <Visual>
             <TooltipId>waveform_display</TooltipId>
@@ -44,6 +196,8 @@
               <Align>bottom|right</Align>
               <Color>#FF0000</Color>
               <TextColor>#FFFFFF</TextColor>
+              <EndIcon>skins:LateNight/classic/style/mark_jump_%1.svg</EndIcon>
+              <DisabledOpacity>0.25</DisabledOpacity>
               <Text> %1 </Text>
             </DefaultMark>
             <!-- Cue -->
@@ -157,8 +311,7 @@
 
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-              <!-- CurPos -->
-              <Template src="skins:LateNight/controls/button_1state_right.xml">
+              <Template src="skins:LateNight/controls/button_1state_right_optional.xml"><!-- CurPos -->
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
                 <SetVariable name="Size">26f,52f</SetVariable>
@@ -171,13 +324,14 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
-                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
+                  <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
+                    <SetVariable name="TooltipId">beats_translate_earlier_move_half_beat</SetVariable>
                     <SetVariable name="ObjectName">BeatsEarlier</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_earlier</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_half</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatsFaster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -190,14 +344,15 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
-                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
+                  <Template src="skins:LateNight/controls/button_1state_right_optional.xml">
+                    <SetVariable name="TooltipId">beats_translate_later_move_half_beat</SetVariable>
                     <SetVariable name="ObjectName">BeatsLater</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beats_translate_half</SetVariable>
                   </Template>
-                  <Template src="skins:LateNight/controls/button_1state.xml">
+                  <Template src="skins:LateNight/controls/button_1state_optional.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
@@ -207,6 +362,44 @@
                   </Template>
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->
+
+              <WidgetGroup><!-- Undo & Lock -->
+                <Layout>vertical</Layout>
+                <Size>26f,52f</Size>
+                <Children>
+                  <Template src="skins:LateNight/controls/button_1state_optional_invert.xml">
+                    <SetVariable name="TooltipId">beats_undo_adjustment</SetVariable>
+                    <SetVariable name="ObjectName">Undo</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_undo_adjustment</SetVariable>
+                    <SetVariable name="CoverConfigKey"><Variable name="Group"/>,beats_undo_possible</SetVariable>
+                  </Template>
+
+                  <!-- Custom 2-state button where 0 and 1 have the same border image -->
+                  <PushButton>
+                    <TooltipId>bpmlock</TooltipId>
+                    <ObjectName>BpmLockToggle</ObjectName>
+                    <Size>26f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>false</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,bpmlock</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+
+                </Children>
+              </WidgetGroup><!-- /Undo & Lock -->
 
               <WidgetGroup><!-- Hotcue shift -->
                 <Layout>vertical</Layout>

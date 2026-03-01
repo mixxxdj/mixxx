@@ -21,8 +21,7 @@ DlgRecording::DlgRecording(
                           this,
                           pConfig,
                           pLibrary,
-                          parent->getTrackTableBackgroundColorOpacity(),
-                          true)),
+                          parent->getTrackTableBackgroundColorOpacity())),
           m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel, true),
           m_bytesRecordedStr("--"),
@@ -124,30 +123,6 @@ void DlgRecording::slotRestoreSearch() {
     emit restoreSearch(currentSearch());
 }
 
-void DlgRecording::activateSelectedTrack() {
-    m_pTrackTableView->activateSelectedTrack();
-}
-
-void DlgRecording::slotAddToAutoDJBottom() {
-    m_pTrackTableView->slotAddToAutoDJBottom();
-}
-
-void DlgRecording::slotAddToAutoDJTop() {
-    m_pTrackTableView->slotAddToAutoDJTop();
-}
-
-void DlgRecording::slotAddToAutoDJReplace() {
-    m_pTrackTableView->slotAddToAutoDJReplace();
-}
-
-void DlgRecording::loadSelectedTrackToGroup(const QString& group, bool play) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
-}
-
-void DlgRecording::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
-}
-
 void DlgRecording::slotRecButtonClicked(bool toggle) {
     Q_UNUSED(toggle);
     m_pRecordingManager->slotToggleRecording(1);
@@ -173,8 +148,8 @@ void DlgRecording::slotRecordingStateChanged(bool isRecording) {
 
 // gets number of recorded bytes and update label
 void DlgRecording::slotBytesRecorded(int bytes) {
-    double megabytes = bytes / 1048576.0;
-    m_bytesRecordedStr = QString::number(megabytes,'f',2);
+    m_bytesRecordedStr =
+            QLocale().formattedDataSize(bytes, 1, QLocale::DataSizeSIFormat);
     refreshLabels();
 }
 
@@ -187,7 +162,7 @@ void DlgRecording::slotDurationRecorded(const QString& durationRecorded) {
 // update label besides start/stop button
 void DlgRecording::refreshLabels() {
     QString recFile = m_pRecordingManager->getRecordingFile();
-    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") +
+    QString recData = QString(QStringLiteral("(") + tr("%1 written in %2") +
             QStringLiteral(")"))
                               .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);

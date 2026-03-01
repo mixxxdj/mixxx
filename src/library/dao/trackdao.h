@@ -48,19 +48,25 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     QList<TrackId> resolveTrackIds(
+            const QList<QUrl>& urls,
+            ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
+    QList<TrackId> resolveTrackIds(
             const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
-    TrackId getTrackIdByRef(
-            const TrackRef& trackRef) const;
     QList<TrackRef> getAllTrackRefs(
             const QDir& rootDir) const;
 
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
 
-    // Returns a set of all track locations in the library.
+    // Returns a set of all track locations in the library,
+    // incl. locations of tracks currently marked as missing.
     QSet<QString> getAllTrackLocations() const;
+    // Return only tracks that are reported to exist during last scan.
+    QSet<QString> getAllExistingTrackLocations() const;
+    // Return all tracks reported missing during last scan.
+    QSet<QString> getAllMissingTrackLocations() const;
     QString getTrackLocation(TrackId trackId) const;
 
     // Only used by friend class LibraryScanner, but public for testing!
@@ -111,10 +117,12 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void tracksAdded(const QSet<TrackId>& trackIds);
     void tracksChanged(const QSet<TrackId>& trackIds);
     void tracksRemoved(const QSet<TrackId>& trackIds);
+    void waveformSummaryUpdated(const TrackId trackId);
 
     void progressVerifyTracksOutside(const QString& path);
     void progressCoverArt(const QString& file);
     void forceModelUpdate();
+    void removeTrackRows(const QSet<TrackId>& trackIds);
 
   public slots:
     // Slots to inform the TrackDAO about changes that
@@ -128,6 +136,10 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class LibraryScanner;
     friend class TrackCollection;
     friend class TrackAnalysisScheduler;
+
+    QList<TrackId> resolveTrackIds(
+            const QStringList& pathList,
+            ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
     TrackId getTrackIdByLocation(
             const QString& location) const;
@@ -148,15 +160,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackPointer& pTrack,
             bool unremove);
     TrackPointer addTracksAddFile(
-            const mixxx::FileAccess& fileAccess,
-            bool unremove);
-    TrackPointer addTracksAddFile(
             const QString& filePath,
-            bool unremove) {
-        return addTracksAddFile(
-                mixxx::FileAccess(mixxx::FileInfo(filePath)),
-                unremove);
-    }
+            bool unremove);
     void addTracksFinish(bool rollback = false);
 
     bool updateTrack(const Track& track) const;
@@ -181,6 +186,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Scanning related calls.
     void markTrackLocationsAsVerified(const QStringList& locations) const;
     void markTracksInDirectoriesAsVerified(const QStringList& directories) const;
+    void cleanupTrackLocationsDirectory() const;
     void invalidateTrackLocationsInLibrary() const;
     void markUnverifiedTracksAsDeleted();
 

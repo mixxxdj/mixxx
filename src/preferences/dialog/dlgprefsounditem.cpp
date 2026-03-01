@@ -246,14 +246,18 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     return SoundDevicePointer();
 }
 
-/// Selects a device in the device combo box given a SoundDevice
-/// internal name, or selects "None" if the device isn't found.
+/// Selects a device in the device combo box given a SoundDevice' internal name,
+/// or selects "None" if the device is nullptr or isn't found.
+/// Called only internally via DlPrefSound::loadPaths()
 void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     int index = deviceComboBox->findData(QVariant::fromValue(device));
-    //qDebug() << "DlgPrefSoundItem::setDevice" << device;
     if (index == -1) {
         deviceComboBox->setCurrentIndex(0); // None
         emit selectedDeviceChanged();
+        if (device != SoundDeviceId()) {
+            // Notify DlgPrefSound that the device that can't be found.
+            emit configuredDeviceNotFound();
+        }
     } else {
         m_emitSettingChanged = false;
         deviceComboBox->setCurrentIndex(index);

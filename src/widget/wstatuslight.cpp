@@ -40,13 +40,13 @@ void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
         if (context.hasNodeSelectElement(node, nodeName, &statusLightNode) ||
                 (i == 0 && context.hasNodeSelectElement(node, "PathBack", &statusLightNode)) ||
                 (i == 1 && context.hasNodeSelectElement(node, "PathStatusLight", &statusLightNode))) {
-            setPixmap(i, context.getPixmapSource(statusLightNode),
-                      context.selectScaleMode(
-                              statusLightNode,
-                              Paintable::FIXED),
-                              context.getScaleFactor());
+            setPixmap(i,
+                    context.getPixmapSource(statusLightNode),
+                    context.selectScaleMode(
+                            statusLightNode, Paintable::DrawMode::Fixed),
+                    context.getScaleFactor());
         } else {
-            m_pixmaps[i].clear();
+            m_pixmaps[i].reset();
         }
     }
 
@@ -62,14 +62,15 @@ void WStatusLight::setPixmap(int iState,
     }
 
     PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
-    if (!pPixmap.isNull() && !pPixmap->isNull()) {
+    if (pPixmap && !pPixmap->isNull()) {
         m_pixmaps[iState] = pPixmap;
-        if (mode == Paintable::FIXED) {
+        if (mode == Paintable::DrawMode::Fixed) {
             setFixedSize(pPixmap->size());
         }
     } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath() << iState;
-        m_pixmaps[iState].clear();
+        qDebug() << "WStatusLight" << objectName() << "Error loading pixmap"
+                 << source.getPath() << "for state" << iState;
+        m_pixmaps[iState].reset();
     }
 }
 
@@ -108,7 +109,7 @@ void WStatusLight::paintEvent(QPaintEvent * /*unused*/) {
 
     PaintablePointer pPixmap = m_pixmaps[m_iPos];
 
-    if (pPixmap.isNull() || pPixmap->isNull()) {
+    if (!pPixmap || pPixmap->isNull()) {
         return;
     }
 

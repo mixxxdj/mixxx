@@ -18,6 +18,11 @@ const ConfigKey mixxx::library::prefs::kRescanOnStartupConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("RescanOnStartup")};
 
+const ConfigKey mixxx::library::prefs::kShowScanSummaryConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("show_library_scan_summary")};
+
 const ConfigKey mixxx::library::prefs::kKeyNotationConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
@@ -109,3 +114,8 @@ const ConfigKey mixxx::library::prefs::kTagFetcherApplyCoverConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("TagFetcherApplyCover")};
+
+const ConfigKey mixxx::library::prefs::kDateFormatConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("DateFormat")};

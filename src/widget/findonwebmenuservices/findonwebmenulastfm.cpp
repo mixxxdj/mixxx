@@ -6,6 +6,7 @@
 #include "moc_findonwebmenulastfm.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "widget/findonweblast.h"
 
 namespace {
 const QString kServiceTitle = QStringLiteral("LastFm");
@@ -27,48 +28,45 @@ const QUrl composeLastfmUrl(const QString& serviceSearchUrl,
 
 } //namespace
 
-FindOnWebMenuLastfm::FindOnWebMenuLastfm(QMenu* pFindOnWebMenu, const Track& track) {
+FindOnWebMenuLastfm::FindOnWebMenuLastfm(const QPointer<QMenu>& pFindOnWebMenu,
+        QPointer<FindOnWebLast> pFindOnWebLast,
+        const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu, std::move(pFindOnWebLast)) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();
-    auto pLastfmMenu = make_parented<QMenu>(pFindOnWebMenu);
-    pLastfmMenu->setTitle(kServiceTitle);
-    pFindOnWebMenu->addMenu(pLastfmMenu);
-    pLastfmMenu->addSeparator();
+    setTitle(kServiceTitle);
+    pFindOnWebMenu->addMenu(this);
+    addSeparator();
     if (!artist.isEmpty()) {
-        const QUrl lastfmUrlArtist = composeLastfmUrl(kSearchUrlArtist, artist);
-        addActionToServiceMenu(pLastfmMenu,
-                composeActionText(tr("Artist"), artist),
-                lastfmUrlArtist);
-    }
-    if (!trackTitle.isEmpty()) {
         if (!artist.isEmpty()) {
-            const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
             const QUrl lastfmUrlArtistWithTrackTitle =
-                    composeLastfmUrl(kSearchUrlTitle, artistWithTrackTitle);
-            addActionToServiceMenu(pLastfmMenu,
-                    composeActionText(
-                            tr("Artist + Title"), artistWithTrackTitle),
+                    composeLastfmUrl(kSearchUrlTitle, composeSearchQuery(artist, trackTitle));
+            addActionToServiceMenu(
+                    kServiceTitle + QStringLiteral(",Artist,Title"),
+                    tr("Artist + Title"),
                     lastfmUrlArtistWithTrackTitle);
         }
-        const QUrl lastfmUrlTrackTitle = composeLastfmUrl(kSearchUrlTitle, trackTitle);
-        addActionToServiceMenu(pLastfmMenu,
-                composeActionText(tr("Title"), trackTitle),
-                lastfmUrlTrackTitle);
+
+        const QUrl lastfmUrlArtist = composeLastfmUrl(kSearchUrlArtist, artist);
+        addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Artist"),
+                tr("Artist"),
+                lastfmUrlArtist);
     }
+
     if (!album.isEmpty()) {
-        if (!artist.isEmpty()) {
-            const QString artistWithAlbum = composeSearchQuery(artist, album);
-            const QUrl lastfmUrlArtistWithAlbum =
-                    composeLastfmUrl(kSearchUrlAlbum, artistWithAlbum);
-            addActionToServiceMenu(pLastfmMenu,
-                    composeActionText(tr("Artist + Album"), artistWithAlbum),
-                    lastfmUrlArtistWithAlbum);
-        } else {
-            const QUrl lastfmUrlAlbum = composeLastfmUrl(kSearchUrlAlbum, album);
-            addActionToServiceMenu(pLastfmMenu,
-                    composeActionText(tr("Album"), album),
-                    lastfmUrlAlbum);
-        }
+        const QUrl lastfmUrlAlbum = composeLastfmUrl(kSearchUrlAlbum, album);
+        addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Album"),
+                tr("Album"),
+                lastfmUrlAlbum);
+    }
+    if (!trackTitle.isEmpty()) {
+        const QUrl lastfmUrlTrackTitle = composeLastfmUrl(kSearchUrlTitle, trackTitle);
+        addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Title"),
+                tr("Title"),
+                lastfmUrlTrackTitle);
     }
 }

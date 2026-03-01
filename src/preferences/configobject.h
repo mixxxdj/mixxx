@@ -15,6 +15,8 @@
 
 // Class for the key for a specific configuration element. A key consists of a
 // group and an item.
+//
+// NOTE: new ConfigKey's item should use the `snake_case` formatting
 class ConfigKey final {
   public:
     ConfigKey() = default; // is required for qMetaTypeConstructHelper()
@@ -84,7 +86,9 @@ class ConfigValue {
     explicit ConfigValue(const QDomNode&) {
         reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
     }
-    bool isNull() const { return value.isNull(); }
+    bool isNull() const {
+        return value.isNull();
+    }
 
     QString value;
 };
@@ -120,7 +124,7 @@ class ConfigValueKbd : public ConfigValue {
         return lhs.m_keys == rhs.m_keys;
     }
 
-   private:
+  private:
     QKeySequence m_keys;
 };
 
@@ -128,7 +132,8 @@ inline bool operator!=(const ConfigValueKbd& lhs, const ConfigValueKbd& rhs) {
     return !(lhs == rhs);
 }
 
-template <class ValueType> class ConfigObject {
+template<class ValueType>
+class ConfigObject {
   public:
     ConfigObject(const QString& file);
     ConfigObject(const QString& file, const QString& resourcePath, const QString& settingsPath);
@@ -154,7 +159,7 @@ template <class ValueType> class ConfigObject {
 
     // Sets the value for key to ValueType(value), over-writing pre-existing
     // values. ResultType is serialized to string on a per-type basis.
-    template <class ResultType>
+    template<class ResultType>
     void setValue(const ConfigKey& key, const ResultType& value);
     template<class EnumType>
         requires std::is_enum_v<EnumType>
@@ -165,7 +170,7 @@ template <class ValueType> class ConfigObject {
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns ResultType().
-    template <class ResultType>
+    template<class ResultType>
     ResultType getValue(const ConfigKey& key) const {
         return getValue<ResultType>(key, ResultType());
     }
@@ -175,7 +180,7 @@ template <class ValueType> class ConfigObject {
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns default_value.
-    template <class ResultType>
+    template<class ResultType>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
     template<typename EnumType>
@@ -237,3 +242,10 @@ void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const QString& va
 template<>
 template<>
 void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const bool& value);
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const unsigned int& value);
+template<>
+template<>
+unsigned int ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const unsigned int& default_value) const;

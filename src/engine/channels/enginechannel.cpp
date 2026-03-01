@@ -20,15 +20,14 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_bIsTalkoverChannel(isTalkoverChannel),
           m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
-    m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
+    m_pPFL->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pMainMix = new ControlPushButton(ConfigKey(getGroup(), "main_mix"));
-    m_pMainMix->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pMainMix->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     m_pMainMix->addAlias(ConfigKey(getGroup(), QStringLiteral("master")));
     // crossfader assignment is persistent
     m_pOrientation = new ControlPushButton(
             ConfigKey(getGroup(), "orientation"), true, defaultOrientation);
-    m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
-    m_pOrientation->setStates(3);
+    m_pOrientation->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(getGroup(), "orientation_left"));
     connect(m_pOrientationLeft, &ControlObject::valueChanged,
             this, &EngineChannel::slotOrientationLeft, Qt::DirectConnection);
@@ -39,7 +38,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
     connect(m_pOrientationCenter, &ControlObject::valueChanged,
             this, &EngineChannel::slotOrientationCenter, Qt::DirectConnection);
     m_pTalkover = new ControlPushButton(ConfigKey(getGroup(), "talkover"));
-    m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pTalkover->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
 
     if (m_pEffectsManager != nullptr) {
         m_pEffectsManager->registerInputChannel(handleGroup);

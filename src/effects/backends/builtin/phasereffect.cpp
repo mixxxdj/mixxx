@@ -2,6 +2,7 @@
 
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "util/math.h"
 
 namespace {
 constexpr unsigned int updateCoef = 32;
@@ -132,13 +133,13 @@ void PhaserEffect::processChannel(
 
     double periodParameter = m_pLFOPeriodParameter->value();
     double periodSamples;
-    if (groupFeatures.has_beat_length_sec) {
+    if (groupFeatures.beat_length.has_value()) {
         // periodParameter is a number of beats
         periodParameter = std::max(roundToFraction(periodParameter, 2.0), 1 / 4.0);
         if (m_pTripletParameter->toBool()) {
             periodParameter /= 3.0;
         }
-        periodSamples = periodParameter * groupFeatures.beat_length_sec *
+        periodSamples = periodParameter * groupFeatures.beat_length->seconds *
                 engineParameters.sampleRate();
     } else {
         // periodParameter is a number of seconds

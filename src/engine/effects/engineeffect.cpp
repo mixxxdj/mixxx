@@ -48,11 +48,9 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
 }
 
 EngineEffect::~EngineEffect() {
-    if (kEffectDebugOutput) {
+    if constexpr (kEffectDebugOutput) {
         qDebug() << debugString() << "destroyed";
     }
-    m_parametersById.clear();
-    m_parameters.clear();
 }
 
 void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
@@ -68,8 +66,8 @@ void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
     m_pProcessor->initializeInputChannel(inputChannel, engineParameters);
 }
 
-bool EngineEffect::processEffectsRequest(EffectsRequest& message,
-                                         EffectsResponsePipe* pResponsePipe) {
+bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
+        EffectsResponsePipe* pResponsePipe) {
     EngineEffectParameterPointer pParameter;
     EffectsResponse response(message);
 
@@ -129,7 +127,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
         const ChannelHandle& outputHandle,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
-        const unsigned int numSamples,
+        const std::size_t numSamples,
         const mixxx::audio::SampleRate sampleRate,
         const EffectEnableState chainEnableState,
         const GroupFeatureState& groupFeatures) {
@@ -182,7 +180,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
         const mixxx::EngineParameters engineParameters(
                 sampleRate,
-                numSamples / mixxx::kEngineChannelCount);
+                numSamples / mixxx::kEngineChannelOutputCount);
 
         m_pProcessor->process(inputHandle,
                 outputHandle,
@@ -202,14 +200,16 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
                 SampleUtil::linearCrossfadeBuffersOut(
                         pOutput,
                         pInput,
-                        numSamples);
+                        numSamples,
+                        mixxx::kEngineChannelOutputCount);
             } else if (effectiveEffectEnableState == EffectEnableState::Enabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade in (fade to wet signal)
-                SampleUtil::linearCrossfadeBuffersIn(
+                SampleUtil::linearCrossfadeBuffersOut(
                         pOutput,
                         pInput,
-                        numSamples);
+                        numSamples,
+                        mixxx::kEngineChannelOutputCount);
             }
         }
     }

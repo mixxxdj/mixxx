@@ -7,6 +7,7 @@
 #include "control/pollingcontrolproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
+#include "encoder/encodersettings.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -19,7 +20,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     EngineRecord(UserSettingsPointer pConfig);
     ~EngineRecord() override;
 
-    void process(const CSAMPLE* pBuffer, const int iBufferSize) override;
+    void process(const CSAMPLE* pBuffer, const std::size_t bufferSize) override;
     void shutdown() override {}
 
     // writes compressed audio to file
@@ -85,4 +86,5 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     QString m_cueFileName;
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
+    bool m_bCueUsesFileAnnotation;
 };

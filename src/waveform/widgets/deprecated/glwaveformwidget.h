@@ -8,9 +8,10 @@ class GLWaveformWidget : public GLWaveformWidgetAbstract {
     GLWaveformWidget(const QString& group, QWidget* parent);
     virtual ~GLWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLFilteredWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::Filtered;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }

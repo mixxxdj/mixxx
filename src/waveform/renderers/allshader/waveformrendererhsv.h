@@ -1,29 +1,28 @@
 #pragma once
 
-#include "shaders/rgbshader.h"
+#include "rendergraph/geometrynode.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/rgbdata.h"
-#include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 namespace allshader {
 class WaveformRendererHSV;
-}
+} // namespace allshader
 
-class allshader::WaveformRendererHSV final : public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererHSV final
+        : public allshader::WaveformRendererSignalBase,
+          public rendergraph::GeometryNode {
   public:
-    explicit WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget,
+            ::WaveformRendererSignalBase::Options options);
 
-    // override ::WaveformRendererSignalBase
+    // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
 
-    void initializeGL() override;
-    void paintGL() override;
+    // Virtuals for rendergraph::Node
+    void preprocess() override;
 
   private:
-    mixxx::RGBShader m_shader;
-    VertexData m_vertices;
-    RGBData m_colors;
+    bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererHSV);
 };

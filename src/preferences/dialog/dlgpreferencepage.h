@@ -28,13 +28,16 @@ class DlgPreferencePage : public QWidget {
             "</html> ")
                                                    .arg(kWarningIconPath);
 
-    void setScrollSafeGuardForAllInputWidgets(QObject* obj);
+    void setScrollSafeGuardForAllInputWidgets(QObject* pObj);
     /// Avoid undesired value changes when scrolling a preferences page while
     /// the pointer is above an input widget (QSpinBox, QComboBox, QSlider):
     /// * set the focus policy to Qt::StrongFocus (focusable by click & tab key)
     /// * forward wheel events to the top-level layout
     void setScrollSafeGuard(QWidget* pWidget);
-    bool eventFilter(QObject* obj, QEvent* e);
+    bool eventFilter(QObject* pObj, QEvent* pEvent);
+    virtual bool okayToClose() const {
+        return true;
+    }
 
     QColor m_pLinkColor;
 
@@ -77,4 +80,8 @@ class DlgPreferencePage : public QWidget {
                 palette().text().color())
                                .name();
     }
+
+  private:
+    template<typename T>
+    void setScrollSafeGuardForChildrenOfType(QObject* pObj);
 };

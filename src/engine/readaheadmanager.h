@@ -9,6 +9,7 @@
 #include "util/types.h"
 
 class LoopingControl;
+class CueControl;
 class RateControl;
 
 /// ReadAheadManager is a tool for keeping track of the engine's current position
@@ -24,7 +25,8 @@ class ReadAheadManager {
   public:
     ReadAheadManager(); // Only for testing: ReadAheadManagerMock
     ReadAheadManager(CachingReader* reader,
-                              LoopingControl* pLoopingControl);
+            LoopingControl* pLoopingControl,
+            CueControl* pCueControl);
     virtual ~ReadAheadManager();
 
     /// Call this method to fill buffer with requested_samples out of the
@@ -32,7 +34,10 @@ class ReadAheadManager {
     /// direction the audio is progressing in. Returns the total number of
     /// samples read into buffer. Note that it is very common that the total
     /// samples read is less than the requested number of samples.
-    virtual SINT getNextSamples(double dRate, CSAMPLE* buffer, SINT requested_samples);
+    virtual SINT getNextSamples(double dRate,
+            CSAMPLE* buffer,
+            SINT requested_samples,
+            mixxx::audio::ChannelCount channelCount);
 
     /// Used to add a new EngineControls that ReadAheadManager will use to decide
     /// which samples to return.
@@ -46,20 +51,22 @@ class ReadAheadManager {
     }
 
     virtual void notifySeek(double seekPosition);
-    virtual void notifySeek(mixxx::audio::FramePos position) {
-        notifySeek(position.toEngineSamplePos());
-    }
 
     /// hintReader allows the ReadAheadManager to provide hints to the reader to
     /// indicate that the given portion of a song is about to be read.
-    virtual void hintReader(double dRate, gsl::not_null<HintVector*> pHintList);
+    virtual void hintReader(double dRate,
+            gsl::not_null<HintVector*> pHintList,
+            mixxx::audio::ChannelCount channelCount);
 
+    /// Return the position in sample
     virtual double getFilePlaypositionFromLog(
             double currentFilePlayposition,
             double numConsumedSamples);
+    /// Return the position in frame
     mixxx::audio::FramePos getFilePlaypositionFromLog(
             mixxx::audio::FramePos currentPosition,
-            mixxx::audio::FrameDiff_t numConsumedFrames);
+            mixxx::audio::FrameDiff_t numConsumedFrames,
+            mixxx::audio::ChannelCount channelCount);
 
   private:
     /// An entry in the read log indicates the virtual playposition the read
@@ -118,10 +125,12 @@ class ReadAheadManager {
                          double virtualPlaypositionEndNonInclusive);
 
     LoopingControl* m_pLoopingControl;
+    CueControl* m_pCueControl;
     RateControl* m_pRateControl;
     std::list<ReadLogEntry> m_readAheadLog;
-    double m_currentPosition;
+    double m_currentPosition; // In absolute samples
     CachingReader* m_pReader;
     CSAMPLE* m_pCrossFadeBuffer;
-    bool m_cacheMissHappened;
+    int m_cacheMissCount;
+    bool m_cacheMissExpected;
 };

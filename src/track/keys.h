@@ -29,13 +29,20 @@ class Keys final {
     const QString& getSubVersion() const;
     void setSubVersion(const QString& subVersion);
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Key calculations
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Return the average key over the entire track if the key is valid.
+    // Return the average key over the entire track if analyzed by Mixxx
+    // or the Key found in the track metadata
     mixxx::track::io::key::ChromaticKey getGlobalKey() const;
+
+    // Return key text form the track metadata literally (not normalized)
     QString getGlobalKeyText() const;
+
+    // Return the detected tuning frequency in Hz (default 0 Hz).
+    // This is the reference frequency A4 that best matches the track's tuning.
+    // Stored as double to preserve cents precision.
+    double getGlobalTuningFrequencyHz() const;
+
+    // Set the tuning frequency in Hz (<0 falls back to 0 Hz).
+    void setGlobalTuningFrequencyHz(double tuningFrequencyHz);
 
   private:
     explicit Keys(const mixxx::track::io::key::KeyMap& m_keyMap);

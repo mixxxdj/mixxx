@@ -53,10 +53,12 @@ EffectPreset::EffectPreset(const EffectSlotPointer pEffectSlot)
     for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
         const EffectParameterType parameterType =
                 static_cast<EffectParameterType>(parameterTypeId);
-        for (const auto& pParameter : pEffectSlot->getLoadedParameters().value(parameterType)) {
+        const auto& loadedParameters = pEffectSlot->getLoadedParameters().value(parameterType);
+        for (const auto& pParameter : loadedParameters) {
             m_effectParameterPresets.append(EffectParameterPreset(pParameter, false));
         }
-        for (const auto& pParameter : pEffectSlot->getHiddenParameters().value(parameterType)) {
+        const auto& hiddenParameters = pEffectSlot->getHiddenParameters().value(parameterType);
+        for (const auto& pParameter : hiddenParameters) {
             m_effectParameterPresets.append(EffectParameterPreset(pParameter, true));
         }
     }

@@ -20,8 +20,7 @@ WCoverArtMenu::~WCoverArtMenu() {
 }
 
 void WCoverArtMenu::createActions() {
-    m_pChange = new QAction(tr("Choose new cover",
-            "change cover art location"), this);
+    m_pChange = new QAction(tr("Choose file", "change cover art location"), this);
     connect(m_pChange, &QAction::triggered, this, &WCoverArtMenu::slotChange);
     addAction(m_pChange);
 
@@ -41,13 +40,11 @@ void WCoverArtMenu::setCoverArt(const CoverInfo& coverInfo) {
 }
 
 void WCoverArtMenu::slotChange() {
-    QFileInfo trackFileInfo;
-
     VERIFY_OR_DEBUG_ASSERT(!m_coverInfo.trackLocation.isEmpty()) {
         return;
     }
 
-    trackFileInfo = QFileInfo(m_coverInfo.trackLocation);
+    QFileInfo trackFileInfo(m_coverInfo.trackLocation);
 
     QString initialDir;
     if (m_coverInfo.type == CoverInfo::FILE) {

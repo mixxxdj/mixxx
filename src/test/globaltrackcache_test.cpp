@@ -93,41 +93,43 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 
     const TrackId trackId(QVariant(1));
 
-    TrackPointer track;
-    {
+    TrackPointer pTrack;
+    { // resolver scope
         auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile)));
-        GlobalTrackCacheResolver resolver(testFileAccess);
-        track = resolver.getTrack();
-        EXPECT_TRUE(static_cast<bool>(track));
-        EXPECT_EQ(2, track.use_count());
+        auto resolver = GlobalTrackCacheResolver(testFileAccess);
+        pTrack = resolver.getTrack();
+        EXPECT_TRUE(static_cast<bool>(pTrack));
+        // track, GlobalTrackCacheResolver::m_strongPtr and GlobalTrackCache::m_incompleteTrack
+        EXPECT_EQ(3, pTrack.use_count());
 
         resolver.initTrackIdAndUnlockCache(trackId);
+        EXPECT_EQ(2, pTrack.use_count());
     }
-    EXPECT_EQ(1, track.use_count());
+    EXPECT_EQ(1, pTrack.use_count());
 
-    TrackWeakPointer trackWeak(track);
+    TrackWeakPointer trackWeak(pTrack);
     EXPECT_EQ(1, trackWeak.use_count());
 
-    TrackPointer trackCopy = track;
+    TrackPointer trackCopy = pTrack;
     EXPECT_EQ(2, trackCopy.use_count());
-    EXPECT_EQ(2, track.use_count());
+    EXPECT_EQ(2, pTrack.use_count());
     EXPECT_EQ(2, trackWeak.use_count());
 
     trackCopy.reset();
-    EXPECT_EQ(1, track.use_count());
+    EXPECT_EQ(1, pTrack.use_count());
     EXPECT_EQ(1, trackWeak.use_count());
 
     auto trackById = GlobalTrackCacheLocker().lookupTrackById(trackId);
-    EXPECT_EQ(track, trackById);
+    EXPECT_EQ(pTrack, trackById);
     EXPECT_EQ(2, trackById.use_count());
-    EXPECT_EQ(2, track.use_count());
+    EXPECT_EQ(2, pTrack.use_count());
     EXPECT_EQ(2, trackWeak.use_count());
 
     trackById.reset();
     EXPECT_EQ(1, trackWeak.use_count());
-    EXPECT_EQ(track, TrackPointer(trackWeak.lock()));
+    EXPECT_EQ(pTrack, TrackPointer(trackWeak.lock()));
 
-    track.reset();
+    pTrack.reset();
     EXPECT_EQ(0, trackWeak.use_count());
     EXPECT_EQ(TrackPointer(), TrackPointer(trackWeak.lock()));
 
@@ -153,7 +155,19 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     // NOTE(2019-12-14, uklotzde): On Travis and macOS executing 10_000
     // iterations takes ~1 sec. In order to safely finish this test within
     // the timeout limit of 30 sec. we use 20 * 10_000 = 200_000 iterations.
-    for (int i = 0; i < 200000; ++i) {
+    //
+    // NOTE(2024-06-03, daschuer): Reduced to 100000 because the we hit a
+    // timeout on the macos-12 GitHub workflow runner
+    // With 200000 we had:
+    // ubuntu-22.04 0.73 sec
+    // windows-2019 9.86 sec
+    // macos-11 5.81 sec
+    // macos-12 timeout after 45.02 sec (24.55 sec with 100000)
+
+    // NOTE(2024-08-31, daschuer): Reduced to 50000 to avoid timeouts
+    // With 100000 we hit a timeout on macos-13 see #14919
+
+    for (int i = 0; i < 50000; ++i) {
         m_recentTrackPtr.reset();
 
         TrackId trackId;
@@ -161,7 +175,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         TrackPointer track;
         {
             auto testFileAccess = mixxx::FileAccess(testFile);
-            GlobalTrackCacheResolver resolver(testFileAccess);
+            auto resolver = GlobalTrackCacheResolver(testFileAccess);
             track = resolver.getTrack();
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();

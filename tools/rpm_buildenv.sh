@@ -53,6 +53,7 @@ case "$1" in
             lilv-devel \
             mesa-libGL-devel \
             mesa-libGLU-devel \
+            mold \
             ninja-build \
             opus-devel \
             opusfile-devel \
@@ -60,7 +61,7 @@ case "$1" in
             portmidi-devel \
             protobuf-compiler \
             protobuf-lite-devel \
-            qt6-qt{5compat,base,base-private,declarative,shadertools,svg}-devel \
+            qt6-qt{5compat,base,base-private,declarative,multimedia,shadertools,svg}-devel \
             qtkeychain-qt6-devel \
             rubberband-devel \
             soundtouch-devel \

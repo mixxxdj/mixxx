@@ -18,6 +18,12 @@ RE_XML_OBJNAME_SETVAR = re.compile(
 )
 RE_CLASSNAME = re.compile(r"^[A-Z]\w+$")
 RE_OBJNAME_VARTAG = re.compile(r"<.*>")
+# Some object names set via variables in
+# src/library/tabledelegates/checkboxdelegate.cpp
+CPP_OBJNAMES = [
+    "LibraryBPMButton",
+    "LibraryPlayedCheckbox",
+]
 
 # List of Qt Widgets, generated with:
 #     python -c 'import inspect, from PyQt5 import QtWidgets;
@@ -230,19 +236,19 @@ def get_skins(path):
 def get_global_names(mixxx_path):
     """Returns 2 sets with all class and object names in the Mixxx codebase."""
     classnames = set()
-    objectnames = set()
+    objectnames = set(CPP_OBJNAMES)
     for root, dirs, fnames in os.walk(os.path.join(mixxx_path, "src")):
         for fname in fnames:
             ext = os.path.splitext(fname)[1]
             if ext in (".h", ".cpp"):
                 fpath = os.path.join(root, fname)
-                with open(fpath, mode="r") as f:
+                with open(fpath, mode="r", encoding="utf-8") as f:
                     for line in f:
                         classnames.update(set(RE_CPP_CLASSNAME.findall(line)))
                         objectnames.update(set(RE_CPP_OBJNAME.findall(line)))
             elif ext == ".ui":
                 fpath = os.path.join(root, fname)
-                with open(fpath, mode="r") as f:
+                with open(fpath, mode="r", encoding="utf-8") as f:
                     objectnames.update(set(RE_UI_OBJNAME.findall(f.read())))
     return classnames, objectnames
 
@@ -260,7 +266,7 @@ def get_skin_objectnames(skin_path):
                 continue
 
             fpath = os.path.join(root, fname)
-            with open(fpath, mode="r") as f:
+            with open(fpath, mode="r", encoding="utf-8") as f:
                 for line in f:
                     yield from RE_XML_OBJNAME.findall(line)
                     yield from RE_XML_OBJNAME_SETVAR.findall(line)

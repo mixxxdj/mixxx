@@ -8,7 +8,9 @@ class GLSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     GLSimpleWaveformWidget(const QString& group, QWidget* parent);
     virtual ~GLSimpleWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::Simple;
+    }
 
     static inline QString getWaveformWidgetName() { return tr("Simple"); }
     static inline bool useOpenGl() { return true; }

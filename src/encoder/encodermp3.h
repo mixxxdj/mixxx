@@ -14,16 +14,17 @@ class EncoderMp3 final : public Encoder {
     EncoderMp3(EncoderCallback* callback=nullptr);
     ~EncoderMp3() override;
 
-    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
-    void encodeBuffer(const CSAMPLE *samples, const int size) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate,
+            QString* pUserErrorMessage) override;
+    void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;
 
   private:
     void initStream();
-    int bufferOutGrow(int size);
-    int bufferInGrow(int size);
+    int bufferOutGrow(std::size_t bufferSize);
+    int bufferInGrow(std::size_t bufferSize);
 
     lame_t m_lameFlags;
     QString m_metaDataTitle;
@@ -35,9 +36,9 @@ class EncoderMp3 final : public Encoder {
     vbr_mode m_encoding_mode;
     MPEG_mode_e m_stereo_mode;
     unsigned char *m_bufferOut;
-    int m_bufferOutSize;
+    std::size_t m_bufferOutSize;
     float* m_bufferIn[2];
-    int m_bufferInSize;
+    std::size_t m_bufferInSize;
 
     EncoderCallback* m_pCallback;
 };

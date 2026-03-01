@@ -5,40 +5,28 @@
 #include <QUrl>
 
 #include "moc_qmlautoreload.cpp"
+#include "util/autofilereloader.h"
 
 namespace mixxx {
 
 namespace qml {
 
-QmlAutoReload::QmlAutoReload() {
-    connect(&m_fileWatcher,
-            &QFileSystemWatcher::fileChanged,
-            this,
-            &QmlAutoReload::slotFileChanged);
-}
+QmlAutoReload::QmlAutoReload()
+        : m_autoReloader(RuntimeLoggingCategory(QStringLiteral("qml_auto_reload"))) {
+    // propagate inner signal outwards
+    connect(&m_autoReloader, &AutoFileReloader::fileChanged, this, &QmlAutoReload::triggered);
+};
 
-QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataType type) {
-    if (!url.isLocalFile() || !QFileInfo(url.toLocalFile()).isFile()) {
+QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataType) {
+    if (!url.isLocalFile()) {
         return url;
     }
-    m_fileWatcher.addPath(url.toLocalFile());
-    m_pathTriggeringReload.insert(url.toLocalFile());
+    QString filePath = url.toLocalFile();
+    if (!QFileInfo(filePath).isFile()) {
+        return url;
+    }
+    m_autoReloader.addPath(filePath);
     return url;
-}
-
-void QmlAutoReload::slotFileChanged(const QString& changedFile) {
-    qDebug() << "File" << changedFile << "used in QML interface has been changed.";
-    if (m_pathTriggeringReload.remove(changedFile)) {
-        m_fileWatcher.removePath(changedFile);
-        emit triggered();
-    }
-}
-
-void QmlAutoReload::clear() {
-    const auto files = m_fileWatcher.files();
-    if (!files.isEmpty()) {
-        m_fileWatcher.removePaths(files);
-    }
 }
 
 } // namespace qml

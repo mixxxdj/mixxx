@@ -29,4 +29,5 @@ message Waveform {
   optional double audio_visual_ratio = 2;
   optional Signal signal_all = 3;
   optional FilteredSignal signal_filtered = 4;
+  repeated Signal signal_stems = 5;
 }

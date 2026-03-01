@@ -51,9 +51,7 @@ void MissingTableModel::setTableModel(int id) {
             LIBRARYTABLE_ID,
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
-    setSearch("");
-
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
 }
 
 MissingTableModel::~MissingTableModel() {
@@ -71,8 +69,10 @@ bool MissingTableModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BEATS_VERSION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_DIRECTORY) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
@@ -88,7 +88,9 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
 }
 
 TrackModel::Capabilities MissingTableModel::getCapabilities() const {
-    return Capability::Purge;
+    return Capability::Purge |
+            Capability::Properties |
+            Capability::Sorting;
 }
 
 QString MissingTableModel::modelKey(bool noSearch) const {

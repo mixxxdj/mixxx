@@ -5,6 +5,7 @@
 #include <limits>
 
 #include "engine/engine.h"
+#include "util/compatibility/qhash.h"
 #include "util/fpclassify.h"
 
 namespace mixxx {
@@ -24,7 +25,7 @@ class FramePos final {
     static constexpr value_t kInvalidValue = std::numeric_limits<FramePos::value_t>::quiet_NaN();
     static constexpr double kLegacyInvalidEnginePosition = -1.0;
 
-    constexpr FramePos()
+    constexpr FramePos() noexcept
             : m_framePosition(kInvalidValue) {
     }
 
@@ -36,7 +37,17 @@ class FramePos final {
     /// "invalid" positions (e.g. when parsing values from control objects),
     /// use `FramePos::fromEngineSamplePosMaybeInvalid` instead.
     static constexpr FramePos fromEngineSamplePos(double engineSamplePos) {
-        return FramePos(engineSamplePos / mixxx::kEngineChannelCount);
+        return FramePos(engineSamplePos / mixxx::kEngineChannelOutputCount);
+    }
+
+    static constexpr FramePos fromSamplePos(double samplePos,
+            mixxx::audio::ChannelCount channelCount) {
+        return FramePos(static_cast<double>(samplePos) / channelCount);
+    }
+
+    static constexpr FramePos fromSamplePos(double samplePos,
+            const mixxx::audio::SignalInfo& signalInfo) {
+        return FramePos(static_cast<double>(samplePos) / signalInfo.getChannelCount());
     }
 
     /// Return an engine sample position. The `FramePos` is expected to be
@@ -44,7 +55,7 @@ class FramePos final {
     /// values), use `FramePos::toEngineSamplePosMaybeInvalid` instead.
     double toEngineSamplePos() const {
         DEBUG_ASSERT(isValid());
-        double engineSamplePos = value() * mixxx::kEngineChannelCount;
+        double engineSamplePos = value() * mixxx::kEngineChannelOutputCount;
         // In the rare but possible instance that the position is valid but
         // the engine sample position is exactly -1.0, we nudge the position
         // because otherwise fromEngineSamplePosMaybeInvalid() will think
@@ -55,6 +66,10 @@ class FramePos final {
         return engineSamplePos;
     }
 
+    double toSamplePos(mixxx::audio::ChannelCount channelCount) const {
+        DEBUG_ASSERT(isValid());
+        return value() * channelCount;
+    }
     /// Return a `FramePos` from a given engine sample position. Sample
     /// positions that equal `kLegacyInvalidEnginePosition` are considered
     /// invalid and result in an invalid `FramePos` instead.
@@ -70,6 +85,14 @@ class FramePos final {
         return fromEngineSamplePos(engineSamplePos);
     }
 
+    static constexpr FramePos fromSamplePosMaybeInvalid(
+            double samplePos, mixxx::audio::ChannelCount channelCount) {
+        if (samplePos == kLegacyInvalidEnginePosition) {
+            return {};
+        }
+        return fromSamplePos(samplePos, channelCount);
+    }
+
     /// Return an engine sample position. If the `FramePos` is invalid,
     /// `kLegacyInvalidEnginePosition` is returned instead.
     ///
@@ -82,6 +105,13 @@ class FramePos final {
             return kLegacyInvalidEnginePosition;
         }
         return toEngineSamplePos();
+    }
+
+    double toSamplePosMaybeInvalid(mixxx::audio::ChannelCount channelCount) const {
+        if (!isValid()) {
+            return kLegacyInvalidEnginePosition;
+        }
+        return toSamplePos(channelCount);
     }
 
     /// Return true if the frame position is valid. Any finite value is
@@ -217,6 +247,12 @@ inline bool operator!=(FramePos frame1, FramePos frame2) {
 }
 
 QDebug operator<<(QDebug dbg, FramePos arg);
+
+inline qhash_seed_t qHash(
+        FramePos pos,
+        qhash_seed_t seed = 0) {
+    return static_cast<qhash_seed_t>(pos.value(), seed);
+}
 
 constexpr FramePos kInvalidFramePos = FramePos(FramePos::kInvalidValue);
 constexpr FramePos kStartFramePos = FramePos(FramePos::kStartValue);

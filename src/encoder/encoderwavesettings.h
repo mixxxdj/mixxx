@@ -30,4 +30,10 @@ class EncoderWaveSettings : public EncoderRecordingSettings {
     QList<OptionsGroup> m_radioList;
     UserSettingsPointer m_pConfig;
     QString m_format;
+
+  protected:
+    // Provide config to base class
+    UserSettingsPointer getConfig() const override {
+        return m_pConfig;
+    }
 };

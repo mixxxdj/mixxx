@@ -1,11 +1,14 @@
 #include "database/schemamanager.h"
 
+#include <QDomElement>
+#include <QDomNode>
+#include <QDomNodeList>
+
 #include "util/assert.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"
 #include "util/logger.h"
 #include "util/math.h"
-#include "util/optional.h"
 #include "util/xml.h"
 
 namespace {

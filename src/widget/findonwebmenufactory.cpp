@@ -11,10 +11,12 @@ namespace mixxx {
 
 namespace library {
 
-void createFindOnWebSubmenus(QMenu* pFindOnWebMenu, const Track& track) {
-    make_parented<QMenu>(new FindOnWebMenuSoundcloud(pFindOnWebMenu, track));
-    make_parented<QMenu>(new FindOnWebMenuDiscogs(pFindOnWebMenu, track));
-    make_parented<QMenu>(new FindOnWebMenuLastfm(pFindOnWebMenu, track));
+void createFindOnWebSubmenus(const QPointer<QMenu>& pFindOnWebMenu,
+        const QPointer<FindOnWebLast>& pFindOnWebLast,
+        const Track& track) {
+    make_parented<FindOnWebMenuDiscogs>(pFindOnWebMenu, pFindOnWebLast, track);
+    make_parented<FindOnWebMenuLastfm>(pFindOnWebMenu, pFindOnWebLast, track);
+    make_parented<FindOnWebMenuSoundcloud>(pFindOnWebMenu, pFindOnWebLast, track);
 }
 
 } // namespace library

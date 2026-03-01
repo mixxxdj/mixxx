@@ -6,91 +6,55 @@ import "Theme"
 AbstractButton {
     id: root
 
-    property color normalColor: Theme.buttonNormalColor
-    required property color activeColor
-    property color pressedColor: activeColor
+    property color activeColor: Theme.buttonActiveColor
     property bool highlight: false
+    property color normalColor: Theme.buttonNormalColor
+    property color pressedColor: activeColor
 
-    implicitWidth: 52
     implicitHeight: 26
-    states: [
-        State {
-            name: "pressed"
-            when: root.pressed
+    implicitWidth: 52
 
-            PropertyChanges {
-                target: backgroundImage
-                source: Theme.imgButtonPressed
-            }
-
-            PropertyChanges {
-                target: label
-                color: root.pressedColor
-            }
-
-            PropertyChanges {
-                target: labelGlow
-                visible: true
-            }
-
-        },
-        State {
-            name: "active"
-            when: (root.highlight || root.checked) && !root.pressed
-
-            PropertyChanges {
-                target: backgroundImage
-                source: Theme.imgButton
-            }
-
-            PropertyChanges {
-                target: label
-                color: root.activeColor
-            }
-
-            PropertyChanges {
-                target: labelGlow
-                visible: true
-            }
-
-        },
-        State {
-            name: "inactive"
-            when: !root.checked && !root.highlight && !root.pressed
-
-            PropertyChanges {
-                target: backgroundImage
-                source: Theme.imgButton
-            }
-
-            PropertyChanges {
-                target: label
-                color: root.normalColor
-            }
-
-            PropertyChanges {
-                target: labelGlow
-                visible: false
-            }
-        }
-    ]
-
-    background: BorderImage {
-        id: backgroundImage
-
+    background: Item {
         anchors.fill: parent
-        horizontalTileMode: BorderImage.Stretch
-        verticalTileMode: BorderImage.Stretch
-        source: Theme.imgButton
 
-        border {
-            top: 10
-            left: 10
-            right: 10
-            bottom: 10
+        Rectangle {
+            id: backgroundImage
+
+            anchors.fill: parent
+            color: '#2B2B2B'
+            radius: 2
+        }
+        DropShadow {
+            id: effect1
+
+            anchors.fill: backgroundImage
+            color: "#80000000"
+            horizontalOffset: 0
+            radius: 1.0
+            source: backgroundImage
+            verticalOffset: 0
+        }
+        InnerShadow {
+            id: effect2
+
+            anchors.fill: backgroundImage
+            color: "#353535"
+            horizontalOffset: 1
+            radius: 1
+            samples: 16
+            source: effect1
+            verticalOffset: 1
+        }
+        InnerShadow {
+            anchors.fill: backgroundImage
+            color: "#353535"
+            horizontalOffset: -1
+            radius: 1
+            samples: 16
+            source: effect2
+            verticalOffset: -1
         }
     }
-
     contentItem: Item {
         anchors.fill: parent
 
@@ -98,24 +62,91 @@ AbstractButton {
             id: labelGlow
 
             anchors.fill: parent
-            radius: 5
-            spread: 0.1
             color: label.color
+            radius: 1
             source: label
+            spread: 0.1
         }
-
         Label {
             id: label
 
             anchors.fill: parent
-            text: root.text
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.family: Theme.fontFamily
-            font.capitalization: Font.AllUppercase
-            font.bold: true
-            font.pixelSize: Theme.buttonFontPixelSize
             color: root.normalColor
+            font.bold: true
+            font.capitalization: Font.AllUppercase
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.buttonFontPixelSize
+            horizontalAlignment: Text.AlignHCenter
+            text: root.text
+            verticalAlignment: Text.AlignVCenter
+            visible: root.text != null
+        }
+        Image {
+            id: image
+
+            anchors.centerIn: parent
+            asynchronous: true
+            fillMode: Image.PreserveAspectFit
+            height: icon.height
+            source: icon.source
+            visible: false
+            width: icon.width
+        }
+        ColorOverlay {
+            anchors.fill: image
+            antialiasing: true
+            color: root.normalColor
+            source: image
+            visible: icon.source != null
         }
     }
+    states: [
+        State {
+            name: "pressed"
+            when: root.pressed
+
+            PropertyChanges {
+                color: root.checked ? "#3a60be" : Theme.darkGray3
+                target: backgroundImage
+            }
+            PropertyChanges {
+                color: root.pressedColor
+                target: label
+            }
+            PropertyChanges {
+                target: labelGlow
+                visible: true
+            }
+        },
+        State {
+            name: "active"
+            when: (root.highlight || root.checked) && !root.pressed
+
+            PropertyChanges {
+                color: "#2D4EA1"
+                target: backgroundImage
+            }
+            PropertyChanges {
+                color: root.activeColor
+                target: label
+            }
+            PropertyChanges {
+                target: labelGlow
+                visible: true
+            }
+        },
+        State {
+            name: "inactive"
+            when: !root.checked && !root.highlight && !root.pressed
+
+            PropertyChanges {
+                color: root.normalColor
+                target: label
+            }
+            PropertyChanges {
+                target: labelGlow
+                visible: false
+            }
+        }
+    ]
 }

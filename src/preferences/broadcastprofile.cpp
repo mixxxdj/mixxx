@@ -1,3 +1,8 @@
+#include "preferences/broadcastprofile.h"
+
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
@@ -16,7 +21,6 @@ using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
-#include "broadcastprofile.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "moc_broadcastprofile.cpp"
@@ -84,10 +88,16 @@ const QString kDefaultStreamDesc =
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
 constexpr bool kDefaultStreamPublic = false;
 
+// Characters not allowed for profile name
 const QRegularExpression kForbiddenChars =
         QRegularExpression(QStringLiteral(
                 "[<>:\"\\/|?*\\\\]|(\\.\\.)"
                 "|CON|AUX|PRN|COM(\\d+)|LPT(\\d+)|NUL"));
+// Characters known to cause trouble for various fields, especially host, login
+// and password.
+// See https://mixxx.discourse.group/t/broadcasting-connection-problems/32861/3
+const QRegularExpression kControlChars =
+        QRegularExpression(QStringLiteral("[\\x00-\\x1F\\x7F]"));
 
 const mixxx::Logger kLogger("BroadcastProfile");
 } // anonymous namespace
@@ -106,9 +116,50 @@ bool BroadcastProfile::validName(const QString& str) {
     return !str.contains(kForbiddenChars);
 }
 
+bool BroadcastProfile::validPassword() {
+    return validPassword(m_password);
+}
+
+bool BroadcastProfile::validPassword(const QString& input) {
+    // Here we get either the strings decoded from Xml when reading the profile
+    // or the password QString we received from the preferences.
+    return !input.contains(kControlChars);
+}
+
 QString BroadcastProfile::stripForbiddenChars(const QString& str) {
     QString sourceText(str);
     return sourceText.replace(kForbiddenChars, " ");
+}
+
+QString BroadcastProfile::removeControlCharacters(
+        const QString& str,
+        const QString& fieldName,
+        bool* pFixed) {
+    // Remove all control characters like %#d; (\r, Carriage Return)
+    // If the config has been corrupted manually, for example by adding linebreaks,
+    // we may also have literals like \n. We don't care about those because
+    // a) we can't tell whether these are there on purpose
+    // b) in contrast to for example &#xd; these are visible in the Password QLineEdit.
+    QString input(str);
+    input.remove(kControlChars);
+    if (str != input) {
+        qWarning() << "BroadcastProfile: removed invalid characters from"
+                   << fieldName << "field";
+        if (pFixed && !(*pFixed)) {
+            *pFixed = true;
+        }
+    }
+    return input;
+}
+
+QString BroadcastProfile::selectCleanNodeString(
+        const QDomElement& doc,
+        const QString& fieldName,
+        bool* pFixed) {
+    return removeControlCharacters(
+            XmlParse::selectNodeQString(doc, fieldName),
+            fieldName,
+            pFixed);
 }
 
 BroadcastProfilePtr BroadcastProfile::loadFromFile(
@@ -294,9 +345,12 @@ bool BroadcastProfile::loadValues(const QString& filename) {
 
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
-    m_host = XmlParse::selectNodeQString(doc, kHost);
+    // Check if we have to remove control chars.
+    // If yes, write the config back to file
+    bool fixedStrings = false;
+    m_host = selectCleanNodeString(doc, kHost, &fixedStrings);
     m_port = XmlParse::selectNodeInt(doc, kPort);
-    m_serverType = XmlParse::selectNodeQString(doc, kServertype);
+    m_serverType = selectCleanNodeString(doc, kServertype, &fixedStrings);
     switch (static_cast<EncryptionMode>(XmlParse::selectNodeInt(doc, kEncryptionMode))) {
     case EncryptionMode::Required:
         m_encryptionMode = EncryptionMode::Required;
@@ -305,11 +359,18 @@ bool BroadcastProfile::loadValues(const QString& filename) {
         m_encryptionMode = EncryptionMode::Disabled;
     }
 
-    m_login = XmlParse::selectNodeQString(doc, kLogin);
+    m_login = selectCleanNodeString(doc, kLogin, &fixedStrings);
     if (m_secureCredentials) {
         m_password = getSecurePassword(m_login);
     } else {
         m_password = XmlParse::selectNodeQString(doc, kPassword);
+    }
+    // If password contains invalid characters, for example linebreaks,
+    // we log a warning. When attempting to connect with invalid credentials
+    // users will get a warning popup and need to check Broadcasting
+    // preferences which will notify them, too.
+    if (!validPassword()) {
+        qWarning() << "BroadcastProfile::loadValues: stored password contains invalid characters!";
     }
 
     m_enableReconnect =
@@ -327,17 +388,17 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_reconnectFirstDelay =
             XmlParse::selectNodeDouble(doc, kReconnectFirstDelay);
 
-    m_mountpoint = XmlParse::selectNodeQString(doc, kMountPoint);
-    m_streamName = XmlParse::selectNodeQString(doc, kStreamName);
-    m_streamDesc = XmlParse::selectNodeQString(doc, kStreamDesc);
-    m_streamGenre = XmlParse::selectNodeQString(doc, kStreamGenre);
+    m_mountpoint = selectCleanNodeString(doc, kMountPoint, &fixedStrings);
+    m_streamName = selectCleanNodeString(doc, kStreamName, &fixedStrings);
+    m_streamDesc = selectCleanNodeString(doc, kStreamDesc, &fixedStrings);
+    m_streamGenre = selectCleanNodeString(doc, kStreamGenre, &fixedStrings);
     m_streamPublic = (bool)XmlParse::selectNodeInt(doc, kStreamPublic);
-    m_streamWebsite = XmlParse::selectNodeQString(doc, kStreamWebsite);
-    m_streamIRC = XmlParse::selectNodeQString(doc, kStreamIRC);
-    m_streamAIM = XmlParse::selectNodeQString(doc, kStreamAIM);
-    m_streamICQ = XmlParse::selectNodeQString(doc, kStreamICQ);
+    m_streamWebsite = selectCleanNodeString(doc, kStreamWebsite, &fixedStrings);
+    m_streamIRC = selectCleanNodeString(doc, kStreamIRC, &fixedStrings);
+    m_streamAIM = selectCleanNodeString(doc, kStreamAIM, &fixedStrings);
+    m_streamICQ = selectCleanNodeString(doc, kStreamICQ, &fixedStrings);
 
-    m_format = XmlParse::selectNodeQString(doc, kFormat);
+    m_format = selectCleanNodeString(doc, kFormat, &fixedStrings);
     if (m_format == BROADCAST_FORMAT_OV_LEGACY) {
         // Upgrade to have the same codec name than the recording define.
         m_format = ENCODING_OGG;
@@ -346,12 +407,24 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_channels = XmlParse::selectNodeInt(doc, kChannels);
 
     m_enableMetadata = (bool)XmlParse::selectNodeInt(doc, kEnableMetadata);
-    m_metadataCharset = XmlParse::selectNodeQString(doc, kMetadataCharset);
-    m_customArtist = XmlParse::selectNodeQString(doc, kCustomArtist);
-    m_customTitle = XmlParse::selectNodeQString(doc, kCustomTitle);
-    m_metadataFormat = XmlParse::selectNodeQString(doc, kMetadataFormat);
+    m_metadataCharset = selectCleanNodeString(doc, kMetadataCharset, &fixedStrings);
+    m_customArtist = selectCleanNodeString(doc, kCustomArtist, &fixedStrings);
+    m_customTitle = selectCleanNodeString(doc, kCustomTitle, &fixedStrings);
+    m_metadataFormat = selectCleanNodeString(doc, kMetadataFormat, &fixedStrings);
     m_oggDynamicUpdate =
             (bool)XmlParse::selectNodeInt(doc, kOggDynamicUpdate);
+
+    if (fixedStrings) {
+        if (save(m_filename)) {
+            qWarning() << "BroadcastProfile::loadValues: wrote config for profile"
+                       << m_profileName
+                       << "with corrected field strings back to file";
+        } else {
+            qWarning() << "BroadcastProfile::loadValues: failed to write config for profile"
+                       << m_profileName
+                       << "with corrected field strings back to file!";
+        }
+    }
 
     return true;
 }
@@ -439,7 +512,7 @@ bool BroadcastProfile::save(const QString& filename) {
 
 void BroadcastProfile::setProfileName(const QString &profileName) {
     QString oldName(m_profileName);
-    m_profileName = QString(profileName);
+    m_profileName = removeControlCharacters(profileName, kProfileName);
 
     emit profileNameChanged(oldName, m_profileName);
 }
@@ -466,6 +539,9 @@ bool BroadcastProfile::secureCredentialStorage() {
 }
 
 bool BroadcastProfile::setSecurePassword(const QString& login, const QString& password) {
+    if (!validPassword(password)) {
+        qWarning() << "BroadcastProfile::setSecurePassword: password contains invalid characters!";
+    }
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -511,7 +587,14 @@ QString BroadcastProfile::getSecurePassword(const QString& login) {
 
     if (readJob.error() == Error::NoError) {
         kLogger.debug() << "getSecureValue: read successful";
-        return readJob.textData();
+        const QString password = readJob.textData();
+        if (!validPassword(password)) {
+            // Don't alter the password. user will get notified when trying to connect
+            // and when entering invalid characters in the preferences
+            qWarning() << "BroadcastProfile::getSecurePassword: password "
+                          "contains invalid characters!";
+        }
+        return password;
     } else {
         kLogger.warning() << "getSecureValue: read job failed with error:"
                         << readJob.errorString();
@@ -563,7 +646,7 @@ QString BroadcastProfile::getHost() const {
 }
 
 void BroadcastProfile::setHost(const QString& value) {
-    m_host = QString(value);
+    m_host = removeControlCharacters(value, kHost);
 }
 
 int BroadcastProfile::getPort() const {
@@ -592,7 +675,7 @@ QString BroadcastProfile::getLogin() const {
 }
 
 void BroadcastProfile::setLogin(const QString& value) {
-    m_login = QString(value);
+    m_login = removeControlCharacters(value, kLogin);
 }
 
 // TODO(Palakis, June 2nd 2017): implement secure password storage
@@ -601,6 +684,11 @@ QString BroadcastProfile::getPassword() const {
 }
 
 void BroadcastProfile::setPassword(const QString& value) {
+    if (!validPassword(value)) {
+        // Don't alter the password. user will get notified when trying to connect
+        // and when entering invalid characters in the preferences
+        qWarning() << "BroadcastProfile::setPassword: password contains invalid characters!";
+    }
     m_password = QString(value);
 }
 
@@ -657,7 +745,7 @@ QString BroadcastProfile::getMountpoint() const {
 }
 
 void BroadcastProfile::setMountPoint(const QString& value) {
-    m_mountpoint = QString(value);
+    m_mountpoint = removeControlCharacters(value, kMountPoint);
 }
 
 QString BroadcastProfile::getStreamName() const {
@@ -665,7 +753,7 @@ QString BroadcastProfile::getStreamName() const {
 }
 
 void BroadcastProfile::setStreamName(const QString& value) {
-    m_streamName = QString(value);
+    m_streamName = removeControlCharacters(value, kStreamName);
 }
 
 QString BroadcastProfile::getStreamDesc() const {
@@ -673,7 +761,7 @@ QString BroadcastProfile::getStreamDesc() const {
 }
 
 void BroadcastProfile::setStreamDesc(const QString& value) {
-    m_streamDesc = QString(value);
+    m_streamDesc = removeControlCharacters(value, kStreamDesc);
 }
 
 QString BroadcastProfile::getStreamGenre() const {
@@ -681,7 +769,7 @@ QString BroadcastProfile::getStreamGenre() const {
 }
 
 void BroadcastProfile::setStreamGenre(const QString& value) {
-    m_streamGenre = QString(value);
+    m_streamGenre = removeControlCharacters(value, kStreamGenre);
 }
 
 bool BroadcastProfile::getStreamPublic() const {
@@ -697,7 +785,7 @@ QString BroadcastProfile::getStreamWebsite() const {
 }
 
 void BroadcastProfile::setStreamWebsite(const QString& value) {
-    m_streamWebsite = QString(value);
+    m_streamWebsite = removeControlCharacters(value, kStreamWebsite);
 }
 
 QString BroadcastProfile::getStreamIRC() const {
@@ -705,7 +793,7 @@ QString BroadcastProfile::getStreamIRC() const {
 }
 
 void BroadcastProfile::setStreamIRC(const QString& value) {
-    m_streamIRC = value;
+    m_streamIRC = removeControlCharacters(value, kStreamIRC);
 }
 
 QString BroadcastProfile::getStreamAIM() const {
@@ -713,7 +801,7 @@ QString BroadcastProfile::getStreamAIM() const {
 }
 
 void BroadcastProfile::setStreamAIM(const QString& value) {
-    m_streamAIM = value;
+    m_streamAIM = removeControlCharacters(value, kStreamAIM);
 }
 
 QString BroadcastProfile::getStreamICQ() const {
@@ -721,7 +809,7 @@ QString BroadcastProfile::getStreamICQ() const {
 }
 
 void BroadcastProfile::setStreamICQ(const QString& value) {
-    m_streamICQ = value;
+    m_streamICQ = removeControlCharacters(value, kStreamICQ);
 }
 
 QString BroadcastProfile::getFormat() const {
@@ -729,7 +817,7 @@ QString BroadcastProfile::getFormat() const {
 }
 
 void BroadcastProfile::setFormat(const QString& value) {
-    m_format = QString(value);
+    m_format = removeControlCharacters(value, kFormat);
 }
 
 int BroadcastProfile::getBitrate() const {
@@ -761,7 +849,7 @@ QString BroadcastProfile::getMetadataCharset() const {
 }
 
 void BroadcastProfile::setMetadataCharset(const QString& value) {
-    m_metadataCharset = QString(value);
+    m_metadataCharset = removeControlCharacters(value, kMetadataCharset);
 }
 
 QString BroadcastProfile::getCustomArtist() const {
@@ -769,7 +857,7 @@ QString BroadcastProfile::getCustomArtist() const {
 }
 
 void BroadcastProfile::setCustomArtist(const QString& value) {
-    m_customArtist = QString(value);
+    m_customArtist = removeControlCharacters(value, kCustomArtist);
 }
 
 QString BroadcastProfile::getCustomTitle() const {
@@ -777,7 +865,7 @@ QString BroadcastProfile::getCustomTitle() const {
 }
 
 void BroadcastProfile::setCustomTitle(const QString& value) {
-    m_customTitle = QString(value);
+    m_customTitle = removeControlCharacters(value, kCustomTitle);
 }
 
 QString BroadcastProfile::getMetadataFormat() const {
@@ -785,7 +873,7 @@ QString BroadcastProfile::getMetadataFormat() const {
 }
 
 void BroadcastProfile::setMetadataFormat(const QString& value) {
-    m_metadataFormat = QString(value);
+    m_metadataFormat = removeControlCharacters(value, kMetadataFormat);
 }
 
 bool BroadcastProfile::getOggDynamicUpdate() const {

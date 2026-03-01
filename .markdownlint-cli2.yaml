@@ -8,8 +8,8 @@ config:
 
   # The same headline in different nested sections is okay (and necessary for
   # CHANGELOG.md).
-  no-duplicate-header:
-    allow_different_nesting: true
+  no-duplicate-heading:
+    siblings_only: true
 
   # We use ordered lists to make stuff easier to read in a text editor.
   ol-prefix:

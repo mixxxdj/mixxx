@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 #include <QUrl>
+#include <QtGlobal>
 
 #include "control/controlproxy.h"
 #include "defs_urls.h"
@@ -87,6 +88,10 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
+#ifdef Q_OS_IOS
+    checkBox_edit_metadata_selected_clicked->setEnabled(false);
+#endif
+
     comboBox_search_bpm_fuzzy_range->clear();
     comboBox_search_bpm_fuzzy_range->addItem("25 %", 25);
     comboBox_search_bpm_fuzzy_range->addItem("50 %", 50);
@@ -105,6 +110,27 @@ DlgPrefLibrary::DlgPrefLibrary(
             });
 
     updateSearchLineEditHistoryOptions();
+
+    comboBox_dateFormat->addItem(tr("Native (System Default)"),
+            QVariant::fromValue(BaseTrackTableModel::DateFormat::Native));
+    comboBox_dateFormat->addItem(tr("ISO 8601 (yyyy-MM-dd)"),
+            QVariant::fromValue(BaseTrackTableModel::DateFormat::ISO8601));
+    comboBox_dateFormat->addItem(tr("Regional Short (d/M/yy)"),
+            QVariant::fromValue(BaseTrackTableModel::DateFormat::RegionalShort));
+    comboBox_dateFormat->addItem(tr("Regional Long (dd.MM.yyyy)"),
+            QVariant::fromValue(BaseTrackTableModel::DateFormat::RegionalLong));
+    comboBox_dateFormat->addItem(tr("Custom"),
+            QVariant::fromValue(BaseTrackTableModel::DateFormat::Custom));
+
+    connect(comboBox_dateFormat,
+            &QComboBox::currentIndexChanged,
+            this,
+            &DlgPrefLibrary::slotDateFormatIndexChanged);
+
+    connect(comboBox_dateFormat,
+            &QComboBox::editTextChanged,
+            this,
+            &DlgPrefLibrary::slotDateFormatChanged);
 
     connect(btn_library_font, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
@@ -171,6 +197,7 @@ void DlgPrefLibrary::slotShow() {
 }
 
 void DlgPrefLibrary::slotHide() {
+    resetLibraryFont();
     if (!m_bAddedDirectory) {
         return;
     }
@@ -178,11 +205,12 @@ void DlgPrefLibrary::slotHide() {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
     msgBox.setWindowTitle(tr("Music Directory Added"));
-    msgBox.setText(tr("You added one or more music directories. The tracks in "
-                      "these directories won't be available until you rescan "
-                      "your library. Would you like to rescan now?"));
+    msgBox.setText(tr(
+            "You added one or more music directories. The tracks in "
+            "these directories won't be available until you rescan "
+            "your library. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
-        tr("Scan"), QMessageBox::AcceptRole);
+            tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
     msgBox.setDefaultButton(scanButton);
     msgBox.exec();
@@ -225,7 +253,7 @@ void DlgPrefLibrary::populateDirList() {
     dirList->setModel(&m_dirListModel);
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));
     // reselect index if it still exists
-    for (int i=0 ; i<m_dirListModel.rowCount() ; ++i) {
+    for (int i = 0; i < m_dirListModel.rowCount(); ++i) {
         const QModelIndex index = m_dirListModel.index(i, 0);
         if (index.data().toString() == selected) {
             dirList->setCurrentIndex(index);
@@ -254,12 +282,22 @@ void DlgPrefLibrary::slotResetToDefaults() {
     setLibraryFont(QApplication::font());
     spinBox_search_debouncing_timeout->setValue(
             WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
-    checkBox_enable_search_history_shortcuts->setChecked(
+    checkBox_enable_search_completions->setChecked(
             WSearchLineEdit::kCompletionsEnabledDefault);
     checkBox_enable_search_history_shortcuts->setChecked(
             WSearchLineEdit::kHistoryShortcutsEnabledDefault);
     comboBox_search_bpm_fuzzy_range->setCurrentIndex(
             comboBox_search_bpm_fuzzy_range->findData(kDefaultFuzzyRateRangePercent));
+
+    int dateIndex = comboBox_dateFormat->findData(
+            QVariant::fromValue(BaseTrackTableModel::DateFormat::Native));
+    if (dateIndex != -1) {
+        comboBox_dateFormat->setCurrentIndex(dateIndex);
+    } else {
+        // Fallback or custom default? Default is usually Native (empty string)
+        // which should be found.
+        comboBox_dateFormat->setCurrentIndex(0);
+    }
 
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -272,6 +310,8 @@ void DlgPrefLibrary::slotUpdate() {
     populateDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             kRescanOnStartupConfigKey, false));
+    checkBox_library_scan_summary->setChecked(m_pConfig->getValue(
+            kShowScanSummaryConfigKey, true));
 
     spinbox_history_track_duplicate_distance->setValue(m_pConfig->getValue(
             kHistoryTrackDuplicateDistanceConfigKey,
@@ -289,17 +329,51 @@ void DlgPrefLibrary::slotUpdate() {
             kUseRelativePathOnExportConfigKey, false));
 
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowRhythmboxLibrary"), true));
+            ConfigKey("[Library]", "ShowRhythmboxLibrary"), true));
     checkBox_show_banshee->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowBansheeLibrary"), true));
+            ConfigKey("[Library]", "ShowBansheeLibrary"), true));
     checkBox_show_itunes->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowITunesLibrary"), true));
+            ConfigKey("[Library]", "ShowITunesLibrary"), true));
     checkBox_show_traktor->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowTraktorLibrary"), true));
+            ConfigKey("[Library]", "ShowTraktorLibrary"), true));
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
-            ConfigKey("[Library]","ShowRekordboxLibrary"), true));
+            ConfigKey("[Library]", "ShowRekordboxLibrary"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
+
+    QString dateFormat = m_pConfig->getValue(
+            kDateFormatConfigKey,
+            BaseTrackTableModel::kDateFormatDefault);
+
+    // Determine the matching preset or custom
+    BaseTrackTableModel::DateFormat preset = BaseTrackTableModel::DateFormat::Custom;
+    if (dateFormat.isEmpty()) {
+        preset = BaseTrackTableModel::DateFormat::Native;
+    } else if (dateFormat == QStringLiteral("yyyy-MM-dd")) {
+        preset = BaseTrackTableModel::DateFormat::ISO8601;
+    } else if (dateFormat == QStringLiteral("d/M/yy")) {
+        preset = BaseTrackTableModel::DateFormat::RegionalShort;
+    } else if (dateFormat == QStringLiteral("dd.MM.yyyy")) {
+        preset = BaseTrackTableModel::DateFormat::RegionalLong;
+    }
+
+    int dateIndex = comboBox_dateFormat->findData(QVariant::fromValue(preset));
+    if (dateIndex != -1) {
+        comboBox_dateFormat->setCurrentIndex(dateIndex);
+    }
+
+    if (preset == BaseTrackTableModel::DateFormat::Custom) {
+        comboBox_dateFormat->setEditable(true);
+        comboBox_dateFormat->setEditText(dateFormat);
+        m_lastCustomDateFormat = dateFormat;
+    } else {
+        comboBox_dateFormat->setEditable(false);
+    }
+
+    updateDateFormatPreview(dateFormat);
+
+    // Ensure the static member is updated on startup/load
+    BaseTrackTableModel::setDateFormat(dateFormat);
 
     switch (m_pConfig->getValue<int>(
             kTrackDoubleClickActionConfigKey,
@@ -341,13 +415,14 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_edit_metadata_selected_clicked->setChecked(editMetadataSelectedClick);
     m_pLibrary->setEditMetadataSelectedClick(editMetadataSelectedClick);
 
-    checkBox_enable_search_history_shortcuts->setChecked(m_pConfig->getValue(
+    checkBox_enable_search_completions->setChecked(m_pConfig->getValue(
             kEnableSearchCompletionsConfigKey,
             WSearchLineEdit::kCompletionsEnabledDefault));
     checkBox_enable_search_history_shortcuts->setChecked(m_pConfig->getValue(
             kEnableSearchHistoryShortcutsConfigKey,
             WSearchLineEdit::kHistoryShortcutsEnabledDefault));
 
+    // Library reads font from config during construction
     m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
     m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBox_row_height->setValue(m_iOriginalTrackTableRowHeight);
@@ -363,12 +438,12 @@ void DlgPrefLibrary::slotUpdate() {
             m_pConfig->getValue(
                     kSearchBpmFuzzyRangeConfigKey,
                     BpmFilterNode::kRelativeRangeDefault);
-    int index = comboBox_search_bpm_fuzzy_range->findData(static_cast<int>(searchBpmFuzzyRange));
-    if (index == -1) {
-        index = comboBox_search_bpm_fuzzy_range->findData(kDefaultFuzzyRateRangePercent);
+    int bpmIndex = comboBox_search_bpm_fuzzy_range->findData(static_cast<int>(searchBpmFuzzyRange));
+    if (bpmIndex == -1) {
+        bpmIndex = comboBox_search_bpm_fuzzy_range->findData(kDefaultFuzzyRateRangePercent);
     }
-    comboBox_search_bpm_fuzzy_range->setCurrentIndex(index);
-    slotBpmRangeSelected(index);
+    comboBox_search_bpm_fuzzy_range->setCurrentIndex(bpmIndex);
+    slotBpmRangeSelected(bpmIndex);
 
     const auto bpmColumnPrecision =
             m_pConfig->getValue(
@@ -384,15 +459,19 @@ void DlgPrefLibrary::slotUpdate() {
 }
 
 void DlgPrefLibrary::slotCancel() {
+    resetLibraryFont();
+}
+
+void DlgPrefLibrary::resetLibraryFont() {
     // Undo any changes in the library font or row height.
     m_pLibrary->setFont(m_originalTrackTableFont);
     m_pLibrary->setRowHeight(m_iOriginalTrackTableRowHeight);
 }
 
 void DlgPrefLibrary::slotAddDir() {
-    QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Choose a music directory"),
-        QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+    QString fd = QFileDialog::getExistingDirectory(this,
+            tr("Choose a music directory"),
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
         if (m_pLibrary->requestAddDir(fd)) {
             populateDirList();
@@ -410,29 +489,29 @@ void DlgPrefLibrary::slotRemoveDir() {
     removeMsgBox.setWindowTitle(tr("Confirm Directory Removal"));
 
     removeMsgBox.setText(tr(
-        "Mixxx will no longer watch this directory for new tracks. "
-        "What would you like to do with the tracks from this directory and "
-        "subdirectories?"
-        "<ul>"
-        "<li>Hide all tracks from this directory and subdirectories.</li>"
-        "<li>Delete all metadata for these tracks from Mixxx permanently.</li>"
-        "<li>Leave the tracks unchanged in your library.</li>"
-        "</ul>"
-        "Hiding tracks saves their metadata in case you re-add them in the "
-        "future."));
+            "Mixxx will no longer watch this directory for new tracks. "
+            "What would you like to do with the tracks from this directory and "
+            "subdirectories?"
+            "<ul>"
+            "<li>Hide all tracks from this directory and subdirectories.</li>"
+            "<li>Delete all metadata for these tracks from Mixxx permanently.</li>"
+            "<li>Leave the tracks unchanged in your library.</li>"
+            "</ul>"
+            "Hiding tracks saves their metadata in case you re-add them in the "
+            "future."));
     removeMsgBox.setInformativeText(tr(
-        "Metadata means all track details (artist, title, playcount, etc.) as "
-        "well as beatgrids, hotcues, and loops. This choice only affects the "
-        "Mixxx library. No files on disk will be changed or deleted."));
+            "Metadata means all track details (artist, title, playcount, etc.) as "
+            "well as beatgrids, hotcues, and loops. This choice only affects the "
+            "Mixxx library. No files on disk will be changed or deleted."));
 
     QPushButton* cancelButton =
             removeMsgBox.addButton(QMessageBox::Cancel);
     QPushButton* hideAllButton = removeMsgBox.addButton(
-        tr("Hide Tracks"), QMessageBox::AcceptRole);
+            tr("Hide Tracks"), QMessageBox::AcceptRole);
     QPushButton* deleteAllButton = removeMsgBox.addButton(
-        tr("Delete Track Metadata"), QMessageBox::AcceptRole);
+            tr("Delete Track Metadata"), QMessageBox::AcceptRole);
     QPushButton* leaveUnchangedButton = removeMsgBox.addButton(
-        tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
+            tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
     Q_UNUSED(leaveUnchangedButton); // Only used in DEBUG_ASSERT
     removeMsgBox.setDefaultButton(cancelButton);
     removeMsgBox.exec();
@@ -474,7 +553,7 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Relink music directory to new location"), startDir);
+            this, tr("Relink music directory to new location"), startDir);
 
     if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
         populateDirList();
@@ -504,6 +583,9 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(kRescanOnStartupConfigKey,
             ConfigValue((int)checkBox_library_scan->isChecked()));
 
+    m_pConfig->set(kShowScanSummaryConfigKey,
+            ConfigValue((int)checkBox_library_scan_summary->isChecked()));
+
     m_pConfig->set(kHistoryTrackDuplicateDistanceConfigKey,
             ConfigValue(spinbox_history_track_duplicate_distance->value()));
     m_pConfig->set(kHistoryMinTracksToKeepConfigKey,
@@ -520,21 +602,21 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
     m_pConfig->set(kEnableSearchCompletionsConfigKey,
-            ConfigValue(checkBox_enable_search_history_shortcuts->isChecked()));
+            ConfigValue(checkBox_enable_search_completions->isChecked()));
     m_pConfig->set(kEnableSearchHistoryShortcutsConfigKey,
             ConfigValue(checkBox_enable_search_history_shortcuts->isChecked()));
     updateSearchLineEditHistoryOptions();
 
-    m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
-                ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
-                ConfigValue((int)checkBox_show_banshee->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
-                ConfigValue((int)checkBox_show_itunes->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
-                ConfigValue((int)checkBox_show_traktor->isChecked()));
-    m_pConfig->set(ConfigKey("[Library]","ShowRekordboxLibrary"),
-                ConfigValue((int)checkBox_show_rekordbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowRhythmboxLibrary"),
+            ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowBansheeLibrary"),
+            ConfigValue((int)checkBox_show_banshee->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowITunesLibrary"),
+            ConfigValue((int)checkBox_show_itunes->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowTraktorLibrary"),
+            ConfigValue((int)checkBox_show_traktor->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "ShowRekordboxLibrary"),
+            ConfigValue((int)checkBox_show_rekordbox->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
 
@@ -571,13 +653,15 @@ void DlgPrefLibrary::slotApply() {
     QFont font = m_pLibrary->getTrackTableFont();
     if (m_originalTrackTableFont != font) {
         m_pConfig->set(ConfigKey("[Library]", "Font"),
-                       ConfigValue(font.toString()));
+                ConfigValue(font.toString()));
+        m_originalTrackTableFont = font;
     }
 
     int rowHeight = spinBox_row_height->value();
     if (m_iOriginalTrackTableRowHeight != rowHeight) {
-        m_pConfig->set(ConfigKey("[Library]","RowHeight"),
-                       ConfigValue(rowHeight));
+        m_pConfig->set(ConfigKey("[Library]", "RowHeight"),
+                ConfigValue(rowHeight));
+        m_iOriginalTrackTableRowHeight = rowHeight;
     }
 
     BaseTrackTableModel::setApplyPlayedTrackColor(
@@ -595,11 +679,39 @@ void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
 }
 
 void DlgPrefLibrary::setLibraryFont(const QFont& font) {
-    lineEdit_library_font->setText(
-            QString("%1 %2 %3pt")
-                    .arg(font.family(),
-                            font.styleName(),
-                            QString::number(font.pointSizeF())));
+    // Update the font name/style/size display
+    QString fontDescription = font.family();
+    const QString style = font.styleName();
+    if (!style.isEmpty()) {
+        // Use the style name if available, likely it's translated
+        fontDescription += ' ' + style;
+    } else {
+        // Else we compose the "style" string from weight and italic.
+        // It's not possible to access the translations used in QFontDialog,
+        // but let's can add them to the user translations
+        const auto weight = font.weight();
+        if (weight >= QFont::Bold) {
+            if (weight >= QFont::Black) {
+                fontDescription += ' ' + tr("Black");
+            } else if (weight >= QFont::ExtraBold) {
+                fontDescription += ' ' + tr("ExtraBold");
+            } else if (weight >= QFont::Bold) {
+                fontDescription += ' ' + tr("Bold");
+            }
+        } else if (weight >= QFont::DemiBold) {
+            fontDescription += ' ' + tr("SemiBold");
+        } else if (weight >= QFont::Medium) {
+            fontDescription += ' ' + tr("Medium");
+        } else if (weight >= QFont::Normal) {
+            // Skip "Normal" as it's implied
+        } else {
+            fontDescription += ' ' + tr("Light");
+        }
+    }
+    fontDescription += ' ' + QString::number(font.pointSizeF()) + QStringLiteral("pt");
+    lineEdit_library_font->setText(fontDescription);
+
+    // Apply the font
     m_pLibrary->setFont(font);
 
     // Don't let the font height exceed the row height.
@@ -614,8 +726,10 @@ void DlgPrefLibrary::setLibraryFont(const QFont& font) {
 void DlgPrefLibrary::slotSelectFont() {
     // False if the user cancels font selection.
     bool ok = false;
-    QFont font = QFontDialog::getFont(&ok, m_pLibrary->getTrackTableFont(),
-                                      this, tr("Select Library Font"));
+    QFont font = QFontDialog::getFont(&ok,
+            m_pLibrary->getTrackTableFont(),
+            this,
+            tr("Select Library Font"));
     if (ok) {
         setLibraryFont(font);
     }
@@ -665,4 +779,68 @@ void DlgPrefLibrary::setSeratoMetadataEnabled(bool shouldSyncTrackMetadata) {
     if (!shouldSyncTrackMetadata) {
         checkBox_serato_metadata_export->setChecked(false);
     }
+}
+
+void DlgPrefLibrary::slotDateFormatIndexChanged(int index) {
+    auto type = comboBox_dateFormat->itemData(index)
+                        .value<BaseTrackTableModel::DateFormat>();
+
+    if (type == BaseTrackTableModel::DateFormat::Custom) {
+        // Enable editing for Custom
+        if (!comboBox_dateFormat->isEditable()) {
+            comboBox_dateFormat->setEditable(true);
+            comboBox_dateFormat->setEditText(m_lastCustomDateFormat);
+        }
+    } else {
+        // Disable editing for Presets
+        comboBox_dateFormat->setEditable(false);
+
+        QString format;
+        switch (type) {
+        case BaseTrackTableModel::DateFormat::Native:
+            format = QString();
+            break;
+        case BaseTrackTableModel::DateFormat::ISO8601:
+            format = QStringLiteral("yyyy-MM-dd");
+            break;
+        case BaseTrackTableModel::DateFormat::RegionalShort:
+            format = QStringLiteral("d/M/yy");
+            break;
+        case BaseTrackTableModel::DateFormat::RegionalLong:
+            format = QStringLiteral("dd.MM.yyyy");
+            break;
+        case BaseTrackTableModel::DateFormat::Custom:
+            // Should not happen here given the if/else above
+            break;
+        }
+        slotDateFormatChanged(format);
+    }
+}
+
+void DlgPrefLibrary::slotDateFormatChanged(const QString& text) {
+    QString format = text;
+    // If not editable, we are in a Preset mode, but 'text' might be the Item
+    // Label (e.g. "Native ...") depending on how this was called. However, our
+    // slotDateFormatIndexChanged calls this explicitly with the correct format
+    // string. The editTextChanged signal only fires when editable. So 'text'
+    // should be the correct format string in all valid cases.
+
+    if (comboBox_dateFormat->isEditable()) {
+        int index = comboBox_dateFormat->currentIndex();
+        if (index >= 0) {
+            auto type = comboBox_dateFormat->itemData(index)
+                                .value<BaseTrackTableModel::DateFormat>();
+            if (type == BaseTrackTableModel::DateFormat::Custom) {
+                m_lastCustomDateFormat = format;
+            }
+        }
+    }
+}
+
+void DlgPrefLibrary::updateDateFormatPreview(const QString& format) {
+    const QString previewStr = mixxx::formatDate(QDate::currentDate(), format);
+    label_dateFormatPreview->setText(previewStr);
+
+    m_pConfig->setValue(kDateFormatConfigKey, format);
+    BaseTrackTableModel::setDateFormat(format);
 }

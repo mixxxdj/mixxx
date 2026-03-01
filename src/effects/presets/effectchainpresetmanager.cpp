@@ -680,7 +680,7 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
 // static
 EffectChainPresetPointer EffectChainPresetManager::createEmptyNamelessChainPreset() {
     auto pPreset = EffectChainPresetPointer::create(EffectChainPreset());
-    pPreset->setName("");
+    pPreset->setName(kNoEffectString);
     return pPreset;
 }
 
@@ -708,6 +708,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
     QHash<QString, EffectChainPresetPointer> quickEffectPresets;
+    QHash<QString, EffectChainPresetPointer> quickStemEffectPresets;
     QHash<QString, EffectManifestPointer> eqEffectManifests;
     // configure default EQs and QuickEffects per deck
     for (const auto& deckString : deckStrings) {
@@ -857,8 +858,31 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         }
     }
 
-    return EffectsXmlData{
-            eqEffectManifests, quickEffectPresets, standardEffectChainPresets, mainEqPreset};
+    // Read names of presets that were loaded into stem QuickEffects on last shutdown
+    QDomElement quickStemEffectPresetsElement =
+            XmlParse::selectElement(root, EffectXml::kStemQuickEffectChainPresets);
+    const QDomNodeList quickStemEffectNodeList =
+            quickStemEffectPresetsElement.elementsByTagName(
+                    EffectXml::kChainPresetName);
+    quickStemEffectPresets.reserve(quickStemEffectNodeList.count());
+    for (int i = 0; i < quickStemEffectNodeList.count(); ++i) {
+        QDomElement presetNameElement = quickStemEffectNodeList.at(i).toElement();
+        if (!presetNameElement.isNull()) {
+            QString deckStemGroup = presetNameElement.attribute(QStringLiteral("group"));
+            auto pPreset = m_effectChainPresets.value(presetNameElement.text());
+            if (pPreset != nullptr) {
+                // Replace defaultQuickEffectChainPreset with pPreset
+                // for this deck group
+                quickStemEffectPresets.insert(deckStemGroup, pPreset);
+            }
+        }
+    }
+
+    return EffectsXmlData{eqEffectManifests,
+            quickEffectPresets,
+            quickStemEffectPresets,
+            standardEffectChainPresets,
+            mainEqPreset};
 }
 
 EffectXmlDataSingleDeck EffectChainPresetManager::readEffectsXmlSingleDeck(
@@ -915,6 +939,37 @@ EffectXmlDataSingleDeck EffectChainPresetManager::readEffectsXmlSingleDeck(
     }
 
     return EffectXmlDataSingleDeck{pEqEffect, pQuickEffectChainPreset};
+}
+
+EffectChainPresetPointer EffectChainPresetManager::readEffectsXmlSingleDeckStem(
+        const QDomDocument& doc, const QString& deckStemString) {
+    QDomElement root = doc.documentElement();
+
+    // Quick Effect
+    auto pQuickEffectChainPreset = getDefaultQuickEffectPreset();
+
+    // Read name of last loaded QuickEffect preset
+    QDomElement quickEffectPresetsElement =
+            XmlParse::selectElement(root, EffectXml::kStemQuickEffectChainPresets);
+    const QDomNodeList quickEffectNodeList =
+            quickEffectPresetsElement.elementsByTagName(
+                    EffectXml::kChainPresetName);
+    for (int i = 0; i < quickEffectNodeList.count(); ++i) {
+        QDomElement presetNameElement = quickEffectNodeList.at(i).toElement();
+        if (presetNameElement.isNull()) {
+            continue;
+        }
+        if (presetNameElement.attribute(QStringLiteral("group")) == deckStemString) {
+            auto pPreset = m_effectChainPresets.value(presetNameElement.text());
+            if (pPreset != nullptr || presetNameElement.text() == kNoEffectString) {
+                // Replace the default preset.
+                // Load empty preset if the chain was cleared explicitly ('---' preset)
+                pQuickEffectChainPreset = pPreset;
+            }
+        }
+    }
+
+    return pQuickEffectChainPreset;
 }
 
 void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data) {
@@ -1007,4 +1062,19 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
         quickEffectElement.setAttribute(QStringLiteral("group"), qeIt.key());
     }
     rootElement.appendChild(quickEffectPresetsElement);
+
+    // Save which presets are loaded to stem QuickEffects
+    QDomElement quickStemEffectPresetsElement =
+            pDoc->createElement(EffectXml::kStemQuickEffectChainPresets);
+    QHashIterator<QString, EffectChainPresetPointer> qseIt(data.quickStemEffectChainPresets);
+    while (qseIt.hasNext()) {
+        qseIt.next();
+        QDomElement quickEffectElement = XmlParse::addElement(
+                *pDoc,
+                quickStemEffectPresetsElement,
+                EffectXml::kChainPresetName,
+                qseIt.value()->name());
+        quickEffectElement.setAttribute(QStringLiteral("group"), qseIt.key());
+    }
+    rootElement.appendChild(quickStemEffectPresetsElement);
 }

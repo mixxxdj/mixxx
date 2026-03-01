@@ -8,17 +8,22 @@
 #include "recording/defs_recording.h"
 #include "track/track.h"
 #include "util/event.h"
+#include "util/sample.h" //Using MixMultiChanneltomono function to convert stereo to mono
 
 constexpr int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_sampleRateControl(QStringLiteral("[App]"), QStringLiteral("samplerate")),
+          m_sampleRateControl(
+                  QStringLiteral("[App]"), QStringLiteral("samplerate")),
           m_frames(0),
           m_recordedDuration(0),
           m_iMetaDataLife(0),
           m_cueTrack(0),
-          m_bCueIsEnabled(false) {
+          m_bCueIsEnabled(false),
+          m_bCueUsesFileAnnotation(
+                  false) { // defaulting to stereo but not picking from config
+                           // in case config is not yet loaded
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 }
@@ -35,7 +40,11 @@ int EngineRecord::updateFromPreferences() {
     m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author"));
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album"));
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath"));
-    m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
+
+    m_bCueIsEnabled = m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, QStringLiteral("CueEnabled")));
+    m_bCueUsesFileAnnotation = m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, QStringLiteral("cue_file_annotation_enabled")));
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
@@ -107,7 +116,7 @@ bool EngineRecord::metaDataHasChanged()
     return true;
 }
 
-void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+void EngineRecord::process(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
     const auto recordingStatus = static_cast<int>(m_pRecReady->get());
     static const QString tag("EngineRecord recording");
 
@@ -146,6 +155,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             // clean frames counting and get current sample rate.
             m_frames = 0;
             m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRateControl.get());
+            m_recordedDuration = 0;
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -197,9 +207,27 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     // Checking again from m_pRecReady since its status might have changed
     // in the previous "if" blocks.
     if (m_pRecReady->get() == RECORD_ON) {
+        int channelMode = m_pConfig->getValue<int>(
+                ConfigKey(RECORDING_PREF_KEY, "channel_mode"), 0);
+        bool recordMono = (channelMode == 1);
+        /* Downmixing audio to mono if mono recording is enabled.
+        We need to do it before encoding because some encoders don't support mono
+        and we want to be able to record in mono even with these encoders.*/
+        const CSAMPLE* bufferToEncode = pBuffer;
+        std::vector<CSAMPLE> monoBuffer;
+        std::size_t encoderBufferSize = bufferSize;
+
+        if (recordMono) {
+            // Allocate mono buffer (half the size since we're going from 2 channels to 1)
+            monoBuffer.resize(bufferSize / 2);
+            SampleUtil::mixMultichannelToMono(monoBuffer.data(), pBuffer, bufferSize);
+            bufferToEncode = monoBuffer.data();
+            encoderBufferSize = bufferSize / 2;
+        }
+
         // Compress audio. Encoder will call method 'write()' below to
         // write a file stream and emit bytesRecorded.
-        m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
+        m_pEncoder->encodeBuffer(bufferToEncode, encoderBufferSize);
 
         //Writing cueLine before updating the time counter since we prefer to be ahead
         //rather than late.
@@ -210,7 +238,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         }
 
         // update frames counting and recorded duration (seconds)
-        m_frames += iBufferSize / 2;
+        m_frames += encoderBufferSize / 2;
         unsigned long lastDuration = m_recordedDuration;
         m_recordedDuration = m_frames / m_sampleRate;
 
@@ -223,9 +251,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 }
 
 QString EngineRecord::getRecordedDurationStr() {
-    return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
+    return QStringLiteral("%1:%2")
+            .arg(m_recordedDuration / 60, 2, 10, QChar('0'))  // minutes
+            .arg(m_recordedDuration % 60, 2, 10, QChar('0')); // seconds
 }
 
 void EngineRecord::writeCueLine() {
@@ -238,16 +266,22 @@ void EngineRecord::writeCueLine() {
                                 ((m_frames / (m_sampleRate / 75)))
                                     % 75);
 
-    m_cueFile.write(QString("  TRACK %1 AUDIO\n")
-                            .arg((double)m_cueTrack, 2, 'f', 0, '0')
-                            .toUtf8());
+    m_cueFile.write(QStringLiteral("  TRACK %1 AUDIO\n")
+                    .arg((double)m_cueTrack, 2, 'f', 0, '0')
+                    .toUtf8());
 
-    m_cueFile.write(QString("    TITLE \"%1\"\n")
-                            .arg(m_pCurrentTrack->getTitle())
-                            .toUtf8());
-    m_cueFile.write(QString("    PERFORMER \"%1\"\n")
-                            .arg(m_pCurrentTrack->getArtist())
-                            .toUtf8());
+    m_cueFile.write(QStringLiteral("    TITLE \"%1\"\n")
+                    .arg(m_pCurrentTrack->getTitle())
+                    .toUtf8());
+    m_cueFile.write(QStringLiteral("    PERFORMER \"%1\"\n")
+                    .arg(m_pCurrentTrack->getArtist())
+                    .toUtf8());
+
+    if (m_bCueUsesFileAnnotation) {
+        m_cueFile.write(QStringLiteral("    FILE \"%1\"\n")
+                        .arg(m_pCurrentTrack->getLocation())
+                        .toUtf8());
+    }
 
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker

@@ -12,17 +12,19 @@
 #include <QLinearGradient>
 
 QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 QtWaveformRendererFilteredSignal::~QtWaveformRendererFilteredSignal() {
 }
 
 void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
-    QColor low = m_pColors->getLowColor();
-    QColor mid = m_pColors->getMidColor();
-    QColor high = m_pColors->getHighColor();
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
+    QColor low = pColors->getLowColor();
+    QColor mid = pColors->getMidColor();
+    QColor high = pColors->getHighColor();
 
     QColor lowCenter = low;
     QColor midCenter = mid;
@@ -316,7 +318,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_pColors->getAxesColor());
+        painter->setPen(m_waveformRenderer->getWaveformSignalColors()->getAxesColor());
         painter->drawLine(0, 0, m_waveformRenderer->getLength(), 0);
     }
 

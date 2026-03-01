@@ -48,9 +48,37 @@ const EffectManifestPointer VisibleEffectsList::previous(
 }
 
 void VisibleEffectsList::readEffectsXml(
-        const QDomDocument& doc, EffectsBackendManagerPointer pBackendManager) {
+        const QDomDocument& doc,
+        EffectsBackendManagerPointer pBackendManager) {
+    QList<EffectManifestPointer> visibleEffects = readEffectsList(
+            doc,
+            pBackendManager,
+            EffectXml::kVisibleEffects);
+    const QList<EffectManifestPointer> hiddenEffects = readEffectsList(
+            doc,
+            pBackendManager,
+            EffectXml::kHiddenEffects);
+
+    // New effects will remain hidden since they are neither in the VisibleEffects
+    // nor in the newly introduced HiddenEffects list.
+    // Unhide all effects that are not in either list.
+    const auto manifests = pBackendManager->getManifestsForBackend(EffectBackendType::BuiltIn);
+    for (const EffectManifestPointer& pManifest : std::as_const(manifests)) {
+        if (!visibleEffects.contains(pManifest) &&
+                !hiddenEffects.contains(pManifest)) {
+            // prepend so un-hidden effects are discoverable
+            visibleEffects.prepend(pManifest);
+        }
+    }
+    setList(visibleEffects);
+}
+
+QList<EffectManifestPointer> VisibleEffectsList::readEffectsList(
+        const QDomDocument& doc,
+        EffectsBackendManagerPointer pBackendManager,
+        const QString& xmlElementName) {
     QDomElement root = doc.documentElement();
-    QDomElement visibleEffectsElement = XmlParse::selectElement(root, EffectXml::kVisibleEffects);
+    QDomElement visibleEffectsElement = XmlParse::selectElement(root, xmlElementName);
     QDomNodeList effectsElementsList = visibleEffectsElement.elementsByTagName(EffectXml::kEffect);
     QList<EffectManifestPointer> list;
 
@@ -67,19 +95,26 @@ void VisibleEffectsList::readEffectsXml(
             }
         }
     }
-
-    if (!list.isEmpty()) {
-        setList(list);
-    } else {
-        setList(pBackendManager->getManifestsForBackend(EffectBackendType::BuiltIn));
-    }
+    return list;
 }
 
-void VisibleEffectsList::saveEffectsXml(QDomDocument* pDoc) {
-    QDomElement root = pDoc->documentElement();
-    QDomElement visibleEffectsElement = pDoc->createElement(EffectXml::kVisibleEffects);
-    root.appendChild(visibleEffectsElement);
+void VisibleEffectsList::saveEffectsXml(QDomDocument* pDoc,
+        EffectsBackendManagerPointer pBackendManager) {
+    saveEffectsListXml(pDoc, m_list, EffectXml::kVisibleEffects);
+    auto hiddenEffects = pBackendManager->getManifests();
     for (const auto& pManifest : std::as_const(m_list)) {
+        hiddenEffects.removeAll(pManifest);
+    }
+    saveEffectsListXml(pDoc, hiddenEffects, EffectXml::kHiddenEffects);
+}
+
+void VisibleEffectsList::saveEffectsListXml(QDomDocument* pDoc,
+        const QList<EffectManifestPointer>& list,
+        const QString& xmlElementName) {
+    QDomElement root = pDoc->documentElement();
+    QDomElement visibleEffectsElement = pDoc->createElement(xmlElementName);
+    root.appendChild(visibleEffectsElement);
+    for (const auto& pManifest : std::as_const(list)) {
         VERIFY_OR_DEBUG_ASSERT(pManifest) {
             continue;
         }

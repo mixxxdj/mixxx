@@ -220,7 +220,11 @@ void PreviewButtonDelegate::buttonClicked() {
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
         // Load to preview deck and start playing
-        emit loadTrackToPlayer(pTrack, kPreviewDeckGroup, true);
+        emit loadTrackToPlayer(pTrack, kPreviewDeckGroup,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                true);
         startedPlaying = true;
     } else if (pTrack == pOldTrack && !isPreviewDeckPlaying()) {
         // Since the Preview deck might be hidden, starting at the main cue

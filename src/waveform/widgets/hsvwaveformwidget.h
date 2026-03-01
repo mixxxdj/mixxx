@@ -1,6 +1,7 @@
 #pragma once
 
 #include "nonglwaveformwidgetabstract.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class QWidget;
 
@@ -9,9 +10,10 @@ class HSVWaveformWidget : public NonGLWaveformWidgetAbstract {
   public:
     virtual ~HSVWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::HSVWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::HSV;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("HSV"); }
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
@@ -27,6 +29,8 @@ class HSVWaveformWidget : public NonGLWaveformWidgetAbstract {
     virtual void paintEvent(QPaintEvent* event);
 
   private:
-    HSVWaveformWidget(const QString& group, QWidget* parent);
+    HSVWaveformWidget(const QString& group,
+            QWidget* parent,
+            WaveformRendererSignalBase::Options options);
     friend class WaveformWidgetFactory;
 };

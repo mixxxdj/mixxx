@@ -8,6 +8,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "engine/sync/enginesync.h"
+#include "mixer/playermanager.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -45,22 +46,21 @@ SyncControl::SyncControl(const QString& group,
     m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay, Qt::DirectConnection);
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
-    m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncMode->setStates(static_cast<int>(SyncMode::NumModes));
+    m_pSyncMode->setBehavior(mixxx::control::ButtonMode::Toggle,
+            static_cast<int>(SyncMode::NumModes));
     m_pSyncMode->connectValueChangeRequest(
             this, &SyncControl::slotSyncModeChangeRequest, Qt::DirectConnection);
 
     m_pSyncLeaderEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_leader")));
-    m_pSyncLeaderEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncLeaderEnabled->setStates(3);
+    m_pSyncLeaderEnabled->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
     m_pSyncLeaderEnabled->addAlias(ConfigKey(group, QStringLiteral("sync_master")));
 
     m_pSyncEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_enabled")));
-    m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
+    m_pSyncEnabled->setButtonMode(mixxx::control::ButtonMode::LongPressLatching);
     m_pSyncEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncEnabledChangeRequest, Qt::DirectConnection);
 
@@ -124,15 +124,18 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pSyncPhaseButton = new ControlProxy(getGroup(), "beatsync_phase", this);
 
 #ifdef __VINYLCONTROL__
-    m_pVCEnabled = new ControlProxy(
-            getGroup(), "vinylcontrol_enabled", this);
+    // Vinyl control COs are only created for main decks
+    if (PlayerManager::isDeckGroup(getGroup())) {
+        m_pVCEnabled = new ControlProxy(
+                getGroup(), "vinylcontrol_enabled", this);
+        // TODO Remove, ControlProxy asserts that the control exists
+        // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+        // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+        DEBUG_ASSERT(m_pVCEnabled->valid());
 
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    DEBUG_ASSERT(m_pVCEnabled->valid());
-
-    m_pVCEnabled->connectValueChanged(
-            this, &SyncControl::slotVinylControlChanged, Qt::DirectConnection);
+        m_pVCEnabled->connectValueChanged(
+                this, &SyncControl::slotVinylControlChanged, Qt::DirectConnection);
+    }
 #endif
 }
 
@@ -142,7 +145,7 @@ SyncMode SyncControl::getSyncMode() const {
 
 void SyncControl::setSyncMode(SyncMode mode) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::setSyncMode" << getGroup() << mode;
+        kLogger.trace() << "setSyncMode" << getGroup() << mode;
     }
     // SyncControl has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
@@ -176,7 +179,7 @@ void SyncControl::notifyUniquePlaying() {
 
 void SyncControl::requestSync() {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::requestSync" << this->getGroup()
+        kLogger.trace() << "requestSync" << this->getGroup()
                         << isPlaying() << m_pQuantize->toBool();
     }
     if (isPlaying() && m_pQuantize->toBool()) {
@@ -237,8 +240,8 @@ mixxx::Bpm SyncControl::getBaseBpm() const {
 
 void SyncControl::updateLeaderBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::updateLeaderBeatDistance"
-                        << beatDistance;
+        kLogger.trace() << "updateLeaderBeatDistance"
+                        << getGroup() << beatDistance;
     }
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
@@ -250,7 +253,7 @@ void SyncControl::updateLeaderBeatDistance(double beatDistance) {
 
 void SyncControl::updateLeaderBpm(mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::updateLeaderBpm" << bpm;
+        kLogger.trace() << "updateLeaderBpm" << getGroup() << bpm;
     }
 
     VERIFY_OR_DEBUG_ASSERT(isSynchronized()) {
@@ -276,10 +279,10 @@ void SyncControl::notifyLeaderParamSource() {
 void SyncControl::reinitLeaderParams(
         double beatDistance, mixxx::Bpm baseBpm, mixxx::Bpm bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::reinitLeaderParams" << getGroup()
+        kLogger.trace() << "reinitLeaderParams" << getGroup()
                         << beatDistance << baseBpm << bpm;
     }
-    m_leaderBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    m_leaderBpmAdjustFactor = determineBpmMultiplier(mixxx::Bpm(m_pBpm->get()), bpm);
     updateLeaderBpm(bpm);
     updateLeaderBeatDistance(beatDistance);
 }
@@ -308,8 +311,8 @@ void SyncControl::updateTargetBeatDistance(mixxx::audio::FramePos refPosition) {
     double targetDistance = m_unmultipliedTargetBeatDistance;
     if (kLogger.traceEnabled()) {
         kLogger.trace()
+                << "updateTargetBeatDistance, unmult distance"
                 << getGroup()
-                << "SyncControl::updateTargetBeatDistance, unmult distance"
                 << targetDistance
                 << m_leaderBpmAdjustFactor
                 << refPosition;
@@ -334,8 +337,8 @@ void SyncControl::updateTargetBeatDistance(mixxx::audio::FramePos refPosition) {
     }
     if (kLogger.traceEnabled()) {
         kLogger.trace()
+                << "updateTargetBeatDistance, adjusted target is"
                 << getGroup()
-                << "SyncControl::updateTargetBeatDistance, adjusted target is"
                 << targetDistance;
     }
     m_pBpmControl->setTargetBeatDistance(targetDistance);
@@ -344,7 +347,7 @@ void SyncControl::updateTargetBeatDistance(mixxx::audio::FramePos refPosition) {
 mixxx::Bpm SyncControl::getBpm() const {
     const auto bpm = mixxx::Bpm(m_pBpm->get());
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::getBpm()"
+        kLogger.trace() << "getBpm()" << getGroup()
                         << bpm << "/" << m_leaderBpmAdjustFactor;
     }
     if (!bpm.isValid()) {
@@ -367,7 +370,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
 
     // This slot is also fired if the user has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackLoaded";
+        kLogger.trace() << "trackLoaded" << getGroup();
     }
 
     mixxx::BeatsPointer pBeats;
@@ -381,7 +384,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
 void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // This slot is fired by if the user has adjusted the beatgrid.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::trackBeatsUpdated";
+        kLogger.trace() << "trackBeatsUpdated" << getGroup();
     }
 
     m_pBeats = pBeats;
@@ -447,7 +450,7 @@ void SyncControl::slotControlBeatSync(double value) {
 
 void SyncControl::slotControlPlay(double play) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::slotControlPlay" << getGroup() << getSyncMode() << play;
+        kLogger.trace() << "slotControlPlay" << getGroup() << getSyncMode() << play;
     }
     m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
@@ -468,7 +471,7 @@ void SyncControl::slotPassthroughChanged(double enabled) {
 
 void SyncControl::slotSyncModeChangeRequest(double state) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::slotSyncModeChangeRequest";
+        kLogger.trace() << "slotSyncModeChangeRequest" << getGroup();
     }
     SyncMode mode = syncModeFromDouble(state);
     if (m_pPassthroughEnabled->toBool() && mode != SyncMode::None) {
@@ -480,7 +483,7 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 
 void SyncControl::slotSyncLeaderEnabledChangeRequest(double state) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::slotSyncLeaderEnabledChangeRequest" << getGroup();
+        kLogger.trace() << "slotSyncLeaderEnabledChangeRequest" << getGroup();
     }
     SyncMode mode = getSyncMode();
     if (state > 0.0) {
@@ -510,7 +513,7 @@ void SyncControl::slotSyncLeaderEnabledChangeRequest(double state) {
 
 void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::slotSyncEnabledChangeRequest" << getGroup();
+        kLogger.trace() << "slotSyncEnabledChangeRequest" << getGroup();
     }
     bool bEnabled = enabled > 0.0;
 
@@ -571,7 +574,7 @@ void SyncControl::slotRateChanged() {
     const double rateRatio = m_pRateRatio->get();
     bpm *= rateRatio;
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::slotRateChanged" << rateRatio << bpm;
+        kLogger.trace() << "slotRateChanged" << getGroup() << rateRatio << bpm;
     }
 
     // BPM may be invalid if rateRatio is NaN or infinity.

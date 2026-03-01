@@ -1,4 +1,3 @@
-
 /**
      Mixxx installs the QJSEngine::ConsoleExtension for the use in controller mapping scripts.
     See also:
@@ -108,21 +107,23 @@ declare namespace console {
     /**
      * Prints the current number of times a particular piece of code has run, along with a message.
      *
-     * @param label
+     * @param label message to be prepended before the count
      */
     function count(label?: string): void;
 
     /**
      *  Turns on the JavaScript profiler.
      *
-     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
+     * @param label measurement label
+     * @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      */
-     function profile(label?: string): void;
+    function profile(label?: string): void;
 
     /**
      *  Turns off the JavaScript profiler.
      *
-     *  @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
+     * @param label measurement label
+     * @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      */
     function profileEnd(label?: string): void;
 
@@ -134,5 +135,4 @@ declare namespace console {
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
      */
     function exception(...data: any[]): void;
-
 }

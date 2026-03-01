@@ -370,8 +370,8 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
     // Incorporate all tracks loaded into decks.
     // Each track has to be done as a separate database query, in case the same
     // track is loaded into multiple decks.
-    int iDecks = (int) PlayerManager::numDecks();
-    for (int i = 0; i < iDecks; ++i) {
+    int numDecks = PlayerInfo::instance().numDecks();
+    for (int i = 0; i < numDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
         if (pTrack) {
@@ -459,25 +459,29 @@ bool AutoDJCratesDAO::updateLastPlayedDateTime() {
     // WHERE newlastplayed != "";
     QString strSetLog;
     strSetLog.setNum(PlaylistDAO::PLHT_SET_LOG);
-    QString strQuery(QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
-            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS ", "
-            AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS ", "
-            AUTODJCRATESTABLE_LASTPLAYED ")"
-            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE ".%1, "
-            AUTODJCRATESTABLE_CRATEREFS ", " AUTODJCRATESTABLE_TIMESPLAYED ", "
-            AUTODJCRATESTABLE_AUTODJREFS ", MAX(%3) AS new"
-            AUTODJCRATESTABLE_LASTPLAYED " FROM " PLAYLIST_TRACKS_TABLE ", "
-            AUTODJCRATES_TABLE " WHERE " PLAYLIST_TRACKS_TABLE
-            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE " WHERE %5 = %6) AND "
-            PLAYLIST_TRACKS_TABLE ".%1 = " AUTODJCRATES_TABLE "."
-            AUTODJCRATESTABLE_TRACKID " GROUP BY " PLAYLIST_TRACKS_TABLE
-            ".%1) WHERE new" AUTODJCRATESTABLE_LASTPLAYED " != \"\"")
-            .arg(PLAYLISTTRACKSTABLE_TRACKID, // %1
-                 PLAYLISTTRACKSTABLE_PLAYLISTID, // %2
-                 PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
-                 PLAYLISTTABLE_ID, // %4
-                 PLAYLISTTABLE_HIDDEN, // %5
-                 strSetLog)); // %6
+    QString strQuery(QString(
+            "INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
+            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", " AUTODJCRATESTABLE_LASTPLAYED
+            ")"
+            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE
+            ".%1, " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", MAX(%3) AS new" AUTODJCRATESTABLE_LASTPLAYED
+            " FROM " PLAYLIST_TRACKS_TABLE ", " AUTODJCRATES_TABLE
+            " WHERE " PLAYLIST_TRACKS_TABLE
+            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE
+            " WHERE %5 = %6) AND " PLAYLIST_TRACKS_TABLE
+            ".%1 = " AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_TRACKID
+            " GROUP BY " PLAYLIST_TRACKS_TABLE
+            ".%1) WHERE new" AUTODJCRATESTABLE_LASTPLAYED " != ''")
+                             .arg(PLAYLISTTRACKSTABLE_TRACKID,          // %1
+                                     PLAYLISTTRACKSTABLE_PLAYLISTID,    // %2
+                                     PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
+                                     PLAYLISTTABLE_ID,                  // %4
+                                     PLAYLISTTABLE_HIDDEN,              // %5
+                                     strSetLog));                       // %6
     oQuery.prepare(strQuery);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
@@ -507,26 +511,30 @@ bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(TrackId trackId) {
     // WHERE newlastplayed != "";
     QString strSetLog;
     strSetLog.setNum(PlaylistDAO::PLHT_SET_LOG);
-    oQuery.prepare(QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
-            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS ", "
-            AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS ", "
-            AUTODJCRATESTABLE_LASTPLAYED ")"
-            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE ".%1, "
-            AUTODJCRATESTABLE_CRATEREFS ", " AUTODJCRATESTABLE_TIMESPLAYED ", "
-            AUTODJCRATESTABLE_AUTODJREFS ", MAX(%3) AS new"
-            AUTODJCRATESTABLE_LASTPLAYED " FROM " PLAYLIST_TRACKS_TABLE ", "
-            AUTODJCRATES_TABLE " WHERE " PLAYLIST_TRACKS_TABLE
-            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE " WHERE %5 = %6) AND "
-            PLAYLIST_TRACKS_TABLE ".%1 = :track_id AND " PLAYLIST_TRACKS_TABLE
+    oQuery.prepare(QString(
+            "INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
+            " (" AUTODJCRATESTABLE_TRACKID ", " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", " AUTODJCRATESTABLE_LASTPLAYED
+            ")"
+            " SELECT * FROM (SELECT " PLAYLIST_TRACKS_TABLE
+            ".%1, " AUTODJCRATESTABLE_CRATEREFS
+            ", " AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_AUTODJREFS
+            ", MAX(%3) AS new" AUTODJCRATESTABLE_LASTPLAYED
+            " FROM " PLAYLIST_TRACKS_TABLE ", " AUTODJCRATES_TABLE
+            " WHERE " PLAYLIST_TRACKS_TABLE
+            ".%2 IN (SELECT %4 FROM " PLAYLIST_TABLE
+            " WHERE %5 = %6) AND " PLAYLIST_TRACKS_TABLE
+            ".%1 = :track_id AND " PLAYLIST_TRACKS_TABLE
             ".%1 = " AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_TRACKID
-            " GROUP BY " PLAYLIST_TRACKS_TABLE ".%1) WHERE new"
-            AUTODJCRATESTABLE_LASTPLAYED " != \"\"")
-            .arg(PLAYLISTTRACKSTABLE_TRACKID, // %1
-                 PLAYLISTTRACKSTABLE_PLAYLISTID, // %2
-                 PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
-                 PLAYLISTTABLE_ID, // %4
-                 PLAYLISTTABLE_HIDDEN, // %5
-                 strSetLog)); // %6
+            " GROUP BY " PLAYLIST_TRACKS_TABLE
+            ".%1) WHERE new" AUTODJCRATESTABLE_LASTPLAYED " != ''")
+                           .arg(PLAYLISTTRACKSTABLE_TRACKID,          // %1
+                                   PLAYLISTTRACKSTABLE_PLAYLISTID,    // %2
+                                   PLAYLISTTRACKSTABLE_DATETIMEADDED, // %3
+                                   PLAYLISTTABLE_ID,                  // %4
+                                   PLAYLISTTABLE_HIDDEN,              // %5
+                                   strSetLog));                       // %6
     oQuery.bindValue(":track_id", trackId.toVariant());
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
@@ -1095,8 +1103,8 @@ void AutoDJCratesDAO::playerInfoTrackLoaded(const QString& group,
     }
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
-    unsigned int numDecks = PlayerManager::numDecks();
-    for (unsigned int i = 0; i < numDecks; ++i) {
+    int numDecks = PlayerInfo::instance().numDecks();
+    for (int i = 0; i < numDecks; ++i) {
         if (group == PlayerManager::groupForDeck(i)) {
             // Update the number of auto-DJ-playlist references to this track.
             QSqlQuery oQuery(m_database);
@@ -1123,8 +1131,8 @@ void AutoDJCratesDAO::playerInfoTrackUnloaded(const QString& group,
     }
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
-    unsigned int numDecks = PlayerManager::numDecks();
-    for (unsigned int i = 0; i < numDecks; ++i) {
+    int numDecks = PlayerInfo::instance().numDecks();
+    for (int i = 0; i < numDecks; ++i) {
         if (group == PlayerManager::groupForDeck(i)) {
             // Get rid of the ID of the track in this deck.
             QSqlQuery oQuery(m_database);

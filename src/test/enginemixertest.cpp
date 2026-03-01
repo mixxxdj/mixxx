@@ -1,14 +1,16 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <QString>
 #include <QtDebug>
+#include <memory>
+#include <tuple>
+#include <vector>
 
-#include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginemixer.h"
-#include "test/mixxxtest.h"
+#include "gtest/gtest.h"
 #include "test/signalpathtest.h"
-#include "util/defs.h"
 #include "util/sample.h"
 #include "util/types.h"
 
@@ -29,457 +31,128 @@ class EngineChannelMock : public EngineChannel {
                       /*isPrimarydeck*/ true) {
     }
 
-    void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {
+    void applyVolume(CSAMPLE* pBuff, const std::size_t bufferSize) {
         Q_UNUSED(pBuff);
-        Q_UNUSED(iBufferSize);
+        Q_UNUSED(bufferSize);
     }
 
-    MOCK_METHOD0(updateActiveState, ActiveState());
-    MOCK_METHOD0(isActive, bool());
-    MOCK_CONST_METHOD0(isMainMixEnabled, bool());
-    MOCK_CONST_METHOD0(isPflEnabled, bool());
-    MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
-    MOCK_CONST_METHOD1(collectFeatures, void(GroupFeatureState* pGroupFeatures));
-    MOCK_METHOD1(postProcess, void(const int iBufferSize));
+    MOCK_METHOD(ActiveState, updateActiveState, (), (override));
+    MOCK_METHOD(bool, isActive, (), (override));
+    MOCK_METHOD(bool, isMainMixEnabled, (), (override, const));
+    MOCK_METHOD(bool, isPflEnabled, (), (override, const));
+    MOCK_METHOD(void, process, (CSAMPLE * pInOut, const std::size_t bufferSize), (override));
+    MOCK_METHOD(void, collectFeatures, (GroupFeatureState * pGroupFeatures), (override, const));
+    MOCK_METHOD(void, postProcess, (const std::size_t bufferSize), (override));
 };
 
-class EngineMixerTest : public BaseSignalPathTest {
+class EngineMixerTest
+        : public BaseSignalPathTest,
+          public testing::WithParamInterface<std::tuple<int, bool>> {
   protected:
     void assertMainBufferMatchesGolden(const QString& testName) {
         assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-                kMaxEngineSamples,
-                QString("%1-main").arg(testName));
+                QStringLiteral("%1-main").arg(testName));
     };
 
     void assertHeadphoneBufferMatchesGolden(const QString& testName) {
         assertBufferMatchesReference(m_pEngineMixer->getHeadphoneBuffer(),
-                kMaxEngineSamples,
-                QString("%1-headphone").arg(testName));
+                QStringLiteral("%1-headphone").arg(testName));
+    };
+    void assertBuffers() {
+        QString testname = QString(::testing::UnitTest::GetInstance()->current_test_info()->name());
+        assertMainBufferMatchesGolden(testname);
+        assertHeadphoneBufferMatchesGolden(testname);
+    }
+
+    // this contains all the ugliness...
+    std::pair<EngineChannelMock*, std::span<const CSAMPLE>> makeChannel(
+            const QString& group, float bufferInitValue) {
+        auto pChannelOwner = std::make_unique<EngineChannelMock>(
+                group, EngineChannel::CENTER, m_pEngineMixer);
+        auto* pChannel = pChannelOwner.get();
+        m_pEngineMixer->addChannel(std::move(pChannelOwner));
+
+        // Pretend that the channel processed the buffer by filling it with values
+        auto buffer = m_pEngineMixer->getChannelBuffer(group);
+        SampleUtil::fill(const_cast<CSAMPLE*>(buffer.data()), bufferInitValue, buffer.size());
+        return {pChannel, buffer};
+    }
+
+  public:
+    static std::string nameGenerator(
+            const testing::TestParamInfo<EngineMixerTest::ParamType>& info) {
+        auto [channelCount, isPfl] = info.param;
+        std::string name;
+        switch (channelCount) {
+        case 1:
+            name = "Single";
+            break;
+        case 2:
+            name = "Two";
+            break;
+        case 3:
+            name = "Three";
+            break;
+        }
+        name += "Channel";
+        if (isPfl) {
+            name += "PFL";
+        }
+        return name;
     };
 };
 
-TEST_F(EngineMixerTest, SingleChannelOutputWorks) {
-    const QString testName = "SingleChannelOutputWorks";
+INSTANTIATE_TEST_SUITE_P(EngineMixerTestSuite,
+        EngineMixerTest,
+        testing::Combine(testing::Values(1, 2, 3), testing::Bool()),
+        EngineMixerTest::nameGenerator);
 
-    EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel);
+TEST_P(EngineMixerTest, OutputWorks) {
+    const auto [channelCount, isPfl] = GetParam();
 
-    // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    SampleUtil::fill(pChannelBuffer, 0.1f, kMaxEngineSamples);
+    std::vector<std::pair<EngineChannelMock*, std::span<const CSAMPLE>>> channels;
+    channels.reserve(channelCount);
+    for (int i = 1; i <= channelCount; ++i) {
+        QString group = QStringLiteral("[Test%1]").arg(i);
+        CSAMPLE bufferInitValue = i * 0.1f;
+        channels.push_back(makeChannel(group, bufferInitValue));
+    }
 
-    // Instruct the mock to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel, postProcess(kMaxEngineSamples))
-            .Times(1);
+    for (auto [pChannel, buffer] : channels) {
+        // Instruct the mock to claim it is active and main
+        EXPECT_CALL(*pChannel, updateActiveState())
+                .Times(1)
+                .WillOnce(Return(EngineChannel::ActiveState::Active));
+        // behavior needs to differ slightly depending on whether channel is PFL
+        if (isPfl) {
+            EXPECT_CALL(*pChannel, isActive())
+                    .Times(2)
+                    .WillRepeatedly(Return(true));
+        } else {
+            EXPECT_CALL(*pChannel, isActive())
+                    .Times(1)
+                    .WillOnce(Return(true));
+        }
+        EXPECT_CALL(*pChannel, isMainMixEnabled())
+                .Times(1)
+                .WillOnce(Return(true));
+        EXPECT_CALL(*pChannel, isPflEnabled())
+                .Times(1)
+                .WillOnce(Return(isPfl));
+        EXPECT_CALL(*pChannel, collectFeatures(_))
+                .Times(1);
+        EXPECT_CALL(*pChannel, postProcess(static_cast<int>(buffer.size())))
+                .Times(1);
 
-    // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
+        // Instruct the mock to just return when process() gets called.
+        EXPECT_CALL(*pChannel, process(_, static_cast<int>(buffer.size())))
+                .Times(1)
+                .WillOnce(Return());
+    }
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(static_cast<int>(channels.at(0).second.size()));
 
-    // Check that the main output contains the channel data.
-    assertMainBufferMatchesGolden(testName);
-
-    // Check that the headphone output does not contain the channel data.
-    assertHeadphoneBufferMatchesGolden(testName);
+    assertBuffers();
 }
 
-TEST_F(EngineMixerTest, SingleChannelPFLOutputWorks) {
-    const QString testName = "SingleChannelPFLOutputWorks";
-
-    EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel);
-
-    // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    SampleUtil::fill(pChannelBuffer, 0.1f, kMaxEngineSamples);
-
-    // Instruct the mock to claim it is active, not main and PFL
-    EXPECT_CALL(*pChannel, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel, process(_, _))
-            .Times(1)
-            .WillOnce(Return());
-
-    m_pEngineMixer->process(kMaxEngineSamples);
-
-    // Check that the main output is empty.
-    assertMainBufferMatchesGolden(testName);
-
-    // Check that the headphone output contains the channel data.
-    assertHeadphoneBufferMatchesGolden(testName);
-}
-
-TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
-    const QString testName = "TwoChannelOutputWorks";
-
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel2);
-
-    // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
-
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
-    SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
-
-    // Instruct channel 1 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel1, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel1, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct channel 2 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel2, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel2, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-
-    m_pEngineMixer->process(kMaxEngineSamples);
-
-    // Check that the main output contains the sum of the channel data.
-    assertMainBufferMatchesGolden(testName);
-
-    // Check that the headphone output does not contain any channel data.
-    assertHeadphoneBufferMatchesGolden(testName);
-}
-
-TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
-    const QString testName = "TwoChannelPFLOutputWorks";
-
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel2);
-
-    // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
-
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
-    SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
-
-    // Instruct channel 1 to claim it is active, main and PFL.
-    EXPECT_CALL(*pChannel1, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(2)
-            .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel1, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct channel 2 to claim it is active, main and PFL.
-    EXPECT_CALL(*pChannel2, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(2)
-            .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel2, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-
-    m_pEngineMixer->process(kMaxEngineSamples);
-
-    // Check that the main output contains the sum of the channel data.
-    assertMainBufferMatchesGolden(testName);
-
-    // Check that the headphone output does not contain any channel data.
-    assertHeadphoneBufferMatchesGolden(testName);
-}
-
-TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
-    const QString testName = "ThreeChannelOutputWorks";
-
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel3);
-
-    // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test3]"));
-
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
-    SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
-    SampleUtil::fill(pChannel3Buffer, 0.3f, kMaxEngineSamples);
-
-    // Instruct channel 1 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel1, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel1, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct channel 2 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel2, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel2, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct channel 3 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel3, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel3, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel3, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel3, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-    EXPECT_CALL(*pChannel3, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-
-    m_pEngineMixer->process(kMaxEngineSamples);
-
-    // Check that the main output contains the sum of the channel data.
-    assertMainBufferMatchesGolden(testName);
-
-    // Check that the headphone output does not contain any channel data.
-    assertHeadphoneBufferMatchesGolden(testName);
-}
-
-TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
-    const QString testName = "ThreeChannelPFLOutputWorks";
-
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMixer);
-    m_pEngineMixer->addChannel(pChannel3);
-
-    // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test3]"));
-
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
-    SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
-    SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
-    SampleUtil::fill(pChannel3Buffer, 0.3f, kMaxEngineSamples);
-
-    // Instruct channel 1 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel1, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(2)
-            .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel1, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct channel 2 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel2, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(2)
-            .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel2, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct channel 3 to claim it is active, main and not PFL.
-    EXPECT_CALL(*pChannel3, updateActiveState())
-            .Times(1)
-            .WillOnce(Return(EngineChannel::ActiveState::Active));
-    EXPECT_CALL(*pChannel3, isActive())
-            .Times(2)
-            .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel3, isMainMixEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, collectFeatures(_))
-            .Times(1);
-    EXPECT_CALL(*pChannel3, postProcess(kMaxEngineSamples))
-            .Times(1);
-
-    // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel1, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-    EXPECT_CALL(*pChannel2, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-    EXPECT_CALL(*pChannel3, process(_, kMaxEngineSamples))
-            .Times(1)
-            .WillOnce(Return());
-
-    m_pEngineMixer->process(kMaxEngineSamples);
-
-    // Check that the main output contains the sum of the channel data.
-    assertMainBufferMatchesGolden(testName);
-
-    // Check that the headphone output does not contain any channel data.
-    assertHeadphoneBufferMatchesGolden(testName);
-}
-
-}  // namespace
+} // namespace

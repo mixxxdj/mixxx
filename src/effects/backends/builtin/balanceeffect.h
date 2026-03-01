@@ -27,8 +27,13 @@ class BalanceGroupState : public EffectState {
 
 class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
   public:
+    // TODO re-evaluate default/delete here. Is adhering to rule of zero possible?
     BalanceEffect() = default;
     ~BalanceEffect() override = default;
+    BalanceEffect(const BalanceEffect&) = delete;
+    BalanceEffect& operator=(const BalanceEffect&) = delete;
+    BalanceEffect(BalanceEffect&&) = delete;
+    BalanceEffect& operator=(BalanceEffect&&) = delete;
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -52,6 +57,4 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
     EngineEffectParameterPointer m_pBalanceParameter;
     EngineEffectParameterPointer m_pMidSideParameter;
     EngineEffectParameterPointer m_pBypassFreqParameter;
-
-    DISALLOW_COPY_AND_ASSIGN(BalanceEffect);
 };

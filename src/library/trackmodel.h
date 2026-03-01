@@ -4,7 +4,6 @@
 #include <QList>
 #include <QUrl>
 #include <QVector>
-#include <QtSql>
 
 #include "library/coverart.h"
 #include "library/dao/settingsdao.h"
@@ -15,10 +14,12 @@
 /// which display track lists.
 class TrackModel {
   public:
-    static const int kHeaderWidthRole = Qt::UserRole + 0;
-    static const int kHeaderNameRole = Qt::UserRole + 1;
+    static constexpr int kHeaderWidthRole = Qt::UserRole + 0;
+    static constexpr int kHeaderNameRole = Qt::UserRole + 1;
     // This role is used for data export like in CSV files
     static constexpr int kDataExportRole = Qt::UserRole + 2;
+    // This role provides the tuning frequency in Hz
+    static constexpr int kTuningFrequencyRole = Qt::UserRole + 3;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)
@@ -52,6 +53,8 @@ class TrackModel {
         RemoveCrate = 1u << 15u,
         RemoveFromDisk = 1u << 16u,
         Analyze = 1u << 17u,
+        Properties = 1u << 18u,
+        Sorting = 1u << 19u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -93,6 +96,7 @@ class TrackModel {
         Color = 30,
         LastPlayedAt = 31,
         PlaylistDateTimeAdded = 32,
+        TuningFrequency = 33,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
@@ -128,8 +132,17 @@ class TrackModel {
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
+    virtual int getTrackRowByPosition(int position) const {
+        Q_UNUSED(position);
+        return -1;
+    }
 
-    virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
+    virtual const QList<int> getSelectedPositions(const QModelIndexList& indices) const {
+        Q_UNUSED(indices);
+        return {};
+    }
+
+    virtual void search(const QString& searchText) = 0;
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can
@@ -233,9 +246,15 @@ class TrackModel {
     virtual void select() {
     }
 
+    virtual void removeTrackRows(const QSet<TrackId>&) {};
+
+    /// This is an interface to stop any potentially running
+    /// model population when switching models in WTrackTableView.
+    /// Only implemented in ProxyTrackModel.
+    virtual void maybeStopModelPopulation() {};
+
     /// @brief modelKey returns a unique identifier for the model
     /// @param noSearch don't include the current search in the key
-    /// @param baseOnly return only a identifier for the whole subsystem
     virtual QString modelKey(bool noSearch) const = 0;
 
     virtual bool getRequireConfirmationToHideRemoveTracks() {

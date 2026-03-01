@@ -3,10 +3,18 @@
 #include <QDomElement>
 #include <QString>
 #include <memory>
+#ifdef MIXXX_USE_QML
+#include <QImage>
+#include <QMap>
+#include <bit>
+
+#include "controllers/legacycontrollermapping.h"
+#else
+class LegacyControllerMapping;
+#endif
 
 class QFileInfo;
 class QDir;
-class LegacyControllerMapping;
 class LegacyControllerSettingsLayoutContainer;
 
 /// The LegacyControllerMappingFileHandler is used for serializing/deserializing the
@@ -48,10 +56,10 @@ class LegacyControllerMappingFileHandler {
     void parseMappingSettings(const QDomElement& root,
             LegacyControllerMapping* mapping) const;
 
-    /// Adds script files from XML to the LegacyControllerMapping.
+    /// Adds script files and QML scenes from XML to the LegacyControllerMapping.
     ///
     /// This function parses the supplied QDomElement structure, finds the
-    /// matching script files inside the search paths and adds them to
+    /// matching script files and QML scenes inside the search paths and adds them to
     /// LegacyControllerMapping.
     ///
     /// @param root The root node of the XML document for the mapping.
@@ -84,5 +92,18 @@ class LegacyControllerMappingFileHandler {
             const QString& filePath,
             const QDir& systemMappingPath) = 0;
 
+#ifdef MIXXX_USE_QML
+  public:
+    static QMap<QString, QImage::Format> kSupportedPixelFormat;
+    static QMap<QString, LegacyControllerMapping::ScreenInfo::ColorEndian> kEndianFormat;
+    // Maximum target frame per request for a screen controller
+    static constexpr int kMaxTargetFps = 240;
+    // Maximum MSAA value that can be used
+    static constexpr int kMaxMsaa = 16;
+    // Maximum time allowed for a screen to run a splash off animation
+    static constexpr int kMaxSplashOffDuration = 3000;
+
+    friend class ControllerRenderingEngineTest;
+#endif
     friend class LegacyControllerMappingSettingsTest_parseSettingBlock_Test;
 };
