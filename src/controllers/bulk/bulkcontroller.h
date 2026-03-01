@@ -111,7 +111,11 @@ class BulkController : public Controller {
     }
 
     uint8_t getInEndpointAddr() const {
-        return m_inEndpointAddr;
+        return m_inEndpointAddr1;
+    }
+
+    uint8_t getSecondInEndpointAddr() const {
+        return m_inEndpointAddr2;
     }
 
     uint8_t getOutEndpointAddr() const {
@@ -149,8 +153,10 @@ class BulkController : public Controller {
 
     std::uint16_t m_vendorId;
     std::uint16_t m_productId;
-    std::uint8_t m_inEndpointAddr;
-    int m_inLength;
+    std::uint8_t m_inEndpointAddr1;
+    int m_inLength1;
+    std::uint8_t m_inEndpointAddr2;
+    int m_inLength2;
     std::uint8_t m_outEndpointAddr;
     std::optional<std::uint8_t> m_interfaceNumber;
 
@@ -159,5 +165,6 @@ class BulkController : public Controller {
 
     QString m_sUID;
     std::unique_ptr<BulkReader> m_pReader;
+    std::unique_ptr<BulkReader> m_pReader2;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };
