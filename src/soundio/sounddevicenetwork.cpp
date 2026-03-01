@@ -16,6 +16,12 @@
 #include "util/trace.h"
 #include "waveform/visualplayposition.h"
 
+// HostTime clock reference type
+// note that the resolution of std::chrono::steady_clock is not guaranteed
+// to be high resolution, but it is guaranteed to be monotonic.
+// However, on all major platforms, it is high resolution enough.
+using ClockT = std::chrono::steady_clock;
+
 namespace {
 constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
@@ -41,7 +47,8 @@ SoundDeviceNetwork::SoundDeviceNetwork(
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
-          m_targetTime(0) {
+          m_targetTime(0),
+          m_hostTimeFilter(512) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
@@ -103,6 +110,8 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
         kLogger.debug() << "Maximum:" << framesPerBuffer << "frames/buffer @"
                         << m_sampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
     }
+
+    m_hostTimeFilter.clear();
 
     return SoundDeviceStatus::Ok;
 }
@@ -502,7 +511,8 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     {
         ScopedTimer t(QStringLiteral("SoundDeviceNetwork::callbackProcess prepare %1"),
                 m_deviceId.name);
-        m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
+        m_pSoundManager->onDeviceOutputCallback(
+                framesPerBuffer, m_absTimeWhenPrevOutputBufferReachesDac);
     }
 
     m_pSoundManager->writeProcess(framesPerBuffer);
@@ -519,6 +529,24 @@ void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {
     m_targetTime += static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000);
     double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
     callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
+
+    // Use HostTimeFilter class to create a smooth linear regression
+    // between absolute network time and absolute host time
+    auto hostTime = std::chrono::duration_cast<std::chrono::microseconds>(
+            ClockT::now().time_since_epoch());
+
+    m_hostTimeFilter.insertTimePoint(static_cast<double>(currentTime), hostTime);
+
+    auto filteredHostTime = m_hostTimeFilter.calcHostTime(static_cast<double>(currentTime));
+    auto outputLatency = std::chrono::microseconds(
+            static_cast<long long>(callbackEntrytoDacSecs * 1000000));
+
+    if (filteredHostTime != HostTimeFilter::kInvalidHostTime) {
+        m_absTimeWhenPrevOutputBufferReachesDac = filteredHostTime + outputLatency;
+    } else {
+        m_absTimeWhenPrevOutputBufferReachesDac = hostTime + outputLatency;
+    }
+
     VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
     //qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs;
 }

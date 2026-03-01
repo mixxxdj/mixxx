@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QString>
+#include <chrono>
 
 #include "audio/types.h"
 #include "preferences/usersettings.h"
@@ -54,6 +55,8 @@ class SoundDevice {
     bool operator==(const SoundDevice &other) const;
     bool operator==(const QString &other) const;
 
+    std::chrono::microseconds m_absTimeWhenPrevOutputBufferReachesDac;
+
   protected:
     void composeOutputBuffer(CSAMPLE* outputBuffer,
                              const SINT iFramesPerBuffer,
@@ -80,6 +83,8 @@ class SoundDevice {
     mixxx::audio::ChannelCount m_numInputChannels;
     // The current samplerate for the sound device.
     mixxx::audio::SampleRate m_sampleRate;
+    // The output latency reported by portaudio streaminfo
+    double m_outputLatencyMillis;
     // The name of the audio API used by this device.
     QString m_hostAPI;
     // The **configured** number of frames per buffer. We'll tell PortAudio we

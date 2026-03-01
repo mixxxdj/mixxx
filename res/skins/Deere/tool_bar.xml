@@ -300,6 +300,39 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
+              <!-- Ableton Link Widget -->
+              <WidgetGroup>
+                <ObjectName>AbletonLinkWidget</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                    <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                    <SetVariable name="MinimumSize">38,22</SetVariable>
+                    <SetVariable name="MaximumSize">38,22</SetVariable>
+                    <SetVariable name="SizePolicy">f,f</SetVariable>
+                    <SetVariable name="state_0_text">Link</SetVariable>
+                    <SetVariable name="state_1_text">Link</SetVariable>
+                    <SetVariable name="left_connection_control">[AbletonLink],sync_enabled</SetVariable>
+                  </Template>
+
+                  <Number>
+                    <TooltipId>num_peers</TooltipId>
+                    <ObjectName>AbletonLinkPeers</ObjectName>
+                    <Size>25f,22f</Size>
+                    <NumberOfDigits>0</NumberOfDigits>
+                    <Alignment>center</Alignment>
+                    <Connection>
+                      <ConfigKey>[AbletonLink],num_peers</ConfigKey>
+                    </Connection>
+                  </Number>
+
+                  <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+              <!-- /Ableton Link Widget -->
+
               <WidgetGroup>
                 <TooltipId>recording_duration</TooltipId>
                 <Layout>horizontal</Layout>
