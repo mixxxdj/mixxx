@@ -113,7 +113,7 @@ ModalTrackBatchOperationProcessor::doProcessNextTrack(
     case Mode::ApplyAndSave:
         return ProcessNextTrackResult::SaveTrackAndContinueProcessing;
     }
-    DEBUG_ASSERT(!"unreachable");
+    DEBUG_ASSERT_UNREACHABLE(!"unreachable");
     return ProcessNextTrackResult::AbortProcessing;
 }
 

@@ -289,7 +289,7 @@ inline bool operator!=(
 
 /// There is not really a use case for this, but it is required for QMetaType::registerComparators.
 inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
-    DEBUG_ASSERT(!"should never be invoked");
+    DEBUG_ASSERT_UNREACHABLE(!"should never be invoked");
     return lhs.portAudioIndex < rhs.portAudioIndex;
 }
 

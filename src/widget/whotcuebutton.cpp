@@ -335,7 +335,7 @@ void WHotcueButton::slotTypeChanged(double type) {
         m_type = QStringLiteral("n60dbsound");
         break;
     default:
-        DEBUG_ASSERT(!"Unknown cue type!");
+        DEBUG_ASSERT_UNREACHABLE(!"Unknown cue type!");
         m_type = QLatin1String("");
     }
     restyleAndRepaint();

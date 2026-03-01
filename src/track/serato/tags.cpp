@@ -127,7 +127,7 @@ double SeratoTags::guessTimingOffsetMillis(
 #endif
 #if defined(__FFMPEG__)
         if (primaryDecoderName == mixxx::SoundSourceProviderFFmpeg::kDisplayName) {
-            DEBUG_ASSERT(!usingMadOrFFmpeg);
+            DEBUG_ASSERT_UNREACHABLE(!usingMadOrFFmpeg);
             usingMadOrFFmpeg = true;
         }
 #endif
@@ -323,7 +323,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         case CueType::Loop:
             if (!cueInfoSeratoAdjusted.getEndPositionMillis().has_value()) {
                 qWarning() << "Loop Cue" << hotcueIndex << "has no end position";
-                DEBUG_ASSERT(false);
+                DEBUG_ASSERT_UNREACHABLE(false);
                 continue;
             }
             hotcueIndex -= kLoopImportIndexOffset;

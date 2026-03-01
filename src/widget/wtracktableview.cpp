@@ -1510,7 +1510,7 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
 
 QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model available";
         return {};
     }
@@ -1534,7 +1534,7 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
 
 TrackId WTrackTableView::getCurrentTrackId() const {
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model available";
         return {};
     }
@@ -1558,7 +1558,7 @@ bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
     }
     //qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
         return false;
     }
@@ -1569,7 +1569,7 @@ bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
 
 void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
         return;
     }
