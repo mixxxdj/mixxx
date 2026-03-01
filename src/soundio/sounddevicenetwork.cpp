@@ -2,6 +2,10 @@
 
 #include <QtDebug>
 
+#if __has_include(<valgrind/valgrind.h>)
+#include <valgrind/valgrind.h>
+#endif
+
 #include "control/controlobject.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
@@ -488,6 +492,11 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
+#if __has_include(<valgrind/valgrind.h>)
+        if (RUNNING_ON_VALGRIND) {
+            qDebug() << "Network Sound: Skipping denormals to zero check: running under Valgrind";
+        } else
+#endif
         VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
             qWarning() << "Network Sound: Denormals to zero mode is not working. "
                           "EQs and effects may suffer high CPU load";
