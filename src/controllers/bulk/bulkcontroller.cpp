@@ -108,7 +108,7 @@ void BulkReader::stop() {
 void BulkReader::run() {
     m_stop = 0;
 
-    while (!m_stop.loadAcquire()) {
+    while (m_stop.loadAcquire() == 0) {
         libusb_handle_events(m_context);
     }
 
