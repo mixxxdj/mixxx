@@ -27,6 +27,7 @@
   -->
 <!-- TODO tbazant: hide key & patch controls as well-->
 <!-- TODO tbazant: connect config option with the minimizing functionality-->
+<!-- TODO tbazant: introduce option to hide PASS waveforms-->
 
 <!DOCTYPE skin>
 <skin>
