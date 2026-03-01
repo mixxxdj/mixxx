@@ -144,6 +144,12 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
      comboBoxEncodingChannels->addItem(tr("Stereo"),
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
+     // Encryption mode combobox
+     encryptionModeComboBox->addItem(tr("Required"),
+             static_cast<int>(BroadcastProfile::EncryptionMode::Required));
+     encryptionModeComboBox->addItem(tr("Disabled"),
+             static_cast<int>(BroadcastProfile::EncryptionMode::Disabled));
+
      connect(checkBoxEnableReconnect,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
              &QCheckBox::checkStateChanged,
@@ -463,6 +469,10 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     // Password
     password->setText(profile->getPassword());
 
+    // Encryption mode
+    encryptionModeComboBox->setCurrentIndex(encryptionModeComboBox->findData(
+            static_cast<int>(profile->getEncryptionMode())));
+
     // Enable automatic reconnect
     bool enableReconnect = profile->getEnableReconnect();
     checkBoxEnableReconnect->setChecked(enableReconnect);
@@ -577,6 +587,8 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setPort(port->text().toInt());
     profile->setLogin(login->text());
     profile->setPassword(password->text());
+    profile->setEncryptionMode(static_cast<BroadcastProfile::EncryptionMode>(
+            encryptionModeComboBox->currentData().toInt()));
     profile->setEnableReconnect(checkBoxEnableReconnect->isChecked());
     profile->setReconnectFirstDelay(spinBoxFirstDelay->value());
     profile->setReconnectPeriod(spinBoxReconnectPeriod->value());
