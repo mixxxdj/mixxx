@@ -19,40 +19,48 @@
 
               <Template src="skins:LateNight/decks/row_1_keyVinylFx.xml"/>
 
-              <WidgetGroup>
-                <ObjectName>DeckRows234</ObjectName>
+              <WidgetGroup> <!-- This will be hidden on passthrough -->
+                <ObjectName>FullDeckControls</ObjectName>
                 <SizePolicy>me,min</SizePolicy>
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
                 <Children>
-
                   <WidgetGroup>
-                    <ObjectName>SpinnyCoverContainer_Big</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>f,f</SizePolicy>
-                    <Children>
-                      <SingletonContainer>
-                        <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
-                      </SingletonContainer>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Skin],show_big_spinny_or_cover</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- SpinnyCoverContainer_Big -->
-
-                  <WidgetGroup>
+                    <ObjectName>DeckRows234</ObjectName>
                     <SizePolicy>me,min</SizePolicy>
-                    <Layout>vertical</Layout>
+                    <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skins:LateNight/decks/row_2_3_TitleArtistTime.xml" />
-                      <Template src="skins:LateNight/decks/row_4_overviewSpinny.xml" />
+                      <WidgetGroup>
+                        <ObjectName>SpinnyCoverContainer_Big</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>f,f</SizePolicy>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Skin],show_big_spinny_or_cover</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup><!-- SpinnyCoverContainer_Big -->
+                      <WidgetGroup>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <Template src="skins:LateNight/decks/row_2_3_TitleArtistTime.xml" />
+                          <Template src="skins:LateNight/decks/row_4_overviewSpinny.xml" />
+                        </Children>
+                      </WidgetGroup>
                     </Children>
-                  </WidgetGroup>
-
+                  </WidgetGroup><!-- DeckRows234 -->
+                  <Template src="skins:LateNight/decks/row_5_transportLoopJump.xml" />
                 </Children>
-              </WidgetGroup><!-- DeckRows234 -->
-
-              <Template src="skins:LateNight/decks/row_5_transportLoopJump.xml" />
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="ChanNum"/>],passthrough</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- DeckRows12345 -->
