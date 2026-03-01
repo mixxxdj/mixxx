@@ -2972,6 +2972,10 @@ if(BUILD_TESTING)
   endif()
 
   add_executable(mixxx-test ${src-mixxx-test})
+  target_compile_definitions(
+    mixxx-test
+    PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
+  )
 
   if(HID)
     target_sources(
@@ -3005,6 +3009,30 @@ if(BUILD_TESTING)
   include(CTest)
   include(GoogleTest)
   enable_testing()
+
+  file(
+    GLOB_RECURSE CONTROLLER_BULK_MAPPING_LIST
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers/*.bulk.xml"
+  )
+  file(
+    GLOB_RECURSE CONTROLLER_HID_MAPPING_LIST
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers/*.hid.xml"
+  )
+  file(
+    GLOB_RECURSE CONTROLLER_MIDI_MAPPING_LIST
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/controllers/*.midi.xml"
+  )
+  list(JOIN CONTROLLER_BULK_MAPPING_LIST "\",\"" CONTROLLER_BULK_MAPPINGS)
+  list(JOIN CONTROLLER_HID_MAPPING_LIST "\",\"" CONTROLLER_HID_MAPPINGS)
+  list(JOIN CONTROLLER_MIDI_MAPPING_LIST "\",\"" CONTROLLER_MIDI_MAPPINGS)
+
+  target_compile_definitions(
+    mixxx-test
+    PUBLIC CONTROLLER_BULK_MAPPINGS="${CONTROLLER_BULK_MAPPINGS}"
+    PUBLIC CONTROLLER_HID_MAPPINGS="${CONTROLLER_HID_MAPPINGS}"
+    PUBLIC CONTROLLER_MIDI_MAPPINGS="${CONTROLLER_MIDI_MAPPINGS}"
+  )
+
   gtest_discover_tests(
     mixxx-test
     EXTRA_ARGS --logLevel info
