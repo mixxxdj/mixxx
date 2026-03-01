@@ -1,0 +1,92 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck widget.
+  Variables:
+    i: The deck number (1-indexed)
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+  <WidgetGroup>
+    <ObjectName>Deck<Variable name="i"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <MinimumSize>500,100</MinimumSize>    
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckRows</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>f,e</SizePolicy>
+        <MaximumSize>500,-1</MaximumSize>
+        <Size>500,</Size>
+        <Children>
+          <Template src="skin:deck_text_row.xml"/>
+          <!--Hides if the stacked waveforms option is activated in the skin settings -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>Spacer22</ObjectName>
+                <Size>0me,1f</Size>
+              </WidgetGroup>
+              <SingletonContainer>
+                <ObjectName>DeckVisualRow<Variable name="i" /></ObjectName>
+              </SingletonContainer>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </WidgetGroup>
+          <Template src="skin:deck_overview_row.xml"/>          
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckRateSlider</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <MinimumSize>-1,-1</MinimumSize>
+        <Children>
+          <Template src="skin:deck_tempo_column.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_pitch_fader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <MinimumSize>-1,-1</MinimumSize>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+        <Template src="skin:deck_controls_row.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_int_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      
+      <!--loop/beatjump-->
+      <WidgetGroup>        
+        <MinimumSize>-1,-1</MinimumSize>
+        <SizePolicy>min,min</SizePolicy>        
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:loop.xml"/>          
+          <Template src="skin:beatjump.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey>[Deere],show_loop_controls</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

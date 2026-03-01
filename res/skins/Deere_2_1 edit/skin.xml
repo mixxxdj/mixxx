@@ -1,0 +1,307 @@
+<!DOCTYPE skin>
+<skin>
+  <manifest>
+    <title>Deere</title>
+    <author>RJ Ryan, S.Brandt</author>
+    <version>1.12.0.01</version>
+    <description>A flexible skin.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+      <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute config_key="[Master],num_samplers">64</attribute>
+      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+
+      <!--Skin settings-->
+      <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Master],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Master],show_spinnies">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
+      <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
+      <attribute persist="true" config_key="[Deere],show_more_hotcues">0</attribute>
+
+      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Deere],show_crossfader">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <attribute persist="true" config_key="[Master],show_killswitches">0</attribute>
+      <attribute persist="true" config_key="[Master],show_faders">1</attribute>
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+
+      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_expanded">0</attribute>
+
+      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
+      <attribute persist="true" config_key="[Master],show_superknobs">0</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:style.qss"/>
+
+  <Size>1024me,550me</Size>
+  <Layout>horizontal</Layout>
+
+  <Children>
+    <SetVariable name="SmallSquareButtonMinimumSize">15,15</SetVariable>
+    <SetVariable name="SmallSquareButtonMaximumSize">15,15</SetVariable>
+    <SetVariable name="SmallSquareButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="SmallWideButtonMinimumSize">50,18</SetVariable>
+    <SetVariable name="SmallWideButtonMaximumSize">50,22</SetVariable>
+    <SetVariable name="SmallWideButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="MinimalControlsButtonMinimumSize">34,22</SetVariable>
+    <SetVariable name="MinimalControlsButtonMaximumSize">34,22</SetVariable>
+    <SetVariable name="MinimalControlsButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="SmallHorizontalStretchButtonMinimumSize">-1,15</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonMaximumSize">-1,15</SetVariable>
+    <SetVariable name="SmallHorizontalStretchButtonSizePolicy">me,f</SetVariable>
+
+    <SetVariable name="SmallVerticalStretchButtonMinimumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
+    <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
+
+    <SetVariable name="SmallHorizontalStretchLinkButtonMinimumSize">-1,4</SetVariable>
+    <SetVariable name="SmallHorizontalStretchLinkButtonMaximumSize">-1,4</SetVariable>
+    <SetVariable name="SmallHorizontalStretchLinkButtonSizePolicy">me,f</SetVariable>
+
+    <SetVariable name="SquareButtonMinimumSize">22,22</SetVariable>
+    <SetVariable name="SquareButtonMaximumSize">22,22</SetVariable>
+    <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="FXAssignmentButtonMinimumSize">26,22</SetVariable>
+    <SetVariable name="FXAssignmentButtonMaximumSize">26,22</SetVariable>
+    <SetVariable name="FXAssignmentButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="WideButtonMinimumSize">40,22</SetVariable>
+    <SetVariable name="WideButtonMaximumSize">40,22</SetVariable>
+    <SetVariable name="WideButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="ToolbarButtonMinimumSize">75,22</SetVariable>
+    <SetVariable name="ToolbarButtonMaximumSize">75,22</SetVariable>
+    <SetVariable name="ToolbarButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="HorizontalStretchButtonMinimumSize">-1,22</SetVariable>
+    <SetVariable name="HorizontalStretchButtonMaximumSize">-1,22</SetVariable>
+    <SetVariable name="HorizontalStretchButtonSizePolicy">me,f</SetVariable>
+
+    <SetVariable name="VerticalStretchButtonMinimumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonMaximumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
+
+    <!-- The waveforms (zoomed and overview) use a lot of memory. They appear in multiple places in
+    main_decks.xml, left_deck.xml, and right_deck.xml, so define them in singletons. This makes
+    toggling between 2/4 decks and stacked/split waveforms slower, but it makes Mixxx startup
+    and shutdown much faster and saves a lot of memory.-->
+    <SingletonDefinition>
+      <ObjectName>DeckVisualRow1</ObjectName>
+      <Children>
+        <Template src="skin:deck_visual_row.xml">
+          <SetVariable name="i">1</SetVariable>
+          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+          <!-- Traditional Blue -->
+          <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckVisualRow2</ObjectName>
+      <Children>
+        <Template src="skin:deck_visual_row.xml">
+          <SetVariable name="i">2</SetVariable>
+          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+          <!-- Traditional Orange -->
+          <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckVisualRow3</ObjectName>
+      <Children>
+        <Template src="skin:deck_visual_row.xml">
+          <SetVariable name="i">3</SetVariable>
+          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+          <!-- Violet -->
+          <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckVisualRow4</ObjectName>
+      <Children>
+        <Template src="skin:deck_visual_row.xml">
+          <SetVariable name="i">4</SetVariable>
+          <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+          <!-- Lime -->
+          <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Library</ObjectName>
+      <Children>
+        <Template src="skin:library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <WidgetGroup>
+      <SizePolicy>me,me</SizePolicy>
+      <Layout>vertical</Layout>
+      <Children>
+        <Template src="skin:tool_bar.xml"/>
+
+        <Splitter><!-- Visible when Library is not maximized -->
+          <ObjectName>WaveformSplitter</ObjectName>
+          <Orientation>vertical</Orientation>
+          <SplitSizesConfigKey>[Deere],StackedWaveformSplitter</SplitSizesConfigKey>
+          <SplitSizes>90,540</SplitSizes>
+          <Size>-1me,-1me</Size>
+          <Connection>
+            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform><Not/></Transform>
+          </Connection>
+          <Children>
+
+            <WidgetGroup><!-- Parallel Waveforms -->
+              <ObjectName>Waveforms</ObjectName>
+              <Layout>vertical</Layout>
+              <Size>-1me,4min</Size>
+              <Connection>
+                <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+              <Children>
+
+                <WidgetGroup>
+                  <Connection>
+                    <ConfigKey>[Master],show_deck_3</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:deck.xml">
+                      <SetVariable name="i">3</SetVariable>
+                      <!-- Violet -->
+                      <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+                      <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+                      <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+                    </Template>
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow3</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:deck.xml">
+                      <SetVariable name="i">1</SetVariable>
+                      <!-- Traditional Blue -->
+                      <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+                      <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                      <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
+                    </Template>
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow1</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:deck.xml">
+                      <SetVariable name="i">2</SetVariable>
+                      <!-- Traditional Orange -->
+                      <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+                      <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+                      <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
+                    </Template>
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow2</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+                
+
+                <WidgetGroup>
+                  <Connection>
+                    <ConfigKey>[Master],show_deck_4</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:deck.xml">
+                      <SetVariable name="i">4</SetVariable>
+                      <!-- Lime -->
+                      <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+                      <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+                      <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+                    </Template>
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow4</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+
+              </Children>
+            </WidgetGroup><!-- /Parallel Waveforms -->
+
+            <WidgetGroup><!-- Main section -->
+              <Layout>vertical</Layout>
+              <SizePolicy>min,max</SizePolicy>
+              <Children>
+                <!--<Template src="skin:main_decks.xml"/> -->
+                <Template src="skin:effect_rack.xml"/>
+                <Template src="skin:sample_decks.xml"/>
+                <Template src="skin:microphone_rack.xml"/>
+                <SingletonContainer>
+                  <ObjectName>Library</ObjectName>
+                </SingletonContainer>
+              </Children>
+            </WidgetGroup><!-- /Main section -->
+
+          </Children>
+        </Splitter><!-- /Visible when Library is not maximized -->
+
+        <WidgetGroup><!-- Maximized Library -->
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+            <SingletonContainer>
+              <ObjectName>Library</ObjectName>
+            </SingletonContainer>
+          </Children>
+          <Connection>
+            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup><!-- /Maximized Library -->
+
+      </Children>
+    </WidgetGroup>
+    <Template src="skin:skin_settings.xml"/>
+  </Children>
+</skin>

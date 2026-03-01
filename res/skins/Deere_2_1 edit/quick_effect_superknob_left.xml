@@ -1,0 +1,70 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The QuickEffect rack superknob.
+  Variables:
+    QuickEffect: the quick effect rack
+    group: the group
+    color: the knob ring color. carmine, yellow or light_blue
+-->
+<Template>
+  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack<Variable name="QuickEffect"/>]</SetVariable>
+  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <!-- Invert the on/off icons so they match the EQ kill switches. -->
+      <PushButton>
+        <TooltipId><Variable name="button_TooltipId"/></TooltipId>
+        <Size>15f,15f</Size>
+        <ObjectName>QuickEffectKillButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text></Text>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text></Text>
+          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="QuickEffectEffectGroup"/>,enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
+        <ObjectName>TEST1</ObjectName>
+        <Size>0me,1min</Size>
+        <Children/>
+        <Connection>
+          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <Template src="skin:knob.xml">
+        <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+        <SetVariable name="control">super1</SetVariable>
+        <SetVariable name="color"><Variable name="color"/></SetVariable>
+      </Template>
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="QuickEffectEffectGroup"/>,loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

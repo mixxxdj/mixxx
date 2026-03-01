@@ -1,0 +1,24 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect group control button.
+  Variables:
+    group_name: The text to show on the button.
+    group_group: The group to enable the effect chain for.
+-->
+<Template>
+  <Template src="skin:left_2state_button.xml">
+    <SetVariable name="TooltipId">EffectUnit_group_enabled</SetVariable>
+    <SetVariable name="ObjectName">EffectChainGroupControlButton</SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="SmallWideButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="SmallWideButtonMaximumSize"/></SetVariable>
+    <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
+    <SetVariable name="state_0_pressed"></SetVariable>
+    <SetVariable name="state_0_unpressed"></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="group_name"/></SetVariable>
+    <SetVariable name="state_1_pressed"></SetVariable>
+    <SetVariable name="state_1_unpressed"></SetVariable>
+    <SetVariable name="state_1_text"><Variable name="group_name"/></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,group_<Variable name="group_group"/>_enable</SetVariable>
+  </Template>
+</Template>

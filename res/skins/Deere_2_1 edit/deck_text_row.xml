@@ -1,0 +1,496 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck text row
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckTextRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <CoverArt>
+            <TooltipId>coverart</TooltipId>
+            <ObjectName>DeckCoverArt</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <MinimumSize>58,58</MinimumSize>
+            <Group><Variable name="group"/></Group>
+          </CoverArt>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_coverart</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckTextColumn</ObjectName>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>UpperTextRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <!-- When TextRow is laid out, we need to ignore our children. Otherwise
+                 decks might end up with different widths based on the size of the
+                 labels in this row -->
+            <SizePolicy>i,max</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>TitleGutter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,max</SizePolicy>
+                <Children>
+
+                  <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
+                       display just a label with asterixes instead. -->
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Property>title</Property>
+                    <Group><Variable name="group"/></Group>
+                    <Elide>right</Elide>
+                    <Connection>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </TrackProperty>
+
+                  <Label>
+                    <TooltipId>track_title</TooltipId>
+                    <Size>me,min</Size>
+                    <ObjectName>HiddenTrackTitleInfo</ObjectName>
+                    <Text>***</Text>
+                    <Connection>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
+                    </Connection>
+                  </Label>
+
+                  <WidgetGroup>
+                    <ObjectName>BPMGutter</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
+                    <Children>
+                      <!-- Fake a click-able multi-state widget by stacking a
+                           transparent PushButton dummy (the trigger) on top of the
+                           individual WidgetGroups (the content). PushButton tracks
+                           the size of the active WidgetGroup and resizes. Notice
+                           that the trigger has the same TooltipId as the content.
+                           Description: Key edit widget -->
+                      <WidgetStack>
+                        <ObjectName>KeyEditRow</ObjectName>
+                        <SizePolicy>max,</SizePolicy>
+                        <Style>
+                        </Style>
+                        <NextControl>[Deere],key_layout_next</NextControl>
+                        <PrevControl>[Deere],key_layout_prev</PrevControl>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>KeyEditRowCollapsed</ObjectName>
+                            <Layout>stacked</Layout>
+                            <Children>
+                              <PushButton>
+                                <ObjectName>KeyEditTrigger</ObjectName>
+                                <TooltipId>visual_key</TooltipId>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <!-- <Text>&#9998;</Text>
+                                  <Alignment>right</Alignment> -->
+                                  <Pressed scalemode="STRETCH"></Pressed>
+                                  <Unpressed scalemode="STRETCH"></Unpressed>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Deere],key_layout_next</ConfigKey>
+                                </Connection>
+                              </PushButton>
+                              <Key>
+                                <ObjectName>KeyEditTriggerLabel</ObjectName>
+                                <MinimumSize>30,20</MinimumSize>
+                                <Group><Variable name="group"/></Group>
+                                <SizePolicy>min,</SizePolicy>
+                                <DisplayCents>false</DisplayCents>
+                                <Connection>
+                                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                                </Connection>
+                              </Key>
+                            </Children>
+                          </WidgetGroup>
+
+                          <WidgetGroup>
+                            <ObjectName>KeyEditRowExpanded</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <WidgetGroup>
+                                <ObjectName>KeyEditRowControls</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>p,me</SizePolicy>
+                                <MinimumSize>80,20</MinimumSize>
+                                <MaximumSize>120,30</MaximumSize>
+                                <Children>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">pitch_down</SetVariable>
+                                    <SetVariable name="ObjectName">PitchDownButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_down</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_down_small</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">pitch_up</SetVariable>
+                                    <SetVariable name="ObjectName">PitchUpButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_up</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_up_small</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+                                    <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
+                                    <SetVariable name="MinimumSize">42,22</SetVariable>
+                                    <SetVariable name="MaximumSize">42,22</SetVariable>
+                                    <SetVariable name="SizePolicy">f,f</SetVariable>
+                                    <SetVariable name="state_0_text">Match</SetVariable>
+                                    <SetVariable name="state_0_pressed"></SetVariable>
+                                    <SetVariable name="state_0_unpressed"></SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,sync_key</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,reset_key</SetVariable>
+                                  </Template>
+                                </Children>
+                              </WidgetGroup><!-- KeyEditRowControls -->
+
+                              <WidgetGroup>
+                                <!-- The key edit controls are aligned to the right because the key
+                                     widget widths can rapidly change, especially with traditional
+                                     notation selected in the preferences. The controls stay calm
+                                     this way. -->
+                                <Layout>stacked</Layout>
+                                <MinimumSize>60,</MinimumSize>
+                                <Children>
+                                  <PushButton>
+                                    <ObjectName>KeyEditTrigger</ObjectName>
+                                    <TooltipId>visual_key</TooltipId>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <!-- <Text>&#9998;</Text>
+                                      <Alignment>right</Alignment> -->
+                                      <Pressed scalemode="STRETCH"></Pressed>
+                                      <Unpressed scalemode="STRETCH"></Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey>[Deere],key_layout_next</ConfigKey>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <Key>
+                                    <ObjectName>KeyEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <SizePolicy>min,</SizePolicy>
+                                    <DisplayCents>true</DisplayCents>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                                    </Connection>
+                                  </Key>
+                                </Children>
+                              </WidgetGroup><!-- KeyEditTrigger -->
+                            </Children>
+                          </WidgetGroup><!-- KeyEditRowExpanded -->
+                        </Children>
+                      </WidgetStack><!-- KeyEditRow -->
+
+                      <!-- Fake a click-able multi-state widget by stacking a
+                           transparent PushButton dummy (the trigger) on top of the
+                           individual WidgetGroups (the content). PushButton tracks
+                           the size of the active WidgetGroup and resizes. Notice
+                           that the trigger has the same TooltipId as the content.
+                           Description: BPM/Beatgrid edit widget -->
+                      <WidgetStack>
+                        <ObjectName>BpmEditRow</ObjectName>
+                        <SizePolicy>max,</SizePolicy>
+                        <Style>
+                        </Style>
+                        <NextControl>[Deere],bpm_layout_next</NextControl>
+                        <PrevControl>[Deere],bpm_layout_prev</PrevControl>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>KeyEditRowCollapsed</ObjectName>
+                            <Layout>stacked</Layout>
+                            <Children>
+                              <PushButton>
+                                <ObjectName>BpmEditTrigger</ObjectName>
+                                <TooltipId>visual_bpm</TooltipId>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <!-- <Text>&#9998;</Text>
+                                  <Alignment>right</Alignment> -->
+                                  <Pressed scalemode="STRETCH"></Pressed>
+                                  <Unpressed scalemode="STRETCH"></Unpressed>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
+                                </Connection>
+                              </PushButton>
+
+                              <!-- We allow to hide the current BPM info in the skin settings,
+                                   display just a label with asterixes instead.
+                                   See https://bugs.launchpad.net/mixxx/+bug/722889 -->
+                              <NumberBpm>
+                                <ObjectName>BpmEditTriggerLabel</ObjectName>
+                                <MinimumSize>70,20</MinimumSize>
+                                <Group><Variable name="group"/></Group>
+                                <Alignment>right</Alignment>
+                                <Connection>
+                                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                              </NumberBpm>
+
+                              <Label>
+                                <TooltipId>visual_bpm</TooltipId>
+                                <Size>me,min</Size>
+                                <ObjectName>HiddenBpmInfo</ObjectName>
+                                <Text>***.**</Text>
+                                <Connection>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                  <Transform>
+                                    <Not/>
+                                  </Transform>
+                                </Connection>
+                              </Label>
+                            </Children>
+                          </WidgetGroup><!-- BpmEditTrigger -->
+
+                          <WidgetGroup>
+                            <ObjectName>BpmEditRowExpanded</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <WidgetGroup>
+                                <ObjectName>BpmEditRowControls</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>p,me</SizePolicy>
+                                <MinimumSize>100,20</MinimumSize>
+                                <MaximumSize>180,30</MaximumSize>
+                                <Children>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsAdjustFasterButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_adjust_faster_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_adjust_faster_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_faster</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsAdjustSlowerButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_adjust_slower_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_adjust_slower_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_slower</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateEarlierButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_earlier</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateLaterButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_later</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
+                                  </Template>
+
+                                  <PushButton>
+                                    <TooltipId>bpm_tap</TooltipId>
+                                    <MinimumSize>40,20</MinimumSize>
+                                    <MaximumSize>60,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text>TAP</Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+                                </Children>
+                              </WidgetGroup>
+
+                              <WidgetGroup>
+                                <Layout>stacked</Layout>
+                                <Children>
+                                  <PushButton>
+                                    <ObjectName>BpmEditTrigger</ObjectName>
+                                    <TooltipId>visual_bpm</TooltipId>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Pressed scalemode="STRETCH"></Pressed>
+                                      <Unpressed scalemode="STRETCH"></Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <NumberBpm>
+                                    <ObjectName>BpmEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <Alignment>right</Alignment>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                                    </Connection>
+                                  </NumberBpm>
+                                </Children>
+                              </WidgetGroup><!-- BpmEditTrigger -->
+                            </Children>
+                          </WidgetGroup><!-- BpmEditRowExpanded -->
+                        </Children>
+                      </WidgetStack><!-- BpmEditRow -->
+                    </Children>
+                  </WidgetGroup><!-- BPMGutter -->
+                </Children>
+              </WidgetGroup><!-- TitleGutter -->
+            </Children>
+          </WidgetGroup><!-- UpperTextRow -->
+
+          <WidgetGroup>
+            <ObjectName>LowerTextRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <!-- When TextRow is laid out, we need to ignore our children. Otherwise
+                 decks might end up with different widths based on the size of the
+                 labels in this row -->
+            <SizePolicy>i,max</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>ArtistGutter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <Children>
+                  <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
+                       display just a label with asterixes instead. -->
+                  <TrackProperty>
+                    <TooltipId>track_artist</TooltipId>
+                    <Property>artist</Property>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Elide>right</Elide>
+                    <Group><Variable name="group"/></Group>
+                    <Connection>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </TrackProperty>
+
+                  <Label>
+                    <TooltipId>track_artist</TooltipId>
+                    <Size>me,min</Size>
+                    <ObjectName>HiddenTrackArtistInfo</ObjectName>
+                    <Text>***</Text>
+                    <Connection>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
+                    </Connection>
+                  </Label>
+
+                  <WidgetGroup>
+                    <ObjectName>StarratingGutter</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <StarRating>
+                        <TooltipId>starrating</TooltipId>
+                        <Group><Variable name="group"/></Group>
+                      </StarRating>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Deere],show_starrating</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <ObjectName>PositionGutter</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
+                    <MinimumSize>70,20</MinimumSize>
+                    <MaximumSize>190,30</MaximumSize>
+                    <Children>
+                      <NumberPos>
+                        <TooltipId>track_time</TooltipId>
+                        <Group><Variable name="group"/></Group>
+                      </NumberPos>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- ArtistGutter -->
+            </Children>
+          </WidgetGroup><!-- LowerTextRow -->
+        </Children>
+      </WidgetGroup><!-- DeckTextColumn -->
+    </Children>
+  </WidgetGroup><!-- DeckTextRow -->
+</Template>

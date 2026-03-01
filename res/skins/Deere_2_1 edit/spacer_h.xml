@@ -1,0 +1,17 @@
+<!DOCTYPE template>
+<!--
+Description:
+A horizontal space filling widget. Grows to fit available space.
+-->
+<Template>
+	<WidgetGroup>
+		<Layout>horizontal</Layout>
+		<SizePolicy>me,min</SizePolicy>
+		<Children>
+		</Children>
+	</WidgetGroup>
+</Template>
+
+
+
+
