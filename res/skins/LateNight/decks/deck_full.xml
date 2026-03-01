@@ -65,19 +65,29 @@
             </Children>
           </WidgetGroup><!-- DeckRows12345 -->
 
-          <WidgetGroup>
-            <ObjectName>DeckRateSpacer</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
-            <Children/>
-            <!-- this is sized and styled in css -->
+          <WidgetGroup> <!-- This will be hidden on passthrough -->
+            <SizePolicy>min,me</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckRateSpacer</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Children/>
+                <!-- this is sized and styled in css -->
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <Template src="skins:LateNight/decks/rate_controls.xml"/>
+            </Children>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
+              <ConfigKey>[Channel<Variable name="ChanNum"/>],passthrough</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-
-          <Template src="skins:LateNight/decks/rate_controls.xml"/>
         </Children>
       </WidgetGroup><!-- DeckN -->
     </Children>
