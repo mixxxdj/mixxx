@@ -128,26 +128,11 @@ Description:
           <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
             <SetVariable name="Setting">[Skin],show_vinylcontrol</SetVariable>
           </Template>
-          <PushButton>
-            <Tooltip>Minimize decks on vinyl passthrough mode</Tooltip>
-            <ObjectName>SkinSettingsButton</ObjectName>
-            <Size>180me,18f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#8202;&#8202;&#9744;  Minimize decks on passthrough</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#8202;&#8202;&#8202;&#10004;&#8202;&#8202; Minimize decks on passthrough</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],latenight_minimize_on_passthrough</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+            <SetVariable name="TooltipId">minimize_on_passthrough</SetVariable>
+            <SetVariable name="Text">Minimize decks on passthrough</SetVariable>
+            <SetVariable name="Setting">[Skin],latenight_minimize_on_passthrough</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
