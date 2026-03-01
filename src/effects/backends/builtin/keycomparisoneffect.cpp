@@ -4,11 +4,9 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
-#include <optional>
 #include <span>
 
 #include "audio/types.h"
-#include "effects/backends/builtin/pianosample.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectmanifestparameter.h"
 #include "engine/effects/engineeffectparameter.h"
@@ -19,50 +17,53 @@
 
 namespace {
 
-// Semitone offsets relative to A4 (440 Hz), one entry per chromatic key.
-// Index 0=C, 1=C#/Db, 2=D, 3=D#/Eb, 4=E, 5=F,
-//       6=F#/Gb, 7=G, 8=G#/Ab, 9=A, 10=A#/Bb, 11=B
+// Semitone distance from each chromatic key to A4 (440 Hz), used to derive
+// the pitch-shift ratio. A4 is index 9 and has offset 0 because the
+// synthesised sample is already tuned to A5 (one octave up, ratio = 2.0).
+// Index: 0=C  1=C#  2=D  3=D#  4=E  5=F  6=F#  7=G  8=G#  9=A  10=A#  11=B
 constexpr std::array<int, 12> kKeySemitoneOffset = {
         -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2};
 
-/// Mixes a pitched mono source into a stereo-interleaved output buffer.
-/// pitchRatio > 1 plays faster (higher pitch); < 1 plays slower (lower pitch).
-/// Linear interpolation avoids clicks at non-integer source positions.
-/// Returns the number of source frames consumed.
-std::size_t playPitchedMonoSamplesWithGain(
+// Mixes a pitched mono source into a stereo-interleaved output buffer by
+// stepping through the source at pitchRatio samples per output frame.
+// Linear interpolation between adjacent source samples keeps the output
+// smooth at non-integer step positions.
+// Returns the number of source frames consumed so the caller can resume
+// from the correct position in the next buffer.
+std::size_t playPitchedMonoIntoStereo(
         std::span<const CSAMPLE> monoSource,
-        std::span<CSAMPLE> output,
+        std::span<CSAMPLE> stereoOutput,
         CSAMPLE_GAIN gain,
         double pitchRatio) {
     const std::size_t outputFrames =
-            output.size() / mixxx::kEngineChannelOutputCount;
+            stereoOutput.size() / mixxx::kEngineChannelOutputCount;
 
-    std::size_t sourceFramesConsumed = 0;
+    std::size_t framesConsumed = 0;
     for (std::size_t i = 0; i < outputFrames; ++i) {
-        const double sourcePos = static_cast<double>(i) * pitchRatio;
-        const auto sourceIndex = static_cast<std::size_t>(sourcePos);
+        const double srcPos = static_cast<double>(i) * pitchRatio;
+        const auto srcIdx = static_cast<std::size_t>(srcPos);
 
-        if (sourceIndex >= monoSource.size()) {
+        if (srcIdx >= monoSource.size()) {
             break;
         }
 
-        CSAMPLE sample;
-        if (sourceIndex + 1 < monoSource.size()) {
-            const double frac = sourcePos - static_cast<double>(sourceIndex);
-            sample = static_cast<CSAMPLE>(
-                    monoSource[sourceIndex] * (1.0 - frac) +
-                    monoSource[sourceIndex + 1] * frac);
+        CSAMPLE s;
+        if (srcIdx + 1 < monoSource.size()) {
+            const double frac = srcPos - static_cast<double>(srcIdx);
+            s = static_cast<CSAMPLE>(
+                    monoSource[srcIdx] * (1.0 - frac) +
+                    monoSource[srcIdx + 1] * frac);
         } else {
-            sample = monoSource[sourceIndex];
+            s = monoSource[srcIdx];
         }
 
-        const std::size_t outIdx = i * mixxx::kEngineChannelOutputCount;
-        output[outIdx] += sample * gain;
-        output[outIdx + 1] += sample * gain;
+        const std::size_t out = i * mixxx::kEngineChannelOutputCount;
+        stereoOutput[out] += s * gain;
+        stereoOutput[out + 1] += s * gain;
 
-        sourceFramesConsumed = sourceIndex + 1;
+        framesConsumed = srcIdx + 1;
     }
-    return sourceFramesConsumed;
+    return framesConsumed;
 }
 
 template<class T>
@@ -71,23 +72,25 @@ std::span<T> subspanClamped(
     return in.subspan(std::min(offset, in.size()));
 }
 
-/// Returns the sub-span where the next note should start given a fixed
-/// period. Works for all modes — period is derived from BPM or beat_length
-/// and scaled by the Measure knob before being passed in.
-std::span<CSAMPLE> noteOutputAtPeriod(
+// Finds where in the current output buffer the next note onset falls given
+// a repeating period. The modulo handles the case where the period is shorter
+// than one buffer (fast subdivisions).
+std::span<CSAMPLE> noteStartInBuffer(
         std::size_t framesSinceLastNote,
-        std::size_t notePeriodFrames,
+        std::size_t periodFrames,
         std::span<CSAMPLE> output) {
-    const std::size_t offset = framesSinceLastNote % notePeriodFrames;
+    const std::size_t framesUntilNext =
+            periodFrames - (framesSinceLastNote % periodFrames);
     return subspanClamped(
-            output, offset * mixxx::kEngineChannelOutputCount);
+            output, framesUntilNext * mixxx::kEngineChannelOutputCount);
 }
 
-/// Converts the Measure knob value to a beat multiplier.
-/// Positive N  → N notes per beat  → period = 1/N beats
-/// Zero or -1  → 1 note per beat   → period = 1 beat
-/// Negative N  → 1 note every N beats → period = N beats
-double beatMultiplierFromMeasure(int measure) {
+// Converts the Measure knob integer to a beat-period multiplier.
+//   positive N  →  N notes per beat   (period = 1/N beats)
+//   0 or -1     →  1 note per beat    (period = 1 beat)
+//   negative N  →  1 note every N beats (period = N beats)
+// The -1 and 0 cases both map to one beat so the knob feels natural at rest.
+double periodMultiplierFromMeasure(int measure) {
     if (measure > 0) {
         return 1.0 / static_cast<double>(measure);
     }
@@ -95,6 +98,11 @@ double beatMultiplierFromMeasure(int measure) {
 }
 
 } // namespace
+
+void KeyComparisonGroupState::audioParametersChanged(
+        const mixxx::EngineParameters& engineParameters) {
+    pianoSample = generatePianoSample(engineParameters.sampleRate());
+}
 
 // static
 QString KeyComparisonEffect::getId() {
@@ -112,7 +120,8 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
             "Plays a piano note at a configurable beat interval so you "
             "can match it by ear to identify or verify the musical key."));
     pManifest->setEffectRampsFromDry(true);
-    // Metaknob maps to gain; neutral position = 0 dB = 24/27 on the scale.
+    // The metaknob controls gain. 24/27 places the knob at 0 dB on the
+    // -24 to +3 dB scale so the default position is a neutral starting point.
     pManifest->setMetaknobDefault(24.0 / 27.0);
 
     EffectManifestParameterPointer key = pManifest->addParameter();
@@ -128,6 +137,8 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     key->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     key->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     key->setDefaultLinkType(EffectManifestParameter::LinkType::None);
+    // Default to A (index 9) because the raw sample is already pitched to A5,
+    // so no resampling is needed and the first press sounds immediately right.
     key->setRange(0.0, 9.0, 11.0);
 
     EffectManifestParameterPointer tuning = pManifest->addParameter();
@@ -135,14 +146,14 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     tuning->setName(QObject::tr("Tuning"));
     tuning->setShortName(QObject::tr("Tune"));
     tuning->setDescription(QObject::tr(
-            "A4 standard tuning is 440 Hz.\n"
-            "Raise or lower this if the track is tuned\n"
-            "above or below 440 Hz\n"
-            "(e.g. 432 Hz, 442 Hz, 415 Hz Baroque)."));
+            "Reference pitch of A4 in Hz. Adjust this when the track was\n"
+            "recorded to a non-standard tuning such as 432 Hz, 442 Hz,\n"
+            "or 415 Hz (Baroque pitch)."));
     tuning->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     tuning->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     tuning->setDefaultLinkType(EffectManifestParameter::LinkType::None);
-    // (440 - 415) / (466 - 415) = 25/51 places 440 Hz at the neutral point.
+    // (440 - 415) / (466 - 415) = 25/51 puts the neutral mark exactly at
+    // 440 Hz so the knob rests at standard pitch with no offset applied.
     tuning->setNeutralPointOnScale(25.0 / 51.0);
     tuning->setRange(415.0, 440.0, 466.0);
 
@@ -151,7 +162,8 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     bpm->setName(QObject::tr("BPM"));
     bpm->setShortName(QObject::tr("BPM"));
     bpm->setDescription(QObject::tr(
-            "Note repeat rate when Sync is disabled."));
+            "Note repeat rate when Sync is off. Has no effect when Sync "
+            "is enabled."));
     bpm->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     bpm->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     bpm->setDefaultLinkType(EffectManifestParameter::LinkType::None);
@@ -162,14 +174,15 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     measure->setName(QObject::tr("Measure"));
     measure->setShortName(QObject::tr("Meas"));
     measure->setDescription(QObject::tr(
-            "Controls note frequency relative to the beat.\n"
+            "How often the note fires relative to the beat.\n"
             "+N = N notes per beat  |  0 = every beat  "
             "|  -N = every N beats\n"
-            "e.g. +4 suits 4/4 subdivisions; "
-            "-3 suits 3/4 or 6/8 time."));
+            "Use -3 for 3/4, -4 for 4/4, +2 for eighth-note subdivisions."));
     measure->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     measure->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     measure->setDefaultLinkType(EffectManifestParameter::LinkType::None);
+    // -4 fires once every four beats, which is unobtrusive enough for the
+    // DJ to mix normally while still getting a clear pitch reference.
     measure->setRange(-8.0, -4.0, 8.0);
 
     EffectManifestParameterPointer sync = pManifest->addParameter();
@@ -177,9 +190,8 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     sync->setName(QObject::tr("Sync"));
     sync->setShortName(QObject::tr("Sync"));
     sync->setDescription(QObject::tr(
-            "When enabled, note timing locks to the detected beat grid,\n"
-            "scaled by the Measure knob.\n"
-            "When disabled, the BPM and Measure knobs set the note rate."));
+            "Lock note timing to the detected beat grid (recommended).\n"
+            "Disable to set a manual rate with the BPM knob."));
     sync->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     sync->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     sync->setRange(0.0, 1.0, 1.0);
@@ -188,7 +200,9 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     gain->setId(QStringLiteral("gain"));
     gain->setName(QObject::tr("Gain"));
     gain->setShortName(QObject::tr("Gain"));
-    gain->setDescription(QObject::tr("Volume of the piano note in dB."));
+    gain->setDescription(QObject::tr(
+            "Volume of the piano note. Keep this below the track level so "
+            "the note sits under the mix rather than competing with it."));
     gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
@@ -220,28 +234,27 @@ void KeyComparisonEffect::processChannel(
     }
 
     if (pOutput != pInput) {
-        SampleUtil::copy(
-                pOutput, pInput, engineParameters.samplesPerBuffer());
+        SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
 
-    const std::span<CSAMPLE> output(
-            pOutput, engineParameters.samplesPerBuffer());
-    const std::span<const CSAMPLE> pianoSample =
-            pianoSampleForSampleRate(engineParameters.sampleRate());
+    const std::span<CSAMPLE> output(pOutput, engineParameters.samplesPerBuffer());
+    const std::span<const CSAMPLE> pianoSample(pGroupState->pianoSample);
 
     const bool shouldSync = m_pSyncParameter->toBool();
-    const bool hasBeatInfo =
-            groupFeatures.beat_length.has_value() &&
+    const bool hasBeatInfo = groupFeatures.beat_length.has_value() &&
             groupFeatures.beat_fraction_buffer_end.has_value();
 
-    // Skip the first note on enable when synced so we don't fire mid-beat.
+    // On first enable, skip ahead past the sample length so the tail-playback
+    // path below produces silence and the note only fires on the next beat
+    // boundary rather than immediately mid-phrase.
     if (enableState == EffectEnableState::Enabling) {
         pGroupState->framesSinceLastNote =
                 (shouldSync && hasBeatInfo) ? pianoSample.size() : 0;
     }
 
-    // pitchRatio = 2^(keySemitones/12) * (tuningHz/440)
-    // The key shift moves in equal-tempered steps; tuning scales linearly.
+    // pitchRatio = 2^(semitones/12) * (tuningHz / 440)
+    // The equal-tempered semitone shift handles key selection; the tuning
+    // factor handles tracks recorded at non-standard reference pitches.
     const int keyIndex = std::clamp(
             static_cast<int>(std::round(m_pKeyParameter->value())),
             0,
@@ -257,44 +270,41 @@ void KeyComparisonEffect::processChannel(
             static_cast<int>(std::round(m_pMeasureParameter->value())),
             -8,
             8);
-    const double beatMultiplier = beatMultiplierFromMeasure(measure);
+    const double periodMultiplier = periodMultiplierFromMeasure(measure);
 
-    // Continue playing the tail of the note triggered in the previous buffer.
-    const auto sourceOffset = static_cast<std::size_t>(
+    // Resume playing the tail of the note that started in a previous buffer.
+    // framesSinceLastNote tracks how far through the sample we already are.
+    const auto srcOffset = static_cast<std::size_t>(
             static_cast<double>(pGroupState->framesSinceLastNote) *
             pitchRatio);
-    playPitchedMonoSamplesWithGain(
-            subspanClamped(pianoSample, sourceOffset),
-            output,
-            gain,
-            pitchRatio);
+    playPitchedMonoIntoStereo(
+            subspanClamped(pianoSample, srcOffset), output, gain, pitchRatio);
     pGroupState->framesSinceLastNote += engineParameters.framesPerBuffer();
 
-    // Derive note period in frames from either the detected beat grid or BPM,
-    // then scale by beatMultiplier from the Measure knob.
+    // Compute the note period in frames. When Sync is on we derive it from
+    // the detected beat grid so the note stays locked even during scratching
+    // or tempo changes. The Measure knob scales the period up or down.
     std::size_t notePeriodFrames = 0;
     if (shouldSync && hasBeatInfo) {
-        const double beatSeconds =
-                std::abs(groupFeatures.beat_length->seconds /
-                        groupFeatures.beat_length->scratch_rate);
+        const double beatSeconds = std::abs(groupFeatures.beat_length->seconds /
+                groupFeatures.beat_length->scratch_rate);
         notePeriodFrames = static_cast<std::size_t>(
-                beatSeconds * engineParameters.sampleRate() *
-                beatMultiplier);
+                beatSeconds * engineParameters.sampleRate() * periodMultiplier);
     } else {
         notePeriodFrames = static_cast<std::size_t>(
                 static_cast<double>(engineParameters.sampleRate()) *
-                60.0 / m_pBpmParameter->value() * beatMultiplier);
+                60.0 / m_pBpmParameter->value() * periodMultiplier);
     }
 
     if (notePeriodFrames == 0) {
         return;
     }
 
-    const std::span<CSAMPLE> noteOffset = noteOutputAtPeriod(
+    const std::span<CSAMPLE> noteStart = noteStartInBuffer(
             pGroupState->framesSinceLastNote, notePeriodFrames, output);
 
-    if (!noteOffset.empty()) {
-        pGroupState->framesSinceLastNote = playPitchedMonoSamplesWithGain(
-                pianoSample, noteOffset, gain, pitchRatio);
+    if (!noteStart.empty()) {
+        pGroupState->framesSinceLastNote = playPitchedMonoIntoStereo(
+                pianoSample, noteStart, gain, pitchRatio);
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
+#include <vector>
 
 #include "audio/types.h"
-#include "util/span.h"
+#include "util/types.h"
 
-std::span<const CSAMPLE> pianoSampleForSampleRate(mixxx::audio::SampleRate rate);
+std::vector<CSAMPLE> generatePianoSample(mixxx::audio::SampleRate sampleRate);
