@@ -330,6 +330,89 @@
           </item>
 
           <item row="6" column="0">
+           <widget class="QLabel" name="lblTuning">
+            <property name="text">
+             <string>Tuning</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <!-- QDoubleSpinBox for entering the A4 tuning frequency.
+                Range 400-480 Hz covers all realistic tuning standards.
+                When value == minimum (400.0), specialValueText displays
+                an empty string, making the box appear blank for
+                unanalyzed tracks.
+                The " Hz" suffix is shown inside the box after the number
+                and is automatically hidden during editing and when the
+                special value text is active. -->
+           <widget class="QDoubleSpinBox" name="spinTuning">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>A4 tuning frequency in Hz. Standard tuning is 440 Hz.</string>
+            </property>
+            <property name="suffix">
+             <string> Hz</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>400.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>480.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.100000000000000</double>
+            </property>
+            <!-- Initial value set to minimum so specialValueText kicks in -->
+            <property name="value">
+             <double>400.000000000000000</double>
+            </property>
+            <!-- Empty string: box appears blank when value == minimum -->
+            <property name="specialValueText">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QLabel" name="lblTuningCents">
+            <property name="text">
+             <string>Offset:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3">
+           <!-- Read-only label showing the offset from A440 in cents.
+                Populated by displayTuningFields() in the .cpp file. -->
+           <widget class="QLabel" name="txtTuningCents">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="toolTip">
+             <string>Offset from A440 standard tuning in cents.</string>
+            </property>
+           </widget>
+          </item>
+
+          <item row="7" column="0">
            <widget class="QLabel" name="lblGrouping">
             <property name="text">
              <string>Grouping</string>
@@ -339,7 +422,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="1">
+          <item row="7" column="1">
            <widget class="QLineEdit" name="txtGrouping">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -355,8 +438,7 @@
             </property>
            </widget>
           </item>
-
-          <item row="6" column="2">
+          <item row="7" column="2">
            <widget class="QLabel" name="lblTrackNumber">
             <property name="text">
              <string>Track #</string>
@@ -366,7 +448,7 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="3">
+          <item row="7" column="3">
            <widget class="QLineEdit" name="txtTrackNumber">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -383,7 +465,7 @@
            </widget>
           </item>
 
-          <item row="7" column="0">
+          <item row="8" column="0">
            <widget class="QLabel" name="lblTrackComment">
             <property name="text">
              <string>Comments</string>
@@ -393,7 +475,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1" colspan="3">
+          <item row="8" column="1" colspan="3">
            <widget class="QPlainTextEdit" name="txtComment">
             <property name="tabChangesFocus">
              <bool>true</bool>
@@ -401,7 +483,7 @@
            </widget>
           </item>
 
-          <item row="8" column="0">
+          <item row="9" column="0">
            <widget class="QLabel" name="lblTrackColor">
             <property name="text">
              <string>Color</string>
@@ -411,7 +493,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="1" colspan="3">
+          <item row="9" column="1" colspan="3">
            <widget class="QPushButton" name="btnColorPicker">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -421,7 +503,8 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
+
+          <item row="10" column="0">
            <spacer name="horizontalSpacer_5">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -434,7 +517,8 @@
             </property>
            </spacer>
           </item>
-          <item row="10" column="0" colspan="4">
+
+          <item row="11" column="0" colspan="4">
            <layout class="QHBoxLayout" name="meatdata_buttons_layout">
             <item>
              <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
@@ -1057,10 +1141,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtAlbumArtist</tabstop>
   <tabstop>txtComposer</tabstop>
   <tabstop>txtGenre</tabstop>
+  <tabstop>txtKey</tabstop>
+  <tabstop>spinTuning</tabstop>
   <tabstop>txtGrouping</tabstop>
   <tabstop>txtComment</tabstop>
   <tabstop>txtYear</tabstop>
-  <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
   <tabstop>btnColorPicker</tabstop>
   <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
