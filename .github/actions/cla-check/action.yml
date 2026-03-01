@@ -48,12 +48,15 @@ runs:
       name: "Check"
       env:
         GOOGLE_TOKEN: ${{steps.auth.outputs.access_token}}
+        GOOGLE_SHEET: https://sheets.googleapis.com/v4/spreadsheets/1xZ1U0RV7-jYIvuEFgD1QnCgTkHG3qqFgNTG4GRL1hww/values/Sheet1!
+        EMAIL_COLUMN: C
       shell: bash
       run: |-
         set -eo pipefail
-        offset=0
+        # Starting from 1 as the first row is used as header
+        offset=1
         while [ "$offset" -lt 10000 ]; do
-          values=$(curl -s --fail -H "Authorization: Bearer $GOOGLE_TOKEN" 'https://sheets.googleapis.com/v4/spreadsheets/1tq0Q8lgH1cR1YB2kphP1NmpO6WMqjhmIqr-z8aYbOVA/values/Sheet1!'"B$(($offset + 1)):B$(($offset + 100))" | jq ".values")
+          values=$(curl -s --fail -H "Authorization: Bearer $GOOGLE_TOKEN" "${GOOGLE_SHEET}${EMAIL_COLUMN}$(($offset + 1)):${EMAIL_COLUMN}$(($offset + 101))" | jq ".values")
           echo $values
           if [ "$(echo $values | jq '. | length')" -eq 0 ]; then
             break
@@ -139,7 +142,7 @@ runs:
 
           Welcome at Mixxx!
 
-          As a first-time contributor we need you to sign the [Mixxx Contributor Agreement](https://docs.google.com/forms/d/e/1FAIpQLScC9QG327sjLL0eWftmfGUasxFFLxg6LCXJ2xHDYRzFIRqyiw/viewform?formkey=dEpYN2NkVEFnWWQzbkFfM0ZYYUZ5X2c6MQ) and comment here when you have done so. It gives us permission to distribute your contribution under the GPL v2 or later license and the Apple Mac App Store. It is also helpful for us to have contact information for contributors in case we may need it in the future.
+          As a first-time contributor we need you to sign the [Mixxx Contributor Agreement](https://forms.gle/QMEqD7GhncStV7Vi6) and comment here when you have done so. It gives us permission to distribute your contribution under the GPL v2 or later license and the Apple Mac App Store. It is also helpful for us to have contact information for contributors in case we may need it in the future.
 
           ${{ steps.check.outputs.found == 'true' && '**' || '' }}Don't forget to :+1: this message or comment when you've done so!${{ steps.check.outputs.found == 'true' && '**' || '' }}
         edit-mode: replace
