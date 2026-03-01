@@ -14,7 +14,14 @@
 const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
 
 //static
+#ifdef __STEM__
+const int MixxxDb::kRequiredSchemaVersion = 41;
+#else
+// Not applying the DB migration for stem if those aren't in used. In case a new
+// DB migration comes available, we will need to apply the STEM migration
+// unconditionally.
 const int MixxxDb::kRequiredSchemaVersion = 40;
+#endif
 
 namespace {
 

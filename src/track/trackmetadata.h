@@ -5,6 +5,9 @@
 #include "audio/streaminfo.h"
 #include "track/albuminfo.h"
 #include "track/trackinfo.h"
+#ifdef __STEM__
+#include "track/steminfo.h"
+#endif
 
 namespace mixxx {
 
@@ -20,6 +23,9 @@ class TrackMetadata final {
     //   - stored in file tags
     MIXXX_DECL_PROPERTY(AlbumInfo, albumInfo, AlbumInfo)
     MIXXX_DECL_PROPERTY(TrackInfo, trackInfo, TrackInfo)
+#ifdef __STEM__
+    MIXXX_DECL_PROPERTY(StemInfo, stemInfo, StemInfo)
+#endif
 
   public:
     TrackMetadata() = default;

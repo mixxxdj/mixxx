@@ -1,0 +1,40 @@
+syntax = "proto2";
+
+package mixxx.track.io;
+
+option optimize_for = LITE_RUNTIME;
+
+message Stem {
+  optional int32 color = 1;
+  optional string label = 2;
+}
+
+message Compressor {
+  required bool enabled = 1 [ default = false ];
+  required int32 ratio = 2 [ default = 10 ];
+  required int32 output_gain = 3;
+  required double release = 4 [ default = 1 ];
+  required double attack = 5 [ default = 0.0001 ];
+  required int32 input_gain = 6;
+  required int32 threshold = 7;
+  required int32 hp_cutoff = 8 [ default = 20 ];
+  required int32 dry_wet = 9 [ default = 100 ];
+}
+
+message Limiter {
+  required bool enabled = 1 [ default = false ];
+  required double release = 2 [ default = 1 ];
+  required int32 threshold = 3;
+  required int32 ceiling = 4;
+}
+
+message MasteringDSP {
+  required Compressor compressor = 1;
+  required Limiter limiter = 2;
+}
+
+message StemInfo {
+  repeated Stem stems = 1;
+  required MasteringDSP masteringDSP = 2;
+  required int32 version = 3 [ default = 1];
+}

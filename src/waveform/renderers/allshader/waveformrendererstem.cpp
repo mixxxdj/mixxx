@@ -114,7 +114,7 @@ bool WaveformRendererStem::preprocessInner() {
 
     auto stemInfo = pTrack->getStemInfo();
     // If this track isn't a stem track, skip the rendering
-    if (stemInfo.isEmpty()) {
+    if (!stemInfo.isValid()) {
         return false;
     }
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip

@@ -105,7 +105,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
 #ifdef __STEM__
-    bool isStemTrack = !pTrack->getStemInfo().isEmpty();
+    bool isStemTrack = pTrack->getStemInfo().isValid();
 #endif
 
     TrackId trackId = pTrack->getId();

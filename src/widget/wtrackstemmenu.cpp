@@ -17,7 +17,7 @@ WTrackStemMenu::WTrackStemMenu(const QString& label,
         QWidget* parent,
         bool primaryDeck,
         const QString& group,
-        const QList<StemInfo>& stemInfo)
+        const mixxx::StemInfo& stemInfo)
         : QMenu(label, parent),
           m_group(group),
           m_selectMode(false),
