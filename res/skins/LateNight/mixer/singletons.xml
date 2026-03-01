@@ -35,7 +35,7 @@
                 <BarAxisPos>19.0</BarAxisPos>
                 <BarUnipolar>false</BarUnipolar>
                 <Connection>
-                  <ConfigKey>[Master],crossfader</ConfigKey>
+                  <ConfigKey>[Mixer],crossfader</ConfigKey>
                 </Connection>
               </SliderComposed>
             </Children>

@@ -33,7 +33,7 @@ WirelessDJ.init = function(id) {
     engine.connectControl("[Channel2]", "filterMid", "WirelessDJ.controlFeedback");
     engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback");
     engine.connectControl("[Master]", "crossfader", "WirelessDJ.controlFeedback");
-    engine.connectControl("[Master]", "headMix", "WirelessDJ.controlFeedback");
+    engine.connectControl("[Master]", "headphone_mix", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback");
@@ -64,7 +64,7 @@ WirelessDJ.shutdown = function(id) {
     engine.connectControl("[Channel2]", "filterMid", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Master]", "crossfader", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Master]", "headMix", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Master]", "headphone_mix", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback", true);
@@ -131,7 +131,7 @@ WirelessDJ.controlFeedback = function(value, group, key) {
         midi.sendShortMsg(0xb0 + deck, 0x15, value*127);
     } else if (key == "crossfader") {
         midi.sendShortMsg(0xb0, 0x1a, (value/2 + 0.5)*127);
-    } else if (key == "headMix") {
+    } else if (key == "headphone_mix") {
         midi.sendShortMsg(0xb0, 0x1b, (value/2 + 0.5)*127);
     } else {
         if (value <= 1) {

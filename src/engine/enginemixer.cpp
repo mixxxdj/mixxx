@@ -30,14 +30,15 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+const QString kMixerGroup = QStringLiteral("[Mixer]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
 const QString kMainGroup = QStringLiteral("[Main]");
 
 const ConfigKey kInternalClockBpmKey{QStringLiteral("[InternalClock]"), QStringLiteral("bpm")};
 } // namespace
 
-EngineMixer::EngineMixer(UserSettingsPointer pConfig,
-        const QString& group,
+EngineMixer::EngineMixer(
+        UserSettingsPointer pConfig,
         EffectsManager* pEffectsManager,
         ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)
@@ -45,11 +46,11 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           // TODO: Make this read only and make EngineMixer decide whether
           // processing the main mix is necessary.
           m_pMainEnabled(std::make_unique<ControlObject>(
-                  ConfigKey(group, "enabled"), true, false, true)),
+                  ConfigKey(kMixerGroup, "main_enabled"), true, false, true)),
           m_pHeadphoneEnabled(std::make_unique<ControlObject>(
-                  ConfigKey(group, "headEnabled"))),
+                  ConfigKey(kMixerGroup, "headphones_enabled"))),
           m_pBoothEnabled(std::make_unique<ControlObject>(
-                  ConfigKey(group, "booth_enabled"))),
+                  ConfigKey(kMixerGroup, "booth_enabled"))),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_outputBusBuffers({mixxx::SampleBuffer(kMaxEngineSamples),
@@ -63,11 +64,11 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pWorkerScheduler(make_parented<EngineWorkerScheduler>(this)),
           m_pEngineSync(std::make_unique<EngineSync>(pConfig)),
           m_pMainGain(std::make_unique<ControlAudioTaperPot>(
-                  ConfigKey(group, "gain"), -14, 14, 0.5)),
+                  ConfigKey(kMixerGroup, "main_gain"), -14, 14, 0.5)),
           m_pBoothGain(std::make_unique<ControlAudioTaperPot>(
-                  ConfigKey(group, "booth_gain"), -14, 14, 0.5)),
+                  ConfigKey(kMixerGroup, "booth_gain"), -14, 14, 0.5)),
           m_pHeadGain(std::make_unique<ControlAudioTaperPot>(
-                  ConfigKey(group, "headGain"), -14, 14, 0.5)),
+                  ConfigKey(kMixerGroup, "headphone_gain"), -14, 14, 0.5)),
           m_pSampleRate(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("samplerate")),
                   true,
@@ -84,15 +85,15 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pAudioLatencyOverload(std::make_unique<ControlObject>(ConfigKey(
                   kAppGroup, QStringLiteral("audio_latency_overload")))),
           m_pTalkoverDucking(
-                  std::make_unique<EngineTalkoverDucking>(pConfig, group)),
+                  std::make_unique<EngineTalkoverDucking>(pConfig, kMixerGroup)),
           m_pMainDelay(
-                  std::make_unique<EngineDelay>(ConfigKey(group, "delay"))),
+                  std::make_unique<EngineDelay>(ConfigKey(kMixerGroup, "main_delay"))),
           m_pHeadDelay(
-                  std::make_unique<EngineDelay>(ConfigKey(group, "headDelay"))),
+                  std::make_unique<EngineDelay>(ConfigKey(kMixerGroup, "headphone_delay"))),
           m_pBoothDelay(std::make_unique<EngineDelay>(
-                  ConfigKey(group, "boothDelay"))),
-          m_pLatencyCompensationDelay(std::make_unique<EngineDelay>(
-                  ConfigKey(group, "microphoneLatencyCompensation"))),
+                  ConfigKey(kMixerGroup, "booth_delay"))),
+          m_pMicrophoneDelay(std::make_unique<EngineDelay>(
+                  ConfigKey(kMixerGroup, "microphone_delay"))),
           m_pVumeter(std::make_unique<EngineVuMeter>(kMainGroup, kLegacyGroup)),
           // Starts a thread for recording and broadcast
           m_pEngineSideChain(bEnableSidechain
@@ -100,11 +101,11 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                                     pConfig, m_sidechainMix.data())
                           : nullptr),
           m_pCrossfader(std::make_unique<ControlPotmeter>(
-                  ConfigKey(group, "crossfader"), -1., 1.)),
+                  ConfigKey(kMixerGroup, "crossfader"), -1., 1.)),
           m_pHeadMix(std::make_unique<ControlPotmeter>(
-                  ConfigKey(group, "headMix"), -1., 1.)),
+                  ConfigKey(kMixerGroup, "headphone_mix"), -1., 1.)),
           m_pBalance(std::make_unique<ControlPotmeter>(
-                  ConfigKey(group, "balance"), -1., 1.)),
+                  ConfigKey(kMixerGroup, "balance"), -1., 1.)),
           m_pXFaderMode(std::make_unique<ControlPushButton>(
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"))),
           m_pXFaderCurve(std::make_unique<ControlPotmeter>(
@@ -120,14 +121,14 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pXFaderReverse(std::make_unique<ControlPushButton>(
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))),
           m_pHeadSplitEnabled(std::make_unique<ControlPushButton>(
-                  ConfigKey(group, "headSplit"), true, 0.0)),
+                  ConfigKey(kMixerGroup, "headphone_split"), true, 0.0)),
 
           m_pKeylockEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                   false,
                   false,
                   static_cast<double>(pConfig->getValue(
-                          ConfigKey(group, "keylock_engine"),
+                          ConfigKey(kAppGroup, "keylock_engine"),
                           EngineBuffer::defaultKeylockEngine())))),
           m_mainGainOld(0.0),
           m_boothGainOld(0.0),
@@ -137,7 +138,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_balleftOld(1.0),
           m_balrightOld(1.0),
           m_numMicsConfigured(0),
-          m_mainHandle(registerChannelGroup(group)),
+          m_mainHandle(registerChannelGroup(kMainGroup)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_mainOutputHandle(registerChannelGroup("[MasterOutput]")),
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
@@ -145,9 +146,9 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")),
           m_pMainMonoMixdown(std::make_unique<ControlObject>(
-                  ConfigKey(group, "mono_mixdown"), true, false, true)),
+                  ConfigKey(kMixerGroup, "mono_mixdown"), true, false, true)),
           m_pMicMonitorMode(std::make_unique<ControlObject>(
-                  ConfigKey(group, "talkover_mix"), true, false, true)) {
+                  ConfigKey(kMixerGroup, "talkover_mix"), true, false, true)) {
     pEffectsManager->registerInputChannel(m_mainHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
     pEffectsManager->registerOutputChannel(m_mainHandle);
@@ -164,7 +165,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_bExternalRecordBroadcastInputConnected = false;
     m_pWorkerScheduler->start(QThread::HighPriority);
 
-    m_pSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
+    m_pSampleRate->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("samplerate")));
     m_pSampleRate->set(44100.);
 
     m_pOutputLatencyMs->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("latency")));
@@ -177,19 +178,29 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     // The last-used bpm value is saved in the destructor of EngineSync.
     ControlObject::set(kInternalClockBpmKey, pConfig->getValue(kInternalClockBpmKey, 124.0));
 
+    m_pCrossfader->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("crossfader")));
+    m_pBalance->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("balance")));
+    m_pMainGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("gain")));
     // Legacy: the main "gain" control used to be named "volume" in Mixxx
     // 1.11.0 and earlier. See issue #7413.
-    m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
-
+    m_pMainGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("volume")));
+    m_pBoothGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("booth_gain")));
+    m_pHeadGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headGain")));
     // Legacy: the headphone "headGain" control used to be named "headVolume" in
     // Mixxx 1.11.0 and earlier. See issue #7413.
-    m_pHeadGain->addAlias(ConfigKey(group, QStringLiteral("headVolume")));
+    m_pHeadGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headVolume")));
 
+    m_pHeadMix->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headMix")));
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
     m_pHeadSplitEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pHeadSplitEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headSplit")));
     m_pHeadSplitEnabled->set(0.0);
+
+    m_pTalkoverDucking->addAlias(
+            ConfigKey(kLegacyGroup, QStringLiteral("duckStrength")),
+            ConfigKey(kLegacyGroup, QStringLiteral("talkoverDucking")));
 
     // zero out otherwise uninitialized buffers
     m_head.clear();
@@ -206,8 +217,15 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_pXFaderMode->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pXFaderReverse->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
+    m_pMainEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("enabled")));
+
+    m_pBoothEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("booth_enabled")));
     m_pBoothEnabled->setReadOnly();
+
+    m_pHeadphoneEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headEnabled")));
     m_pHeadphoneEnabled->setReadOnly();
+
+    m_pMainMonoMixdown->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("mono_mixdown")));
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
@@ -712,7 +730,7 @@ void EngineMixer::process(const std::size_t bufferSize) {
 
                     // Copy the main mix to a separate buffer before delaying it
                     // to avoid delaying the main output.
-                    m_pLatencyCompensationDelay->process(m_sidechainMix.data(), bufferSize);
+                    m_pMicrophoneDelay->process(m_sidechainMix.data(), bufferSize);
                     SampleUtil::add(m_sidechainMix.data(), m_talkover.data(), bufferSize);
                 }
             }

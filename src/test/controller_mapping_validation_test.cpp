@@ -139,7 +139,6 @@ void LegacyControllerMappingValidationTest::SetUp() {
     m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
     m_pEngine = std::make_shared<EngineMixer>(
             m_pConfig,
-            "[Master]",
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);

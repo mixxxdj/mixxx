@@ -98,22 +98,22 @@
       <attribute persist="true" config_key="[Skin],show_library_coverart">1</attribute>
 
     <!-- Disable hidden effect routing Buttons -->
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>

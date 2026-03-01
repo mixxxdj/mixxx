@@ -7,6 +7,7 @@
 namespace {
 
 constexpr CSAMPLE kDuckThreshold = 0.1f;
+const QString kLegacyGroup = QStringLiteral("[Master]");
 
 } // namespace
 
@@ -20,9 +21,13 @@ EngineTalkoverDucking::EngineTalkoverDucking(
             &EngineTalkoverDucking::slotSampleRateChanged,
             Qt::DirectConnection);
 
-    m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
+    m_pDuckStrength = new ControlPotmeter(
+            ConfigKey(m_group, QStringLiteral("talkover_ducking_strength")), 0.0, 1.0);
+    m_pDuckStrength->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("duckStrength")));
     m_pDuckStrength->set(
-            m_pConfig->getValue<double>(ConfigKey(m_group, "duckStrength"), 90) / 100);
+            m_pConfig->getValue<double>(
+                    ConfigKey(m_group, QStringLiteral("duckStrength")), 90) /
+            100);
     connect(m_pDuckStrength, &ControlObject::valueChanged,
             this, &EngineTalkoverDucking::slotDuckStrengthChanged,
             Qt::DirectConnection);
@@ -36,11 +41,14 @@ EngineTalkoverDucking::EngineTalkoverDucking(
             static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
             static_cast<unsigned int>(m_pSampleRate->get() / 2));
 
-    m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
+    m_pTalkoverDucking = new ControlPushButton(
+            ConfigKey(m_group, QStringLiteral("talkover_ducking_mode")));
+    m_pTalkoverDucking->addAlias(
+            ConfigKey(kLegacyGroup, QStringLiteral("talkoverDucking")));
     m_pTalkoverDucking->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
     m_pTalkoverDucking->set(
             m_pConfig->getValue<double>(
-                ConfigKey(m_group, "duckMode"), AUTO));
+                    ConfigKey(m_group, QStringLiteral("duckMode")), AUTO));
     connect(m_pTalkoverDucking, &ControlObject::valueChanged,
             this, &EngineTalkoverDucking::slotDuckModeChanged,
             Qt::DirectConnection);
@@ -52,6 +60,12 @@ EngineTalkoverDucking::~EngineTalkoverDucking() {
 
     delete m_pDuckStrength;
     delete m_pTalkoverDucking;
+}
+
+void EngineTalkoverDucking::addAlias(
+        const ConfigKey& duckStrengthKey, const ConfigKey& talkoverDuckingKey) {
+    m_pDuckStrength->addAlias(duckStrengthKey);
+    m_pTalkoverDucking->addAlias(talkoverDuckingKey);
 }
 
 void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {

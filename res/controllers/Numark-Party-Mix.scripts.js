@@ -383,18 +383,18 @@ NumarkPartyMix.Browse.prototype = Object.create(components.ComponentContainer.pr
 
 NumarkPartyMix.Gains = function() {
     this.mainGain = new components.Pot({
-        group: "[Master]",
-        inKey: "gain"
+        group: "[Mixer]",
+        inKey: "main_gain"
     });
 
     this.cueGain = new components.Pot({
-        group: "[Master]",
-        inKey: "headGain"
+        group: "[Mixer]",
+        inKey: "headphone_gain"
     });
 
     this.cueMix = new components.Pot({
-        group: "[Master]",
-        inKey: "headMix"
+        group: "[Mixer]",
+        inKey: "headphone_mix"
     });
 };
 NumarkPartyMix.Gains.prototype = Object.create(components.ComponentContainer.prototype);
