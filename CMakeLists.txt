@@ -53,6 +53,11 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+# Normalized DESTINATION paths in install()
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
   if(NOT DEFINED ENV{JAVA_HOME})
     message(FATAL_ERROR "JAVA_HOME is not set. Did you source the setup file?")
