@@ -46,7 +46,7 @@ This repository contains the Mixxx source code, skins, controller mappings, and 
 
 - [mixxxdj/website](https://github.com/mixxxdj/website): content for the main [mixxx.org](https://mixxx.org/) website which is generated with the [Pelican static site generator](https://getpelican.com/)
 - [mixxxdj/manual](https://github.com/mixxxdj/manual): content for the Mixxx manual, which uses [Sphinx](https://www.sphinx-doc.org/)
-- [mixxxdj/vcpkg](https://github.com/mixxxdj/vcpkg): dependencies packaged for macOS and Windows
+- [mixxxdj/vcpkg](https://github.com/mixxxdj/vcpkg): dependencies packaged for macOS, Windows, Android and Linux (statically linked builds)
 
 All of these are automatically built and deployed by [GitHub Actions](https://github.com/features/actions) whenever a change is committed. You are welcome to open a pull request in any of these repositories.
 
