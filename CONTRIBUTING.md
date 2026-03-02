@@ -103,7 +103,7 @@ All of these are automatically built and deployed by [GitHub Actions](https://gi
 
 6. **Run tests**:
 
-    `ctest`
+    `ctest` or `mixxx-test` (Useful if you wish to run the test with a debugger)
 
 ## Pre-commit Setup {#pre-commit}
 
