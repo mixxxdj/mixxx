@@ -119,23 +119,6 @@ Description:
         <SetVariable name="Setting">[Skin],show_vinylcontrol</SetVariable>
       </Template>
 
-      <WidgetGroup>
-        <ObjectName>SkinSettingsSubMenu</ObjectName>
-        <Layout>stacked</Layout>
-        <Size>180min,18f</Size>
-        <Children>
-          <!-- translucent cover when vinylcontrol is hidden -->
-          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
-            <SetVariable name="Setting">[Skin],show_vinylcontrol</SetVariable>
-          </Template>
-          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
-            <SetVariable name="TooltipId">minimize_on_passthrough</SetVariable>
-            <SetVariable name="Text">Minimize decks on passthrough</SetVariable>
-            <SetVariable name="Setting">[Skin],latenight_minimize_on_passthrough</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-
       <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
 
       <!-- Spinny -->

@@ -25,9 +25,6 @@
   TODO: Remove "persist" attributes throughout the skin and confirm that declaring
   them in the attributes section instead works.
   -->
-<!-- TODO tbazant: hide key & patch controls as well-->
-<!-- TODO tbazant: connect config option with the minimizing functionality-->
-<!-- TODO tbazant: introduce option to hide PASS waveforms-->
 
 <!DOCTYPE skin>
 <skin>
@@ -58,7 +55,6 @@
       <attribute persist="true" config_key="[Skin],select_big_spinny_or_cover">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
       <attribute persist="true" config_key="[Skin],show_vinylcontrol">0</attribute>
-      <attribute persist="true" config_key="[Skin],latenight_minimize_on_passthrough">1</attribute>
       <!-- Deck variant that is shown as soon as the mixer is hidden.
           See deck.xml and /helpers/skin_helper_deck_size.xml for documentation.
           0=mini 1=compact(default) 2=full deck -->

@@ -57,7 +57,6 @@
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],passthrough</ConfigKey>
-             <!-- <ConfigKey persist="true">[Skin],latenight_minimize_on_passthrough</ConfigKey> -->
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -84,9 +83,6 @@
             </Children>
             <Connection>
               <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],passthrough</ConfigKey>
-              <!-- <ConfigKey
-              persist="true">[Skin],latenight_minimize_on_passthrough</ConfigKey>
-              -->
                <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
