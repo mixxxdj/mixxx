@@ -603,7 +603,11 @@ class Deck extends ComponentContainer {
         }
         this.settings = settings;
         this.moveMode = moveModes.beat;
-        this.secondDeckModes = null;
+        this.secondDeckModes = {
+            moveMode: this.moveMode,
+            wheelMode: this.wheelMode,
+        };
+
         this.selectedHotcue = null;
         this.relativeTempoMode = DefaultRelativeTempoMode;
 
@@ -629,6 +633,11 @@ class Deck extends ComponentContainer {
     switchDeck(newDeck) {
         const newGroup = Deck.groupForNumber(newDeck);
 
+        const currentModes = {
+            wheelMode: this.wheelMode,
+            moveMode: this.moveMode,
+        };
+
         switch (this.moveMode) {
         case moveModes.beat:
         case moveModes.bpm:
@@ -645,11 +654,6 @@ class Deck extends ComponentContainer {
             });
             break;
         }
-
-        const currentModes = {
-            wheelMode: this.wheelMode,
-            moveMode: this.moveMode,
-        };
 
         this.selectedStem.fill(false);
 
