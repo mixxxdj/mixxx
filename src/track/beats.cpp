@@ -477,7 +477,7 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
     DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
-    DEBUG_ASSERT(it == cbegin() || it == cend() || *it > *std::prev(it));
+    DEBUG_ASSERT(it == cbegin() || it == cend() || *std::prev(it) < position);
     return it;
 }
 
