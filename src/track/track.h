@@ -313,6 +313,8 @@ class Track : public QObject {
     // Call when analysis is done.
     void analysisFinished();
 
+    CuePointer addCue(CuePointer pCue);
+
     // Calls for managing the track's cue points
     CuePointer createAndAddCue(
             mixxx::CueType type,

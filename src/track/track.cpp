@@ -1089,6 +1089,11 @@ CuePointer Track::createAndAddCue(
             startPosition,
             endPosition,
             color));
+    addCue(pCue);
+    return pCue;
+}
+
+CuePointer Track::addCue(CuePointer pCue) {
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
