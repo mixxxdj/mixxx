@@ -33,6 +33,9 @@ class CmdlineArgs final {
     bool getStartAutoDJ() const {
         return m_startAutoDJ;
     }
+    std::optional<QString> getStartRecording() const {
+        return m_startRecording;
+    }
     bool getRescanLibrary() const {
         return m_rescanLibrary;
     }
@@ -102,6 +105,7 @@ class CmdlineArgs final {
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_startAutoDJ;
+    std::optional<QString> m_startRecording;
     bool m_rescanLibrary;
     bool m_controllerDebug;
     bool m_controllerPreviewScreens;
