@@ -99,7 +99,7 @@ All of these are automatically built and deployed by [GitHub Actions](https://gi
 
      For building and installing Mixxx as a Flatpak, check the documentation in [packaging/flatpak/README.md](packaging/flatpak/  README.md).
 
-     Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/  wiki#compile-mixxx-from-source-code)
+     Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
 
 6. **Run tests**:
 
