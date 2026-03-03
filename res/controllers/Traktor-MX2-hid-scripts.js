@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 /*                                                                                     */
 /* Traktor Kontrol MX2 HID controller script v1.00                                     */
-/* Last modification: February 2026                                                    */
+/* Last modification: March 2026                                                       */
 /* Author: K7                                                                          */
 /* https://manual.mixxx.org/2.6/en/hardware/controllers/native_instruments_traktor_mx2 */
 /*                                                                                     */
@@ -117,13 +117,14 @@ class TraktorMX2Class {
     }
 
     registerInputPackets() {
-        // 0x01 = Short messages (buttons, encoders) ->
+
+        // 0x01 = Buttons, Encoders -> packet is 64+15=79 bytes long; last 15 Bytes are data, first is report ID 0x01
         const inputReportButton = new HIDPacket("inputReportButton", 0x01, this.messageCallback.bind(this)); //eslint-disable-line no-undef
 
-        // 0x02 = Long messages (knobs, fader) ->
+        // 0x02 = Knobs, Fader -> packet is 64+53=117 bytes long; last 53 Bytes are data, first is report ID 0x02
         const inputReportKnob = new HIDPacket("inputReportKnob", 0x02, this.messageCallback.bind(this)); //eslint-disable-line no-undef
 
-        // 0x03 = Jog wheel messages (jog timer and jog wheel) -> 84 Bytes
+        // 0x03 = Jog timer, Jog wheel -> packet is 64+20=84 Bytes long; last 20 Bytes are data, first is report ID 0x03
         // In contrary to the two other report types, the MX2 sends this continuously to provide the clock and not only when the jogwheels are turned
         const inputReportJog = new HIDPacket("inputReportJog", 0x03, this.messageCallback.bind(this)); //eslint-disable-line no-undef
 
