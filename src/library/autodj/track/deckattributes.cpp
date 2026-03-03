@@ -72,8 +72,7 @@ void DeckAttributes::slotPlayerEmpty() {
     emit playerEmpty(this);
 }
 
-void DeckAttributes::slotRateChanged(double v) {
-    Q_UNUSED(v);
+void DeckAttributes::slotRateChanged(double) {
     emit rateChanged(this);
 }
 
