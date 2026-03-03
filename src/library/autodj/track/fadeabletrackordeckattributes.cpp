@@ -4,7 +4,7 @@
 #include "moc_fadeabletrackordeckattributes.cpp"
 
 FadeableTrackOrDeckAttributes::FadeableTrackOrDeckAttributes()
-        : m_startPos(AutoDJConstants::kKeepPosition),
+        : m_startPos(mixxx::autodj::kKeepPosition),
           m_fadeBeginPos(1.0),
           m_fadeEndPos(1.0),
           m_isFromDeck(false) {

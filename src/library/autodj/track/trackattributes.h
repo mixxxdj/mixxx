@@ -4,7 +4,6 @@
 
 /// Exposes the attributes of a track from the Auto DJ queue.
 class TrackAttributes : public FadeableTrackOrDeckAttributes {
-    Q_OBJECT
   public:
     TrackAttributes(TrackPointer pTrack);
 

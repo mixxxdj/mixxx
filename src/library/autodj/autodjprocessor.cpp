@@ -13,8 +13,8 @@ const QString kConfigKey = QStringLiteral("[Auto DJ]");
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
-constexpr double kKeepPosition = AutoDJConstants::kKeepPosition;
-constexpr double kSkipToNextTrack = AutoDJConstants::kSkipToNextTrack;
+constexpr double kKeepPosition = mixxx::autodj::kKeepPosition;
+constexpr double kSkipToNextTrack = mixxx::autodj::kSkipToNextTrack;
 
 // A track needs to be longer than two callbacks to not stop AutoDJ
 constexpr double kMinimumTrackDurationSec = 0.2;
