@@ -89,7 +89,7 @@ void GlitchEffect::processChannel(
             }
         }
         period = std::max(period, 1 / 8.0);
-        delay_seconds = static_cast<int>(period * groupFeatures.beat_length->seconds);
+        delay_seconds = period * groupFeatures.beat_length->seconds;
         min_delay = 1 / 8.0 * groupFeatures.beat_length->seconds;
     } else {
         delay_seconds = period;
