@@ -596,7 +596,7 @@ TEST(BeatsTest, IteratorFromCeilUndershoot) {
     const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
     const auto position = audio::FramePos(
             std::nextafter(beatPos.value(),
-                    std::numeric_limits<double>::infinity()));
+                    std::numeric_limits<double>::max()));
 
     const auto it = beats.iteratorFrom(position);
     EXPECT_GE(it->value(), position.value());
@@ -628,7 +628,7 @@ TEST(BeatsTest, IteratorFromFloorUndershoot) {
     const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
     const auto position = audio::FramePos(
             std::nextafter(beatPos.value(),
-                    std::numeric_limits<double>::infinity()));
+                    std::numeric_limits<double>::max()));
 
     const auto it = beats.iteratorFrom(position);
     EXPECT_GE(it->value(), position.value());
