@@ -483,20 +483,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <layout class="QGridLayout">
-           <item row="7" column="0">
-            <widget class="QLabel" name="stream_ICQ_label">
-             <property name="text">
-              <string>ICQ</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="stream_AIM_label">
-             <property name="text">
-              <string>AIM</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="1">
             <widget class="QLineEdit" name="stream_name">
              <property name="sizePolicy">
@@ -640,23 +626,73 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="stream_IRC_label">
-             <property name="text">
-              <string>IRC</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLineEdit" name="stream_IRC"/>
-           </item>
-           <item row="6" column="1">
-            <widget class="QLineEdit" name="stream_AIM"/>
-           </item>
-           <item row="7" column="1">
-            <widget class="QLineEdit" name="stream_ICQ"/>
-           </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBoxSocialLinks">
+           <property name="title">
+            <string>Social &amp; Contact Links</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_sociallinks">
+            <item>
+             <widget class="QTableWidget" name="socialLinksTable">
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>Platform</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Link</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_sociallinks">
+              <item>
+               <widget class="QPushButton" name="btnAddSocialLink">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnRemoveSocialLink">
+                <property name="text">
+                 <string>Remove selected</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_social">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -893,9 +929,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>stream_website</tabstop>
   <tabstop>stream_desc</tabstop>
   <tabstop>stream_genre</tabstop>
-  <tabstop>stream_IRC</tabstop>
-  <tabstop>stream_AIM</tabstop>
-  <tabstop>stream_ICQ</tabstop>
 
   <tabstop>metadata_format</tabstop>
   <tabstop>enableCustomMetadata</tabstop>

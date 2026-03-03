@@ -1,11 +1,11 @@
 #include "preferences/dialog/dlgprefbroadcast.h"
 
+#include <QComboBox>
 #include <QHeaderView>
 #include <QInputDialog>
+#include <QLineEdit>
 #include <QMessageBox>
-
-// this is needed to define SHOUT_META_* macros used in version guard
-#include <shoutidjc/shout.h>
+#include <QTableWidgetItem>
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
@@ -41,20 +41,24 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
     groupPasswordStorage->setVisible(false);
 #endif
 
-#ifndef SHOUT_META_IRC
-    stream_IRC_label->setVisible(false);
-    stream_IRC->setVisible(false);
-#endif
+    connect(btnAddSocialLink,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnAddSocialLinkClicked);
+    connect(btnRemoveSocialLink,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnRemoveSocialLinkClicked);
 
-#ifndef SHOUT_META_AIM
-    stream_AIM_label->setVisible(false);
-    stream_AIM->setVisible(false);
-#endif
-
-#ifndef SHOUT_META_ICQ
-    stream_ICQ_label->setVisible(false);
-    stream_ICQ->setVisible(false);
-#endif
+    // Set up the social links table
+    socialLinksTable->horizontalHeader()->setStretchLastSection(true);
+    socialLinksTable->verticalHeader()->setVisible(false);
+    // Grow vertically to fit rows — AdjustToContents recalculates sizeHint(),
+    // Minimum policy lets the layout use that hint as the actual height.
+    socialLinksTable->setSizeAdjustPolicy(
+            QAbstractScrollArea::AdjustToContents);
+    socialLinksTable->setSizePolicy(
+            QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     connect(connectionList->horizontalHeader(),
             &QHeaderView::sectionResized,
@@ -492,14 +496,12 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     // Stream website
     stream_website->setText(profile->getStreamWebsite());
 
-    // Stream IRC
-    stream_IRC->setText(profile->getStreamIRC());
-
-    // Stream AIM
-    stream_AIM->setText(profile->getStreamAIM());
-
-    // Stream ICQ
-    stream_ICQ->setText(profile->getStreamICQ());
+    // Social & Contact Links
+    socialLinksTable->setRowCount(0);
+    const QMap<QString, QString> extraMeta = profile->getStreamExtraMetadata();
+    for (auto it = extraMeta.constBegin(); it != extraMeta.constEnd(); ++it) {
+        addSocialLinkRow(it.key(), it.value());
+    }
 
     // Stream description
     stream_desc->setText(profile->getStreamDesc());
@@ -584,9 +586,25 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setMaximumRetries(spinBoxMaximumRetries->value());
     profile->setStreamName(stream_name->text());
     profile->setStreamWebsite(stream_website->text());
-    profile->setStreamIRC(stream_IRC->text());
-    profile->setStreamAIM(stream_AIM->text());
-    profile->setStreamICQ(stream_ICQ->text());
+
+    // Social & Contact Links — read table rows into a map
+    QMap<QString, QString> extraMeta;
+    for (int row = 0; row < socialLinksTable->rowCount(); ++row) {
+        QComboBox* keyCombo = qobject_cast<QComboBox*>(
+                socialLinksTable->cellWidget(row, 0));
+        QLineEdit* valueEdit = qobject_cast<QLineEdit*>(
+                socialLinksTable->cellWidget(row, 1));
+        if (!keyCombo || !valueEdit) {
+            continue;
+        }
+        QString key = keyCombo->currentText().trimmed();
+        QString value = valueEdit->text().trimmed();
+        if (!key.isEmpty() && !value.isEmpty()) {
+            extraMeta.insert(key, value);
+        }
+    }
+    profile->setStreamExtraMetadata(extraMeta);
+
     profile->setStreamDesc(stream_desc->toPlainText());
     profile->setStreamGenre(stream_genre->text());
     profile->setStreamPublic(stream_public->isChecked());
@@ -682,4 +700,60 @@ void DlgPrefBroadcast::onSectionResized() {
 
 bool DlgPrefBroadcast::okayToClose() const {
     return m_allProfilesValid;
+}
+
+void DlgPrefBroadcast::addSocialLinkRow(const QString& key, const QString& value) {
+    int row = socialLinksTable->rowCount();
+    socialLinksTable->insertRow(row);
+
+    // Column 0: QComboBox with common platform options + editable
+    QComboBox* keyCombo = new QComboBox(this);
+    keyCombo->setEditable(true);
+    // Common platforms recognized by Icecast / streamer communities
+    const QStringList platforms = {
+            QStringLiteral("irc"),
+            QStringLiteral("instagram"),
+            QStringLiteral("twitter"),
+            QStringLiteral("facebook"),
+            QStringLiteral("discord"),
+            QStringLiteral("youtube"),
+            QStringLiteral("twitch"),
+            QStringLiteral("spotify"),
+            QStringLiteral("soundcloud"),
+            QStringLiteral("mixcloud"),
+    };
+    keyCombo->addItems(platforms);
+    if (!key.isEmpty()) {
+        int idx = keyCombo->findText(key);
+        if (idx >= 0) {
+            keyCombo->setCurrentIndex(idx);
+        } else {
+            keyCombo->setCurrentText(key);
+        }
+    }
+    socialLinksTable->setCellWidget(row, 0, keyCombo);
+
+    // Column 1: QLineEdit for the value
+    QLineEdit* valueEdit = new QLineEdit(this);
+    valueEdit->setPlaceholderText(tr("Link or username"));
+    if (!value.isEmpty()) {
+        valueEdit->setText(value);
+    }
+    socialLinksTable->setCellWidget(row, 1, valueEdit);
+    // Notify the layout that our preferred height has changed
+    socialLinksTable->updateGeometry();
+}
+
+void DlgPrefBroadcast::btnAddSocialLinkClicked() {
+    addSocialLinkRow();
+    // Scroll to the new row
+    socialLinksTable->scrollToBottom();
+}
+
+void DlgPrefBroadcast::btnRemoveSocialLinkClicked() {
+    int row = socialLinksTable->currentRow();
+    if (row >= 0) {
+        socialLinksTable->removeRow(row);
+        socialLinksTable->updateGeometry();
+    }
 }
