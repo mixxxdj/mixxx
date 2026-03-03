@@ -11,7 +11,7 @@ if(NOT GIT_DESCRIBE)
 else()
   set(PACKAGE_VERSION "${GIT_DESCRIBE}")
 endif()
-set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}")
+set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}-${CPACK_SYSTEM_PROCESSOR}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
 
 # The upstream version must not contain hyphen
