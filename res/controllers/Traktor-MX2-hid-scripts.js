@@ -117,212 +117,218 @@ class TraktorMX2Class {
     }
 
     registerInputPackets() {
-        const messageShort = new HIDPacket("shortmessage", 0x01, this.messageCallback.bind(this));
-        const messageLong = new HIDPacket("longmessage", 0x02, this.messageCallback.bind(this));
-        const messageJog = new HIDPacket("reportmessage", 0x03, this.messageCallback.bind(this));
+        // 0x01 = Short messages (buttons, encoders) ->
+        const inputReportButton = new HIDPacket("inputReportButton", 0x01, this.messageCallback.bind(this)); //eslint-disable-line no-undef
+
+        // 0x02 = Long messages (knobs, fader) ->
+        const inputReportKnob = new HIDPacket("inputReportKnob", 0x02, this.messageCallback.bind(this)); //eslint-disable-line no-undef
+
+        // 0x03 = Jog wheel messages (jog timer and jog wheel) -> 84 Bytes
+        // In contrary to the two other report types, the MX2 sends this continuously to provide the clock and not only when the jogwheels are turned
+        const inputReportJog = new HIDPacket("inputReportJog", 0x03, this.messageCallback.bind(this)); //eslint-disable-line no-undef
 
         // Channel 1
 
         // // Channel FX
-        this.registerInputButton(messageShort, "EffectUnit1", "misc", 0x01, 0x01, this.fxHandler.bind(this));
-        this.registerInputButton(messageShort, "EffectUnit1", "Effect1", 0x01, 0x02, this.fxHandler.bind(this));
-        this.registerInputButton(messageShort, "EffectUnit1", "Effect2", 0x01, 0x04, this.fxHandler.bind(this));
-        this.registerInputButton(messageShort, "EffectUnit1", "Effect3", 0x01, 0x08, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit1", "misc", 0x01, 0x01, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit1", "Effect1", 0x01, 0x02, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit1", "Effect2", 0x01, 0x04, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit1", "Effect3", 0x01, 0x08, this.fxHandler.bind(this));
 
         // // Library Controls
-        this.registerInputButton(messageShort, "[Channel1]", "!FavList", 0x01, 0x10, this.favListHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!AddTrack", 0x01, 0x20, this.addTrackHandler.bind(this));
-        this.registerInputButton(messageShort, "[PreviewDeck1]", "!PreviewL", 0x01, 0x40, this.previewHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!MaximizeLibrary", 0x01, 0x80, this.maximizeLibraryHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!FavList", 0x01, 0x10, this.favListHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!AddTrack", 0x01, 0x20, this.addTrackHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[PreviewDeck1]", "!PreviewL", 0x01, 0x40, this.previewHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!MaximizeLibrary", 0x01, 0x80, this.maximizeLibraryHandler.bind(this));
 
         // // Rev / FLUX
-        this.registerInputButton(messageShort, "[Channel1]", "!slip_enabled", 0x02, 0x01, this.fluxHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!reverse", 0x02, 0x02, this.reverseHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!slip_enabled", 0x02, 0x01, this.fluxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!reverse", 0x02, 0x02, this.reverseHandler.bind(this));
 
         // // Jog Mode
-        this.registerInputButton(messageShort, "[Channel1]", "!tt", 0x02, 0x04, this.jogModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!jog", 0x02, 0x08, this.jogModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!tt", 0x02, 0x04, this.jogModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!jog", 0x02, 0x08, this.jogModeHandler.bind(this));
 
-        this.registerInputButton(messageShort, "[Channel1]", "!shift", 0x02, 0x10, this.shiftHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!sync", 0x02, 0x20, this.syncHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!sync_leader", 0x02, 0x40, this.masterHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!keylock", 0x02, 0x80, this.keylockHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!shift", 0x02, 0x10, this.shiftHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!sync", 0x02, 0x20, this.syncHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!sync_leader", 0x02, 0x40, this.masterHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!keylock", 0x02, 0x80, this.keylockHandler.bind(this));
 
         // // Hotcue / Stem / Pattern / Loop Mode
-        this.registerInputButton(messageShort, "[Channel1]", "!hotcues", 0x03, 0x01, this.padModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!stems", 0x03, 0x02, this.padModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!patterns", 0x03, 0x04, this.padModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!loops", 0x03, 0x08, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!hotcues", 0x03, 0x01, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!stems", 0x03, 0x02, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!patterns", 0x03, 0x04, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!loops", 0x03, 0x08, this.padModeHandler.bind(this));
 
         // // Pads (Hotcues, Stems, Patterns and Loops depending on current mode)
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_1", 0x03, 0x10, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_2", 0x03, 0x20, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_3", 0x03, 0x40, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_4", 0x03, 0x80, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_5", 0x04, 0x01, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_6", 0x04, 0x02, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_7", 0x04, 0x04, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pad_8", 0x04, 0x08, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_1", 0x03, 0x10, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_2", 0x03, 0x20, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_3", 0x03, 0x40, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_4", 0x03, 0x80, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_5", 0x04, 0x01, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_6", 0x04, 0x02, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_7", 0x04, 0x04, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pad_8", 0x04, 0x08, this.padHandler.bind(this));
 
         // // Cue and Play
-        this.registerInputButton(messageShort, "[Channel1]", "!cue_default", 0x04, 0x10, this.cueHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!play", 0x04, 0x20, this.playHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!cue_default", 0x04, 0x10, this.cueHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!play", 0x04, 0x20, this.playHandler.bind(this));
 
 
         // Channel 2
 
         // // Channel FX
-        this.registerInputButton(messageShort, "EffectUnit2", "misc", 0x04, 0x40, this.fxHandler.bind(this));
-        this.registerInputButton(messageShort, "EffectUnit2", "Effect1", 0x04, 0x80, this.fxHandler.bind(this));
-        this.registerInputButton(messageShort, "EffectUnit2", "Effect2", 0x05, 0x01, this.fxHandler.bind(this));
-        this.registerInputButton(messageShort, "EffectUnit2", "Effect3", 0x05, 0x02, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit2", "misc", 0x04, 0x40, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit2", "Effect1", 0x04, 0x80, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit2", "Effect2", 0x05, 0x01, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit2", "Effect3", 0x05, 0x02, this.fxHandler.bind(this));
 
         // // Library Controls
-        this.registerInputButton(messageShort, "[Channel2]", "!FavList", 0x05, 0x04, this.favListHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!AddTrack", 0x05, 0x08, this.addTrackHandler.bind(this));
-        this.registerInputButton(messageShort, "[PreviewDeck1]", "!PreviewR", 0x05, 0x10, this.previewHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!MaximizeLibrary", 0x05, 0x20, this.maximizeLibraryHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!FavList", 0x05, 0x04, this.favListHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!AddTrack", 0x05, 0x08, this.addTrackHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[PreviewDeck1]", "!PreviewR", 0x05, 0x10, this.previewHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!MaximizeLibrary", 0x05, 0x20, this.maximizeLibraryHandler.bind(this));
 
         // // Rev / FLUX
-        this.registerInputButton(messageShort, "[Channel2]", "!slip_enabled", 0x05, 0x40, this.fluxHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!reverse", 0x05, 0x80, this.reverseHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!slip_enabled", 0x05, 0x40, this.fluxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!reverse", 0x05, 0x80, this.reverseHandler.bind(this));
 
         // // Jog Mode
-        this.registerInputButton(messageShort, "[Channel2]", "!tt", 0x06, 0x01, this.jogModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!jog", 0x06, 0x02, this.jogModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!tt", 0x06, 0x01, this.jogModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!jog", 0x06, 0x02, this.jogModeHandler.bind(this));
 
         // // Shift, Sync, Sync Master, Keylock
-        this.registerInputButton(messageShort, "[Channel2]", "!shift", 0x06, 0x04, this.shiftHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!sync", 0x06, 0x08, this.syncHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!sync_leader", 0x06, 0x10, this.masterHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!keylock", 0x06, 0x20, this.keylockHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!shift", 0x06, 0x04, this.shiftHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!sync", 0x06, 0x08, this.syncHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!sync_leader", 0x06, 0x10, this.masterHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!keylock", 0x06, 0x20, this.keylockHandler.bind(this));
 
         // // Hotcue / Stem / Pattern / Loop Mode
-        this.registerInputButton(messageShort, "[Channel2]", "!hotcues", 0x06, 0x40, this.padModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!stems", 0x06, 0x80, this.padModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!patterns", 0x07, 0x01, this.padModeHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!loops", 0x07, 0x02, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!hotcues", 0x06, 0x40, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!stems", 0x06, 0x80, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!patterns", 0x07, 0x01, this.padModeHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!loops", 0x07, 0x02, this.padModeHandler.bind(this));
 
         // // Pads (Hotcues, Stems, Patterns and Loops depending on current mode)
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_1", 0x07, 0x04, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_2", 0x07, 0x08, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_3", 0x07, 0x10, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_4", 0x07, 0x20, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_5", 0x07, 0x40, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_6", 0x07, 0x80, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_7", 0x08, 0x01, this.padHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pad_8", 0x08, 0x02, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_1", 0x07, 0x04, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_2", 0x07, 0x08, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_3", 0x07, 0x10, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_4", 0x07, 0x20, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_5", 0x07, 0x40, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_6", 0x07, 0x80, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_7", 0x08, 0x01, this.padHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pad_8", 0x08, 0x02, this.padHandler.bind(this));
 
         // // Cue and Play
-        this.registerInputButton(messageShort, "[Channel2]", "!cue_default", 0x08, 0x04, this.cueHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!play", 0x08, 0x08, this.playHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!cue_default", 0x08, 0x04, this.cueHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!play", 0x08, 0x08, this.playHandler.bind(this));
 
 
         // Mixer and global Effects
 
         // // Channel 1 FX Select and GFX / PFL
-        this.registerInputButton(messageShort, "[Channel1]", "EffectUnit1", 0x08, 0x10, this.fxSelectHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "EffectUnit2", 0x08, 0x20, this.fxSelectHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "EffectUnit1", 0x08, 0x10, this.fxSelectHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "EffectUnit2", 0x08, 0x20, this.fxSelectHandler.bind(this));
 
-        this.registerInputButton(messageShort, "[Channel1]", "!gfx_toggle", 0x08, 0x40, this.gfxToggleHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!pfl", 0x08, 0x80, this.headphoneHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!gfx_toggle", 0x08, 0x40, this.gfxToggleHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!pfl", 0x08, 0x80, this.headphoneHandler.bind(this));
 
         // // Channel 2 FX Select and GFX / PFL
-        this.registerInputButton(messageShort, "[Channel2]", "EffectUnit1", 0x09, 0x01, this.fxSelectHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "EffectUnit2", 0x09, 0x02, this.fxSelectHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "EffectUnit1", 0x09, 0x01, this.fxSelectHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "EffectUnit2", 0x09, 0x02, this.fxSelectHandler.bind(this));
 
-        this.registerInputButton(messageShort, "[Channel2]", "!gfx_toggle", 0x09, 0x04, this.gfxToggleHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!pfl", 0x09, 0x08, this.headphoneHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!gfx_toggle", 0x09, 0x04, this.gfxToggleHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!pfl", 0x09, 0x08, this.headphoneHandler.bind(this));
 
         // // GFX
-        this.registerInputButton(messageShort, "[ChannelX]", "!gfx0", 0x0a, 0x01, this.globalfxHandler.bind(this));
-        this.registerInputButton(messageShort, "[ChannelX]", "!gfx1", 0x09, 0x10, this.globalfxHandler.bind(this));
-        this.registerInputButton(messageShort, "[ChannelX]", "!gfx2", 0x09, 0x20, this.globalfxHandler.bind(this));
-        this.registerInputButton(messageShort, "[ChannelX]", "!gfx3", 0x09, 0x40, this.globalfxHandler.bind(this));
-        this.registerInputButton(messageShort, "[ChannelX]", "!gfx4", 0x09, 0x80, this.globalfxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[ChannelX]", "!gfx0", 0x0a, 0x01, this.globalfxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[ChannelX]", "!gfx1", 0x09, 0x10, this.globalfxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[ChannelX]", "!gfx2", 0x09, 0x20, this.globalfxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[ChannelX]", "!gfx3", 0x09, 0x40, this.globalfxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[ChannelX]", "!gfx4", 0x09, 0x80, this.globalfxHandler.bind(this));
 
         // // Microphone
-        this.registerInputButton(messageShort, "[Microphone]", "!talkover", 0x0a, 0x02, this.microphoneHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Microphone]", "!talkover", 0x0a, 0x02, this.microphoneHandler.bind(this));
 
 
         // Other
 
         // // Selectors Press
-        this.registerInputButton(messageShort, "[Channel1]", "!LoadSelectedTrack", 0x0a, 0x04, this.loadTrackHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!ActivateBeatjump", 0x0a, 0x08, this.activateBeatjumpHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!ActivateLoop", 0x0a, 0x10, this.activateLoopHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!LoadSelectedTrack", 0x0a, 0x04, this.loadTrackHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!ActivateBeatjump", 0x0a, 0x08, this.activateBeatjumpHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!ActivateLoop", 0x0a, 0x10, this.activateLoopHandler.bind(this));
 
-        this.registerInputButton(messageShort, "[Channel2]", "!LoadSelectedTrack", 0x0a, 0x20, this.loadTrackHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!ActivateBeatjump", 0x0a, 0x40, this.activateBeatjumpHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!ActivateLoop", 0x0a, 0x80, this.activateLoopHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!LoadSelectedTrack", 0x0a, 0x20, this.loadTrackHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!ActivateBeatjump", 0x0a, 0x40, this.activateBeatjumpHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!ActivateLoop", 0x0a, 0x80, this.activateLoopHandler.bind(this));
 
 
         // // Jog Touch
-        this.registerInputButton(messageShort, "[Channel1]", "!jog_touch", 0x0b, 0x01, this.jogTouchHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!jog_touch", 0x0b, 0x02, this.jogTouchHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!jog_touch", 0x0b, 0x01, this.jogTouchHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!jog_touch", 0x0b, 0x02, this.jogTouchHandler.bind(this));
 
         // // Selectors Turn
-        this.registerInputButton(messageShort, "[Channel1]", "!SelectTrack", 0x0c, 0x0f, this.selectTrackHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!SelectBeatjump", 0x0c, 0xf0, this.selectBeatjumpHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel1]", "!SelectLoop", 0x0d, 0x0f, this.selectLoopHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!SelectTrack", 0x0c, 0x0f, this.selectTrackHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!SelectBeatjump", 0x0c, 0xf0, this.selectBeatjumpHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel1]", "!SelectLoop", 0x0d, 0x0f, this.selectLoopHandler.bind(this));
 
-        this.registerInputButton(messageShort, "[Channel2]", "!SelectTrack", 0x0d, 0xf0, this.selectTrackHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!SelectBeatjump", 0x0e, 0x0f, this.selectBeatjumpHandler.bind(this));
-        this.registerInputButton(messageShort, "[Channel2]", "!SelectLoop", 0x0e, 0xf0, this.selectLoopHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!SelectTrack", 0x0d, 0xf0, this.selectTrackHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!SelectBeatjump", 0x0e, 0x0f, this.selectBeatjumpHandler.bind(this));
+        this.registerInputButton(inputReportButton, "[Channel2]", "!SelectLoop", 0x0e, 0xf0, this.selectLoopHandler.bind(this));
 
-        this.controller.registerInputPacket(messageShort);
+        this.controller.registerInputPacket(inputReportButton);
 
 
-        this.registerInputScaler(messageLong, "[Channel1]", "pregain", 0x11, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[Channel2]", "pregain", 0x1b, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Channel1]", "pregain", 0x11, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Channel2]", "pregain", 0x1b, 0xffff, this.parameterHandler.bind(this));
 
-        this.registerInputScaler(messageLong, "[Channel1]", "volume", 0x2b, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[Channel2]", "volume", 0x2d, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Channel1]", "volume", 0x2b, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Channel2]", "volume", 0x2d, 0xffff, this.parameterHandler.bind(this));
 
-        this.registerInputScaler(messageLong, "[Master]", "gain", 0x25, 0xffff, this.masterGainHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Master]", "gain", 0x25, 0xffff, this.masterGainHandler.bind(this));
 
-        this.registerInputScaler(messageLong, "[Channel1]", "rate", 0x31, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Channel1]", "rate", 0x31, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler.bind(this));
 
         // FX Parameter
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1]", "mix", 0x01, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect1]", "meta", 0x03, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect2]", "meta", 0x05, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit1_Effect3]", "meta", 0x07, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1]", "mix", 0x01, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect1]", "meta", 0x03, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect2]", "meta", 0x05, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect3]", "meta", 0x07, 0xffff, this.parameterHandler.bind(this));
 
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2]", "mix", 0x09, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect1]", "meta", 0x0b, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect2]", "meta", 0x0d, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EffectRack1_EffectUnit2_Effect3]", "meta", 0x0f, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2]", "mix", 0x09, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect1]", "meta", 0x0b, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect2]", "meta", 0x0d, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect3]", "meta", 0x0f, 0xffff, this.parameterHandler.bind(this));
 
         // EQ Parameter
-        this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x15, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x17, 0xffff, this.parameterHandler.bind(this));
 
-        this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x1d, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x1f, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x21, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x1d, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x1f, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x21, 0xffff, this.parameterHandler.bind(this));
 
         // Global FX Parameter
-        this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x23, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[QuickEffectRack1_[Channel1]]", "super1", 0x19, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[QuickEffectRack1_[Channel2]]", "super1", 0x23, 0xffff, this.parameterHandler.bind(this));
 
         // Master
-        this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x2f, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Master]", "crossfader", 0x2f, 0xffff, this.parameterHandler.bind(this));
 
-        this.registerInputScaler(messageLong, "[Master]", "headMix", 0x27, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(messageLong, "[Master]", "headGain", 0x29, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Master]", "headMix", 0x27, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[Master]", "headGain", 0x29, 0xffff, this.parameterHandler.bind(this));
 
-        this.controller.registerInputPacket(messageLong);
+        this.controller.registerInputPacket(inputReportKnob);
 
-        this.registerInputJog(messageJog, "[Channel1]", "jog_timer", 0x04, 0xffffffff, this.jogHandler.bind(this));
-        this.registerInputJog(messageJog, "[Channel1]", "jog_wheel", 0x08, 0xffffffff, this.jogHandler.bind(this));
+        this.registerInputJog(inputReportJog, "[Channel1]", "jog_timer", 0x04, 0xffffffff, this.jogHandler.bind(this));
+        this.registerInputJog(inputReportJog, "[Channel1]", "jog_wheel", 0x08, 0xffffffff, this.jogHandler.bind(this));
 
-        this.registerInputJog(messageJog, "[Channel2]", "jog_timer", 0x0c, 0xffffffff, this.jogHandler.bind(this));
-        this.registerInputJog(messageJog, "[Channel2]", "jog_wheel", 0x10, 0xffffffff, this.jogHandler.bind(this));
+        this.registerInputJog(inputReportJog, "[Channel2]", "jog_timer", 0x0c, 0xffffffff, this.jogHandler.bind(this));
+        this.registerInputJog(inputReportJog, "[Channel2]", "jog_wheel", 0x10, 0xffffffff, this.jogHandler.bind(this));
 
-        this.controller.registerInputPacket(messageJog);
+        this.controller.registerInputPacket(inputReportJog);
 
 
         // Dirty hack to set initial values in the packet parser
@@ -454,7 +460,7 @@ class TraktorMX2Class {
             this.outputHandler(0, field.group, "patterns");
             this.outputHandler(0, field.group, "loops");
             // Light LEDs (blue for all enabled hotcues, dimmed white for disabled)
-            for (let i = 1; i <= 8; ++i) {
+            for (let padIdx = 1; padIdx <= 8; ++padIdx) {
                 const active = engine.getValue(field.group, `hotcue_${i}_status`);
                 if (active) {
                     const color = engine.getValue(field.group, `hotcue_${i}_color`);
@@ -473,11 +479,11 @@ class TraktorMX2Class {
             this.outputHandler(0, field.group, "patterns");
             this.outputHandler(0, field.group, "loops");
             // Light LEDs (stem color for all unmuted stems, dimmed red for muted)
-            for (let i = 1; i <= engine.getValue(field.group, "stem_count"); i++) {
-                const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "color");
-                const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${i}]`, "mute");
+            for (let stemIdx = 1; stemIdx <= engine.getValue(field.group, "stem_count"); stemIdx++) {
+                const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${stemIdx}]`, "color");
+                const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${stemIdx}]`, "mute");
                 const colorValue = status ? this.baseColors.dimmedRed : this.padColorMap.getValueForNearestColor(color);
-                this.outputHandler(colorValue, field.group, `pad_${i}`);
+                this.outputHandler(colorValue, field.group, `pad_${stemIdx}`);
             }
             break;
 
@@ -489,8 +495,8 @@ class TraktorMX2Class {
             this.outputHandler(1, field.group, "patterns");
             this.outputHandler(0, field.group, "loops");
             // Turn off LEDs
-            for (let i = 1; i <= 8; ++i) {
-                this.outputHandler(0x00, field.group, `pad_${i}`);
+            for (let padIdx = 1; padIdx <= 8; ++padIdx) {
+                this.outputHandler(0x00, field.group, `pad_${padIdx}`);
             }
             break;
 
@@ -501,8 +507,8 @@ class TraktorMX2Class {
             this.outputHandler(0, field.group, "patterns");
             this.outputHandler(1, field.group, "loops");
             // Turn LEDs green
-            for (let i = 1; i <= 8; ++i) {
-                this.outputHandler(this.baseColors.dimmedGreen, field.group, `pad_${i}`);
+            for (let padIdx = 1; padIdx <= 8; ++padIdx) {
+                this.outputHandler(this.baseColors.dimmedGreen, field.group, `pad_${padIdx}`);
             }
             break;
         }
@@ -1291,14 +1297,13 @@ class TraktorMX2Class {
 
         this.linkOutput("[Microphone]", "talkover", this.outputHandler.bind(this));
 
-        for (let i = 1; i <= 8; ++i) {
-            engine.makeConnection("[Channel1]", `hotcue_${i}_status`, this.hotcueOutputHandler.bind(this));
-            engine.makeConnection("[Channel2]", `hotcue_${i}_status`, this.hotcueOutputHandler.bind(this));
+        for (let padIdx = 1; padIdx <= 8; ++padIdx) {
+            engine.makeConnection("[Channel1]", `hotcue_${padIdx}_status`, this.hotcueOutputHandler.bind(this));
+            engine.makeConnection("[Channel2]", `hotcue_${padIdx}_status`, this.hotcueOutputHandler.bind(this));
 
-            engine.makeConnection("[Channel1]", `hotcue_${i}_color`, this.hotcueColorHandler.bind(this));
-            engine.makeConnection("[Channel2]", `hotcue_${i}_color`, this.hotcueColorHandler.bind(this));
+            engine.makeConnection("[Channel1]", `hotcue_${padIdx}_color`, this.hotcueColorHandler.bind(this));
+            engine.makeConnection("[Channel2]", `hotcue_${padIdx}_color`, this.hotcueColorHandler.bind(this));
         }
-
         engine.makeConnection("[Channel1]", "stem_count", this.patternOutputHandler.bind(this));
         engine.makeConnection("[Channel2]", "stem_count", this.patternOutputHandler.bind(this));
 
@@ -1351,13 +1356,13 @@ class TraktorMX2Class {
 
     vuMeterOutputHandler(value, group, _key) {
         const vuKeys = Object.keys(this.vuMeterThresholds);
-        for (let i = 0; i < vuKeys.length; ++i) {
+        for (let vuKeyIdx = 0; vuKeyIdx < vuKeys.length; ++vuKeyIdx) {
             // Avoid spamming HID by only sending last LED update
-            const last = i === vuKeys.length - 1;
-            if (this.vuMeterThresholds[vuKeys[i]] > value) {
-                this.controller.setOutput(group, vuKeys[i], 0x00, last);
+            const last = vuKeyIdx === vuKeys.length - 1;
+            if (this.vuMeterThresholds[vuKeys[vuKeyIdx]] > value) {
+                this.controller.setOutput(group, vuKeys[vuKeyIdx], 0x00, last);
             } else {
-                this.controller.setOutput(group, vuKeys[i], 0x7e, last);
+                this.controller.setOutput(group, vuKeys[vuKeyIdx], 0x7e, last);
             }
         }
     };
@@ -1428,11 +1433,11 @@ class TraktorMX2Class {
 
     patternOutputHandler(value, group, name) {
         if (this.padModeState[group] === 1) {
-            for (let i = 1; i <= engine.getValue(group, name); i++) {
-                const color = engine.getValue(`[Channel${group[group.length - 2]}_Stem${i}]`, "color");
-                const status = engine.getValue(`[Channel${group[group.length - 2]}_Stem${i}]`, "mute");
+            for (let padIdx = 1; padIdx <= engine.getValue(group, name); padIdx++) {
+                const color = engine.getValue(`[Channel${group[group.length - 2]}_Stem${padIdx}]`, "color");
+                const status = engine.getValue(`[Channel${group[group.length - 2]}_Stem${padIdx}]`, "mute");
                 const colorValue = status ? this.baseColors.dimmedRed : this.padColorMap.getValueForNearestColor(color);
-                this.outputHandler(colorValue, group, `pad_${i}`);
+                this.outputHandler(colorValue, group, `pad_${padIdx}`);
             }
         }
     };
@@ -1443,22 +1448,23 @@ class TraktorMX2Class {
             const eot = engine.getValue(channel, "end_of_track");
             const loop = engine.getValue(channel, "loop_enabled");
             const playing = engine.getValue(channel, "play");
-            for (let i = 1; i <= 6; i++) {
+            for (let bottomLedIdx = 1; bottomLedIdx <= 6; bottomLedIdx++) {
                 if (eot) {
-                    if (this.bottomLedState[channel][i] === this.baseColors.red) {
-                        this.bottomLedState[channel][i] = this.baseColors.off;
+                    if (this.bottomLedState[channel][bottomLedIdx] === this.baseColors.red) {
+                        this.bottomLedState[channel][bottomLedIdx] = this.baseColors.off;
                     } else {
-                        this.bottomLedState[channel][i] = this.baseColors.red;
+                        this.bottomLedState[channel][bottomLedIdx] = this.baseColors.red;
                     }
                 } else if (loop) {
-                    this.bottomLedState[channel][i] = playing ? this.baseColors.green : this.baseColors.dimmedGreen;
+                    this.bottomLedState[channel][bottomLedIdx] = playing ? this.baseColors.green : this.baseColors.dimmedGreen;
                 } else {
-                    this.bottomLedState[channel][i] = playing ? this.baseColors.blue : this.baseColors.dimmedBlue;
+                    this.bottomLedState[channel][bottomLedIdx] = playing ? this.baseColors.blue : this.baseColors.dimmedBlue;
                 }
             }
 
-            for (let i = 1; i <= 5; i++) {
-                this.controller.setOutput(channel, `bottom_led_${i}`, this.bottomLedState[channel][i], false);
+            // set the packets for LED 1-5 -> set LED 6 to the same value but with send_packet=true to avoid sending multiple packets when state changes
+            for (let bottomLedIdx = 1; bottomLedIdx <= 5; bottomLedIdx++) {
+                this.controller.setOutput(channel, `bottom_led_${bottomLedIdx}`, this.bottomLedState[channel][bottomLedIdx], false);
             }
             this.controller.setOutput(channel, `bottom_led_${6}`, this.bottomLedState[channel][6], true);
         }
@@ -1520,16 +1526,16 @@ class TraktorMX2Class {
         current = engine.getValue("[Channel2]", "keylock");
         this.controller.setOutput("[Channel2]", "keylock", getColorValue("[Channel2]", "keylock", current), false);
 
-        for (let i = 1; i <= 8; ++i) {
+        for (let padIdx = 1; padIdx <= 8; ++padIdx) {
             if (switchOff) {
                 // do not dim but turn completely off
-                this.outputHandler(0x00, "[Channel1]", `pad_${i}`);
-                this.outputHandler(0x00, "[Channel2]", `pad_${i}`);
+                this.outputHandler(0x00, "[Channel1]", `pad_${padIdx}`);
+                this.outputHandler(0x00, "[Channel2]", `pad_${padIdx}`);
             } else {
-                current = engine.getValue("[Channel1]", `hotcue_${i}_status`) ? this.baseColors.blue : this.baseColors.dimmed;
-                this.outputHandler(current, "[Channel1]", `pad_${i}`);
-                current = engine.getValue("[Channel2]", `hotcue_${i}_status`) ? this.baseColors.blue : this.baseColors.dimmed;
-                this.outputHandler(current, "[Channel2]", `pad_${i}`);
+                current = engine.getValue("[Channel1]", `hotcue_${padIdx}_status`) ? this.baseColors.blue : this.baseColors.dimmed;
+                this.outputHandler(current, "[Channel1]", `pad_${padIdx}`);
+                current = engine.getValue("[Channel2]", `hotcue_${padIdx}_status`) ? this.baseColors.blue : this.baseColors.dimmed;
+                this.outputHandler(current, "[Channel2]", `pad_${padIdx}`);
             }
         }
 
