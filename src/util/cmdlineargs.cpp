@@ -51,7 +51,7 @@ bool calcUseColorsAuto() {
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
           m_startAutoDJ(false),
-          m_startRecording(std::nullopt),
+          m_startRecordingTo(),
           m_rescanLibrary(false),
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
@@ -197,12 +197,22 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     QCommandLineOption startRecording(QStringLiteral("start-recording"),
             forUserFeedback
                     ? QCoreApplication::translate("CmdlineArgs",
-                              "Starts recording when Mixxx is launched. If no "
-                              "path is passed, used the recording folder and "
-                              "automatic file name")
+                              "Starts recording when Mixxx is launched.")
+                    : QString());
+    parser.addOption(startRecording);
+
+    QCommandLineOption startRecordingTo(QStringLiteral("start-recording-to"),
+            forUserFeedback
+                    ? QCoreApplication::translate("CmdlineArgs",
+                              "Starts recording to a give file when Mixxx is "
+                              "launched. If the file exists, it will be "
+                              "overwritten. The parent directory must exist or "
+                              "the recording won't start. If the file "
+                              "extension doesn't match with the configured "
+                              "encoder, it will be updated to the right one")
                     : QString(),
             QStringLiteral("path"));
-    parser.addOption(startRecording);
+    parser.addOption(startRecordingTo);
 
     const QCommandLineOption rescanLibrary(QStringLiteral("rescan-library"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -453,8 +463,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_startAutoDJ = true;
     }
 
-    if (parser.isSet(startRecording)) {
-        m_startRecording = parser.value(startRecording);
+    if (parser.isSet(startRecordingTo)) {
+        m_startRecordingTo = parser.value(startRecording);
+    } else if (parser.isSet(startRecording)) {
+        m_startRecordingTo = QString("");
     }
 
     if (parser.isSet(rescanLibrary)) {
