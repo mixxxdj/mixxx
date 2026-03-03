@@ -1173,7 +1173,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
-    calculateTransitionImpl(*pFromDeck, *pToDeck, seekToStartPoint);
+    calculateTransitionImpl(pFromDeck, pToDeck, seekToStartPoint);
 
     if (pToDeck->startPos() == kSkipToNextTrack) {
         // This is a safety measure to handle tracks that are too short.
@@ -1190,15 +1190,15 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 }
 
 void AutoDJProcessor::calculateTransitionImpl(
-        FadeableTrackOrDeckAttributes& fromTrack,
-        FadeableTrackOrDeckAttributes& toTrack,
+        FadeableTrackOrDeckAttributes* fromTrack,
+        FadeableTrackOrDeckAttributes* toTrack,
         bool seekToStartPoint) {
     // ===================================
     // Check for tracks that are too short
     // ===================================
 
-    const double fromDeckEndSecond = getEndSecond(fromTrack);
-    const double toDeckEndSecond = getEndSecond(toTrack);
+    const double fromDeckEndSecond = getEndSecond(*fromTrack);
+    const double toDeckEndSecond = getEndSecond(*toTrack);
     // Since the end position is measured in seconds from 0:00 it is also
     // the track duration. Use this alias for better readability.
     const double fromDeckDuration = fromDeckEndSecond;
@@ -1207,9 +1207,9 @@ void AutoDJProcessor::calculateTransitionImpl(
     VERIFY_OR_DEBUG_ASSERT(fromDeckDuration >= kMinimumTrackDurationSec) {
         // Track has no duration or too short. This should not happen, because short
         // tracks are skipped after load. Play ToDeck immediately.
-        fromTrack.setFadeBeginPos(0);
-        fromTrack.setFadeEndPos(0);
-        toTrack.setStartPos(kKeepPosition);
+        fromTrack->setFadeBeginPos(0);
+        fromTrack->setFadeEndPos(0);
+        toTrack->setStartPos(kKeepPosition);
         return;
     }
 
@@ -1222,7 +1222,7 @@ void AutoDJProcessor::calculateTransitionImpl(
     VERIFY_OR_DEBUG_ASSERT(toDeckDuration >= kMinimumTrackDurationSec) {
         // Track has no duration or too short. This should not happen, because short
         // tracks are skipped after load. Immediately pick next track from queue.
-        toTrack.setStartPos(kSkipToNextTrack);
+        toTrack->setStartPos(kSkipToNextTrack);
         return;
     }
 
@@ -1233,9 +1233,9 @@ void AutoDJProcessor::calculateTransitionImpl(
     // Within this function, the outro refers to the outro of the currently
     // playing track and the intro refers to the intro of the next track.
 
-    double outroEndSecond = getOutroEndSecond(fromTrack);
-    double outroStartSecond = getOutroStartSecond(fromTrack);
-    const double fromDeckPosition = fromDeckDuration * fromTrack.playPosition();
+    double outroEndSecond = getOutroEndSecond(*fromTrack);
+    double outroStartSecond = getOutroStartSecond(*fromTrack);
+    const double fromDeckPosition = fromDeckDuration * fromTrack->playPosition();
 
     VERIFY_OR_DEBUG_ASSERT(outroEndSecond <= fromDeckEndSecond) {
         outroEndSecond = fromDeckEndSecond;
@@ -1251,23 +1251,23 @@ void AutoDJProcessor::calculateTransitionImpl(
     }
     double outroLength = outroEndSecond - outroStartSecond;
 
-    double toDeckPositionSeconds = toDeckDuration * toTrack.playPosition();
+    double toDeckPositionSeconds = toDeckDuration * toTrack->playPosition();
     // Store here a possible fadeBeginPos for the transition after next
     // This is used to check if it will be possible or a re-cue is required.
     // here it is done for FullIntroOutro and FadeAtOutroStart.
     // It is adjusted below for the other modes.
-    toTrack.setFadeEndPos(getOutroEndSecond(toTrack));
-    double toDeckOutroStartSecond = getOutroStartSecond(toTrack);
-    if (toTrack.fadeEndPos() == toDeckOutroStartSecond) {
+    toTrack->setFadeEndPos(getOutroEndSecond(*toTrack));
+    double toDeckOutroStartSecond = getOutroStartSecond(*toTrack);
+    if (toTrack->fadeEndPos() == toDeckOutroStartSecond) {
         // outro not defined, use transition time.
         toDeckOutroStartSecond -= m_transitionTime;
     }
-    toTrack.setFadeBeginPos(toDeckOutroStartSecond);
+    toTrack->setFadeBeginPos(toDeckOutroStartSecond);
 
     double toDeckStartSeconds = toDeckPositionSeconds;
-    const double introStartSecond = getIntroStartSecond(toTrack);
-    const double introEndSecond = getIntroEndSecond(toTrack);
-    if (seekToStartPoint || toDeckPositionSeconds >= toTrack.fadeBeginPos()) {
+    const double introStartSecond = getIntroStartSecond(*toTrack);
+    const double introEndSecond = getIntroEndSecond(*toTrack);
+    if (seekToStartPoint || toDeckPositionSeconds >= toTrack->fadeBeginPos()) {
         // toDeckPosition >= toTrack.fadeBeginPos happens when the
         // user has seeked or played the to track behind fadeBeginPos of
         // the fade after the next.
@@ -1329,20 +1329,20 @@ void AutoDJProcessor::calculateTransitionImpl(
         }
         if (transitionLength > 0) {
             const double transitionEnd = toDeckStartSeconds + transitionLength;
-            if (transitionEnd > toTrack.fadeBeginPos()) {
+            if (transitionEnd > toTrack->fadeBeginPos()) {
                 // End intro before next outro starts
-                transitionLength = toTrack.fadeBeginPos() - toDeckStartSeconds;
+                transitionLength = toTrack->fadeBeginPos() - toDeckStartSeconds;
                 VERIFY_OR_DEBUG_ASSERT(transitionLength > 0) {
                     // We seek to intro start above in this case so this never happens
                     transitionLength = 1;
                 }
             }
-            fromTrack.setFadeBeginPos(outroEndSecond - transitionLength);
-            fromTrack.setFadeEndPos(outroEndSecond);
-            toTrack.setStartPos(toDeckStartSeconds);
+            fromTrack->setFadeBeginPos(outroEndSecond - transitionLength);
+            fromTrack->setFadeEndPos(outroEndSecond);
+            toTrack->setStartPos(toDeckStartSeconds);
         } else {
-            useFixedFadeTime(fromTrack,
-                    toTrack,
+            useFixedFadeTime(*fromTrack,
+                    *toTrack,
                     fromDeckPosition,
                     outroEndSecond,
                     toDeckStartSeconds);
@@ -1379,25 +1379,25 @@ void AutoDJProcessor::calculateTransitionImpl(
                 }
             }
             const double transitionEnd = toDeckStartSeconds + transitionLength;
-            if (transitionEnd > toTrack.fadeBeginPos()) {
+            if (transitionEnd > toTrack->fadeBeginPos()) {
                 // End intro before next outro starts
-                transitionLength = toTrack.fadeBeginPos() - toDeckStartSeconds;
+                transitionLength = toTrack->fadeBeginPos() - toDeckStartSeconds;
                 VERIFY_OR_DEBUG_ASSERT(transitionLength > 0) {
                     // We seek to intro start above in this case so this never happens
                     transitionLength = 1;
                 }
             }
-            fromTrack.setFadeBeginPos(outroStartSecond);
-            fromTrack.setFadeEndPos(outroStartSecond + transitionLength);
-            toTrack.setStartPos(toDeckStartSeconds);
+            fromTrack->setFadeBeginPos(outroStartSecond);
+            fromTrack->setFadeEndPos(outroStartSecond + transitionLength);
+            toTrack->setStartPos(toDeckStartSeconds);
         } else if (introLength > 0) {
             transitionLength = introLength;
-            fromTrack.setFadeBeginPos(outroEndSecond - transitionLength);
-            fromTrack.setFadeEndPos(outroEndSecond);
-            toTrack.setStartPos(toDeckStartSeconds);
+            fromTrack->setFadeBeginPos(outroEndSecond - transitionLength);
+            fromTrack->setFadeEndPos(outroEndSecond);
+            toTrack->setStartPos(toDeckStartSeconds);
         } else {
-            useFixedFadeTime(fromTrack,
-                    toTrack,
+            useFixedFadeTime(*fromTrack,
+                    *toTrack,
                     fromDeckPosition,
                     outroEndSecond,
                     toDeckStartSeconds);
@@ -1409,28 +1409,28 @@ void AutoDJProcessor::calculateTransitionImpl(
         [[fallthrough]];
     case TransitionMode::FixedSkipSilence: {
         double toDeckStartSecond;
-        toTrack.setFadeBeginPos(getLastSoundSecond(toTrack));
-        if (seekToStartPoint || toDeckPositionSeconds >= toTrack.fadeBeginPos()) {
+        toTrack->setFadeBeginPos(getLastSoundSecond(*toTrack));
+        if (seekToStartPoint || toDeckPositionSeconds >= toTrack->fadeBeginPos()) {
             // toDeckPosition >= toTrack.fadeBeginPos happens when the
             // user has seeked or played the to track behind fadeBeginPos of
             // the fade after the next.
             // In this case we recue the track just before the transition.
-            toDeckStartSecond = getFirstSoundSecond(toTrack);
+            toDeckStartSecond = getFirstSoundSecond(*toTrack);
         } else {
             toDeckStartSecond = toDeckPositionSeconds;
         }
         useFixedFadeTime(
-                fromTrack,
-                toTrack,
+                *fromTrack,
+                *toTrack,
                 fromDeckPosition,
-                getLastSoundSecond(fromTrack),
+                getLastSoundSecond(*fromTrack),
                 toDeckStartSecond);
     } break;
     case TransitionMode::FixedFullTrack:
     default: {
         double startPoint;
-        toTrack.setFadeBeginPos(toDeckEndSecond);
-        if (seekToStartPoint || toDeckPositionSeconds >= toTrack.fadeBeginPos()) {
+        toTrack->setFadeBeginPos(toDeckEndSecond);
+        if (seekToStartPoint || toDeckPositionSeconds >= toTrack->fadeBeginPos()) {
             // toDeckPosition >= toTrack.fadeBeginPos happens when the
             // user has seeked or played the to track behind fadeBeginPos of
             // the fade after the next.
@@ -1439,22 +1439,22 @@ void AutoDJProcessor::calculateTransitionImpl(
         } else {
             startPoint = toDeckPositionSeconds;
         }
-        useFixedFadeTime(fromTrack, toTrack, fromDeckPosition, fromDeckEndSecond, startPoint);
+        useFixedFadeTime(*fromTrack, *toTrack, fromDeckPosition, fromDeckEndSecond, startPoint);
         }
     }
 
     // The positions are expected to be a fraction of the track length.
-    fromTrack.setFadeBeginPos(fromTrack.fadeBeginPos() / fromDeckDuration);
-    fromTrack.setFadeEndPos(fromTrack.fadeEndPos() / fromDeckDuration);
-    toTrack.setStartPos(toTrack.startPos() / toDeckDuration);
-    toTrack.setFadeBeginPos(toTrack.fadeBeginPos() / toDeckDuration);
-    toTrack.setFadeEndPos(toTrack.fadeEndPos() / toDeckDuration);
+    fromTrack->setFadeBeginPos(fromTrack->fadeBeginPos() / fromDeckDuration);
+    fromTrack->setFadeEndPos(fromTrack->fadeEndPos() / fromDeckDuration);
+    toTrack->setStartPos(toTrack->startPos() / toDeckDuration);
+    toTrack->setFadeBeginPos(toTrack->fadeBeginPos() / toDeckDuration);
+    toTrack->setFadeEndPos(toTrack->fadeEndPos() / toDeckDuration);
 
-    fromTrack.setFromDeck(true);
-    toTrack.setFromDeck(false);
+    fromTrack->setFromDeck(true);
+    toTrack->setFromDeck(false);
 
-    VERIFY_OR_DEBUG_ASSERT(fromTrack.fadeBeginPos() <= 1) {
-        fromTrack.setFadeBeginPos(1);
+    VERIFY_OR_DEBUG_ASSERT(fromTrack->fadeBeginPos() <= 1) {
+        fromTrack->setFadeBeginPos(1);
     }
 }
 
