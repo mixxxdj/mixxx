@@ -330,12 +330,16 @@ class TraktorMX2Class {
 
         this.controller.registerInputPacket(inputReportJog);
 
+        this.initializeCurrentState();
+    }
 
-        // Dirty hack to set initial values in the packet parser
-        const data = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        this.incomingData(data);
+    initializeCurrentState() {
+        const report0x01 = new Uint8Array(controller.getInputReport(0x01));
+        this.controller.parsePacket([0x01, ...Array.from(report0x01)]);
 
-
+        const report0x02 = new Uint8Array(controller.getInputReport(0x02));
+        this.controller.parsePacket([0x02, ...Array.from(report0x02.map(x => x ^ 0xFF))]);
+        this.controller.parsePacket([0x02, ...Array.from(report0x02)]);
     }
 
     incomingData(data, length) {
