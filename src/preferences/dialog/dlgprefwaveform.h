@@ -27,6 +27,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotUpdate() override;
     void slotApply() override;
     void slotResetToDefaults() override;
+    void slotCancel() override;
     void slotSetWaveformEndRender(int endTime);
 
   private slots:
@@ -89,4 +90,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
+
+    int m_savedWaveformTypeIndex;
+    bool m_savedAccelerationCheckBox = false;
 };

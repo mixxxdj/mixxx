@@ -304,12 +304,14 @@ void DlgPrefWaveform::slotUpdate() {
         useAccelerationCheckBox->setEnabled(false);
         useAccelerationCheckBox->setChecked(false);
     }
+    m_savedAccelerationCheckBox = useAccelerationCheckBox->isChecked();
 
     // The combobox holds a list of [handle name, handle index]
     int currentIndex = waveformTypeComboBox->findData(factory->getType());
     if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
+    m_savedWaveformTypeIndex = waveformTypeComboBox->currentIndex();
 
     bool useWaveform = factory->getType() != WaveformWidgetType::Empty;
     useWaveformCheckBox->setChecked(useWaveform);
@@ -458,6 +460,15 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
+}
+
+void DlgPrefWaveform::slotCancel() {
+        waveformTypeComboBox->setCurrentIndex(m_savedWaveformTypeIndex);
+
+        if (useAccelerationCheckBox->isChecked() != m_savedAccelerationCheckBox) {
+                slotSetWaveformAcceleration(m_savedAccelerationCheckBox);
+                useAccelerationCheckBox->setChecked(m_savedAccelerationCheckBox);
+        }
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
