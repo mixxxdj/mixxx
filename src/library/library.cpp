@@ -773,6 +773,10 @@ void Library::showAutoDJ() {
     m_pSidebarModel->slotFeatureSelect(m_pAutoDJFeature, QModelIndex(), false);
 }
 
+void Library::appendTracksToAutoDJ(const QList<TrackId>& trackIds) {
+    m_pAutoDJFeature->appendTracks(trackIds);
+}
+
 #ifdef __ENGINEPRIME__
 std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
         QWidget* parent) {

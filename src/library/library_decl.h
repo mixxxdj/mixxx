@@ -29,4 +29,5 @@ struct LibraryScanResultSummary {
     int numNewMissingTracks;
     int numRediscoveredTracks;
     int tracksTotal;
+    QString lastTrackLocation;
 };

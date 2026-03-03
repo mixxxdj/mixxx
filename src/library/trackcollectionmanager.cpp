@@ -35,14 +35,15 @@ parented_ptr<TrackCollection> createInternalTrackCollection(
 
 } // anonymous namespace
 
-TrackCollectionManager::TrackCollectionManager(
-        QObject* parent,
+TrackCollectionManager::TrackCollectionManager(QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
-    : QObject(parent),
-      m_pConfig(pConfig),
-      m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
+        : QObject(parent),
+          m_pConfig(pConfig),
+          m_pInternalCollection(createInternalTrackCollection(
+                  this, pConfig, deleteTrackForTestingFn)),
+          m_incomingDirChangePending(false) {
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
@@ -74,16 +75,16 @@ TrackCollectionManager::TrackCollectionManager(
     } else {
         m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
 
+        connect(m_pScanner.get(),
+                &LibraryScanner::scanFinished,
+                this,
+                &TrackCollectionManager::slotScanFinished);
+
         // Forward signals
         connect(m_pScanner.get(),
                 &LibraryScanner::scanStarted,
                 this,
                 &TrackCollectionManager::libraryScanStarted,
-                /*signal-to-signal*/ Qt::DirectConnection);
-        connect(m_pScanner.get(),
-                &LibraryScanner::scanFinished,
-                this,
-                &TrackCollectionManager::libraryScanFinished,
                 /*signal-to-signal*/ Qt::DirectConnection);
         connect(m_pScanner.get(),
                 &LibraryScanner::scanSummary,
@@ -131,10 +132,13 @@ TrackCollectionManager::TrackCollectionManager(
 
         kLogger.info() << "Starting library scanner thread";
         m_pScanner->start();
+
+        initIncomingDirWatcher();
     }
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
+    updateIncomingDirWatcher({});
     if (m_pScanner) {
         while (m_pScanner->isRunning()) {
             kLogger.info() << "Stopping library scanner thread";
@@ -632,3 +636,94 @@ bool TrackCollectionManager::updateTrackMood(
             mood);
 }
 #endif // __EXTRA_METADATA__
+
+void TrackCollectionManager::slotIncomingDirectoryChanged() {
+    VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
+        return;
+    }
+
+    QStringList dirs = m_incomingDirWatcher.directories();
+    if (dirs.isEmpty()) {
+        return;
+    }
+    if (!m_pScanner->isIdle()) {
+        m_incomingDirChangePending = true;
+        return;
+    }
+
+    auto fi = QFileInfo(dirs.first());
+    const QString absPath = fi.absoluteFilePath();
+
+    kLogger.info() << "Incoming directory changed, starting scan for:" << absPath;
+
+    m_pScanner->scanDir(absPath);
+}
+
+void TrackCollectionManager::initIncomingDirWatcher() {
+    m_incomingDirTimer.setSingleShot(true);
+    connect(&m_incomingDirTimer,
+            &QTimer::timeout,
+            this,
+            &TrackCollectionManager::slotIncomingDirectoryChanged);
+    connect(&m_incomingDirWatcher,
+            &QFileSystemWatcher::directoryChanged,
+            this,
+            [this]() {
+                m_incomingDirTimer.start(2000);
+            });
+}
+
+void TrackCollectionManager::updateIncomingDirWatcher(const QString& incomingTracksDir) {
+    QStringList dirs = m_incomingDirWatcher.directories();
+    if (!dirs.isEmpty()) {
+        m_incomingDirWatcher.removePaths(dirs);
+    }
+
+    if (incomingTracksDir.isEmpty()) {
+        return;
+    }
+
+    auto fi = QFileInfo(incomingTracksDir);
+    if (!fi.exists() || !fi.isDir()) {
+        kLogger.warning()
+                << "Configured incoming tracks directory is invalid:"
+                << incomingTracksDir;
+        return;
+    }
+    QString incomingDirPath = fi.absoluteFilePath();
+    if (!m_incomingDirWatcher.addPath(incomingDirPath)) {
+        kLogger.warning() << "Failed to watch incoming tracks directory"
+                          << incomingDirPath;
+    } else {
+        kLogger.info() << "Watching incoming tracks directory" << incomingDirPath;
+    }
+}
+
+void TrackCollectionManager::slotScanFinished() {
+    emit libraryScanFinished();
+
+    if (!m_incomingDirChangePending) {
+        return;
+    }
+    m_incomingDirChangePending = false;
+
+    VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
+        return;
+    }
+
+    QStringList dirs = m_incomingDirWatcher.directories();
+    if (dirs.isEmpty()) {
+        return;
+    }
+
+    m_pScanner->scanDir(dirs.first());
+}
+
+void TrackCollectionManager::slotInitalIncomingDirScan() {
+    const QString incomingTracksDir =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kIncomingTracksDir,
+                    QString());
+    updateIncomingDirWatcher(incomingTracksDir);
+    slotIncomingDirectoryChanged();
+}

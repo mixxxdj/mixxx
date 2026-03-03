@@ -106,7 +106,8 @@ LibraryScanner::LibraryScanner(
           m_state(IDLE),
           m_numRelocatedTracks(0),
           m_pProgressDlg(std::make_unique<LibraryScannerDlg>()),
-          m_manualScan(true) {
+          m_manualScan(true),
+          m_recursive(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
     moveToThread(this);
@@ -120,6 +121,7 @@ LibraryScanner::LibraryScanner(
     // Listen to signals from our public methods (invoked by other threads) and
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
+    connect(this, &LibraryScanner::startDirScan, this, &LibraryScanner::slotStartDirScan);
 
     connect(this,
             &LibraryScanner::progressLoading,
@@ -185,6 +187,17 @@ void LibraryScanner::run() {
     kLogger.debug() << "Exiting thread";
 }
 
+void LibraryScanner::slotStartDirScan(const QString& dir) {
+    kLogger.debug() << "slotStartDirScan()";
+    DEBUG_ASSERT(m_state == STARTING);
+
+    cleanUpDatabase(m_libraryHashDao.database());
+
+    m_libraryRootDirs = {mixxx::FileInfo(dir)};
+    m_recursive = false;
+    startScanInner();
+}
+
 void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
@@ -193,6 +206,11 @@ void LibraryScanner::slotStartScan() {
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.loadAllDirectories();
+    m_recursive = true;
+    startScanInner();
+}
+
+void LibraryScanner::startScanInner() {
     // If there are no directories then we have nothing to do. Cleanup and
     // finish the scan immediately.
     if (m_libraryRootDirs.isEmpty()) {
@@ -221,23 +239,27 @@ void LibraryScanner::slotStartScan() {
 
     emit scanStarted();
 
-    // First, we're going to mark all the directories that we've previously
-    // hashed as needing verification. As we search through the directory tree
-    // when we rescan, we'll mark any directory that does still exist as
-    // verified.
-    m_libraryHashDao.invalidateAllDirectories();
+    if (m_recursive) {
+        // First, we're going to mark all the directories that we've previously
+        // hashed as needing verification. As we search through the directory tree
+        // when we rescan, we'll mark any directory that does still exist as
+        // verified.
+        m_libraryHashDao.invalidateAllDirectories();
 
-    // Make sure that `directory` in in track_locations table is indeed a
-    // directory path. This works around / removes residues of a bug where tracks
-    // are falsely marked missing because `directory` == `location`.
-    m_trackDao.cleanupTrackLocationsDirectory();
+        // Make sure that `directory` in in track_locations table is indeed a
+        // directory path. This works around / removes residues of a bug where tracks
+        // are falsely marked missing because `directory` == `location`.
+        m_trackDao.cleanupTrackLocationsDirectory();
 
-    // Mark all the tracks in the library as needing verification of their
-    // existence. (ie. we want to check they're still on your hard drive where
-    // we think they are)
-    m_trackDao.invalidateTrackLocationsInLibrary();
+        // Mark all the tracks in the library as needing verification of their
+        // existence. (ie. we want to check they're still on your hard drive where
+        // we think they are)
+        m_trackDao.invalidateTrackLocationsInLibrary();
 
-    kLogger.debug() << "Recursively scanning library.";
+        kLogger.debug() << "Recursively scanning library.";
+    } else {
+        kLogger.debug() << "Scanning single directory.";
+    }
 
     // Start scanning the library. This prepares insertion queries in TrackDAO
     // (must be called before calling addTracksAdd) and begins a transaction.
@@ -268,8 +290,9 @@ void LibraryScanner::slotStartScan() {
         }
         auto dirAccess = mixxx::FileAccess(rootDir);
         if (!m_scannerGlobal->testAndMarkDirectoryScanned(rootDir.toQDir())) {
+            const bool scanUnhashed = false;
             queueTask(new RecursiveScanDirectoryTask(
-                    this, m_scannerGlobal, std::move(dirAccess), false));
+                    this, m_scannerGlobal, std::move(dirAccess), scanUnhashed, m_recursive));
         }
     }
     pWatcher->taskDone();
@@ -307,14 +330,32 @@ void LibraryScanner::slotFinishHashedScan() {
     for (mixxx::FileAccess dirAccess : m_scannerGlobal->unhashedDirs()) {
         // no testAndMarkDirectoryScanned() here, because all unhashedDirs()
         // are already tracked
+        const bool scanUnhashed = true;
         queueTask(new RecursiveScanDirectoryTask(
-                this, m_scannerGlobal, std::move(dirAccess), true));
+                this, m_scannerGlobal, std::move(dirAccess), scanUnhashed, m_recursive));
     }
     pWatcher->taskDone();
 }
 
 // Quick hack: return number of relocated tracks
 void LibraryScanner::cleanUpScan() {
+    if (!m_recursive) {
+        // no clean up required in case of single directory scan
+        // only update BaseTrackCache via signals connected to the main TrackDAO.
+        QSet<TrackId> addedTrackIds;
+        for (const QString& trackLocation : m_scannerGlobal->addedTracks()) {
+            TrackId id = m_trackDao.getTrackIdByLocation(trackLocation);
+            VERIFY_OR_DEBUG_ASSERT(id.isValid()) {
+                continue;
+            }
+            addedTrackIds.insert(std::move(id));
+        }
+        if (!addedTrackIds.isEmpty()) {
+            emit tracksChanged(addedTrackIds);
+        }
+        return;
+    }
+
     // At the end of a scan, mark all tracks and directories that weren't
     // "verified" as "deleted" (as long as the scan wasn't canceled half way
     // through). This condition is important because our rescanning algorithm
@@ -331,10 +372,12 @@ void LibraryScanner::cleanUpScan() {
     m_trackDao.markTrackLocationsAsVerified(m_scannerGlobal->verifiedTracks());
 
     kLogger.debug() << "Marking unchanged directories and tracks as verified";
+    const bool deleted = false;
+    const bool verified = true;
     m_libraryHashDao.updateDirectoryStatuses(
             m_scannerGlobal->verifiedDirectories(),
-            false,
-            true);
+            deleted,
+            verified);
     m_trackDao.markTracksInDirectoriesAsVerified(
             m_scannerGlobal->verifiedDirectories());
 
@@ -490,6 +533,9 @@ void LibraryScanner::slotFinishUnhashedScan() {
     result.numRediscoveredTracks = numRediscoveredTracks;
     result.tracksTotal = tracksTotal;
     result.autoscan = m_manualScan;
+    if (result.numNewTracks >= 1) {
+        result.lastTrackLocation = m_scannerGlobal->addedTracks().last();
+    }
 
     m_scannerGlobal.clear();
     changeScannerState(FINISHED);
@@ -503,6 +549,13 @@ void LibraryScanner::scan(bool autoscan) {
     if (changeScannerState(STARTING)) {
         m_manualScan = autoscan;
         emit startScan();
+    }
+}
+
+void LibraryScanner::scanDir(const QString& dir) {
+    if (changeScannerState(STARTING)) {
+        m_manualScan = true;
+        emit startDirScan(dir);
     }
 }
 
@@ -721,4 +774,8 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         DEBUG_ASSERT(false);
         return false;
     }
+}
+
+bool LibraryScanner::isIdle() {
+    return m_state == IDLE;
 }

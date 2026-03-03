@@ -111,6 +111,10 @@ DlgPreferences::DlgPreferences(
             &DlgPrefLibrary::scanLibrary,
             pLibrary->trackCollectionManager(),
             &TrackCollectionManager::startLibraryScan);
+    connect(plibraryPage,
+            &DlgPrefLibrary::incomingTracksDirChanged,
+            pLibrary->trackCollectionManager(),
+            &TrackCollectionManager::slotInitalIncomingDirScan);
     addPageWidget(PreferencesPage(plibraryPage,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Library"),

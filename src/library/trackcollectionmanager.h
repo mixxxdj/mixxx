@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QDir>
+#include <QFileSystemWatcher>
 #include <QList>
 #include <QSet>
+#include <QTimer>
 #include <memory>
 
 #include "library/dao/directorydao.h"
@@ -106,6 +108,9 @@ class TrackCollectionManager: public QObject,
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
+    void slotIncomingDirectoryChanged();
+    void slotScanFinished();
+    void slotInitalIncomingDirScan();
 
   private:
     void afterTrackAdded(const TrackPointer& pTrack) const;
@@ -114,6 +119,9 @@ class TrackCollectionManager: public QObject,
 
     // Callback for GlobalTrackCache
     void saveEvictedTrack(Track* pTrack) noexcept override;
+
+    void initIncomingDirWatcher();
+    void updateIncomingDirWatcher(const QString& incomingTracksDir);
 
     // Might be called from any thread
     enum class TrackMetadataExportMode {
@@ -135,4 +143,8 @@ class TrackCollectionManager: public QObject,
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
+
+    QFileSystemWatcher m_incomingDirWatcher;
+    QTimer m_incomingDirTimer;
+    bool m_incomingDirChangePending;
 };
