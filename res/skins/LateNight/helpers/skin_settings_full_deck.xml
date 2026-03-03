@@ -119,6 +119,34 @@ Description:
         <SetVariable name="Setting">[Skin],show_vinylcontrol</SetVariable>
       </Template>
 
+      <!-- Vinyl Passthrough control -->
+      <WidgetGroup>
+        <ObjectName>SkinSettingsSubMenu</ObjectName>
+        <Layout>stacked</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <!-- translucent cover when vinyl controls are hidden -->
+          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+            <SetVariable name="Setting">[Skin],show_vinylcontrol</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">minimize_decks_toggle</SetVariable>
+                <SetVariable name="Text">Minimize Decks On Passthru</SetVariable>
+                <SetVariable name="Setting">[Skin],minimize_decks_on_passthrough</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">minimize_waveform_toggle</SetVariable>
+                <SetVariable name="Text">Minimize Waveforms On Passthru</SetVariable>
+                <SetVariable name="Setting">[Skin],minimize_waveform_on_passthrough</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
       <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
 
       <!-- Spinny -->
