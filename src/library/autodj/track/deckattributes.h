@@ -109,16 +109,16 @@ class DeckAttributes : public FadeableTrackOrDeckAttributes {
     bool loading; // The data is inconsistent during loading a deck
 
   private:
-    ControlProxy m_orientation;
+    PollingControlProxy m_orientation;
     ControlProxy m_playPos;
     ControlProxy m_play;
-    ControlProxy m_repeat;
+    PollingControlProxy m_repeat;
     ControlProxy m_introStartPos;
     ControlProxy m_introEndPos;
     ControlProxy m_outroStartPos;
     ControlProxy m_outroEndPos;
-    ControlProxy m_trackSamples;
-    ControlProxy m_sampleRate;
+    PollingControlProxy m_trackSamples;
+    PollingControlProxy m_sampleRate;
     ControlProxy m_rateRatio;
     BaseTrackPlayer* m_pPlayer;
 };
