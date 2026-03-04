@@ -416,7 +416,33 @@ void DlgPrefWaveform::slotUpdate() {
 }
 
 void DlgPrefWaveform::slotApply() {
-    // All other settings have already been applied instantly for preview purpose
+	m_savedWaveformTypeIndex = waveformTypeComboBox->currentIndex();
+	m_savedFrameRate = frameRateSlider->value();
+	m_savedEndOfTrackWarning = endOfTrackWarningTimeSlider->value();
+	m_savedBeatGridAlpha = beatGridAlphaSlider->value();
+	m_savedPlayMarkerPositionSlider = playMarkerPositionSlider->value();
+	m_savedDefaultZoomIndex = defaultZoomComboBox->currentIndex();
+	m_savedUntilMarkAlign = untilMarkAlignComboBox->currentIndex();
+	m_savedUntilMarkTextPointSize = untilMarkTextPointSizeSpinBox->value();
+	m_savedUntilMarkTextHeightLimit = untilMarkTextHeightLimitComboBox->currentIndex();
+	m_savedOverviewTypeIndex = waveformOverviewComboBox->currentIndex();
+	m_savedAllVisualGain = allVisualGain->value();
+	m_savedLowVisualGain = lowVisualGain->value();
+	m_savedMidVisualGain = midVisualGain->value();
+	m_savedHighVisualGain = highVisualGain->value();
+	m_savedStemOpacity = stemOpacitySpinBox->value();
+	m_savedStemOutlineOpacity = stemOutlineOpacitySpinBox->value();
+	m_savedAccelerationCheckBox = useAccelerationCheckBox->isChecked();
+	m_savedZoomSync = synchronizeZoomCheckBox->isChecked();
+	m_savedUntilShowBeats = untilMarkShowBeatsCheckBox->isChecked();
+	m_savedUntilShowTime = untilMarkShowTimeCheckBox->isChecked();
+	m_savedStemReorderOnChange = stemReorderLayerOnChangedCheckBox->isChecked();
+	m_savedOverviewStereo = overviewStereoCheckBox->isChecked();
+	m_savedDrawOverviewMinuteMarkers = overviewMinuteMarkersCheckBox->isChecked();
+	m_savedIsOverviewNormalized = overview_scale_normalize->isChecked();
+	m_savedSplitLeftRight = splitLeftRightCheckBox->isChecked();
+    m_savedHighDetail = highDetailCheckBox->isChecked();
+	// All other settings have already been applied instantly for preview purpose
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
