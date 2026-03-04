@@ -2749,11 +2749,11 @@ endif()
 
 # FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
-find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
-if(FFMPEG)
-  if(NOT FFMPEG_FOUND)
-    message(FATAL_ERROR "FFMPEG was not found")
+find_package(FFmpeg COMPONENTS libavcodec libavformat libavutil libswresample)
+default_option(FFmpeg "FFmpeg support (version 4.1.9 or later)" "FFmpeg_FOUND")
+if(FFmpeg)
+  if(NOT FFmpeg_FOUND)
+    message(FATAL_ERROR "FFmpeg was not found")
   endif()
 
   # Check minimum required versions
@@ -2761,39 +2761,39 @@ if(FFMPEG)
   # Windows: Version numbers are not available!?
   # macOS: Untested
   if(
-    FFMPEG_libavcodec_VERSION
-    AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100
+    FFmpeg_libavcodec_VERSION
+    AND FFmpeg_libavcodec_VERSION VERSION_LESS 58.35.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION})."
+      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFmpeg_libavcodec_VERSION})."
     )
   endif()
   if(
-    FFMPEG_libavformat_VERSION
-    AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100
+    FFmpeg_libavformat_VERSION
+    AND FFmpeg_libavformat_VERSION VERSION_LESS 58.20.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION})."
+      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFmpeg_libavformat_VERSION})."
     )
   endif()
   if(
-    FFMPEG_libavutil_VERSION
-    AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100
+    FFmpeg_libavutil_VERSION
+    AND FFmpeg_libavutil_VERSION VERSION_LESS 56.22.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION})."
+      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFmpeg_libavutil_VERSION})."
     )
   endif()
   if(
-    FFMPEG_libswresample_VERSION
-    AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100
+    FFmpeg_libswresample_VERSION
+    AND FFmpeg_libswresample_VERSION VERSION_LESS 3.3.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION})."
+      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFmpeg_libswresample_VERSION})."
     )
   endif()
 
@@ -2801,21 +2801,21 @@ if(FFMPEG)
   target_compile_definitions(
     mixxx-lib
     PUBLIC
-      __FFMPEG__
+      __FFmpeg__
       # Needed to build new FFmpeg
       __STDC_CONSTANT_MACROS
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
-  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
+  target_link_libraries(mixxx-lib PRIVATE "${FFmpeg_LIBRARIES}")
+  target_include_directories(mixxx-lib PUBLIC "${FFmpeg_INCLUDE_DIRS}")
 endif()
 
 # STEM file support
-default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+default_option(STEM "STEM file support" "FFmpeg_FOUND;FFmpeg")
 if(STEM)
-  if(NOT FFMPEG)
-    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
+  if(NOT FFmpeg)
+    message(FATAL_ERROR "STEM requires that also FFmpeg is enabled")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
