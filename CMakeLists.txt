@@ -3728,10 +3728,6 @@ if(QML)
     list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
   endif()
 endif()
-# Move custom module path at the end, so system and VCPKG ones take precedence (particularly findFFmpeg)
-list(POP_FRONT CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
-
 find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS ${QT_COMPONENTS} ${QT_EXTRA_COMPONENTS}
