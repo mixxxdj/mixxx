@@ -9,6 +9,7 @@
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "moc_loopingcontrol.cpp"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/compatibility/qatomic.h"
@@ -1769,7 +1770,11 @@ void LoopingControl::slotBeatJump(double beats) {
     LoopInfo loopInfo = m_loopInfo.getValue();
     const auto currentPosition = m_currentPosition.getValue();
 
-    if (m_bLoopingEnabled && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
+    bool beatjumpDoesLoopmove = m_pConfig->getValue(
+            ConfigKey(QStringLiteral("[Controls]"), QStringLiteral("BeatjumpDoesLoopmove")),
+            kDefaultBeatjumpDoesLoopmove);
+    if (m_bLoopingEnabled && beatjumpDoesLoopmove &&
+            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
             loopInfo.startPosition <= currentPosition &&
             loopInfo.endPosition >= currentPosition) {
         // If inside an active loop, move loop

@@ -16,6 +16,7 @@ class QWidget;
 
 namespace {
 constexpr bool kDefaultCloneDeckOnLoad = true;
+constexpr bool kDefaultBeatjumpDoesLoopmove = true;
 } // namespace
 
 namespace {
@@ -52,6 +53,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotSetTrackLoadMode(int comboboxIndex);
     void slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex);
     void slotCloneDeckOnLoadDoubleTapCheckbox(bool);
+    void slotBeatjumpLoopmove(bool checked);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
 
@@ -97,6 +99,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     bool m_bSetIntroStartAtMainCue;
     bool m_bCloneDeckOnLoadDoubleTap;
+    bool m_bBeatjumpLoopmove;
 
     int m_iRateRangePercent;
     bool m_bRateDownIncreasesSpeed;
