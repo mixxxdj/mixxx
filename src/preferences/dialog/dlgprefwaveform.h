@@ -24,6 +24,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     virtual ~DlgPrefWaveform();
 
   public slots:
+	void saveState();
     void slotUpdate() override;
     void slotApply() override;
     void slotResetToDefaults() override;
