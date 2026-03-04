@@ -280,6 +280,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const CoverInfo& coverInfo,
             const QPixmap& pixmap);
 
+    /// Called via signal from DateFormatChangedBroadcaster,
+    /// will tell the view(s) to repaint date columns when visible
+    void slotEmitDataChangedForDateColumns();
+
   private:
     QVariant rawSiblingValue(
             const QModelIndex& index,
