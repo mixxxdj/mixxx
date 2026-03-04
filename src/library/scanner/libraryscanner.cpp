@@ -193,15 +193,20 @@ void LibraryScanner::slotStartScan() {
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.loadAllDirectories();
-    // If there are no directories then we have nothing to do. Cleanup and
-    // finish the scan immediately.
-    if (m_libraryRootDirs.isEmpty()) {
+    // If there are no directories then we still have to scan independently added tracks.
+    QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
+
+    if (m_libraryRootDirs.isEmpty() && trackLocations.isEmpty()) {
+        // Nothing to do. noDirectoriesConfigured == true will show the "no dirs" message.
+        LibraryScanResultSummary result;
+        result.autoscan = m_manualScan;
+        result.noDirectoriesConfigured = true;
+
         changeScannerState(IDLE);
+        emit scanSummary(result);
         return;
     }
     changeScannerState(SCANNING);
-
-    QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     // Store number of existing tracks so we can calculate the number
     // of missing tracks in slotFinishUnhashedScan().
     m_previouslyMissingTracks = m_trackDao.getAllMissingTrackLocations();
