@@ -1,21 +1,17 @@
 #include "effects/backends/builtin/pianosample.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <vector>
 
 namespace {
 
-// A5 (880 Hz) rather than A4 (440 Hz) sits above most bass-heavy mix content,
-// making it easier to hear the pitch reference against a loud kick or bassline.
-// processChannel pitch-shifts it down to any of the 12 chromatic keys.
-constexpr double kBaseFrequencyHz = 880.0;
+// A4 (440 Hz) matches the A4 reference used in kKeySemitoneOffset in the
+// effect. Using A4 puts the 12-note range at C4–B4 (261–494 Hz), which
+// sits in the mid-register and is easy to compare against both bass and
+// melodic elements in a mix.
+constexpr double kBaseFrequencyHz = 440.0;
 constexpr double kDurationSeconds = 1.5;
-
-// 5 ms is long enough to remove the click at note onset without audibly
-// softening the attack.
-constexpr double kAttackSeconds = 0.005;
 
 // Leaving a small headroom below 1.0 prevents inter-sample clipping after
 // pitch-shifting introduces brief interpolation overshoots.
@@ -28,8 +24,7 @@ struct Harmonic {
     double decayRate;
 };
 
-// Amplitude and decay values approximate a real piano's spectral envelope.
-// Each row is one partial: fundamental, octave, fifth above that, and so on.
+// Amplitudes and decay rates approximate a real piano's spectral envelope.
 constexpr Harmonic kHarmonics[] = {
         {1.00, 3.0},
         {0.60, 4.5},
@@ -61,15 +56,6 @@ std::vector<CSAMPLE> generatePianoSample(mixxx::audio::SampleRate sampleRate) {
                     std::sin(2.0 * M_PI * freq * t) *
                     std::exp(-kHarmonics[h].decayRate * t);
         }
-    }
-
-    // A hard onset at sample 0 creates a Gibbs-phenomenon click. The ramp
-    // suppresses this without changing the perceived attack character.
-    const std::size_t attackSamples = std::max(
-            std::size_t{1},
-            static_cast<std::size_t>(fs * kAttackSeconds));
-    for (std::size_t i = 0; i < attackSamples; ++i) {
-        wave[i] *= static_cast<double>(i) / static_cast<double>(attackSamples);
     }
 
     double peak = 0.0;

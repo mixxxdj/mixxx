@@ -26,6 +26,7 @@ class KeyComparisonGroupState final : public EffectState {
 
     std::vector<CSAMPLE> pianoSample;
     std::size_t framesSinceLastNote = 0;
+    mixxx::audio::SampleRate m_sampleRate;
 };
 
 /// Plays a short pitched piano tone at a configurable beat interval.

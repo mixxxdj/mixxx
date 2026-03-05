@@ -17,9 +17,8 @@
 
 namespace {
 
-// Semitone distance from each chromatic key to A4 (440 Hz), used to derive
-// the pitch-shift ratio. A4 is index 9 and has offset 0 because the
-// synthesised sample is already tuned to A5 (one octave up, ratio = 2.0).
+// Semitone offsets from A4 (440 Hz) for each chromatic key.
+// Index 9 (A) has offset 0 — the sample is synthesised at A4.
 // Index: 0=C  1=C#  2=D  3=D#  4=E  5=F  6=F#  7=G  8=G#  9=A  10=A#  11=B
 constexpr std::array<int, 12> kKeySemitoneOffset = {
         -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2};
@@ -85,23 +84,18 @@ std::span<CSAMPLE> noteStartInBuffer(
             output, framesUntilNext * mixxx::kEngineChannelOutputCount);
 }
 
-// Converts the Measure knob integer to a beat-period multiplier.
-//   positive N  →  N notes per beat   (period = 1/N beats)
-//   0 or -1     →  1 note per beat    (period = 1 beat)
-//   negative N  →  1 note every N beats (period = N beats)
-// The -1 and 0 cases both map to one beat so the knob feels natural at rest.
+// Returns the number of beats between each note onset.
+// 1 fires on every beat, 3 suits 3/4 time, 4 suits 4/4 time, and so on.
 double periodMultiplierFromMeasure(int measure) {
-    if (measure > 0) {
-        return 1.0 / static_cast<double>(measure);
-    }
-    return static_cast<double>(std::max(1, -measure));
+    return static_cast<double>(std::max(1, measure));
 }
 
 } // namespace
 
 void KeyComparisonGroupState::audioParametersChanged(
         const mixxx::EngineParameters& engineParameters) {
-    pianoSample = generatePianoSample(engineParameters.sampleRate());
+    m_sampleRate = engineParameters.sampleRate();
+    pianoSample = generatePianoSample(m_sampleRate);
 }
 
 // static
@@ -174,16 +168,15 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     measure->setName(QObject::tr("Measure"));
     measure->setShortName(QObject::tr("Meas"));
     measure->setDescription(QObject::tr(
-            "How often the note fires relative to the beat.\n"
-            "+N = N notes per beat  |  0 = every beat  "
-            "|  -N = every N beats\n"
-            "Use -3 for 3/4, -4 for 4/4, +2 for eighth-note subdivisions."));
+            "How many beats between each note.\n"
+            "1 = every beat  |  3 = 3/4 time  |  "
+            "4 = 4/4 time  |  5 = 5/4 time"));
     measure->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     measure->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     measure->setDefaultLinkType(EffectManifestParameter::LinkType::None);
-    // -4 fires once every four beats, which is unobtrusive enough for the
-    // DJ to mix normally while still getting a clear pitch reference.
-    measure->setRange(-8.0, -4.0, 8.0);
+    // 4 fires once every four beats, unobtrusive enough for the DJ to mix
+    // normally while still getting a clear pitch reference each bar.
+    measure->setRange(1.0, 4.0, 8.0);
 
     EffectManifestParameterPointer sync = pManifest->addParameter();
     sync->setId(QStringLiteral("sync"));
@@ -233,6 +226,12 @@ void KeyComparisonEffect::processChannel(
         return;
     }
 
+    // audioParametersChanged may be called with a stale rate during init.
+    // Regenerate the sample here on the first buffer at the real engine rate.
+    if (engineParameters.sampleRate() != pGroupState->m_sampleRate) {
+        pGroupState->audioParametersChanged(engineParameters);
+    }
+
     if (pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
@@ -268,12 +267,11 @@ void KeyComparisonEffect::processChannel(
 
     const int measure = std::clamp(
             static_cast<int>(std::round(m_pMeasureParameter->value())),
-            -8,
+            1,
             8);
     const double periodMultiplier = periodMultiplierFromMeasure(measure);
 
-    // Resume playing the tail of the note that started in a previous buffer.
-    // framesSinceLastNote tracks how far through the sample we already are.
+    // Continue the note tail from the previous buffer.
     const auto srcOffset = static_cast<std::size_t>(
             static_cast<double>(pGroupState->framesSinceLastNote) *
             pitchRatio);
@@ -281,9 +279,8 @@ void KeyComparisonEffect::processChannel(
             subspanClamped(pianoSample, srcOffset), output, gain, pitchRatio);
     pGroupState->framesSinceLastNote += engineParameters.framesPerBuffer();
 
-    // Compute the note period in frames. When Sync is on we derive it from
-    // the detected beat grid so the note stays locked even during scratching
-    // or tempo changes. The Measure knob scales the period up or down.
+    // Beat period in frames — from the beat grid when synced, from the BPM
+    // knob otherwise. Scaled by the Measure knob.
     std::size_t notePeriodFrames = 0;
     if (shouldSync && hasBeatInfo) {
         const double beatSeconds = std::abs(groupFeatures.beat_length->seconds /
