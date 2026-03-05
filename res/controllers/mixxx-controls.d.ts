@@ -730,6 +730,10 @@ declare namespace MixxxControls {
         /**
          * Set a loop that is beatloop_size beats long and enables the loop.
          * If the loaded track has no beat grid, seconds are used instead of beats.
+         * If there is a rolling beatloop active (beatlooproll_activate
+         * or beatlooproll_X_activate),
+         * adopt that loop and quit slip mode. Releasing the rolling beatloop controls will have
+         * no effect on the play position or loop state.
          * Depending on the state of loop_anchor the loop is created forwards
          * or backwards from the current position.
          *
