@@ -249,12 +249,6 @@ void KeyComparisonEffect::processChannel(
         return;
     }
 
-    // audioParametersChanged may be called with a stale rate during init.
-    // Regenerate the sample here on the first buffer at the real engine rate.
-    if (engineParameters.sampleRate() != pGroupState->m_sampleRate) {
-        pGroupState->audioParametersChanged(engineParameters);
-    }
-
     if (pOutput != pInput) {
         SampleUtil::copy(pOutput, pInput, engineParameters.samplesPerBuffer());
     }
@@ -279,10 +273,16 @@ void KeyComparisonEffect::processChannel(
             static_cast<int>(std::round(m_pKeyParameter->value())),
             0,
             static_cast<int>(kKeySemitoneOffset.size()) - 1);
-    // pitchRatio = 2^(semitones/12) * (tuningHz / 440)
+    // pitchRatio = 2^(semitones/12) * (tuningHz / 440) * (generatedRate / engineRate)
+    // The rate correction compensates for the sample being generated at a
+    // different rate than the engine (e.g. 96000 Hz default vs 48000 Hz actual).
+    const double rateCorrection =
+            static_cast<double>(pGroupState->m_sampleRate.value()) /
+            static_cast<double>(engineParameters.sampleRate().value());
     const double pitchRatio =
             std::pow(2.0, kKeySemitoneOffset[keyIndex] / 12.0) *
-            (m_pTuningParameter->value() / 440.0);
+            (m_pTuningParameter->value() / 440.0) *
+            rateCorrection;
 
     const CSAMPLE_GAIN gain =
             db2ratio(static_cast<float>(m_pGainParameter->value()));
