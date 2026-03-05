@@ -24,42 +24,35 @@ namespace {
 constexpr std::array<int, 12> kKeySemitoneOffset = {
         -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2};
 
-// Mixes a pitched mono source into a stereo-interleaved output buffer by
-// stepping through the source at pitchRatio samples per output frame.
-// Linear interpolation between adjacent source samples keeps the output
-// smooth at non-integer step positions.
+// Resamples monoSource into monoDest using linear interpolation at pitchRatio.
 // Returns the number of source frames consumed so the caller can resume
 // from the correct position in the next buffer.
-std::size_t playPitchedMonoIntoStereo(
+// Kept as a separate loop so the stereo mix step (SampleUtil::addMonoToStereoWithGain)
+// can be vectorized independently by the compiler.
+std::size_t resampleMono(
         std::span<const CSAMPLE> monoSource,
-        std::span<CSAMPLE> stereoOutput,
-        CSAMPLE_GAIN gain,
+        std::span<CSAMPLE> monoDest,
         double pitchRatio) {
-    const std::size_t outputFrames =
-            stereoOutput.size() / mixxx::kEngineChannelOutputCount;
-
     std::size_t framesConsumed = 0;
-    for (std::size_t i = 0; i < outputFrames; ++i) {
+    for (std::size_t i = 0; i < monoDest.size(); ++i) {
         const double srcPos = static_cast<double>(i) * pitchRatio;
         const auto srcIdx = static_cast<std::size_t>(srcPos);
 
         if (srcIdx >= monoSource.size()) {
+            std::fill(monoDest.begin() + static_cast<std::ptrdiff_t>(i),
+                    monoDest.end(),
+                    0.0f);
             break;
         }
 
-        CSAMPLE s;
         if (srcIdx + 1 < monoSource.size()) {
             const double frac = srcPos - static_cast<double>(srcIdx);
-            s = static_cast<CSAMPLE>(
+            monoDest[i] = static_cast<CSAMPLE>(
                     monoSource[srcIdx] * (1.0 - frac) +
                     monoSource[srcIdx + 1] * frac);
         } else {
-            s = monoSource[srcIdx];
+            monoDest[i] = monoSource[srcIdx];
         }
-
-        const std::size_t out = i * mixxx::kEngineChannelOutputCount;
-        stereoOutput[out] += s * gain;
-        stereoOutput[out + 1] += s * gain;
 
         framesConsumed = srcIdx + 1;
     }
@@ -127,8 +120,9 @@ double periodMultiplierFromMeasure(int measure) {
 
 void KeyComparisonGroupState::audioParametersChanged(
         const mixxx::EngineParameters& engineParameters) {
-    m_sampleRate = engineParameters.sampleRate();
-    pianoSample = generatePianoSample(m_sampleRate);
+    sampleRate = engineParameters.sampleRate();
+    pianoSample = generatePianoSample(sampleRate);
+    tempMono.resize(engineParameters.framesPerBuffer());
 }
 
 // static
@@ -222,6 +216,7 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    // 0 dB sits at (0 - (-24)) / (3 - (-24)) = 24/27 on the -24..+3 dB scale.
     gain->setNeutralPointOnScale(24.0 / 27.0);
     gain->setRange(-24.0, -5.0, 3.0);
 
@@ -266,7 +261,7 @@ void KeyComparisonEffect::processChannel(
         } else {
             pGroupState->framesSinceLastNote = 0;
         }
-        pGroupState->m_beatCount = 0;
+        pGroupState->beatCount = 0;
     }
 
     const int keyIndex = std::clamp(
@@ -277,7 +272,7 @@ void KeyComparisonEffect::processChannel(
     // The rate correction compensates for the sample being generated at a
     // different rate than the engine (e.g. 96000 Hz default vs 48000 Hz actual).
     const double rateCorrection =
-            static_cast<double>(pGroupState->m_sampleRate.value()) /
+            static_cast<double>(pGroupState->sampleRate.value()) /
             static_cast<double>(engineParameters.sampleRate().value());
     const double pitchRatio =
             std::pow(2.0, kKeySemitoneOffset[keyIndex] / 12.0) *
@@ -297,8 +292,12 @@ void KeyComparisonEffect::processChannel(
     const auto srcOffset = static_cast<std::size_t>(
             static_cast<double>(pGroupState->framesSinceLastNote) *
             pitchRatio);
-    playPitchedMonoIntoStereo(
-            subspanClamped(pianoSample, srcOffset), output, gain, pitchRatio);
+    {
+        const std::size_t tailFrames = output.size() / mixxx::kEngineChannelOutputCount;
+        std::span<CSAMPLE> tailMono(pGroupState->tempMono.data(), tailFrames);
+        resampleMono(subspanClamped(pianoSample, srcOffset), tailMono, pitchRatio);
+        SampleUtil::addMonoToStereoWithGain(gain, pOutput, tailMono.data(), tailFrames);
+    }
     pGroupState->framesSinceLastNote += engineParameters.framesPerBuffer();
 
     const std::span<CSAMPLE> noteStart = shouldSync && hasBeatInfo
@@ -320,13 +319,19 @@ void KeyComparisonEffect::processChannel(
 
     // In sync mode, count beats and only fire every `measure` beats.
     if (shouldSync && hasBeatInfo) {
-        pGroupState->m_beatCount++;
-        if (pGroupState->m_beatCount < measure) {
+        pGroupState->beatCount++;
+        if (pGroupState->beatCount < measure) {
             return;
         }
-        pGroupState->m_beatCount = 0;
+        pGroupState->beatCount = 0;
     }
 
-    pGroupState->framesSinceLastNote =
-            playPitchedMonoIntoStereo(pianoSample, noteStart, gain, pitchRatio);
+    {
+        const std::size_t onsetFrames = noteStart.size() / mixxx::kEngineChannelOutputCount;
+        std::span<CSAMPLE> onsetMono(pGroupState->tempMono.data(), onsetFrames);
+        pGroupState->framesSinceLastNote =
+                resampleMono(pianoSample, onsetMono, pitchRatio);
+        SampleUtil::addMonoToStereoWithGain(
+                gain, noteStart.data(), onsetMono.data(), onsetFrames);
+    }
 }
