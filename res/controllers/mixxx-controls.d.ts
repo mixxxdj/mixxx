@@ -420,7 +420,7 @@ declare namespace MixxxControls {
          * @feedback None
          * @since New in version 1.10.0.
          */
-        'orientation' | AuxiliaryNMicrophoneNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
+        'orientation' | AuxiliaryNChannelNPreviewDeckNSamplerNControl | AuxiliaryNMicrophoneNControl;
 
     type AuxiliaryNChannelNPreviewDeckNSamplerNControl =
         /**
@@ -582,7 +582,7 @@ declare namespace MixxxControls {
          * @feedback The deck’s track context menu is shown or hidden.
          * @since New in version 2.5.0.
          */
-        'show_track_menu' | AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+        'show_track_menu' | ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
 
     type ChannelNChannelNStemMPreviewDeckNSamplerNControl =
         /**
@@ -2191,6 +2191,30 @@ declare namespace MixxxControls {
         | 'scratch2_enable'
 
         /**
+         * Affects absolute play speed & direction whether currently playing or not when [ChannelN],scratch_position_enable is active.
+         * This is used for scratching with scrolling waveforms and spinning vinyl widgets, but can also be used in mappings for controllers with
+         * jogwheels that send absolute or relative position values. Like with [ChannelN],scratch2 and
+         * engine.scratchTick() , input values need to be scaled in order
+         * to achieve the desired wheel/waveform scratch ratio. Consider that waveforms, spinnies and scratch_position mappings of a specific deck use the same control.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range double
+         * @feedback Waveform
+         * @since New in version 1.10.0.
+         */
+        | 'scratch_position'
+
+        /**
+         * When active this enables scratching with [ChannelN],scratch_position.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Waveform
+         * @since New in version 1.10.0.
+         */
+        | 'scratch_position_enable'
+
+        /**
          * (No description)
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -3642,24 +3666,7 @@ declare namespace MixxxControls {
          */
         | 'gain';
 
-    type PreviewDeckNControl = AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
-
     type EqualizerRack1ChannelIControl =
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
-
-    type EffectRack1EffectUnitNEffectMControl =
-        EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
-
-    type MicrophoneNControl = AuxiliaryNMicrophoneNControl;
-
-    type EqualizerRack1ChannelIEffect1Control =
-        EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
-
-    type QuickEffectRack1ChannelIEffect1Control =
-        EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
-
-    type QuickEffectRack1ChannelIControl =
         | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
         | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
@@ -3667,12 +3674,29 @@ declare namespace MixxxControls {
         | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
         | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
-    type ChannelNStemMControl = ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+    type MicrophoneNControl = AuxiliaryNMicrophoneNControl;
+
+    type SamplerNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
 
     type QuickEffectRack1ChannelIStemJEffect1Control =
         EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-    type SamplerNControl = AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+    type QuickEffectRack1ChannelIEffect1Control =
+        EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
+
+    type PreviewDeckNControl = ChannelNPreviewDeckNSamplerNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+
+    type ChannelNStemMControl = ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+
+    type EqualizerRack1ChannelIEffect1Control =
+        EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
+
+    type QuickEffectRack1ChannelIControl =
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
+
+    type EffectRack1EffectUnitNEffectMControl =
+        EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
     namespace ReadOnly {
         // Read-only controls
@@ -4083,39 +4107,39 @@ declare namespace MixxxControls {
              */
             'num_effectsavailable';
 
-        type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
-
-        type ReadOnlyEffectRack1EffectUnitNControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
-
-        type ReadOnlyEqualizerRack1ChannelIControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
+        type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
 
         type ReadOnlyEffectRack1EffectUnitNEffectMControl =
             ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-        type ReadOnlyMicrophoneNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
-
-        type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
-
-        type ReadOnlyAuxiliaryNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
-
-        type ReadOnlyEqualizerRack1ChannelIEffect1Control =
-            ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
-
-        type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
-            ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
-
-        type ReadOnlyQuickEffectRack1ChannelIControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
+        type ReadOnlyEqualizerRack1ChannelIControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
         type ReadOnlyQuickEffectRack1ChannelIStemJControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
-        type ReadOnlyEqualizerRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
+        type ReadOnlyMicrophoneNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
 
-        type ReadOnlyQuickEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
+        type ReadOnlySamplerNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
 
         type ReadOnlyQuickEffectRack1ChannelIStemJEffect1Control =
             ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-        type ReadOnlySamplerNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
+        type ReadOnlyEqualizerRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
+
+        type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
+            ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
+
+        type ReadOnlyEffectRack1EffectUnitNControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
+
+        type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
+
+        type ReadOnlyAuxiliaryNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+
+        type ReadOnlyQuickEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
+
+        type ReadOnlyEqualizerRack1ChannelIEffect1Control =
+            ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
+
+        type ReadOnlyQuickEffectRack1ChannelIControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
     }
 
     namespace Deprecated {
@@ -4704,19 +4728,19 @@ declare namespace MixxxControls {
              */
             'show_vinylcontrol';
 
-        type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
-
         type DeprecatedAuxiliaryNControl = DeprecatedAuxiliaryNMicrophoneNControl;
-
-        type DeprecatedEffectRack1EffectUnitNControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
-        type DeprecatedQuickEffectRack1ChannelIControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
         type DeprecatedChannelNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
 
+        type DeprecatedSamplerNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
+
+        type DeprecatedQuickEffectRack1ChannelIControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
         type DeprecatedEqualizerRack1ChannelIControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
-        type DeprecatedSamplerNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
+        type DeprecatedEffectRack1EffectUnitNControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
+        type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
     }
 
     export interface Config {
