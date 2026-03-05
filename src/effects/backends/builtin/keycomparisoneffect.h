@@ -27,6 +27,9 @@ class KeyComparisonGroupState final : public EffectState {
     std::vector<CSAMPLE> pianoSample;
     std::size_t framesSinceLastNote = 0;
     mixxx::audio::SampleRate m_sampleRate;
+    // Counts beats since last note fired, used to implement the Measure knob
+    // in sync mode.
+    int m_beatCount = 0;
 };
 
 /// Plays a short pitched piano tone at a configurable beat interval.
