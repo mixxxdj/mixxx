@@ -9,14 +9,14 @@ declare namespace MixxxControls {
         | '[App]'
 
         /**
-         * The [Master] group generally corresponds to controls that affect the mixing engine. This will bear some similarity to what you will find on a DJ mixer (e.g. crossfader controls, headphone cueing controls, etc.).
+         * The [AutoDJ] controls allow interacting with AutoDJ.
          */
-        | '[Master]'
+        | '[AutoDJ]'
 
         /**
-         * The [Main] group contains controls for the main mix output meters and clipping indicators.
+         * The [AuxiliaryN] group contains controls for auxiliary input channels.
          */
-        | '[Main]'
+        | `[Auxiliary${number}]`
 
         /**
          * Each deck in Mixxx corresponds to a [ChannelN] group.
@@ -26,67 +26,10 @@ declare namespace MixxxControls {
         | `[Channel${number}]`
 
         /**
-         * Preview decks are identical to regular decks, but are used for previewing tracks; their controls mirror [ChannelN].
-         */
-        | `[PreviewDeck${number}]`
-
-        /**
-         * Sample decks are identical to regular decks, but are used for playing samples; their controls mirror [ChannelN].
-         */
-        | `[Sampler${number}]`
-
-        /**
          * Stem decks are per-stem subgroups for a stem track loaded in [ChannelN].
          * M ranges from 1 to [ChannelN],stem_count (usually 2-4) and refers to one stem (for example vocals, drums, bass, or other) with its own controls.
          */
         | `[Channel${number}_Stem${number}]`
-
-        /**
-         * The [Sampler] group contains global controls for managing sampler banks.
-         */
-        | '[Sampler]'
-
-        /**
-         * The [MicrophoneN] group contains controls for microphone input channels, including talkover and monitoring.
-         */
-        | `[Microphone${number}]`
-
-        /**
-         * The [AuxiliaryN] group contains controls for auxiliary input channels.
-         */
-        | `[Auxiliary${number}]`
-
-        /**
-         * The [VinylControl] group can toggle the vinyl control feature.
-         */
-        | '[VinylControl]'
-
-        /**
-         * The controls in the [Recording] group can be used to query and control the recording of your mix.
-         */
-        | '[Recording]'
-
-        /**
-         * The [AutoDJ] controls allow interacting with AutoDJ.
-         */
-        | '[AutoDJ]'
-
-        /**
-         * The controls in the [Library] group can be used to navigate the library.
-         * Note that [Library],MoveUp and other Move and Scroll controls emulate keypresses and therefore require the Mixxx window to be focused.
-         */
-        | '[Library]'
-
-        /**
-         * The [Shoutcast] group contains controls for broadcasting to a Shoutcast server.
-         */
-        | '[Shoutcast]'
-
-        /**
-         * [Playlist] controls allow navigating the sidebar and tracks table directly without considering the currently focused widget. This is helpful when another application’s window is focused.
-         * This group is going to be deprecated at some point, with its controls added to [Library] above.
-         */
-        | '[Playlist]'
 
         /**
          * The [Controls] group contains controls that didn’t fit in any other group.
@@ -109,19 +52,66 @@ declare namespace MixxxControls {
         | `[EffectRack1_EffectUnit${number}_Effect${number}]`
 
         /**
-         * The [QuickEffectRack1] group contains global controls for the quick effects rack.
-         */
-        | '[QuickEffectRack1]'
-
-        /**
          * The [EqualizerRack1] group contains global controls for the EQ rack.
          */
         | '[EqualizerRack1]'
 
         /**
+         * The [EqualizerRack1_[ChannelI]] group contains per-deck EQ rack controls.
+         */
+        | `[EqualizerRack1_[Channel${number}]]`
+
+        /**
+         * The [EqualizerRack1_[ChannelI]_Effect1] group contains controls for the EQ effect slot on a deck.
+         */
+        | `[EqualizerRack1_[Channel${number}]_Effect1]`
+
+        /**
+         * The controls in the [Library] group can be used to navigate the library.
+         * Note that [Library],MoveUp and other Move and Scroll controls emulate keypresses and therefore require the Mixxx window to be focused.
+         */
+        | '[Library]'
+
+        /**
+         * The [Main] group contains controls for the main mix output meters and clipping indicators.
+         */
+        | '[Main]'
+
+        /**
+         * The [Master] group generally corresponds to controls that affect the mixing engine. This will bear some similarity to what you will find on a DJ mixer (e.g. crossfader controls, headphone cueing controls, etc.).
+         */
+        | '[Master]'
+
+        /**
+         * The [MicrophoneN] group contains controls for microphone input channels, including talkover and monitoring.
+         */
+        | `[Microphone${number}]`
+
+        /**
+         * [Playlist] controls allow navigating the sidebar and tracks table directly without considering the currently focused widget. This is helpful when another application’s window is focused.
+         * This group is going to be deprecated at some point, with its controls added to [Library] above.
+         */
+        | '[Playlist]'
+
+        /**
+         * Preview decks are identical to regular decks, but are used for previewing tracks; their controls mirror [ChannelN].
+         */
+        | `[PreviewDeck${number}]`
+
+        /**
+         * The [QuickEffectRack1] group contains global controls for the quick effects rack.
+         */
+        | '[QuickEffectRack1]'
+
+        /**
          * The [QuickEffectRack1_[ChannelI]] group contains per-deck quick effect controls.
          */
         | `[QuickEffectRack1_[Channel${number}]]`
+
+        /**
+         * The [QuickEffectRack1_[ChannelI]_Effect1] group contains controls for the single quick effect slot on a deck.
+         */
+        | `[QuickEffectRack1_[Channel${number}]_Effect1]`
 
         /**
          * The [QuickEffectRack1_[ChannelI_StemJ]] group contains per-stem quick effect controls for a stem within deck I.
@@ -130,29 +120,39 @@ declare namespace MixxxControls {
         | `[QuickEffectRack1_[Channel${number}_Stem${number}]]`
 
         /**
-         * The [EqualizerRack1_[ChannelI]] group contains per-deck EQ rack controls.
-         */
-        | `[EqualizerRack1_[Channel${number}]]`
-
-        /**
-         * The [QuickEffectRack1_[ChannelI]_Effect1] group contains controls for the single quick effect slot on a deck.
-         */
-        | `[QuickEffectRack1_[Channel${number}]_Effect1]`
-
-        /**
          * The [QuickEffectRack1_[ChannelI_StemJ]_Effect1] group contains controls for the quick effect slot on a stem within deck I.
          */
         | `[QuickEffectRack1_[Channel${number}_Stem${number}]_Effect1]`
 
         /**
-         * The [EqualizerRack1_[ChannelI]_Effect1] group contains controls for the EQ effect slot on a deck.
+         * The controls in the [Recording] group can be used to query and control the recording of your mix.
          */
-        | `[EqualizerRack1_[Channel${number}]_Effect1]`
+        | '[Recording]'
+
+        /**
+         * The [Sampler] group contains global controls for managing sampler banks.
+         */
+        | '[Sampler]'
+
+        /**
+         * Sample decks are identical to regular decks, but are used for playing samples; their controls mirror [ChannelN].
+         */
+        | `[Sampler${number}]`
+
+        /**
+         * The [Shoutcast] group contains controls for broadcasting to a Shoutcast server.
+         */
+        | '[Shoutcast]'
 
         /**
          * The [Skin] group contains controls that are used to selective show and hide parts of the graphical user interface of Mixxx to suit your needs.
          */
-        | '[Skin]';
+        | '[Skin]'
+
+        /**
+         * The [VinylControl] group can toggle the vinyl control feature.
+         */
+        | '[VinylControl]';
 
     /*
      * Public
@@ -208,19 +208,9 @@ declare namespace MixxxControls {
         | ''
 
         /**
-         * Increases the value, e.g. [ChannelN],rate_perm_up sets the speed one step higher (4 % default)
-         */
-        | '_up'
-
-        /**
          * Decreases the value, sets the speed one step lower (4 % default)
          */
         | '_down'
-
-        /**
-         * Increases the value by smaller step, sets the speed one small step higher (1 % default)
-         */
-        | '_up_small'
 
         /**
          * Decreases the value by smaller step, sets the speed one small step lower (1 % default)
@@ -228,14 +218,9 @@ declare namespace MixxxControls {
         | '_down_small'
 
         /**
-         * Sets the value to 1.0, sets the channel volume to full
+         * Sets the value to -1.0 if the value was > -1.0, and to 1.0 if the value was -1.0, can tilt the crossfader from left to right
          */
-        | '_set_one'
-
-        /**
-         * Sets the value to -1.0, sets the channel volume to zero
-         */
-        | '_set_minus_one'
+        | '_minus_toggle'
 
         /**
          * Input: sets the control to its default, return to default waveform zoom level
@@ -248,6 +233,16 @@ declare namespace MixxxControls {
         | '_set_default'
 
         /**
+         * Sets the value to -1.0, sets the channel volume to zero
+         */
+        | '_set_minus_one'
+
+        /**
+         * Sets the value to 1.0, sets the channel volume to full
+         */
+        | '_set_one'
+
+        /**
          * Sets the value to 0.0, put the crossfader in the middle again
          */
         | '_set_zero'
@@ -258,9 +253,14 @@ declare namespace MixxxControls {
         | '_toggle'
 
         /**
-         * Sets the value to -1.0 if the value was > -1.0, and to 1.0 if the value was -1.0, can tilt the crossfader from left to right
+         * Increases the value, e.g. [ChannelN],rate_perm_up sets the speed one step higher (4 % default)
          */
-        | '_minus_toggle';
+        | '_up'
+
+        /**
+         * Increases the value by smaller step, sets the speed one small step higher (1 % default)
+         */
+        | '_up_small';
 
     type AppControl =
         /**
@@ -420,7 +420,7 @@ declare namespace MixxxControls {
          * @feedback None
          * @since New in version 1.10.0.
          */
-        'orientation' | AuxiliaryNMicrophoneNControl | AuxiliaryNChannelNPreviewDeckNSamplerNControl;
+        'orientation' | AuxiliaryNChannelNPreviewDeckNSamplerNControl | AuxiliaryNMicrophoneNControl;
 
     type AuxiliaryNChannelNPreviewDeckNSamplerNControl =
         /**
@@ -582,7 +582,7 @@ declare namespace MixxxControls {
          * @feedback The deck’s track context menu is shown or hidden.
          * @since New in version 2.5.0.
          */
-        'show_track_menu' | AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+        'show_track_menu' | AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl;
 
     type ChannelNChannelNStemMPreviewDeckNSamplerNControl =
         /**
@@ -607,76 +607,6 @@ declare namespace MixxxControls {
         | `volume${PotMeterSuffix}`;
 
     type ChannelNPreviewDeckNSamplerNControl =
-        /**
-         * Clone the given deck number, copying the play state, position, rate, and key. If 0 or a negative number is given, Mixxx will attempt to select the first playing deck as the source for the clone.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range integer between 1 and [Master],num_decks (inclusive)
-         * @feedback The channel will start playing at the rate and position of the source deck.
-         * @since New in version 2.3.0.
-         */
-        | 'CloneFromDeck'
-
-        /**
-         * Clone the given sampler number, copying the play state, position, rate, and key.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range integer between 1 and [App],num_samplers (inclusive)
-         * @feedback The channel will start playing at the rate and position of the source deck.
-         * @since New in version 2.3.0.
-         */
-        | 'CloneFromSampler'
-
-        /**
-         * Loads the currently highlighted track into the deck
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range binary
-         * @feedback Track name & waveform change
-         */
-        | 'LoadSelectedTrack'
-
-        /**
-         * Loads the currently highlighted track into the deck and starts playing.
-         * If the player is a preview deck and the selected track is already loaded, toggle play/pause.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range binary
-         * @feedback Track name & waveform change & Play/pause button
-         * @since New in version 1.11.0.
-         */
-        | 'LoadSelectedTrackAndPlay'
-
-        /**
-         * Load the track currently loaded to the given deck number.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range integer between 1 and [App],num_decks (inclusive)
-         * @feedback Track name & waveform change
-         * @since New in version 2.4.0.
-         */
-        | 'LoadTrackFromDeck'
-
-        /**
-         * Load the track currently loaded to the given preview deck number.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range integer between 1 and [App],num_preview_decks (inclusive)
-         * @feedback Track name & waveform change
-         * @since New in version 2.6.0.
-         */
-        | 'LoadTrackFromPreviewDeck'
-
-        /**
-         * Load the track currently loaded to the given sampler number.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range integer between 1 and [App],num_samplers (inclusive)
-         * @feedback Track name & waveform change
-         * @since New in version 2.4.0.
-         */
-        | 'LoadTrackFromSampler'
-
         /**
          * Fast rewind (REW)
          *
@@ -714,32 +644,6 @@ declare namespace MixxxControls {
          * @since New in version 2.0.0.
          */
         | 'beatjump'
-
-        /**
-         * Jump backward by X beats. A control exists for
-         * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512.
-         * If a loop is active, the loop is moved backward by X beats.
-         * If the loaded track has no beat grid, this value is treated as seconds instead of beats.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range binary
-         * @feedback Player jumps backward by X beats.
-         * @since New in version 2.0.0.
-         */
-        | `beatjump_${number}_backward`
-
-        /**
-         * Jump forward by X beats. A control exists for
-         * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512.
-         * If a loop is active, the loop is moved forward by X beats.
-         * If the loaded track has no beat grid, this value is treated as seconds instead of beats.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range binary
-         * @feedback Player jumps forward by X beats.
-         * @since New in version 2.0.0.
-         */
-        | `beatjump_${number}_forward`
 
         /**
          * Jump backward by beatjump_size.
@@ -798,42 +702,30 @@ declare namespace MixxxControls {
         | 'beatjump_size_halve'
 
         /**
-         * Activates a loop over X beats. A control exists for
+         * Jump backward by X beats. A control exists for
          * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512.
-         * If the loaded track has no beat grid, seconds are used instead of beats.
-         * Depending on the state of loop_anchor the loop is created forwards
-         * or backwards from the current position.
+         * If a loop is active, the loop is moved backward by X beats.
+         * If the loaded track has no beat grid, this value is treated as seconds instead of beats.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
          * @range binary
-         * @feedback A loop is shown over X beats.
-         * @since New in version 1.10.0.
+         * @feedback Player jumps backward by X beats.
+         * @since New in version 2.0.0.
          */
-        | `beatloop_${number}_activate`
+        | `beatjump_${number}_backward`
 
         /**
-         * 1 if beatloop X is enabled, 0 if not.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range binary
-         * @feedback Beatloop X button in skin is lit.
-         * @since New in version 1.10.0.
-         */
-        | `beatloop_${number}_enabled`
-
-        /**
-         * Toggles a loop over X beats. A control exists for
+         * Jump forward by X beats. A control exists for
          * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512.
-         * If the loaded track has no beat grid, seconds are used instead of beats.
-         * Depending on the state of loop_anchor the loop is created forwards
-         * or backwards from the current position.
+         * If a loop is active, the loop is moved forward by X beats.
+         * If the loaded track has no beat grid, this value is treated as seconds instead of beats.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
          * @range binary
-         * @feedback A loop is shown over X beats.
-         * @since New in version 1.10.0.
+         * @feedback Player jumps forward by X beats.
+         * @since New in version 2.0.0.
          */
-        | `beatloop_${number}_toggle`
+        | `beatjump_${number}_forward`
 
         /**
          * Set a loop that is beatloop_size beats long and enables the loop.
@@ -876,19 +768,42 @@ declare namespace MixxxControls {
         | 'beatloop_size'
 
         /**
-         * Activates a rolling loop over X beats. Once disabled, playback will resume where the
-         * track would have been if it had not entered the loop. A control exists for
+         * Activates a loop over X beats. A control exists for
          * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512.
          * If the loaded track has no beat grid, seconds are used instead of beats.
-         * Depending on the state of loop_anchor, the loop is created forwards
+         * Depending on the state of loop_anchor the loop is created forwards
          * or backwards from the current position.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
          * @range binary
-         * @feedback Beatloop X button in skin is lit. A loop overlay is shown over X beats on waveform.The slip mode toggle is activated.
-         * @since New in version 1.11.0.
+         * @feedback A loop is shown over X beats.
+         * @since New in version 1.10.0.
          */
-        | `beatlooproll_${number}_activate`
+        | `beatloop_${number}_activate`
+
+        /**
+         * 1 if beatloop X is enabled, 0 if not.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Beatloop X button in skin is lit.
+         * @since New in version 1.10.0.
+         */
+        | `beatloop_${number}_enabled`
+
+        /**
+         * Toggles a loop over X beats. A control exists for
+         * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512.
+         * If the loaded track has no beat grid, seconds are used instead of beats.
+         * Depending on the state of loop_anchor the loop is created forwards
+         * or backwards from the current position.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback A loop is shown over X beats.
+         * @since New in version 1.10.0.
+         */
+        | `beatloop_${number}_toggle`
 
         /**
          * Activates a rolling loop over beatloop_size beats.
@@ -917,6 +832,21 @@ declare namespace MixxxControls {
          * @since New in version 2.5.0.
          */
         | `beatlooproll_r${number}_activate`
+
+        /**
+         * Activates a rolling loop over X beats. Once disabled, playback will resume where the
+         * track would have been if it had not entered the loop. A control exists for
+         * X = 0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512.
+         * If the loaded track has no beat grid, seconds are used instead of beats.
+         * Depending on the state of loop_anchor, the loop is created forwards
+         * or backwards from the current position.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Beatloop X button in skin is lit. A loop overlay is shown over X beats on waveform.The slip mode toggle is activated.
+         * @since New in version 1.11.0.
+         */
+        | `beatlooproll_${number}_activate`
 
         /**
          * Adjust the average BPM up by +0.01
@@ -1057,6 +987,26 @@ declare namespace MixxxControls {
          * @since New in version 2.5.0.
          */
         | 'bpmlock'
+
+        /**
+         * Clone the given deck number, copying the play state, position, rate, and key. If 0 or a negative number is given, Mixxx will attempt to select the first playing deck as the source for the clone.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range integer between 1 and [Master],num_decks (inclusive)
+         * @feedback The channel will start playing at the rate and position of the source deck.
+         * @since New in version 2.3.0.
+         */
+        | 'CloneFromDeck'
+
+        /**
+         * Clone the given sampler number, copying the play state, position, rate, and key.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range integer between 1 and [App],num_samplers (inclusive)
+         * @feedback The channel will start playing at the rate and position of the source deck.
+         * @since New in version 2.3.0.
+         */
+        | 'CloneFromSampler'
 
         /**
          * Represents a Cue button that is always in CDJ mode.
@@ -1226,6 +1176,36 @@ declare namespace MixxxControls {
          * @feedback > button
          */
         | 'fwd'
+
+        /**
+         * Contains the number of the most recently used hotcue (or -1 if no hotcue was used).
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range positive integer (or -1)
+         * @feedback None
+         * @since New in version 2.3.0.
+         */
+        | 'hotcue_focus'
+
+        /**
+         * If there is a focused hotcue, sets its color to the next color in the palette.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Color of focused hotcue button and waveform marker changes.
+         * @since New in version 2.3.0.
+         */
+        | 'hotcue_focus_color_next'
+
+        /**
+         * If there is a focused hotcue, sets its color to the previous color in the palette.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Color of focused hotcue button and waveform marker changes.
+         * @since New in version 2.3.0.
+         */
+        | 'hotcue_focus_color_prev'
 
         /**
          * If hotcue X is not set, this sets a hotcue at the current play position and saves it as hotcue X of type “Hotcue”.
@@ -1409,36 +1389,6 @@ declare namespace MixxxControls {
         | `hotcue_${number}_type`
 
         /**
-         * Contains the number of the most recently used hotcue (or -1 if no hotcue was used).
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range positive integer (or -1)
-         * @feedback None
-         * @since New in version 2.3.0.
-         */
-        | 'hotcue_focus'
-
-        /**
-         * If there is a focused hotcue, sets its color to the next color in the palette.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range binary
-         * @feedback Color of focused hotcue button and waveform marker changes.
-         * @since New in version 2.3.0.
-         */
-        | 'hotcue_focus_color_next'
-
-        /**
-         * If there is a focused hotcue, sets its color to the previous color in the palette.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range binary
-         * @feedback Color of focused hotcue button and waveform marker changes.
-         * @since New in version 2.3.0.
-         */
-        | 'hotcue_focus_color_prev'
-
-        /**
          * If the intro end cue is set, seeks the player to the intro end position. If the intro end is not set, sets the intro end to the current play position.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -1572,6 +1522,56 @@ declare namespace MixxxControls {
          * @since New in version 1.9.0.
          */
         | 'keylock'
+
+        /**
+         * Loads the currently highlighted track into the deck
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Track name & waveform change
+         */
+        | 'LoadSelectedTrack'
+
+        /**
+         * Loads the currently highlighted track into the deck and starts playing.
+         * If the player is a preview deck and the selected track is already loaded, toggle play/pause.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Track name & waveform change & Play/pause button
+         * @since New in version 1.11.0.
+         */
+        | 'LoadSelectedTrackAndPlay'
+
+        /**
+         * Load the track currently loaded to the given deck number.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range integer between 1 and [App],num_decks (inclusive)
+         * @feedback Track name & waveform change
+         * @since New in version 2.4.0.
+         */
+        | 'LoadTrackFromDeck'
+
+        /**
+         * Load the track currently loaded to the given preview deck number.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range integer between 1 and [App],num_preview_decks (inclusive)
+         * @feedback Track name & waveform change
+         * @since New in version 2.6.0.
+         */
+        | 'LoadTrackFromPreviewDeck'
+
+        /**
+         * Load the track currently loaded to the given sampler number.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range integer between 1 and [App],num_samplers (inclusive)
+         * @feedback Track name & waveform change
+         * @since New in version 2.4.0.
+         */
+        | 'LoadTrackFromSampler'
 
         /**
          * Reflects the average bpm around the current play position of the loaded file.
@@ -2004,35 +2004,6 @@ declare namespace MixxxControls {
         | `rate${PotMeterSuffix}`
 
         /**
-         * Actual rate (used in visuals, not for control)
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         */
-        | 'rateEngine'
-
-        /**
-         * Sets the range of the Speed slider (0.08 = 8%)
-         * This is a ControlPotMeter control.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range 0.0..4.0
-         * @feedback none, until you move the Speed slider
-         * @kind pot meter control
-         */
-        | `rateRange${PotMeterSuffix}`
-
-        /**
-         * Seeks forward (positive values) or backward (negative values) at a speed determined by the value
-         * This is a ControlPotMeter control.
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range -300..300
-         * @feedback Deck seeks
-         * @kind pot meter control
-         */
-        | `rateSearch${PotMeterSuffix}`
-
-        /**
          * Indicates orientation of speed slider.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -2113,6 +2084,35 @@ declare namespace MixxxControls {
         | 'rate_temp_up_small'
 
         /**
+         * Actual rate (used in visuals, not for control)
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         */
+        | 'rateEngine'
+
+        /**
+         * Sets the range of the Speed slider (0.08 = 8%)
+         * This is a ControlPotMeter control.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range 0.0..4.0
+         * @feedback none, until you move the Speed slider
+         * @kind pot meter control
+         */
+        | `rateRange${PotMeterSuffix}`
+
+        /**
+         * Seeks forward (positive values) or backward (negative values) at a speed determined by the value
+         * This is a ControlPotMeter control.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range -300..300
+         * @feedback Deck seeks
+         * @kind pot meter control
+         */
+        | `rateSearch${PotMeterSuffix}`
+
+        /**
          * Activate current loop, jump to its loop in point, and stop playback.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -2189,6 +2189,30 @@ declare namespace MixxxControls {
          * @since New in version 1.8.0.
          */
         | 'scratch2_enable'
+
+        /**
+         * Affects absolute play speed & direction whether currently playing or not when [ChannelN],scratch_position_enable is active.
+         * This is used for scratching with scrolling waveforms and spinning vinyl widgets, but can also be used in mappings for controllers with
+         * jogwheels that send absolute or relative position values. Like with [ChannelN],scratch2 and
+         * engine.scratchTick() , input values need to be scaled in order
+         * to achieve the desired wheel/waveform scratch ratio. Consider that waveforms, spinnies and scratch_position mappings of a specific deck use the same control.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range double
+         * @feedback Waveform
+         * @since New in version 1.10.0.
+         */
+        | 'scratch_position'
+
+        /**
+         * When active this enables scratching with [ChannelN],scratch_position.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Waveform
+         * @since New in version 1.10.0.
+         */
+        | 'scratch_position_enable'
 
         /**
          * (No description)
@@ -2617,8 +2641,8 @@ declare namespace MixxxControls {
          * @range binary
          */
         | `group_[Sampler${number}]_enable`
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
     type EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl =
         /**
@@ -2820,6 +2844,69 @@ declare namespace MixxxControls {
 
     type LibraryControl =
         /**
+         * Clear the search.
+         *
+         * @groups [Library]
+         * @range Binary
+         * @feedback Searchbox query is cleared
+         * @since New in version 2.4.0.
+         */
+        | 'clear_search'
+
+        /**
+         * Read this control to know which library widget is currently focused, or write in order to focus a specific library widget.
+         * This control can be used in controller scripts to trigger context-specific actions. For example, if the
+         * tracks table has focus, pressing a button loads the selected track to a specific deck, while the same
+         * button would clear the search if the search bar is focused.
+         * Note: This control is useful only if a Mixxx window has keyboard focus, otherwise it always returns 0.
+         *
+         * @groups [Library]
+         * @range
+         * |Value|writeable|Widget|
+         * |---|---|---|
+         * |0  |   |none|
+         * |1  |X  |Search bar|
+         * |2  |X  |Tree view|
+         * |3  |X  |Tracks table or root views of library features|
+         * |4  |   |Context menu (menus of library widgets or other editable widgets, or main menu bar)|
+         * |5  |   |Dialog (any confirmation or error popup, preferences, track properties or cover art window)|
+         * |6  |   |Unknown (widgets that don’t fit into any of the above categories)|
+         * @feedback Currently focused widget changes
+         * @since New in version 2.4.0.
+         */
+        | 'focused_widget'
+
+        /**
+         * Decrease the size of the library font
+         *
+         * @groups [Library]
+         * @range Binary
+         * @feedback Library view
+         * @since New in version 2.0.0.
+         */
+        | 'font_size_decrement'
+
+        /**
+         * Increase the size of the library font. If the row height is smaller than the font-size the larger of the two is used.
+         *
+         * @groups [Library]
+         * @range Binary
+         * @feedback Library view
+         * @since New in version 2.0.0.
+         */
+        | 'font_size_increment'
+
+        /**
+         * Increase or decrease the size of the library font
+         *
+         * @groups [Library]
+         * @range Relative
+         * @feedback Library view
+         * @since New in version 2.0.0.
+         */
+        | 'font_size_knob'
+
+        /**
          * Triggers different actions, depending on which interface element currently has keyboard focus:
          * |Search bar|
          * |---|
@@ -2958,69 +3045,6 @@ declare namespace MixxxControls {
          * @since New in version 2.1.0.
          */
         | 'ScrollVertical'
-
-        /**
-         * Clear the search.
-         *
-         * @groups [Library]
-         * @range Binary
-         * @feedback Searchbox query is cleared
-         * @since New in version 2.4.0.
-         */
-        | 'clear_search'
-
-        /**
-         * Read this control to know which library widget is currently focused, or write in order to focus a specific library widget.
-         * This control can be used in controller scripts to trigger context-specific actions. For example, if the
-         * tracks table has focus, pressing a button loads the selected track to a specific deck, while the same
-         * button would clear the search if the search bar is focused.
-         * Note: This control is useful only if a Mixxx window has keyboard focus, otherwise it always returns 0.
-         *
-         * @groups [Library]
-         * @range
-         * |Value|writeable|Widget|
-         * |---|---|---|
-         * |0  |   |none|
-         * |1  |X  |Search bar|
-         * |2  |X  |Tree view|
-         * |3  |X  |Tracks table or root views of library features|
-         * |4  |   |Context menu (menus of library widgets or other editable widgets, or main menu bar)|
-         * |5  |   |Dialog (any confirmation or error popup, preferences, track properties or cover art window)|
-         * |6  |   |Unknown (widgets that don’t fit into any of the above categories)|
-         * @feedback Currently focused widget changes
-         * @since New in version 2.4.0.
-         */
-        | 'focused_widget'
-
-        /**
-         * Decrease the size of the library font
-         *
-         * @groups [Library]
-         * @range Binary
-         * @feedback Library view
-         * @since New in version 2.0.0.
-         */
-        | 'font_size_decrement'
-
-        /**
-         * Increase the size of the library font. If the row height is smaller than the font-size the larger of the two is used.
-         *
-         * @groups [Library]
-         * @range Binary
-         * @feedback Library view
-         * @since New in version 2.0.0.
-         */
-        | 'font_size_increment'
-
-        /**
-         * Increase or decrease the size of the library font
-         *
-         * @groups [Library]
-         * @range Relative
-         * @feedback Library view
-         * @since New in version 2.0.0.
-         */
-        | 'font_size_knob'
 
         /**
          * Select the next saved search query. Wraps around at the last item to the empty search.
@@ -3622,16 +3646,6 @@ declare namespace MixxxControls {
 
     type VinylControlControl =
         /**
-         * Moves control by a vinyl control signal from one deck to another if using the single deck vinyl control (VC) feature.
-         *
-         * @groups [VinylControl]
-         * @range binary
-         * @feedback If VC isn’t enabled on any decks, enable it on the first one we’re receiving samples for. If VC is enabled on a single (exclusive) deck, and another deck is setup to receive samples, disable it on the former deck and enable it on the next eligible deck (ordered by deck number). If VC is enabled on multiple decks, don’t do anything.
-         * @since New in version 1.10.0.
-         */
-        | 'Toggle'
-
-        /**
          * Allows to amplify the “phono” level of attached turntables to “line” level.
          * This is equivalent to setting the turntable boost in Options ‣ Preferences ‣ Vinyl Control
          *
@@ -3640,39 +3654,49 @@ declare namespace MixxxControls {
          * @feedback position of Boost slider in Options ‣ Preferences ‣ Vinyl Control (is not updated while viewing this Preferences page)
          * @since New in version 1.10.0.
          */
-        | 'gain';
+        | 'gain'
 
-    type PreviewDeckNControl = AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+        /**
+         * Moves control by a vinyl control signal from one deck to another if using the single deck vinyl control (VC) feature.
+         *
+         * @groups [VinylControl]
+         * @range binary
+         * @feedback If VC isn’t enabled on any decks, enable it on the first one we’re receiving samples for. If VC is enabled on a single (exclusive) deck, and another deck is setup to receive samples, disable it on the former deck and enable it on the next eligible deck (ordered by deck number). If VC is enabled on multiple decks, don’t do anything.
+         * @since New in version 1.10.0.
+         */
+        | 'Toggle';
 
-    type EqualizerRack1ChannelIControl =
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
+    type ChannelNStemMControl = ChannelNChannelNStemMPreviewDeckNSamplerNControl;
 
     type EffectRack1EffectUnitNEffectMControl =
         EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-    type MicrophoneNControl = AuxiliaryNMicrophoneNControl;
+    type EqualizerRack1ChannelIControl =
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
     type EqualizerRack1ChannelIEffect1Control =
         EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
+    type MicrophoneNControl = AuxiliaryNMicrophoneNControl;
+
+    type PreviewDeckNControl = AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl;
+
+    type QuickEffectRack1ChannelIControl =
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
+
     type QuickEffectRack1ChannelIEffect1Control =
         EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-    type QuickEffectRack1ChannelIControl =
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
-
     type QuickEffectRack1ChannelIStemJControl =
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
-        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
-
-    type ChannelNStemMControl = ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl
+        | EffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
     type QuickEffectRack1ChannelIStemJEffect1Control =
         EffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-    type SamplerNControl = AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl;
+    type SamplerNControl = AuxiliaryNChannelNPreviewDeckNSamplerNControl | ChannelNChannelNStemMPreviewDeckNSamplerNControl | ChannelNPreviewDeckNSamplerNControl;
 
     namespace ReadOnly {
         // Read-only controls
@@ -3779,7 +3803,7 @@ declare namespace MixxxControls {
              * @since New in version 2.6.0.
              * @readonly
              */
-            'stem_count' | ReadOnlyChannelNPreviewDeckNSamplerNControl | ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+            'stem_count' | ReadOnlyAuxiliaryNChannelNMicrophoneNControl | ReadOnlyChannelNPreviewDeckNSamplerNControl;
 
         type ReadOnlyChannelNPreviewDeckNSamplerNControl =
             /**
@@ -4083,34 +4107,34 @@ declare namespace MixxxControls {
              */
             'num_effectsavailable';
 
-        type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
+        type ReadOnlyAuxiliaryNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+
+        type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
 
         type ReadOnlyEffectRack1EffectUnitNControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
-
-        type ReadOnlyEqualizerRack1ChannelIControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
         type ReadOnlyEffectRack1EffectUnitNEffectMControl =
             ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-        type ReadOnlyMicrophoneNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+        type ReadOnlyEqualizerRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
 
-        type ReadOnlyEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
-
-        type ReadOnlyAuxiliaryNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+        type ReadOnlyEqualizerRack1ChannelIControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
         type ReadOnlyEqualizerRack1ChannelIEffect1Control =
             ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
 
-        type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
-            ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
+        type ReadOnlyMicrophoneNControl = ReadOnlyAuxiliaryNChannelNMicrophoneNControl;
+
+        type ReadOnlyPreviewDeckNControl = ReadOnlyChannelNPreviewDeckNSamplerNControl;
+
+        type ReadOnlyQuickEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
 
         type ReadOnlyQuickEffectRack1ChannelIControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
 
+        type ReadOnlyQuickEffectRack1ChannelIEffect1Control =
+            ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
+
         type ReadOnlyQuickEffectRack1ChannelIStemJControl = ReadOnlyEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIQuickEffectRack1ChannelIStemJControl;
-
-        type ReadOnlyEqualizerRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
-
-        type ReadOnlyQuickEffectRack1Control = ReadOnlyEffectRack1EqualizerRack1QuickEffectRack1Control;
 
         type ReadOnlyQuickEffectRack1ChannelIStemJEffect1Control =
             ReadOnlyEffectRack1EffectUnitNEffectMEqualizerRack1ChannelIEffect1QuickEffectRack1ChannelIEffect1QuickEffectRack1ChannelIStemJEffect1Control;
@@ -4120,6 +4144,29 @@ declare namespace MixxxControls {
 
     namespace Deprecated {
         type DeprecatedAuxiliaryNMicrophoneNControl =
+            /**
+             * 1 if a channel input is enabled, 0 if not.
+             *
+             * @groups [AuxiliaryN], [MicrophoneN]
+             * @range binary
+             * @feedback Microphone is enabled.
+             * @since New in version 1.10.0.
+             * @deprecated since  version 2.0.0: Use [MicrophoneN],input_configured instead.
+             */
+            | 'enabled'
+
+            /**
+             * Hold value at 1 to mix channel input into the main output.
+             * For [MicrophoneN] use [MicrophoneN],talkover instead.
+             * Note that [AuxiliaryN] also take [AuxiliaryN],orientation into account.
+             *
+             * @groups [AuxiliaryN], [MicrophoneN]
+             * @range binary
+             * @feedback Auxiliary: Play buttonMicrophone: N/A
+             * @deprecated since  version 2.4.0: Use [MicrophoneN],talkover and [AuxiliaryN],main_mix instead.
+             */
+            | 'master'
+
             /**
              * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
              *
@@ -4184,97 +4231,9 @@ declare namespace MixxxControls {
              * @since New in version 2.0.0.
              * @deprecated since  version 2.4.0: Use [MicrophoneN],vu_meter_right and [AuxiliaryN],vu_meter_right instead.
              */
-            | `VuMeter${number}`
-
-            /**
-             * 1 if a channel input is enabled, 0 if not.
-             *
-             * @groups [AuxiliaryN], [MicrophoneN]
-             * @range binary
-             * @feedback Microphone is enabled.
-             * @since New in version 1.10.0.
-             * @deprecated since  version 2.0.0: Use [MicrophoneN],input_configured instead.
-             */
-            | 'enabled'
-
-            /**
-             * Hold value at 1 to mix channel input into the main output.
-             * For [MicrophoneN] use [MicrophoneN],talkover instead.
-             * Note that [AuxiliaryN] also take [AuxiliaryN],orientation into account.
-             *
-             * @groups [AuxiliaryN], [MicrophoneN]
-             * @range binary
-             * @feedback Auxiliary: Play buttonMicrophone: N/A
-             * @deprecated since  version 2.4.0: Use [MicrophoneN],talkover and [AuxiliaryN],main_mix instead.
-             */
-            | 'master';
+            | `VuMeter${number}`;
 
         type DeprecatedChannelNPreviewDeckNSamplerNControl =
-            /**
-             * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
-             *
-             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-             * @range binary
-             * @feedback Clip light
-             * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator, [PreviewDeckN],peak_indicator and [SamplerN],peak_indicator instead.
-             */
-            | 'PeakIndicator'
-
-            /**
-             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
-             *
-             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-             * @range binary
-             * @feedback Clip light (left)
-             * @since New in version 2.0.0.
-             * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_left, [PreviewDeckN],peak_indicator_left and [SamplerN],peak_indicator_left instead.
-             */
-            | `PeakIndicator${number}`
-
-            /**
-             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
-             *
-             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-             * @range binary
-             * @feedback Clip light (right)
-             * @since New in version 2.0.0.
-             * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_right, [PreviewDeckN],peak_indicator_right and [SamplerN],peak_indicator_right instead.
-             */
-            | `PeakIndicator${number}`
-
-            /**
-             * Outputs the current instantaneous deck volume
-             *
-             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-             * @range default
-             * @feedback Deck VU meter
-             * @since New in version ?.?.?.
-             * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter, Use [PreviewDeckN],vu_meter and [SamplerN],vu_meter instead.
-             */
-            | 'VuMeter'
-
-            /**
-             * Outputs the current instantaneous deck volume for the left channel
-             *
-             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-             * @range default
-             * @feedback Deck VU meter L
-             * @since New in version ?.?.?.
-             * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_left, Use [PreviewDeckN],vu_meter_left and [SamplerN],vu_meter_left instead.
-             */
-            | `VuMeter${number}`
-
-            /**
-             * Outputs the current instantaneous deck volume for the right channel
-             *
-             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-             * @range default
-             * @feedback Deck VU meter R
-             * @since New in version ?.?.?.
-             * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_right, Use [PreviewDeckN],vu_meter_right and [SamplerN],vu_meter_right instead.
-             */
-            | `VuMeter${number}`
-
             /**
              * Setup a loop over the set number of beats.
              * If the loaded track has no beat grid, seconds are used instead of beats.
@@ -4390,6 +4349,38 @@ declare namespace MixxxControls {
             | `hotcue_${number}_enabled`
 
             /**
+             * Indicates when the signal is clipping (too loud for the hardware and is being distorted)
+             *
+             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+             * @range binary
+             * @feedback Clip light
+             * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator, [PreviewDeckN],peak_indicator and [SamplerN],peak_indicator instead.
+             */
+            | 'PeakIndicator'
+
+            /**
+             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel
+             *
+             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+             * @range binary
+             * @feedback Clip light (left)
+             * @since New in version 2.0.0.
+             * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_left, [PreviewDeckN],peak_indicator_left and [SamplerN],peak_indicator_left instead.
+             */
+            | `PeakIndicator${number}`
+
+            /**
+             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel
+             *
+             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+             * @range binary
+             * @feedback Clip light (right)
+             * @since New in version 2.0.0.
+             * @deprecated since  version 2.4.0: Use [ChannelN],peak_indicator_right, [PreviewDeckN],peak_indicator_right and [SamplerN],peak_indicator_right instead.
+             */
+            | `PeakIndicator${number}`
+
+            /**
              * Toggles the current loop on or off. If the loop is ahead of the current play position, the track will keep playing normally until it reaches the loop.
              *
              * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -4407,7 +4398,40 @@ declare namespace MixxxControls {
              * @feedback Waveform
              * @deprecated since  version ??: Use the JavaScript engine.scratch functions instead.
              */
-            | 'scratch';
+            | 'scratch'
+
+            /**
+             * Outputs the current instantaneous deck volume
+             *
+             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+             * @range default
+             * @feedback Deck VU meter
+             * @since New in version ?.?.?.
+             * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter, Use [PreviewDeckN],vu_meter and [SamplerN],vu_meter instead.
+             */
+            | 'VuMeter'
+
+            /**
+             * Outputs the current instantaneous deck volume for the left channel
+             *
+             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+             * @range default
+             * @feedback Deck VU meter L
+             * @since New in version ?.?.?.
+             * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_left, Use [PreviewDeckN],vu_meter_left and [SamplerN],vu_meter_left instead.
+             */
+            | `VuMeter${number}`
+
+            /**
+             * Outputs the current instantaneous deck volume for the right channel
+             *
+             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+             * @range default
+             * @feedback Deck VU meter R
+             * @since New in version ?.?.?.
+             * @deprecated since  version 2.4.0: Use [ChannelN],vu_meter_right, Use [PreviewDeckN],vu_meter_right and [SamplerN],vu_meter_right instead.
+             */
+            | `VuMeter${number}`;
 
         type DeprecatedEffectRack1Control =
             /**
@@ -4455,66 +4479,6 @@ declare namespace MixxxControls {
             'show_coverart';
 
         type DeprecatedMasterControl =
-            /**
-             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) (composite).
-             *
-             * @groups [Master]
-             * @range binary
-             * @feedback Clip light (mono)
-             * @deprecated since  version 2.4.0: Use [Main],peak_indicator instead.
-             */
-            | 'PeakIndicator'
-
-            /**
-             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel.
-             *
-             * @groups [Master]
-             * @range binary
-             * @feedback Clip light (left)
-             * @deprecated since  version 2.4.0: Use [Main],peak_indicator_left instead.
-             */
-            | `PeakIndicator${number}`
-
-            /**
-             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel.
-             *
-             * @groups [Master]
-             * @range binary
-             * @feedback Clip light (right)
-             * @deprecated since  version 2.4.0: Use [Main],peak_indicator_right instead.
-             */
-            | `PeakIndicator${number}`
-
-            /**
-             * Outputs the current instantaneous main volume (composite).
-             *
-             * @groups [Master]
-             * @range default
-             * @feedback Main meter (mono)
-             * @deprecated since  version 2.4.0: Use [Main],vu_meter instead.
-             */
-            | 'VuMeter'
-
-            /**
-             * Outputs the current instantaneous main volume for the left channel.
-             *
-             * @groups [Master]
-             * @range default
-             * @feedback Main meter L
-             * @deprecated since  version 2.4.0: Use [Main],vu_meter_left instead.
-             */
-            | `VuMeter${number}`
-
-            /**
-             * Outputs the current instantaneous main volume for the right channel.
-             *
-             * @groups [Master]
-             * @range default
-             * @feedback Main meter R
-             * @deprecated since  version 2.4.0: Use [Main],vu_meter_right instead.
-             */
-            | `VuMeter${number}`
-
             /**
              * Indicates a buffer under or over-flow. Resets after 500 ms.
              *
@@ -4652,6 +4616,36 @@ declare namespace MixxxControls {
             | 'num_samplers'
 
             /**
+             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) (composite).
+             *
+             * @groups [Master]
+             * @range binary
+             * @feedback Clip light (mono)
+             * @deprecated since  version 2.4.0: Use [Main],peak_indicator instead.
+             */
+            | 'PeakIndicator'
+
+            /**
+             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the left channel.
+             *
+             * @groups [Master]
+             * @range binary
+             * @feedback Clip light (left)
+             * @deprecated since  version 2.4.0: Use [Main],peak_indicator_left instead.
+             */
+            | `PeakIndicator${number}`
+
+            /**
+             * Indicates when the signal is clipping (too loud for the hardware and is being distorted) for the right channel.
+             *
+             * @groups [Master]
+             * @range binary
+             * @feedback Clip light (right)
+             * @deprecated since  version 2.4.0: Use [Main],peak_indicator_right instead.
+             */
+            | `PeakIndicator${number}`
+
+            /**
              * The current output sample rate (default: 44100 Hz).
              *
              * @groups [Master]
@@ -4669,7 +4663,37 @@ declare namespace MixxxControls {
              * @feedback Main Gain knob
              * @deprecated since  version 2.0.0: Use [Master],gain instead.
              */
-            | 'volume';
+            | 'volume'
+
+            /**
+             * Outputs the current instantaneous main volume (composite).
+             *
+             * @groups [Master]
+             * @range default
+             * @feedback Main meter (mono)
+             * @deprecated since  version 2.4.0: Use [Main],vu_meter instead.
+             */
+            | 'VuMeter'
+
+            /**
+             * Outputs the current instantaneous main volume for the left channel.
+             *
+             * @groups [Master]
+             * @range default
+             * @feedback Main meter L
+             * @deprecated since  version 2.4.0: Use [Main],vu_meter_left instead.
+             */
+            | `VuMeter${number}`
+
+            /**
+             * Outputs the current instantaneous main volume for the right channel.
+             *
+             * @groups [Master]
+             * @range default
+             * @feedback Main meter R
+             * @deprecated since  version 2.4.0: Use [Main],vu_meter_right instead.
+             */
+            | `VuMeter${number}`;
 
         type DeprecatedMicrophoneNControl =
             /**
@@ -4704,17 +4728,17 @@ declare namespace MixxxControls {
              */
             'show_vinylcontrol';
 
-        type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
-
         type DeprecatedAuxiliaryNControl = DeprecatedAuxiliaryNMicrophoneNControl;
-
-        type DeprecatedEffectRack1EffectUnitNControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
-
-        type DeprecatedQuickEffectRack1ChannelIControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
         type DeprecatedChannelNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
 
+        type DeprecatedEffectRack1EffectUnitNControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
         type DeprecatedEqualizerRack1ChannelIControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
+
+        type DeprecatedPreviewDeckNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
+
+        type DeprecatedQuickEffectRack1ChannelIControl = DeprecatedEffectRack1EffectUnitNEqualizerRack1ChannelIQuickEffectRack1ChannelIControl;
 
         type DeprecatedSamplerNControl = DeprecatedChannelNPreviewDeckNSamplerNControl;
     }
