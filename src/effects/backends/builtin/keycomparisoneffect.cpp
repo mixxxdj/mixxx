@@ -20,9 +20,9 @@ namespace {
 
 // Semitone offsets from A4 (440 Hz) for each chromatic key.
 // Index 9 (A) has offset 0 — the sample is synthesised at A4.
-// Index: 0=C  1=C#  2=D  3=D#  4=E  5=F  6=F#  7=G  8=G#  9=A  10=A#  11=B
-constexpr std::array<int, 12> kKeySemitoneOffset = {
-        -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2};
+// Index: 0=C  1=C#  2=D  3=D#  4=E  5=F  6=F#  7=G  8=G#  9=A  10=A#  11=B  12=C
+constexpr std::array<int, 13> kKeySemitoneOffset = {
+        -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3};
 
 // Resamples monoSource into monoDest using linear interpolation at pitchRatio.
 // Returns the number of source frames consumed so the caller can resume
@@ -148,15 +148,15 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     key->setName(QObject::tr("Key"));
     key->setShortName(QObject::tr("Key"));
     key->setDescription(QObject::tr(
-            "Musical key of the piano note (12 chromatic steps).\n"
+            "Musical key of the piano note (C to C, 13 chromatic steps).\n"
             "0=C  1=C\u266f/D\u266d  2=D  3=D\u266f/E\u266d  "
             "4=E  5=F\n"
             "6=F\u266f/G\u266d  7=G  8=G\u266f/A\u266d  "
-            "9=A  10=A\u266f/B\u266d  11=B"));
+            "9=A  10=A\u266f/B\u266d  11=B  12=C"));
     key->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     key->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     key->setDefaultLinkType(EffectManifestParameter::LinkType::None);
-    key->setRange(0.0, 9.0, 11.0);
+    key->setRange(0.0, 9.0, 12.0);
 
     EffectManifestParameterPointer tuning = pManifest->addParameter();
     tuning->setId(QStringLiteral("tuning"));
