@@ -189,3 +189,10 @@ repos:
         additional_dependencies:
           - lxml==5.3.0
         files: ^(res/translations/.*\.ts)$
+      - id: check-ui-buddies
+        name: check-ui-buddies
+        description: "Detect invalid or self-referential QLabel buddies in Qt UI files"
+        entry: python tools/check_ui_buddies.py
+        language: python
+        types: [text]
+        files: ^.*\.ui$
