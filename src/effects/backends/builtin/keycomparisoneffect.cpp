@@ -263,7 +263,12 @@ void KeyComparisonEffect::processChannel(
 
     if (enableState == EffectEnableState::Enabling) {
         if (shouldSync && hasBeatInfo) {
-            // In sync mode, wait silently for the first beat.
+            // If the user enabled within the first quarter of a beat they
+            // were just a split second late — fire immediately so it feels
+            // like it started on the downbeat. Otherwise wait for the next beat.
+            const bool justMissedBeat =
+                    *groupFeatures.beat_fraction_buffer_end < 0.25;
+            pGroupState->m_fireImmediately = justMissedBeat;
             pGroupState->m_srcFramePos =
                     static_cast<double>(pianoSample.size());
             pGroupState->framesSinceLastNote = pianoSample.size();
