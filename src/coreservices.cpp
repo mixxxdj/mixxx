@@ -442,33 +442,28 @@ void CoreServices::initializeSettings() {
 #endif
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
 
-#ifdef Q_OS_MACOS
-    // When running in a macOS sandbox with a custom --settings-path,
-    // verify we can access the settings directory. If the path is outside
-    // the sandbox container, prompt the user to grant access.
+    // Verify we can access the custom settings directory. If it is unwritable
+    // (e.g. due to macOS sandboxing, or restricted filesystem permissions),
+    // prompt the user to grant access or select a new location.
     // See https://github.com/mixxxdj/mixxx/issues/15489
     if (m_cmdlineArgs.getSettingsPathSet()) {
-        if (!Sandbox::ensureSettingsPathAccessible(settingsPath)) {
+        if (!Sandbox::ensureSettingsPathAccessible(&settingsPath)) {
             // The user either declined the permission dialog or the
-            // sandbox still blocks access. Show a clear error and exit.
+            // folder remains unwritable. Show a clear error and exit.
             QMessageBox::critical(nullptr,
                     tr("Cannot access settings folder"),
                     tr("Mixxx cannot access the settings folder:"
                        "\n\n%1\n\n"
-                       "On macOS, sandboxed applications can only access "
-                       "certain directories. You can either:\n\n"
+                       "You can either:\n\n"
                        "\u2022 Remove the --settings-path argument to use the "
                        "default location\n"
-                       "\u2022 Re-run Mixxx and grant access when prompted\n"
-                       "\u2022 Use a path inside the Mixxx container:\n"
-                       "  ~/Library/Containers/org.mixxx.mixxx/Data/...\n\n"
+                       "\u2022 Re-run Mixxx and select a valid folder when prompted\n\n"
                        "Click OK to exit.")
                             .arg(settingsPath),
                     QMessageBox::Ok);
             exit(1);
         }
     }
-#endif
 
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }

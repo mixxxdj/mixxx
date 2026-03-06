@@ -36,12 +36,14 @@ class Sandbox {
 
 #ifdef Q_OS_MACOS
     static QString migrateOldSettings();
-    // Checks if the given settings path is accessible. If the path is outside
-    // the sandbox container, prompts the user to grant access via a file dialog
-    // (which creates a security-scoped bookmark). Returns true if the path is
-    // accessible, false otherwise.
-    static bool ensureSettingsPathAccessible(const QString& settingsPath);
 #endif
+
+    // Checks if the given settings path is accessible. If the path does not
+    // exist, attempts to create it. If it is unwritable, prompts the user to
+    // select a new location via a file dialog.
+    // If a new location is selected, pSettingsPath is updated.
+    // Returns true if an accessible path was secured, false otherwise.
+    static bool ensureSettingsPathAccessible(QString* pSettingsPath);
 
     // Returns true if we are in a sandbox.
     static bool enabled() {
