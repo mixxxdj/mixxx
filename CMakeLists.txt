@@ -1265,6 +1265,8 @@ add_library(
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
   src/effects/backends/builtin/metronomeclick.cpp
+  src/effects/backends/builtin/keycomparisoneffect.cpp
+  src/effects/backends/builtin/pianosample.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/compressoreffect.cpp
   src/effects/backends/builtin/autogaincontroleffect.cpp
