@@ -73,6 +73,7 @@
 
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <X11/Xlibint.h>
+
 #include <QtX11Extras/QX11Info>
 
 #include "engine/channelhandle.h"
@@ -440,6 +441,35 @@ void CoreServices::initializeSettings() {
     }
 #endif
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
+
+#ifdef Q_OS_MACOS
+    // When running in a macOS sandbox with a custom --settings-path,
+    // verify we can access the settings directory. If the path is outside
+    // the sandbox container, prompt the user to grant access.
+    // See https://github.com/mixxxdj/mixxx/issues/15489
+    if (m_cmdlineArgs.getSettingsPathSet()) {
+        if (!Sandbox::ensureSettingsPathAccessible(settingsPath)) {
+            // The user either declined the permission dialog or the
+            // sandbox still blocks access. Show a clear error and exit.
+            QMessageBox::critical(nullptr,
+                    tr("Cannot access settings folder"),
+                    tr("Mixxx cannot access the settings folder:"
+                       "\n\n%1\n\n"
+                       "On macOS, sandboxed applications can only access "
+                       "certain directories. You can either:\n\n"
+                       "\u2022 Remove the --settings-path argument to use the "
+                       "default location\n"
+                       "\u2022 Re-run Mixxx and grant access when prompted\n"
+                       "\u2022 Use a path inside the Mixxx container:\n"
+                       "  ~/Library/Containers/org.mixxx.mixxx/Data/...\n\n"
+                       "Click OK to exit.")
+                            .arg(settingsPath),
+                    QMessageBox::Ok);
+            exit(1);
+        }
+    }
+#endif
+
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
@@ -808,11 +838,11 @@ void CoreServices::initializeKeyboard() {
 void CoreServices::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     if (toggle) {
-        //qDebug() << "Enable keyboard shortcuts/mappings";
+        // qDebug() << "Enable keyboard shortcuts/mappings";
         m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfig.get());
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
     } else {
-        //qDebug() << "Disable keyboard shortcuts/mappings";
+        // qDebug() << "Disable keyboard shortcuts/mappings";
         m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
     }
@@ -822,13 +852,35 @@ bool CoreServices::initializeDatabase() {
     kLogger.info() << "Connecting to database";
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     if (!dbConnection.isOpen()) {
+        QString settingsPath = m_pSettingsManager->settings()->getSettingsPath();
+        QFileInfo settingsInfo(settingsPath);
+
+        QString errorDetail;
+        if (!settingsInfo.exists()) {
+            errorDetail = tr(
+                    "The settings directory does not exist:\n%1\n\n"
+                    "Please verify the --settings-path argument.")
+                                  .arg(settingsPath);
+        } else if (!settingsInfo.isWritable()) {
+            errorDetail = tr(
+                    "The settings directory is not writable:\n%1\n\n"
+                    "This may be caused by macOS sandbox restrictions "
+                    "if you are using a custom --settings-path outside "
+                    "the app container.\n\n"
+                    "Try running Mixxx without --settings-path, or "
+                    "grant Mixxx access to the folder when prompted.")
+                                  .arg(settingsPath);
+        } else {
+            errorDetail = tr(
+                    "Unable to establish a database connection.\n"
+                    "Mixxx requires Qt with SQLite support. Please read "
+                    "the Qt SQL driver documentation for information on how "
+                    "to build it.");
+        }
+
         QMessageBox::critical(nullptr,
                 tr("Cannot open database"),
-                tr("Unable to establish a database connection.\n"
-                   "Mixxx requires QT with SQLite support. Please read "
-                   "the Qt SQL driver documentation for information on how "
-                   "to build it.\n\n"
-                   "Click OK to exit."),
+                errorDetail + QStringLiteral("\n\n") + tr("Click OK to exit."),
                 QMessageBox::Ok);
         return false;
     }

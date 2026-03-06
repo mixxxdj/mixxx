@@ -39,10 +39,12 @@ void Sandbox::checkSandboxed() {
     if (SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
         SecRequirementRef sandboxReq;
         CFStringRef entitlement = CFSTR("entitlement [\"com.apple.security.app-sandbox\"]");
-        if (SecRequirementCreateWithString(entitlement, kSecCSDefaultFlags,
-                                           &sandboxReq) == errSecSuccess) {
-            if (SecCodeCheckValidity(secCodeSelf, kSecCSDefaultFlags,
-                                     sandboxReq) == errSecSuccess) {
+        if (SecRequirementCreateWithString(entitlement,
+                    kSecCSDefaultFlags,
+                    &sandboxReq) == errSecSuccess) {
+            if (SecCodeCheckValidity(secCodeSelf,
+                        kSecCSDefaultFlags,
+                        sandboxReq) == errSecSuccess) {
                 s_bInSandbox = true;
             }
             CFRelease(sandboxReq);
@@ -68,7 +70,7 @@ void Sandbox::shutdown() {
     }
 }
 
-//static
+// static
 bool Sandbox::createSecurityToken(mixxx::FileInfo* pFileInfo) {
     VERIFY_OR_DEBUG_ASSERT(pFileInfo) {
         return false;
@@ -77,7 +79,7 @@ bool Sandbox::createSecurityToken(mixxx::FileInfo* pFileInfo) {
     return createSecurityToken(canonicalLocation, pFileInfo->isDir());
 }
 
-//static
+// static
 bool Sandbox::canAccess(mixxx::FileInfo* pFileInfo) {
     VERIFY_OR_DEBUG_ASSERT(pFileInfo) {
         return false;
@@ -88,7 +90,7 @@ bool Sandbox::canAccess(mixxx::FileInfo* pFileInfo) {
     return pFileInfo->isReadable();
 }
 
-//static
+// static
 bool Sandbox::canAccessDir(const QDir& dir) {
     // NOTE: The token must be assigned to a variable, otherwise it will be
     // invalidated immediately (causing `isReadable` to fail).
@@ -171,12 +173,12 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
 // static
 ConfigKey Sandbox::keyForCanonicalPath(const QString& canonicalPath) {
     return ConfigKey("[OSXBookmark]",
-                     QString(canonicalPath.toLocal8Bit().toBase64()));
+            QString(canonicalPath.toLocal8Bit().toBase64()));
 }
 
 // static
 bool Sandbox::createSecurityToken(const QString& canonicalPath,
-                                  bool isDirectory) {
+        bool isDirectory) {
     if (sDebug) {
         qDebug() << "createSecurityToken" << canonicalPath << isDirectory;
     }
@@ -189,9 +191,10 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
     }
 
 #ifdef __APPLE__
-    CFURLRef url = CFURLCreateWithFileSystemPath(
-            kCFAllocatorDefault, QStringToCFString(canonicalPath),
-            kCFURLPOSIXPathStyle, isDirectory);
+    CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
+            QStringToCFString(canonicalPath),
+            kCFURLPOSIXPathStyle,
+            isDirectory);
     if (url) {
         CFErrorRef error = NULL;
 #ifdef Q_OS_IOS
@@ -211,7 +214,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
             QString bookmarkBase64 = QString(bookmarkBA.toBase64());
 
             s_pSandboxPermissions->set(keyForCanonicalPath(canonicalPath),
-                                       bookmarkBase64);
+                    bookmarkBase64);
             CFRelease(bookmark);
             return true;
         } else {
@@ -326,7 +329,7 @@ SecurityTokenPointer Sandbox::openSecurityTokenForDir(const QDir& dir, bool crea
     while (!walkDirCanonicalPath.isEmpty()) {
         // Look for a valid token in the cache.
         QHash<QString, SecurityTokenWeakPointer>::iterator it = s_activeTokens
-                .find(walkDirCanonicalPath);
+                                                                        .find(walkDirCanonicalPath);
         if (it != s_activeTokens.end()) {
             SecurityTokenPointer pToken(it.value());
             if (pToken) {
@@ -368,12 +371,12 @@ SecurityTokenPointer Sandbox::openSecurityTokenForDir(const QDir& dir, bool crea
 }
 
 SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
-                                                    const QString& bookmarkBase64) {
+        const QString& bookmarkBase64) {
 #ifdef __APPLE__
     QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
     if (!bookmarkBA.isEmpty()) {
-        CFDataRef bookmarkData = CFDataCreate(
-                kCFAllocatorDefault, reinterpret_cast<const UInt8*>(bookmarkBA.constData()),
+        CFDataRef bookmarkData = CFDataCreate(kCFAllocatorDefault,
+                reinterpret_cast<const UInt8*>(bookmarkBA.constData()),
                 bookmarkBA.length());
         Boolean stale;
         CFErrorRef error = NULL;
@@ -399,7 +402,7 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
                 }
             } else {
                 SecurityTokenPointer pToken = SecurityTokenPointer(
-                    new SandboxSecurityToken(canonicalPath, url));
+                        new SandboxSecurityToken(canonicalPath, url));
                 s_activeTokens[canonicalPath] = pToken;
                 return pToken;
             }
@@ -550,6 +553,117 @@ QString Sandbox::migrateOldSettings() {
         }
     }
     return sandboxedPath;
+}
+
+// static
+bool Sandbox::ensureSettingsPathAccessible(const QString& settingsPath) {
+    // TEMPORARY FOR TESTING
+    // if (!enabled()) {
+    //     // Not in a sandbox, all paths are accessible
+    //     return true;
+    // }
+
+    QString homePath = QLatin1String("/Users/") + qgetenv("USER");
+    if (qEnvironmentVariableIsEmpty("USER") || qgetenv("USER").contains("/")) {
+        qWarning() << "Sandbox::ensureSettingsPathAccessible:"
+                   << "Cannot determine home directory"
+                   << "(USER environment variable invalid)";
+        // Can't determine container path, try to proceed anyway
+        return true;
+    }
+
+    QString containerPath = homePath +
+            QLatin1String("/Library/Containers/org.mixxx.mixxx/Data/");
+
+    QDir settingsDir(settingsPath);
+    QString absoluteSettingsPath = settingsDir.absolutePath();
+
+    // If the path is inside the sandbox container, no extra permission needed
+    if (absoluteSettingsPath.startsWith(containerPath)) {
+        qInfo() << "Sandbox::ensureSettingsPathAccessible:"
+                << "Settings path is inside the sandbox container";
+        return true;
+    }
+
+    qInfo() << "Sandbox::ensureSettingsPathAccessible:"
+            << "Settings path is outside the sandbox container:"
+            << absoluteSettingsPath;
+
+    // Try to create the directory if it doesn't exist
+    if (!settingsDir.exists()) {
+        if (!settingsDir.mkpath(".")) {
+            qWarning() << "Sandbox::ensureSettingsPathAccessible:"
+                       << "Failed to create directory"
+                       << absoluteSettingsPath;
+        }
+    }
+
+    // Check if we already have access (e.g. from a previous security-scoped bookmark)
+    if (settingsDir.exists() && QFileInfo(absoluteSettingsPath).isWritable()) {
+        qInfo() << "Sandbox::ensureSettingsPathAccessible:"
+                << "Settings path is already accessible";
+        return true;
+    }
+
+    // Request permission via file dialog
+    QString title = QObject::tr("Mixxx needs access to the settings folder");
+    QMessageBox::information(nullptr,
+            title,
+            QObject::tr(
+                    "Due to macOS sandboxing, Mixxx needs your permission to "
+                    "access the following settings folder:"
+                    "\n\n%1\n\n"
+                    "After clicking OK, a file selection dialog will appear. "
+                    "Please select the above folder to grant Mixxx access."
+                    "\n\n"
+                    "If you do not want to grant access, click Cancel in the "
+                    "file picker. Mixxx will then exit.")
+                    .arg(absoluteSettingsPath));
+
+    QString result = QFileDialog::getExistingDirectory(
+            nullptr,
+            title,
+            absoluteSettingsPath);
+
+    if (result.isEmpty()) {
+        qWarning() << "Sandbox::ensureSettingsPathAccessible:"
+                   << "User declined to grant access to"
+                   << absoluteSettingsPath;
+        return false;
+    }
+
+    // Create a security-scoped bookmark for the selected path
+    QDir resultDir(result);
+    QString canonicalResult = resultDir.canonicalPath();
+    if (canonicalResult.isEmpty()) {
+        qWarning() << "Sandbox::ensureSettingsPathAccessible:"
+                   << "Cannot resolve canonical path for" << result;
+        return false;
+    }
+
+    bool tokenCreated = createSecurityToken(canonicalResult, true);
+    if (!tokenCreated) {
+        qWarning() << "Sandbox::ensureSettingsPathAccessible:"
+                   << "Failed to create security token for"
+                   << canonicalResult;
+        return false;
+    }
+
+    // Verify we can now access the path
+    if (!settingsDir.exists()) {
+        settingsDir.mkpath(".");
+    }
+    if (QFileInfo(absoluteSettingsPath).isWritable()) {
+        qInfo() << "Sandbox::ensureSettingsPathAccessible:"
+                << "Successfully granted access to"
+                << absoluteSettingsPath;
+        return true;
+    }
+
+    qWarning() << "Sandbox::ensureSettingsPathAccessible:"
+               << "Still cannot access" << absoluteSettingsPath
+               << "after granting permission";
+    return false;
 }
 #endif
 

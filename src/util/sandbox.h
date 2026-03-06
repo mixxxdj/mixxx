@@ -36,6 +36,11 @@ class Sandbox {
 
 #ifdef Q_OS_MACOS
     static QString migrateOldSettings();
+    // Checks if the given settings path is accessible. If the path is outside
+    // the sandbox container, prompts the user to grant access via a file dialog
+    // (which creates a security-scoped bookmark). Returns true if the path is
+    // accessible, false otherwise.
+    static bool ensureSettingsPathAccessible(const QString& settingsPath);
 #endif
 
     // Returns true if we are in a sandbox.
@@ -74,7 +79,8 @@ class Sandbox {
             const QString& canonicalPath, const QString& bookmarkBase64);
 
     // Creates a security token. s_mutex is not needed for this method.
-    static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
+    static bool createSecurityToken(
+            const QString& canonicalPath, bool isDirectory);
 
     static QT_RECURSIVE_MUTEX s_mutex;
     static bool s_bInSandbox;
