@@ -1248,6 +1248,18 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
+    QMessageBox* pMsg = new QMessageBox();
+    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    pMsg->setWindowTitle(tr("Library scan finished"));
+
+    if (result.noDirectoriesConfigured) {
+        pMsg->setText(tr("No music directories configured for scanning.") +
+                QStringLiteral("<br>") +
+                tr("Add directories in the library preferences."));
+        pMsg->show();
+        return;
+    }
+
     QString summary =
             tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
     if (result.numNewTracks == 0 &&
@@ -1282,9 +1294,7 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     }
-    QMessageBox* pMsg = new QMessageBox();
-    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    pMsg->setWindowTitle(tr("Library scan finished"));
+
     pMsg->setText(summary);
     pMsg->show();
 }
