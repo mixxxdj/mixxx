@@ -619,6 +619,39 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
+           <item row="5" column="0" alignment="Qt::AlignTop">
+            <widget class="QLabel" name="label_custom_metadata">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Custom Metadata</string>
+             </property>
+             <property name="buddy">
+              <cstring>btnAddSocialLink</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <layout class="QVBoxLayout" name="layoutCustomMetadata">
+             <item>
+              <widget class="QPushButton" name="btnAddSocialLink">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item row="0" column="0" colspan="2">
             <widget class="QCheckBox" name="stream_public">
              <property name="text">
@@ -627,72 +660,6 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupBoxSocialLinks">
-           <property name="title">
-            <string>Social &amp; Contact Links</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_sociallinks">
-            <item>
-             <widget class="QTableWidget" name="socialLinksTable">
-              <property name="selectionMode">
-               <enum>QAbstractItemView::SingleSelection</enum>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>true</bool>
-              </attribute>
-              <attribute name="verticalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <column>
-               <property name="text">
-                <string>Platform</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Link</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_sociallinks">
-              <item>
-               <widget class="QPushButton" name="btnAddSocialLink">
-                <property name="text">
-                 <string>Add</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btnRemoveSocialLink">
-                <property name="text">
-                 <string>Remove selected</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_social">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
          </item>
         </layout>
        </widget>

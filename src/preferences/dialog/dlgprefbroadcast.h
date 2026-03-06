@@ -51,7 +51,6 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void btnDisconnectAllClicked();
     void onSectionResized();
     void btnAddSocialLinkClicked();
-    void btnRemoveSocialLinkClicked();
 
   private:
     void applyModel();

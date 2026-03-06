@@ -41,24 +41,14 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
     groupPasswordStorage->setVisible(false);
 #endif
 
+    // Connect the Add button for Custom Metadata
     connect(btnAddSocialLink,
             &QPushButton::clicked,
             this,
             &DlgPrefBroadcast::btnAddSocialLinkClicked);
-    connect(btnRemoveSocialLink,
-            &QPushButton::clicked,
-            this,
-            &DlgPrefBroadcast::btnRemoveSocialLinkClicked);
 
-    // Set up the social links table
-    socialLinksTable->horizontalHeader()->setStretchLastSection(true);
-    socialLinksTable->verticalHeader()->setVisible(false);
-    // Grow vertically to fit rows — AdjustToContents recalculates sizeHint(),
-    // Minimum policy lets the layout use that hint as the actual height.
-    socialLinksTable->setSizeAdjustPolicy(
-            QAbstractScrollArea::AdjustToContents);
-    socialLinksTable->setSizePolicy(
-            QSizePolicy::Expanding, QSizePolicy::Minimum);
+    // Remove table-specific initialization
+    // ... no longer needed since we use a QVBoxLayout ...
 
     connect(connectionList->horizontalHeader(),
             &QHeaderView::sectionResized,
@@ -496,8 +486,13 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     // Stream website
     stream_website->setText(profile->getStreamWebsite());
 
-    // Social & Contact Links
-    socialLinksTable->setRowCount(0);
+    for (int i = layoutCustomMetadata->count() - 1; i >= 0; --i) {
+        QWidget* widget = layoutCustomMetadata->itemAt(i)->widget();
+        if (widget && widget != btnAddSocialLink) {
+            layoutCustomMetadata->removeWidget(widget);
+            delete widget;
+        }
+    }
     const QMap<QString, QString> extraMeta = profile->getStreamExtraMetadata();
     for (auto it = extraMeta.constBegin(); it != extraMeta.constEnd(); ++it) {
         addSocialLinkRow(it.key(), it.value());
@@ -587,20 +582,21 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setStreamName(stream_name->text());
     profile->setStreamWebsite(stream_website->text());
 
-    // Social & Contact Links — read table rows into a map
+    // Custom Metadata Links — read layout rows into a map
     QMap<QString, QString> extraMeta;
-    for (int row = 0; row < socialLinksTable->rowCount(); ++row) {
-        QComboBox* keyCombo = qobject_cast<QComboBox*>(
-                socialLinksTable->cellWidget(row, 0));
-        QLineEdit* valueEdit = qobject_cast<QLineEdit*>(
-                socialLinksTable->cellWidget(row, 1));
-        if (!keyCombo || !valueEdit) {
-            continue;
-        }
-        QString key = keyCombo->currentText().trimmed();
-        QString value = valueEdit->text().trimmed();
-        if (!key.isEmpty() && !value.isEmpty()) {
-            extraMeta.insert(key, value);
+    for (int i = 0; i < layoutCustomMetadata->count(); ++i) {
+        QWidget* rowWidget = layoutCustomMetadata->itemAt(i)->widget();
+        if (rowWidget && rowWidget != btnAddSocialLink) {
+            QComboBox* keyCombo = rowWidget->findChild<QComboBox*>();
+            QLineEdit* valueEdit = rowWidget->findChild<QLineEdit*>();
+            if (!keyCombo || !valueEdit) {
+                continue;
+            }
+            QString key = keyCombo->currentText().trimmed();
+            QString value = valueEdit->text().trimmed();
+            if (!key.isEmpty() && !value.isEmpty()) {
+                extraMeta.insert(key, value);
+            }
         }
     }
     profile->setStreamExtraMetadata(extraMeta);
@@ -703,57 +699,47 @@ bool DlgPrefBroadcast::okayToClose() const {
 }
 
 void DlgPrefBroadcast::addSocialLinkRow(const QString& key, const QString& value) {
-    int row = socialLinksTable->rowCount();
-    socialLinksTable->insertRow(row);
+    QWidget* rowWidget = new QWidget(this);
+    QHBoxLayout* rowLayout = new QHBoxLayout(rowWidget);
+    rowLayout->setContentsMargins(0, 0, 0, 0);
 
-    // Column 0: QComboBox with common platform options + editable
-    QComboBox* keyCombo = new QComboBox(this);
+    // Column 0: QComboBox (editable, no default items)
+    QComboBox* keyCombo = new QComboBox(rowWidget);
     keyCombo->setEditable(true);
-    // Common platforms recognized by Icecast / streamer communities
-    const QStringList platforms = {
-            QStringLiteral("irc"),
-            QStringLiteral("instagram"),
-            QStringLiteral("twitter"),
-            QStringLiteral("facebook"),
-            QStringLiteral("discord"),
-            QStringLiteral("youtube"),
-            QStringLiteral("twitch"),
-            QStringLiteral("spotify"),
-            QStringLiteral("soundcloud"),
-            QStringLiteral("mixcloud"),
-    };
-    keyCombo->addItems(platforms);
+    // As per review feedback, no default social platforms
+
     if (!key.isEmpty()) {
-        int idx = keyCombo->findText(key);
-        if (idx >= 0) {
-            keyCombo->setCurrentIndex(idx);
-        } else {
-            keyCombo->setCurrentText(key);
-        }
+        keyCombo->setCurrentText(key);
     }
-    socialLinksTable->setCellWidget(row, 0, keyCombo);
+    rowLayout->addWidget(keyCombo);
 
     // Column 1: QLineEdit for the value
-    QLineEdit* valueEdit = new QLineEdit(this);
-    valueEdit->setPlaceholderText(tr("Link or username"));
+    QLineEdit* valueEdit = new QLineEdit(rowWidget);
+    valueEdit->setPlaceholderText(tr("Value"));
     if (!value.isEmpty()) {
         valueEdit->setText(value);
     }
-    socialLinksTable->setCellWidget(row, 1, valueEdit);
-    // Notify the layout that our preferred height has changed
-    socialLinksTable->updateGeometry();
+    // Allow expanding horizontally
+    valueEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    rowLayout->addWidget(valueEdit);
+
+    // Column 2: Remove button
+    QPushButton* btnRemove = new QPushButton(tr("Remove"), rowWidget);
+    connect(btnRemove, &QPushButton::clicked, this, [this, rowWidget]() {
+        layoutCustomMetadata->removeWidget(rowWidget);
+        delete rowWidget;
+    });
+    rowLayout->addWidget(btnRemove);
+
+    // Insert the row widget into the dynamic layout, just above the "Add" button
+    int insertIndex = layoutCustomMetadata->count() - 1;
+    // ensure we don't insert below zero if add button somehow is missing
+    if (insertIndex < 0) {
+        insertIndex = 0;
+    }
+    layoutCustomMetadata->insertWidget(insertIndex, rowWidget);
 }
 
 void DlgPrefBroadcast::btnAddSocialLinkClicked() {
     addSocialLinkRow();
-    // Scroll to the new row
-    socialLinksTable->scrollToBottom();
-}
-
-void DlgPrefBroadcast::btnRemoveSocialLinkClicked() {
-    int row = socialLinksTable->currentRow();
-    if (row >= 0) {
-        socialLinksTable->removeRow(row);
-        socialLinksTable->updateGeometry();
-    }
 }
