@@ -37,6 +37,8 @@ class KeyComparisonGroupState final : public EffectState {
     // Counts beats since last note fired, used to implement the Measure knob
     // in sync mode.
     int m_beatCount = 0;
+    // Set on enable in unsynced mode to fire the first note immediately.
+    bool m_fireImmediately = false;
 };
 
 /// Plays a short pitched piano tone at a configurable beat interval.

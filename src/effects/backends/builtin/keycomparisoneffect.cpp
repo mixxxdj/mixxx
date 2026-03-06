@@ -262,13 +262,21 @@ void KeyComparisonEffect::processChannel(
     const double periodMultiplier = periodMultiplierFromMeasure(measure);
 
     if (enableState == EffectEnableState::Enabling) {
-        // Start m_srcFramePos past the sample end so the tail path produces
-        // silence until the first beat fires a fresh note.
-        pGroupState->m_srcFramePos =
-                static_cast<double>(pianoSample.size());
-        pGroupState->framesSinceLastNote =
-                shouldSync && hasBeatInfo ? pianoSample.size() : 0;
-        // Initialise to measure - 1 so the first beat fires immediately
+        if (shouldSync && hasBeatInfo) {
+            // In sync mode, wait silently for the first beat.
+            pGroupState->m_srcFramePos =
+                    static_cast<double>(pianoSample.size());
+            pGroupState->framesSinceLastNote = pianoSample.size();
+        } else {
+            // In unsynced mode, fire the first note immediately via
+            // m_fireImmediately. Silence the tail path so the note
+            // does not play twice on the first buffer.
+            pGroupState->m_srcFramePos =
+                    static_cast<double>(pianoSample.size());
+            pGroupState->framesSinceLastNote = 0;
+            pGroupState->m_fireImmediately = true;
+        }
+        // Initialise to measure - 1 so the first synced beat fires immediately
         // rather than waiting a full measure.
         pGroupState->m_beatCount = measure - 1;
     }
@@ -305,18 +313,26 @@ void KeyComparisonEffect::processChannel(
     }
     pGroupState->framesSinceLastNote += engineParameters.framesPerBuffer();
 
-    const std::span<CSAMPLE> noteStart = shouldSync && hasBeatInfo
-            ? syncedNoteOutput(
-                      *groupFeatures.beat_fraction_buffer_end,
-                      groupFeatures.beat_length,
-                      engineParameters,
-                      output)
-            : unsyncedNoteOutput(
-                      engineParameters.sampleRate(),
-                      pGroupState->framesSinceLastNote,
-                      m_pBpmParameter->value(),
-                      periodMultiplier,
-                      output);
+    std::span<CSAMPLE> noteStart;
+    if (pGroupState->m_fireImmediately) {
+        // Fire at the start of this buffer immediately, then revert to normal
+        // unsynced timing.
+        noteStart = output;
+        pGroupState->m_fireImmediately = false;
+    } else if (shouldSync && hasBeatInfo) {
+        noteStart = syncedNoteOutput(
+                *groupFeatures.beat_fraction_buffer_end,
+                groupFeatures.beat_length,
+                engineParameters,
+                output);
+    } else {
+        noteStart = unsyncedNoteOutput(
+                engineParameters.sampleRate(),
+                pGroupState->framesSinceLastNote,
+                m_pBpmParameter->value(),
+                periodMultiplier,
+                output);
+    }
 
     if (noteStart.empty()) {
         return;
