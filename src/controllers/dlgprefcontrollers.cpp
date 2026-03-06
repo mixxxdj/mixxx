@@ -44,7 +44,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::rescanControllers);
 
-#ifdef __PORTMIDI__
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
     checkBox_midithrough->setChecked(m_pConfig->getValue(kMidiThroughCfgKey, false));
     connect(checkBox_midithrough,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -276,7 +276,7 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, 
     pControllerTreeItem->setFont(0, temp);
 }
 
-#ifdef __PORTMIDI__
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 void DlgPrefControllers::slotMidiThroughChanged(Qt::CheckState state) {
     m_pConfig->setValue(kMidiThroughCfgKey, state != Qt::Unchecked);

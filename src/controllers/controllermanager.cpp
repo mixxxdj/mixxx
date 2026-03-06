@@ -20,6 +20,10 @@
 #include "controllers/midi/portmidienumerator.h"
 #endif
 
+#ifdef __LIBREMIDI__
+#include "controllers/midi/libremidienumerator.h"
+#endif
+
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
 #endif
@@ -158,6 +162,9 @@ void ControllerManager::slotInitialize() {
     // construct since they interact with host MIDI APIs.
 #ifdef __PORTMIDI__
     m_enumerators.append(new PortMidiEnumerator(m_pConfig));
+#endif
+#ifdef __LIBREMIDI__
+    m_enumerators.append(new LibremidiEnumerator(m_pConfig));
 #endif
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());
