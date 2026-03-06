@@ -28,11 +28,15 @@ class KeyComparisonGroupState final : public EffectState {
     // Temporary mono buffer for the resampling step. Sized to framesPerBuffer
     // in audioParametersChanged so no allocation happens on the audio thread.
     std::vector<CSAMPLE> tempMono;
+    // Tracks position in the piano sample in source frames. Stored as double
+    // so that changing pitchRatio mid-note does not cause a position jump and
+    // the resulting crack.
+    double m_srcFramePos = 0.0;
     std::size_t framesSinceLastNote = 0;
-    mixxx::audio::SampleRate sampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     // Counts beats since last note fired, used to implement the Measure knob
     // in sync mode.
-    int beatCount = 0;
+    int m_beatCount = 0;
 };
 
 /// Plays a short pitched piano tone at a configurable beat interval.

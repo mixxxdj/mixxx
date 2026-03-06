@@ -120,8 +120,8 @@ double periodMultiplierFromMeasure(int measure) {
 
 void KeyComparisonGroupState::audioParametersChanged(
         const mixxx::EngineParameters& engineParameters) {
-    sampleRate = engineParameters.sampleRate();
-    pianoSample = generatePianoSample(sampleRate);
+    m_sampleRate = engineParameters.sampleRate();
+    pianoSample = generatePianoSample(m_sampleRate);
     tempMono.resize(engineParameters.framesPerBuffer());
 }
 
@@ -255,13 +255,22 @@ void KeyComparisonEffect::processChannel(
     const bool hasBeatInfo = groupFeatures.beat_length.has_value() &&
             groupFeatures.beat_fraction_buffer_end.has_value();
 
+    const int measure = std::clamp(
+            static_cast<int>(std::round(m_pMeasureParameter->value())),
+            1,
+            8);
+    const double periodMultiplier = periodMultiplierFromMeasure(measure);
+
     if (enableState == EffectEnableState::Enabling) {
-        if (shouldSync && hasBeatInfo) {
-            pGroupState->framesSinceLastNote = pianoSample.size();
-        } else {
-            pGroupState->framesSinceLastNote = 0;
-        }
-        pGroupState->beatCount = 0;
+        // Start m_srcFramePos past the sample end so the tail path produces
+        // silence until the first beat fires a fresh note.
+        pGroupState->m_srcFramePos =
+                static_cast<double>(pianoSample.size());
+        pGroupState->framesSinceLastNote =
+                shouldSync && hasBeatInfo ? pianoSample.size() : 0;
+        // Initialise to measure - 1 so the first beat fires immediately
+        // rather than waiting a full measure.
+        pGroupState->m_beatCount = measure - 1;
     }
 
     const int keyIndex = std::clamp(
@@ -272,7 +281,7 @@ void KeyComparisonEffect::processChannel(
     // The rate correction compensates for the sample being generated at a
     // different rate than the engine (e.g. 96000 Hz default vs 48000 Hz actual).
     const double rateCorrection =
-            static_cast<double>(pGroupState->sampleRate.value()) /
+            static_cast<double>(pGroupState->m_sampleRate.value()) /
             static_cast<double>(engineParameters.sampleRate().value());
     const double pitchRatio =
             std::pow(2.0, kKeySemitoneOffset[keyIndex] / 12.0) *
@@ -282,21 +291,17 @@ void KeyComparisonEffect::processChannel(
     const CSAMPLE_GAIN gain =
             db2ratio(static_cast<float>(m_pGainParameter->value()));
 
-    const int measure = std::clamp(
-            static_cast<int>(std::round(m_pMeasureParameter->value())),
-            1,
-            8);
-    const double periodMultiplier = periodMultiplierFromMeasure(measure);
-
     // Continue the note tail from the previous buffer.
-    const auto srcOffset = static_cast<std::size_t>(
-            static_cast<double>(pGroupState->framesSinceLastNote) *
-            pitchRatio);
+    // m_srcFramePos tracks the source position directly so that changing
+    // pitchRatio mid-note does not cause a position jump and crack.
     {
         const std::size_t tailFrames = output.size() / mixxx::kEngineChannelOutputCount;
         std::span<CSAMPLE> tailMono(pGroupState->tempMono.data(), tailFrames);
+        const auto srcOffset = static_cast<std::size_t>(pGroupState->m_srcFramePos);
         resampleMono(subspanClamped(pianoSample, srcOffset), tailMono, pitchRatio);
         SampleUtil::addMonoToStereoWithGain(gain, pOutput, tailMono.data(), tailFrames);
+        pGroupState->m_srcFramePos +=
+                static_cast<double>(engineParameters.framesPerBuffer()) * pitchRatio;
     }
     pGroupState->framesSinceLastNote += engineParameters.framesPerBuffer();
 
@@ -319,19 +324,22 @@ void KeyComparisonEffect::processChannel(
 
     // In sync mode, count beats and only fire every `measure` beats.
     if (shouldSync && hasBeatInfo) {
-        pGroupState->beatCount++;
-        if (pGroupState->beatCount < measure) {
+        pGroupState->m_beatCount++;
+        if (pGroupState->m_beatCount < measure) {
             return;
         }
-        pGroupState->beatCount = 0;
+        pGroupState->m_beatCount = 0;
     }
 
     {
         const std::size_t onsetFrames = noteStart.size() / mixxx::kEngineChannelOutputCount;
         std::span<CSAMPLE> onsetMono(pGroupState->tempMono.data(), onsetFrames);
-        pGroupState->framesSinceLastNote =
+        const std::size_t srcConsumed =
                 resampleMono(pianoSample, onsetMono, pitchRatio);
         SampleUtil::addMonoToStereoWithGain(
                 gain, noteStart.data(), onsetMono.data(), onsetFrames);
+        // Reset source position and output counter from the onset playback.
+        pGroupState->m_srcFramePos = static_cast<double>(srcConsumed);
+        pGroupState->framesSinceLastNote = srcConsumed;
     }
 }
