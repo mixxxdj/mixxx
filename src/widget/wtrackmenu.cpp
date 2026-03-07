@@ -575,7 +575,7 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotUpdateReplayGainFromPregain);
 
         m_pNormalizeReplayGainAct = make_parented<QAction>(
-                tr("Normalize ReplayGain Across Selected Tracks"), this);
+                tr("Apply Average ReplayGain to Selection (e.g. Album)"), this);
         connect(m_pNormalizeReplayGainAct,
                 &QAction::triggered,
                 this,
