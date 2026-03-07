@@ -1,5 +1,8 @@
 #include "controllers/controllershareddata.h"
 
+#include <QReadLocker>
+#include <QWriteLocker>
+
 #include "moc_controllershareddata.cpp"
 
 ControllerSharedData::ControllerSharedData(QObject* parent)
@@ -9,6 +12,7 @@ ControllerSharedData::ControllerSharedData(QObject* parent)
 QVariant ControllerSharedData::get(const QString& ns,
         const QString& entity,
         const QString& key) const {
+    QReadLocker locker(&m_lock);
     auto nsIt = m_values.constFind(ns);
     if (nsIt == m_values.constEnd()) {
         return QVariant();
@@ -29,9 +33,14 @@ void ControllerSharedData::set(const QString& ns,
         const QString& key,
         const QVariant& value,
         QObject* sender) {
-    // QHash default-constructs entries if they do not exist, no need to check if they exist
-    // already.
-    m_values[ns][entity][key] = value;
+    {
+        QWriteLocker locker(&m_lock);
+        // QHash default-constructs entries if they do not exist, no need to
+        // check if they exist already.
+        m_values[ns][entity][key] = value;
+    }
+    // Emit outside the lock to avoid holding it during signal delivery,
+    // which could deadlock if a slot calls back into get().
     emit updated(ns, entity, key, value, sender);
 }
 

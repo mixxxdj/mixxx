@@ -2,6 +2,7 @@
 
 #include <QHash>
 #include <QObject>
+#include <QReadWriteLock>
 #include <QVariant>
 
 class ControllerNamespacedSharedData;
@@ -50,6 +51,9 @@ class ControllerSharedData : public QObject {
             QObject* sender);
 
   private:
+    // Protects m_values for thread-safe access from both the
+    // Controller thread and the GUI thread.
+    mutable QReadWriteLock m_lock;
     // namespace -> entity -> key -> value
     QHash<QString, QHash<QString, QHash<QString, QVariant>>> m_values;
 };
