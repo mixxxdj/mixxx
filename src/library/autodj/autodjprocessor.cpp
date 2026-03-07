@@ -1699,10 +1699,9 @@ void AutoDJProcessor::playerOrientationChanged(DeckAttributes* pAttributes) {
     }
 
     if (m_eState != ADJ_DISABLED) {
-        // Disable and Enable auto DJ.  We will likely fail to enable auto DJ
-        // but that will pop up an error to explain the situation to the user.
+        // Disable auto DJ and emit the error explaining that we no longer have two valid decks.
         toggleAutoDJ(false);
-        toggleAutoDJ(true);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
     }
 }
 
