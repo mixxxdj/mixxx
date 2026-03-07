@@ -1,11 +1,17 @@
 #include "encoder/encoderwave.h"
 
+#include <infotag.h>
+#include <qendian.h>
+#include <qglobal.h>
+#include <sndfile.h>
+
 #include <QtDebug>
 
 #include "audio/types.h"
 #include "encoder/encodercallback.h"
 #include "encoder/encoderwavesettings.h"
 #include "recording/defs_recording.h"
+#include "util/assert.h"
 
 // The virtual file context must return the length of the virtual file in bytes.
 static sf_count_t  sf_f_get_filelen (void *user_data)
@@ -145,6 +151,42 @@ void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
 // call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
 void EncoderWave::flush() {
     sf_write_sync(m_pSndfile);
+
+    QString trackList = getTrackList().join("\n");
+
+    TagLib::RIFF::Info::Tag tag;
+    tag.setTitle(QStringToTString(m_metaDataTitle));
+    tag.setArtist(QStringToTString(m_metaDataArtist));
+    tag.setAlbum(QStringToTString(m_metaDataAlbum));
+    tag.setComment(QStringToTString(trackList));
+
+    TagLib::ByteVector tagBuffer = tag.render();
+
+    // Write the LIST chunk header.
+    QByteArray listChunkHeaderBuffer = QByteArray("LIST");
+    listChunkHeaderBuffer.resize(8);
+    qToLittleEndian(tagBuffer.size(), listChunkHeaderBuffer.data() + 4);
+
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(listChunkHeaderBuffer.constData()),
+            0,
+            listChunkHeaderBuffer.size());
+
+    // Write the INFO chunks.
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(tagBuffer.data()),
+            0,
+            tagBuffer.size());
+
+    // Update the file header with the new file size
+    int fileSize = m_pCallback->tell();
+    m_pCallback->seek(4);
+    auto fileSizeBuffer = QByteArray(4, 0);
+    qToLittleEndian(fileSize - 8, listChunkHeaderBuffer.data());
+    m_pCallback->write(nullptr,
+            reinterpret_cast<const unsigned char*>(fileSizeBuffer.constData()),
+            0,
+            4);
 }
 
 void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferSize) {
@@ -156,10 +198,17 @@ void EncoderWave::encodeBuffer(const CSAMPLE* pBuffer, const std::size_t bufferS
  *
  * Currently this method is used before init() once to save artist, title and album
 */
-void EncoderWave::updateMetaData(const QString& artist, const QString& title, const QString& album) {
-    m_metaDataTitle = title;
-    m_metaDataArtist = artist;
-    m_metaDataAlbum = album;
+void EncoderWave::updateMetaData(const QString& artist,
+        const QString& title,
+        const QString& album,
+        std::chrono::seconds timecode) {
+    if (m_pSndfile == nullptr) {
+        m_metaDataTitle = title;
+        m_metaDataArtist = artist;
+        m_metaDataAlbum = album;
+    } else {
+        addToTracklist(artist, title, timecode);
+    }
 }
 
 void EncoderWave::initStream() {
