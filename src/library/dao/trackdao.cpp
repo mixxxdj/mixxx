@@ -1118,13 +1118,9 @@ bool TrackDAO::onPurgingTracks(
     return true;
 }
 
-void TrackDAO::afterPurgingTracks(
-        const QList<TrackId>& trackIds) {
-    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
-    // replaced with QSet<T>(list.begin(), list.end()).
-    // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixxx is increased,
-    // we need a version check here
+void TrackDAO::afterPurgingTracks(const QList<TrackId>& trackIds) {
+    // Notify BaseTrackCache it should remove tracks and track models
+    // that they should update their cache as well.
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
     emit tracksRemoved(tracksRemovedSet);
 }
