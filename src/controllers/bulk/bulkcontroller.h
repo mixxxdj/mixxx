@@ -1,32 +1,32 @@
 #pragma once
 
-#include <libusb.h>
-
 #include <QAtomicInt>
 #include <QThread>
 #include <optional>
+
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
 #endif
 
+#include <libusb.h>
+
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
-
-struct bulk_transfer_cb_data;
-struct libusb_device_handle;
-struct libusb_transfer;
-struct libusb_context;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
     Q_OBJECT
   public:
-    BulkReader(libusb_device_handle* handle, libusb_context* context, std::uint8_t in_epaddr);
+    BulkReader(libusb_device_handle* handle,
+            libusb_context* context,
+            std::uint8_t in_epaddr,
+            int length);
     ~BulkReader() override;
 
     static void transferFinishedCb(libusb_transfer* transfer) {
         bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
         cb_data->reader->handleTransfer(transfer);
+        cb_data->completed = 1;
     }
 
     void stop();
@@ -40,16 +40,23 @@ class BulkReader : public QThread {
   private:
     QAtomicInt m_stop;
 
-    libusb_transfer* m_in_transfer;
-    libusb_context* m_context;
-
-    std::array<std::uint8_t, 255> m_data;
-
     struct bulk_transfer_cb_data {
         BulkReader* reader;
+        int completed;
     };
 
+    libusb_transfer* m_in_transfer;
+    libusb_context* m_context;
+    libusb_device_handle* m_handle;
     std::unique_ptr<bulk_transfer_cb_data> m_cb_data;
+
+    std::uint8_t m_in_epaddr;
+    int m_in_length;
+    libusb_transfer* transfer_create(libusb_device_handle* handle,
+            std::uint8_t epaddr,
+            int length,
+            unsigned int timeout);
+    void transfer_destroy(libusb_transfer*& transfer);
     void handleTransfer(libusb_transfer* transfer);
 };
 
@@ -145,6 +152,7 @@ class BulkController : public Controller {
     std::uint16_t m_vendorId;
     std::uint16_t m_productId;
     std::uint8_t m_inEndpointAddr;
+    int m_inLength;
     std::uint8_t m_outEndpointAddr;
     std::optional<std::uint8_t> m_interfaceNumber;
 

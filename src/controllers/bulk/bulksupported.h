@@ -12,6 +12,7 @@ struct bulk_device_id {
 
 struct bulk_device_endpoints {
     std::uint8_t in_epaddr;
+    int in_length; // message length for the in_endpoint
     std::uint8_t out_epaddr;
     // we may not know the interface, in which case we should not try to claim it.
     // these devices are likely unusable on windows without claiming the correct interface.
@@ -24,9 +25,9 @@ struct bulk_support_lookup {
 };
 
 constexpr static bulk_support_lookup bulk_supported[] = {
-        {{0x06f8, 0xb105}, {0x82, 0x03, std::nullopt}}, // Hercules MP3e2
-        {{0x06f8, 0xb107}, {0x83, 0x03, std::nullopt}}, // Hercules Mk4
-        {{0x06f8, 0xb100}, {0x86, 0x06, std::nullopt}}, // Hercules Mk2
-        {{0x06f8, 0xb120}, {0x82, 0x03, std::nullopt}}, // Hercules MP3 LE / Glow
-        {{0x17cc, 0x1720}, {0x00, 0x03, 0x04}},         // Traktor NI S4 Mk3
+        {{0x06f8, 0xb105}, {0x82, 255, 0x03, std::nullopt}}, // Hercules MP3e2
+        {{0x06f8, 0xb107}, {0x83, 255, 0x03, std::nullopt}}, // Hercules Mk4
+        {{0x06f8, 0xb100}, {0x86, 255, 0x06, std::nullopt}}, // Hercules Mk2
+        {{0x06f8, 0xb120}, {0x82, 255, 0x03, std::nullopt}}, // Hercules MP3 LE / Glow
+        {{0x17cc, 0x1720}, {0x00, 255, 0x03, 0x04}},         // Traktor NI S4 Mk3
 };
