@@ -30,4 +30,5 @@ constexpr static bulk_support_lookup bulk_supported[] = {
         {{0x06f8, 0xb100}, {0x86, 255, 0x06, std::nullopt}}, // Hercules Mk2
         {{0x06f8, 0xb120}, {0x82, 255, 0x03, std::nullopt}}, // Hercules MP3 LE / Glow
         {{0x17cc, 0x1720}, {0x00, 255, 0x03, 0x04}},         // Traktor NI S4 Mk3
+        {{0x17cc, 0x2305}, {0x81, 255, 0x01, 0x00}},         // NI Traktor Kontrol X1 MK1
 };

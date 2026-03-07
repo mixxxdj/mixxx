@@ -25,6 +25,7 @@ BulkReader::BulkReader(libusb_device_handle* handle,
 }
 
 BulkReader::~BulkReader() {
+    wait();
     transfer_destroy(m_in_transfer);
 }
 
