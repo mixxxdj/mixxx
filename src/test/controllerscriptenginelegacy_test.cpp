@@ -69,7 +69,7 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
     static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
         QByteArray contentsBa = contents.toLocal8Bit();
         ScopedTemporaryFile pFile = std::make_unique<QTemporaryFile>();
-        [[maybe_unused]] auto result = pFile->open();
+        [[maybe_unused]] bool result = pFile->open();
         DEBUG_ASSERT(result);
         pFile->write(contentsBa);
         pFile->close();
