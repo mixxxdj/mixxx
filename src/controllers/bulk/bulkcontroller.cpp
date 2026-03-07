@@ -11,7 +11,6 @@
 #include "moc_bulkcontroller.cpp"
 #include "util/cmdlineargs.h"
 #include "util/time.h"
-#include "util/trace.h"
 
 BulkReader::BulkReader(libusb_device_handle* handle,
         libusb_context* context,
@@ -30,12 +29,9 @@ BulkReader::~BulkReader() {
 }
 
 void BulkReader::handleTransfer(libusb_transfer* transfer) {
-    std::optional<Trace> trace;
-
     switch (transfer->status) {
     case LIBUSB_TRANSFER_COMPLETED:
     case LIBUSB_TRANSFER_TIMED_OUT:
-        trace.emplace("BulkReader process packet");
         if (transfer->actual_length > 0) {
             QByteArray byteArray(reinterpret_cast<char*>(transfer->buffer),
                     transfer->actual_length);
@@ -48,17 +44,10 @@ void BulkReader::handleTransfer(libusb_transfer* transfer) {
         }
         break;
     case LIBUSB_TRANSFER_CANCELLED:
-        trace.emplace("BulkReader transfer cancelled");
-        break;
     case LIBUSB_TRANSFER_ERROR:
-        trace.emplace("BulkReader transfer error");
-        break;
     case LIBUSB_TRANSFER_NO_DEVICE:
     case LIBUSB_TRANSFER_STALL:
-        trace.emplace("BulkReader transfer stall");
-        break;
     case LIBUSB_TRANSFER_OVERFLOW:
-        trace.emplace("BulkReader transfer overflow");
         break;
     }
 }
