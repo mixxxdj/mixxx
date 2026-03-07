@@ -93,20 +93,9 @@ void BulkReader::transfer_destroy(libusb_transfer*& transfer) {
         return;
     }
 
-    int completed = 0;
-    while (!completed) {
-        auto status = transfer->status;
-        switch (status) {
-        case LIBUSB_TRANSFER_COMPLETED:
-        case LIBUSB_TRANSFER_CANCELLED:
-        case LIBUSB_TRANSFER_TIMED_OUT:
-        case LIBUSB_TRANSFER_ERROR:
-        case LIBUSB_TRANSFER_NO_DEVICE:
-            completed = 1;
-            break;
-        default:
-            break;
-        }
+    // Wait for last transfer to complete
+    while (!m_cb_data->completed) {
+        QThread::msleep(1);
     }
 
     libusb_free_transfer(transfer);
