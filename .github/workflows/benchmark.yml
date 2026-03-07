@@ -124,8 +124,6 @@ jobs:
         # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
-          # This should always match the minimum required version in
-          # our CMakeLists.txt
           cmake-version: "3.22.x"
 
       - name: "[Windows] Set up cmake"
@@ -134,9 +132,6 @@ jobs:
         # On windows-11-arm this action installs the x64 version which has unwanted side effects
         if: matrix.os == 'windows-2022'
         with:
-          # This is a workaround for a SSL false positive in cmake 3.26.4
-          # When downloading the manual. 3.22 is required for installing the
-          # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
           cmake-version: "3.22.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
