@@ -156,10 +156,14 @@ TEST_F(NamespacedSharedDataTest, SetAndGet) {
     EXPECT_TRUE(val.toBool());
 }
 
-TEST_F(NamespacedSharedDataTest, ReadFromParentStore) {
+TEST_F(NamespacedSharedDataTest, ReadFromOtherStore) {
     // Set via the parent store, read via namespace wrapper
     m_pSharedData->set("testNS", "deck1", "shift", QVariant(true));
     QVariant val = m_pNamespaced->get("deck1", "shift");
+    EXPECT_TRUE(val.toBool());
+    // Set via wrapper, read via parent store
+    m_pNamespaced->set("deck2", "shift", QVariant(true));
+    val = m_pSharedData->get("testNS", "deck2", "shift");
     EXPECT_TRUE(val.toBool());
 }
 

@@ -29,6 +29,8 @@ void ControllerSharedData::set(const QString& ns,
         const QString& key,
         const QVariant& value,
         QObject* sender) {
+    // QHash default-constructs entries if they do not exist, no need to check if they exist
+    // already.
     m_values[ns][entity][key] = value;
     emit updated(ns, entity, key, value, sender);
 }

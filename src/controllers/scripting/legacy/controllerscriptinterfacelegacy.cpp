@@ -203,6 +203,44 @@ QJSValue ControllerScriptInterfaceLegacy::getSharedValue(
     return pJsEngine->toScriptValue(val);
 }
 
+namespace {
+
+/// Returns true if a QVariant holds one of the SafePrimitive types
+/// allowed by the engine API: string, number, boolean, or null.
+bool isSafePrimitive(const QVariant& v) {
+    if (v.isNull()) {
+        return true;
+    }
+    switch (v.typeId()) {
+    case QMetaType::Bool:
+    case QMetaType::Int:
+    case QMetaType::UInt:
+    case QMetaType::LongLong:
+    case QMetaType::ULongLong:
+    case QMetaType::Double:
+    case QMetaType::Float:
+    case QMetaType::QString:
+        return true;
+    default:
+        return false;
+    }
+}
+
+/// Returns true if a QVariant holds a SafeValue type:
+/// a SafePrimitive or an array of SafePrimitives.
+bool isSafeValue(const QVariant& v) {
+    if (isSafePrimitive(v)) {
+        return true;
+    }
+    if (v.typeId() == QMetaType::QVariantList) {
+        const QVariantList list = v.toList();
+        return std::all_of(list.cbegin(), list.cend(), isSafePrimitive);
+    }
+    return false;
+}
+
+} // anonymous namespace
+
 void ControllerScriptInterfaceLegacy::setSharedValue(
         const QString& entity,
         const QString& key,
@@ -219,8 +257,18 @@ void ControllerScriptInterfaceLegacy::setSharedValue(
         return;
     }
 
+    QVariant variant = value.toVariant();
+    if (!isSafeValue(variant)) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("setSharedValue: value must be a SafeValue "
+                               "type (string, number, boolean, null, or an "
+                               "array of these). Got type: ") +
+                QString::fromLatin1(variant.typeName()));
+        return;
+    }
+
     // Pass "this" as sender so we can suppress self-notifications.
-    pSharedData->set(entity, key, value.toVariant(), this);
+    pSharedData->set(entity, key, variant, this);
 }
 
 QJSValue ControllerScriptInterfaceLegacy::makeSharedValueConnection(
@@ -263,12 +311,12 @@ QJSValue ControllerScriptInterfaceLegacy::makeSharedValueConnection(
             new SharedDataConnectionJSProxy(m_sharedDataConnections.last()));
 }
 
-bool ControllerScriptInterfaceLegacy::removeSharedDataConnection(
+void ControllerScriptInterfaceLegacy::removeSharedDataConnection(
         const SharedDataConnection& conn) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
-        return false;
+        return;
     }
-    return m_sharedDataConnections.removeAll(conn) > 0;
+    m_sharedDataConnections.removeAll(conn);
 }
 
 void ControllerScriptInterfaceLegacy::triggerSharedDataConnection(

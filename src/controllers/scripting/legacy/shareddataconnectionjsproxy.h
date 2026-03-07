@@ -23,7 +23,7 @@ class SharedDataConnectionJSProxy : public QObject {
     bool readIsConnected() const {
         return m_isConnected;
     }
-    Q_INVOKABLE bool disconnect();
+    Q_INVOKABLE void disconnect();
     Q_INVOKABLE void trigger();
 
   private:

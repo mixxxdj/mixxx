@@ -141,7 +141,7 @@ class FakeController : public Controller {
     QString getSharedDataNamespace() override {
         if (m_pMidiMapping) {
             return m_pMidiMapping->sharedDataNamespace();
-#ifdef __HID
+#ifdef __HID__
         } else if (m_pHidMapping) {
             return m_pHidMapping->sharedDataNamespace();
 #endif

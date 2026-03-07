@@ -132,7 +132,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
     void triggerScriptConnection(const ScriptConnection& conn);
 
     /// Disconnect and remove a SharedDataConnection JS callback
-    bool removeSharedDataConnection(const SharedDataConnection& conn);
+    void removeSharedDataConnection(const SharedDataConnection& conn);
     /// Execute a SharedDataConnection JS callback with current value
     void triggerSharedDataConnection(const SharedDataConnection& conn);
 
