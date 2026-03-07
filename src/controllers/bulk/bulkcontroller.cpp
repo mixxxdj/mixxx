@@ -31,8 +31,6 @@ BulkReader::BulkReader(libusb_device_handle* handle,
             transferFinishedCb,
             m_cb_data.get(),
             100);
-
-    libusb_submit_transfer(m_in_transfer);
 }
 
 BulkReader::~BulkReader() {
@@ -85,6 +83,10 @@ void BulkReader::handleTransfer(libusb_transfer* transfer) {
     case LIBUSB_TRANSFER_OVERFLOW:
         trace.emplace("BulkReader transfer overflow");
         break;
+    default:
+        if (!m_stop) {
+            libusb_submit_transfer(transfer);
+        }
     }
 }
 
