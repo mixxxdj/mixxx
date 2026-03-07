@@ -114,12 +114,12 @@ void BulkReader::transfer_destroy(libusb_transfer*& transfer) {
 }
 
 void BulkReader::stop() {
-    m_stop = 1;
-
-    if (m_in_transfer) {
-        qInfo() << "Cancelling bulk transfer";
-        libusb_cancel_transfer(m_in_transfer);
+    if (!m_stop.testAndSetAcquire(0, 1)) {
+        return;
     }
+
+    qInfo() << "Cancelling bulk transfer";
+    libusb_cancel_transfer(m_in_transfer);
 }
 
 void BulkReader::run() {
