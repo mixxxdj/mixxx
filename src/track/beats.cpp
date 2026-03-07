@@ -432,18 +432,27 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     DEBUG_ASSERT(isValid());
     auto it = cfirstmarker();
 
-    auto previousIfNeeded = [](Beats::ConstIterator it, audio::FramePos position) {
-        // In positive direction the minimum step width of a double increases.
-        // This may lead to tiny floating point errors that make `std::ceil`
-        // round up and makes us end up one beat too late.
+    auto adjustIfNeeded = [](Beats::ConstIterator it, audio::FramePos position) {
+        // If `position` is very close (or exactly on) a beat, the calculation
+        // can place the iterator one beat off in either direction due to
+        // finite precision of floating point operations.
         //
-        // Likewise, in negative direction, we can also end up one beat to
-        // late if position is very close to a beat.
+        // ------|------------|------
+        //     it^ ^position          (too early - before `position`)
         //
-        // This works around that issue by going back to the previous
-        // beat if necessary.
-        auto previousBeatIt = it - 1;
-        return (*previousBeatIt >= position) ? previousBeatIt : it;
+        // ------|------------|------
+        //       ^position    ^it     (too late - previous beat also matches)
+        //
+        // We check for such cases here and adjust the iterator as needed.
+
+        const auto previousBeatIt = std::prev(it);
+        if (*previousBeatIt >= position) {
+            return previousBeatIt;
+        }
+        if (*it < position) {
+            return std::next(it);
+        }
+        return it;
     };
 
     audio::FrameDiff_t diff = position - m_lastMarkerPosition;
@@ -455,7 +464,7 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
             return cend();
         }
         it = clastmarker() + static_cast<int>(n);
-        it = previousIfNeeded(it, position);
+        it = adjustIfNeeded(it, position);
     } else if (position < *it) {
         // Lookup position is before the first marker position
         const double n = std::floor((*it - position) / firstBeatLengthFrames());
@@ -463,12 +472,12 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
             return cbegin();
         }
         it -= static_cast<int>(n);
-        it = previousIfNeeded(it, position);
+        it = adjustIfNeeded(it, position);
     } else {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
     DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
-    DEBUG_ASSERT(it == cbegin() || it == cend() || *it > *std::prev(it));
+    DEBUG_ASSERT(it == cbegin() || it == cend() || *std::prev(it) < position);
     return it;
 }
 

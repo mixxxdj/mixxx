@@ -96,6 +96,213 @@
   Do not edit it manually.
   -->
   <releases>
+    <release version="2.5.5" type="development" date="2026-03-05" timestamp="1772747251">
+      <description>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Search: fix 'not' operator
+   #15923
+   #15918
+  </li>
+  <li>
+   Rhythmbox: fix imports
+   #15798
+   #15770
+  </li>
+  <li>
+   WTrackMenu: warn before opening more than 10 tracks in file browser
+   #15828
+   #15819
+  </li>
+  <li>
+   Fix "dataChanged() called with an invalid index range" warning
+   #15937
+   #14610
+  </li>
+  <li>
+   History: allow track file export
+   #16074
+  </li>
+  <li>
+   History: prevent deletion of current history after purging tracks
+   #15991
+  </li>
+  <li>
+   Tracks: improve performance when restoring large track selections
+   #15973
+  </li>
+ </ul>
+ <p>
+  Effects
+ </p>
+ <ul>
+  <li>
+   White Noise: remove DC offset
+   #15979
+  </li>
+  <li>
+   White Noise: improve gain responds
+   #15949
+  </li>
+  <li>
+   Echo: fix distortion bug
+   #15985
+   #15835
+  </li>
+  <li>
+   Echo: fix ramping of the send and feedback parameters
+   #16006
+  </li>
+  <li>
+   QuickEffect: fix crackling noise when switching
+   #15796
+   #15794
+  </li>
+  <li>
+   Glitch: remove unnecessary cast to integer
+   #16068
+  </li>
+  <li>
+   Reverb: fix ramping of the send parameter
+   #16001
+  </li>
+ </ul>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Numark Mixtrack 3: update scripts
+   #14180
+  </li>
+  <li>
+   Pioneer CDJ-350: fix incorrect name in controller mapping
+   #15683
+  </li>
+  <li>
+   Reloop Beatmix 2/4: implement shift+jog wheel seek
+   #15575
+   #12334
+  </li>
+  <li>
+   Traktor Kontrol Z1: fix crossfader cut
+   #14451
+   #14450
+   #15945
+  </li>
+  <li>
+   Traktor S4Mk2: check for deck undefined
+   #14445
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   Fix scratching with keylock enabled and mapping using scratch2
+   #15845
+  </li>
+  <li>
+   AudioUnit: fix crash due to off-by-one error in parameter syncing
+   #15919
+  </li>
+  <li>
+   AudioUnit: fix startup crash by loading out-of-process
+   #16106
+  </li>
+  <li>
+   FX units: resolve issue preventing use on all samplers
+   #15971
+   #15799
+  </li>
+  <li>
+   Fix false positive "First sound has been moved!" warnings log message
+   #16054
+  </li>
+  <li>
+   Beats: fix rare off-by-one beat issue with quantize and sync
+   #13262
+   #16086
+  </li>
+ </ul>
+ <p>
+  Preferences
+ </p>
+ <ul>
+  <li>
+   Interface: use main window screen to detect if skin fits
+   #15824
+   #15823
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Time widget: make ShowSeconds only show seconds, no extra locale info
+   #15805
+  </li>
+  <li>
+   Search related menu: fix search click trigger
+   #15912
+  </li>
+  <li>
+   Tracks: avoid re-sorting table when purging/hiding tracks
+   #15872
+   #12565
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Add Flatpak packaging files
+   #15695
+   #15922
+   #15935
+  </li>
+  <li>
+   Fail early if not running from Visual Studio environment
+   #14623
+  </li>
+  <li>
+   Make Debian non-free optional
+   #15895
+  </li>
+  <li>
+   Debian: remove 'qml6-module-qtquick-nativestyle
+   #15771
+  </li>
+  <li>
+   Ubuntu: retire Plucky Puffin 25.04
+   #15926
+  </li>
+ </ul>
+ <p>
+  Miscellaneous
+ </p>
+ <ul>
+  <li>
+   Fix
+   mixxx-test
+   build to find
+   mad.h
+   #15803
+  </li>
+  <li>
+   Num deck streamline
+   #14112
+   #16009
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.5.4" type="stable" date="2025-12-14" timestamp="1765670400">
       <description>
  <p>
