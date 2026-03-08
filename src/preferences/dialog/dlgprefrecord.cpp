@@ -2,6 +2,7 @@
 
 #include <QFileDialog>
 #include <QRadioButton>
+#include <QStandardItemModel>
 #include <QStandardPaths>
 
 #include "encoder/encoder.h"
@@ -101,6 +102,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     comboBoxSplitting->addItem(SPLIT_74MIN);
     comboBoxSplitting->addItem(SPLIT_80MIN);
     comboBoxSplitting->addItem(SPLIT_120MIN);
+    comboBoxSplitting->addItem(SPLIT_NONE);
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -345,6 +347,7 @@ void DlgPrefRecord::setupEncoderUI() {
     }
 
     updateTracklistAsComment();
+    updateSplitNoneItem();
 }
 
 // This is to load the recording channel mode (Mono/Stereo) from config
@@ -417,6 +420,29 @@ void DlgPrefRecord::updateTracklistAsComment() {
         CheckBoxTracklistAsComment->setChecked(false);
     }
     CheckBoxTracklistAsComment->blockSignals(true);
+}
+
+void DlgPrefRecord::updateSplitNoneItem() {
+    bool hasFileSizeCap = (m_selFormat.internalName == ENCODING_WAVE ||
+            m_selFormat.internalName == ENCODING_AIFF);
+    QStandardItemModel* pModel =
+            qobject_cast<QStandardItemModel*>(comboBoxSplitting->model());
+    if (!pModel) {
+        return;
+    }
+    int noneIndex = comboBoxSplitting->findText(SPLIT_NONE);
+    if (noneIndex < 0) {
+        return;
+    }
+    QStandardItem* pItem = pModel->item(noneIndex);
+    if (hasFileSizeCap) {
+        pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
+        if (comboBoxSplitting->currentIndex() == noneIndex) {
+            comboBoxSplitting->setCurrentIndex(4); // fall back to 4 GB
+        }
+    } else {
+        pItem->setFlags(pItem->flags() | Qt::ItemIsEnabled);
+    }
 }
 
 void DlgPrefRecord::slotGroupChanged() {

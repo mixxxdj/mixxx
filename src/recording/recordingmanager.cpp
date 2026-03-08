@@ -324,6 +324,8 @@ quint64 RecordingManager::getFileSplitSize() {
         return SIZE_4GB; //Ignore size limit. use time limit
     } else if (fileSizeStr == SPLIT_120MIN) {
         return SIZE_4GB; //Ignore size limit. use time limit
+    } else if (fileSizeStr == SPLIT_NONE) {
+        return SIZE_NONE; // No file size limit.
     } else {
         return SIZE_4GB; // default
     }
