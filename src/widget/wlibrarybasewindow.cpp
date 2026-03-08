@@ -1,3 +1,5 @@
+#include "widget/wlibrarybasewindow.h"
+
 #include <QKeyEvent>
 #include <QtDebug>
 
