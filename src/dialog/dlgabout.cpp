@@ -162,7 +162,8 @@ DlgAbout::DlgAbout()
             << "Robert Hendrickx"
             << "Rishabh Saini"
             << "J&eacute;r&ocirc;me Froissart"
-            << "Daniel Kinahan";
+            << "Daniel Kinahan"
+            << "Anuj Nayak";
 
     QStringList specialThanks;
     specialThanks
