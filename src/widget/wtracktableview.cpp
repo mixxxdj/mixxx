@@ -413,9 +413,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
             restoreCurrentViewState();
         }
         initTrackMenu();
-        return;
-    } else if (pCurrModel) {
-        pCurrModel->maybeStopModelPopulation();
     }
 }
 
@@ -454,7 +451,7 @@ void WTrackTableView::loadTrackModelInPreparationWindow(
         // If the model has not changed there's no need to exchange the headers
         // which would cause a small GUI freeze
         TrackModel* pCurrModel = getTrackModel();
-        if (getTrackModel() == pNewTrackModel) {
+        if (pCurrModel == pNewTrackModel) {
             // Re-sort the table even if the track model is the same. This triggers
             // a select() if the table is dirty.
             doSortByColumn(horizontalHeader()->sortIndicatorSection(),
