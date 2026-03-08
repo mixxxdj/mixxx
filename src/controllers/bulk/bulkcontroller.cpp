@@ -49,6 +49,7 @@ void BulkReader::handleTransfer(libusb_transfer* transfer) {
     case LIBUSB_TRANSFER_NO_DEVICE:
     case LIBUSB_TRANSFER_STALL:
     case LIBUSB_TRANSFER_OVERFLOW:
+        stop();
         break;
     }
 }
