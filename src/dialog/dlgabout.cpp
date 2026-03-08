@@ -111,7 +111,6 @@ DlgAbout::DlgAbout()
             << "Morgan Nunan"
             << "FrankwaP"
             << "Markus Kohlhase"
-            << "Daniel Fernandes"
             << "Frank Grimy"
             << "Al Hadebe"
             << "Emilien Colombier"
