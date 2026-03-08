@@ -100,11 +100,14 @@ TEST_F(ControllerSharedDataBackendTest, MultipleEntitiesAndKeys) {
 }
 
 TEST_F(ControllerSharedDataBackendTest, UpdateSignalEmitted) {
-    QString receivedNs;
-    QString receivedEntity;
-    QString receivedKey;
-    QVariant receivedValue;
-    QObject* receivedSender = nullptr;
+    struct Result {
+        QString ns;
+        QString entity;
+        QString key;
+        QVariant value;
+        QObject* sender = nullptr;
+    };
+    auto received = std::make_shared<Result>();
 
     QObject::connect(m_pSharedData.get(),
             &ControllerSharedData::updated,
@@ -113,21 +116,21 @@ TEST_F(ControllerSharedDataBackendTest, UpdateSignalEmitted) {
                     const QString& key,
                     const QVariant& value,
                     QObject* sender) {
-                receivedNs = ns;
-                receivedEntity = entity;
-                receivedKey = key;
-                receivedValue = value;
-                receivedSender = sender;
+                received->ns = ns;
+                received->entity = entity;
+                received->key = key;
+                received->value = value;
+                received->sender = sender;
             });
 
     QObject senderObj;
     m_pSharedData->set("ns1", "deck1", "shift", QVariant(true), &senderObj);
 
-    EXPECT_EQ(receivedNs, "ns1");
-    EXPECT_EQ(receivedEntity, "deck1");
-    EXPECT_EQ(receivedKey, "shift");
-    EXPECT_TRUE(receivedValue.toBool());
-    EXPECT_EQ(receivedSender, &senderObj);
+    EXPECT_EQ(received->ns, "ns1");
+    EXPECT_EQ(received->entity, "deck1");
+    EXPECT_EQ(received->key, "shift");
+    EXPECT_TRUE(received->value.toBool());
+    EXPECT_EQ(received->sender, &senderObj);
 }
 
 //
@@ -168,8 +171,11 @@ TEST_F(NamespacedSharedDataTest, ReadFromOtherStore) {
 }
 
 TEST_F(NamespacedSharedDataTest, OnlyReceivesOwnNamespace) {
-    QString receivedEntity;
-    int callCount = 0;
+    struct Result {
+        QString entity;
+        int callCount = 0;
+    };
+    auto received = std::make_shared<Result>();
 
     QObject::connect(m_pNamespaced.get(),
             &ControllerNamespacedSharedData::updated,
@@ -180,20 +186,23 @@ TEST_F(NamespacedSharedDataTest, OnlyReceivesOwnNamespace) {
                 Q_UNUSED(key);
                 Q_UNUSED(value);
                 Q_UNUSED(sender);
-                receivedEntity = entity;
-                callCount++;
+                received->entity = entity;
+                received->callCount++;
             });
 
     m_pSharedData->set("otherNS", "deck1", "shift", QVariant(true));
-    EXPECT_EQ(callCount, 0);
+    EXPECT_EQ(received->callCount, 0);
 
     m_pSharedData->set("testNS", "deck1", "shift", QVariant(true));
-    EXPECT_EQ(callCount, 1);
-    EXPECT_EQ(receivedEntity, "deck1");
+    EXPECT_EQ(received->callCount, 1);
+    EXPECT_EQ(received->entity, "deck1");
 }
 
 TEST_F(NamespacedSharedDataTest, UpdateSignalIncludesSender) {
-    QObject* receivedSender = nullptr;
+    struct Result {
+        QObject* sender = nullptr;
+    };
+    auto received = std::make_shared<Result>();
 
     QObject::connect(m_pNamespaced.get(),
             &ControllerNamespacedSharedData::updated,
@@ -204,12 +213,12 @@ TEST_F(NamespacedSharedDataTest, UpdateSignalIncludesSender) {
                 Q_UNUSED(entity);
                 Q_UNUSED(key);
                 Q_UNUSED(value);
-                receivedSender = sender;
+                received->sender = sender;
             });
 
     QObject senderObj;
     m_pNamespaced->set("deck1", "shift", QVariant(true), &senderObj);
-    EXPECT_EQ(receivedSender, &senderObj);
+    EXPECT_EQ(received->sender, &senderObj);
 }
 
 //
@@ -268,6 +277,19 @@ class ControllerSharedDataTest : public MixxxTest {
 
     const QList<SharedDataConnection>& sharedDataConnectionsB() {
         return interfaceB()->m_sharedDataConnections;
+    }
+
+    bool processEventsUntil(std::function<bool()> condition, int timeoutMs = 500) {
+        QElapsedTimer timer;
+        timer.start();
+        while (!timer.hasExpired(timeoutMs)) {
+            application()->processEvents();
+            if (condition()) {
+                return true;
+            }
+            QThread::msleep(1);
+        }
+        return false;
     }
 
     ControllerScriptEngineLegacy* m_pEngineA;
