@@ -318,16 +318,10 @@ quint64 RecordingManager::getFileSplitSize() {
         return SIZE_2GB;
     } else if (fileSizeStr == SPLIT_4096MB) {
         return SIZE_4GB;
-    } else if (fileSizeStr == SPLIT_60MIN) {
-        return SIZE_4GB; //Ignore size limit. use time limit
-    } else if (fileSizeStr == SPLIT_74MIN) {
-        return SIZE_4GB; //Ignore size limit. use time limit
-    } else if (fileSizeStr == SPLIT_80MIN) {
-        return SIZE_4GB; //Ignore size limit. use time limit
-    } else if (fileSizeStr == SPLIT_120MIN) {
-        return SIZE_4GB; //Ignore size limit. use time limit
     } else {
-        return SIZE_4GB; // default
+        // Time-based splits, SPLIT_NONE, and unknown values all disable
+        // the file size limit; splitting is handled by time or not at all.
+        return SIZE_4GB;
     }
 }
 
