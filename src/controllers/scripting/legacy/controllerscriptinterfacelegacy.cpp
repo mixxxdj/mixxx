@@ -311,12 +311,12 @@ QJSValue ControllerScriptInterfaceLegacy::makeSharedValueConnection(
             new SharedDataConnectionJSProxy(m_sharedDataConnections.last()));
 }
 
-void ControllerScriptInterfaceLegacy::removeSharedDataConnection(
+bool ControllerScriptInterfaceLegacy::removeSharedDataConnection(
         const SharedDataConnection& conn) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
-        return;
+        return false;
     }
-    m_sharedDataConnections.removeAll(conn);
+    return m_sharedDataConnections.removeAll(conn) > 0;
 }
 
 void ControllerScriptInterfaceLegacy::triggerSharedDataConnection(
@@ -353,10 +353,17 @@ void ControllerScriptInterfaceLegacy::onSharedDataUpdated(
     }
     QJSValue jsVal = pJsEngine->toScriptValue(value);
 
-    for (auto& connection : m_sharedDataConnections) {
+    // Collect matching connections first to avoid mutating the underlying
+    // container while iterating if callbacks cause disconnections.
+    QList<SharedDataConnection> connectionsToInvoke;
+    connectionsToInvoke.reserve(m_sharedDataConnections.size());
+    for (const auto& connection : m_sharedDataConnections) {
         if (connection.entity == entity && connection.key == key) {
-            connection.executeCallback(jsVal);
+            connectionsToInvoke.append(connection);
         }
+    }
+    for (const auto& connection : connectionsToInvoke) {
+        connection.executeCallback(jsVal);
     }
 }
 
