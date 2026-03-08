@@ -438,7 +438,8 @@ void DlgPrefRecord::updateSplitNoneItem() {
     if (hasFileSizeCap) {
         pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
         if (comboBoxSplitting->currentIndex() == noneIndex) {
-            comboBoxSplitting->setCurrentIndex(4); // fall back to 4 GB
+            int fallbackIndex = comboBoxSplitting->findText(SPLIT_4096MB);
+            comboBoxSplitting->setCurrentIndex(fallbackIndex >= 0 ? fallbackIndex : 0);
         }
     } else {
         pItem->setFlags(pItem->flags() | Qt::ItemIsEnabled);

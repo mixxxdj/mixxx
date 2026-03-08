@@ -223,7 +223,9 @@ void RecordingManager::slotBytesRecorded(int bytes) {
     //Split before reaching the max size. m_split_size has some headroom, as
     //seen in the constant definitions in defs_recording.h. Also, note that
     //bytes are increased in the order of 10s of KBs each call.
-    if (m_iNumberOfBytesRecordedSplit >= m_split_size) {
+    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
+    if (fileSizeStr != SPLIT_NONE &&
+            m_iNumberOfBytesRecordedSplit >= m_split_size) {
         qDebug() << "Splitting after " << m_iNumberOfBytesRecorded << " bytes written";
         // This will reuse the previous filename but append a suffix.
         splitContinueRecording();
@@ -324,8 +326,6 @@ quint64 RecordingManager::getFileSplitSize() {
         return SIZE_4GB; //Ignore size limit. use time limit
     } else if (fileSizeStr == SPLIT_120MIN) {
         return SIZE_4GB; //Ignore size limit. use time limit
-    } else if (fileSizeStr == SPLIT_NONE) {
-        return SIZE_NONE; // No file size limit.
     } else {
         return SIZE_4GB; // default
     }
