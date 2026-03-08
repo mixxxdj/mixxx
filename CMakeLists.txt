@@ -5120,6 +5120,24 @@ if(WIN32)
     )
   endif()
 
+  # Build the custom action DLL for cross-scope upgrade detection.
+  # Old Mixxx (<=2.5) was installed per-user due to a CPack bug (CMP0172).
+  # The standard FindRelatedProducts skips per-user products when the
+  # current install is per-machine.  The custom action calls scope-agnostic
+  # MsiEnumRelatedProducts() to detect and mark the old installation for
+  # removal by RemoveExistingProducts.
+  add_subdirectory(packaging/wix)
+  set(CPACK_WIX_INSTALL_SCOPE "perMachine")
+  file(
+    GENERATE OUTPUT
+    "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
+    INPUT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/MixxxUpgradePatch.xml.in"
+  )
+  set(
+    CPACK_WIX_PATCH_FILE
+    "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
+  )
+
   # uses CMAKE_PROJECT_VERSION
   configure_file(packaging/wix/LICENSE.rtf.in packaging/wix/LICENSE.rtf @ONLY)
 endif()
