@@ -18,6 +18,8 @@ class TrackModel {
     static constexpr int kHeaderNameRole = Qt::UserRole + 1;
     // This role is used for data export like in CSV files
     static constexpr int kDataExportRole = Qt::UserRole + 2;
+    // This role provides the tuning frequency in Hz
+    static constexpr int kTuningFrequencyRole = Qt::UserRole + 3;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)
@@ -94,6 +96,7 @@ class TrackModel {
         Color = 30,
         LastPlayedAt = 31,
         PlaylistDateTimeAdded = 32,
+        TuningFrequency = 33,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
@@ -139,7 +142,7 @@ class TrackModel {
         return {};
     }
 
-    virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
+    virtual void search(const QString& searchText) = 0;
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can

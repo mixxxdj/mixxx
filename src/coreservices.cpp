@@ -45,6 +45,7 @@
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
 #include "qml/qmlplayermanagerproxy.h"
+#include "qml/qmlpreferencesproxy.h"
 #include "qml/qmlsoundmanagerproxy.h"
 #endif
 #include "soundio/soundmanager.h"
@@ -66,6 +67,9 @@
 
 #if defined(Q_OS_LINUX) && defined(__X11__)
 #include <X11/XKBlib.h>
+#endif
+#if defined(Q_OS_ANDROID)
+#include <QtCore/private/qandroidextras_p.h>
 #endif
 
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -626,6 +630,44 @@ void CoreServices::initialize(QApplication* pApp) {
         if (!dir.exists()) {
             dir.mkpath(".");
         }
+#elif defined(Q_OS_ANDROID)
+        // if(QOperatingSystemVersion::current() <
+        // QOperatingSystemVersion(QOperatingSystemVersion::Android, 11)) {
+        //     qDebug() << "it is less then Android 11 - ALL FILES permission
+        //     isn't possible!";
+        // }
+        QString fd;
+        jboolean value = QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+        if (value == false) {
+            qDebug() << "requesting ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+            QJniObject ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION =
+                    QJniObject::getStaticObjectField(
+                            "android/provider/Settings",
+                            "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
+                            "Ljava/lang/String;");
+            QJniObject intent("android/content/Intent",
+                    "(Ljava/lang/String;)V",
+                    ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION.object());
+            QJniObject jniPath = QJniObject::fromString(
+                    QStringLiteral("package:%1").arg(ANDROID_PACKAGE_NAME));
+            QJniObject jniUri =
+                    QJniObject::callStaticObjectMethod("android/net/Uri",
+                            "parse",
+                            "(Ljava/lang/String;)Landroid/net/Uri;",
+                            jniPath.object<jstring>());
+            QJniObject jniResult = intent.callObjectMethod("setData",
+                    "(Landroid/net/Uri;)Landroid/content/Intent;",
+                    jniUri.object<jobject>());
+            QtAndroidPrivate::startActivity(intent, 0);
+        } else {
+            qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+        }
+        fd = "/storage/emulated/0/Music/";
+        QDir dir = fd;
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
 #else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
@@ -715,7 +757,9 @@ void CoreServices::initialize(QApplication* pApp) {
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
-    for (int i = 0; i < (int)m_pPlayerManager->numDecks() && i < musicFiles.count(); ++i) {
+    const int numTracks = std::min(m_pPlayerManager->numberOfDecks(),
+            static_cast<int>(musicFiles.count()));
+    for (int i = 0; i < numTracks; ++i) {
         if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
@@ -744,6 +788,9 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
     mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
+    mixxx::qml::QmlControllerManagerProxy::registerManager(
+            getControllerManager(),
+            CmdlineArgs::Instance().getControllerPreviewScreens());
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
@@ -866,6 +913,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
     mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
+    mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif

@@ -120,6 +120,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::Key)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::TuningFrequency)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY);
+    m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
     m_columnIndexBySortColumnId[static_cast<int>(
@@ -408,29 +411,26 @@ const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
-    if (sDebug) {
-        qDebug() << this << "setSearch" << searchText;
+void BaseSqlTableModel::setExtraFilter(const QString& extraFilter) {
+    // Note: don't use SQL strings as extraFilter, this will cause issues in
+    // BaseTrackCache::filterAndSort() which is responsible for adding/removing
+    // dirty tracks from the view.
+    if (m_currentSearchFilter != extraFilter) {
+        m_currentSearchFilter = extraFilter;
     }
-
-    bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
-    bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
-    bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
-
-    if (!searchIsDifferent && (filterDisabled || !searchFilterIsDifferent)) {
-        // Do nothing if the filters are no different.
-        return;
-    }
-
-    m_currentSearch = searchText;
-    m_currentSearchFilter = extraFilter;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
+void BaseSqlTableModel::setSearch(const QString& searchText) {
+    if (m_currentSearch != searchText) {
+        m_currentSearch = searchText;
+    }
+}
+
+void BaseSqlTableModel::search(const QString& searchText) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
-    setSearch(searchText, extraFilter);
+    setSearch(searchText);
     select();
 }
 
@@ -826,13 +826,13 @@ void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }
 
-    const int numColumns = columnCount();
+    const int lastColumn = columnCount() - 1;
     for (const auto& trackId : trackIds) {
         const auto rows = getTrackRows(trackId);
         for (int row : rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex topLeft = index(row, 0);
-            QModelIndex bottomRight = index(row, numColumns);
+            QModelIndex bottomRight = index(row, lastColumn);
             emit dataChanged(topLeft, bottomRight);
         }
     }
@@ -849,7 +849,59 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
-    select(); //Repopulate the data model.
+
+    QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
+    removeTrackRows(tracksRemovedSet);
+}
+
+void BaseSqlTableModel::removeTrackRows(const QSet<TrackId>& trackIdsToRemove) {
+    // This is called after hiding, purging or removing tracks from a track set.
+    // The purpose is to keep the tracks view constant after after these
+    // operations by avoiding pointless/confusing re-sorting of the model,
+    // which happens when we call select(), which rebuilds the row cache.
+    // We assume metadata of remaining tracks hasn't changed, we can simply
+    // remove the respective track rows.
+
+    // However, if this is a playlist model, track removal likely also changes
+    // the tracks' positions in the playlist. We need to get the tracks' new
+    // positions from the database, so let's do a select().
+    // FIXME Update position without re-sorting
+    if (hasPositionColumn()) {
+        select();
+        return;
+    }
+
+    // For other models we can now remove all track rows.
+    QVector<RowInfo> rowInfos = m_rowInfo;
+    TrackId2Rows trackIdToRows;
+    TrackPos2Row trackPosToRows; // remains empty
+
+    QMutableListIterator<RowInfo> it(rowInfos);
+    while (it.hasNext()) {
+        const RowInfo& rowInfo = it.next();
+        if (trackIdsToRemove.contains(rowInfo.trackId)) {
+            it.remove();
+        }
+    }
+
+    // Recreate TrackId2Rows, taken from select()
+    trackIdToRows.reserve(rowInfos.size());
+    for (int i = 0; i < rowInfos.size(); ++i) {
+        const RowInfo& rowInfo = rowInfos[i];
+        if (rowInfo.row == -1) {
+            // We've reached the end of valid rows. Resize rowInfo to cut off
+            // this and all further elements.
+            rowInfos.resize(i);
+            break;
+        }
+        trackIdToRows[rowInfo.trackId].push_back(i);
+    }
+
+    clearRows();
+    replaceRows(
+            std::move(rowInfos),
+            std::move(trackIdToRows),
+            std::move(trackPosToRows));
 }
 
 QList<TrackRef> BaseSqlTableModel::getTrackRefs(

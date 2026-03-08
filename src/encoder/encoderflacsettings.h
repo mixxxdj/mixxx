@@ -39,4 +39,10 @@ class EncoderFlacSettings : public EncoderRecordingSettings {
     QList<OptionsGroup> m_radioList;
     QList<int> m_qualList;
     UserSettingsPointer m_pConfig;
+
+  protected:
+    // Provide config to base class
+    UserSettingsPointer getConfig() const override {
+        return m_pConfig;
+    }
 };

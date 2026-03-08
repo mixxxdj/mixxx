@@ -1,16 +1,15 @@
-#version 120
 //// GENERATED - EDITS WILL BE OVERWRITTEN
 
 struct buf
 {
-    mat4 matrix;
+    highp mat4 matrix;
 };
 
 uniform buf ubuf;
 
-varying vec3 vColor;
-attribute vec3 color;
-attribute vec4 position;
+varying highp vec3 vColor;
+attribute highp vec3 color;
+attribute highp vec4 position;
 
 void main()
 {

@@ -16,9 +16,13 @@ class DragAndDropHelper final {
   public:
     DragAndDropHelper() = delete;
 
+    static bool urlsContainSupportedTrackFiles(
+            const QList<QUrl>& urls,
+            bool acceptPlaylists);
+
     static QList<mixxx::FileInfo> supportedTracksFromUrls(
             const QList<QUrl>& urls,
-            bool firstOnly,
+            bool stopOnFirstMatch,
             bool acceptPlaylists);
 
     static bool allowDeckCloneAttempt(
@@ -28,7 +32,7 @@ class DragAndDropHelper final {
     static bool dragEnterAccept(
             const QMimeData& mimeData,
             const QString& sourceIdentifier,
-            bool firstOnly,
+            bool stopOnFirstMatch,
             bool acceptPlaylists);
 
     static QDrag* dragTrack(

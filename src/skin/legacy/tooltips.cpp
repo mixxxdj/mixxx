@@ -969,7 +969,11 @@ void Tooltips::addStandardTooltips() {
             //: The musical key of a track
             << tr("Track Key")
             << tr("Displays the musical key of the loaded track.")
-            << trackTags;
+            << trackTags
+            << tr("Tuning indicators (if detected):")
+            << tr("✧ (sparkle) = 432Hz tuning")
+            << tr("↓ (arrow down) = tuning below 440Hz")
+            << tr("↑ (arrow up) = tuning above 440Hz");
 
     add("track_comment")
             << tr("Track Comment")
@@ -1021,6 +1025,12 @@ void Tooltips::addStandardTooltips() {
     // Intro & outro cues
     add("show_intro_outro_cues")
             << tr("Show/hide intro & outro markers and associated buttons.");
+
+    add("keep_consistent_waveform_heights") << tr(
+            "Ensure all waveforms to have the same height across all channels. "
+            "By default, when displaying the stem controls, waveform for "
+            "channel that have no stem may render with a shorter height in "
+            "order to honor the waveform container size you have requested..");
 
     add("intro_start")
             << tr("Intro Start Marker")

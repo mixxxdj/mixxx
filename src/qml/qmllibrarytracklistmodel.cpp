@@ -54,6 +54,7 @@ QmlLibraryTrackListModel::QmlLibraryTrackListModel(
                 pColumn->fillSpan(),
                 pColumn->columnIdx(),
                 pColumn->preferredWidth(),
+                pColumn->autoHideWidth(),
                 pColumn->delegate(),
                 pColumn->role()));
     }

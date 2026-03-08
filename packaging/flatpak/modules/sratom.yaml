@@ -1,0 +1,22 @@
+name: sratom
+buildsystem: meson
+build-options:
+  prepend-pkg-config-path: /app/lib64/pkgconfig
+config-opts:
+  - -Dbuildtype=debugoptimized
+  - -Ddocs=disabled
+  - -Dtests=disabled
+sources:
+  - type: archive
+    url: https://gitlab.com/lv2/sratom/-/archive/v0.6.20/sratom-v0.6.20.tar.gz
+    sha256: 2e71c82c1fc3b22551077e60ba5858c0dc42a5803f084f90ed2c34ccf21927ff
+    x-checker-data:
+      type: anitya
+      project-id: 14903
+      stable-only: true
+      url-template: https://gitlab.com/lv2/sratom/-/archive/v$version/sratom-v$version.tar.gz
+cleanup:
+  - /include
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t $FLATPAK_DEST/share/licenses/sratom ../COPYING

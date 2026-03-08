@@ -7,224 +7,209 @@ import "../Theme"
 Item {
     id: root
 
+    property bool advanced: false
+    property list<var> gateways: []
+    required property string group
+    property alias handleSink: handleSinkEdge
+    property alias handleSource: handleSourceEdge
+    property var metaType: null
+    required property string name
+
     signal connect(var entity)
     signal disconnect(var entity)
-
-    signal scrolled()
     signal gatewayReady(string address, Item node)
+    signal scrolled
 
-    required property string name
-    required property string group
-    property list<var> gateways: []
-    property bool advanced: false
-
-    implicitHeight: 54 + 32 * gatewayRepeater.visibleChannels
-    width: 135
+    implicitHeight: 45 + 28 * gatewayRepeater.visibleChannels
+    width: 105
     z: 10
 
     onGatewaysChanged: {
-        gatewayRepeater.visibleChannels = root.gateways.length
+        gatewayRepeater.visibleChannels = root.gateways.length;
     }
 
-    property alias handleSource: handleSourceEdge
-    property alias handleSink: handleSinkEdge
-
-    property var metaType: null
     Rectangle {
         id: content
-        radius: 15
-        color: Theme.darkGray3
+
         anchors.fill: parent
         anchors.margins: 8
+        color: Theme.darkGray3
+        radius: 15
+
         Column {
             id: gatewayColumn
+
             anchors.fill: parent
             padding: 0
             spacing: 4
 
             Item {
-                height: nameLabel.implicitHeight + 18
+                height: nameLabel.implicitHeight + 9
                 width: parent.width
+
                 Label {
                     id: nameLabel
+
                     anchors.fill: parent
                     anchors.margins: 9
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignTop
-                    text: name
                     color: Theme.white
                     elide: Text.ElideRight
                     font.pixelSize: 15
                     fontSizeMode: Text.Fit
+                    horizontalAlignment: Text.AlignHCenter
+                    text: name
+                    verticalAlignment: Text.AlignTop
                 }
             }
-
             Repeater {
                 id: gatewayRepeater
-                model: root.gateways
+
                 property int visibleChannels: root.gateways.length
+
+                model: root.gateways
+
                 Repeater {
                     id: node
 
-                    required property int index
-                    readonly property string label: root.gateways[index].name
                     readonly property string address: root.gateways[index].address || root.gateways[index].name
-                    readonly property var channels: root.gateways[index].channels || [0, 1]
-                    readonly property var instances: root.gateways[index].instances || 1
-                    readonly property string type: root.gateways[index].type
                     readonly property bool advanced: root.gateways[index].advanced || false
+                    property list<int> channelAssignation: [...Array(node.channels.length / 2)].map((_, i) => i)
+                    readonly property var channels: root.gateways[index].channels || [0, 1]
+                    property int connectionCount: 0
+                    required property int index
+                    readonly property var instances: root.gateways[index].instances || 1
+                    readonly property string label: root.gateways[index].name
                     readonly property bool required: !!root.gateways[index].required
+                    readonly property string type: root.gateways[index].type
 
-                    model: node.channels.length/2 * instances
-
-                    property list<int> channelAssignation: [...Array(node.channels.length/2)].map((_, i) => i)
-
-                    function availableEdge() {
-                        for (let i = 0; i < node.count; i++) {
-                            let current = node.itemAt(i);
-                            if (current.edgeItem.connection) continue;
-                            return i;
-                        }
-                    }
                     function assignedEdges() {
-                        let assignation = {}
+                        let assignation = {};
                         for (let i = 0; i < node.count; i++) {
                             let current = node.itemAt(i);
                             if (current.edgeItem.connection) {
-                                assignation[node.channelAssignation[i]] = current.edgeItem.connection
+                                assignation[node.channelAssignation[i]] = current.edgeItem.connection;
                             }
                         }
-                        return assignation
+                        return assignation;
                     }
-                    property int connectionCount: 0
+                    function availableEdge() {
+                        for (let i = 0; i < node.count; i++) {
+                            let current = node.itemAt(i);
+                            if (current.edgeItem.connection)
+                                continue;
+                            return i;
+                        }
+                    }
+
+                    model: node.channels.length / 2 * instances
+
+                    Component.onCompleted: {
+                        root.gatewayReady(address, node);
+                    }
+
                     Item {
                         id: channel
 
-                        required property int index
-                        property alias edgeItem: edge
                         property bool counted: channel.index == 0
+                        property alias edgeItem: edge
+                        required property int index
 
+                        height: 22
                         visible: (edgeItem.connection?.ready || index == node.connectionCount) && (!node.advanced || root.advanced)
+                        width: parent.width
+
                         onVisibleChanged: {
                             if (counted != channel.visible)
-                                gatewayRepeater.visibleChannels += channel.visible ? 1 : -1
-                            counted = channel.visible
+                                gatewayRepeater.visibleChannels += channel.visible ? 1 : -1;
+                            counted = channel.visible;
                         }
 
-                        width: parent.width
-                        height: 28
                         RowLayout {
+                            id: inputLabel
+
                             anchors {
                                 left: parent.left
-                                right: parent.right
                                 leftMargin: 15
+                                right: parent.right
                                 rightMargin: 15
                             }
-                            id: inputLabel
                             Label {
-                                Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignVCenter
+                                Layout.fillWidth: true
                                 Layout.preferredHeight: 28
-                                verticalAlignment: Text.AlignVCenter
-                                text: node.instances == 1 ? label : `${label} #${index+1}`
                                 color: Theme.white
                                 elide: Text.ElideRight
                                 font.pixelSize: 10
                                 fontSizeMode: Text.Fit
+                                text: node.instances == 1 ? label : `${label} #${index + 1}`
+                                verticalAlignment: Text.AlignVCenter
                             }
                             // Item {
                             //     Layout.fillWidth: true
                             // }
                             Skin.ComboBox {
-                                Layout.minimumWidth: implicitWidth
                                 id: channelSelector
-                                property int previousIndex: node.channelAssignation[channel.index] ?? 0
-                                visible: node.count > 1 && node.channels.length > 2
-                                spacing: 2
-                                clip: true
 
+                                property int previousIndex: node.channelAssignation[channel.index] ?? 0
+
+                                Layout.minimumWidth: implicitWidth
+                                clip: true
+                                currentIndex: node.channelAssignation[channel.index] ?? 0
                                 font.pixelSize: 12
                                 model: {
-                                    return [...Array(node.channels.length/2)].map((e, i) => `Ch ${i * 2 + node.channels[0] + 1} - ${i * 2 + node.channels[0] + 2}`);
+                                    return [...Array(node.channels.length / 2)].map((e, i) => `Ch ${i * 2 + node.channels[0] + 1} - ${i * 2 + node.channels[0] + 2}`);
                                 }
-                                currentIndex: node.channelAssignation[channel.index] ?? 0
-                                onActivated: (activatedIndex) => {
-                                    let alreadyAssigned = node.channelAssignation.indexOf(activatedIndex)
-                                    node.channelAssignation[alreadyAssigned] = previousIndex
-                                    node.channelAssignation[channel.index] = activatedIndex
+                                spacing: 2
+                                visible: node.count > 1 && node.channels.length > 2
+
+                                onActivated: activatedIndex => {
+                                    let alreadyAssigned = node.channelAssignation.indexOf(activatedIndex);
+                                    node.channelAssignation[alreadyAssigned] = previousIndex;
+                                    node.channelAssignation[channel.index] = activatedIndex;
                                 }
                             }
                         }
                         Rectangle {
                             id: edge
-                            property var entity: root
-                            property var advanced: node.advanced
-                            property int instance: index / (node.channels.length/2)
-                            property string type: node.type
-                            property string group: root.group
+
                             property var address: node.address
-
-                            anchors.horizontalCenter: type == "source" ? parent.right : parent.left
-                            anchors.verticalCenter: inputLabel.verticalCenter
-
+                            property var advanced: node.advanced
+                            property bool connecting: false
                             property var connection: null
                             property bool counted: false
-                            property bool connecting: false
-
-                            onConnectionChanged: {
-                                if (counted != !!edge.connection)
-                                    node.connectionCount += edge.connection ? 1 : -1
-                                counted = !!edge.connection
-                            }
+                            property var entity: root
+                            property string group: root.group
+                            property int instance: index / (node.channels.length / 2)
+                            property string type: node.type
 
                             function updateConnectionPosition() {
                                 if (edge.connection && edge.connection.source == edge) {
-                                    edge.connection.sourcePosition = edge.mapToItem(edge.connection.router, edge.width/2, edge.height/2)
+                                    edge.connection.sourcePosition = edge.mapToItem(edge.connection.router, edge.width / 2, edge.height / 2);
                                 } else if (edge.connection && edge.connection.sink == edge) {
-                                    edge.connection.sinkPosition = edge.mapToItem(edge.connection.router, edge.width/2, edge.height/2)
+                                    edge.connection.sinkPosition = edge.mapToItem(edge.connection.router, edge.width / 2, edge.height / 2);
                                 }
                             }
 
-                            Connections {
-                                target: root
-                                function onScrolled() {
-                                    edge.updateConnectionPosition()
-                                }
-                                function onXChanged() {
-                                    edge.updateConnectionPosition()
-                                }
-                                function onYChanged() {
-                                    edge.updateConnectionPosition()
-                                }
-                            }
-
-                            Connections {
-                                target: channel
-                                function onHeightChanged() {
-                                    edge.updateConnectionPosition()
-                                }
-                                function onYChanged() {
-                                    edge.updateConnectionPosition()
-                                }
-                            }
-
+                            anchors.horizontalCenter: type == "source" ? parent.right : parent.left
+                            anchors.verticalCenter: inputLabel.verticalCenter
                             color: Theme.midGray
-                            width: 10
                             height: width
-                            radius: width/2
+                            radius: width / 2
+                            width: 15
                             z: 100
 
                             states: [
                                 State {
                                     name: "idle"
+                                    when: !edge.connecting && !edge.connection
                                 },
                                 State {
                                     name: "warning"
                                     when: (!edge.connection && node.required) || (edge.connection && edge.connection.state == "warning")
 
                                     PropertyChanges {
-                                        edge.width: 15
                                         edge.color: Theme.warningColor
+                                        edge.width: 20
                                     }
                                 },
                                 State {
@@ -237,90 +222,145 @@ Item {
                                 },
                                 State {
                                     name: "setting"
-                                    when: edge.connection && !edge.connection.existing || edge.connecting
+                                    when: edge.connection && !edge.connection.existing
 
                                     PropertyChanges {
-                                        edge.width: 15
                                         edge.color: Theme.accentColor
+                                        edge.width: 15
+                                    }
+                                },
+                                State {
+                                    name: "creating"
+                                    when: edge.connecting
+
+                                    PropertyChanges {
+                                        edge.color: Theme.accentColor
+                                        edge.width: 15
                                     }
                                 }
                             ]
 
+                            onConnectionChanged: {
+                                if (counted != !!edge.connection)
+                                    node.connectionCount += edge.connection ? 1 : -1;
+                                counted = !!edge.connection;
+                            }
+
+                            Connections {
+                                function onScrolled() {
+                                    edge.updateConnectionPosition();
+                                }
+                                function onXChanged() {
+                                    edge.updateConnectionPosition();
+                                }
+                                function onYChanged() {
+                                    edge.updateConnectionPosition();
+                                }
+
+                                target: root
+                            }
+                            Connections {
+                                function onHeightChanged() {
+                                    edge.updateConnectionPosition();
+                                }
+                                function onYChanged() {
+                                    edge.updateConnectionPosition();
+                                }
+
+                                target: channel
+                            }
+                            SequentialAnimation {
+                                alwaysRunToEnd: true
+                                loops: Animation.Infinite
+                                running: edge.state == "creating"
+
+                                OpacityAnimator {
+                                    duration: 500
+                                    from: 1
+                                    target: edge
+                                    to: 0.2
+                                }
+                                OpacityAnimator {
+                                    duration: 500
+                                    from: 0.2
+                                    target: edge
+                                    to: 1
+                                }
+                            }
                             MouseArea {
                                 id: edgeMouseArea
-                                hoverEnabled: edge.connection != null && edge.connection.visible
+
                                 anchors.fill: parent
-                                onPressed: {
-                                    if (edge.connection && edge.connection.flags & AudioConnection.Flags.AboutToDelete) {
-                                        root.disconnect(edge.connection)
-                                    } else if (edge.connection == null) {
-                                        root.connect(parent)
-                                    }
-                                }
+                                hoverEnabled: edge.connection != null && edge.connection.visible
+
                                 onEntered: {
                                     if (edge.connection) {
-                                        edge.connection.flags |= AudioConnection.Flags.AboutToDelete
+                                        edge.connection.flags |= AudioConnection.Flags.AboutToDelete;
                                     }
                                 }
                                 onExited: {
                                     if (edge.connection) {
-                                        edge.connection.flags &= ~AudioConnection.Flags.AboutToDelete
+                                        edge.connection.flags &= ~AudioConnection.Flags.AboutToDelete;
+                                    }
+                                }
+                                onPressed: {
+                                    if (edge.connection && edge.connection.flags & AudioConnection.Flags.AboutToDelete) {
+                                        root.disconnect(edge.connection);
+                                    } else if (edge.connection == null) {
+                                        root.connect(parent);
                                     }
                                 }
                             }
                         }
-                    }
-                    Component.onCompleted: {
-                        root.gatewayReady(address, node)
                     }
                 }
             }
         }
         AudioEntityEdge {
             id: handleSourceEdge
+
+            anchors.horizontalCenter: handleSourceEdge.vertical ? parent.horizontalCenter : parent.right
+            anchors.top: handleSourceEdge.vertical ? undefined : parent.top
+            anchors.topMargin: handleSourceEdge.vertical ? 0 : 16
+            anchors.verticalCenter: handleSourceEdge.vertical ? parent.bottom : undefined
             entity: root
             type: "source"
 
             Connections {
-                target: root
-
                 function onImplicitHeightChanged() {
-                    handleSourceEdge.updateConnectionPosition()
+                    handleSourceEdge.updateConnectionPosition();
                 }
                 function onXChanged() {
-                    handleSourceEdge.updateConnectionPosition()
+                    handleSourceEdge.updateConnectionPosition();
                 }
                 function onYChanged() {
-                    handleSourceEdge.updateConnectionPosition()
+                    handleSourceEdge.updateConnectionPosition();
                 }
-            }
 
-            anchors.horizontalCenter: handleSourceEdge.vertical ? parent.horizontalCenter : parent.right
-            anchors.verticalCenter: handleSourceEdge.vertical ? parent.bottom : undefined
-            anchors.top: handleSourceEdge.vertical ? undefined :parent.top
-            anchors.topMargin: handleSourceEdge.vertical ? 0 :16
+                target: root
+            }
         }
         AudioEntityEdge {
             id: handleSinkEdge
+
+            anchors.horizontalCenter: handleSinkEdge.vertical ? parent.horizontalCenter : parent.left
+            anchors.verticalCenter: handleSinkEdge.vertical ? parent.top : parent.verticalCenter
             entity: root
             type: "sink"
 
             Connections {
-                target: root
-
                 function onImplicitHeightChanged() {
-                    handleSinkEdge.updateConnectionPosition()
+                    handleSinkEdge.updateConnectionPosition();
                 }
                 function onXChanged() {
-                    handleSinkEdge.updateConnectionPosition()
+                    handleSinkEdge.updateConnectionPosition();
                 }
                 function onYChanged() {
-                    handleSinkEdge.updateConnectionPosition()
+                    handleSinkEdge.updateConnectionPosition();
                 }
-            }
 
-            anchors.horizontalCenter: handleSinkEdge.vertical ? parent.horizontalCenter : parent.left
-            anchors.verticalCenter: handleSinkEdge.vertical ? parent.top : parent.verticalCenter
+                target: root
+            }
         }
     }
 }

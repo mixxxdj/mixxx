@@ -490,6 +490,14 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
 
     m_pPlay->set(0.0);
 
+#ifdef __STEM__
+    if (m_pStemColors.size()) {
+        for (const auto& stemColorCo : m_pStemColors) {
+            stemColorCo->forceSet(kNoTrackColor);
+        }
+    }
+#endif
+
     TrackPointer pUnloadedTrack(std::move(m_pLoadedTrack));
     DEBUG_ASSERT(!m_pLoadedTrack);
     emit trackUnloaded(pUnloadedTrack);
@@ -688,15 +696,17 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
         if (!m_pChannelToCloneFrom) {
             BaseTrackPlayer::TrackLoadReset reset = m_pConfig->getValue(
-                    ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
-            if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
+                    ConfigKey("[Controls]", "SpeedAutoReset"), TrackLoadReset::RESET_PITCH);
+            if (reset == TrackLoadReset::RESET_SPEED ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
                 // Avoid resetting speed if sync lock is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMixer->getEngineSync()->otherSyncedPlaying(getGroup())) {
                     m_pRateRatio->set(1.0);
                 }
             }
-            if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
+            if (reset == TrackLoadReset::RESET_PITCH ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
                 m_pPitchAdjust->set(0.0);
             }
         } else {
@@ -721,19 +731,17 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         }
 
 #ifdef __STEM__
-        if (m_pStemColors.size()) {
-            const auto& stemInfo = m_pLoadedTrack->getStemInfo();
-            DEBUG_ASSERT(stemInfo.size() <= mixxx::kMaxSupportedStems);
-            int stemIdx = 0;
-            for (const auto& stemColorCo : m_pStemColors) {
-                auto color = kNoTrackColor;
-                if (stemIdx < stemInfo.size()) {
-                    color = trackColorToDouble(mixxx::RgbColor::fromQColor(
-                            stemInfo.at(stemIdx).getColor()));
-                }
-                stemColorCo->forceSet(color);
-                stemIdx++;
+        const auto& stemInfo = pNewTrack->getStemInfo();
+        DEBUG_ASSERT(!m_pChannel->isPrimaryDeck() || stemInfo.empty() ||
+                static_cast<size_t>(stemInfo.size()) == m_pStemColors.size());
+
+        for (size_t stemIdx = 0; stemIdx < m_pStemColors.size(); stemIdx++) {
+            auto color = kNoTrackColor;
+            if (stemIdx < static_cast<size_t>(stemInfo.size())) {
+                color = trackColorToDouble(mixxx::RgbColor::fromQColor(
+                        stemInfo.at(stemIdx).getColor()));
             }
+            m_pStemColors[stemIdx]->forceSet(color);
         }
 #endif
 

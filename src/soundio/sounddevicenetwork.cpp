@@ -2,6 +2,10 @@
 
 #include <QtDebug>
 
+#if __has_include(<valgrind/valgrind.h>)
+#include <valgrind/valgrind.h>
+#endif
+
 #include "control/controlobject.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
@@ -334,7 +338,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         } else if (writeExpected < outChunkSize / 2) {
             // We will overshoot by more than a half of the new frames
             if (pWorker->outputDrift()) {
-                // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() "
+                // kLogger.debug() << "workerWriteProcess() "
                 //                    "skip one frame"
                 //                 << (float)writeAvailable / outChunkSize
                 //                 << (float)readAvailable / outChunkSize;
@@ -488,10 +492,15 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
-        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "Network Sound: Denormals to zero mode is not working. "
-                          "EQs and effects may suffer high CPU load";
-        }
+#if __has_include(<valgrind/valgrind.h>)
+        if (RUNNING_ON_VALGRIND) {
+            qDebug() << "Network Sound: Skipping denormals to zero check: running under Valgrind";
+        } else
+#endif
+            VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
+                qWarning() << "Network Sound: Denormals to zero mode is not working. "
+                              "EQs and effects may suffer high CPU load";
+            }
         else {
             qDebug() << "Network Sound: Denormals to zero mode is working";
         }

@@ -300,7 +300,8 @@ WSearchLineEdit,
 
 WBeatSpinBox,
 WBpmEditor QDoubleSpinBox,
-#spinBoxTransition  {
+#spinBoxTransition,
+#spinBoxRecentDays {
   selection-color: #000;
   selection-background-color: #d2d2d2;
   }
@@ -638,7 +639,8 @@ WLibrary {
 
 WBeatSpinBox,
 WBpmEditor QDoubleSpinBox,
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   background-color: #0f0f0f;
   }
   WBeatSpinBox {
@@ -651,22 +653,34 @@ WBpmEditor QDoubleSpinBox,
       border-image: url(skins:LateNight/classic/buttons/spinbox_elevated_border_focus.svg) 2 19 2 2;
     }
 
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     border-width: 3px 19px 2px 3px;
     border-image: url(skins:LateNight/classic/buttons/spinbox_embedded_border.svg) 3 19 2 3;
-    width: 24px;
     height: 19px;
     padding: 0px -15px 0px 0px;
     margin: 0px 2px 3px 5px;
     }
-    #spinBoxTransition:focus {
+  #spinBoxTransition {
+    width: 24px;
+    }
+  #spinBoxRecentDays {
+    width: 45px;
+    }
+    #spinBoxTransition:focus,
+    #spinBoxRecentDays:focus {
       border-image: url(skins:LateNight/classic/buttons/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
+    }
+    #spinBoxRecentDays:disabled {
+      color: #494949;
     }
 
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   #spinBoxTransition::up-button,
-  #spinBoxTransition::down-button {
+  #spinBoxTransition::down-button,
+  #spinBoxRecentDays::up-button,
+  #spinBoxRecentDays::down-button {
     subcontrol-origin: content;
     position: relative;
     /* as with spinbox: border is added to size. */
@@ -674,35 +688,41 @@ WBpmEditor QDoubleSpinBox,
     padding: 0px;
     }
     WBeatSpinBox::up-button,
-    #spinBoxTransition::up-button {
+    #spinBoxTransition::up-button,
+    #spinBoxRecentDays::up-button {
       height: 11px;
       subcontrol-position: top right;
       image: url(skins:LateNight/classic/buttons/spinbox_up.svg) no-repeat;
       }
       WBeatSpinBox::up-button:pressed,
-      #spinBoxTransition::up-button:pressed {
+      #spinBoxTransition::up-button:pressed,
+      #spinBoxRecentDays::up-button:pressed {
         image: url(skins:LateNight/classic/buttons/spinbox_up_pressed.svg) no-repeat;
       }
       WBeatSpinBox::up-button {
         margin: -1px 0px 0px 0px;
         }
-      #spinBoxTransition::up-button {
+      #spinBoxTransition::up-button,
+      #spinBoxRecentDays::up-button {
         margin: -2px -3px 0px 0px;
         }
     WBeatSpinBox::down-button,
-    #spinBoxTransition::down-button {
+    #spinBoxTransition::down-button,
+    #spinBoxRecentDays::down-button {
       height: 11px;
       subcontrol-position: bottom right;
       image: url(skins:LateNight/classic/buttons/spinbox_down.svg) no-repeat;
       }
       WBeatSpinBox::down-button:pressed,
-      #spinBoxTransition::down-button:pressed {
+      #spinBoxTransition::down-button:pressed,
+      #spinBoxRecentDays::down-button:pressed {
         image: url(skins:LateNight/classic/buttons/spinbox_down_pressed.svg) no-repeat;
       }
       WBeatSpinBox::down-button {
         margin: 0px 0px -2px 0px;
         }
-      #spinBoxTransition::down-button {
+      #spinBoxTransition::down-button,
+      #spinBoxRecentDays::down-button {
         margin: 0px -3px -1px 0px;
         }
 
@@ -753,6 +773,8 @@ WBpmEditor QDoubleSpinBox::down-button {
   WBpmEditor QDoubleSpinBox::down-button:pressed {
     image: url(skins:LateNight/classic/buttons/btn__bpm_spinbox_minus_pressed.svg) no-repeat;
   }
+
+
 
 
 
@@ -1276,6 +1298,7 @@ WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 WBeatSpinBox,
 #spinBoxTransition,
+#spinBoxRecentDays,
 WBpmEditor QDoubleSpinBox,
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton {
@@ -2036,6 +2059,10 @@ WPushButton#BpmLockToggle[value="1"] {
     image: url(skins:LateNight/classic/buttons/btn__stem_controls_collapse.svg) no-repeat center center;
   }
 
+#NoStemLabel {
+  color: #f0bb2b;
+}
+
   #BpmLockToggle[value="1"] {
     image: url(skins:LateNight/classic/buttons/btn__bpm_locked.svg);
     }
@@ -2318,7 +2345,9 @@ WTrackTableView::item:selected,
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
-WLibrarySidebar::item:!selected:focus {
+WLibrarySidebar::item:!selected:focus,
+/* This, in conjunction with the c++ counterpart, styles only items hovered while dragging */
+WLibrarySidebar[dragHover="true"]::item:hover {
   outline: none;
   border: 1px solid white;
 }
@@ -2439,17 +2468,18 @@ WTrackTableViewHeader {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #222,
       stop:1 #111);
+    border: 0px;
   }
   WTrackTableViewHeader::section {
-    /* Workaround Qt bug that causes space being reserved for invisible sort indicators.
-       For details see style-plaemon.qss */
-    padding-right: -0.95em;
+    padding: 2px 1px 4px 2px;
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }
   WTrackTableViewHeader::up-arrow,
   WTrackTableViewHeader::down-arrow {
-    border-right: 1px solid #000;
+    outline: none;
+    padding: 0px;
+    margin-bottom: 2px;
     /* gradient colors should match those of QHeaderView gradient,
       with a little transparency added to not cut off the header label */
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,

@@ -31,6 +31,10 @@ on:
         required: false
       MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD:
         required: false
+      ANDROID_SIGNING_KEYSTORE_BASE64:
+        required: false
+      ANDROID_SIGNING_PASSWORD:
+        required: false
       NETLIFY_BUILD_HOOK:
         required: false
       RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
@@ -67,7 +71,6 @@ jobs:
             artifacts_name: Ubuntu 24.04 Qt6 DEB
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
-            qt_qpa_platform: offscreen
           - name: macOS 15 x64
             os: macos-15-intel
             cmake_args: >-
@@ -91,7 +94,6 @@ jobs:
             artifacts_name: macOS Intel DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
-            qt_qpa_platform: offscreen
           - name: macOS 15 arm64
             os: macos-15-intel
             cmake_args: >-
@@ -115,7 +117,6 @@ jobs:
             artifacts_name: macOS ARM DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
-            qt_qpa_platform: offscreen
           - name: Windows 2022 x64
             os: windows-2022
             # Attention: If you change the cmake_args for the Windows CI build,
@@ -142,7 +143,6 @@ jobs:
             artifacts_name: Windows x64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
-            qt_qpa_platform: windows
             arch: x64
           - name: Windows 11 ARM64
             os: windows-11-arm
@@ -171,13 +171,37 @@ jobs:
             artifacts_name: Windows ARM64 Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-winarm
-            qt_qpa_platform: windows
+            arch: arm64
+          - name: Android 15 arm64
+            os: ubuntu-24.04
+            # DBUILD_TESTING=OFF: error: OpenMP support and version of OpenMP (31, 40 or 45) differs
+            cmake_args: >-
+              -DBULK=ON
+              -DQT6=ON
+              -DQML=ON
+              -DHID=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-android
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-linux-release
+              -DCMAKE_SYSTEM_NAME=Android
+              -DBUILD_TESTING=OFF
+              -DBUILD_BENCH=OFF
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/android_buildenv.sh
+            artifacts_name: Android 15 APK
+            artifacts_path: build/android-build/build/outputs/apk/release/*.apk
+            artifacts_slug: android-15
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            crosscompile: true
             arch: arm64
 
     env:
       # macOS codesigning
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+      # Android signing
+      ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+      ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
@@ -189,7 +213,7 @@ jobs:
       artifact-windows-winarm: ${{ steps.prepare_deploy.outputs.artifact-windows-winarm }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -206,7 +230,7 @@ jobs:
         run: git fetch origin --force --tags
 
       - name: "[macOS] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.0
+        uses: jwlawson/actions-setup-cmake@v2.1
         # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
@@ -215,7 +239,7 @@ jobs:
           cmake-version: "3.21.x"
 
       - name: "[Windows] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.0
+        uses: jwlawson/actions-setup-cmake@v2.1
         # Ubuntu 24.04 should use the CMake version from the repos.
         # On windows-11-arm this action installs the x64 version which has unwanted side effects
         if: matrix.os == 'windows-2022'
@@ -250,13 +274,6 @@ jobs:
         if: runner.os != 'Linux'
         run: ${{ matrix.buildenv_script }} name
 
-      - name: "[macOS/Windows] Set up build environment cache"
-        if: runner.os != 'Linux'
-        uses: actions/cache@v4
-        with:
-          path: ${{ matrix.buildenv_basepath }}
-          key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
-
       - name: "[macOS] Import Apple code signing identity"
         id: apple_codesign
         if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
@@ -279,6 +296,33 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
+      - name: "[android] Setup signing key"
+        if: startsWith(matrix.artifacts_slug, 'android')
+        run: |
+          if [ -z "${ANDROID_SIGNING_KEYSTORE_BASE64}" ]; then
+            # If no signing key is available (e.g running on a fork), generate a temporary key
+            keytool \
+              -genkey \
+              -keystore mixxx.keystore \
+              -alias mixxx \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 365 \
+              -keypass mixxxandroid \
+              -storepass mixxxandroid \
+              -dname "CN=${{ github.actor }}"
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=mixxxandroid" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=mixxxandroid" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
+          else
+            echo "${{ env.ANDROID_SIGNING_KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/mixxx.keystore
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
+          fi
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
@@ -296,7 +340,7 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
@@ -311,6 +355,29 @@ jobs:
           ${{ matrix.compiler_cache }} --zero-stats
           ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
+
+      # Remove unused pre-installed software as the runner runs out of space otherwise
+      # Currently freeing up about 17.7G, ~20%
+      - name: "[android] Free up disk space"
+        if: startsWith(matrix.artifacts_slug, 'android')
+        run: |
+          sudo apt-get autoremove -y && sudo apt-get clean
+          sudo rm -rf /home/packer                 # Free up 677M
+          sudo rm -rf /opt/az                      # Free up 649M
+          sudo rm -rf /opt/google                  # Free up 378M
+          sudo rm -rf /opt/hostedtoolcache/CodeQL  # Free up 1.6G
+          sudo rm -rf /opt/hostedtoolcache/go      # Free up 808M
+          sudo rm -rf /opt/hostedtoolcache/node    # Free up 532M
+          sudo rm -rf /opt/hostedtoolcache/PyPy    # Free up 520M
+          sudo rm -rf /opt/hostedtoolcache/Python  # Free up 1.5G
+          sudo rm -rf /opt/microsoft               # Free up 781M
+          sudo rm -rf /opt/pipx                    # Free up 499M
+          sudo rm -rf /usr/lib/google-cloud-sdk    # Free up 957M
+          sudo rm -rf /usr/local/julia1.11.7       # Free up 996M
+          sudo rm -rf /usr/local/share/powershell  # Free up 1.3G
+          sudo rm -rf /usr/share/dotnet            # Free up 3.4G
+          sudo rm -rf /usr/share/swift             # Free up 3.2G
+          sudo rm -rf /usr/local/share/vcpkg       # Size unknown, but obvious duplicate
 
       - name: "Create build directory"
         run: mkdir build
@@ -367,27 +434,16 @@ jobs:
         run: ctest --timeout 45 ${{ matrix.ctest_args }}
         working-directory: build
         env:
-          # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel
           CTEST_PARALLEL_LEVEL: 1
           CTEST_OUTPUT_ON_FAILURE: 1
 
-      - name: Benchmark
-        if: matrix.crosscompile != true
-        run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
-        working-directory: build
-        env:
-          # Render analyzer waveform tests to an offscreen buffer
-          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
-
       - name: "[Windows] Sign executables"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        # Pinned to commit, to fix a caching issue https://github.com/Azure/trusted-signing-action/issues/62
-        uses: azure/trusted-signing-action@0d74250c661747df006298d0fb49944c10f16e03
+        uses: azure/trusted-signing-action@v1.1.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -433,7 +489,7 @@ jobs:
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
@@ -469,8 +525,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        # Pinned to commit, to fix a caching issue https://github.com/Azure/trusted-signing-action/issues/62
-        uses: azure/trusted-signing-action@0d74250c661747df006298d0fb49944c10f16e03
+        uses: azure/trusted-signing-action@v1.1.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -505,6 +560,15 @@ jobs:
           --dest-path "${DEPLOY_PATH}"
           --dest-url 'https://downloads.mixxx.org'
           ${{ matrix.artifacts_path }}
+
+      # TODO create a F-droid repo?
+      # - name: fdroid nightly
+      #   run: |
+      #     sudo add-apt-repository ppa:fdroid/fdroidserver
+      #     sudo apt-get update
+      #     sudo apt-get install apksigner fdroidserver --no-install-recommends
+      #     export DEBUG_KEYSTORE=$
+      #     fdroid nightly --archive-older 10
 
       # Warning: do not move this step before restoring caches or it will break caching due to
       # https://github.com/actions/cache/issues/531
@@ -559,9 +623,9 @@ jobs:
           ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
-      - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
+      - name: "[Android/macOS/Windows] Upload build to downloads.mixxx.org"
         # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: runner.os != 'Linux' && inputs.publish && env.SSH_AUTH_SOCK != null
+        if: startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
@@ -578,10 +642,83 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
+
+  build-flatpak:
+    name: "Flatpak"
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.10
+      options: --privileged
+      volumes:
+        - /usr:/host/usr
+        - /opt:/host/opt
+    strategy:
+      matrix:
+        variant:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.variant.runner }}
+    steps:
+      - name: "Recover host disk space"
+        run: |
+          rm -rf /host/opt/hostedtoolcache/CodeQL
+          rm -rf /host/opt/hostedtoolcache/go
+          rm -rf /host/usr/local/lib/android
+          rm -rf /host/usr/local/.ghcup
+          rm -rf /host/usr/local/share/powershell
+          rm -rf /host/usr/share/swift
+          rm -rf /host/usr/share/dotnet
+
+      - name: "Check out repository"
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: "Store Git version"
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          GIT_DESC=$(git describe --always --first-parent --dirty=-modified)
+          if [ -z "$GIT_DESC" ]; then
+            GIT_DESC="unknown"
+          fi
+          echo "GIT_DESC=$GIT_DESC" >> $GITHUB_ENV
+
+      - name: "Build Flatpak"
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: packaging/flatpak/org.mixxx.Mixxx.yaml
+          arch: ${{ matrix.variant.arch }}
+          build-bundle: false
+          upload-artifact: false
+
+      - name: "Create Flatpak bundle"
+        run: |
+          flatpak build-bundle repo \
+            --arch=${{ matrix.variant.arch }} \
+            Mixxx-${GIT_DESC}-${{ matrix.variant.arch }}.flatpak org.mixxx.Mixxx
+
+      - name: "Create Debug extension"
+        run: |
+          flatpak build-bundle repo \
+            --arch=${{ matrix.variant.arch }} \
+            --runtime Mixxx-${GIT_DESC}-${{ matrix.variant.arch }}.Debug.flatpak org.mixxx.Mixxx.Debug
+
+      - name: "Upload Flatpak bundle"
+        uses: actions/upload-artifact@v6
+        with:
+          name: Flatpak ${{ matrix.variant.arch }}
+          path: Mixxx-${{ env.GIT_DESC }}-${{ matrix.variant.arch }}.flatpak
+
+      - name: "Upload Debug extension"
+        uses: actions/upload-artifact@v6
+        with:
+          name: Flatpak Debug Extension ${{ matrix.variant.arch }}
+          path: Mixxx-${{ env.GIT_DESC }}-${{ matrix.variant.arch }}.Debug.flatpak
 
   update_manifest:
     name: "Update manifest file on download server"
@@ -594,7 +731,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 

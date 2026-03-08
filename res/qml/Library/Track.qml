@@ -3,59 +3,70 @@ import QtQuick
 import QtQuick.Controls 2.15
 import "../Theme"
 
-MouseArea {
-    id: dragArea
+Item {
+    id: root
 
     required property var capabilities
-
+    property alias drag: dragHandler
     readonly property var library: Mixxx.Library
-
-    drag.target: value
-    acceptedButtons: Qt.LeftButton | Qt.RightButton
-    onClicked: (mouse) => {
-        if (mouse.button === Qt.RightButton)
-            contextMenu.popup()
-    }
-    onPressAndHold: (mouse) => {
-        if (mouse.source === Qt.MouseEventNotSynthesized)
-            contextMenu.popup()
-    }
+    property alias tap: tapHandler
 
     function hasCapabilities(caps) {
-        return (dragArea.capabilities & caps) == caps;
+        return (root.capabilities & caps) == caps;
     }
 
+    DragHandler {
+        id: dragHandler
+
+        target: value
+    }
+    TapHandler {
+        id: tapHandler
+
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+        onLongPressed: mouse => {
+            contextMenu.popup();
+        }
+        onTapped: (eventPoint, button) => {
+            if (button === Qt.RightButton) {
+                contextMenu.popup();
+            }
+        }
+    }
     Menu {
         id: contextMenu
+
         title: qsTr("File")
 
         Menu {
-            title: qsTr("Load to")
             enabled: {
-                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToDeck) ||
-                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToSampler) ||
-                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToPreviewDeck)
+                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToDeck) || hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToSampler) || hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToPreviewDeck);
             }
+            title: qsTr("Load to")
 
             Menu {
                 id: loadToDeckMenu
-                title: qsTr("Deck")
+
                 enabled: hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToDeck)
+                title: qsTr("Deck")
+
                 Instantiator {
                     model: 4
+
                     delegate: MenuItem {
-                        text: qsTr("Deck %1").arg(modelData+1)
-                        onTriggered: Mixxx.PlayerManager.getPlayer(`[Channel${modelData+1}]`).loadTrack(track)
+                        text: qsTr("Deck %1").arg(modelData + 1)
+
+                        onTriggered: Mixxx.PlayerManager.getPlayer(`[Channel${modelData + 1}]`).loadTrack(track)
                     }
 
                     onObjectAdded: (index, object) => loadToDeckMenu.insertItem(index, object)
                     onObjectRemoved: (index, object) => loadToDeckMenu.removeItem(object)
                 }
             }
-
             Menu {
-                title: qsTr("Sampler")
                 enabled: hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToSampler)
+                title: qsTr("Sampler")
             }
 
             // Instantiator {
@@ -70,48 +81,49 @@ MouseArea {
             //     onObjectRemoved: (index, object) => recentFilesMenu.removeItem(object)
             // }
         }
-
         Menu {
             id: addToPlaylistMenu
-            title: qsTr("Add to playlists")
+
             enabled: {
-                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.AddToTrackSet)
+                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.AddToTrackSet);
             }
+            title: qsTr("Add to playlists")
 
-            MenuSeparator {}
-
+            MenuSeparator {
+            }
             MenuItem {
                 enabled: false // TODO implement
                 text: qsTr("Create New Playlist")
             }
         }
-
         Menu {
             id: addToCrateMenu
-            title: qsTr("Crates")
+
             enabled: {
-                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.AddToTrackSet)
+                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.AddToTrackSet);
             }
+            title: qsTr("Crates")
 
-            MenuSeparator {}
-
+            MenuSeparator {
+            }
             MenuItem {
                 enabled: false // TODO implement
                 text: qsTr("Create New Crate")
             }
         }
-
         Menu {
             id: analyzeMenu
-            title: qsTr("Analyze")
+
             enabled: {
-                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.EditMetadata)||
-                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.Analyze)
+                hasCapabilities(Mixxx.LibraryTrackListModel.Capability.EditMetadata) || hasCapabilities(Mixxx.LibraryTrackListModel.Capability.Analyze);
             }
+            title: qsTr("Analyze")
+
             MenuItem {
                 text: qsTr("Analyze")
+
                 onTriggered: {
-                    library.analyze(track)
+                    library.analyze(track);
                 }
             }
             MenuItem {

@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QList>
 #include <QLocale>
+#include <QMainWindow>
 #include <QScreen>
 #include <QVariant>
 #include <QtGlobal>
@@ -140,20 +141,7 @@ DlgPrefInterface::DlgPrefInterface(
                 tr("The minimum size of the selected skin is bigger than your "
                    "screen resolution."));
 
-        ComboBoxSkinconf->clear();
-        skinPreviewLabel->setText("");
-        skinDescriptionText->setText("");
-        skinDescriptionText->hide();
-
-        const QList<SkinPointer> skins = m_pSkinLoader->getSkins();
-        int index = 0;
-        for (const SkinPointer& pSkin : skins) {
-            ComboBoxSkinconf->insertItem(index, pSkin->name());
-            m_skins.insert(pSkin->name(), pSkin);
-            index++;
-        }
-
-        ComboBoxSkinconf->setCurrentIndex(index);
+        slotUpdateSkins();
         // schemes must be updated here to populate the drop-down box and set m_colorScheme
         slotUpdateSchemes();
         slotSetSkinPreview();
@@ -247,8 +235,19 @@ DlgPrefInterface::DlgPrefInterface(
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    auto* pScreen =
-            mixxx::widgethelper::getScreen(*this);
+    QScreen* pScreen = nullptr;
+    const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
+    for (QWidget* pWidget : topLevelWidgets) {
+        // Ignore other popups and hidden track menus
+        QMainWindow* pMainWindow = qobject_cast<QMainWindow*>(pWidget);
+        if (pMainWindow) {
+            pScreen = mixxx::widgethelper::getScreen(*pMainWindow);
+            break;
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        pScreen = mixxx::widgethelper::getScreen(*this);
+    }
     if (!pScreen) {
         // Obtain the primary screen. This is necessary if no window is
         // available before the widget is displayed.
@@ -256,6 +255,58 @@ QScreen* DlgPrefInterface::getScreen() const {
     }
     DEBUG_ASSERT(pScreen);
     return pScreen;
+}
+
+void DlgPrefInterface::slotUpdateSkins() {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
+    ComboBoxSkinconf->blockSignals(true);
+    ComboBoxSkinconf->clear();
+    m_skins.clear();
+    skinPreviewLabel->setText("");
+    skinDescriptionText->setText("");
+    skinDescriptionText->hide();
+
+    // Check the text color of the palette for whether to use dark or light icons
+    QDir iconsPath;
+    if (!Color::isDimColor(palette().text().color())) {
+        iconsPath.setPath(":/images/preferences/light/");
+    } else {
+        iconsPath.setPath(":/images/preferences/dark/");
+    }
+
+    // Set the user skin icon.
+    QIcon userSkinIcon(iconsPath.filePath("ic_custom.svg"));
+
+    const QList<SkinPointer> userSkins = m_pSkinLoader->getUserSkins();
+    int index = 0;
+    for (const SkinPointer& pSkin : userSkins) {
+        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->name());
+        m_skins.insert(pSkin->name(), pSkin);
+        index++;
+    }
+
+    // If there are user skins, we add a separator and the
+    // built-in skins also get an icon.
+    QIcon systemSkinIcon;
+    if (ComboBoxSkinconf->count() > 0) {
+        ComboBoxSkinconf->insertSeparator(index);
+        systemSkinIcon = QIcon(iconsPath.filePath("ic_mixxx_symbolic.svg"));
+        index++;
+    }
+
+    const QList<SkinPointer> systemSkins = m_pSkinLoader->getSystemSkins();
+    for (const SkinPointer& pSkin : systemSkins) {
+        ComboBoxSkinconf->insertItem(
+                index, systemSkinIcon, pSkin->name());
+        m_skins.insert(pSkin->name(), pSkin);
+        index++;
+    }
+
+    ComboBoxSkinconf->setCurrentIndex(index);
+    ComboBoxSkinconf->blockSignals(false);
 }
 
 void DlgPrefInterface::slotUpdateSchemes() {
@@ -303,6 +354,8 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
 void DlgPrefInterface::slotUpdate() {
     if (m_pSkinLoader) {
+        slotUpdateSkins();
+
         const SkinPointer pSkinOnUpdate = m_pSkinLoader->getConfiguredSkin();
         if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
             m_skinNameOnUpdate = pSkinOnUpdate->name();

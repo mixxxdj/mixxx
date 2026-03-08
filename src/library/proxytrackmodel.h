@@ -33,7 +33,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     TrackId getTrackId(const QModelIndex& index) const final;
     CoverInfo getCoverInfo(const QModelIndex& index) const final;
     const QVector<int> getTrackRows(TrackId trackId) const final;
-    void search(const QString& searchText,const QString& extraFilter = QString()) final;
+    void search(const QString& searchText) final;
     const QString currentSearch() const final;
     bool isColumnInternal(int column) final;
     bool isColumnHiddenByDefault(int column) final;

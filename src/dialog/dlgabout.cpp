@@ -139,7 +139,27 @@ DlgAbout::DlgAbout()
             << "Hetarth Jodha"
             << "Harsh Barhate"
             << "Nikhil Bisht"
-            << "Jan Claußen";
+            << "Jan Claußen"
+            << "Nisarg Shah"
+            << "Manish Sehrawat"
+            << "xuijuthub"
+            << "Nicolay Leiva"
+            << "Didier Malenfant"
+            << "Rene E"
+            << "Owen Turnbull"
+            << "Benjamin Paker"
+            << "J&eacute;r&ocirc;me Froissart"
+            << "Harshit Singh Hada"
+            << "Andrej Lajovic"
+            << "Pri-yan-shu"
+            << "Graham Hall"
+            << "Ayush Sah"
+            << "fixxiefixx"
+            << "evoixmr"
+            << "Greg-Orca"
+            << "Iron-Wolf"
+            << "endcredits33"
+            << "cucucat";
 
     QStringList specialThanks;
     specialThanks

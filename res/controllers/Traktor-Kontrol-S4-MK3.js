@@ -141,6 +141,8 @@ const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMicAuxOnShi
 // Default: false
 const UseBeatloopRollInsteadOfSampler = !!engine.getSetting("useBeatloopRollInsteadOfSampler");
 
+const FilterIsFirstQuickEffect = !!engine.getSetting("filterIsFirstQuickEffect");
+
 // Predefined beatlooproll sizes.
 const BeatLoopRolls = [
     engine.getSetting("beatLoopRollsSize1") || 1/8,
@@ -935,12 +937,15 @@ class HotcueButton extends PushButton {
         } else if (this.deck.libraryPlayButton.pressed) {
             engine.setValue(this.deck.libraryPlayButton.group, this.inKey, pressed);
         } else {
-            engine.setValue(this.group, "scratch2_enable", false);
+            if (this.deck.wheelMode === wheelModes.vinyl && !this.deck.wheelTouch.touched) {
+                engine.setValue(this.group, "scratch2_enable", false);
+            }
             engine.setValue(this.group, this.inKey, pressed);
             if (this.shifted) {
                 this.indicatorColor = LedColors.off;
             }
         }
+
     }
     output(value) {
         if (value) {
@@ -1498,16 +1503,20 @@ class Mixer extends ComponentContainer {
         this.secondPressedFxSelector = null;
         this.comboSelected = false;
 
+        // FX SELECT buttons: Filter, 1, 2, 3, 4
         const fxSelectsInputs = [
+            {inByte: 8, inBit: 7},
             {inByte: 8, inBit: 5},
             {inByte: 8, inBit: 1},
             {inByte: 8, inBit: 6},
             {inByte: 8, inBit: 0},
-            {inByte: 8, inBit: 7},
         ];
+        if (!FilterIsFirstQuickEffect) {
+            // FX SELECT buttons: 1, 2, 3, 4, Filter
+            fxSelectsInputs.push(fxSelectsInputs.shift());
+        }
         this.fxSelects = [];
-        // FX SELECT buttons: Filter, 1, 2, 3, 4
-        for (const i of [0, 1, 2, 3, 4]) {
+        for (let i = 0; i < fxSelectsInputs.length; i++) {
             this.fxSelects[i] = new FXSelect(
                 Object.assign(fxSelectsInputs[i], {
                     number: i + 1,

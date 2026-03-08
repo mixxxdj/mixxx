@@ -133,7 +133,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         // Since 3-band is by far the most common, stick with that.
         const int kMaxEqs = 3;
         for (int deck = 1; deck <= iNumDecks; ++deck) {
-            QMenu* pDeckMenu = addSubmenu(QString("Deck %1").arg(deck), pEqMenu);
+            //: %1 is the deck number 1 ... 4
+            QMenu* pDeckMenu = addSubmenu(tr("Deck %1").arg(deck), pEqMenu);
             for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
                 const QString group = EqualizerEffectChain::formatEffectSlotGroup(
                         QString("[Channel%1]").arg(deck));
@@ -145,11 +146,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         tr("Adjust %1").arg(eqNames[effect]),
                         pBandMenu,
                         true,
+                        //: %1 is the deck number 1 ... 4
                         tr("Deck %1").arg(deck));
 
                 control = "button_parameter%1";
                 addControl(group,
                         control.arg(effect + 1),
+                        //: %1 is "Low EQ" "Mid EQ" or "High EQ"
                         tr("Kill %1").arg(eqNames[effect]),
                         tr("Kill %1").arg(eqNames[effect]),
                         pBandMenu,
@@ -995,7 +998,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* pEffectsMenu = addSubmenu(tr("Effects"));
     // Deck Quick Effects
     for (int i = 1; i <= iNumDecks; ++i) {
-        const QString deckGroup = PlayerManager::groupForDeck(i);
+        const QString deckGroup = PlayerManager::groupForDeck(i - 1);
         const QString quickEffectGroup = QuickEffectChain::formatEffectChainGroup(deckGroup);
         QMenu* pQuickEffectMenu = addSubmenu(tr("Quick Effects Deck %1").arg(i), pEffectsMenu);
         addControl(quickEffectGroup,
@@ -1017,7 +1020,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         pQuickEffectMenu->addSeparator();
         // Stem Quick Effects
         for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
-            const QString stemGroup = PlayerManager::groupForDeckStem(i, j - 1);
+            const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
             const QString stemQuickEffectGroup =
                     QuickEffectChain::formatEffectChainGroup(stemGroup);
             addControl(stemQuickEffectGroup,
@@ -1683,7 +1686,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
             for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
                 const QString stemPrefix = m_deckStemStr.arg(
                         QString::number(i), QString::number(j));
-                const QString stemGroup = PlayerManager::groupForDeckStem(i, j - 1);
+                const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
                 addSingleControl(stemGroup,
                         control,
                         controlTitle,
@@ -1711,7 +1714,7 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                 for (int j = 1; j <= mixxx::kMaxSupportedStems; ++j) {
                     const QString stemPrefix = m_deckStemStr.arg(
                             QString::number(i), QString::number(j));
-                    const QString stemGroup = PlayerManager::groupForDeckStem(i, j - 1);
+                    const QString stemGroup = PlayerManager::groupForDeckStem(i - 1, j - 1);
                     addSingleControl(stemGroup,
                             control,
                             controlTitle,

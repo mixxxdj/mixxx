@@ -23,7 +23,7 @@
         <RequiresStem>true</RequiresStem>
         <ObjectName>StemControls</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>max,me</SizePolicy>
+        <Size>240f,0me</Size>
         <Children>
           <WidgetGroup>
             <Size>0me,1me</Size>
@@ -108,8 +108,46 @@
               <!-- /StemControls 4ch -->
 
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <!-- /StemControlsInner -->
+
+          <WidgetGroup>
+            <!-- NoStemLabel -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Size>1me,3f</Size>
+              </WidgetGroup>
+              <Label>
+                <SizePolicy>min,me</SizePolicy>
+                <ObjectName>NoStemLabel</ObjectName>
+                <Text>Track has no STEMs</Text>
+              </Label>
+              <WidgetGroup>
+                <Size>1me,3f</Size>
+              </WidgetGroup>
+              <!-- WaveformMinSizeConstrain -->
+              <WidgetGroup>
+                <Size>0f,110f</Size>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],keep_consistent_waveform_heights</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- /WaveformMinSizeConstrain -->
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <!-- /NoStemLabel -->
 
           <WidgetGroup>
             <Size>1me,1me</Size>
@@ -125,7 +163,7 @@
       <WidgetGroup>
         <ObjectName>WaveformBox<Variable name="ChanNum"/></ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <Size>me,30min</Size>
         <Children>
           <Visual>
             <TooltipId>waveform_display</TooltipId>

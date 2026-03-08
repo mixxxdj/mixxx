@@ -12,6 +12,7 @@
 
 namespace {
 constexpr bool kDefaultCueEnabled = true;
+constexpr bool kDefaultTracklistAsComment = true;
 constexpr bool kDefaultCueFileAnnotationEnabled = false;
 } // anonymous namespace
 
@@ -20,6 +21,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
           m_pConfig(pConfig),
           m_selFormat({QString(), QString(), false, QString()}) {
     setupUi(this);
+
+    // Recording audio output mode
+    recordingMainOutputModeComboBox->addItem(tr("Stereo"), 0);
+    recordingMainOutputModeComboBox->addItem(tr("Mono"), 1);
+    loadChannelMode();
 
     // Setting recordings path.
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
@@ -54,18 +60,21 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         if (prefformat == format.internalName) {
             m_selFormat = format;
             button->setChecked(true);
-            found=true;
+            found = true;
         }
         m_formatButtons.append(button);
     }
     if (!found) {
         // If no format was available, set to WAVE as default.
         if (!prefformat.isEmpty()) {
-            qWarning() << prefformat <<" format was set in the configuration, but it is not recognized!";
+            qWarning() << prefformat
+                       << " format was set in the configuration, but it is not "
+                          "recognized!";
         }
         m_selFormat = EncoderFactory::getFactory().getFormats().first();
         m_formatButtons.first()->setChecked(true);
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),  ConfigValue(m_selFormat.internalName));
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),
+                ConfigValue(m_selFormat.internalName));
     }
 
     setupEncoderUI();
@@ -76,6 +85,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
+    updateTracklistAsComment();
 
     CheckBoxUseCueFileAnnotation->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "cue_file_annotation_enabled"),
@@ -98,7 +108,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
     } else {
-        //Use max RIFF size (4GB) as default index, since usually people don't want to split.
+        // Use max RIFF size (4GB) as default index, since usually people don't want to split.
         comboBoxSplitting->setCurrentIndex(4);
         saveSplitSize();
     }
@@ -158,8 +168,19 @@ void DlgPrefRecord::slotApply() {
     saveMetaData();
     saveEncoding();
     saveUseCueFile();
+    saveTracklistAsComment();
     saveUseCueFileAnnotation();
     saveSplitSize();
+    saveChannelMode(); // saving channel preference (Mono/Stereo) to the config
+}
+// This function is saving the channel mode selection to the config
+void DlgPrefRecord::saveChannelMode() {
+    const int mode =
+            recordingMainOutputModeComboBox->currentData().toInt();
+
+    m_pConfig->set(
+            ConfigKey(RECORDING_PREF_KEY, "channel_mode"),
+            ConfigValue(mode));
 }
 
 // This function updates/refreshes the contents of this dialog.
@@ -167,9 +188,9 @@ void DlgPrefRecord::slotUpdate() {
     // Find out the max width of the labels. This is needed to keep the
     // UI fixed in size when hiding or showing elements.
     // It is not perfect, but it didn't get better than this.
-    int max=0;
-    if (LabelQuality->size().width()> max) {
-        max=LabelQuality->size().width();
+    int max = 0;
+    if (LabelQuality->size().width() > max) {
+        max = LabelQuality->size().width();
     }
     LabelLossless->setMaximumWidth(max);
     LabelLossy->setMaximumWidth(max);
@@ -193,8 +214,11 @@ void DlgPrefRecord::slotUpdate() {
     // Setting miscellaneous
     CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
             ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
+    updateTracklistAsComment();
 
     slotToggleCueEnabled();
+    loadChannelMode(); // Load recording channel mode (Mono/Stereo) to keep the
+                       // ui updated if reopening preferences
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -221,16 +245,17 @@ void DlgPrefRecord::slotResetToDefaults() {
 
     // Sets 'Create a CUE file' checkbox value
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
+    updateTracklistAsComment();
 
     // Sets 'Enable File Annotation in CUE file' checkbox value
     CheckBoxUseCueFileAnnotation->setChecked(kDefaultCueFileAnnotationEnabled);
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
-    QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Choose recordings directory"),
+    QString fd = QFileDialog::getExistingDirectory(this,
+            tr("Choose recordings directory"),
             m_pConfig->getValueString(
-                    ConfigKey(RECORDING_PREF_KEY,"Directory")));
+                    ConfigKey(RECORDING_PREF_KEY, "Directory")));
 
     if (fd != "") {
         // The user has picked a new directory via a file dialog. This means the
@@ -245,7 +270,7 @@ void DlgPrefRecord::slotBrowseRecordingsDir() {
 }
 
 void DlgPrefRecord::slotFormatChanged() {
-    QObject *senderObj = sender();
+    QObject* senderObj = sender();
     m_selFormat = EncoderFactory::getFactory().getFormatFor(senderObj->objectName());
     setupEncoderUI();
 }
@@ -257,7 +282,7 @@ void DlgPrefRecord::setupEncoderUI() {
     if (settings->usesQualitySlider()) {
         qualityGroup->setVisible(true);
         SliderQuality->setMinimum(0);
-        SliderQuality->setMaximum(settings->getQualityValues().size()-1);
+        SliderQuality->setMaximum(settings->getQualityValues().size() - 1);
         SliderQuality->setValue(settings->getQualityIndex());
         updateTextQuality();
     } else {
@@ -266,7 +291,7 @@ void DlgPrefRecord::setupEncoderUI() {
     if (settings->usesCompressionSlider()) {
         compressionGroup->setVisible(true);
         SliderCompression->setMinimum(0);
-        SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
+        SliderCompression->setMaximum(settings->getCompressionValues().size() - 1);
         SliderCompression->setValue(settings->getCompression());
         updateTextCompression();
     } else {
@@ -306,7 +331,7 @@ void DlgPrefRecord::setupEncoderUI() {
             OptionGroupsLayout->addWidget(widget);
             optionsgroup.addButton(widget);
             m_optionWidgets.append(widget);
-            if (controlIdx == 0 ) {
+            if (controlIdx == 0) {
                 widget->setChecked(true);
             }
             controlIdx--;
@@ -314,10 +339,25 @@ void DlgPrefRecord::setupEncoderUI() {
     } else {
         labelOptionGroup->setVisible(false);
     }
-        // small hack for VBR
+    // small hack for VBR
     if (m_selFormat.internalName == ENCODING_MP3) {
         updateTextQuality();
     }
+
+    updateTracklistAsComment();
+}
+
+// This is to load the recording channel mode (Mono/Stereo) from config
+void DlgPrefRecord::loadChannelMode() {
+    const int mode = m_pConfig->getValue<int>(
+            ConfigKey(RECORDING_PREF_KEY, "channel_mode"),
+            0); // default = Stereo
+
+    const int index =
+            recordingMainOutputModeComboBox->findData(mode);
+
+    recordingMainOutputModeComboBox->setCurrentIndex(
+            index >= 0 ? index : 0);
 }
 
 void DlgPrefRecord::slotSliderQuality() {
@@ -366,8 +406,20 @@ void DlgPrefRecord::updateTextCompression() {
     TextCompression->setText(QString::number(quality));
 }
 
-void DlgPrefRecord::slotGroupChanged()
-{
+void DlgPrefRecord::updateTracklistAsComment() {
+    CheckBoxTracklistAsComment->blockSignals(true);
+    if (m_selFormat.internalName == ENCODING_MP3 || m_selFormat.internalName == ENCODING_WAVE) {
+        CheckBoxTracklistAsComment->setEnabled(true);
+        CheckBoxTracklistAsComment->setChecked(m_pConfig->getValue(
+                ConfigKey(RECORDING_PREF_KEY, "tracklist_as_comment"), kDefaultTracklistAsComment));
+    } else {
+        CheckBoxTracklistAsComment->setEnabled(false);
+        CheckBoxTracklistAsComment->setChecked(false);
+    }
+    CheckBoxTracklistAsComment->blockSignals(true);
+}
+
+void DlgPrefRecord::slotGroupChanged() {
     // On complex scenarios, one could want to enable or disable some controls when changing
     // these, but we don't have these needs now.
     EncoderRecordingSettingsPointer settings =
@@ -425,7 +477,7 @@ void DlgPrefRecord::saveEncoding() {
             EncoderFactory::getFactory().getEncoderRecordingSettings(
                     m_selFormat, m_pConfig);
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"),
-        ConfigValue(m_selFormat.internalName));
+            ConfigValue(m_selFormat.internalName));
 
     if (settings->usesQualitySlider()) {
         settings->setQualityByIndex(SliderQuality->value());
@@ -438,7 +490,7 @@ void DlgPrefRecord::saveEncoding() {
         // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
-        int i=0;
+        int i = 0;
         for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked) {
@@ -460,7 +512,12 @@ void DlgPrefRecord::slotToggleCueEnabled() {
 
 void DlgPrefRecord::saveUseCueFile() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"),
-                   ConfigValue(CheckBoxRecordCueFile->isChecked()));
+            ConfigValue(CheckBoxRecordCueFile->isChecked()));
+}
+
+void DlgPrefRecord::saveTracklistAsComment() {
+    m_pConfig->setValue(ConfigKey(RECORDING_PREF_KEY, "tracklist_as_comment"),
+            CheckBoxTracklistAsComment->isChecked());
 }
 
 void DlgPrefRecord::saveUseCueFileAnnotation() {
@@ -470,5 +527,5 @@ void DlgPrefRecord::saveUseCueFileAnnotation() {
 
 void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
-                   ConfigValue(comboBoxSplitting->currentText()));
+            ConfigValue(comboBoxSplitting->currentText()));
 }

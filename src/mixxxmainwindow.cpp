@@ -11,7 +11,7 @@
 #include <QGLFormat>
 #endif
 
-#ifdef __LINUX__
+#if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #endif
@@ -238,7 +238,7 @@ void MixxxMainWindow::initialize() {
         m_pVisualsManager->addDeck(group);
     }
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfDecksChanged,
+            &PlayerManagerInterface::numberOfDecksChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -247,7 +247,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfSamplersChanged,
+            &PlayerManagerInterface::numberOfSamplersChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -842,6 +842,14 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotShowKeywheel,
             Qt::UniqueConnection);
+#ifndef __APPLE__
+    // Menubar auto-hide
+    connect(m_pMenuBar,
+            &WMainMenuBar::menubarAutoHideChanged,
+            this,
+            &MixxxMainWindow::slotUpdateMenuBarAltKeyConnection,
+            Qt::UniqueConnection);
+#endif
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -1240,39 +1248,53 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
-    QString summary =
-            tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
-    if (result.numNewTracks == 0 && result.numMovedTracks == 0 && result.numNewMissingTracks == 0) {
-        summary += tr("No changes detected.") +
-                QStringLiteral("<br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
-                QStringLiteral("</b>");
-    } else {
-        if (result.numNewTracks != 0) {
-            summary += tr("%1 new tracks found").arg(QString::number(result.numNewTracks)) +
-                    QStringLiteral("<br>");
-        }
-        if (result.numMovedTracks != 0) {
-            summary += tr("%1 moved tracks detected").arg(QString::number(result.numMovedTracks)) +
-                    QStringLiteral("<br>");
-        }
-        if (result.numNewMissingTracks != 0) {
-            summary += tr("%1 tracks are missing (%2 total)")
-                               .arg(QString::number(result.numNewMissingTracks),
-                                       QString::number(result.numMissingTracks));
-        }
-        if (result.numRediscoveredTracks != 0) {
-            summary += QStringLiteral("<br>") +
-                    tr("%1 tracks have been rediscovered")
-                            .arg(QString::number(result.numRediscoveredTracks));
-        }
-        summary += QStringLiteral("<br><br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
-                QStringLiteral("</b>");
-    }
     QMessageBox* pMsg = new QMessageBox();
     pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
     pMsg->setWindowTitle(tr("Library scan finished"));
+
+    if (result.noDirectoriesConfigured) {
+        pMsg->setText(tr("No music directories configured for scanning.") +
+                QStringLiteral("<br>") +
+                tr("Add directories in the library preferences."));
+        pMsg->show();
+        return;
+    }
+
+    QString summary =
+            tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
+    if (result.numNewTracks == 0 &&
+            result.numMovedTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        summary += tr("No changes detected.") +
+                QStringLiteral("<br><b>") +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
+                QStringLiteral("</b>");
+    } else {
+        if (result.numNewTracks != 0) {
+            summary += tr("%n new track(s) found", nullptr, result.numNewTracks) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numMovedTracks != 0) {
+            summary += tr("%n moved track(s) detected", nullptr, result.numMovedTracks) +
+                    QStringLiteral("<br>");
+        }
+        if (result.numNewMissingTracks != 0) {
+            summary += tr("%n track(s) missing (%1 total)",
+                    nullptr,
+                    result.numNewMissingTracks);
+        }
+        if (result.numRediscoveredTracks != 0) {
+            summary += QStringLiteral("<br>") +
+                    tr("%n track(s) rediscovered",
+                            nullptr,
+                            result.numRediscoveredTracks);
+        }
+        summary += QStringLiteral("<br><br><b>") +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
+                QStringLiteral("</b>");
+    }
+
     pMsg->setText(summary);
     pMsg->show();
 }
@@ -1539,16 +1561,16 @@ bool MixxxMainWindow::confirmExit() {
     bool playing(false);
     bool playingSampler(false);
     auto pPlayerManager = m_pCoreServices->getPlayerManager();
-    unsigned int deckCount = pPlayerManager->numDecks();
-    unsigned int samplerCount = pPlayerManager->numSamplers();
-    for (unsigned int i = 0; i < deckCount; ++i) {
+    int deckCount = pPlayerManager->numberOfDecks();
+    int samplerCount = pPlayerManager->numberOfSamplers();
+    for (int i = 0; i < deckCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
-    for (unsigned int i = 0; i < samplerCount; ++i) {
+    for (int i = 0; i < samplerCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;
