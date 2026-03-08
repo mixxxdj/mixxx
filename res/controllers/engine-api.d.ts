@@ -240,6 +240,23 @@ declare namespace engine {
      */
     function setSharedValue(entity: Entity, key: string, value: SafeValue): void;
 
+    /**
+     * Gets all shared data values for this controller's namespace.
+     * Returns an object of { entity: { key: value, ... }, ... } containing
+     * every entry stored under the namespace. Acquires the read lock once.
+     *
+     * @returns An object mapping entity names to { key: value } objects
+     */
+    function getAllSharedValues(): { [entity: Entity]: { [key: string]: SafeValue } };
+
+    /**
+     * Sets multiple shared data values at once, acquiring the write lock only
+     * once. Fires individual "updated" signals for each entry.
+     *
+     * @param values An object of { entity: { key: value, ... }, ... }
+     */
+    function setSharedValues(values: { [entity: Entity]: { [key: string]: SafeValue } }): void;
+
     type SharedDataCallback = (value: SafeValue, entity: Entity, key: string) => void;
 
     /**

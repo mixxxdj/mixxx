@@ -25,6 +25,11 @@ class ControllerSharedData : public QObject {
             const QString& entity,
             const QString& key) const;
 
+    /// Get all entries for a specific namespace.
+    /// Returns entity -> key -> value for everything stored under the
+    /// given namespace. Acquires the read lock once.
+    QHash<QString, QHash<QString, QVariant>> getAll(const QString& ns) const;
+
     /// Create a namespace-scoped wrapper for use by a controller.
     /// The caller owns the returned wrapper.
     /// @param ns The namespace to restrict access to
@@ -39,6 +44,13 @@ class ControllerSharedData : public QObject {
             const QString& entity,
             const QString& key,
             const QVariant& value,
+            QObject* sender = nullptr);
+
+    /// Set multiple entity/key/value entries for a namespace in a single
+    /// write-lock acquisition. Emits updated() for each individual entry
+    /// after releasing the lock.
+    void setMultiple(const QString& ns,
+            const QHash<QString, QHash<QString, QVariant>>& values,
             QObject* sender = nullptr);
 
   signals:
@@ -68,6 +80,10 @@ class ControllerNamespacedSharedData : public QObject {
 
     QVariant get(const QString& entity, const QString& key) const;
 
+    /// Get all entries for this namespace.
+    /// Returns entity -> key -> value.
+    QHash<QString, QHash<QString, QVariant>> getAll() const;
+
     const QString& ns() const {
         return m_namespace;
     }
@@ -79,6 +95,12 @@ class ControllerNamespacedSharedData : public QObject {
     void set(const QString& entity,
             const QString& key,
             const QVariant& value,
+            QObject* sender = nullptr);
+
+    /// Set multiple entity/key/value entries in a single lock acquisition.
+    /// Emits updated() for each individual entry.
+    void setMultiple(
+            const QHash<QString, QHash<QString, QVariant>>& values,
             QObject* sender = nullptr);
 
   signals:

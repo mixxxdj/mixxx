@@ -68,6 +68,8 @@ class ControllerScriptInterfaceLegacy : public QObject {
             const QString& entity,
             const QString& key,
             const QJSValue& value);
+    Q_INVOKABLE QJSValue getAllSharedValues();
+    Q_INVOKABLE void setSharedValues(const QJSValue& values);
     Q_INVOKABLE QJSValue makeSharedValueConnection(
             const QString& entity,
             const QString& key,

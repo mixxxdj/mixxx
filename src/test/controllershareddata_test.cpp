@@ -553,3 +553,186 @@ TEST_F(ControllerSharedDataTest, MultipleConnectionsSameEntityKey) {
     )--");
     EXPECT_FALSE(result.isError()) << result.toString().toStdString();
 }
+
+//
+// ── Backend tests for bulk set/get ───────────────────────────────────────────
+//
+
+TEST_F(ControllerSharedDataBackendTest, SetMultipleAndGetAll) {
+    QHash<QString, QHash<QString, QVariant>> values;
+    values["deck1"]["shift"] = QVariant(true);
+    values["deck1"]["filter"] = QVariant(0.5);
+    values["deck2"]["shift"] = QVariant(false);
+
+    m_pSharedData->setMultiple("ns1", values);
+
+    // Verify all values were set
+    EXPECT_TRUE(m_pSharedData->get("ns1", "deck1", "shift").toBool());
+    EXPECT_DOUBLE_EQ(m_pSharedData->get("ns1", "deck1", "filter").toDouble(), 0.5);
+    EXPECT_FALSE(m_pSharedData->get("ns1", "deck2", "shift").toBool());
+
+    // Verify getAll returns all entries for the namespace
+    auto all = m_pSharedData->getAll("ns1");
+    EXPECT_EQ(all.size(), 2);          // deck1, deck2
+    EXPECT_EQ(all["deck1"].size(), 2); // shift, filter
+    EXPECT_EQ(all["deck2"].size(), 1); // shift
+    EXPECT_TRUE(all["deck1"]["shift"].toBool());
+    EXPECT_DOUBLE_EQ(all["deck1"]["filter"].toDouble(), 0.5);
+    EXPECT_FALSE(all["deck2"]["shift"].toBool());
+}
+
+TEST_F(ControllerSharedDataBackendTest, GetAllReturnsEmptyForMissingNamespace) {
+    auto all = m_pSharedData->getAll("nonexistent");
+    EXPECT_TRUE(all.isEmpty());
+}
+
+TEST_F(ControllerSharedDataBackendTest, SetMultipleEmitsPerEntrySignals) {
+    struct Update {
+        QString entity;
+        QString key;
+        QVariant value;
+    };
+    auto updates = std::make_shared<QList<Update>>();
+
+    QObject::connect(m_pSharedData.get(),
+            &ControllerSharedData::updated,
+            [updates](const QString& ns,
+                    const QString& entity,
+                    const QString& key,
+                    const QVariant& value,
+                    QObject* sender) {
+                Q_UNUSED(ns);
+                Q_UNUSED(sender);
+                updates->append({entity, key, value});
+            });
+
+    QHash<QString, QHash<QString, QVariant>> values;
+    values["deck1"]["shift"] = QVariant(true);
+    values["deck1"]["filter"] = QVariant(0.5);
+    values["deck2"]["shift"] = QVariant(false);
+
+    m_pSharedData->setMultiple("ns1", values);
+
+    EXPECT_EQ(updates->size(), 3);
+}
+
+//
+// ── Namespaced wrapper tests for bulk set/get ────────────────────────────────
+//
+
+TEST_F(NamespacedSharedDataTest, SetMultipleAndGetAll) {
+    QHash<QString, QHash<QString, QVariant>> values;
+    values["deck1"]["shift"] = QVariant(true);
+    values["deck1"]["filter"] = QVariant(0.5);
+    values["mixer"]["crossfader"] = QVariant(0.75);
+
+    m_pNamespaced->setMultiple(values);
+
+    // Read back via single get
+    EXPECT_TRUE(m_pNamespaced->get("deck1", "shift").toBool());
+    EXPECT_DOUBLE_EQ(m_pNamespaced->get("deck1", "filter").toDouble(), 0.5);
+    EXPECT_DOUBLE_EQ(m_pNamespaced->get("mixer", "crossfader").toDouble(), 0.75);
+
+    // Read back via getAll
+    auto all = m_pNamespaced->getAll();
+    EXPECT_EQ(all.size(), 2); // deck1, mixer
+    EXPECT_TRUE(all["deck1"]["shift"].toBool());
+}
+
+//
+// ── JS integration tests for bulk set/get ────────────────────────────────────
+//
+
+TEST_F(ControllerSharedDataTest, SetSharedValuesFromJS) {
+    auto result = evaluateA(R"--(
+        engine.setSharedValues({
+            "deck1": { "shift": true, "filter": 0.5 },
+            "deck2": { "shift": false }
+        });
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+
+    EXPECT_TRUE(m_pSharedData->get("testNS", "deck1", "shift").toBool());
+    EXPECT_DOUBLE_EQ(m_pSharedData->get("testNS", "deck1", "filter").toDouble(), 0.5);
+    EXPECT_FALSE(m_pSharedData->get("testNS", "deck2", "shift").toBool());
+}
+
+TEST_F(ControllerSharedDataTest, GetAllSharedValuesFromJS) {
+    // Pre-populate some values
+    m_pSharedData->set("testNS", "deck1", "shift", QVariant(true));
+    m_pSharedData->set("testNS", "deck1", "filter", QVariant(0.5));
+    m_pSharedData->set("testNS", "mixer", "crossfader", QVariant(0.75));
+
+    auto result = evaluateA(R"--(
+        var all = engine.getAllSharedValues();
+        if (typeof all !== "object") throw new Error("Expected object, got " + typeof all);
+        if (all.deck1.shift !== true) throw new Error("Expected deck1.shift=true, got " + all.deck1.shift);
+        if (all.deck1.filter !== 0.5) throw new Error("Expected deck1.filter=0.5, got " + all.deck1.filter);
+        if (all.mixer.crossfader !== 0.75) throw new Error("Expected mixer.crossfader=0.75, got " + all.mixer.crossfader);
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+}
+
+TEST_F(ControllerSharedDataTest, GetAllSharedValuesReturnsEmptyObject) {
+    auto result = evaluateA(R"--(
+        var all = engine.getAllSharedValues();
+        if (typeof all !== "object") throw new Error("Expected object, got " + typeof all);
+        if (Object.keys(all).length !== 0) throw new Error("Expected empty object, got " + JSON.stringify(all));
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+}
+
+TEST_F(ControllerSharedDataTest, SetSharedValuesFiresCallbacks) {
+    auto result = evaluateB(R"--(
+        var callCount = 0;
+        var receivedPairs = [];
+        engine.makeSharedValueConnection("deck1", "shift", function(value, entity, key) {
+            callCount++;
+            receivedPairs.push(entity + "." + key + "=" + value);
+        });
+        engine.makeSharedValueConnection("deck1", "filter", function(value, entity, key) {
+            callCount++;
+            receivedPairs.push(entity + "." + key + "=" + value);
+        });
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+
+    result = evaluateA(R"--(
+        engine.setSharedValues({
+            "deck1": { "shift": true, "filter": 0.5 }
+        });
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+    application()->processEvents();
+
+    result = evaluateB(R"--(
+        if (callCount !== 2) throw new Error("Expected 2 callbacks, got " + callCount);
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+}
+
+TEST_F(ControllerSharedDataTest, SetSharedValuesRejectsInvalidType) {
+    auto result = evaluateA(R"--(
+        try {
+            engine.setSharedValues("not an object");
+            throw new Error("Should have thrown");
+        } catch (e) {
+            if (!e.message.includes("must be an object")) throw e;
+        }
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+}
+
+TEST_F(ControllerSharedDataTest, SetSharedValuesRejectsNestedInvalidValue) {
+    auto result = evaluateA(R"--(
+        try {
+            engine.setSharedValues({
+                "deck1": { "shift": { "nested": "object" } }
+            });
+            throw new Error("Should have thrown");
+        } catch (e) {
+            if (!e.message.includes("SafeValue")) throw e;
+        }
+    )--");
+    EXPECT_FALSE(result.isError()) << result.toString().toStdString();
+}

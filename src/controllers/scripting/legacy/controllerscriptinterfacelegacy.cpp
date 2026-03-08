@@ -1,5 +1,6 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#include <QJSValueIterator>
 #include <QStringEncoder>
 #include <gsl/pointers>
 
@@ -269,6 +270,96 @@ void ControllerScriptInterfaceLegacy::setSharedValue(
 
     // Pass "this" as sender so we can suppress self-notifications.
     pSharedData->set(entity, key, variant, this);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getAllSharedValues() {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+    auto* pSharedData = m_pScriptEngineLegacy->getSharedData();
+    if (!pSharedData) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("No shared data available. Make sure a valid "
+                               "namespace is defined in the mapping."));
+        return QJSValue();
+    }
+
+    QHash<QString, QHash<QString, QVariant>> allValues = pSharedData->getAll();
+    QJSValue result = pJsEngine->newObject();
+    for (auto entityIt = allValues.constBegin();
+            entityIt != allValues.constEnd();
+            ++entityIt) {
+        QJSValue entityObj = pJsEngine->newObject();
+        for (auto keyIt = entityIt->constBegin();
+                keyIt != entityIt->constEnd();
+                ++keyIt) {
+            entityObj.setProperty(keyIt.key(),
+                    keyIt->isValid()
+                            ? pJsEngine->toScriptValue(keyIt.value())
+                            : QJSValue(QJSValue::UndefinedValue));
+        }
+        result.setProperty(entityIt.key(), entityObj);
+    }
+    return result;
+}
+
+void ControllerScriptInterfaceLegacy::setSharedValues(const QJSValue& values) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return;
+    }
+    auto* pSharedData = m_pScriptEngineLegacy->getSharedData();
+    if (!pSharedData) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("No shared data available. Make sure a valid "
+                               "namespace is defined in the mapping."));
+        return;
+    }
+
+    if (!values.isObject()) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("setSharedValues: argument must be an object "
+                               "of { entity: { key: value, ... }, ... }"));
+        return;
+    }
+
+    // Convert JS object to QHash<entity, QHash<key, QVariant>>,
+    // validating each value against SafeValue.
+    QHash<QString, QHash<QString, QVariant>> bulk;
+    QJSValueIterator entityIt(values);
+    while (entityIt.hasNext()) {
+        entityIt.next();
+        const QString& entity = entityIt.name();
+        QJSValue entityObj = entityIt.value();
+        if (!entityObj.isObject()) {
+            m_pScriptEngineLegacy->throwJSError(
+                    QStringLiteral("setSharedValues: value for entity '") +
+                    entity +
+                    QStringLiteral("' must be an object { key: value, ... }"));
+            return;
+        }
+        QHash<QString, QVariant> keyMap;
+        QJSValueIterator keyIt(entityObj);
+        while (keyIt.hasNext()) {
+            keyIt.next();
+            QVariant variant = keyIt.value().toVariant();
+            if (!isSafeValue(variant)) {
+                m_pScriptEngineLegacy->throwJSError(
+                        QStringLiteral("setSharedValues: value for '") +
+                        entity + QStringLiteral(".") + keyIt.name() +
+                        QStringLiteral("' must be a SafeValue type "
+                                       "(string, number, boolean, null, or "
+                                       "an array of these). Got type: ") +
+                        QString::fromLatin1(variant.typeName()));
+                return;
+            }
+            keyMap.insert(keyIt.name(), variant);
+        }
+        bulk.insert(entity, keyMap);
+    }
+
+    pSharedData->setMultiple(bulk, this);
 }
 
 QJSValue ControllerScriptInterfaceLegacy::makeSharedValueConnection(
