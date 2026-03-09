@@ -60,24 +60,6 @@ class WaveformMarkSet {
         }
     }
 
-    template<typename Receiver, typename Slot>
-    void connectTypeChanged(Receiver receiver, Slot slot) const {
-        for (const auto& pMark : std::as_const(m_marks)) {
-            if (pMark->isValid()) {
-                pMark->connectTypeChanged(receiver, slot);
-            }
-        }
-    }
-
-    template<typename Receiver, typename Slot>
-    void connectStatusChanged(Receiver receiver, Slot slot) const {
-        for (const auto& pMark : std::as_const(m_marks)) {
-            if (pMark->isValid()) {
-                pMark->connectStatusChanged(receiver, slot);
-            }
-        }
-    }
-
     inline QList<WaveformMarkPointer>::const_iterator begin() const {
         return m_marksToRender.begin();
     }

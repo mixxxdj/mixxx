@@ -16,11 +16,16 @@ class TraktorZ1Class {
         this.vuLeftConnection = {};
         this.vuRightConnection = {};
         this.vuMeterThresholds = {"vu-30": (1 / 7), "vu-15": (2 / 7), "vu-6": (3 / 7), "vu-3": (4 / 7), "vu0": (5 / 7), "vu3": (6 / 7), "vu6": (7 / 7)};
+
+        // Calibration data
+        this.rawCalibration = {};
+        this.calibration = null;
     }
 
     init(_id) {
         this.id = _id;
 
+        this.calibrate();
         this.registerInputPackets();
         this.registerOutputPackets();
         this.readCurrentPosition();
@@ -67,7 +72,7 @@ class TraktorZ1Class {
         this.registerInputScaler(InputReport0x01, "[Channel2]", "volume", 0x19, 0xFFFF, this.parameterHandler.bind(this));
 
         // Crossfader
-        this.registerInputScaler(InputReport0x01, "[Master]", "crossfader", 0x1B, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(InputReport0x01, "[Master]", "crossfader", 0x1B, 0xFFFF, this.crossfaderHandler.bind(this));
 
         this.controller.registerInputPacket(InputReport0x01);
     }
@@ -114,6 +119,32 @@ class TraktorZ1Class {
         this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler.bind(this));
 
         this.lightDeck(false);
+    }
+
+    calibrate() {
+        this.rawCalibration.faders = new Uint8Array(0x20 * 3);
+        this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD1)), 0x00);
+        this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD2)), 0x20);
+        this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD3)), 0x40);
+        this.calibration = this.parseRawCalibration();
+    }
+
+    parseRawCalibration() {
+        return {
+            crossfader: this.parseCrossfaderCalibration(0x3C),
+        };
+    }
+
+    parseCrossfaderCalibration(index) {
+        const data = this.rawCalibration.faders;
+        return {
+            min: this.parseUint16Le(data, index),
+            max: this.parseUint16Le(data, index+2),
+        };
+    }
+
+    parseUint16Le(data, index) {
+        return data[index] + (data[index+1]<<8);
     }
 
     readCurrentPosition() {
@@ -207,6 +238,16 @@ class TraktorZ1Class {
 
     parameterHandler(field) {
         engine.setParameter(field.group, field.name, field.value / 4095);
+    }
+
+    crossfaderHandler(field) {
+        // Crossfader value don't reach boundaries and need to use calibration values
+        // Also apply extra safe margins
+        const safeMargins = 5;
+        const min = this.calibration.crossfader.min;
+        const max = this.calibration.crossfader.max;
+        const value = script.absoluteLin(field.value, 0, 1, min + safeMargins, max - safeMargins);
+        engine.setParameter(field.group, field.name, value);
     }
 
     outputHandler(value, group, key) {

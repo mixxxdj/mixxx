@@ -66,8 +66,8 @@ void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
     m_pProcessor->initializeInputChannel(inputChannel, engineParameters);
 }
 
-bool EngineEffect::processEffectsRequest(EffectsRequest& message,
-                                         EffectsResponsePipe* pResponsePipe) {
+bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
+        EffectsResponsePipe* pResponsePipe) {
     EngineEffectParameterPointer pParameter;
     EffectsResponse response(message);
 

@@ -8,6 +8,7 @@
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_bansheeplaylistmodel.cpp"
 #include "track/track.h"
@@ -358,6 +359,6 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
     return (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
+            (PlayerInfo::instance().numPreviewDecks() == 0 &&
                     column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)));
 }

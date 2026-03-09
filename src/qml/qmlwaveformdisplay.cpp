@@ -218,7 +218,7 @@ void QmlWaveformDisplay::slotTrackLoaded(TrackPointer pTrack) {
 void QmlWaveformDisplay::slotTrackLoading(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
     DEBUG_ASSERT(getTrackInfo() == pOldTrack);
-    setCurrentTrack(pNewTrack);
+    setCurrentTrack({});
 }
 
 void QmlWaveformDisplay::slotTrackUnloaded() {

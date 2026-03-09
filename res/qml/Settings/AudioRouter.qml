@@ -117,6 +117,7 @@ Rectangle {
                 "router": root,
                 "source": edge
             });
+            root.newConnection.source.connecting = true;
         }
     }
     function entityOnDisconnect(connection) {

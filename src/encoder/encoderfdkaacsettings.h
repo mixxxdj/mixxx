@@ -33,4 +33,10 @@ class EncoderFdkAacSettings : public EncoderRecordingSettings {
     QList<int> m_qualList;
     UserSettingsPointer m_pConfig;
     QString m_format;
+
+  protected:
+    // Provide config to base class
+    UserSettingsPointer getConfig() const override {
+        return m_pConfig;
+    }
 };

@@ -126,7 +126,13 @@ class WaveformWidgetFactory : public QObject,
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
+    /// Returns whether Mixxx has started with Open GL support. In this case
+    /// isOpenGlesAvailable() returns false.
+    /// Note: The Macro MIXXX_USE_QOPENGL selects the Qt6 openGL implementation
+    /// Of Qt inside the Mixxx source.
     bool isOpenGlAvailable() const { return m_openGlAvailable;}
+    /// Returns whether Mixxx has started with Open GLES support. In this case
+    /// isOpenGlAvailable() returns false. It may also happen that
     bool isOpenGlesAvailable() const { return m_openGlesAvailable;}
     QString getOpenGLVersion() const { return m_openGLVersion;}
 
@@ -294,9 +300,10 @@ class WaveformWidgetFactory : public QObject,
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
             WaveformWidgetType::Type type,
-            WWaveformViewer* viewer,
+            WWaveformViewer* pViewer,
             WaveformRendererSignalBase::Options option);
-    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createWaveformWidget(
+            WaveformWidgetType::Type type, WWaveformViewer* pViewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
     WaveformWidgetType::Type findTypeFromHandleIndex(int index);

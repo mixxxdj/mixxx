@@ -67,8 +67,8 @@ TEST_F(SearchQueryParserTest, OneTermOneColumn) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("artist LIKE '%asdf%'")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("artist IS NOT NULL AND artist LIKE '%asdf%'")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, OneTermMultipleColumns) {
@@ -82,9 +82,10 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumns) {
     pTrack->setAlbum("testASDFtest");
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(
-        qPrintable(QString("(artist LIKE '%asdf%') OR (album LIKE '%asdf%')")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable(QString(
+                         "(artist IS NOT NULL AND artist LIKE '%asdf%') OR "
+                         "(album IS NOT NULL AND album LIKE '%asdf%')")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, OneTermMultipleColumnsNegation) {
@@ -98,9 +99,10 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumnsNegation) {
     pTrack->setAlbum("testASDFtest");
     EXPECT_FALSE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(
-        qPrintable(QString("NOT ((artist LIKE '%asdf%') OR (album LIKE '%asdf%'))")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable(QString(
+                         "NOT ((artist IS NOT NULL AND artist LIKE '%asdf%') "
+                         "OR (album IS NOT NULL AND album LIKE '%asdf%'))")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, MultipleTermsOneColumn) {
@@ -114,9 +116,10 @@ TEST_F(SearchQueryParserTest, MultipleTermsOneColumn) {
     pTrack->setArtist("test zXcV test asDf");
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(
-        qPrintable(QString("(artist LIKE '%asdf%') AND (artist LIKE '%zxcv%')")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable(QString(
+                         "(artist IS NOT NULL AND artist LIKE '%asdf%') AND "
+                         "(artist IS NOT NULL AND artist LIKE '%zxcv%')")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumns) {
@@ -134,11 +137,12 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumns) {
     pTrack->setAlbum("ASDF ZXCV");
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(
-        qPrintable(QString(
-            "((artist LIKE '%asdf%') OR (album LIKE '%asdf%')) "
-            "AND ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%'))")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable(QString(
+                         "((artist IS NOT NULL AND artist LIKE '%asdf%') OR "
+                         "(album IS NOT NULL AND album LIKE '%asdf%')) "
+                         "AND ((artist IS NOT NULL AND artist LIKE '%zxcv%') "
+                         "OR (album IS NOT NULL AND album LIKE '%zxcv%'))")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumnsNegation) {
@@ -158,10 +162,12 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumnsNegation) {
     EXPECT_FALSE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString(
-            "((artist LIKE '%asdf%') OR (album LIKE '%asdf%')) "
-            "AND (NOT ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%')))")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString(
+                    "((artist IS NOT NULL AND artist LIKE '%asdf%') OR (album "
+                    "IS NOT NULL AND album LIKE '%asdf%')) "
+                    "AND (NOT ((artist IS NOT NULL AND artist LIKE '%zxcv%') "
+                    "OR (album IS NOT NULL AND album LIKE '%zxcv%')))")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilter) {
@@ -176,8 +182,8 @@ TEST_F(SearchQueryParserTest, TextFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("comment LIKE '%asdf%'")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%asdf%'")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterEquals) {
@@ -191,7 +197,7 @@ TEST_F(SearchQueryParserTest, TextFilterEquals) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-            qPrintable(QString("comment LIKE 'asdf'")),
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE 'asdf'")),
             qPrintable(pQuery->toSql()));
 
     // Incomplete quoting should use StringMatch::Contains,
@@ -202,7 +208,7 @@ TEST_F(SearchQueryParserTest, TextFilterEquals) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-            qPrintable(QString("comment LIKE '%asdf%'")),
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%asdf%'")),
             qPrintable(pQuery->toSql()));
 }
 
@@ -233,8 +239,8 @@ TEST_F(SearchQueryParserTest, TextFilterQuote) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("comment LIKE '%asdf zxcv%'")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%asdf zxcv%'")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterQuote_NoEndQuoteTakesWholeQuery) {
@@ -249,8 +255,8 @@ TEST_F(SearchQueryParserTest, TextFilterQuote_NoEndQuoteTakesWholeQuery) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("comment LIKE '%asdf zxcv qwer%'")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%asdf zxcv qwer%'")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
@@ -265,8 +271,8 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("comment LIKE '%asdf%'")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%asdf%'")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterQuotes) {
@@ -281,8 +287,8 @@ TEST_F(SearchQueryParserTest, TextFilterQuotes) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("comment LIKE '%asdf ewe%'")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%asdf ewe%'")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterDecoration) {
@@ -302,9 +308,9 @@ TEST_F(SearchQueryParserTest, TextFilterDecoration) {
 
     qDebug() << pQuery->toSql();
 
-    EXPECT_STREQ(
-        qPrintable(QString::fromUtf8("comment LIKE '%asdf\xC2\xB0 ewe%'")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable(QString::fromUtf8("comment IS NOT NULL AND comment "
+                                              "LIKE '%asdf\xC2\xB0 ewe%'")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterTrailingSpace) {
@@ -319,8 +325,8 @@ TEST_F(SearchQueryParserTest, TextFilterTrailingSpace) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("comment LIKE '%asdf _%'")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%asdf _%'")),
+            qPrintable(pQuery->toSql()));
 
     // We allow to search for two consequitve spaces
     auto pQuery2(
@@ -329,8 +335,8 @@ TEST_F(SearchQueryParserTest, TextFilterTrailingSpace) {
     EXPECT_FALSE(pQuery2->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("comment LIKE '%  _%'")),
-        qPrintable(pQuery2->toSql()));
+            qPrintable(QString("comment IS NOT NULL AND comment LIKE '%  _%'")),
+            qPrintable(pQuery2->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, TextFilterNegation) {
@@ -345,8 +351,8 @@ TEST_F(SearchQueryParserTest, TextFilterNegation) {
     EXPECT_FALSE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("NOT (comment LIKE '%asdf%')")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("NOT (comment IS NOT NULL AND comment LIKE '%asdf%')")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, NumericFilter) {
@@ -627,11 +633,14 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
     pTrack->setTitle("Colorvision");
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(qPrintable(QString("(bpm BETWEEN 127.12 AND 129) AND "
-                                    "((artist LIKE '%com truise%') OR "
-                                    "(album_artist LIKE '%com truise%')) AND "
-                                    "((artist LIKE '%colorvision%') OR (title "
-                                    "LIKE '%colorvision%'))")),
+    EXPECT_STREQ(
+            qPrintable(QString(
+                    "(bpm BETWEEN 127.12 AND 129) AND "
+                    "((artist IS NOT NULL AND artist LIKE '%com truise%') OR "
+                    "(album_artist IS NOT NULL AND album_artist LIKE '%com "
+                    "truise%')) AND "
+                    "((artist IS NOT NULL AND artist LIKE '%colorvision%') OR "
+                    "(title IS NOT NULL AND title LIKE '%colorvision%'))")),
             qPrintable(pQuery->toSql()));
 }
 
@@ -647,8 +656,8 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(1 > 2) AND (artist LIKE '%asdf%')")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("(1 > 2) AND (artist IS NOT NULL AND artist LIKE '%asdf%')")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
@@ -1015,10 +1024,11 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
     EXPECT_TRUE(pQuery->match(pTrackA));
     EXPECT_FALSE(pQuery->match(pTrackB));
 
-    EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTerm) +
-                            ") AND ((artist LIKE '%asdf%') OR (album_artist LIKE '%asdf%'))"),
-                 qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable("(" + m_crateFilterQuery.arg(searchTerm) +
+                         ") AND ((artist IS NOT NULL AND artist LIKE '%asdf%') "
+                         "OR (album_artist IS NOT NULL AND album_artist LIKE "
+                         "'%asdf%'))"),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
