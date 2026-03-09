@@ -287,32 +287,32 @@ void DlgPrefWaveform::slotSetWaveformOptions(
             factory->findHandleIndexFromType(type), true);
 }
 
-void DlgPrefWaveform::saveState() {
-	m_savedWaveformTypeIndex = waveformTypeComboBox->currentIndex();
-	m_savedFrameRate = frameRateSlider->value();
-	m_savedEndOfTrackWarning = endOfTrackWarningTimeSlider->value();
-	m_savedBeatGridAlpha = beatGridAlphaSlider->value();
-	m_savedPlayMarkerPositionSlider = playMarkerPositionSlider->value();
-	m_savedDefaultZoomIndex = defaultZoomComboBox->currentIndex();
-	m_savedUntilMarkAlign = untilMarkAlignComboBox->currentIndex();
-	m_savedUntilMarkTextPointSize = untilMarkTextPointSizeSpinBox->value();
-	m_savedUntilMarkTextHeightLimit = untilMarkTextHeightLimitComboBox->currentIndex();
-	m_savedOverviewTypeIndex = waveformOverviewComboBox->currentIndex();
-	m_savedAllVisualGain = allVisualGain->value();
-	m_savedLowVisualGain = lowVisualGain->value();
-	m_savedMidVisualGain = midVisualGain->value();
-	m_savedHighVisualGain = highVisualGain->value();
-	m_savedStemOpacity = stemOpacitySpinBox->value();
-	m_savedStemOutlineOpacity = stemOutlineOpacitySpinBox->value();
-	m_savedAccelerationCheckBox = useAccelerationCheckBox->isChecked();
-	m_savedZoomSync = synchronizeZoomCheckBox->isChecked();
-	m_savedUntilShowBeats = untilMarkShowBeatsCheckBox->isChecked();
-	m_savedUntilShowTime = untilMarkShowTimeCheckBox->isChecked();
-	m_savedStemReorderOnChange = stemReorderLayerOnChangedCheckBox->isChecked();
-	m_savedOverviewStereo = overviewStereoCheckBox->isChecked();
-	m_savedDrawOverviewMinuteMarkers = overviewMinuteMarkersCheckBox->isChecked();
-	m_savedIsOverviewNormalized = overview_scale_normalize->isChecked();
-	m_savedSplitLeftRight = splitLeftRightCheckBox->isChecked();
+void DlgPrefWaveform::storeUiSettingsSnapshot() {
+    m_savedWaveformTypeIndex = waveformTypeComboBox->currentIndex();
+    m_savedFrameRate = frameRateSlider->value();
+    m_savedEndOfTrackWarning = endOfTrackWarningTimeSlider->value();
+    m_savedBeatGridAlpha = beatGridAlphaSlider->value();
+    m_savedPlayMarkerPositionSlider = playMarkerPositionSlider->value();
+    m_savedDefaultZoomIndex = defaultZoomComboBox->currentIndex();
+    m_savedUntilMarkAlign = untilMarkAlignComboBox->currentIndex();
+    m_savedUntilMarkTextPointSize = untilMarkTextPointSizeSpinBox->value();
+    m_savedUntilMarkTextHeightLimit = untilMarkTextHeightLimitComboBox->currentIndex();
+    m_savedOverviewTypeIndex = waveformOverviewComboBox->currentIndex();
+    m_savedAllVisualGain = allVisualGain->value();
+    m_savedLowVisualGain = lowVisualGain->value();
+    m_savedMidVisualGain = midVisualGain->value();
+    m_savedHighVisualGain = highVisualGain->value();
+    m_savedStemOpacity = stemOpacitySpinBox->value();
+    m_savedStemOutlineOpacity = stemOutlineOpacitySpinBox->value();
+    m_savedAccelerationCheckBox = useAccelerationCheckBox->isChecked();
+    m_savedZoomSync = synchronizeZoomCheckBox->isChecked();
+    m_savedUntilShowBeats = untilMarkShowBeatsCheckBox->isChecked();
+    m_savedUntilShowTime = untilMarkShowTimeCheckBox->isChecked();
+    m_savedStemReorderOnChange = stemReorderLayerOnChangedCheckBox->isChecked();
+    m_savedOverviewStereo = overviewStereoCheckBox->isChecked();
+    m_savedDrawOverviewMinuteMarkers = overviewMinuteMarkersCheckBox->isChecked();
+    m_savedIsOverviewNormalized = overview_scale_normalize->isChecked();
+    m_savedSplitLeftRight = splitLeftRightCheckBox->isChecked();
     m_savedHighDetail = highDetailCheckBox->isChecked();
 }
 
@@ -416,12 +416,12 @@ void DlgPrefWaveform::slotUpdate() {
         waveformSettings.waveformGenerationWithAnalysisEnabled());
     calculateCachedWaveformDiskUsage();
 
-	saveState();
+    storeUiSettingsSnapshot();
 }
 
 void DlgPrefWaveform::slotApply() {
-	saveState();
-	// All other settings have already been applied instantly for preview purpose
+    storeUiSettingsSnapshot();
+    // All other settings have already been applied instantly for preview purpose
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
@@ -511,7 +511,7 @@ void DlgPrefWaveform::slotCancel() {
     untilMarkAlignComboBox->setCurrentIndex(m_savedUntilMarkAlign);
     untilMarkTextPointSizeSpinBox->setValue(m_savedUntilMarkTextPointSize);
     untilMarkTextHeightLimitComboBox->setCurrentIndex(m_savedUntilMarkTextHeightLimit);
-	waveformOverviewComboBox->setCurrentIndex(m_savedOverviewTypeIndex);
+    waveformOverviewComboBox->setCurrentIndex(m_savedOverviewTypeIndex);
     if (useAccelerationCheckBox->isChecked() != m_savedAccelerationCheckBox) {
         slotSetWaveformAcceleration(m_savedAccelerationCheckBox);
         useAccelerationCheckBox->setChecked(m_savedAccelerationCheckBox);
@@ -526,10 +526,10 @@ void DlgPrefWaveform::slotCancel() {
     }
     if (m_savedIsOverviewNormalized) {
         overview_scale_normalize->setChecked(true);
-		slotSetOverviewScaling();
+        slotSetOverviewScaling();
     } else {
         overview_scale_allReplayGain->setChecked(true);
-		slotSetOverviewScaling();
+        slotSetOverviewScaling();
     }
     if (splitLeftRightCheckBox->isChecked() != m_savedSplitLeftRight) {
         splitLeftRightCheckBox->setChecked(m_savedSplitLeftRight);
@@ -542,9 +542,9 @@ void DlgPrefWaveform::slotCancel() {
     untilMarkShowBeatsCheckBox->setChecked(m_savedUntilShowBeats);
     untilMarkShowTimeCheckBox->setChecked(m_savedUntilShowTime);
     if (overviewStereoCheckBox->isChecked() != m_savedOverviewStereo) {
-		overviewStereoCheckBox->setChecked(m_savedOverviewStereo);
-		slotSetOverviewStereoMode(m_savedOverviewStereo); 
-	}
+        overviewStereoCheckBox->setChecked(m_savedOverviewStereo);
+        slotSetOverviewStereoMode(m_savedOverviewStereo); 
+    }
     overviewMinuteMarkersCheckBox->setChecked(m_savedDrawOverviewMinuteMarkers);
 }
 

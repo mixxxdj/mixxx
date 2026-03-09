@@ -24,7 +24,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     virtual ~DlgPrefWaveform();
 
   public slots:
-	void saveState();
+    void storeUiSettingsSnapshot();
     void slotUpdate() override;
     void slotApply() override;
     void slotResetToDefaults() override;
@@ -101,12 +101,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     int m_savedUntilMarkAlign;
     int m_savedUntilMarkTextPointSize;
     int m_savedUntilMarkTextHeightLimit;
-	int m_savedOverviewTypeIndex;
+    int m_savedOverviewTypeIndex;
     double m_savedAllVisualGain;
     double m_savedLowVisualGain;
     double m_savedMidVisualGain;
     double m_savedHighVisualGain;
-	double m_savedStemOpacity;
+    double m_savedStemOpacity;
     double m_savedStemOutlineOpacity;
     bool m_savedAccelerationCheckBox;
     bool m_savedZoomSync;
