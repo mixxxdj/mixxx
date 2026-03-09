@@ -223,13 +223,16 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
         speed = -speed;
     }
 
-    // Calculate the next grain position based on actual consumed input
-    // This ensures position tracking stays synchronized with the audio
+    // For subsequent grains, advance position based on actual frames consumed
+    // from the previous grain. This ensures position tracking stays synchronized
+    // with the audio.
     if (!std::isnan(m_request.position)) {
-        // Advance position based on actual frames consumed in previous iteration
-        // Use Bungee's expected input chunk size to maintain synchronization
-        const double grainAdvance = static_cast<double>(kMaxGrainFrames);
-        m_grainPosition += (m_bBackwards ? -grainAdvance : grainAdvance);
+        // Calculate actual frames consumed from the previous grain's input chunk
+        const SINT framesConsumed = m_currentInputChunk.end - m_currentInputChunk.begin;
+        if (framesConsumed > 0) {
+            m_grainPosition += (m_bBackwards ? -static_cast<double>(framesConsumed)
+                                             : static_cast<double>(framesConsumed));
+        }
     } else {
         // First grain - start at position 0
         m_grainPosition = 0.0;
