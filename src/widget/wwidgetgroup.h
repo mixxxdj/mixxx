@@ -79,6 +79,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     void paintEvent(QPaintEvent* pe) override;
     void resizeEvent(QResizeEvent* re) override;
     bool event(QEvent* pEvent) override;
+    void updateAccessibilityMetadata();
     void fillDebugTooltip(QStringList* debug) override;
 
   private:
@@ -86,4 +87,6 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     PaintablePointer m_pPixmapBack;
     PaintablePointer m_pPixmapBackHighlighted;
     int m_highlight;
+    QString m_autoAccessibleName;
+    QString m_autoAccessibleDescription;
 };

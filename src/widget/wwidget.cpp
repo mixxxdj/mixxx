@@ -25,6 +25,7 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
     setAttribute(Qt::WA_AcceptTouchEvents);
 #endif
     setFocusPolicy(Qt::ClickFocus);
+    updateAccessibilityMetadata();
 }
 
 WWidget::~WWidget() {
@@ -35,9 +36,60 @@ bool WWidget::touchIsRightButton() {
     return m_pTouchShift->toBool();
 }
 
+void WWidget::updateAccessibilityMetadata() {
+    const QString currentName = accessibleName();
+    if (!m_autoAccessibleName.isEmpty() && currentName != m_autoAccessibleName) {
+        m_autoAccessibleName.clear();
+    }
+
+    const bool canUpdateName = currentName.isEmpty() ||
+            currentName == m_autoAccessibleName;
+    if (canUpdateName) {
+        QString fallbackName = statusTip().simplified();
+        if (fallbackName.isEmpty()) {
+            fallbackName = toolTip().simplified();
+        }
+        if (fallbackName.isEmpty()) {
+            fallbackName = objectName().simplified();
+        }
+        if (!fallbackName.isEmpty()) {
+            setAccessibleName(fallbackName);
+            m_autoAccessibleName = fallbackName;
+        } else if (currentName == m_autoAccessibleName) {
+            setAccessibleName(QString());
+            m_autoAccessibleName.clear();
+        }
+    }
+
+    const QString currentDescription = accessibleDescription();
+    if (!m_autoAccessibleDescription.isEmpty() &&
+            currentDescription != m_autoAccessibleDescription) {
+        m_autoAccessibleDescription.clear();
+    }
+
+    const bool canUpdateDescription = currentDescription.isEmpty() ||
+            currentDescription == m_autoAccessibleDescription;
+    if (canUpdateDescription) {
+        QString description = toolTip().simplified();
+        if (description == accessibleName()) {
+            description.clear();
+        }
+        if (!description.isEmpty()) {
+            setAccessibleDescription(description);
+            m_autoAccessibleDescription = description;
+        } else if (currentDescription == m_autoAccessibleDescription) {
+            setAccessibleDescription(QString());
+            m_autoAccessibleDescription.clear();
+        }
+    }
+}
+
 bool WWidget::event(QEvent* e) {
     if (e->type() == QEvent::ToolTip) {
         updateTooltip();
+    } else if (e->type() == QEvent::ToolTipChange ||
+            e->type() == QEvent::StatusTip) {
+        updateAccessibilityMetadata();
     } if (e->type() == QEvent::FontChange) {
         const QFont& fonti = font();
         // Change the new font on the fly by casting away its constancy

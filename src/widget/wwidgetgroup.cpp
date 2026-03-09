@@ -17,6 +17,55 @@ WWidgetGroup::WWidgetGroup(QWidget* pParent)
           m_pPixmapBackHighlighted(nullptr),
           m_highlight(0) {
     setObjectName("WidgetGroup");
+    updateAccessibilityMetadata();
+}
+
+void WWidgetGroup::updateAccessibilityMetadata() {
+    const QString currentName = accessibleName();
+    if (!m_autoAccessibleName.isEmpty() && currentName != m_autoAccessibleName) {
+        m_autoAccessibleName.clear();
+    }
+
+    const bool canUpdateName = currentName.isEmpty() ||
+            currentName == m_autoAccessibleName;
+    if (canUpdateName) {
+        QString fallbackName = statusTip().simplified();
+        if (fallbackName.isEmpty()) {
+            fallbackName = toolTip().simplified();
+        }
+        if (fallbackName.isEmpty()) {
+            fallbackName = objectName().simplified();
+        }
+        if (!fallbackName.isEmpty()) {
+            setAccessibleName(fallbackName);
+            m_autoAccessibleName = fallbackName;
+        } else if (currentName == m_autoAccessibleName) {
+            setAccessibleName(QString());
+            m_autoAccessibleName.clear();
+        }
+    }
+
+    const QString currentDescription = accessibleDescription();
+    if (!m_autoAccessibleDescription.isEmpty() &&
+            currentDescription != m_autoAccessibleDescription) {
+        m_autoAccessibleDescription.clear();
+    }
+
+    const bool canUpdateDescription = currentDescription.isEmpty() ||
+            currentDescription == m_autoAccessibleDescription;
+    if (canUpdateDescription) {
+        QString description = toolTip().simplified();
+        if (description == accessibleName()) {
+            description.clear();
+        }
+        if (!description.isEmpty()) {
+            setAccessibleDescription(description);
+            m_autoAccessibleDescription = description;
+        } else if (currentDescription == m_autoAccessibleDescription) {
+            setAccessibleDescription(QString());
+            m_autoAccessibleDescription.clear();
+        }
+    }
 }
 
 int WWidgetGroup::layoutSpacing() const {
@@ -216,6 +265,9 @@ void WWidgetGroup::resizeEvent(QResizeEvent* re) {
 bool WWidgetGroup::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
+    } else if (pEvent->type() == QEvent::ToolTipChange ||
+            pEvent->type() == QEvent::StatusTip) {
+        updateAccessibilityMetadata();
     }
     return QFrame::event(pEvent);
 }

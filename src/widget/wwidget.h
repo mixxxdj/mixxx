@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QString>
 #include <QWidget>
 
 #include "widget/wbasewidget.h"
@@ -23,6 +24,7 @@ class WWidget : public QWidget, public WBaseWidget {
   protected:
     bool touchIsRightButton();
     bool event(QEvent* e) override;
+    void updateAccessibilityMetadata();
     void setScaleFactor(double value) {
         m_scaleFactor = value;
     }
@@ -35,4 +37,6 @@ class WWidget : public QWidget, public WBaseWidget {
   private:
     ControlProxy* m_pTouchShift;
     double m_scaleFactor;
+    QString m_autoAccessibleName;
+    QString m_autoAccessibleDescription;
 };
