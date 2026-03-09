@@ -21,6 +21,17 @@ enum class FocusWidget {
 };
 
 struct LibraryScanResultSummary {
+    LibraryScanResultSummary()
+            : autoscan(false),
+              numNewTracks(0),
+              numMovedTracks(0),
+              numMissingTracks(0),
+              numNewMissingTracks(0),
+              numRediscoveredTracks(0),
+              tracksTotal(0),
+              noDirectoriesConfigured(false) {
+    }
+
     QString durationString;
     bool autoscan;
     int numNewTracks;
@@ -29,4 +40,5 @@ struct LibraryScanResultSummary {
     int numNewMissingTracks;
     int numRediscoveredTracks;
     int tracksTotal;
+    bool noDirectoriesConfigured;
 };

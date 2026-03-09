@@ -22,6 +22,7 @@
 #include "effects/backends/builtin/distortioneffect.h"
 #include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/glitcheffect.h"
+#include "effects/backends/builtin/keycomparisoneffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
 #include "effects/backends/builtin/phasereffect.h"
@@ -58,6 +59,7 @@ BuiltInBackend::BuiltInBackend() {
 #endif
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
+    registerEffect<KeyComparisonEffect>();
     registerEffect<TremoloEffect>();
 #ifdef __RUBBERBAND__
     registerEffect<PitchShiftEffect>();

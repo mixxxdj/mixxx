@@ -129,10 +129,10 @@ static struct timecode_def timecodes[] = {
          .high = 0x400000000040,
          .low = 0x0000010800000001
      },
-     .length = 1820000,
-     .safe = 1800000,
+     .length = 1845000,
+     .safe = 1795000,
      .threshold = (128 << 16),
-     },    
+     },
     {
      .name = "traktor_mk2_b",
      .desc = "Traktor Scratch MK2, side B",
@@ -147,10 +147,10 @@ static struct timecode_def timecodes[] = {
          .high = 0x400000000040,
          .low = 0x0000010800000001
      },
-     .length = 2570000,
-     .safe = 2550000,
+     .length = 2590000,
+     .safe = 2540000,
      .threshold = (128 << 16),
-     },    
+     },
     {
      .name = "traktor_mk2_cd",
      .desc = "Traktor Scratch MK2, CD",
@@ -166,7 +166,7 @@ static struct timecode_def timecodes[] = {
          .low = 0x1000010800000001
      },
      .length = 4500000,
-     .safe = 4495000,
+     .safe = 4450000,
      .threshold = (128 << 16),
      },
     {
@@ -490,8 +490,10 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     /* Compute the factor the scale up the derivative to the original level */
     tc->gain_compensation = 1.0 / (M_PI * tc->def->resolution / tc->sample_rate);
 
-    mk2_subcode_init(&tc->upper_bitstream);
-    mk2_subcode_init(&tc->lower_bitstream);
+    if (tc->def->flags & TRAKTOR_MK2) {
+        mk2_subcode_init(&tc->upper_bitstream);
+        mk2_subcode_init(&tc->lower_bitstream);
+    }
 }
 
 /*

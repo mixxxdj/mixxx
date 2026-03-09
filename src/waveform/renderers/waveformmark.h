@@ -98,19 +98,6 @@ class WaveformMark {
             m_pEndPositionCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
         }
     };
-    template<typename Receiver, typename Slot>
-    void connectTypeChanged(Receiver receiver, Slot slot) const {
-        if (m_typeCO) {
-            m_typeCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
-        }
-    };
-    template<typename Receiver, typename Slot>
-    void connectStatusChanged(Receiver receiver, Slot slot) const {
-        if (m_statusCO) {
-            m_statusCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
-        }
-    };
-
     double getSamplePosition() const {
         return m_pPositionCO->get();
     }

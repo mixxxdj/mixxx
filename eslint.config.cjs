@@ -20,6 +20,7 @@ module.exports = tseslint.config(
             "res/controllers/Novation-Launchpad MK2-scripts.js",
             "res/controllers/Novation-Launchpad Mini MK3-scripts.js",
             "res/controllers/Novation-Launchpad-scripts.js",
+            "res/controllers/mixxx-controls.d.ts",
         ],
     },
     {

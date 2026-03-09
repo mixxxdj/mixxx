@@ -58,6 +58,8 @@ extern const ConfigKey kTagFetcherApplyTagsConfigKey;
 
 extern const ConfigKey kTagFetcherApplyCoverConfigKey;
 
+extern const ConfigKey kDateFormatConfigKey;
+
 } // namespace prefs
 
 } // namespace library

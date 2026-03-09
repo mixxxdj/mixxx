@@ -115,6 +115,13 @@ void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
 }
 
+const QString BaseTrackTableModel::kDateFormatDefault = QString();
+QString BaseTrackTableModel::s_dateFormat = BaseTrackTableModel::kDateFormatDefault;
+
+void BaseTrackTableModel::setDateFormat(const QString& format) {
+    s_dateFormat = format;
+}
+
 BaseTrackTableModel::BaseTrackTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
@@ -689,10 +696,10 @@ QVariant BaseTrackTableModel::roleValue(
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
                 // Timestamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
-                return mixxx::displayLocalDateTime(dt);
+                return mixxx::displayLocalDateTime(dt, s_dateFormat);
             }
             // For Date Added, use just the date: "5/20/98"
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
@@ -718,7 +725,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
                 return dt;
             }
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;

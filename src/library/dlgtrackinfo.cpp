@@ -397,7 +397,7 @@ void DlgTrackInfo::replaceTrackRecord(
     QFileInfo info(trackLocation);
     if (info.exists() && info.isFile()) {
         int size = info.size();
-        QString sizeStr = QLocale().formattedDataSize(size);
+        QString sizeStr = QLocale().formattedDataSize(size, 1, QLocale::DataSizeSIFormat);
         txtFileSize->setText(sizeStr);
     }
 
