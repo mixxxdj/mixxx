@@ -244,7 +244,7 @@ void DlgPrefRecord::slotResetToDefaults() {
     LineEditAuthor->setText("");
 
     // 4GB splitting is the default
-    comboBoxSplitting->setCurrentIndex(4);
+    comboBoxSplitting->setCurrentIndex(comboBoxSplitting->findData(SPLIT_4096MB));
 
     // Sets 'Create a CUE file' checkbox value
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);

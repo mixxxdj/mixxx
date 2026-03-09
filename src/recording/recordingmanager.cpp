@@ -38,9 +38,6 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEn
             &RecordingManager::slotToggleRecording);
     m_pCoRecStatus = std::make_unique<ControlObject>(ConfigKey(RECORDING_PREF_KEY, "status"));
 
-    m_split_size = getFileSplitSize();
-    m_split_time = getFileSplitSeconds();
-
     // Register EngineRecord with the engine sidechain.
     EngineSideChain* pSidechain = pEngine->getSideChain();
     if (pSidechain) {
@@ -111,8 +108,14 @@ void RecordingManager::startRecording() {
     m_secondsRecorded=0;
     m_dfSilence = false;
     m_dfCounter=0;
-    m_split_size = getFileSplitSize();
-    m_split_time = getFileSplitSeconds();
+    m_split_size = 0;
+    m_split_time = 0;
+
+    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
+    if (fileSizeStr != SPLIT_NONE) {
+        m_split_size = getFileSplitSize(fileSizeStr);
+        m_split_time = getFileSplitSeconds(fileSizeStr);
+    }
     if (m_split_time < INT_MAX) {
         qDebug() << "Split time is:" << m_split_time;
     }
@@ -198,7 +201,7 @@ QString& RecordingManager::getRecordingDir() {
 void RecordingManager::slotDurationRecorded(quint64 duration) {
     if (m_secondsRecordedSplit != duration) {
         m_secondsRecordedSplit = duration;
-        if (duration >= m_split_time) {
+        if (m_split_time != 0 && duration >= m_split_time) {
             qDebug() << "Splitting after " << duration << " seconds";
             // This will reuse the previous filename but append a suffix.
             splitContinueRecording();
@@ -223,8 +226,7 @@ void RecordingManager::slotBytesRecorded(int bytes) {
     //Split before reaching the max size. m_split_size has some headroom, as
     //seen in the constant definitions in defs_recording.h. Also, note that
     //bytes are increased in the order of 10s of KBs each call.
-    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-    if (fileSizeStr != SPLIT_NONE &&
+    if (m_split_size != 0 &&
             m_iNumberOfBytesRecordedSplit >= m_split_size) {
         qDebug() << "Splitting after " << m_iNumberOfBytesRecorded << " bytes written";
         // This will reuse the previous filename but append a suffix.
@@ -306,8 +308,7 @@ const QString& RecordingManager::getRecordingLocation() const {
     return m_recordingLocation;
 }
 
-quint64 RecordingManager::getFileSplitSize() {
-    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
+quint64 RecordingManager::getFileSplitSize(const QString& fileSizeStr) {
     if (fileSizeStr == SPLIT_650MB) {
         return SIZE_650MB;
     } else if (fileSizeStr == SPLIT_700MB) {
@@ -325,8 +326,7 @@ quint64 RecordingManager::getFileSplitSize() {
     }
 }
 
-unsigned int RecordingManager::getFileSplitSeconds() {
-    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
+unsigned int RecordingManager::getFileSplitSeconds(const QString& fileSizeStr) {
     if (fileSizeStr == SPLIT_60MIN) {
         return 60*60;
     } else if (fileSizeStr == SPLIT_74MIN) {
