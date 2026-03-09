@@ -385,6 +385,24 @@ jobs:
           timestamp-digest: SHA256
           timeout: 600
 
+      - name: "[Windows] Sign WiX custom action DLL"
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+        uses: azure/trusted-signing-action@v0.5.10
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://weu.codesigning.azure.net/
+          trusted-signing-account-name: mixxx
+          certificate-profile-name: mixxx
+          files: build/packaging/wix/mixxxupgradecustomaction.dll
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          timeout: 600
+
       - name: "[Windows] Install WiX Toolset"
         if: runner.os == 'Windows'
         shell: pwsh
