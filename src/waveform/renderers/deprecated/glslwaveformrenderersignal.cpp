@@ -14,6 +14,10 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 
+namespace {
+const QString kPaththroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
+} // namespace
+
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
         ColorType colorType,
         const QString& fragShader)
@@ -54,28 +58,33 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 Shader::Vertex,
-                ":/shaders/passthrough.vert")) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_frameShaderProgram->log();
+                kPaththroughShaderPath)) {
+        qWarning()
+                << "GLSLWaveformRendererSignal::loadShaders - compilation failed:"
+                << kPaththroughShaderPath;
+        qDebug() << m_frameShaderProgram->log();
         return false;
     }
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 Shader::Fragment,
-                m_pFragShader)) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_frameShaderProgram->log();
+                m_fragShader)) {
+        qWarning() << "GLSLWaveformRendererSignal::loadShaders - compilation "
+                      "failed:"
+                   << m_fragShader;
+        qDebug() << m_frameShaderProgram->log();
         return false;
     }
 
     if (!m_frameShaderProgram->link()) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_frameShaderProgram->log();
+        qWarning() << "GLSLWaveformRendererSignal::loadShaders - linking "
+                      "failed." qDebug()
+                   << m_frameShaderProgram->log();
         return false;
     }
 
     if (!m_frameShaderProgram->bind()) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - shaders binding failed";
+        qDebug() << "GLSLWaveformRendererSignal::loadShaders - binding failed";
         return false;
     }
 

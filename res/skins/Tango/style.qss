@@ -1,5 +1,10 @@
 /* Tango style sheet */
 
+#StemLabelEmpty {
+  color: #FFFFFF;
+}
+
+
 #Mixxx {  /*
   AlignRight just for testing, to attach SkinSettings to right edge.
   Not working. See https://github.com/mixxxdj/mixxx/issues/8646 */

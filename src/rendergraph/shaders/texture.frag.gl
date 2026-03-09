@@ -1,4 +1,3 @@
-#version 120
 //// GENERATED - EDITS WILL BE OVERWRITTEN
 
 struct buf
@@ -11,7 +10,7 @@ uniform buf ubuf;
 
 uniform sampler2D texture1;
 
-varying vec2 vTexcoord;
+varying highp vec2 vTexcoord;
 
 void main()
 {

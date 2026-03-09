@@ -67,6 +67,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
 
     void hideTracks(const QModelIndexList& indices) override;
+    void removeTrackRows(const QSet<TrackId>& trackIdsToRemove) override;
 
     void select() override;
 
