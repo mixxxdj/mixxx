@@ -121,23 +121,29 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotCancel);
 
     // BPM edit buttons
-    connect(bpmDouble, &QPushButton::clicked, this, [this] {
-        slotBpmScale(mixxx::Beats::BpmScale::Double);
-    });
     connect(bpmHalve, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::Halve);
     });
     connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
     });
-    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+    connect(bpmThreeFourths, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
+    });
+    connect(bpmFourFifths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FourFifths);
+    });
+    connect(bpmFiveFourths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FiveFourths);
     });
     connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
     });
     connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
+    });
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Double);
     });
     connect(bpmClear,
             &QPushButton::clicked,
@@ -476,12 +482,14 @@ void DlgTrackInfo::updateBpmEditControls() {
     bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
     spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
     bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
-    bpmDouble->setEnabled(!m_bpmLocked);
     bpmHalve->setEnabled(!m_bpmLocked);
     bpmTwoThirds->setEnabled(!m_bpmLocked);
-    bpmThreeFourth->setEnabled(!m_bpmLocked);
+    bpmThreeFourths->setEnabled(!m_bpmLocked);
+    bpmFourFifths->setEnabled(!m_bpmLocked);
+    bpmFiveFourths->setEnabled(!m_bpmLocked);
     bpmFourThirds->setEnabled(!m_bpmLocked);
     bpmThreeHalves->setEnabled(!m_bpmLocked);
+    bpmDouble->setEnabled(!m_bpmLocked);
     bpmClear->setEnabled(!m_bpmLocked);
 }
 
