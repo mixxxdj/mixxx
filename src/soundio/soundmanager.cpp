@@ -42,6 +42,11 @@ typedef PaError (*SetJackClientName)(const char *name);
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
+#ifdef __WINDOWS__
+const QString kWindowsPrimarySoundDriverName = QStringLiteral("Primary Sound Driver");
+const QString kWindowsWasapiApi = QStringLiteral("Windows WASAPI");
+const QString kWindowsMmeApi = QStringLiteral("MME");
+#endif
 
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
@@ -55,6 +60,63 @@ struct DeviceMode {
 constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
 } // anonymous namespace
+
+#ifdef __WINDOWS__
+bool SoundManager::shouldUseWindowsApiFallbackForPrimaryDevice() const {
+    if (m_triedWindowsPrimaryDeviceFallback ||
+            m_config.getAPI() != MIXXX_PORTAUDIO_DIRECTSOUND_STRING) {
+        return false;
+    }
+
+    const QSet<SoundDeviceId> devices = m_config.getDevices();
+    if (devices.isEmpty()) {
+        return false;
+    }
+
+    for (const auto& device : devices) {
+        if (device.name == kWindowsPrimarySoundDriverName) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool SoundManager::applyWindowsApiFallbackForPrimaryDevice() {
+    if (!shouldUseWindowsApiFallbackForPrimaryDevice()) {
+        return false;
+    }
+
+    QString fallbackApi;
+    const QList<QString> apiList = getHostAPIList();
+    const auto hasOutputDevices = [this](const QString& api) {
+        return !getDeviceList(api, true, false).isEmpty();
+    };
+
+    if (apiList.contains(kWindowsWasapiApi) && hasOutputDevices(kWindowsWasapiApi)) {
+        fallbackApi = kWindowsWasapiApi;
+    } else if (apiList.contains(kWindowsMmeApi) && hasOutputDevices(kWindowsMmeApi)) {
+        fallbackApi = kWindowsMmeApi;
+    } else {
+        for (const auto& api : apiList) {
+            if (api != MIXXX_PORTAUDIO_DIRECTSOUND_STRING && hasOutputDevices(api)) {
+                fallbackApi = api;
+                break;
+            }
+        }
+    }
+
+    if (fallbackApi.isEmpty()) {
+        return false;
+    }
+
+    m_triedWindowsPrimaryDeviceFallback = true;
+    qWarning() << "Falling back from" << MIXXX_PORTAUDIO_DIRECTSOUND_STRING
+               << "Primary Sound Driver to" << fallbackApi;
+    m_config.setAPI(fallbackApi);
+    m_config.loadDefaults(this, SoundManagerConfig::DEVICES | SoundManagerConfig::OTHER);
+    return true;
+}
+#endif
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
         EngineMixer* pEngineMixer)
@@ -688,6 +750,15 @@ SoundDeviceStatus SoundManager::setupDevices() {
 closeAndError:
     const bool sleepAfterClosing = false;
     closeDevices(sleepAfterClosing);
+#ifdef __WINDOWS__
+    if (applyWindowsApiFallbackForPrimaryDevice()) {
+        const SoundDeviceStatus fallbackStatus = setupDevices();
+        if (fallbackStatus == SoundDeviceStatus::Ok) {
+            m_config.writeToDisk();
+        }
+        return fallbackStatus;
+    }
+#endif
     return status;
 }
 

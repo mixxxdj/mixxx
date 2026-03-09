@@ -141,6 +141,12 @@ class SoundManager : public QObject {
         return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
     }
 
+  #ifdef __WINDOWS__
+    bool shouldUseWindowsApiFallbackForPrimaryDevice() const;
+    bool applyWindowsApiFallbackForPrimaryDevice();
+    bool m_triedWindowsPrimaryDeviceFallback = false;
+  #endif
+
     EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
