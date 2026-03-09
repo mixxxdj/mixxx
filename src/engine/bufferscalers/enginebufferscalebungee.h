@@ -58,6 +58,9 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     std::vector<mixxx::SampleBuffer> m_channelBuffers;
     std::vector<float*> m_channelBufferPtrs;
 
+    // Single contiguous buffer for all channels (for Bungee's planar format)
+    mixxx::SampleBuffer m_contiguousChannelBuffer;
+
     // Interleaved read buffer from ReadAheadManager
     mixxx::SampleBuffer m_interleavedReadBuffer;
 
@@ -82,5 +85,7 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
 
     // Static maximum buffer size for grain processing
     static constexpr SINT kMaxGrainFrames = 4096;
-    static constexpr SINT kInputBufferFrames = 8192;
+
+    // Buffer size for input (set dynamically based on Bungee's requirements)
+    SINT m_inputBufferFrames;
 };
