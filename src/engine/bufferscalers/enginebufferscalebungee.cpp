@@ -17,7 +17,8 @@ EngineBufferScaleBungee::EngineBufferScaleBungee(ReadAheadManager* pReadAheadMan
           m_grainPosition(0.0),
           m_bResetNeeded(true),
           m_remainingOutputFrames(0),
-          m_outputChunkConsumed(0) {
+          m_outputChunkConsumed(0),
+          m_inputBufferFrames(0) {
     // Initialize the request with NaN position (invalid)
     m_request.position = std::numeric_limits<double>::quiet_NaN();
     m_request.speed = 1.0;
@@ -42,28 +43,22 @@ EngineBufferScaleBungee::EngineBufferScaleBungee(ReadAheadManager* pReadAheadMan
 void EngineBufferScaleBungee::onSignalChanged() {
     const int channelCount = static_cast<int>(getOutputSignal().getChannelCount());
 
-    // Initialize channel buffers (even if signal is not yet valid)
-    if (m_channelBuffers.size() != static_cast<size_t>(channelCount)) {
-        m_channelBuffers.resize(channelCount);
-        m_channelBufferPtrs.resize(channelCount);
-    }
-
-    // Allocate deinterleaved buffers for grain processing
-    for (int ch = 0; ch < channelCount; ++ch) {
-        if (m_channelBuffers[ch].size() < kInputBufferFrames) {
-            m_channelBuffers[ch] = mixxx::SampleBuffer(kInputBufferFrames);
-        }
-        m_channelBufferPtrs[ch] = m_channelBuffers[ch].data();
-    }
-
-    // Initialize interleaved read buffer
-    const SINT interleavedSize = kInputBufferFrames * channelCount;
-    if (m_interleavedReadBuffer.size() < interleavedSize) {
-        m_interleavedReadBuffer = mixxx::SampleBuffer(interleavedSize);
-    }
-
     // Only create stretcher if we have a valid signal
     if (!getOutputSignal().isValid()) {
+        // Still need to initialize channel buffers with default size
+        if (m_channelBuffers.size() != static_cast<size_t>(channelCount)) {
+            m_channelBuffers.resize(channelCount);
+            m_channelBufferPtrs.resize(channelCount);
+        }
+        // Use a default size until we have valid signal
+        m_inputBufferFrames = kMaxGrainFrames;
+        for (int ch = 0; ch < channelCount; ++ch) {
+            if (static_cast<size_t>(m_channelBuffers[ch].size()) <
+                    static_cast<size_t>(m_inputBufferFrames)) {
+                m_channelBuffers[ch] = mixxx::SampleBuffer(m_inputBufferFrames);
+            }
+            m_channelBufferPtrs[ch] = m_channelBuffers[ch].data();
+        }
         return;
     }
 
@@ -77,7 +72,36 @@ void EngineBufferScaleBungee::onSignalChanged() {
     m_pStretcher = std::make_unique<Bungee::Stretcher<Bungee::Basic>>(
             sampleRates, channelCount, 0);
 
-    m_channelStride = kInputBufferFrames;
+    // Get the actual buffer size required by Bungee
+    m_inputBufferFrames = m_pStretcher->maxInputFrameCount();
+
+    // Initialize channel buffers - Option A: Single contiguous buffer for all channels
+    // This ensures proper channel stride for Bungee's planar format
+    if (m_channelBuffers.size() != static_cast<size_t>(channelCount)) {
+        m_channelBuffers.resize(channelCount);
+        m_channelBufferPtrs.resize(channelCount);
+    }
+
+    // Allocate single contiguous buffer for all channels
+    const SINT totalFrames = m_inputBufferFrames * channelCount;
+    if (static_cast<size_t>(m_contiguousChannelBuffer.size()) < static_cast<size_t>(totalFrames)) {
+        m_contiguousChannelBuffer = mixxx::SampleBuffer(totalFrames);
+    }
+
+    // Set up channel pointers within the contiguous buffer
+    for (int ch = 0; ch < channelCount; ++ch) {
+        // Each channel starts at offset ch * m_inputBufferFrames
+        m_channelBufferPtrs[ch] = m_contiguousChannelBuffer.data() + (ch * m_inputBufferFrames);
+    }
+
+    // Channel stride is the number of frames between consecutive channels
+    m_channelStride = m_inputBufferFrames;
+
+    // Initialize interleaved read buffer
+    const SINT interleavedSize = m_inputBufferFrames * channelCount;
+    if (m_interleavedReadBuffer.size() < interleavedSize) {
+        m_interleavedReadBuffer = mixxx::SampleBuffer(interleavedSize);
+    }
 
     // Reset state
     m_request.position = std::numeric_limits<double>::quiet_NaN();
@@ -138,8 +162,8 @@ void EngineBufferScaleBungee::deinterleaveInput(const CSAMPLE* pBuffer, SINT fra
     switch (getOutputSignal().getChannelCount()) {
     case mixxx::audio::ChannelCount::stereo():
         SampleUtil::deinterleaveBuffer(
-                m_channelBuffers[0].data(),
-                m_channelBuffers[1].data(),
+                m_channelBufferPtrs[0],
+                m_channelBufferPtrs[1],
                 pBuffer,
                 frames);
         break;
@@ -147,7 +171,7 @@ void EngineBufferScaleBungee::deinterleaveInput(const CSAMPLE* pBuffer, SINT fra
         // Generic deinterleave for any channel count
         for (SINT frame = 0; frame < frames; ++frame) {
             for (int ch = 0; ch < channelCount; ++ch) {
-                m_channelBuffers[ch].data()[frame] = pBuffer[frame * channelCount + ch];
+                m_channelBufferPtrs[ch][frame] = pBuffer[frame * channelCount + ch];
             }
         }
     } break;
@@ -243,11 +267,12 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     // Deinterleave input for Bungee
     deinterleaveInput(m_interleavedReadBuffer.data(), availableFrames);
 
-    // Analyze the grain
+    // Analyze the grain - pass the base pointer and correct stride
+    // With contiguous buffer, channel[0] is at base, channel[1] is at base + m_channelStride, etc.
     const int muteHead = 0;
     const int muteTail = framesNeeded - availableFrames;
     m_pStretcher->analyseGrain(
-            m_channelBuffers[0].data(),
+            m_channelBufferPtrs[0],
             m_channelStride,
             muteHead,
             std::max(0, muteTail));
