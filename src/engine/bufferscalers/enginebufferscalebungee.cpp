@@ -53,7 +53,8 @@ void EngineBufferScaleBungee::onSignalChanged() {
         // Use a default size until we have valid signal
         m_inputBufferFrames = kMaxGrainFrames;
         for (int ch = 0; ch < channelCount; ++ch) {
-            if (static_cast<size_t>(m_channelBuffers[ch].size()) < static_cast<size_t>(m_inputBufferFrames)) {
+            if (static_cast<size_t>(m_channelBuffers[ch].size()) <
+                    static_cast<size_t>(m_inputBufferFrames)) {
                 m_channelBuffers[ch] = mixxx::SampleBuffer(m_inputBufferFrames);
             }
             m_channelBufferPtrs[ch] = m_channelBuffers[ch].data();
