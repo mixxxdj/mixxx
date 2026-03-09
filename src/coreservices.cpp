@@ -640,7 +640,8 @@ void CoreServices::initialize(QApplication* pApp) {
         QString fd = QFileDialog::getExistingDirectory(nullptr,
                 tr("Choose music library directory"),
                 QStandardPaths::writableLocation(
-                        QStandardPaths::MusicLocation));
+                        QStandardPaths::MusicLocation),
+                QFileDialog::ShowDirsOnly);
 #endif
         // request to add directory to database.
         if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
