@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <span>
 #include <string>
@@ -38,6 +39,8 @@ struct Options :
 		add_options() //
 			("input", "input WAV filename", cxxopts::value<std::string>()) //
 			("output", "output WAV filename", cxxopts::value<std::string>()) //
+			;
+		add_options(helpGroups.emplace_back("Input")) //
 			("start", "start time in seconds", cxxopts::value<double>()->default_value("+0")) //
 			("stop", "stop time in seconds", cxxopts::value<double>()->default_value("-0")) //
 			;
@@ -185,6 +188,73 @@ struct Processor
 		}
 	};
 
+	struct DynamicRange
+	{
+		float absMax{};
+		void consider(float x)
+		{
+			absMax = std::max(absMax, std::abs(x));
+		}
+		void report()
+		{
+			std::cout << "Peak: " << std::fixed << std::setprecision(2) << std::showpos << 20.0f * std::log10(absMax) << " dBFS";
+		}
+	};
+
+	template <typename Sample>
+	struct ToFloat : DynamicRange
+	{
+		~ToFloat()
+		{
+			std::cout << "Input ";
+			report();
+			std::cout << "\n";
+		}
+
+		float operator()(Sample s)
+		{
+			float x = float(s);
+			if constexpr (!std::is_same_v<Sample, float>)
+				x *= -1.f / std::numeric_limits<Sample>::min();
+			consider(x);
+			return x;
+		}
+	};
+
+	struct FromFloat : DynamicRange
+	{
+		bool clipped{};
+
+		~FromFloat()
+		{
+			std::cout << "Output ";
+			report();
+			std::cout << (clipped ? " [CLIPPED]\n" : "\n");
+		}
+
+		template <typename Sample>
+		Sample convertTo(float x)
+		{
+			consider(x);
+			if constexpr (!std::is_same_v<Sample, float>)
+			{
+				x = std::ldexp(x, 8 * sizeof(Sample) - 1);
+				x = std::round(x);
+				if (x < std::numeric_limits<Sample>::min())
+				{
+					x = std::numeric_limits<Sample>::min();
+					clipped = true;
+				}
+				if (x >= -(float)std::numeric_limits<Sample>::min())
+				{
+					x = std::numeric_limits<Sample>::max();
+					clipped = true;
+				}
+			}
+			return static_cast<Sample>(x);
+		}
+	};
+
 	std::vector<char> wavHeader;
 	std::vector<char> wavData;
 	decltype(wavData.begin()) o;
@@ -197,6 +267,7 @@ struct Processor
 	std::vector<float> inputBuffer;
 	std::ifstream inputFile;
 	std::ofstream outputFile;
+	FromFloat fromFloat;
 
 	Processor(const cxxopts::ParseResult &parameters, Request &request) :
 		inputFile(parameters["input"].as<std::string>(), std::ios::binary)
@@ -347,7 +418,7 @@ struct Processor
 		for (int f = 0; f < count / channelCount; ++f)
 			for (int c = 0; c < channelCount; ++c)
 			{
-				write<Sample>(&*o, fromFloat<Sample>(chunk.data[f + c * chunk.channelStride]));
+				write<Sample>(&*o, fromFloat.convertTo<Sample>(chunk.data[f + c * chunk.channelStride]));
 				o += sizeof(Sample);
 			}
 
@@ -395,6 +466,7 @@ struct Processor
 		inputChannelStride = inputFrameCount = int(frameStop - frameStart);
 		inputBuffer.resize(channelCount * inputChannelStride);
 
+		ToFloat<Sample> toFloat;
 		for (int i = 0; i < inputFrameCount; ++i)
 			for (int c = 0; c < channelCount; ++c)
 				inputBuffer[c * inputChannelStride + i] = toFloat(read<Sample>(&wavData[((i + frameStart) * channelCount + c) * sizeof(Sample)]));
@@ -422,29 +494,6 @@ struct Processor
 		else
 			for (unsigned i = 0; i < sizeof(Type); ++i)
 				data[i] = value >> 8 * i;
-	}
-
-	template <typename Sample>
-	static inline float toFloat(Sample x)
-	{
-		if (std::is_same_v<Sample, float>)
-			return x;
-		constexpr float k = -1.f / std::numeric_limits<Sample>::min();
-		return k * x;
-	}
-
-	template <typename Sample>
-	static inline Sample fromFloat(float x)
-	{
-		if constexpr (std::is_same_v<Sample, float>)
-			return x;
-		x = std::ldexp(x, 8 * sizeof(Sample) - 1);
-		x = std::round(x);
-		if (x < std::numeric_limits<Sample>::min())
-			return std::numeric_limits<Sample>::min();
-		if (x >= -(float)std::numeric_limits<Sample>::min())
-			return std::numeric_limits<Sample>::max();
-		return static_cast<Sample>(x);
 	}
 };
 

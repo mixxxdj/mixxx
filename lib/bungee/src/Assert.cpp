@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
+#include <array>
 
 namespace Bungee::Assert {
 
@@ -56,20 +57,30 @@ FloatingPointExceptions::~FloatingPointExceptions()
 
 struct Petrification
 {
-	static void petrify(int signalNumber)
+	static void petrify(int sig, siginfo_t *info, void *context)
 	{
-		psignal(signalNumber, "Bungee petrified");
-		fprintf(stderr, "Bungee PID=%d\n", getpid());
-		while (true)
-			sleep(1);
+		auto message = std::to_array("Bungee petrified PID=       \n");
+		auto p = message.rbegin() + 1;
+		int pid = (int)getpid();
+		while (pid)
+		{
+			*p++ = '0' + pid % 10;
+			pid /= 10;
+		}
+		write(STDERR_FILENO, message.data(), message.size());
+		raise(SIGSTOP);
 	}
 
 	Petrification()
 	{
-		signal(SIGSEGV, petrify);
-		signal(SIGABRT, petrify);
-		signal(SIGILL, petrify);
-		signal(SIGFPE, petrify);
+		struct sigaction sa{};
+		sa.sa_sigaction = petrify;
+		sa.sa_flags = SA_SIGINFO;
+
+		sigaction(SIGSEGV, &sa, nullptr);
+		sigaction(SIGABRT, &sa, nullptr);
+		sigaction(SIGILL, &sa, nullptr);
+		sigaction(SIGFPE, &sa, nullptr);
 	}
 };
 

@@ -320,12 +320,14 @@ struct Stretcher
 	/**
 	 * @brief Begins processing the grain.
 	 *
-	 * The audio data should correspond to the range specified by specifyGrain's return value.
-	 * After calling this function, call synthesiseGrain().
-	 * @param data Pointer to input audio data.
+	 * The audio data provided should cover the range specified by specifyGrain's return value.
+	 * After calling this function, synthesiseGrain() must be called to complete processing.
+	 * The buffer pointed to by @p data must remain valid until after synthesiseGrain() returns.
+	 *
+	 * @param data Pointer to input audio data (per-channel, non-interleaved).
 	 * @param channelStride Stride between channels in the data buffer.
-	 * @param muteFrameCountHead Number of unavailable frames at the start (default 0).
-	 * @param muteFrameCountTail Number of unavailable frames at the end (default 0).
+	 * @param muteFrameCountHead Number of unavailable frames at the start of the buffer (default 0).
+	 * @param muteFrameCountTail Number of unavailable frames at the end of the buffer (default 0).
 	 * @note Mute frames are replaced with zero-valued frames.
 	 */
 	inline void analyseGrain(const float *data, intptr_t channelStride, int muteFrameCountHead = 0, int muteFrameCountTail = 0)
