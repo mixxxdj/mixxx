@@ -145,8 +145,10 @@ void EngineBufferScaleBungee::setScaleParameters(double base_rate,
         m_request.pitch = pitchScale;
     }
 
-    // Speed is used by Bungee when it can't determine speed from position deltas
-    m_request.speed = m_dBaseRate * m_dTempoRatio;
+    // Bungee's speed parameter is the input/output frame ratio.
+    // Use only the tempo ratio (playback speed) without base_rate.
+    // Bungee handles sample rate conversion internally via resampleMode.
+    m_request.speed = m_dTempoRatio;
 
     // If the direction changed, we need to reset
     if (m_bBackwards && m_request.speed > 0) {
@@ -218,10 +220,14 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     }
 
     // Only process if we have valid parameters
-    double speed = m_dBaseRate * m_dTempoRatio;
+    // For Bungee's request, use only the tempo ratio (input/output frame ratio)
+    double speed = m_dTempoRatio;
     if (m_bBackwards) {
         speed = -speed;
     }
+
+    // Calculate effective rate for ReadAheadManager (includes base_rate for sample rate conversion)
+    const double effectiveRate = m_dBaseRate * m_dTempoRatio;
 
     // For subsequent grains, advance position based on actual frames consumed
     // from the previous grain. This ensures position tracking stays synchronized
@@ -254,7 +260,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     // Read input from ReadAheadManager
     const SINT samplesNeeded = getOutputSignal().frames2samples(framesNeeded);
     const SINT availableSamples = m_pReadAheadManager->getNextSamples(
-            speed,
+            effectiveRate,
             m_interleavedReadBuffer.data(),
             samplesNeeded,
             getOutputSignal().getChannelCount());
@@ -384,8 +390,9 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
 
             // Try to get more input
             const SINT samplesToRead = getOutputSignal().frames2samples(kMaxGrainFrames);
+            const double effectiveRate = (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio;
             const SINT availableSamples = m_pReadAheadManager->getNextSamples(
-                    (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
+                    effectiveRate,
                     m_interleavedReadBuffer.data(),
                     samplesToRead,
                     getOutputSignal().getChannelCount());
