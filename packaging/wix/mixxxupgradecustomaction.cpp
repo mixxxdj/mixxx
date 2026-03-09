@@ -13,21 +13,27 @@
 
 #pragma comment(lib, "msi.lib")
 
-// Mixxx Upgrade GUID — must match CPACK_WIX_UPGRADE_GUID
-static const wchar_t kUpgradeCode[] = L"{921DC99C-4DCF-478D-B950-50685CB9E6BE}";
+namespace {
+// MSI GUIDs are exactly 38 chars (incl curly brackets, dashes and the null terminator):
+// {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}
+constexpr DWORD kMsiGuidBufferSize = 39;
+
+// Mixxx Upgrade GUID — same as CPACK_WIX_UPGRADE_GUID
+constexpr wchar_t kMixxxUpgradeCode[] = L"{921DC99C-4DCF-478D-B950-50685CB9E6BE}";
+} // namespace
 
 extern "C"
         __declspec(dllexport) UINT __stdcall FindAllRelatedMixxxInstallations(
                 MSIHANDLE hInstall) {
     // Get our own ProductCode so we don't mark ourselves for removal.
-    wchar_t productCode[39] = {};
-    DWORD productCodeLen = 39;
+    wchar_t productCode[kMsiGuidBufferSize] = {};
+    DWORD productCodeLen = kMsiGuidBufferSize;
     MsiGetPropertyW(hInstall, L"ProductCode", productCode, &productCodeLen);
 
     // Enumerate ALL products with our UpgradeCode (scope-agnostic).
-    wchar_t relatedProduct[39] = {};
+    wchar_t relatedProduct[kMsiGuidBufferSize] = {};
     DWORD index = 0;
-    while (MsiEnumRelatedProductsW(kUpgradeCode, 0, index, relatedProduct) == ERROR_SUCCESS) {
+    while (MsiEnumRelatedProductsW(kMixxxUpgradeCode, 0, index, relatedProduct) == ERROR_SUCCESS) {
         if (wcscmp(relatedProduct, productCode) != 0) {
             // Found an older/different installation — mark it for upgrade removal.
             MsiSetPropertyW(hInstall, L"WIX_UPGRADE_DETECTED", relatedProduct);
