@@ -604,7 +604,37 @@ declare namespace MixxxControls {
          * @feedback Deck volume fader
          * @kind pot meter control
          */
-        | `volume${PotMeterSuffix}`;
+        | `volume${PotMeterSuffix}`
+
+        /**
+         * Outputs the current instantaneous deck volume (or stem volume for [ChannelN_StemM])
+         *
+         * @groups [ChannelN], [ChannelN_StemM], [PreviewDeckN], [SamplerN]
+         * @range default
+         * @feedback Deck VU meter
+         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeter, [PreviewDeckN],VuMeter and [SamplerN],VuMeter controls.
+         */
+        | 'vu_meter'
+
+        /**
+         * Outputs the current instantaneous deck volume for the left channel (or stem volume for [ChannelN_StemM])
+         *
+         * @groups [ChannelN], [ChannelN_StemM], [PreviewDeckN], [SamplerN]
+         * @range default
+         * @feedback Deck VU meter L
+         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterL, [PreviewDeckN],VuMeterL and [SamplerN],VuMeterL controls.
+         */
+        | 'vu_meter_left'
+
+        /**
+         * Outputs the current instantaneous deck volume for the right channel (or stem volume for [ChannelN_StemM])
+         *
+         * @groups [ChannelN], [ChannelN_StemM], [PreviewDeckN], [SamplerN]
+         * @range default
+         * @feedback Deck VU meter R
+         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterR, [PreviewDeckN],VuMeterR and [SamplerN],VuMeterR controls.
+         */
+        | 'vu_meter_right';
 
     type ChannelNPreviewDeckNSamplerNControl =
         /**
@@ -2506,36 +2536,6 @@ declare namespace MixxxControls {
          * @kind pot meter control
          */
         | `visual_key_distance${PotMeterSuffix}`
-
-        /**
-         * Outputs the current instantaneous deck volume
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range default
-         * @feedback Deck VU meter
-         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeter, [PreviewDeckN],VuMeter and [SamplerN],VuMeter controls.
-         */
-        | 'vu_meter'
-
-        /**
-         * Outputs the current instantaneous deck volume for the left channel
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range default
-         * @feedback Deck VU meter L
-         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterL, [PreviewDeckN],VuMeterL and [SamplerN],VuMeterL controls.
-         */
-        | 'vu_meter_left'
-
-        /**
-         * Outputs the current instantaneous deck volume for the right channel
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range default
-         * @feedback Deck VU meter R
-         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterR, [PreviewDeckN],VuMeterR and [SamplerN],VuMeterR controls.
-         */
-        | 'vu_meter_right'
 
         /**
          * Zooms the waveform to look ahead or back as needed.
