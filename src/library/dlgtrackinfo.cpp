@@ -482,12 +482,14 @@ void DlgTrackInfo::updateBpmEditControls() {
     bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
     spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
     bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
-    bpmDouble->setEnabled(!m_bpmLocked);
     bpmHalve->setEnabled(!m_bpmLocked);
     bpmTwoThirds->setEnabled(!m_bpmLocked);
-    bpmThreeFourth->setEnabled(!m_bpmLocked);
+    bpmThreeFourths->setEnabled(!m_bpmLocked);
+    bpmFourFifths->setEnabled(!m_bpmLocked);
+    bpmFiveFourths->setEnabled(!m_bpmLocked);
     bpmFourThirds->setEnabled(!m_bpmLocked);
     bpmThreeHalves->setEnabled(!m_bpmLocked);
+    bpmDouble->setEnabled(!m_bpmLocked);
     bpmClear->setEnabled(!m_bpmLocked);
 }
 
