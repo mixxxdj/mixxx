@@ -1,0 +1,9 @@
+[book]
+authors = ["Jean-Michaël Celerier"]
+language = "en"
+src = "src"
+title = "libremidi documentation"
+
+[output.html]
+default-theme = "Ayu"
+preferred-dark-theme = "Ayu"

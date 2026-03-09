@@ -3696,9 +3696,8 @@ endif()
 default_option(LIBREMIDI "Enable the Libremidi backend for MIDI controllers" "NOT ANDROID")
 if(LIBREMIDI)
   target_compile_definitions(mixxx-lib PUBLIC __LIBREMIDI__)
-  add_subdirectory(lib/libremidi)
+  add_subdirectory(lib/libremidi-5.4.3)
   target_link_libraries(mixxx-lib PRIVATE libremidi)
-  target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libremidi)
   target_sources(
     mixxx-lib
     PRIVATE
