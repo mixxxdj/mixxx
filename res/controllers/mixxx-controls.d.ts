@@ -2331,6 +2331,56 @@ declare namespace MixxxControls {
         | 'stars_down'
 
         /**
+         * Give the currently loaded track a rating of 5 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_five'
+
+        /**
+         * Give the currently loaded track a rating of 4 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_four'
+
+        /**
+         * Give the currently loaded track a rating of 1 star.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_one'
+
+        /**
+         * Give the currently loaded track a rating of 3 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_three'
+
+        /**
+         * Give the currently loaded track a rating of 2 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_two'
+
+        /**
          * Increase the rating of the currently loaded track (if the skin has star widgets in the decks section).
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
