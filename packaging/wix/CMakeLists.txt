@@ -2,10 +2,10 @@
 # Finds old Mixxx installations with CPACK_WIX_INSTALL_SCOPE "none"
 # that the standard FindRelatedProducts action skips due to scope mismatch.
 if(WIN32)
-  add_library(MixxxUpgradeCA SHARED MixxxUpgradeCA.cpp)
-  target_link_libraries(MixxxUpgradeCA PRIVATE msi)
+  add_library(mixxxupgradecustomaction SHARED mixxxupgradecustomaction.cpp)
+  target_link_libraries(mixxxupgradecustomaction PRIVATE msi)
   set_target_properties(
-    MixxxUpgradeCA
+    mixxxupgradecustomaction
     PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/wix"
       PREFIX ""

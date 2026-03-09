@@ -12,11 +12,11 @@
     can clean up the old installation.
   -->
   <CPackWiXFragment Id="#PRODUCT">
-    <Binary Id="MixxxUpgradeCA"
-            SourceFile="$<TARGET_FILE:MixxxUpgradeCA>" />
+    <Binary Id="mixxxupgradecustomaction"
+            SourceFile="$<TARGET_FILE:mixxxupgradecustomaction>" />
 
     <CustomAction Id="FindAllRelatedMixxxInstallations"
-                  BinaryRef="MixxxUpgradeCA"
+                  BinaryRef="mixxxupgradecustomaction"
                   DllEntry="FindAllRelatedMixxxInstallations"
                   Execute="firstSequence" />
 
