@@ -235,7 +235,9 @@ case "$COMMAND" in
     bundle | debug)
         echo ""
         echo "Creating single-file Flatpak bundle..."
-        flatpak build-bundle "$REPO_DIR" Mixxx.flatpak org.mixxx.Mixxx
+        flatpak build-bundle "$REPO_DIR" \
+            --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo \
+            Mixxx.flatpak org.mixxx.Mixxx
         if [[ -f "Mixxx.flatpak" ]]; then
             echo ""
             echo "To install the single-file bundle, run:"

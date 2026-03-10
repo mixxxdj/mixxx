@@ -560,6 +560,7 @@ jobs:
         run: |
           flatpak build-bundle repo \
             --arch=${{ matrix.variant.arch }} \
+            --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo \
             Mixxx-${GIT_DESC}-${{ matrix.variant.arch }}.flatpak org.mixxx.Mixxx
 
       - name: "Create Debug extension"
