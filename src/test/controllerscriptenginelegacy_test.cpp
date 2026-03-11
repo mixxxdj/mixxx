@@ -16,6 +16,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
+#include "util/assert.h"
 #ifdef MIXXX_USE_QML
 #include <QQuickItem>
 
@@ -68,7 +69,8 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
     static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
         QByteArray contentsBa = contents.toLocal8Bit();
         ScopedTemporaryFile pFile = std::make_unique<QTemporaryFile>();
-        pFile->open();
+        [[maybe_unused]] bool result = pFile->open();
+        DEBUG_ASSERT(result);
         pFile->write(contentsBa);
         pFile->close();
         return pFile;
