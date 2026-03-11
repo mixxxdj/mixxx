@@ -10,6 +10,7 @@
 #include "effects/backends/effectprocessor.h"
 #include "util/class.h"
 #include "util/types.h"
+#include "engine/filters/simplebandpass.h"
 
 class ReverbGroupState : public EffectState {
   public:
@@ -19,11 +20,13 @@ class ReverbGroupState : public EffectState {
               sendPrevious(0) {
         reverb.init(sampleRate);
     }
+    
     ~ReverbGroupState() override = default;
 
     float sampleRate;
     float sendPrevious;
     MixxxPlateX2 reverb;
+    SimpleBandPass bandPass;
 };
 
 class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
@@ -54,6 +57,8 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     EngineEffectParameterPointer m_pBandWidthParameter;
     EngineEffectParameterPointer m_pDampingParameter;
     EngineEffectParameterPointer m_pSendParameter;
+    EngineEffectParameterPointer m_pBPFreqParameter;
+    EngineEffectParameterPointer m_pBPQParameter;
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };
