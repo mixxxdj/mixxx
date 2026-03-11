@@ -113,6 +113,9 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_tempRateRatio(0.0),
           m_dRateTempRampChange(0.0),
           m_spinupRateLimit(1.0) {
+          m_pRampStartEnabled = new ControlProxy(getGroup(), "ramped_start_enabled");
+          m_pRampStartEnabled->set(1.0);
+
     // Vinyl control COs are only created for main decks
     if (PlayerManager::isDeckGroup(getGroup())) {
         m_pVCEnabled = ControlObject::getControl(
@@ -409,8 +412,21 @@ double RateControl::calculateSpeed(double baserate,
     *pReportReverse = false;
 
     // Detect play pressed from pause → start physical spin-up
-    if (!paused && m_prevPaused) {
+    if (!paused && m_prevPaused && m_pRampStartEnabled->get() > 0.5) {
         m_spinupRateLimit = 0.0;
+    }
+    // Physical spin-up ramp
+    if (m_spinupRateLimit < 1.0) {
+        const double dt =
+                static_cast<double>(samplesPerBuffer) / m_pSampleRate.get();
+
+        const double rampSpeed = 6.0;
+
+        m_spinupRateLimit += (1.0 - m_spinupRateLimit) * rampSpeed * dt;
+
+        if (m_spinupRateLimit > 0.999) {
+            m_spinupRateLimit = 1.0;
+        }
     }
 
     processTempRate(samplesPerBuffer);
