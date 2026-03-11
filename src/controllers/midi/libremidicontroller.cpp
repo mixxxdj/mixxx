@@ -74,23 +74,21 @@ int LibremidiController::open(const QString& resourcePath) {
 
     if (m_pInputPort && isInputDevice()) {
         qCInfo(m_logBase) << "LibremidiController: Opening"
-                          << m_pInputPort->port_name << "for input";
-        stdx::error err = m_pInputDevice->open_port(m_pInputPort.value());
+                          << m_pInputPort->port_name.c_str() << "for input";
+        stdx::error error = m_pInputDevice->open_port(m_pInputPort.value());
 
-        if (err.is_set()) {
-            std::string str(err.message().data(), err.message().size());
-            qCWarning(m_logBase) << "Libremidi error:" << str;
+        if (error.is_set()) {
+            qCWarning(m_logBase) << "Libremidi error:" << error.message().data();
             return -2;
         }
     }
     if (m_pOutputPort && isOutputDevice()) {
         qCInfo(m_logBase) << "LibremidiController: Opening"
-                          << m_pOutputPort->port_name << "for output";
+                          << m_pOutputPort->port_name.c_str() << "for output";
 
-        stdx::error err = m_pOutputDevice->open_port(m_pOutputPort.value());
-        if (err.is_set()) {
-            std::string str(err.message().data(), err.message().size());
-            qCWarning(m_logBase) << "Libremidi error:" << str;
+        stdx::error error = m_pOutputDevice->open_port(m_pOutputPort.value());
+        if (error.is_set()) {
+            qCWarning(m_logBase) << "Libremidi error:" << error.message().data();
             return -2;
         }
     }
@@ -112,19 +110,17 @@ int LibremidiController::close() {
     int result = 0;
 
     if (m_pInputDevice && m_pInputDevice->is_port_connected()) {
-        stdx::error err = m_pInputDevice->close_port();
-        if (err.is_set()) {
-            std::string str(err.message().data(), err.message().size());
-            qCWarning(m_logBase) << "Libremidi error:" << str;
+        stdx::error error = m_pInputDevice->close_port();
+        if (error.is_set()) {
+            qCWarning(m_logBase) << "Libremidi error:" << error.message().data();
             result = -1;
         }
     }
 
     if (m_pOutputDevice && m_pOutputDevice->is_port_open()) {
-        stdx::error err = m_pOutputDevice->close_port();
-        if (err.is_set()) {
-            std::string str(err.message().data(), err.message().size());
-            qCWarning(m_logBase) << "Libremidi error:" << str;
+        stdx::error error = m_pOutputDevice->close_port();
+        if (error.is_set()) {
+            qCWarning(m_logBase) << "Libremidi error:" << error.message().data();
             result = -1;
         }
     }
@@ -139,8 +135,8 @@ void LibremidiController::sendShortMsg(
         return;
     }
 
-    stdx::error err = m_pOutputDevice->send_message(status, byte1, byte2);
-    if (err.is_set()) {
+    stdx::error error = m_pOutputDevice->send_message(status, byte1, byte2);
+    if (error.is_set()) {
         // Use two qWarnings() to ensure line break works on all operating systems
         qCWarning(m_logOutput) << "Error sending short message"
                                << MidiUtils::formatMidiOpCode(getName(),
@@ -149,8 +145,7 @@ void LibremidiController::sendShortMsg(
                                           byte2,
                                           MidiUtils::channelFromStatus(status),
                                           MidiUtils::opCodeFromStatus(status));
-        std::string str(err.message().data(), err.message().size());
-        qCWarning(m_logOutput) << "Libremidi error:" << str;
+        qCWarning(m_logOutput) << "Libremidi error:" << error.message().data();
     } else {
         qCDebug(m_logOutput) << QStringLiteral("outgoing: ")
                              << MidiUtils::formatMidiOpCode(getName(),
@@ -167,13 +162,13 @@ bool LibremidiController::sendBytes(const QByteArray& data) {
         return false;
     }
 
-    stdx::error err = m_pOutputDevice->send_message((unsigned char*)data.constData(), data.size());
-    if (err.is_set()) {
-        std::string str(err.message().data(), err.message().size());
+    stdx::error error = m_pOutputDevice->send_message(
+            (unsigned char*)data.constData(), data.size());
+    if (error.is_set()) {
         // Use two qWarnings() to ensure line break works on all operating systems
         qCWarning(m_logOutput) << "Error sending SysEx message:"
                                << MidiUtils::formatSysexMessage(getName(), data);
-        qCWarning(m_logOutput) << "Libremidi error:" << str;
+        qCWarning(m_logOutput) << "Libremidi error:" << error.message().data();
     } else {
         qCDebug(m_logOutput) << QStringLiteral("outgoing: ")
                              << MidiUtils::formatSysexMessage(getName(), data);

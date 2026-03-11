@@ -100,11 +100,11 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
 } // namespace
 
 void input_removed(const libremidi::input_port& port) {
-    qWarning() << "Input removed: " << port.port_name << "\n";
+    qWarning() << "Input removed: " << port.port_name.c_str() << "\n";
 }
 
 void output_removed(const libremidi::output_port& port) {
-    qWarning() << "Input removed: " << port.port_name << "\n";
+    qWarning() << "Input removed: " << port.port_name.c_str() << "\n";
 }
 
 LibremidiEnumerator::LibremidiEnumerator(UserSettingsPointer pConfig)
@@ -186,11 +186,11 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
     const auto out_ports = obs.get_output_ports();
 
     for (const libremidi::input_port& port : in_ports) {
-        qWarning() << port.port_name << "\n";
+        qWarning() << port.port_name.c_str() << "\n";
     }
 
     for (const libremidi::output_port& port : out_ports) {
-        qWarning() << port.port_name << "\n";
+        qWarning() << port.port_name.c_str() << "\n";
     }
 
     QListIterator<Controller*> dev_it(m_devices);
@@ -202,10 +202,9 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
 
     const libremidi::input_port* inputPort = nullptr;
     const libremidi::output_port* outputPort = nullptr;
-    int inputDevIndex = -1;
-    int outputDevIndex = -1;
+    size_t outputDevIndex = -1;
 
-    QMap<int, QString> unassignedOutputDevices;
+    QMap<size_t, QString> unassignedOutputDevices;
 
     // Build a complete list of output devices for later pairing
     for (size_t i = 0; i < out_ports.size(); i++) {
@@ -214,7 +213,7 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
             continue;
         }
         qDebug() << " Found output device"
-                 << "#" << i << out_port.port_name;
+                 << "#" << i << out_port.port_name.c_str();
         QString deviceName = out_port.port_name.c_str();
         unassignedOutputDevices[i] = deviceName;
     }
@@ -230,16 +229,15 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
         }
 
         qDebug() << " Found input device"
-                 << "#" << i << pPort.port_name;
+                 << "#" << i << pPort.port_name.c_str();
         inputPort = &pPort;
-        inputDevIndex = i;
 
         // Reset our output device variables before we look for one in case we find none.
         outputPort = nullptr;
         outputDevIndex = -1;
 
         // Search for a corresponding output device
-        QMapIterator<int, QString> j(unassignedOutputDevices);
+        QMapIterator<size_t, QString> j(unassignedOutputDevices);
         while (j.hasNext()) {
             j.next();
 
