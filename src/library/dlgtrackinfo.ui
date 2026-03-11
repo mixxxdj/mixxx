@@ -781,7 +781,17 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="2" column="0" colspan="3">
+            <widget class="QLabel" name="labelScaleBpm">
+             <property name="text">
+              <string>Scale BPM:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignHCenter|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
             <widget class="QPushButton" name="bpmHalve">
              <property name="toolTip">
               <string>Sets the BPM to 50% of the current value.</string>
@@ -791,7 +801,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="3" column="1">
             <widget class="QPushButton" name="bpmDouble">
              <property name="toolTip">
               <string>Sets the BPM to 200% of the current value.</string>
@@ -801,7 +811,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QPushButton" name="bpmTwoThirds">
              <property name="toolTip">
               <string>Sets the BPM to 66% of the current value.</string>
@@ -811,7 +821,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QPushButton" name="bpmThreeHalves">
              <property name="toolTip">
               <string>Sets the BPM to 150% of the current value.</string>
@@ -821,7 +831,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QPushButton" name="bpmThreeFourths">
              <property name="toolTip">
               <string>Sets the BPM to 75% of the current value.</string>
@@ -831,7 +841,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QPushButton" name="bpmFourThirds">
              <property name="toolTip">
               <string>Sets the BPM to 133% of the current value.</string>
@@ -841,7 +851,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="6" column="0">
             <widget class="QPushButton" name="bpmFourFifths">
              <property name="toolTip">
               <string>Sets the BPM to 80% of the current value.</string>
@@ -851,7 +861,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="6" column="1">
             <widget class="QPushButton" name="bpmFiveFourths">
              <property name="toolTip">
               <string>Sets the BPM to 125% of the current value.</string>
@@ -861,7 +871,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="2" column="2" rowspan="4">
+           <item row="3" column="2" rowspan="4">
             <widget class="QPushButton" name="bpmTap">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
