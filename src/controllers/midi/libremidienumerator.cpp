@@ -108,19 +108,11 @@ void output_removed(const libremidi::output_port& port) {
 }
 
 LibremidiEnumerator::LibremidiEnumerator(UserSettingsPointer pConfig)
-        : obs(libremidi::observer{
+        : m_observer(libremidi::observer{
                   libremidi::observer_configuration{
                           .input_removed = input_removed,
                           .output_removed = output_removed}}),
           m_pConfig(pConfig) {
-}
-
-LibremidiEnumerator::~LibremidiEnumerator() {
-    qDebug() << "Deleting Libremidi devices...";
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
 }
 
 bool libremidiShouldLinkInputToOutput(const QString& input_name,
@@ -182,8 +174,8 @@ bool libremidiShouldLinkInputToOutput(const QString& input_name,
 QList<Controller*> LibremidiEnumerator::queryDevices() {
     qDebug() << "Scanning PortMIDI devices:";
 
-    const auto in_ports = obs.get_input_ports();
-    const auto out_ports = obs.get_output_ports();
+    const auto in_ports = m_observer.get_input_ports();
+    const auto out_ports = m_observer.get_output_ports();
 
     for (const libremidi::input_port& port : in_ports) {
         qWarning() << port.port_name.c_str() << "\n";
@@ -193,22 +185,18 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
         qWarning() << port.port_name.c_str() << "\n";
     }
 
-    QListIterator<Controller*> dev_it(m_devices);
-    while (dev_it.hasNext()) {
-        delete dev_it.next();
-    }
-
     m_devices.clear();
 
-    const libremidi::input_port* inputPort = nullptr;
-    const libremidi::output_port* outputPort = nullptr;
+    const libremidi::input_port* pInputPort = nullptr;
+    const libremidi::output_port* pOutputPort = nullptr;
     size_t outputDevIndex = -1;
 
     QMap<size_t, QString> unassignedOutputDevices;
+    QList<Controller*> devices;
 
     // Build a complete list of output devices for later pairing
     for (size_t i = 0; i < out_ports.size(); i++) {
-        const auto out_port = out_ports[i];
+        const auto& out_port = out_ports[i];
         if (!recognizeDevice(out_port, m_pConfig)) {
             continue;
         }
@@ -220,8 +208,8 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
 
     // Search for input devices and pair them with output devices if applicable
     for (size_t i = 0; i < in_ports.size(); i++) {
-        auto pPort = in_ports[i];
-        if (!recognizeDevice(pPort, m_pConfig)) {
+        auto in_port = in_ports[i];
+        if (!recognizeDevice(in_port, m_pConfig)) {
             // Is there a use case for output-only devices such as message
             // displays? Then this condition has to be split and
             // deviceInfo->output also needs to be checked and handled.
@@ -229,11 +217,11 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
         }
 
         qDebug() << " Found input device"
-                 << "#" << i << pPort.port_name.c_str();
-        inputPort = &pPort;
+                 << "#" << i << in_port.port_name.c_str();
+        pInputPort = &in_port;
 
         // Reset our output device variables before we look for one in case we find none.
-        outputPort = nullptr;
+        pOutputPort = nullptr;
         outputDevIndex = -1;
 
         // Search for a corresponding output device
@@ -241,12 +229,12 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
         while (j.hasNext()) {
             j.next();
 
-            QString deviceName = inputPort->port_name.c_str();
+            QString deviceName = pInputPort->port_name.c_str();
             QString outputName = QString(j.value());
 
             if (libremidiShouldLinkInputToOutput(deviceName, outputName)) {
                 outputDevIndex = j.key();
-                outputPort = &out_ports[outputDevIndex];
+                pOutputPort = &out_ports[outputDevIndex];
 
                 unassignedOutputDevices.remove(outputDevIndex);
 
@@ -260,9 +248,11 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
         // device (outputPort != NULL).
 
         //.... so create our (aggregate) MIDI device!
-        LibremidiController* currentDevice =
-                new LibremidiController(inputPort, outputPort);
-        m_devices.push_back(currentDevice);
+        auto pCurrentDevice =
+                std::make_unique<LibremidiController>(pInputPort, pOutputPort);
+        m_devices.push_back(std::move(pCurrentDevice));
+        devices.push_back(pCurrentDevice.get());
     }
-    return m_devices;
+
+    return devices;
 }

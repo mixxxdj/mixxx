@@ -11,15 +11,14 @@ class LibremidiEnumerator : public MidiEnumerator {
     Q_OBJECT
   public:
     LibremidiEnumerator(UserSettingsPointer pConfig);
-    ~LibremidiEnumerator() override;
 
     QList<Controller*> queryDevices() override;
 
   private:
-    libremidi::observer obs;
-    std::vector<libremidi::input_port> input_ports;
-    std::vector<libremidi::output_port> output_ports;
-    QList<Controller*> m_devices;
+    libremidi::observer m_observer;
+    std::vector<libremidi::input_port> m_input_ports;
+    std::vector<libremidi::output_port> m_output_ports;
+    std::vector<std::unique_ptr<Controller>> m_devices;
     UserSettingsPointer m_pConfig;
 };
 

@@ -10,15 +10,21 @@
 
 namespace {
 const QString kUnknownControllerName = QStringLiteral("Unknown LibremidiController");
+const QString getDeviceName(const libremidi::input_port* input,
+        const libremidi::output_port* output) {
+    if (input) {
+        return QString::fromLocal8Bit(input->port_name);
+    }
+    if (output) {
+        return QString::fromLocal8Bit(output->port_name);
+    }
+    return kUnknownControllerName;
+}
 } // namespace
 
 LibremidiController::LibremidiController(const libremidi::input_port* inputPort,
         const libremidi::output_port* outputPort)
-        : MidiController((inputPort || outputPort)
-                          ? QString::fromLocal8Bit(inputPort
-                                            ? inputPort->port_name
-                                            : outputPort->port_name)
-                          : kUnknownControllerName) {
+        : MidiController(getDeviceName(inputPort, outputPort)) {
     if (inputPort) {
         m_pInputPort.emplace(*inputPort);
         setInputDevice(true);
