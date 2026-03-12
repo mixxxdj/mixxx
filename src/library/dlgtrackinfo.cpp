@@ -3,6 +3,7 @@
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
+#include <cmath>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
@@ -33,6 +34,9 @@ constexpr int kMinBpm = 30;
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 const QString kBpmPropertyName = QStringLiteral("bpm");
+
+constexpr double kStandardTuningHz = 440.0;
+constexpr double kCentsPerOctave = 1200.0;
 
 } // namespace
 
@@ -121,17 +125,20 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotCancel);
 
     // BPM edit buttons
-    connect(bpmDouble, &QPushButton::clicked, this, [this] {
-        slotBpmScale(mixxx::Beats::BpmScale::Double);
-    });
     connect(bpmHalve, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::Halve);
     });
     connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
     });
-    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+    connect(bpmThreeFourths, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
+    });
+    connect(bpmFourFifths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FourFifths);
+    });
+    connect(bpmFiveFourths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FiveFourths);
     });
     connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
@@ -139,10 +146,18 @@ void DlgTrackInfo::init() {
     connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
     });
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Double);
+    });
     connect(bpmClear,
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotBpmClear);
+
+    connect(bpmLock,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmLockClicked);
 
     connect(bpmConst,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -162,6 +177,11 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             &DlgTrackInfo::slotKeyTextChanged);
+
+    connect(spinTuning,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgTrackInfo::slotTuningValueChanged);
 
     connect(bpmTap,
             &QPushButton::pressed,
@@ -429,6 +449,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtBpm->setText(
             m_trackRecord.getMetadata().getTrackInfo().getBpmText());
     displayKeyText();
+    displayTuningFields();
 
     // Non-editable fields
     txtDuration->setText(
@@ -464,20 +485,36 @@ void DlgTrackInfo::updateSpinBpmFromBeats() {
     spinBpm->setValue(bpmValue);
 }
 
+/// Updates Lock button text and enables/disables all BPM editing controls based on m_bpmLocked.
+void DlgTrackInfo::updateBpmEditControls() {
+    bpmLock->setText(m_bpmLocked ? tr("Unlock BPM") : tr("Lock BPM"));
+
+    bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
+    spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+    bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+    bpmHalve->setEnabled(!m_bpmLocked);
+    bpmTwoThirds->setEnabled(!m_bpmLocked);
+    bpmThreeFourths->setEnabled(!m_bpmLocked);
+    bpmFourFifths->setEnabled(!m_bpmLocked);
+    bpmFiveFourths->setEnabled(!m_bpmLocked);
+    bpmFourThirds->setEnabled(!m_bpmLocked);
+    bpmThreeHalves->setEnabled(!m_bpmLocked);
+    bpmDouble->setEnabled(!m_bpmLocked);
+    bpmClear->setEnabled(!m_bpmLocked);
+}
+
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_pBeatsClone = track.getBeats();
     updateSpinBpmFromBeats();
+    updateBpmScaleButtonLabels();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tap them
-    bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
-    if (track.isBpmLocked()) {
-        tabBPM->setEnabled(false);
-    } else {
-        tabBPM->setEnabled(true);
-    }
+    // Store the lock state from the track into the local staging variable.
+    // This will only be written back to the track on Apply/OK.
+    m_bpmLocked = track.isBpmLocked();
+
+    updateBpmEditControls();
 }
 
 void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
@@ -637,6 +674,9 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     updateKeyText();
 
+    slotTuningValueChanged(spinTuning->value());
+    m_trackRecord.setBpmLocked(m_bpmLocked);
+
     // Update the cached track
     //
     // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
@@ -663,6 +703,7 @@ void DlgTrackInfo::clear() {
     resetTrackRecord();
 
     m_pBeatsClone.reset();
+    m_bpmLocked = false;
     updateSpinBpmFromBeats();
 
     txtLocation->setText("");
@@ -678,17 +719,57 @@ void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
     if (scaledBeats) {
         m_pBeatsClone = *scaledBeats;
         updateSpinBpmFromBeats();
+        updateBpmScaleButtonLabels();
     }
+}
+
+void DlgTrackInfo::updateBpmScaleButtonLabels() {
+    // Get current BPM from the spinbox
+    const double bpm = spinBpm->value();
+
+    auto formatLabel = [bpm](const QString& baseLabel, double scale) -> QString {
+        if (bpm <= 0) {
+            return baseLabel;
+        }
+        const double scaledBpm = bpm * scale;
+        QLocale loc;
+        QString scaledBpmStr = loc.toString(scaledBpm, 'f', 2);
+        while (scaledBpmStr.endsWith('0')) {
+            scaledBpmStr.chop(1);
+        }
+        if (scaledBpmStr.endsWith(loc.decimalPoint())) {
+            scaledBpmStr.chop(1);
+        }
+        return QStringLiteral("%1 | %2 BPM").arg(baseLabel, scaledBpmStr);
+    };
+
+    bpmHalve->setText(formatLabel(tr("1/2 BPM"), 0.5));
+    bpmTwoThirds->setText(formatLabel(tr("2/3 BPM"), 2.0 / 3.0));
+    bpmThreeFourths->setText(formatLabel(tr("3/4 BPM"), 3.0 / 4.0));
+    bpmFourFifths->setText(formatLabel(tr("4/5 BPM"), 4.0 / 5.0));
+    bpmFiveFourths->setText(formatLabel(tr("5/4 BPM"), 5.0 / 4.0));
+    bpmFourThirds->setText(formatLabel(tr("4/3 BPM"), 4.0 / 3.0));
+    bpmThreeHalves->setText(formatLabel(tr("3/2 BPM"), 3.0 / 2.0));
+    bpmDouble->setText(formatLabel(tr("2x BPM"), 2.0));
 }
 
 void DlgTrackInfo::slotBpmClear() {
     m_pBeatsClone.reset();
     updateSpinBpmFromBeats();
+    updateBpmScaleButtonLabels();
 
     bpmConst->setChecked(true);
     bpmConst->setEnabled(m_trackHasBeatMap);
     spinBpm->setEnabled(true);
     bpmTap->setEnabled(true);
+}
+
+void DlgTrackInfo::slotBpmLockClicked() {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    m_bpmLocked = !m_bpmLocked;
+    updateBpmEditControls();
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -753,6 +834,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     updateSpinBpmFromBeats();
+    updateBpmScaleButtonLabels();
 }
 
 void DlgTrackInfo::updateKeyText() {
@@ -766,6 +848,53 @@ void DlgTrackInfo::updateKeyText() {
 void DlgTrackInfo::displayKeyText() {
     const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
+}
+
+void DlgTrackInfo::displayTuningFields() {
+    const double tuningHz =
+            m_trackRecord.getKeys().getGlobalTuningFrequencyHz();
+    const QSignalBlocker blocker(spinTuning);
+    if (tuningHz > 0.0) {
+        // Block signals to avoid triggering slotTuningValueChanged
+        // while we are just loading data into the widget.
+        spinTuning->setValue(tuningHz);
+
+        const double cents = kCentsPerOctave *
+                std::log2(tuningHz / kStandardTuningHz);
+        const int centsRounded = static_cast<int>(std::lround(cents));
+        const QString offsetText = centsRounded >= 0
+                ? QStringLiteral("+%1 ct").arg(centsRounded)
+                : QStringLiteral("%1 ct").arg(centsRounded);
+        txtTuningCents->setText(offsetText);
+    } else {
+        // No tuning data: set to minimum (triggers specialValueText = blank)
+        spinTuning->setValue(spinTuning->minimum());
+        txtTuningCents->clear();
+    }
+}
+
+void DlgTrackInfo::slotTuningValueChanged(double value) {
+    // Store the user-entered Hz value in the Keys protobuf
+    Keys keys = m_trackRecord.getKeys();
+    if (value <= spinTuning->minimum()) {
+        // Special value (minimum) means "no tuning set" — store 0 Hz
+        keys.setGlobalTuningFrequencyHz(0.0);
+        m_trackRecord.setKeys(std::move(keys));
+        txtTuningCents->clear();
+        return;
+    }
+
+    keys.setGlobalTuningFrequencyHz(value);
+    m_trackRecord.setKeys(std::move(keys));
+
+    // Update the cents offset label so the user gets immediate feedback
+    const double cents = kCentsPerOctave *
+            std::log2(value / kStandardTuningHz);
+    const int centsRounded = static_cast<int>(std::lround(cents));
+    const QString offsetText = centsRounded >= 0
+            ? QStringLiteral("+%1 ct").arg(centsRounded)
+            : QStringLiteral("%1 ct").arg(centsRounded);
+    txtTuningCents->setText(offsetText);
 }
 
 void DlgTrackInfo::slotKeyTextChanged() {
