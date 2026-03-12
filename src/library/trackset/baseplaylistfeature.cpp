@@ -612,11 +612,11 @@ void BasePlaylistFeature::slotExportPlaylist() {
     pPlaylistTableModel->select();
 
     // check config if relative paths are desired
-    bool useRelativePath = m_pConfig->getValue<bool>(
+    PlaylistExportFilePathMode filePathMode = m_pConfig->getValue<PlaylistExportFilePathMode>(
             kUseRelativePathOnExportConfigKey);
 
     if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.get(), useRelativePath);
+        ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.get(), filePathMode);
     } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
         if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) ==
                 PlaylistDAO::PLHT_SET_LOG) {
@@ -635,7 +635,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
         exportPlaylistItemsIntoFile(
                 fileLocation,
                 playlistItems,
-                useRelativePath);
+                filePathMode);
     }
 }
 

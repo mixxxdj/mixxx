@@ -269,7 +269,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     spinbox_history_min_tracks_to_keep->setValue(1);
     checkBox_sync_track_metadata->setChecked(false);
     checkBox_serato_metadata_export->setChecked(false);
-    checkBox_use_relative_path->setChecked(false);
+    radioButton_absolutePaths->setChecked(true);
+
     checkBox_edit_metadata_selected_clicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
     spinbox_bpm_precision->setValue(BaseTrackTableModel::kBpmColumnPrecisionDefault);
@@ -325,8 +326,22 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_serato_metadata_export->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
     setSeratoMetadataEnabled(checkBox_sync_track_metadata->isChecked());
-    checkBox_use_relative_path->setChecked(m_pConfig->getValue(
-            kUseRelativePathOnExportConfigKey, false));
+
+    PlaylistExportFilePathMode filePathMode =
+            m_pConfig->getValue<PlaylistExportFilePathMode>(
+                    kUseRelativePathOnExportConfigKey,
+                    PlaylistExportFilePathMode::AbsolutePaths);
+    switch (filePathMode) {
+    case PlaylistExportFilePathMode::RelativePaths:
+        radioButton_relativePaths->setChecked(true);
+        break;
+    case PlaylistExportFilePathMode::NoPaths:
+        radioButton_noPaths->setChecked(true);
+        break;
+    case PlaylistExportFilePathMode::AbsolutePaths:
+    default:
+        radioButton_absolutePaths->setChecked(true);
+    }
 
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowRhythmboxLibrary"), true));
@@ -598,8 +613,15 @@ void DlgPrefLibrary::slotApply() {
             kSyncSeratoMetadataConfigKey,
             ConfigValue{checkBox_serato_metadata_export->isChecked()});
 
-    m_pConfig->set(kUseRelativePathOnExportConfigKey,
-            ConfigValue((int)checkBox_use_relative_path->isChecked()));
+    PlaylistExportFilePathMode filePathMode =
+            PlaylistExportFilePathMode::AbsolutePaths;
+    if (radioButton_relativePaths->isChecked()) {
+        filePathMode = PlaylistExportFilePathMode::RelativePaths;
+    } else if (radioButton_noPaths->isChecked()) {
+        filePathMode = PlaylistExportFilePathMode::NoPaths;
+    }
+    m_pConfig->setValue<PlaylistExportFilePathMode>(
+            kUseRelativePathOnExportConfigKey, filePathMode);
 
     m_pConfig->set(kEnableSearchCompletionsConfigKey,
             ConfigValue(checkBox_enable_search_completions->isChecked()));
