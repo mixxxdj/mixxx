@@ -1,0 +1,165 @@
+name: Flatpak
+on:
+  workflow_call:
+    inputs:
+      update_repo:
+        type: boolean
+        default: false
+      run_id:
+        type: string
+        required: true
+      ref:
+        type: string
+        required: true
+    secrets:
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY:
+        required: false
+      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+        required: false
+
+jobs:
+  publish-flatpak:
+    name: Publish Flatpak
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Set up SSH Agent"
+        shell: bash
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_HOST: downloads-hostgator.mixxx.org
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+          mkdir -p "${HOME}/.ssh"
+          ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
+          echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
+
+      - name: Check out repository
+        if: ${{ inputs.update_repo }}
+        uses: actions/checkout@v6
+
+      - name: "Prepare"
+        id: prepare
+        shell: bash
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak ostree
+          # Download rsync wrapper to safely update ostree
+          wget https://raw.githubusercontent.com/ostreedev/ostree-releng-scripts/621f7637ba6b8e0a8b761ce643c16a1511d04f6b/rsync-repos
+          chmod +x rsync-repos
+
+          if [[ "$REF" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "commit_summary=Stable build for 2.5" >> $GITHUB_OUTPUT
+            echo "branch=stable" >> $GITHUB_OUTPUT
+          elif [ "$REF" = "refs/heads/2.6" ]; then
+            echo "commit_summary=Beta build for 2.6" >> $GITHUB_OUTPUT
+            echo "branch=beta" >> $GITHUB_OUTPUT
+            echo "expiry=30 days" >> $GITHUB_OUTPUT
+          elif [ "$REF" = "refs/heads/main" ]; then
+            echo "commit_summary=Nightly build for 2.7" >> $GITHUB_OUTPUT
+            echo "branch=nightly" >> $GITHUB_OUTPUT
+            echo "expiry=14 days" >> $GITHUB_OUTPUT
+          else
+            echo "::error:: The git reference is unsupported for publication to the Flatpak repo."
+            exit 1
+          fi
+
+      - name: "Download bundles"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        shell: bash
+        run: |
+          gh --repo mixxxdj/mixxx run download $RUN_ID --pattern 'Flatpak *' -D bundles
+          find bundles/ -name *.flatpak -exec mv {} bundles/ \;
+          find bundles/ -mindepth 1 -type d -delete
+          if [ ! `find bundles/ -name '*x86_64.flatpak' | wc -l` -eq 1 ]; then
+            echo "At least a x86_64 build is expected. Current bundles:"
+            find bundles/ -type f
+            exit 1
+          fi
+          version=$(find bundles/ -name '*x86_64.flatpak' | cut -d- -f 2- | rev | cut -d- -f 2- | rev)
+          echo "VERSION=${version}" >> $GITHUB_ENV
+
+      - name: "[Ubuntu] Import PPA GPG key"
+        run: gpg --import <(echo "${RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY}")
+        env:
+          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
+      - name: "Import bundle to repo"
+        env:
+          GPG_KEY_ID: rryan@mixxx.org
+          COMMIT_SUMMARY: ${{ steps.prepare.outputs.commit_summary }}
+          BRANCH: ${{ steps.prepare.outputs.branch }}
+        shell: bash
+        run: |
+          set -x
+
+          function import_to_repo {
+            file=$1
+            id=$2
+            arch=$3
+            type=$4
+
+            flatpak build-import-bundle -v --gpg-sign=$GPG_KEY_ID repo.tmp "$file"
+            checksum=$(ostree --repo=repo.tmp rev-parse "${type}/${id}/${arch}/master")
+            metadata=$(ostree --repo=repo.tmp show --print-metadata-key=xa.metadata "${type}/${id}/${arch}/master")
+            ostree --repo=repo pull --depth=-1 --mirror "upstream:${type}/${id}/${arch}/${BRANCH}" || true
+            ostree --repo=repo pull-local repo.tmp "${checksum}"
+            ostree --repo=repo commit \
+              --gpg-sign=$GPG_KEY_ID \
+              -b "${type}/${id}/${arch}/${BRANCH}" \
+              -s "$COMMIT_SUMMARY" \
+              "--add-metadata-string=version=$VERSION" \
+              "--add-metadata-string=xa.metadata=$(printf "%b" "${metadata:1:-1}")" \
+              "--tree=ref=${checksum}"
+            ostree --repo=repo show --print-metadata-key=xa.metadata "${type}/${id}/${arch}/${BRANCH}"
+          }
+
+          # Prepare local repos
+          ostree --repo=repo.tmp init --mode=archive-z2
+          ostree --repo=repo init --mode=archive-z2
+
+          # Hook publish repo to the remote
+          ostree --repo=repo remote add upstream https://downloads.mixxx.org/flatpak/
+
+          for arch in "x86_64" "aarch64"; do
+            import_to_repo "bundles/Mixxx-${VERSION}-${arch}.flatpak" org.mixxx.Mixxx ${arch} app
+            if [ -f "bundles/Mixxx-${VERSION}-${arch}.Debug.flatpak" ]; then
+              import_to_repo "bundles/Mixxx-${VERSION}-${arch}.Debug.flatpak" org.mixxx.Mixxx.Debug ${arch} runtime
+            else
+              echo "No debug extension for ${arch}"
+            fi
+          done
+
+      - name: "Cleanup old builds"
+        if: ${{ steps.prepare.outputs.expiry != null }}
+        shell: bash
+        env:
+          EXPIRY: ${{ steps.prepare.outputs.expiry }}
+        run: |
+          ostree --repo=repo prune --refs-only --keep-younger-than="$EXPIRY ago"
+      - name: "Push the updated repo"
+        env:
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+          GPG_KEY_ID: rryan@mixxx.org
+        shell: bash
+        run: |
+          ostree --repo=repo summary -u --gpg-sign=$GPG_KEY_ID
+          flatpak build-update-repo --gpg-sign=$GPG_KEY_ID repo
+          ./rsync-repos --src "repo/" --dest "${SSH_USER}@${SSH_HOST}:public_html/downloads/flatpak" --rsync-opts "--verbose --recursive --checksum --times --delay-updates"
+
+      - name: "Update the repo manifest"
+        if: ${{ inputs.update_repo }}
+        env:
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+        shell: bash
+        run: |
+          rsync --verbose "packaging/flatpak/repo.flatpakrepo" "${SSH_USER}@${SSH_HOST}:public_html/downloads/flatpak/repo.flatpakrepo"
+
+      # TODO we could also publish a .flatpakref file to allow one-click install a version and publish this as a comment to the PR.
