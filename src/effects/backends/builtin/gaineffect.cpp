@@ -66,11 +66,22 @@ void GainEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    const CSAMPLE_GAIN gain = db2ratio(static_cast<float>(m_pGainParameter->value()));
     const auto clip = m_pClipParameter->toBool();
-    GainGroupState& gs = *pState;
+
+    CSAMPLE_GAIN gain;
+
+    if (enableState == EffectEnableState::Disabling) {
+        gain = 1;
+    } else {
+        gain = db2ratio(static_cast<float>(m_pGainParameter->value()));
+    }
+
+    if (enableState == EffectEnableState::Enabling) {
+        pState->previous_gain = 1;
+    }
+
     RampingValue<CSAMPLE_GAIN> gain_ramping_value(
-            gs.previous_gain, gain, engineParameters.samplesPerBuffer());
+            pState->previous_gain, gain, engineParameters.samplesPerBuffer());
 
     for (SINT i = 0;
             i < engineParameters.samplesPerBuffer();
@@ -83,9 +94,5 @@ void GainEffect::processChannel(
         }
     }
 
-    if (enableState == EffectEnableState::Disabling) {
-        gs.previous_gain = 0;
-    } else {
-        gs.previous_gain = gain;
-    }
+    pState->previous_gain = gain;
 }
