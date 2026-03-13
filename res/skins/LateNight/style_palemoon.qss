@@ -58,6 +58,34 @@
     border-right: 1px solid #0c0c0c;
   }
 
+/* borders of highlighted containers */
+#Deck1[highlight_input_allow="1"],
+#Deck2[highlight_input_allow="1"],
+#Deck3[highlight_input_allow="1"],
+#Deck4[highlight_input_allow="1"] {
+  border-width: 1px;
+  border-style: solid;
+  margin: 0 1px;
+  padding: 2px;
+}
+
+#Deck1[highlight_input_allow="1"][highlight_deck="1"],
+#DeckCompact1[highlight_input_allow="1"][highlight_deck="1"],
+#DeckMini1[highlight_input_allow="1"][highlight_deck="1"],
+#Deck3[highlight_input_allow="1"][highlight_deck="1"],
+#DeckCompact3[highlight_input_allow="1"][highlight_deck="1"],
+#DeckMini3[highlight_input_allow="1"][highlight_deck="1"] {
+    border-color: #b2421c;
+}
+
+#Deck2[highlight_input_allow="1"][highlight_deck="1"],
+#DeckCompact2[highlight_input_allow="1"][highlight_deck="1"],
+#DeckMini2[highlight_input_allow="1"][highlight_deck="1"],
+#Deck4[highlight_input_allow="1"][highlight_deck="1"],
+#DeckCompact4[highlight_input_allow="1"][highlight_deck="1"],
+#DeckMini4[highlight_input_allow="1"][highlight_deck="1"] {
+    border-color: #b2421c;
+}
 /* dim 1st-level containers */
 #ToolBar,
 #WaveformsContainer,
@@ -484,28 +512,44 @@ WTrackProperty[selected="true"],
   padding-bottom: 1px;
 }
 
-#WaveformBox1,
-#WaveformBox2,
-#WaveformBox3,
-#WaveformBox4 {
+#WaveformBox1[highlight_input_allow="0"],
+#WaveformBox2[highlight_input_allow="0"],
+#WaveformBox3[highlight_input_allow="0"],
+#WaveformBox4[highlight_input_allow="0"] {
   border-left: 0px;
   }
-  #WaveformBox1,
-  #WaveformBox3 {
+  #WaveformBox1[highlight_input_allow="0"],
+  #WaveformBox3[highlight_input_allow="0"] {
     border-bottom: 0px;
   }
-  #WaveformBox2,
-  #WaveformBox4 {
+  #WaveformBox2[highlight_input_allow="0"],
+  #WaveformBox4[highlight_input_allow="0"] {
     border-top: 0px;
   }
   /* Hide some borders when 4 decks are visible */
-  #WaveformBox1[highlight="1"] {
+  #WaveformBox1[highlight_input_allow="0"][highlight="1"] {
     border-top: 0px;
   }
-  #WaveformBox2[highlight="1"] {
+  #WaveformBox2[highlight_input_allow="0"][highlight="1"] {
     border-bottom: 0px;
   }
 
+#WaveformBox1[highlight_input_allow="1"],
+#WaveformBox2[highlight_input_allow="1"],
+#WaveformBox3[highlight_input_allow="1"],
+#WaveformBox4[highlight_input_allow="1"] {
+  border-width: 1px;
+  border-style: solid;
+  padding: 0 1px;
+  margin: 0 3px;
+
+}
+#WaveformBox1[highlight_input_allow="1"][highlight_waveform="1"],
+#WaveformBox2[highlight_input_allow="1"][highlight_waveform="1"],
+#WaveformBox3[highlight_input_allow="1"][highlight_waveform="1"],
+#WaveformBox4[highlight_input_allow="1"][highlight_waveform="1"] {
+    border-color: #b2421c;
+}
 
 /************** Decks *********************************************************/
 
@@ -625,6 +669,18 @@ WTrackProperty[selected="true"],
 #DeckRow_5_Compact {
 }
 
+#MixerChannel_4Decks[highlight_input_allow="1"] {
+  border-width: 1px;
+  border-style: solid;
+  margin: 0 1px;
+  padding: 2px;
+}
+#MixerChannel_4Decks[highlight_input_allow="1"][highlight_mixer="1"] {
+    border-color: #b2421c;
+}
+#MixerChannel_4Decks[highlight_input_allow="1"][highlight_mixer="0"] {
+    border-color: #1e1e20;
+}
 
 /************** RateControls ********************************************/
 
@@ -719,8 +775,11 @@ WBeatSpinBox::down-button,
   border:  1px solid #b2421c;
 }
 
-#MixerDecks {
+#MixerDecks[highlight_input_allow="0"] {
   padding: 2px 5px 2px 5px;
+  }
+#MixerDecks[highlight_input_allow="1"] {
+  padding: 1px 5px 2px 5px;
   }
   #MixerChannel_2Decks_Left {
     margin: 0px 2px;
