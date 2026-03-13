@@ -23,6 +23,8 @@ jobs:
 
   changelog:
     uses: ./.github/workflows/changelog.yml
+    secrets:
+      MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT: ${{ secrets.MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT }}
 
   build:
     uses: ./.github/workflows/build.yml
@@ -57,7 +59,7 @@ jobs:
       RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
   sync:
-    if: ${{ github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
+    if: ${{ github.ref_type != 'tag' && github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
     uses: ./.github/workflows/sync_branches.yml
     secrets:
       MIXXX_BRANCH_SYNC_PAT: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
