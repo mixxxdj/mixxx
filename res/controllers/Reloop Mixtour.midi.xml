@@ -30,17 +30,6 @@
       <value label="follow Deck 2 or 4 selection">0</value>
       <description>This specifies which Decks the right side of the controller should represent. Usually it will be used for Deck 2, but you can choose to use it for the other Decks as well. Or it can follow the selection of the active Deck (2 or 4) from another controller (if the controller implementation supports deck/mixer highlighting).</description>
     </option>
-    <option
-      variable="fxButton"
-      type="enum"
-      label="FX Button will activate">
-      <value label="FX 1">1</value>
-      <value label="FX 2">2</value>
-      <value label="FX 3">3</value>
-      <value label="FX 4">4</value>
-      <value label="FX for Deck number" default="true">0</value>
-      <description>This specifies which FX is activated for tehe current Deck when FX button is pressed.</description>
-    </option>
 </settings >
     <controller id="Reloop Mixtour">
         <scriptfiles>
@@ -91,8 +80,28 @@
             <control>
                 <group>[Channel1]</group>
                 <key>ReloopMixtour.mixer.left.effect.input</key>
-                <description>[FX]FX</description>
+                <description>[FX]ch1 FX</description>
                 <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ReloopMixtour.mixer.left.effect.input</key>
+                <description>Shift [FX]</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ReloopMixtour.mixer.right.effect.input</key>
+                <description>[FX]ch2 FX</description>
+                <status>0x91</status>
                 <midino>0x01</midino>
                 <options>
                     <script-binding />
@@ -101,9 +110,9 @@
             <control>
                 <group>[Channel2]</group>
                 <key>ReloopMixtour.mixer.right.effect.input</key>
-                <description>[FX]FX</description>
+                <description>Shift [FX]</description>
                 <status>0x91</status>
-                <midino>0x01</midino>
+                <midino>0x41</midino>
                 <options>
                     <script-binding />
                 </options>

@@ -226,30 +226,58 @@ ReloopMixtour.Mixer = class extends components.Deck {
             group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
         });
 
-        this.fxButton = parseInt(engine.getSetting("fxButton"));
+        // loaded_chain_preset - values are a following:
+        // 0 is the empty/passthrough preset
+        // -1 indicates an unsaved preset (no idea if this index can be selected)
+        // 1 should be the default (Filter) preset. This can be configured by the user in the pref dialog
         this.effect = new components.Button({
             midi: [0x90 + midiChannel, 0x01],
-            key: `group_[Channel${midiChannel + 1}]_enable`,
             shiftOffset: 0x40,
-            group: this.fxButton?`[EffectRack1_EffectUnit${this.fxButton}]`:`[EffectRack1_EffectUnit${script.deckFromGroup(theMixer.currentDeck)}]`,
-            type: components.Button.prototype.types.toggle,
-            input: function(channel, control, value, status, group) {
-                if (value) {
-                    theMixer.fxKnob.group = this.inGetValue()?`[QuickEffectRack1_${theMixer.currentDeck}]`:this.group;
+            key: "loaded_chain_preset",
+            secondOutKey: "enabled",
+            group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
+            // set preset to first real fx. if available at all this is number 2
+            fxPreset: (engine.getValue(this.group, "num_chain_presets") > 2)?2:0,
+            nextPreset: function() {
+                const nChainPresets = engine.getValue(this.group, "num_chain_presets");
+                this.fxPreset = (this.fxPreset + 1) % nChainPresets;
+                if (nChainPresets > 2 && this.fxPreset < 2) {
+                    this.fxPreset = 2; // set preset to first real fx.
                 }
-                components.Button.prototype.input.call(this, channel, control, value, status, group);
             },
-            output: function(value, _group, _control) {
-                theMixer.fxKnob.group = value?this.group:`[QuickEffectRack1_${theMixer.currentDeck}]`;
-                this.send(this.outValueScale(value));
+            input: function(_channel, control, value, _status, _group) {
+                // only act on button-press and if fx are available
+                if (value && engine.getValue(this.group, "num_chain_presets") > 2) {
+                    if (control < this.shiftOffset) {
+                        if (this.inGetValue() !== 1) {                  // current FX is not the 'Filter'
+                            this.fxPreset = this.inGetValue() || 2;    // store current FX (but not 0)
+                            this.inSetValue(1);                         // activate the 'Filter'
+                        } else {
+                            this.inSetValue(this.fxPreset);            // activate last stored FX
+                        }
+                    } else {
+                        this.nextPreset();                              // select and store next FX
+                        if (this.inGetValue() !== 1) {                  // if FX is active
+                            this.inSetValue(this.fxPreset);            // activate (new) FX
+                        }
+                    }
+                }
             },
-            reconnect: function(newGroup) {
-                this.disconnect();
-                this.group = theMixer.fxButton?`[EffectRack1_EffectUnit${theMixer.fxButton}]`:`[EffectRack1_EffectUnit${script.deckFromGroup(newGroup)}]`;
-                this.inKey = `group_${newGroup}_enable`;
-                this.outKey = `group_${newGroup}_enable`;
-                this.connect();
-                this.trigger();
+            outValueScale: function(_value) {
+                // activate FX led if any FX is selected (>2) and enabled
+                return (this.outGetValue() >= 2 && engine.getValue(this.group, this.secondOutKey)) ? this.on : this.off;
+            },
+            connect: function() {
+                // use two connections for the LED, one to check for any real FX (id > 2) and the other to check
+                // if effect is enabled
+                if (this.connections[0] === undefined &&
+                undefined !== this.group &&
+                undefined !== this.outKey &&
+                undefined !== this.output &&
+                typeof this.output === "function") {
+                    this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+                    this.connections[1] = engine.makeConnection(this.group, this.secondOutKey, this.output.bind(this));
+                }
             },
         });
 
@@ -296,10 +324,23 @@ ReloopMixtour.Mixer = class extends components.Deck {
         this.fxIndicator = new components.Component({
             midi: [0x90 + midiChannel, 0x00],
             key: "super1",
+            secondOutKey: "enabled",
             group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
             outValueScale(value) {
-                return (Math.abs(0.5 - value) > 0.01)?0x7F:0x00;
-            }
+                return (engine.getValue(this.group, this.secondOutKey) && (Math.abs(0.5 - value) > 0.01))?0x7F:0x00;
+            },
+            connect: function() {
+                // use two connections for the LED, one to check for any real FX (id > 2) and the other to check
+                // if effect is enabled
+                if (this.connections[0] === undefined &&
+                undefined !== this.group &&
+                undefined !== this.outKey &&
+                undefined !== this.output &&
+                typeof this.output === "function") {
+                    this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
+                    this.connections[1] = engine.makeConnection(this.group, this.secondOutKey, this.output.bind(this));
+                }
+            },
         });
 
         this.forEachComponent(function(component) {
