@@ -1,0 +1,316 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>Mixer_4Decks_Row</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Channel controls + Main VU -->
+        <ObjectName>AlignHCenter</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <Template src="skins:LateNight/mixer/channel_left.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Row_Ch3</SetVariable>
+            <SetVariable name="ChanNum">3</SetVariable>
+            <SetVariable name="xfaderLeft">default</SetVariable>
+            <SetVariable name="xfaderRight">warning</SetVariable>
+          </Template><!-- Channel3 -->
+
+          <WidgetGroup><!-- Pfl + VU 3 -->
+            <Layout>vertical</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <!-- spacer to center channel controls without crossfader
+                  without stretching the mixer -->
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>PflBox_4Decks_Row</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>PflButton3</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup><!-- PflBox_4Decks_Row -->
+
+              <WidgetGroup>
+                <ObjectName>VuMeterBoxFull</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
+                  <SingletonContainer>
+                    <ObjectName>VuMeterChannel3</ObjectName>
+                  </SingletonContainer>
+                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- VuMeterBoxFull -->
+
+              <Template src="skins:LateNight/mixer/spacer_4decks_eq_vu.xml">
+                <SetVariable name="Height">18f</SetVariable>
+              </Template>
+
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Pfl + VU 3 -->
+
+          <WidgetGroup>
+            <ObjectName>Mixer4Decks_ChannelSeparator</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children/>
+            <!-- this is sized and styled in css -->
+          </WidgetGroup><!-- Mixer4Decks_ChannelSeparator -->
+
+          <Template src="skins:LateNight/mixer/channel_left.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Row_Ch1</SetVariable>
+            <SetVariable name="ChanNum">1</SetVariable>
+            <SetVariable name="xfaderLeft">default</SetVariable>
+            <SetVariable name="xfaderRight">warning</SetVariable>
+          </Template><!-- Channel1 -->
+
+          <WidgetGroup><!-- Pfl + VU 1/2 + Main -->
+            <Layout>vertical</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>PflBox_4Decks_Row</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>PflButton1</ObjectName>
+                  </SingletonContainer>
+                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+                  <SingletonContainer>
+                    <ObjectName>PflButton2</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup><!-- PflBox_4Decks_Row -->
+
+              <WidgetGroup>
+                <ObjectName>VuMeterBoxFull</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>VuMeterChannel1</ObjectName>
+                  </SingletonContainer>
+                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
+                  <SingletonContainer>
+                    <ObjectName>VuMeterMain_Dark</ObjectName>
+                  </SingletonContainer>
+                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
+                  <SingletonContainer>
+                    <ObjectName>VuMeterChannel2</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup><!-- VuMeterBoxFull -->
+
+              <Template src="skins:LateNight/mixer/spacer_4decks_eq_vu.xml">
+                <SetVariable name="Height">18f</SetVariable>
+              </Template>
+
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Pfl + VU 1/2 + Main -->
+
+          <Template src="skins:LateNight/mixer/channel_right.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Row_Ch2</SetVariable>
+            <SetVariable name="ChanNum">2</SetVariable>
+            <SetVariable name="xfaderLeft">warning</SetVariable>
+            <SetVariable name="xfaderRight">default</SetVariable>
+          </Template><!-- Channel2 -->
+
+          <WidgetGroup>
+            <ObjectName>Mixer4Decks_ChannelSeparator</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children/>
+            <!-- this is sized and styled in css -->
+          </WidgetGroup><!-- Mixer4Decks_ChannelSeparator -->
+
+          <WidgetGroup><!-- Pfl + VU 4 -->
+            <Layout>vertical</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>PflBox_4Decks_Row</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>PflButton4</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup><!-- PflBox_4Decks_Row -->
+
+              <WidgetGroup>
+                <ObjectName>VuMeterBoxFull</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
+                  <SingletonContainer>
+                    <ObjectName>VuMeterChannel4</ObjectName>
+                  </SingletonContainer>
+                  <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- VuMeterBoxFull -->
+
+              <Template src="skins:LateNight/mixer/spacer_4decks_eq_vu.xml">
+                <SetVariable name="Height">18f</SetVariable>
+              </Template>
+
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Pfl + VU 4 -->
+
+          <Template src="skins:LateNight/mixer/channel_right.xml">
+            <SetVariable name="ObjectName">Mixer_4Decks_Row_Ch4</SetVariable>
+            <SetVariable name="ChanNum">4</SetVariable>
+            <SetVariable name="xfaderLeft">warning</SetVariable>
+            <SetVariable name="xfaderRight">default</SetVariable>
+          </Template><!-- Channel4 -->
+
+        </Children>
+      </WidgetGroup><!-- Channel controls + Main VU -->
+
+      <WidgetGroup>
+        <ObjectName>Mixer4Decks_SeparatorH</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children/>
+        <!-- this is sized and styled in css -->
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- Mixer4Decks_SeparatorH -->
+
+      <!-- TODO align xfader switches somehow with channels above -->
+      <WidgetGroup><!-- Crossfader + Channel3/1/2/4 assign switches -->
+        <ObjectName>CrossfaderAndSwitches4Decks</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Channel 3 xFader switch -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_xfader_deck.xml">
+                <SetVariable name="Group">[Channel3]</SetVariable>
+                <SetVariable name="xfaderLeft">default</SetVariable>
+                <SetVariable name="xfaderRight">warning</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- Channel 3 xFader switch -->
+
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Channel 1 xFader switch -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_xfader_deck.xml">
+                <SetVariable name="Group">[Channel1]</SetVariable>
+                <SetVariable name="xfaderLeft">default</SetVariable>
+                <SetVariable name="xfaderRight">warning</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- Channel 1 xFader switch -->
+
+          <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- CrossfaderContainer -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>CrossfaderSingleton</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>CrossfaderNarrowSingleton</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- CrossfaderContainer -->
+
+          <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Channel 2 xFader switch -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,me</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_xfader_deck.xml">
+                <SetVariable name="Group">[Channel2]</SetVariable>
+                <SetVariable name="xfaderLeft">warning</SetVariable>
+                <SetVariable name="xfaderRight">default</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- Channel 2 xFader switch -->
+
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+
+          <WidgetGroup><!-- Channel 4 xFader switch -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,me</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/controls/button_xfader_deck.xml">
+                <SetVariable name="Group">[Channel4]</SetVariable>
+                <SetVariable name="xfaderLeft">warning</SetVariable>
+                <SetVariable name="xfaderRight">default</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- Channel 4 xFader switch -->
+
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /Crossfader + Channel3/1/2/4 assign switches -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Skin],show_4decks_row</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup><!-- MixerDecks -->
+</Template>
