@@ -86,7 +86,9 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
     // Automatically free the transfer buffer on exit
     transfer->flags = LIBUSB_TRANSFER_FREE_BUFFER;
 
-    if (libusb_submit_transfer(transfer)) { // Submit first transfer
+    int error = libusb_submit_transfer(transfer); // Submit first transfer
+    if (error != 0) {
+        qWarning() << "Cannot submit a bulk transfer:" << libusb_error_name(error);
         libusb_free_transfer(transfer);
         return nullptr;
     }
