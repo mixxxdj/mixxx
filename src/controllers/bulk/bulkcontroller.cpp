@@ -105,6 +105,10 @@ void BulkReader::transfer_destroy(libusb_transfer** transfer) {
         return;
     }
 
+    VERIFY_OR_DEBUG_ASSERT(m_cb_data != nullptr) {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock(m_cb_data->mutex);
 
     // Wait for last transfer to complete
