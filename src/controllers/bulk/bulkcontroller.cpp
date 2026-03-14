@@ -105,10 +105,12 @@ void BulkReader::transfer_destroy(libusb_transfer** transfer) {
         return;
     }
 
+    std::unique_lock<std::mutex> lock(m_cb_data->mutex);
+
     // Wait for last transfer to complete
-    while (m_cb_data->completed == 0) {
-        QThread::msleep(1);
-    }
+    m_cb_data->cv.wait(lock, [&] {
+        return m_cb_data->completed != 0;
+    });
 
     libusb_free_transfer(*transfer);
     *transfer = nullptr;

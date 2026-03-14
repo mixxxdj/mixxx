@@ -26,7 +26,10 @@ class BulkReader : public QThread {
     static void transferFinishedCb(libusb_transfer* transfer) {
         bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
         cb_data->reader->handleTransfer(transfer);
+
+        std::unique_lock<std::mutex> lock(cb_data->mutex);
         cb_data->completed = 1;
+        cb_data->cv.notify_one();
     }
 
     void stop();
@@ -41,6 +44,8 @@ class BulkReader : public QThread {
     struct bulk_transfer_cb_data {
         BulkReader* reader;
         int completed;
+        std::mutex mutex;
+        std::condition_variable cv;
     };
 
     libusb_transfer* transfer_create(libusb_device_handle* handle,
