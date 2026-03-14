@@ -1,6 +1,7 @@
 #include "controllers/bulk/bulkcontroller.h"
 
 #include <libusb.h>
+
 #include <memory>
 
 #if defined(Q_OS_ANDROID)
@@ -94,7 +95,11 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
 }
 
 void BulkReader::transfer_destroy(libusb_transfer** transfer) {
-    if (!*transfer) {
+    VERIFY_OR_DEBUG_ASSERT(transfer != nullptr) {
+        return;
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(*transfer != nullptr) {
         return;
     }
 
@@ -392,7 +397,8 @@ int BulkController::open(const QString& resourcePath) {
                  << "doesn't require reading the data. Ignoring BulkReader "
                     "setup.";
     } else {
-        m_pReader = std::make_unique<BulkReader>(m_phandle, m_context, m_inEndpointAddr, m_inLength);
+        m_pReader = std::make_unique<BulkReader>(
+                m_phandle, m_context, m_inEndpointAddr, m_inLength);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
         connect(m_pReader.get(), &BulkReader::incomingData, this, &BulkController::receive);
