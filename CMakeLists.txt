@@ -1274,6 +1274,8 @@ add_library(
   src/effects/backends/builtin/phasereffect.cpp
   src/effects/backends/builtin/reverbeffect.cpp
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
+  src/effects/backends/builtin/twobandbiquadeqeffect.cpp
+  src/effects/backends/builtin/fourbandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
   src/effects/backends/effectmanifest.cpp

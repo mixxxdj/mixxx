@@ -8,11 +8,13 @@
 #include "effects/backends/builtin/bitcrushereffect.h"
 #include "effects/backends/builtin/filtereffect.h"
 #include "effects/backends/builtin/flangereffect.h"
+#include "effects/backends/builtin/fourbandbiquadeqeffect.h"
 #include "effects/backends/builtin/graphiceqeffect.h"
 #include "effects/backends/builtin/linkwitzriley8eqeffect.h"
 #include "effects/backends/builtin/moogladder4filtereffect.h"
 #include "effects/backends/builtin/parametriceqeffect.h"
 #include "effects/backends/builtin/threebandbiquadeqeffect.h"
+#include "effects/backends/builtin/twobandbiquadeqeffect.h"
 #ifndef __MACAPPSTORE__
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
@@ -39,6 +41,8 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<Bessel8LVMixEQEffect>();
     registerEffect<LinkwitzRiley8EQEffect>();
     registerEffect<ThreeBandBiquadEQEffect>();
+    registerEffect<TwoBandBiquadEQEffect>();
+    registerEffect<FourBandBiquadEQEffect>();
     registerEffect<BiquadFullKillEQEffect>();
     // Compensations EQs
     registerEffect<GraphicEQEffect>();
