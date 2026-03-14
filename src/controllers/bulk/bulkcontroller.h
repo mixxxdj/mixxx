@@ -160,6 +160,6 @@ class BulkController : public Controller {
     QString m_product;
 
     QString m_sUID;
-    BulkReader* m_pReader;
+    std::unique_ptr<BulkReader> m_pReader;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };

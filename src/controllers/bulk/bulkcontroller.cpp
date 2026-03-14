@@ -1,6 +1,7 @@
 #include "controllers/bulk/bulkcontroller.h"
 
 #include <libusb.h>
+#include <memory>
 
 #if defined(Q_OS_ANDROID)
 #include "controllers/android.h"
@@ -391,10 +392,10 @@ int BulkController::open(const QString& resourcePath) {
                  << "doesn't require reading the data. Ignoring BulkReader "
                     "setup.";
     } else {
-        m_pReader = new BulkReader(m_phandle, m_context, m_inEndpointAddr, m_inLength);
+        m_pReader = std::make_unique<BulkReader>(m_phandle, m_context, m_inEndpointAddr, m_inLength);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
-        connect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
+        connect(m_pReader.get(), &BulkReader::incomingData, this, &BulkController::receive);
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -420,12 +421,10 @@ int BulkController::close() {
         qCWarning(m_logBase) << "BulkReader not present for" << getName()
                              << "yet the device is open!";
     } else if (m_pReader) {
-        disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
+        disconnect(m_pReader.get(), &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
         qCInfo(m_logBase) << "  Waiting on reader to finish";
         m_pReader->wait();
-        delete m_pReader;
-        m_pReader = nullptr;
     }
 
     // Stop controller engine here to ensure it's done before the device is
