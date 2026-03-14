@@ -56,7 +56,7 @@ class BulkReader : public QThread {
             std::uint8_t epaddr,
             int length,
             unsigned int timeout);
-    void transfer_destroy(libusb_transfer*& transfer);
+    void transfer_destroy(libusb_transfer** transfer);
     void handleTransfer(libusb_transfer* transfer);
 };
 

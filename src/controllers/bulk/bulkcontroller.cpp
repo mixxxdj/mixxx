@@ -27,7 +27,7 @@ BulkReader::BulkReader(libusb_device_handle* handle,
 
 BulkReader::~BulkReader() {
     wait();
-    transfer_destroy(m_in_transfer);
+    transfer_destroy(&m_in_transfer);
 }
 
 void BulkReader::handleTransfer(libusb_transfer* transfer) {
@@ -41,7 +41,7 @@ void BulkReader::handleTransfer(libusb_transfer* transfer) {
         }
         if (!m_stop) {
             if (libusb_submit_transfer(transfer)) {
-                transfer_destroy(transfer);
+                transfer_destroy(&transfer);
             }
         }
         break;
@@ -93,8 +93,8 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
     return transfer;
 }
 
-void BulkReader::transfer_destroy(libusb_transfer*& transfer) {
-    if (!transfer) {
+void BulkReader::transfer_destroy(libusb_transfer** transfer) {
+    if (!*transfer) {
         return;
     }
 
@@ -103,8 +103,8 @@ void BulkReader::transfer_destroy(libusb_transfer*& transfer) {
         QThread::msleep(1);
     }
 
-    libusb_free_transfer(transfer);
-    transfer = nullptr;
+    libusb_free_transfer(*transfer);
+    *transfer = nullptr;
 }
 
 void BulkReader::stop() {
