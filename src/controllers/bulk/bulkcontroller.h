@@ -38,26 +38,25 @@ class BulkReader : public QThread {
     void run() override;
 
   private:
-    QAtomicInt m_stop;
-
     struct bulk_transfer_cb_data {
         BulkReader* reader;
         int completed;
     };
 
-    libusb_transfer* m_in_transfer;
-    libusb_context* m_context;
-    libusb_device_handle* m_handle;
-    std::unique_ptr<bulk_transfer_cb_data> m_cb_data;
-
-    std::uint8_t m_in_epaddr;
-    int m_in_length;
     libusb_transfer* transfer_create(libusb_device_handle* handle,
             std::uint8_t epaddr,
             int length,
             unsigned int timeout);
     void transfer_destroy(libusb_transfer** transfer);
     void handleTransfer(libusb_transfer* transfer);
+
+    QAtomicInt m_stop;
+    libusb_transfer* m_in_transfer;
+    libusb_context* m_context;
+    libusb_device_handle* m_handle;
+    std::unique_ptr<bulk_transfer_cb_data> m_cb_data;
+    std::uint8_t m_in_epaddr;
+    int m_in_length;
 };
 
 class BulkController : public Controller {
