@@ -238,7 +238,7 @@ void MixxxMainWindow::initialize() {
         m_pVisualsManager->addDeck(group);
     }
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfDecksChanged,
+            &PlayerManagerInterface::numberOfDecksChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -247,7 +247,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
     connect(pPlayerManager.get(),
-            &PlayerManager::numberOfSamplersChanged,
+            &PlayerManagerInterface::numberOfSamplersChanged,
             this,
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
@@ -1248,6 +1248,18 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
+    QMessageBox* pMsg = new QMessageBox();
+    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    pMsg->setWindowTitle(tr("Library scan finished"));
+
+    if (result.noDirectoriesConfigured) {
+        pMsg->setText(tr("No music directories configured for scanning.") +
+                QStringLiteral("<br>") +
+                tr("Add directories in the library preferences."));
+        pMsg->show();
+        return;
+    }
+
     QString summary =
             tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
     if (result.numNewTracks == 0 &&
@@ -1282,9 +1294,7 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     }
-    QMessageBox* pMsg = new QMessageBox();
-    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    pMsg->setWindowTitle(tr("Library scan finished"));
+
     pMsg->setText(summary);
     pMsg->show();
 }
@@ -1551,16 +1561,16 @@ bool MixxxMainWindow::confirmExit() {
     bool playing(false);
     bool playingSampler(false);
     auto pPlayerManager = m_pCoreServices->getPlayerManager();
-    unsigned int deckCount = pPlayerManager->numDecks();
-    unsigned int samplerCount = pPlayerManager->numSamplers();
-    for (unsigned int i = 0; i < deckCount; ++i) {
+    int deckCount = pPlayerManager->numberOfDecks();
+    int samplerCount = pPlayerManager->numberOfSamplers();
+    for (int i = 0; i < deckCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
-    for (unsigned int i = 0; i < samplerCount; ++i) {
+    for (int i = 0; i < samplerCount; ++i) {
         if (ControlObject::toBool(
                     ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;

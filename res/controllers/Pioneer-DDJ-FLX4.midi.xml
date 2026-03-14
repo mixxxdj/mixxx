@@ -157,7 +157,7 @@
             <control>
                 <description>CUE +SHIFT (DECK1) - press - Jump to track start</description>
                 <group>[Channel1]</group>
-                <key>start_play</key>
+                <key>start_stop</key>
                 <status>0x90</status>
                 <midino>0x48</midino>
                 <options>
@@ -177,7 +177,7 @@
             <control>
                 <description>CUE +SHIFT (DECK2) - press - Jump to track start</description>
                 <group>[Channel2]</group>
-                <key>start_play</key>
+                <key>start_stop</key>
                 <status>0x91</status>
                 <midino>0x48</midino>
                 <options>

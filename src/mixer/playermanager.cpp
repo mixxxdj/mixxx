@@ -93,13 +93,6 @@ inline QString getDefaultSamplerPath(UserSettingsPointer pConfig) {
 
 } // anonymous namespace
 
-//static
-QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
-//static
-QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
-//static
-QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
-
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
@@ -158,10 +151,6 @@ PlayerManager::~PlayerManager() {
     m_samplers.clear();
     m_microphones.clear();
     m_auxiliaries.clear();
-
-    delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
-    delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
-    delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
 
     if (m_pTrackAnalysisScheduler) {
         m_pTrackAnalysisScheduler->stop();
@@ -241,61 +230,6 @@ bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
 // static
 bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
     return extractIntFromRegex(kPreviewDeckRegex, group, number);
-}
-
-// static
-unsigned int PlayerManager::numDecks() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
-    if (pCOPNumDecks == nullptr) {
-        pCOPNumDecks = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_decks")));
-        if (!pCOPNumDecks->valid()) {
-            delete pCOPNumDecks;
-            pCOPNumDecks = nullptr;
-        } else {
-            m_pCOPNumDecks = pCOPNumDecks;
-        }
-    }
-    // m_pCOPNumDecks->get() fails on MacOs
-    return pCOPNumDecks ? static_cast<int>(pCOPNumDecks->get()) : 0;
-}
-
-// static
-unsigned int PlayerManager::numSamplers() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
-    if (pCOPNumSamplers == nullptr) {
-        pCOPNumSamplers = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_samplers")));
-        if (!pCOPNumSamplers->valid()) {
-            delete pCOPNumSamplers;
-            pCOPNumSamplers = nullptr;
-        } else {
-            m_pCOPNumSamplers = pCOPNumSamplers;
-        }
-    }
-    // m_pCOPNumSamplers->get() fails on MacOs
-    return pCOPNumSamplers ? static_cast<int>(pCOPNumSamplers->get()) : 0;
-}
-
-// static
-unsigned int PlayerManager::numPreviewDecks() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
-    if (pCOPNumPreviewDecks == nullptr) {
-        pCOPNumPreviewDecks = new ControlProxy(
-                ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")));
-        if (!pCOPNumPreviewDecks->valid()) {
-            delete pCOPNumPreviewDecks;
-            pCOPNumPreviewDecks = nullptr;
-        } else {
-            m_pCOPNumPreviewDecks = pCOPNumPreviewDecks;
-        }
-    }
-    // m_pCOPNumPreviewDecks->get() fails on MacOs
-    return pCOPNumPreviewDecks ? static_cast<int>(pCOPNumPreviewDecks->get()) : 0;
 }
 
 void PlayerManager::slotChangeNumDecks(double v) {
@@ -597,33 +531,37 @@ BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
     return nullptr;
 }
 
-Deck* PlayerManager::getDeck(unsigned int deck) const {
+Deck* PlayerManager::getDeck(int deckIndex) const {
     const auto locker = lockMutex(&m_mutex);
-    VERIFY_OR_DEBUG_ASSERT(deck > 0 && deck <= numDecks()) {
-        qWarning() << "getDeck() called with invalid number:" << deck;
+    VERIFY_OR_DEBUG_ASSERT(deckIndex >= 0 && deckIndex < m_decks.size()) {
+        qWarning() << "getDeck() called with invalid index:" << deckIndex;
         return nullptr;
     }
-    return m_decks[deck - 1];
+    return m_decks[deckIndex];
 }
 
-PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
+BaseTrackPlayer* PlayerManager::getDeckBase(int deckIndex) const {
+    return getDeck(deckIndex);
+}
+
+PreviewDeck* PlayerManager::getPreviewDeck(int previewDeckIndex) const {
     const auto locker = lockMutex(&m_mutex);
-    if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
+    VERIFY_OR_DEBUG_ASSERT(previewDeckIndex >= 0 && previewDeckIndex < m_previewDecks.size()) {
         kLogger.warning() << "Warning getPreviewDeck() called with invalid index: "
-                   << libPreviewPlayer;
+                          << previewDeckIndex;
         return nullptr;
     }
-    return m_previewDecks[libPreviewPlayer - 1];
+    return m_previewDecks[previewDeckIndex];
 }
 
-Sampler* PlayerManager::getSampler(unsigned int sampler) const {
+Sampler* PlayerManager::getSampler(int samplerIndex) const {
     const auto locker = lockMutex(&m_mutex);
-    if (sampler < 1 || sampler > numSamplers()) {
+    VERIFY_OR_DEBUG_ASSERT(samplerIndex >= 0 && samplerIndex < m_samplers.size()) {
         kLogger.warning() << "Warning getSampler() called with invalid index: "
-                   << sampler;
+                          << samplerIndex;
         return nullptr;
     }
-    return m_samplers[sampler - 1];
+    return m_samplers[samplerIndex];
 }
 
 TrackPointer PlayerManager::getLastEjectedTrack() const {
@@ -882,4 +820,16 @@ void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress an
 
 void PlayerManager::onTrackAnalysisFinished() {
     emit trackAnalyzerIdle();
+}
+
+int PlayerManager::numberOfDecks() const {
+    return static_cast<int>(m_pCONumDecks->get());
+}
+
+int PlayerManager::numberOfPreviewDecks() const {
+    return static_cast<int>(m_pCONumPreviewDecks->get());
+}
+
+int PlayerManager::numberOfSamplers() const {
+    return static_cast<int>(m_pCONumSamplers->get());
 }
