@@ -53,14 +53,6 @@ AbletonLink::~AbletonLink() {
     m_pLink->setNumPeersCallback([](std::size_t) {});
     m_pLink->enable(false);
 
-    // Disconnect the connection from the Link GUI button
-    if (m_pLinkButton) {
-        QObject::disconnect(m_pLinkButton.get(),
-                &ControlObject::valueChanged,
-                this,
-                &AbletonLink::slotControlSyncEnabled);
-    }
-
     // Destroy control objects before releasing Link.
     m_pNumLinkPeers.reset();
     m_pLinkButton.reset();
