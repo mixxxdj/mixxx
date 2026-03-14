@@ -1,4 +1,6 @@
+
 #include "engine/channels/enginedeck.h"
+#include "engine/faderstartcontrol.h"
 
 #include <QStringView>
 
@@ -31,6 +33,7 @@ EngineDeck::EngineDeck(
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
+    m_faderStart = new FaderStartControl(getGroup());
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
     m_bPassthroughIsActive = false;
@@ -113,6 +116,7 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
 #endif
 
 EngineDeck::~EngineDeck() {
+    delete m_faderStart;
     delete m_pPassing;
     delete m_pBuffer;
     delete m_pPregain;

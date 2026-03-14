@@ -8,11 +8,13 @@
 #include "track/track_decl.h"
 #include "util/samplebuffer.h"
 
+
 class EnginePregain;
 class EngineBuffer;
 class EngineMixer;
 class ControlPushButton;
 class ControlPotmeter;
+class FaderStartControl;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
@@ -96,6 +98,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     UserSettingsPointer m_pConfig;
     EngineBuffer* m_pBuffer;
     EnginePregain* m_pPregain;
+    FaderStartControl* m_faderStart;
 
 #ifdef __STEM__
     // Stem buffer used to retrieve all the channel to mix together
