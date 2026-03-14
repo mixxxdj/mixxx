@@ -40,7 +40,7 @@ void BulkReader::handleTransfer(libusb_transfer* transfer) {
                     transfer->actual_length);
             emit incomingData(byteArray, mixxx::Time::elapsed());
         }
-        if (!m_stop) {
+        if (m_stop == 0) {
             if (libusb_submit_transfer(transfer)) {
                 transfer_destroy(&transfer);
             }
@@ -61,16 +61,16 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
         int length,
         unsigned int timeout) {
     libusb_transfer* transfer = libusb_alloc_transfer(0);
-    if (!transfer) {
+    if (transfer == nullptr) {
         return nullptr;
     }
 
-    if (!m_cb_data) {
+    if (m_cb_data == nullptr) {
         m_cb_data = std::make_unique<bulk_transfer_cb_data>(this);
     }
 
     unsigned char* buffer = (unsigned char*)calloc(length, sizeof(unsigned char));
-    if (!buffer) {
+    if (buffer == nullptr) {
         return nullptr;
     }
 
@@ -104,7 +104,7 @@ void BulkReader::transfer_destroy(libusb_transfer** transfer) {
     }
 
     // Wait for last transfer to complete
-    while (!m_cb_data->completed) {
+    while (m_cb_data->completed == 0) {
         QThread::msleep(1);
     }
 
@@ -125,7 +125,7 @@ void BulkReader::run() {
     m_stop = 0;
 
     m_in_transfer = transfer_create(m_handle, m_in_epaddr, m_in_length, 500);
-    if (!m_in_transfer) {
+    if (m_in_transfer == nullptr) {
         m_stop = 1;
         return;
     }
