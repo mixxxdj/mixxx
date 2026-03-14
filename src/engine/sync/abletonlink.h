@@ -101,6 +101,20 @@ class AbletonLink : public QObject, public Syncable {
     void onCallbackEnd(int sampleRate, size_t bufferSize);
 
   private:
+    void slotControlSyncEnabled(double value);
+
+    std::chrono::microseconds getHostTime() const;
+    std::chrono::microseconds getHostTimeAtSpeaker(std::chrono::microseconds hostTime) const;
+
+    double getQuantum() const {
+        // Mixxx doesn't know about bars/time-signatures yet - phase
+        // synchronisation can't be implemented therefore yet
+        return 1.0;
+    }
+
+    /// Test/Debug code - To be call from audio thread.
+    void audioThreadDebugOutput();
+
     ableton::link::HostTimeFilter<MixxxClockRef> m_hostTimeFilter;
     QString m_group;
     EngineSync* m_pEngineSync; // borrowed, must outlive this.
@@ -113,20 +127,4 @@ class AbletonLink : public QObject, public Syncable {
     std::unique_ptr<ableton::BasicLink<MixxxClockRef>> m_pLink;
     std::unique_ptr<ControlPushButton> m_pLinkButton;
     std::unique_ptr<ControlObject> m_pNumLinkPeers;
-
-    void slotControlSyncEnabled(double value);
-
-    std::chrono::microseconds getHostTime() const;
-    std::chrono::microseconds getHostTimeAtSpeaker(std::chrono::microseconds hostTime) const;
-
-    double getQuantum() const {
-        // Mixxx doesn't know about bars/time-signatures yet - phase
-        // synchronisation can't be implemented therefore yet
-        return 1.0;
-    }
-
-    // Test/Debug code
-
-    /// Link getters to call from audio thread.
-    void audioThreadDebugOutput();
 };
