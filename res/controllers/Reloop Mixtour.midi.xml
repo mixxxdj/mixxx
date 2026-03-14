@@ -2,7 +2,7 @@
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.0.0+">
     <info>
         <name>Reloop Mixtour</name>
-        <author>Rene (mixxx at absorb.it), zfhrp</author>
+        <author>Rene (mixxx at absorb.it), András (andras08 at gmail.com), zfhrp</author>
         <description>Reloop Mixtour mapping (2-deck with support for 4-deck)</description>
         <forum>https://mixxx.discourse.group/t/new-mapping-for-reloop-mixtour/33093</forum>
         <manual>reloop_mixtour</manual>
