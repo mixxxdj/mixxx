@@ -68,6 +68,9 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
     }
 
     unsigned char* buffer = (unsigned char*)calloc(length, sizeof(unsigned char));
+    if (!buffer) {
+        return nullptr;
+    }
 
     libusb_fill_bulk_transfer(transfer,
             handle,
