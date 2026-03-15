@@ -1,21 +1,13 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
+#include "control/controlproxy.h"
 
-#include "control/controlobject.h"
-#include "util/configkey.h"
-
-class FaderStartControl : public QObject {
-    Q_OBJECT
-
-public:
+class FaderStartControl {
+  public:
     explicit FaderStartControl(const QString& group);
+    void process();
 
-private slots:
-    void slotVolumeChanged(double value);
-
-private:
-    ControlObject* m_pPlay{nullptr};
-    ControlObject* m_pVolume{nullptr};
+  private:
+    ControlProxy m_play;
+    ControlProxy m_volume;
 };

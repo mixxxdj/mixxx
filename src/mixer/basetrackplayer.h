@@ -24,6 +24,7 @@ class ControlEncoder;
 class EffectsManager;
 class QString;
 class EngineDeck;
+class FaderStartControl;
 
 constexpr int kUnreplaceDelay = 500;
 
@@ -230,6 +231,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     parented_ptr<ControlProxy> m_pReplayGain;
     parented_ptr<ControlProxy> m_pPlay;
+    std::unique_ptr<FaderStartControl> m_pFaderStartControl;
     parented_ptr<ControlProxy> m_pLowFilter;
     parented_ptr<ControlProxy> m_pMidFilter;
     parented_ptr<ControlProxy> m_pHighFilter;

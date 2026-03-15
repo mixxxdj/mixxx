@@ -1,6 +1,5 @@
 
 #include "engine/channels/enginedeck.h"
-#include "engine/faderstartcontrol.h"
 
 #include <QStringView>
 
@@ -11,6 +10,7 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
+#include "engine/faderstartcontrol.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
 #include "util/assert.h"

@@ -11,6 +11,7 @@
 #include "engine/engine.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
+#include "engine/faderstartcontrol.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -52,7 +53,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
           m_pLoadedTrack(),
           m_pPrevFailedTrackId(),
           m_replaygainPending(false),
-          m_pChannelToCloneFrom(nullptr) {
+          m_pChannelToCloneFrom(nullptr),
+          m_pFaderStartControl(std::make_unique<FaderStartControl>(handleGroup.name())) {
     auto channel = std::make_unique<EngineDeck>(handleGroup,
             pConfig,
             pMixingEngine,
@@ -974,6 +976,10 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+    }
+
+    if (m_pFaderStartControl) {
+        m_pFaderStartControl->process();
     }
 }
 

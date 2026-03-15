@@ -8,7 +8,6 @@
 #include "track/track_decl.h"
 #include "util/samplebuffer.h"
 
-
 class EnginePregain;
 class EngineBuffer;
 class EngineMixer;
