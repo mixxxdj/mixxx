@@ -73,7 +73,7 @@
       </description>
     </option>
   </settings>
-  <controller id="DDJ-200 ALT">
+  <controller id="DDJ-200">
     <scriptfiles>
       <file filename="midi-components-0.0.js" />
       <file functionprefix="DDJ200" filename="Pioneer-DDJ-200-scripts.js" />
