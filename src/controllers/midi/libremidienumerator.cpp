@@ -250,8 +250,8 @@ QList<Controller*> LibremidiEnumerator::queryDevices() {
         //.... so create our (aggregate) MIDI device!
         auto pCurrentDevice =
                 std::make_unique<LibremidiController>(pInputPort, pOutputPort);
-        m_devices.push_back(std::move(pCurrentDevice));
         devices.push_back(pCurrentDevice.get());
+        m_devices.push_back(std::move(pCurrentDevice));
     }
 
     return devices;
