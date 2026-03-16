@@ -280,6 +280,11 @@ DDJ200.PadModeContainers.ModeSelector = class extends components.ComponentContai
             this.padInstancesBuffer.next();
         };
         this.setPads(this.padInstancesBuffer.current());
+        if (isShifted) {
+            this.choosenPadInstance.shift();
+        } else {
+            this.choosenPadInstance.unshift();
+        }
     }
 
     setCurrentDeckHelper(padInstance, newGroup) {
