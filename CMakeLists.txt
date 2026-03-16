@@ -3702,7 +3702,7 @@ if(LIBREMIDI)
   add_subdirectory(lib/readerwriterqueue-1.0.7)
   add_subdirectory(lib/libremidi-5.4.3)
   target_link_libraries(libremidi PUBLIC readerwriterqueue)
-  target_link_libraries(mixxx-lib PRIVATE libremidi)
+  target_link_libraries(mixxx-lib PUBLIC libremidi)
   target_sources(
     mixxx-lib
     PRIVATE
