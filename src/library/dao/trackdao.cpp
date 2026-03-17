@@ -2428,7 +2428,6 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 QStringLiteral(
                         "UPDATE library SET "
                         "timesplayed=0,"
-                        "last_played_at=NULL "
                         "WHERE id NOT IN("
                         "SELECT PlaylistTracks.track_id "
                         "FROM PlaylistTracks "
@@ -2468,7 +2467,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 QStringLiteral(
                         "UPDATE library SET "
                         "timesplayed=:timesplayed,"
-                        "last_played_at=:last_played_at "
+                        "last_played_at=COALESCE(:last_played_at )"
                         "WHERE library.id=:trackId"));
         for (const auto& trackId : trackIds) {
             playCounterQuery.bindValue(
