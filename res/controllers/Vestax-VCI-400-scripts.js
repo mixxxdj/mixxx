@@ -54,8 +54,8 @@ VestaxVCI400.init = function (id) {
 
     //Reset VU meters
     if (VestaxVCI400.enableMasterVu) {
-        midi.sendShortMsg("0xbe", 43, 0);
-        midi.sendShortMsg("0xbe", 44, 0);
+        midi.sendShortMsg(0xbe, 43, 0);
+        midi.sendShortMsg(0xbe, 44, 0);
     }
 };
 
@@ -76,8 +76,8 @@ VestaxVCI400.shutdown = function () {
 
     //Reset VU meters
     if (VestaxVCI400.enableMasterVu) {
-        midi.sendShortMsg("0xbe", 43, 0);
-        midi.sendShortMsg("0xbe", 44, 0);
+        midi.sendShortMsg(0xbe, 43, 0);
+        midi.sendShortMsg(0xbe, 44, 0);
     }
 };
 
@@ -87,13 +87,13 @@ VestaxVCI400.shiftActivate = function (channel, control, value, status, group) {
 
 VestaxVCI400.onMasterVuMeterLChanged = function(value){
     if (!VestaxVCI400.enableMasterVu) { return; }
-    var normalizedVal = parseInt(value*127);
-    midi.sendShortMsg("0xbe", 43, normalizedVal);
+    const normalizedVal = parseInt(value * 127);
+    midi.sendShortMsg(0xbe, 43, normalizedVal);
 }
 VestaxVCI400.onMasterVuMeterRChanged = function(value){
     if (!VestaxVCI400.enableMasterVu) { return; }
-    var normailizedVal = parseInt(value*127);
-    midi.sendShortMsg("0xbe", 44, normailizedVal);
+    const normailizedVal = parseInt(value * 127);
+    midi.sendShortMsg(0xbe, 44, normailizedVal);
 }
 
 /*
@@ -288,10 +288,10 @@ VestaxVCI400.Deck.prototype.onDynamicButtonPressed = function(button, buttonNumb
  * The deck VU meters
  */
 VestaxVCI400.Deck.prototype.onVuMeterChanged = function(value, group, key) {
-    var normalizedVal = parseInt(value*127);
-    var deckNumber = parseInt(group.substring(8,9));
-    var midiNo = deckNumber + 1;
-    var statusByte = "0xb".concat(midiNo.toString());
+    const normalizedVal = parseInt(value*127);
+    const deckNumber = parseInt(group.substring(8, 9));
+    const midiNo = deckNumber + 1;
+    const statusByte = 0xb0 + midiNo;
     midi.sendShortMsg(statusByte, 17, normalizedVal);
 };
 
@@ -581,20 +581,19 @@ VestaxVCI400.deckSwitch = function (channel, control, value, status, group) {
 };
 
 VestaxVCI400.setToggleLights = function (group) {
-    var chan;
-
     if (!VestaxVCI400.GetDeck(group).isActive) {
         return;
     }
 
+    let chan;
     if (group == "[Channel1]" || group == "[Channel3]") {
-        chan = "0x9C";
+        chan = 0x9C;
     } else {
-        chan = "0x9D";
+        chan = 0x9D;
     }
 
-    midi.sendShortMsg(chan, "0x03", engine.getValue(group, "quantize") > 0.5 ? 0x7F : 0);
-    midi.sendShortMsg(chan, "0x04", engine.getValue(group, "keylock") > 0.5 ? 0x7F : 0);
+    midi.sendShortMsg(chan, 0x03, engine.getValue(group, "quantize") > 0.5 ? 0x7F : 0);
+    midi.sendShortMsg(chan, 0x04, engine.getValue(group, "keylock") > 0.5 ? 0x7F : 0);
 }
 
 VestaxVCI400.wheelTouch = function (channel, control, value, status, group) {
