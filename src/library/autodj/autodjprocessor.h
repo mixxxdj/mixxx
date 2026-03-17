@@ -165,8 +165,8 @@ class AutoDJProcessor : public QObject {
             FadeableTrackOrDeckAttributes* pToDeck,
             bool seekToStartPoint);
     void useFixedFadeTime(
-            FadeableTrackOrDeckAttributes& fromTrack,
-            FadeableTrackOrDeckAttributes& toTrack,
+            FadeableTrackOrDeckAttributes* fromTrack,
+            FadeableTrackOrDeckAttributes* toTrack,
             double fromDeckSecond,
             double fadeEndSecond,
             double toDeckStartSecond);
