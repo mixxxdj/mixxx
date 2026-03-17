@@ -120,5 +120,5 @@ class DeckAttributes : public FadeableTrackOrDeckAttributes {
     PollingControlProxy m_trackSamples;
     PollingControlProxy m_sampleRate;
     ControlProxy m_rateRatio;
-    BaseTrackPlayer* m_pPlayer;
+    parented_ptr<BaseTrackPlayer> m_pPlayer;
 };

@@ -77,5 +77,5 @@ void DeckAttributes::slotRateChanged(double) {
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
-    return m_pPlayer != nullptr ? m_pPlayer->getLoadedTrack() : TrackPointer();
+    return m_pPlayer ? m_pPlayer->getLoadedTrack() : TrackPointer();
 }
