@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <thread>
 
 NAMESPACE_LIBREMIDI
 {
@@ -279,7 +280,7 @@ public:
       return std::errc::no_buffer_space;
 
     while (jack_ringbuffer_write_space(ringbuffer) < sz + size_sz)
-      sched_yield();
+      std::this_thread::yield();
 
     jack_ringbuffer_write(ringbuffer, reinterpret_cast<char*>(&sz), size_sz);
     jack_ringbuffer_write(ringbuffer, reinterpret_cast<const char*>(data), sz);

@@ -3695,7 +3695,7 @@ endif()
 
 default_option(LIBREMIDI "Enable the Libremidi backend for MIDI controllers" "NOT ANDROID")
 if(LIBREMIDI)
-  if(WIN32 OR APPLE)
+  if(APPLE)
     set(LIBREMIDI_NO_JACK ON)
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __LIBREMIDI__)
