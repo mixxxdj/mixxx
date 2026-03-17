@@ -42,6 +42,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   private slots:
     void rescanControllers();
 #if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+    void slotMidiAPIChanged(const QString& api);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
     void slotMidiThroughChanged(Qt::CheckState state);
 #else

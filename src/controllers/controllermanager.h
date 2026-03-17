@@ -76,6 +76,9 @@ class ControllerManager : public QObject {
     void pollIfAnyControllersOpen();
     void openController(Controller* pController);
     void closeController(Controller* pController);
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+    void loadMidiBackend();
+#endif
 
     UserSettingsPointer m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;

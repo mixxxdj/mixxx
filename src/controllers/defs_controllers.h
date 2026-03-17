@@ -31,4 +31,12 @@ inline QString userMappingsPath(UserSettingsPointer pConfig) {
 const auto kMidiThroughPortPrefix = QLatin1String("MIDI Through Port");
 const ConfigKey kMidiThroughCfgKey =
         ConfigKey(QStringLiteral("[Controller]"), QStringLiteral("midi_through_enabled"));
+const ConfigKey kMidiAPI =
+        ConfigKey(QStringLiteral("[Controller]"), QStringLiteral("midi_api"));
+#endif
+
+#if defined(__PORTMIDI__)
+const auto kDefaultMidiAPI = QStringLiteral("PortMidi");
+#elif defined(__LIBREMIDI__)
+const auto kDefaultMidiAPI = QStringLiteral("Libremidi");
 #endif
