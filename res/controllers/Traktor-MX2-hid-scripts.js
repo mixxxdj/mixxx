@@ -113,7 +113,7 @@ class TraktorMX2Class {
         this.registerInputPackets();
         this.registerOutputPackets();
 
-        console.log(`${this.id  } initialized`);
+        console.log(`${this.id} initialized`);
     }
 
     registerInputPackets() {
@@ -1098,7 +1098,7 @@ class TraktorMX2Class {
 
         output.addOutput("[Channel1]", "favorites", 0x05, "B");
         output.addOutput("[Channel1]", "addTrack", 0x06, "B");
-        output.addOutput("[PreviewDeck1]", "play_indicator", 0x07, "B");
+        output.addOutput("[PreviewDeck1]", "indicatorL", 0x07, "B");
         output.addOutput("[Channel1]", "maximizeLibrary", 0x08, "B");
 
         output.addOutput("[Channel1]", "slip_enabled", 0x09, "B");
@@ -1140,7 +1140,7 @@ class TraktorMX2Class {
 
         output.addOutput("[Channel2]", "favorites", 0x23, "B");
         output.addOutput("[Channel2]", "addTrack", 0x24, "B");
-        output.addOutput("[PreviewDeck2]", "play_indicator", 0x25, "B");
+        output.addOutput("[PreviewDeck1]", "indicatorR", 0x25, "B");
         output.addOutput("[Channel2]", "maximizeLibrary", 0x26, "B");
 
         output.addOutput("[Channel2]", "slip_enabled", 0x27, "B");
@@ -1240,7 +1240,7 @@ class TraktorMX2Class {
 
         // Favorites
         // Add to List
-        engine.makeConnection("[PreviewDeck1]", "play_indicator", this.previewOutputHandler.bind(this));
+        engine.makeConnection("[PreviewDeck1]", "indicatorL", this.previewOutputHandler.bind(this));
         // Maximize Library
 
         this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler.bind(this));
@@ -1387,8 +1387,8 @@ class TraktorMX2Class {
 
     previewOutputHandler(_value, group, name) {
         const value = engine.getValue(group, name);
-        this.outputHandler(value, "[PreviewDeck1]", "play_indicator");
-        this.outputHandler(value, "[PreviewDeck2]", "play_indicator");
+        this.outputHandler(value, "[PreviewDeck1]", "indicatorL");
+        this.outputHandler(value, "[PreviewDeck1]", "indicatorR");
     };
 
     gfxToggleOutputHandler(_value, group, name) {
@@ -1600,8 +1600,8 @@ class TraktorMX2Class {
         this.controller.setOutput("[Channel2]", "tt", getColorValue("[Channel2]", "tt", !current), false);
         this.controller.setOutput("[Channel2]", "jog", getColorValue("[Channel2]", "jog", current), false);
 
-        this.controller.setOutput("[PreviewDeck1]", "play_indicator", getColorValue("[PreviewDeck1]", "play_indicator", false), false);
-        this.controller.setOutput("[PreviewDeck2]", "play_indicator", getColorValue("[PreviewDeck2]", "play_indicator", false), false);
+        this.controller.setOutput("[PreviewDeck1]", "indicatorL", getColorValue("[PreviewDeck1]", "indicatorL", false), false);
+        this.controller.setOutput("[PreviewDeck1]", "indicatorR", getColorValue("[PreviewDeck1]", "indicatorR", false), false);
 
         this.controller.setOutput("[Channel1]", "maximizeLibrary", getColorValue("[Channel1]", "maximizeLibrary", false), false);
         this.controller.setOutput("[Channel2]", "maximizeLibrary", getColorValue("[Channel2]", "maximizeLibrary", false), false);
@@ -1711,9 +1711,8 @@ class TraktorMX2Class {
             }, "[Microphone]": {
                 "talkover": {dim: this.baseColors.dimmedWhite, full: this.baseColors.white},
             }, "[PreviewDeck1]": {
-                "play_indicator": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
-            }, "[PreviewDeck2]": {
-                "play_indicator": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
+                "indicatorL": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
+                "indicatorR": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
             },
         };
     }
