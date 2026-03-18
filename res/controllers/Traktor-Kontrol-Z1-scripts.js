@@ -122,7 +122,7 @@ class TraktorZ1Class {
     }
 
     calibrate() {
-        this.rawCalibration.faders = new Uint8Array(0x20 * 3);
+        this.rawCalibration.faders = new Uint8Array(0x20 * 2);
         this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD1)), 0x00);
         this.rawCalibration.faders.set(new Uint8Array(controller.getFeatureReport(0xD2)), 0x20);
         this.calibration = this.parseRawCalibration();
