@@ -3695,12 +3695,10 @@ endif()
 
 default_option(LIBREMIDI "Enable the Libremidi backend for MIDI controllers" "NOT ANDROID")
 if(LIBREMIDI)
-  if(APPLE)
-    set(LIBREMIDI_NO_JACK ON)
-  endif()
   target_compile_definitions(mixxx-lib PUBLIC __LIBREMIDI__)
   add_subdirectory(lib/readerwriterqueue-1.0.7)
-  add_subdirectory(lib/libremidi-5.4.3)
+  add_subdirectory(lib/libremidi)
+
   target_link_libraries(libremidi PUBLIC readerwriterqueue)
   target_link_libraries(mixxx-lib PUBLIC libremidi)
   target_sources(
