@@ -746,8 +746,8 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
                                 kReadFrameCount) *
                                 kReadFrameCount,
                         kReadFrameCount);
-                // Allow short reads near EOF — different decoders may
-                // report slightly different frame counts at file boundaries
+                // Allow short reads near EOF — A bug in Windows 11's Media Foundation AAC
+                // decoder may report slightly different frame counts at file boundaries
                 auto secondResult = pAudioSource->readSampleFrames(
                         mixxx::WritableSampleFrames(
                                 secondChunkRange,
