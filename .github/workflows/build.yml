@@ -382,7 +382,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v0.5.10
+        uses: azure/trusted-signing-action@v1.1.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -390,7 +390,7 @@ jobs:
           endpoint: https://weu.codesigning.azure.net/
           trusted-signing-account-name: mixxx
           certificate-profile-name: mixxx
-          files: build/packaging/wix/mixxxupgradecustomaction.dll
+          files: ${{ github.workspace }}/build/packaging/wix/mixxxupgradecustomaction.dll
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
