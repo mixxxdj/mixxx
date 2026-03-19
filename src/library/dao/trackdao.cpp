@@ -2467,7 +2467,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 QStringLiteral(
                         "UPDATE library SET "
                         "timesplayed=:timesplayed,"
-                        "last_played_at=COALESCE(:last_played_at )"
+                       "last_played_at=:last_played_at "
                         "WHERE library.id=:trackId"));
         for (const auto& trackId : trackIds) {
             playCounterQuery.bindValue(
@@ -2492,6 +2492,13 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 // Never played and timesplayed should not be NULL
                 DEBUG_ASSERT(last_played_at.isNull());
                 timesplayed = 0;
+
+                // Fetch the actual last played date from older history sessions
+                QString historicalDate = findLastTimeAddedToHistory(trackId);
+                if (!historicalDate.isEmpty()) {
+                    last_played_at = historicalDate;
+                }
+            
             }
             trackUpdateQuery.bindValue(
                     QStringLiteral(":trackId"),
@@ -2535,4 +2542,37 @@ void TrackDAO::setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed) {
 //static
 bool TrackDAO::getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord) {
     return trackRecord.m_headerParsed;
+}
+QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId)const {
+    if (!trackId.isValid()) {
+        return {};
+    }
+    
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT PlaylistTracks.pl_datetime_added "
+            "FROM PlaylistTracks "
+            "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
+            "WHERE PlaylistTracks.track_id = :id "
+            "AND Playlists.hidden = :type "
+            "ORDER BY PlaylistTracks.pl_datetime_added DESC "
+            "LIMIT 1"));
+            
+    query.bindValue(":id", trackId.toVariant());
+    query.bindValue(":type", PlaylistDAO::PLHT_SET_LOG); // Use the correct Enum
+    
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "Failed to find last time added to history for track" << trackId;
+        return {};
+    }
+
+    if (query.next()) {
+        QString dateTimeStr = query.value(0).toString();
+        VERIFY_OR_DEBUG_ASSERT(!dateTimeStr.isEmpty()) {
+            return {};
+        }
+        return dateTimeStr;
+    }
+    
+    return {};
 }
