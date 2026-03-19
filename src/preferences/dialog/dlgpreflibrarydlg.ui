@@ -290,15 +290,7 @@
        <widget class="QSpinBox" name="spinbox_bpm_precision"/>
       </item>
 
-      <item row="10" column="0" colspan="4">
-       <widget class="QCheckBox" name="checkbox_played_track_color">
-        <property name="text">
-         <string>Grey out played tracks</string>
-        </property>
-       </widget>
-      </item>
-
-      <item row="11" column="0">
+      <item row="10" column="0">
        <widget class="QLabel" name="label_dateFormat">
         <property name="text">
          <string>Date Format:</string>
@@ -308,7 +300,7 @@
         </property>
        </widget>
       </item>
-      <item row="11" column="1" colspan="3">
+      <item row="10" column="1" colspan="2">
        <layout class="QHBoxLayout" name="horizontalLayout_dateFormat">
         <property name="leftMargin">
          <number>0</number>
@@ -340,6 +332,23 @@
          </widget>
         </item>
        </layout>
+      </item>
+
+      <item row="11" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkbox_played_track_color">
+        <property name="text">
+         <string>Grey out played tracks</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0" colspan="3">
+       <widget class="QGroupBox" name="groupBox_dimColumns">
+        <property name="title">
+         <string>Always use 'Played' color for these columns:</string>
+        </property>
+        <layout class="QGridLayout" name="layout_dimColumns">
+        </layout>
+       </widget>
       </item>
 
      </layout>
@@ -736,10 +745,11 @@
   <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>radioButton_dbclick_ignore</tabstop>
   <tabstop>spinBox_row_height</tabstop>
+  <tabstop>lineEdit_library_font</tabstop>
   <tabstop>btn_library_font</tabstop>
   <tabstop>spinbox_bpm_precision</tabstop>
-  <tabstop>checkbox_played_track_color</tabstop>
   <tabstop>comboBox_dateFormat</tabstop>
+  <tabstop>checkbox_played_track_color</tabstop>
   <tabstop>spinBox_search_debouncing_timeout</tabstop>
   <tabstop>checkBox_enable_search_completions</tabstop>
   <tabstop>checkBox_enable_search_history_shortcuts</tabstop>
