@@ -3235,7 +3235,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.27.0)
+  set(LIBDJINTEROP_VERSION 0.27.1)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -3298,7 +3298,7 @@ if(ENGINEPRIME)
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
       URL_HASH
-        SHA256=c4e73bf3907fd45be1c9767bcd9f367cbb7c279b4fe047bf2216bc92ae3d1668
+        SHA256=4c7393ab70b7c92374557e72c86f650bea73ba50e59f6e5a683c69038cc7ea48
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       PREFIX "libdjinterop-${LIBDJINTEROP_VERSION}"
@@ -5382,6 +5382,8 @@ set(
   "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake"
 )
 
+# Use WiX toolset version >= 4.0 for building Windows installers.
+set(CPACK_WIX_VERSION 4)
 set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
 set(
   CPACK_WIX_LICENSE_RTF
@@ -5419,6 +5421,24 @@ if(WIN32)
       "WIX: Unsupported architecture: ${CMAKE_SYSTEM_PROCESSOR}"
     )
   endif()
+
+  # Build the custom action DLL for cross-scope upgrade detection.
+  # Old Mixxx (<=2.5) was installed per-user due to a CPack bug (CMP0172).
+  # The standard FindRelatedProducts skips per-user products when the
+  # current install is per-machine.  The custom action calls scope-agnostic
+  # MsiEnumRelatedProducts() to detect and mark the old installation for
+  # removal by RemoveExistingProducts.
+  add_subdirectory(packaging/wix)
+  set(CPACK_WIX_INSTALL_SCOPE "perMachine")
+  file(
+    GENERATE OUTPUT
+    "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
+    INPUT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/MixxxUpgradePatch.xml.in"
+  )
+  set(
+    CPACK_WIX_PATCH_FILE
+    "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
+  )
 
   # uses CMAKE_PROJECT_VERSION
   configure_file(packaging/wix/LICENSE.rtf.in packaging/wix/LICENSE.rtf @ONLY)
