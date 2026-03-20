@@ -2494,9 +2494,9 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 timesplayed = 0;
 
                 // Fetch the actual last played date from older history sessions
-                QString historicalDate = findLastTimeAddedToHistory(trackId);
-                if (!historicalDate.isEmpty()) {
-                    last_played_at = historicalDate;
+               QString lastTimeAdded = findLastTimeAddedToHistory(trackId);
+                if (!lastTimeAdded.isEmpty()) {
+                    last_played_at = lastTimeAdded;
                 }
             
             }
@@ -2554,12 +2554,11 @@ QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId)const {
             "FROM PlaylistTracks "
             "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
             "WHERE PlaylistTracks.track_id = :id "
-            "AND Playlists.hidden = :type "
-            "ORDER BY PlaylistTracks.pl_datetime_added DESC "
-            "LIMIT 1"));
+            "AND Playlists.hidden = :type "         
+            ));
             
     query.bindValue(":id", trackId.toVariant());
-    query.bindValue(":type", PlaylistDAO::PLHT_SET_LOG); // Use the correct Enum
+    query.bindValue(":type", PlaylistDAO::PLHT_SET_LOG); // The history feature was originally named "Set log"
     
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Failed to find last time added to history for track" << trackId;
