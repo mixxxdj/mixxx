@@ -1,11 +1,15 @@
 #include "mixxxmainwindow.h"
 
+#include <QApplication>
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QDebug>
 #include <QFileDialog>
+#include <QList>
+#include <QMessageBox>
 #include <QOpenGLContext>
 #include <QUrl>
+#include <QWidget>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QGLFormat>
@@ -1594,19 +1598,49 @@ bool MixxxMainWindow::confirmExit() {
             return false;
         }
     }
-    if (m_pPrefDlg && m_pPrefDlg->isVisible()) {
-        QMessageBox::StandardButton btn = QMessageBox::question(
-            this, tr("Confirm Exit"),
-            tr("The preferences window is still open.") + "<br>" +
-            tr("Discard any changes and exit Mixxx?"),
-            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+    bool requireWarning = false;
+    QList<QWidget*> windowsToClose;
+
+    const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
+    for (QWidget* pWidget : topLevelWidgets) {
+        if (pWidget == this || !pWidget->isVisible()) {
+            continue;
+        }
+
+        Qt::WindowType type = pWidget->windowType();
+        if (type == Qt::ToolTip || type == Qt::Popup || type == Qt::Desktop) {
+            continue;
+        }
+
+        if (qobject_cast<DlgAbout*>(pWidget) ||
+                qobject_cast<DlgDeveloperTools*>(pWidget) ||
+                qobject_cast<DlgKeywheel*>(pWidget)) {
+            windowsToClose.append(pWidget);
+        } else if (!qobject_cast<QMessageBox*>(pWidget)) {
+            requireWarning = true;
+            windowsToClose.append(pWidget);
+        }
+    }
+
+    if (requireWarning) {
+        QMessageBox::StandardButton btn = QMessageBox::question(this,
+                tr("Confirm Exit"),
+                tr("Another window is still open.") + "<br>" +
+                        tr("Discard any changes and exit Mixxx?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
         if (btn == QMessageBox::No) {
             return false;
         }
-        else {
-            m_pPrefDlg->close();
-        }
     }
+
+    for (QWidget* pWidget : windowsToClose) {
+        pWidget->close();
+    }
+
+    windowsToClose.clear();
 
     return true;
 }
