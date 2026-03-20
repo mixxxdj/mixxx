@@ -1,5 +1,7 @@
 #include "library/basetracktablemodel.h"
 
+#include <qglobal.h>
+
 #include <QBuffer>
 #include <QGuiApplication>
 #include <QMimeData>
@@ -34,6 +36,7 @@
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
+#include "util/defs.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -46,6 +49,61 @@ constexpr double kRelativeHeightOfCoverartToolTip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
 constexpr int kReplayGainPrecision = 2;
+
+BaseTrackTableModel::LoadedDeckMasks deckBitMaskForGroup(const QString& group) {
+    int deckNumber = 0;
+    if (PlayerManager::isDeckGroup(group, &deckNumber) &&
+            deckNumber > 0 &&
+            deckNumber <= kMaxNumberOfDecks) {
+        return {
+                static_cast<quint8>(1U << (deckNumber - 1)),
+                0,
+        };
+    }
+
+    int samplerNumber = 0;
+    if (PlayerManager::isSamplerGroup(group, &samplerNumber) &&
+            samplerNumber > 0 &&
+            samplerNumber <= kMaxNumberOfSamplers) {
+        return {
+                0,
+                static_cast<quint64>(1ULL << (samplerNumber - 1)),
+        };
+    }
+
+    return {};
+}
+
+BaseTrackTableModel::LoadedDeckMasks deckMaskFromVariant(const QVariant& rawValue) {
+    if (rawValue.isNull() || !rawValue.isValid()) {
+        return {};
+    }
+    if (!rawValue.canConvert<BaseTrackTableModel::LoadedDeckMasks>()) {
+        return {};
+    }
+    return rawValue.value<BaseTrackTableModel::LoadedDeckMasks>();
+}
+
+QString loadedDecksText(
+        BaseTrackTableModel::LoadedDeckMasks deckMask,
+        const QString& separator,
+        const QString& deckFormat,
+        const QString& samplerFormat) {
+    QStringList labels;
+    for (int deckNumber = 1; deckNumber <= kMaxNumberOfDecks; ++deckNumber) {
+        const auto deckBitmask = static_cast<quint8>(1U << (deckNumber - 1));
+        if ((deckMask.mainDeck & deckBitmask) != 0u) {
+            labels.append(deckFormat.arg(deckNumber));
+        }
+    }
+    for (int samplerNumber = 1; samplerNumber <= kMaxNumberOfSamplers; ++samplerNumber) {
+        const auto samplerBitmask = static_cast<quint64>(1ULL << (samplerNumber - 1));
+        if ((deckMask.samplersDeck & samplerBitmask) != 0u) {
+            labels.append(samplerFormat.arg(samplerNumber));
+        }
+    }
+    return labels.join(separator);
+}
 
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
@@ -617,6 +675,16 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+        case ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK: {
+            if (role == kDataExportRole) {
+                return QVariant();
+            }
+            return loadedDecksText(
+                    deckMaskFromVariant(rawValue),
+                    QStringLiteral(", "),
+                    BaseTrackTableModel::tr("Deck %1"),
+                    BaseTrackTableModel::tr("Sampler %1"));
+        }
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -797,6 +865,12 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return freq;
         }
+        case ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK:
+            return loadedDecksText(
+                    deckMaskFromVariant(rawValue),
+                    QStringLiteral(" "),
+                    QStringLiteral("%1"),
+                    QStringLiteral("S%1"));
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
             // The Key value is determined by either the KEY_ID or KEY column
             return KeyUtils::keyFromKeyTextAndIdFields(
@@ -917,6 +991,9 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignHCenter);
         }
+        case ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK: {
+            return static_cast<int>(Qt::AlignVCenter | Qt::AlignHCenter);
+        }
         default:
             return QVariant(); // default AlignLeft for all other columns
         }
@@ -1027,6 +1104,7 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
@@ -1102,7 +1180,6 @@ void BaseTrackTableModel::slotTrackChanged(
         const QString& group,
         TrackPointer pNewTrack,
         TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -1118,6 +1195,114 @@ void BaseTrackTableModel::slotTrackChanged(
         }
         m_previewDeckTrackId = doGetTrackId(pNewTrack);
     }
+
+    updateLoadedDeckState(
+            group,
+            pNewTrack,
+            pOldTrack);
+}
+
+void BaseTrackTableModel::updateLoadedDeckState(
+        const QString& group,
+        const TrackPointer& pNewTrack,
+        const TrackPointer& pOldTrack) {
+    // No loaded deck column
+    if (fieldIndex(LIBRARYTABLE_LOADED_DECK) < 0) {
+        return;
+    }
+    const auto deckBitmask = deckBitMaskForGroup(group);
+    // Track is not loaded anywhere
+    if (deckBitmask.mainDeck == 0 && deckBitmask.samplersDeck == 0) {
+        return;
+    }
+
+    const TrackId oldTrackId = doGetTrackId(pOldTrack);
+    const TrackId newTrackId = doGetTrackId(pNewTrack);
+
+    const QVector<int> oldRows = oldTrackId.isValid()
+            ? getTrackRows(oldTrackId)
+            : QVector<int>{};
+    const QVector<int> newRows = newTrackId.isValid()
+            ? getTrackRows(newTrackId)
+            : QVector<int>{};
+    // Does not contain either track
+    if (oldRows.isEmpty() && newRows.isEmpty()) {
+        return;
+    }
+
+    QList<int> rows;
+    rows.reserve(oldRows.size() + newRows.size());
+
+    if (oldTrackId.isValid()) {
+        auto updatedMask = m_loadedDecksMaskByTrackId.value(oldTrackId);
+        updatedMask.mainDeck &= ~deckBitmask.mainDeck;
+        updatedMask.samplersDeck &= ~deckBitmask.samplersDeck;
+
+        if (updatedMask.mainDeck == 0 && updatedMask.samplersDeck == 0) {
+            // track removed from all decks
+            m_loadedDecksMaskByTrackId.remove(oldTrackId);
+        } else {
+            // track updated to new deck
+            m_loadedDecksMaskByTrackId.insert(oldTrackId, updatedMask);
+        }
+        appendLoadedDeckRows(oldTrackId, &rows);
+    }
+
+    if (newTrackId.isValid()) {
+        auto updatedMask = m_loadedDecksMaskByTrackId.value(newTrackId);
+        updatedMask.mainDeck |= deckBitmask.mainDeck;
+        updatedMask.samplersDeck |= deckBitmask.samplersDeck;
+
+        // new track added
+        m_loadedDecksMaskByTrackId.insert(newTrackId, updatedMask);
+        appendLoadedDeckRows(newTrackId, &rows);
+    }
+
+    std::sort(rows.begin(), rows.end());
+    rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+
+    handleLoadedDecksChanged(rows);
+}
+
+void BaseTrackTableModel::appendLoadedDeckRows(
+        TrackId trackId,
+        QList<int>* pRows) const {
+    if (!trackId.isValid() || !pRows) {
+        return;
+    }
+    const QVector<int> trackRows = getTrackRows(trackId);
+    for (int row : trackRows) {
+        pRows->append(row);
+    }
+}
+
+BaseTrackTableModel::LoadedDeckMasks
+BaseTrackTableModel::loadedDeckMaskForTrackId(TrackId trackId) const {
+    if (trackId.isValid()) {
+        return m_loadedDecksMaskByTrackId.value(trackId);
+    }
+    return {};
+}
+
+void BaseTrackTableModel::setLoadedDeckMasks(
+        QHash<TrackId, LoadedDeckMasks>&& loadedDeckMasksByTrackId) {
+    m_loadedDecksMaskByTrackId = std::move(loadedDeckMasksByTrackId);
+}
+
+void BaseTrackTableModel::handleLoadedDecksChanged(
+        const QList<int>& rows) {
+    if (rows.isEmpty()) {
+        return;
+    }
+
+    const int column = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK);
+    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+        return;
+    }
+    emitDataChangedForMultipleRowsInColumn(
+            rows,
+            column,
+            {Qt::DisplayRole, Qt::ToolTipRole, Qt::TextAlignmentRole});
 }
 
 void BaseTrackTableModel::slotRefreshCoverRows(

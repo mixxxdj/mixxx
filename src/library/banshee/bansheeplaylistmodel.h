@@ -23,6 +23,10 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     Capabilities getCapabilities() const final;
 
+  protected:
+    QString normalizeTrackLocationForLoadedDecks(
+            const QString& location) const final;
+
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const final;
     void dropTempTable();
