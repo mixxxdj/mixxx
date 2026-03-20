@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.3.3">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.5.4">
   <info>
-    <name>Numark Party Mix</name>
-    <!-- inspired by https://github.com/mixxxdj/mixxx/blob/main/res/controllers/Numark%20Mixtrack%20Pro%20FX.midi.xml -->
-    <author>olaf</author>
-    <description>Full Mappings for Numark Party Mix including selectable pad modes</description>
-    <wiki>      <!-- Encoded URL to Mixxx wiki page documenting this controller mapping (coming soon!) --></wiki>
-    <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=9232</forums>
+    <name>Numark Party Mix MKII</name>
+    <description>Mapping for Numark Party Mix MKII</description>
   </info>
-  <controller id="Numark Party Mix">
+  <controller id="Numark Party Mix MKII">
     <scriptfiles>
       <file functionprefix="" filename="midi-components-0.0.js" />
-      <file filename="Numark-Party-Mix.scripts.js" functionprefix="NumarkPartyMix" />
+      <file filename="Numark-Party-Mix-MKII.scripts.js" functionprefix="NumarkPartyMix" />
     </scriptfiles>
     <controls>
       <!-- Main gain Controls -->
@@ -143,6 +139,25 @@
         <midino>0x19</midino>
         <options>
           <script-binding />
+        </options>
+      </control>
+      <!-- Filter -->
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>super1</key>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>super1</key>
+        <status>0xB1</status>
+        <midino>0x1A</midino>
+        <options>
+          <normal />
         </options>
       </control>
       <!-- Channel volume -->
@@ -297,29 +312,10 @@
           <script-binding />
         </options>
       </control>
-      <!-- Scratch toggle buttons (press) -->
+      <!-- Jogwheels (turn) -->
       <control>
         <group>[Channel1]</group>
-        <key>NumarkPartyMix.deck[0].scratchToggle.input</key>
-        <status>0x90</status>
-        <midino>0x07</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>NumarkPartyMix.deck[1].scratchToggle.input</key>
-        <status>0x91</status>
-        <midino>0x07</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <!-- Jogwheels -->
-      <control>
-        <group>[Channel1]</group>
-        <key>NumarkPartyMix.deck[0].wheelTurn.input</key>
+        <key>NumarkPartyMix.deck[0].jogWheel.inputWheel</key>
         <status>0xB0</status>
         <midino>0x06</midino>
         <options>
@@ -328,8 +324,46 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkPartyMix.deck[1].wheelTurn.input</key>
+        <key>NumarkPartyMix.deck[1].jogWheel.inputWheel</key>
         <status>0xB1</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+       <!-- Jogwheels (touch) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].jogWheel.inputTouch</key>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].jogWheel.inputTouch</key>
+        <status>0x91</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Jogwheels (untouch) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].jogWheel.inputTouch</key>
+        <status>0x80</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].jogWheel.inputTouch</key>
+        <status>0x81</status>
         <midino>0x06</midino>
         <options>
           <script-binding />
@@ -360,7 +394,7 @@
         <group>[Channel1]</group>
         <key>NumarkPartyMix.deck[0].padSection.modeButtonPress</key>
         <status>0x94</status>
-        <midino>0x0B</midino>
+        <midino>0x0E</midino>
         <options>
           <script-binding />
         </options>
@@ -369,7 +403,7 @@
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.modeButtonPress</key>
         <status>0x95</status>
-        <midino>0x0B</midino>
+        <midino>0x0E</midino>
         <options>
           <script-binding />
         </options>
@@ -379,7 +413,7 @@
         <group>[Channel1]</group>
         <key>NumarkPartyMix.deck[0].padSection.modeButtonPress</key>
         <status>0x94</status>
-        <midino>0x0E</midino>
+        <midino>0x0B</midino>
         <options>
           <script-binding />
         </options>
@@ -388,7 +422,7 @@
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.modeButtonPress</key>
         <status>0x95</status>
-        <midino>0x0E</midino>
+        <midino>0x0B</midino>
         <options>
           <script-binding />
         </options>
@@ -398,7 +432,7 @@
         <group>[Channel1]</group>
         <key>NumarkPartyMix.deck[0].padSection.modeButtonPress</key>
         <status>0x94</status>
-        <midino>0x18</midino>
+        <midino>0x0F</midino>
         <options>
           <script-binding />
         </options>
@@ -407,7 +441,7 @@
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.modeButtonPress</key>
         <status>0x95</status>
-        <midino>0x18</midino>
+        <midino>0x0F</midino>
         <options>
           <script-binding />
         </options>
@@ -572,7 +606,7 @@
         <group>[Library]</group>
         <key>NumarkPartyMix.browse.knobButton.input</key>
         <status>0x9F</status>
-        <midino>0x00</midino>
+        <midino>0x07</midino>
         <options>
           <script-binding />
         </options>
@@ -581,7 +615,7 @@
         <group>[Library]</group>
         <key>NumarkPartyMix.browse.knobButton.input</key>
         <status>0x8F</status>
-        <midino>0x00</midino>
+        <midino>0x07</midino>
         <options>
           <script-binding />
         </options>

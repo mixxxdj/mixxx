@@ -1,16 +1,8 @@
 // eslint-disable-next-line no-var
 var NumarkPartyMix = {};
 
-// The jogwheel is behaving inconsistently
-// when scratching the point in the song moves
-// this is according to my theory because
-// the movements are not properly registered by the encoder
-// (this can happen when the sampling rate of the sensor is too low)
-NumarkPartyMix.jogScratchSensitivity = 340;
 NumarkPartyMix.jogScratchAlpha = 1 / 8; // do NOT set to 2 or higher
 NumarkPartyMix.jogScratchBeta = 1 / 8 / 32;
-NumarkPartyMix.jogPitchSensitivity = 10;
-NumarkPartyMix.jogSearchSensitivity = 1 / 2;
 
 // autoloop sizes, for available values see:
 // https://manual.mixxx.org/2.3/en/chapters/appendix/mixxx_controls.html#control-[ChannelN]-beatloop_X_toggle
@@ -36,9 +28,9 @@ components.Button.prototype.shutdown = function() {
 // pad modes control codes
 NumarkPartyMix.PadModeControls = {
     HOTCUE: 0x00,
-    LOOP: 0x0B,
-    SAMPLER: 0x0E,
-    EFX: 0x18,
+    LOOP: 0x0E,
+    SAMPLER: 0x0B,
+    EFX: 0x0F,
 };
 
 NumarkPartyMix.init = function(_id, _debugging) {
@@ -71,8 +63,6 @@ NumarkPartyMix.Deck = function(deckNumber) {
     components.Deck.call(this, deckNumber);
 
     const channel = deckNumber - 1;
-    const deck = this;
-    this.scratchModeEnabled = false;
 
     this.playButton = new components.PlayButton({
         midi: [0x90 + channel, 0x00],
@@ -125,54 +115,12 @@ NumarkPartyMix.Deck = function(deckNumber) {
 
     this.padSection = new NumarkPartyMix.PadSection(deckNumber);
 
-    this.scratchToggle = new components.Button({
-        midi: [0x90 + channel, 0x07],
-        type: components.Button.prototype.types.toggle,
-        inToggle: function() {
-            deck.scratchModeEnabled = !deck.scratchModeEnabled;
-            if (deck.scratchModeEnabled) {
-                this.send(this.on);
-            } else {
-                engine.scratchDisable(deckNumber);
-                this.send(this.off);
-            }
-        }
-    });
-
-    this.wheelTurn = new components.Encoder({
-        group: "[Channel" + deckNumber + "]",
-        key: "wheelTurn",
-        touchTimer: 0,
-        touchTimout: 0,
-        input: function(channel, _control, value, _status, group) {
-            //clockwise (slow-fast) 0x01 - 0x06
-            //counter-clockwise (slow-fast) 0x7F - 0x7A
-            //transform counter-clockwise messages to negative values
-            var newValue = (value < 0x40) ? value : (value - 0x80);
-
-            if (this.touchTimer !== 0) {
-                engine.stopTimer(this.touchTimer);
-                this.touchTimer = 0;
-            }
-
-            if (deck.scratchModeEnabled) {
-                this.touchTimer = engine.beginTimer(50, () => {
-                    engine.scratchDisable(deckNumber);
-                }, true);
-
-                if (!engine.isScratching(deckNumber)) {
-                    engine.scratchEnable(deckNumber, NumarkPartyMix.jogScratchSensitivity, 33 + 1 / 3, NumarkPartyMix.jogScratchAlpha, NumarkPartyMix.jogScratchBeta, true);
-                }
-                engine.scratchTick(deckNumber, newValue); // Scratch!
-            } else {
-                if (engine.getValue(group, "play") > 0) {
-                    engine.setValue(group, "jog", newValue / NumarkPartyMix.jogPitchSensitivity); // fine jog to sync
-                } else {
-                    engine.setValue(group, "jog", newValue / NumarkPartyMix.jogSearchSensitivity); // scrup through track
-
-                }
-            }
-        }
+    this.jogWheel = new components.JogWheelBasic({
+        deck: deckNumber,
+        wheelResolution: 300,
+        alpha: NumarkPartyMix.jogScratchAlpha,
+        beta: NumarkPartyMix.jogScratchBeta,
+        rpm: 33 + 1/3
     });
 
     this.reconnectComponents(function(component) {
