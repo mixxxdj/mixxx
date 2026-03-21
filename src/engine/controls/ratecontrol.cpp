@@ -411,10 +411,17 @@ double RateControl::calculateSpeed(double baserate,
     *pReportScratching = false;
     *pReportReverse = false;
 
+  /*  qWarning() << "paused:" << paused;
+    qWarning() << "prevPaused:" << m_prevPaused;
+    qWarning() << "scratching:" << *pReportScratching;*/
+
     // Detect play pressed from pause → start physical spin-up
-    if (!paused && m_prevPaused && m_pRampStartEnabled->get() > 0.5) {
+   /* if (!paused && m_prevPaused && !*pReportScratching) {
+        qWarning() << "🔥 SPINUP 🔥";
         m_spinupRateLimit = 0.0;
     }
+
+    m_prevPaused = paused;*/
     // Physical spin-up ramp
     if (m_spinupRateLimit < 1.0) {
         const double dt =

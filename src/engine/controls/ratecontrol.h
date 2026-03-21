@@ -177,4 +177,5 @@ private:
   double m_dRateTempRampChange;
   // Physical spin-up rate limiter (0.0 → 1.0)
   double m_spinupRateLimit;
+  ControlProxy* m_pRampStartEnabled;
 };
