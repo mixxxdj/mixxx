@@ -48,6 +48,7 @@
 #include "skin/skinloader.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
+#include "track/globaltrackcache.h"
 #include "track/track.h"
 #include "util/debug.h"
 #include "util/desktophelper.h"
@@ -1520,6 +1521,20 @@ void MixxxMainWindow::closeEvent(QCloseEvent *event) {
         event->ignore();
         return;
     }
+
+    ScopedWaitCursor cursor;
+
+    QMessageBox savingMsg(this);
+    savingMsg.setIcon(QMessageBox::Information);
+    savingMsg.setWindowTitle(tr("Saving Metadata"));
+    savingMsg.setText(tr("Mixxx is saving track metadata to the database. Please wait..."));
+    savingMsg.setStandardButtons(QMessageBox::NoButton);
+    savingMsg.show();
+
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+
+    GlobalTrackCacheLocker().deactivateCache();
+
     QMainWindow::closeEvent(event);
 }
 
