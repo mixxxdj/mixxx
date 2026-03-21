@@ -272,16 +272,16 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     pHeader->setDefaultAlignment(Qt::AlignLeft);
 
     // Initialize all column-specific things
+    std::vector<std::unique_ptr<QAbstractItemDelegate>> newDelegates;
     for (int i = 0; i < pNewModel->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        QAbstractItemDelegate* delegate =
-                pNewTrackModel->delegateForColumn(i, this);
-        // We need to delete the old delegates, since the docs say the view will
-        // not take ownership of them.
-        QAbstractItemDelegate* old_delegate = itemDelegateForColumn(i);
+        auto delegate = std::unique_ptr<QAbstractItemDelegate>(
+                pNewTrackModel->delegateForColumn(i, this));
         // If delegate is NULL, it will unset the delegate for the column
-        setItemDelegateForColumn(i, delegate);
-        delete old_delegate;
+        setItemDelegateForColumn(i, delegate.get());
+        if (delegate) {
+            newDelegates.push_back(std::move(delegate));
+        }
 
         // Show or hide the column based on whether it should be shown or not.
         if (pNewTrackModel->isColumnInternal(i)) {
@@ -298,6 +298,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
             horizontalHeader()->hideSection(i);
         }
     }
+    m_columnDelegates = std::move(newDelegates);
 
     if (m_sorting) {
         // NOTE: Should be a UniqueConnection but that requires Qt 4.6
