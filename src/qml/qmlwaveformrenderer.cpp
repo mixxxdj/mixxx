@@ -31,7 +31,7 @@ QString waveformMarkerErrorToString(
         const QString& pixmap,
         const QString& endPixmap,
         const QString& icon) {
-    QString errorMessage = QStringLiteral("Invalid default marker: ");
+    QString errorMessage = QStringLiteral("Invalid marker: ");
     switch (error) {
     case WaveformMark::WaveformMarkConstructionError::EndIconInvalidArgumentCount:
         errorMessage.append(
@@ -380,7 +380,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
                     icon));
             continue;
         }
-        auto pMarker = WaveformMarkPointer(std::get<WaveformMark*>(maybeMarker));
+        auto pMarker = std::get<WaveformMarkPointer>(maybeMarker);
         pRenderer->addMark(pMarker);
         priority--;
     }

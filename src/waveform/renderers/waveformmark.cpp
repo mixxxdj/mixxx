@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <tuple>
+#include <vector>
 
 #include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -276,7 +278,7 @@ WaveformMark::WaveformMark(const QString& group,
     m_disabledOpacity = context.selectDouble(node, "DisabledOpacity", 0.5);
 }
 
-std::variant<WaveformMark*, WaveformMark::WaveformMarkConstructionError> WaveformMark::create(
+std::variant<WaveformMarkPointer, WaveformMark::WaveformMarkConstructionError> WaveformMark::create(
         const QString& group,
         const QString& positionControl,
         const QString& visibilityControl,
@@ -293,7 +295,9 @@ std::variant<WaveformMark*, WaveformMark::WaveformMarkConstructionError> Wavefor
         const QString& endIconPath,
         float disabledOpacity,
         float enabledOpacity) {
-    std::unique_ptr<WaveformMark> pMark(new WaveformMark(group,
+    // Used WaveformMark's ctor variant is private so we must explicitly call
+    // new before wrapping it in a smart pointer
+    WaveformMarkPointer pMark(new WaveformMark(group,
             positionControl,
             visibilityControl,
             textColor,
@@ -312,7 +316,7 @@ std::variant<WaveformMark*, WaveformMark::WaveformMarkConstructionError> Wavefor
     if (auto err = pMark->validate(); err.has_value()) {
         return err.value();
     }
-    return pMark.release();
+    return pMark;
 }
 
 WaveformMark::~WaveformMark() = default;

@@ -3,6 +3,8 @@
 #include <QHash>
 #include <QImage>
 #include <memory>
+#include <optional>
+#include <variant>
 
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
@@ -13,6 +15,9 @@
 
 class SkinContext;
 class QOpenGLTexture;
+
+class WaveformMark;
+typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
 namespace allshader {
 class WaveformRenderMark;
@@ -53,7 +58,7 @@ class WaveformMark {
 
     // FIXME we are using `std::variant` instead of `std::expected` as Mixxx
     // doesn't yet support C++23.
-    static std::variant<WaveformMark*, WaveformMarkConstructionError> create(
+    static std::variant<WaveformMarkPointer, WaveformMarkConstructionError> create(
             const QString& group,
             const QString& positionControl,
             const QString& visibilityControl,

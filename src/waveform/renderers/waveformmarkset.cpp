@@ -1,6 +1,7 @@
 #include "waveformmarkset.h"
 
 #include <QtDebug>
+#include <memory>
 #include <optional>
 #include <set>
 
@@ -86,6 +87,7 @@ WaveformMarkSet::setDefault(const QString& group,
     if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(mark)) {
         return std::get<WaveformMark::WaveformMarkConstructionError>(mark);
     }
+    m_pDefaultMark = std::get<WaveformMarkPointer>(mark);
 
     for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
         if (m_hotCueMarks.value(i).isNull()) {
@@ -104,12 +106,12 @@ WaveformMarkSet::setDefault(const QString& group,
                     signalColors,
                     model.endPixmapPath,
                     model.endIconPath,
-                    model.enabledOpacity,
-                    model.disabledOpacity);
+                    model.disabledOpacity,
+                    model.enabledOpacity);
             if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(pMaybeMark)) {
                 return std::get<WaveformMark::WaveformMarkConstructionError>(pMaybeMark);
             }
-            auto pMark = WaveformMarkPointer(std::get<WaveformMark*>(pMaybeMark));
+            auto pMark = std::get<WaveformMarkPointer>(pMaybeMark);
             m_marks.push_front(pMark);
             m_hotCueMarks.insert(pMark->getHotCue(), pMark);
         }

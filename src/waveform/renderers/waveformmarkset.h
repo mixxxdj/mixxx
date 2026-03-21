@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QList>
+#include <optional>
 
-#include "waveformmark.h"
 #include "skin/legacy/skincontext.h"
-
+#include "waveformmark.h"
 
 // This class helps share code between the WaveformRenderMark and WOverview
 // constructors and allows to iterate over the orders marks that have to be
@@ -85,6 +85,8 @@ class WaveformMarkSet {
     void clear() {
         m_marks.clear();
         m_marksToRender.clear();
+        m_hotCueMarks.clear();
+        m_pDefaultMark.reset();
     }
 
     void addMark(WaveformMarkPointer pMark) {
