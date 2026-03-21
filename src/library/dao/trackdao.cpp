@@ -2467,7 +2467,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 QStringLiteral(
                         "UPDATE library SET "
                         "timesplayed=:timesplayed,"
-                       "last_played_at=:last_played_at "
+                        "last_played_at=:last_played_at "
                         "WHERE library.id=:trackId"));
         for (const auto& trackId : trackIds) {
             playCounterQuery.bindValue(
@@ -2494,11 +2494,10 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 timesplayed = 0;
 
                 // Fetch the actual last played date from older history sessions
-               QString lastTimeAdded = findLastTimeAddedToHistory(trackId);
+                QString lastTimeAdded = findLastTimeAddedToHistory(trackId);
                 if (!lastTimeAdded.isEmpty()) {
                     last_played_at = lastTimeAdded;
                 }
-            
             }
             trackUpdateQuery.bindValue(
                     QStringLiteral(":trackId"),
@@ -2547,19 +2546,18 @@ QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
     if (!trackId.isValid()) {
         return {};
     }
-    
+
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
             "SELECT PlaylistTracks.pl_datetime_added "
             "FROM PlaylistTracks "
             "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
             "WHERE PlaylistTracks.track_id = :id "
-            "AND Playlists.hidden = :type "         
-            ));
-            
+            "AND Playlists.hidden = :type "));
+
     query.bindValue(":id", trackId.toVariant());
     query.bindValue(":type", PlaylistDAO::PLHT_SET_LOG); // The history feature was originally named "Set log"
-    
+
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Failed to find last time added to history for track" << trackId;
         return {};
@@ -2572,6 +2570,6 @@ QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
         }
         return dateTimeStr;
     }
-    
+
     return {};
 }
