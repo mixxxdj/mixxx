@@ -2556,8 +2556,9 @@ QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
             "AND Playlists.hidden = :type "));
 
     query.bindValue(":id", trackId.toVariant());
-    query.bindValue(":type", PlaylistDAO::PLHT_SET_LOG); // The history feature was originally named "Set log"
-
+    query.bindValue(
+            ":type", PlaylistDAO::PLHT_SET_LOG); // The history feature was
+                                                 // originally named "Set log"
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Failed to find last time added to history for track" << trackId;
         return {};
