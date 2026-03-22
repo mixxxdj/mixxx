@@ -12,7 +12,6 @@
 
 #include "library/dao/settingsdao.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
 #include "library/missing_hidden/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
