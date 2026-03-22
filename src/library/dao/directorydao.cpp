@@ -199,19 +199,42 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
         return {RelocateResult::UnreadableDirectory, {}};
     }
 
-    // TODO(rryan): This method could use error reporting. It can fail in
-    // mysterious ways for example if a track in the oldDirectory also has a zombie
-    // track location in newDirectory then the replace query will fail because the
-    // location column becomes non-unique.
+    // Check if the new dir is a child of an existing dir.
+    bool newIsChildOfExistingDir = false;
+    for (auto&& rootDir : loadAllDirectories(true /* ignore missing */)) {
+        const auto rootDirLocation = rootDir.canonicalLocation();
+        DEBUG_ASSERT(!rootDirLocation.isEmpty());
+        if (mixxx::FileInfo::isRootSubCanonicalLocation(
+                    rootDirLocation,
+                    newFileInfo.canonicalLocation())) {
+            const mixxx::FileInfo oldFileInfo(oldDirectory);
+            const auto result = removeDirectory(oldFileInfo);
+            if (result != DirectoryDAO::RemoveResult::Ok) {
+                kLogger.warning() << "could not relocate directory"
+                                  << oldDirectory << "to" << newDirectory;
+                return {RelocateResult::SqlError, {}};
+            }
+            newIsChildOfExistingDir = true;
+            break;
+        }
+    }
+
     QSqlQuery query(m_database);
-    query.prepare("UPDATE " % kTable % " SET " % kLocationColumn %
-            "=:newDirectory WHERE " % kLocationColumn % "=:oldDirectory");
-    query.bindValue(":newDirectory", newDirectory);
-    query.bindValue(":oldDirectory", oldDirectory);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not relocate directory"
-                                << oldDirectory << "to" << newDirectory;
-        return {RelocateResult::SqlError, {}};
+    if (!newIsChildOfExistingDir) {
+        // Replace old with new dir
+        // TODO(rryan): This method could use error reporting. It can fail in
+        // mysterious ways for example if a track in the oldDirectory also has a zombie
+        // track location in newDirectory then the replace query will fail because the
+        // location column becomes non-unique.
+        query.prepare("UPDATE " % kTable % " SET " % kLocationColumn %
+                "=:newDirectory WHERE " % kLocationColumn % "=:oldDirectory");
+        query.bindValue(":newDirectory", newDirectory);
+        query.bindValue(":oldDirectory", oldDirectory);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query) << "could not relocate directory"
+                                    << oldDirectory << "to" << newDirectory;
+            return {RelocateResult::SqlError, {}};
+        }
     }
 
     // Appending '/' is required to disambiguate files from parent
