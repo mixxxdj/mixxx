@@ -8,10 +8,12 @@
 #include <QJniObject>
 #endif
 
-#include <libusb.h>
-
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
+
+struct libusb_device_handle;
+struct libusb_context;
+struct libusb_transfer;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
@@ -23,15 +25,7 @@ class BulkReader : public QThread {
             int length);
     ~BulkReader() override;
 
-    static void transferFinishedCb(libusb_transfer* transfer) {
-        bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
-        cb_data->reader->handleTransfer(transfer);
-
-        std::unique_lock<std::mutex> lock(cb_data->mutex);
-        cb_data->completed = 1;
-        cb_data->cv.notify_one();
-    }
-
+    static void transferFinishedCb(libusb_transfer* transfer);
     void stop();
 
   signals:

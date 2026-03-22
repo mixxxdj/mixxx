@@ -4,15 +4,15 @@
 
 #include <memory>
 
-#if defined(Q_OS_ANDROID)
-#include "controllers/android.h"
-#endif
-
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
 #include "util/cmdlineargs.h"
 #include "util/time.h"
+
+#if defined(Q_OS_ANDROID)
+#include "controllers/android.h"
+#endif
 
 BulkReader::BulkReader(libusb_device_handle* handle,
         libusb_context* context,
@@ -29,6 +29,15 @@ BulkReader::BulkReader(libusb_device_handle* handle,
 BulkReader::~BulkReader() {
     wait();
     transfer_destroy(&m_in_transfer);
+}
+
+void BulkReader::transferFinishedCb(libusb_transfer* transfer) {
+    bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
+    cb_data->reader->handleTransfer(transfer);
+
+    std::unique_lock<std::mutex> lock(cb_data->mutex);
+    cb_data->completed = 1;
+    cb_data->cv.notify_one();
 }
 
 void BulkReader::handleTransfer(libusb_transfer* transfer) {
