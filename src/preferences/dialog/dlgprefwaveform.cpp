@@ -287,6 +287,7 @@ void DlgPrefWaveform::slotSetWaveformOptions(
             factory->findHandleIndexFromType(type), true);
 }
 
+// helper function for saving all member variables
 void DlgPrefWaveform::storeUiSettingsSnapshot() {
     m_savedWaveformTypeIndex = waveformTypeComboBox->currentIndex();
     m_savedAccelerationCheckBox = useAccelerationCheckBox->isChecked();
@@ -492,6 +493,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     playMarkerPositionSlider->setValue(50);
 }
 
+// Revert all preferences to the set of preferences which were there by default or the last time when user clicks 'Apply', if user clicks 'Cancel'
 void DlgPrefWaveform::slotCancel() {
     waveformTypeComboBox->setCurrentIndex(m_savedWaveformTypeIndex);
     if (useAccelerationCheckBox->isChecked() != m_savedAccelerationCheckBox) {
