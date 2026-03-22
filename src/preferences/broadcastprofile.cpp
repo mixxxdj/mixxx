@@ -30,6 +30,7 @@ using namespace QKeychain;
 #include "util/xml.h"
 
 namespace {
+constexpr const char* kBroadcastPregainThreshold = "BroadcastPregainThreshold";
 constexpr const char* kDoctype = "broadcastprofile";
 constexpr const char* kDocumentRoot = "BroadcastProfile";
 constexpr const char* kSecureCredentials = "SecureCredentialsStorage";
@@ -188,37 +189,38 @@ bool BroadcastProfile::equals(BroadcastProfilePtr other) {
 }
 
 bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
-    if (getEnabled() == other->getEnabled()
-            && secureCredentialStorage() == other->secureCredentialStorage()
-            && getHost() == other->getHost()
-            && getPort() == other->getPort()
-            && getServertype() == other->getServertype()
-            && getLogin() == other->getLogin()
-            && getPassword() == other->getPassword()
-            && getEnableReconnect() == other->getEnableReconnect()
-            && getReconnectPeriod() == other->getReconnectPeriod()
-            && getLimitReconnects() == other->getLimitReconnects()
-            && getMaximumRetries() == other->getMaximumRetries()
-            && getNoDelayFirstReconnect() == other->getNoDelayFirstReconnect()
-            && getReconnectFirstDelay() == other->getReconnectFirstDelay()
-            && getFormat() == other->getFormat()
-            && getBitrate() == other->getBitrate()
-            && getChannels() == other->getChannels()
-            && getMountpoint() == other->getMountpoint()
-            && getStreamName() == other->getStreamName()
-            && getStreamDesc() == other->getStreamDesc()
-            && getStreamGenre() == other->getStreamGenre()
-            && getStreamPublic() == other->getStreamPublic()
-            && getStreamWebsite() == other->getStreamWebsite()
-            && getStreamIRC() == other->getStreamIRC()
-            && getStreamAIM() == other->getStreamAIM()
-            && getStreamICQ() == other->getStreamICQ()
-            && getEnableMetadata() == other->getEnableMetadata()
-            && getMetadataCharset() == other->getMetadataCharset()
-            && getCustomArtist() == other->getCustomArtist()
-            && getCustomTitle() == other->getCustomTitle()
-            && getMetadataFormat() == other->getMetadataFormat()
-            && getOggDynamicUpdate() == other->getOggDynamicUpdate()) {
+    if (getEnabled() == other->getEnabled() &&
+            secureCredentialStorage() == other->secureCredentialStorage() &&
+            getHost() == other->getHost() && getPort() == other->getPort() &&
+            getServertype() == other->getServertype() &&
+            getLogin() == other->getLogin() &&
+            getPassword() == other->getPassword() &&
+            getEnableReconnect() == other->getEnableReconnect() &&
+            getReconnectPeriod() == other->getReconnectPeriod() &&
+            getLimitReconnects() == other->getLimitReconnects() &&
+            getMaximumRetries() == other->getMaximumRetries() &&
+            getNoDelayFirstReconnect() == other->getNoDelayFirstReconnect() &&
+            getReconnectFirstDelay() == other->getReconnectFirstDelay() &&
+            getFormat() == other->getFormat() &&
+            getBitrate() == other->getBitrate() &&
+            getChannels() == other->getChannels() &&
+            getMountpoint() == other->getMountpoint() &&
+            getStreamName() == other->getStreamName() &&
+            getStreamDesc() == other->getStreamDesc() &&
+            getStreamGenre() == other->getStreamGenre() &&
+            getStreamPublic() == other->getStreamPublic() &&
+            getStreamWebsite() == other->getStreamWebsite() &&
+            getStreamIRC() == other->getStreamIRC() &&
+            getStreamAIM() == other->getStreamAIM() &&
+            getStreamICQ() == other->getStreamICQ() &&
+            getEnableMetadata() == other->getEnableMetadata() &&
+            getMetadataCharset() == other->getMetadataCharset() &&
+            getCustomArtist() == other->getCustomArtist() &&
+            getCustomTitle() == other->getCustomTitle() &&
+            getMetadataFormat() == other->getMetadataFormat() &&
+            getOggDynamicUpdate() == other->getOggDynamicUpdate() &&
+            getBroadcastPregainThreshold() ==
+                    other->getBroadcastPregainThreshold()) {
         return true;
     }
 
@@ -271,7 +273,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setCustomTitle(this->getCustomTitle());
     other->setMetadataFormat(this->getMetadataFormat());
     other->setOggDynamicUpdate(this->getOggDynamicUpdate());
-
+    other->setBroadcastPregainThreshold(this->getBroadcastPregainThreshold());
     other->setEnabled(this->getEnabled());
 }
 
@@ -305,6 +307,7 @@ void BroadcastProfile::adoptDefaultValues() {
     m_customTitle = QString();
     m_metadataFormat = kDefaultMetadataFormat;
     m_oggDynamicUpdate = kDefaultOggDynamicupdate;
+    m_broadcastPregainThreshold = 0.25;
 
     m_bitrate = kDefaultBitrate;
     m_channels = kDefaultChannels;
@@ -403,7 +406,14 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_metadataFormat = selectCleanNodeString(doc, kMetadataFormat, &fixedStrings);
     m_oggDynamicUpdate =
             (bool)XmlParse::selectNodeInt(doc, kOggDynamicUpdate);
-
+    QDomNode pregainThresholdNode = XmlParse::selectNode(doc, kBroadcastPregainThreshold);
+    // here, m_broadcastPregainThreshold follows the same command structure as m_profileName
+    if (!pregainThresholdNode.isNull()) {
+        m_broadcastPregainThreshold =
+                XmlParse::selectNodeDouble(doc, kBroadcastPregainThreshold);
+    } else {
+        m_broadcastPregainThreshold = 0.25;
+    }
     if (fixedStrings) {
         if (save(m_filename)) {
             qWarning() << "BroadcastProfile::loadValues: wrote config for profile"
@@ -481,6 +491,10 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kMetadataFormat, m_metadataFormat);
     XmlParse::addElement(doc, docRoot, kOggDynamicUpdate,
                          QString::number((int)m_oggDynamicUpdate));
+    XmlParse::addElement(doc,
+            docRoot,
+            kBroadcastPregainThreshold,
+            QString::number((double)m_broadcastPregainThreshold));
 
     doc.appendChild(docRoot);
 
@@ -868,4 +882,19 @@ bool BroadcastProfile::getOggDynamicUpdate() const {
 
 void BroadcastProfile::setOggDynamicUpdate(bool value) {
     m_oggDynamicUpdate = value;
+}
+
+double BroadcastProfile::getBroadcastPregainThreshold() const {
+    return m_broadcastPregainThreshold;
+}
+
+void BroadcastProfile::setBroadcastPregainThreshold(double value) {
+    // Range check to keep the value between 0 and 1
+    if (value < 0.0) {
+        value = 0.0;
+    }
+    if (value > 1.0) {
+        value = 1.0;
+    }
+    m_broadcastPregainThreshold = value;
 }

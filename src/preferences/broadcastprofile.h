@@ -145,6 +145,9 @@ class BroadcastProfile : public QObject {
     bool getOggDynamicUpdate() const;
     void setOggDynamicUpdate(bool value);
 
+    double getBroadcastPregainThreshold() const;
+    void setBroadcastPregainThreshold(double value);
+
   signals:
     void profileNameChanged(const QString& oldName, const QString& newName);
     void statusChanged(bool newStatus);
@@ -205,4 +208,6 @@ class BroadcastProfile : public QObject {
     bool m_oggDynamicUpdate;
 
     QAtomicInt m_connectionStatus;
+
+    double m_broadcastPregainThreshold;
 };
