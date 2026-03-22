@@ -301,7 +301,7 @@ int BulkController::open(const QString& resourcePath) {
         return -1;
     }
     m_inEndpointAddr = pDevice->endpoints.in_epaddr;
-    m_inLength = pDevice->endpoints.in_length;
+    m_inLength = static_cast<int>(pDevice->endpoints.in_length);
     m_outEndpointAddr = pDevice->endpoints.out_epaddr;
     m_interfaceNumber = pDevice->endpoints.interface_number;
 

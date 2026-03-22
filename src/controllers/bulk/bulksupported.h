@@ -12,7 +12,7 @@ struct bulk_device_id {
 
 struct bulk_device_endpoints {
     std::uint8_t in_epaddr;
-    int in_length; // message length for the in_endpoint
+    uint32_t in_length; // message length for the in_endpoint
     std::uint8_t out_epaddr;
     // we may not know the interface, in which case we should not try to claim it.
     // these devices are likely unusable on windows without claiming the correct interface.
