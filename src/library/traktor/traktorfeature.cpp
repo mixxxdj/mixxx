@@ -1,5 +1,6 @@
 #include "library/traktor/traktorfeature.h"
 
+#include <QFileDialog>
 #include <QMap>
 #include <QMessageBox>
 #include <QRegularExpression>
@@ -9,6 +10,7 @@
 #include <QXmlStreamReader>
 #include <QtDebug>
 
+#include "library/dao/settingsdao.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missing_hidden/missingtablemodel.h"
@@ -152,6 +154,11 @@ QVariant TraktorFeature::title() {
 }
 
 bool TraktorFeature::isSupported() {
+#if defined(Q_OS_MACOS)
+    if (Sandbox::enabled()) {
+        return true;
+    }
+#endif
     return (QFile::exists(getTraktorMusicDatabase()));
 }
 
@@ -167,14 +174,57 @@ void TraktorFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
+
+        SettingsDAO settings(m_pTrackCollection->database());
+        QString dbFile(settings.getValue("mixxx.traktorfeature.dbpath"));
+
+        bool hasValidDbFile = false;
+
+        if (!dbFile.isEmpty()) {
+            mixxx::FileInfo dbFileInfo(dbFile);
+#if defined(Q_OS_MACOS)
+            if (Sandbox::enabled() && Sandbox::canAccess(&dbFileInfo)) {
+                hasValidDbFile = true;
+            }
+#endif
+            if (!hasValidDbFile && dbFileInfo.checkFileExists()) {
+                hasValidDbFile = true;
+            }
+        }
+
+        if (!hasValidDbFile) {
+            dbFile = getTraktorMusicDatabase();
+            mixxx::FileInfo dbFileInfo(dbFile);
+
+#if defined(Q_OS_MACOS)
+            if (Sandbox::enabled()) {
+                if (!dbFileInfo.checkFileExists() || !Sandbox::canAccess(&dbFileInfo)) {
+                    if (!Sandbox::askForAccess(&dbFileInfo)) {
+                        QString newDbFile = QFileDialog::getOpenFileName(nullptr,
+                                tr("Select your Traktor collection"),
+                                dbFile,
+                                "Traktor Collection (*.nml)");
+                        if (newDbFile.isEmpty()) {
+                            m_isActivated = false;
+                            return;
+                        }
+                        dbFile = newDbFile;
+                        mixxx::FileInfo newFileInfo(dbFile);
+                        Sandbox::createSecurityToken(&newFileInfo);
+                    }
+                }
+            }
+#endif
+            settings.setValue("mixxx.traktorfeature.dbpath", dbFile);
+        }
+
         // Let a worker thread do the XML parsing
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         m_future = QtConcurrent::run(&TraktorFeature::importLibrary,
                 this,
-                getTraktorMusicDatabase());
+                dbFile);
 #else
-        m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary,
-                                     getTraktorMusicDatabase());
+        m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, dbFile);
 #endif
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
@@ -611,15 +661,16 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
     //Let's try to detect the latest Traktor version and its collection.nml
     QString myDocuments = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#if defined(Q_OS_MACOS)
+    if (Sandbox::enabled()) {
+        QString user = qgetenv("USER");
+        if (!user.isEmpty()) {
+            myDocuments = QLatin1String("/Users/") + user + QLatin1String("/Documents");
+        }
+    }
+#endif
     QDir ni_directory(myDocuments +"/Native Instruments/");
     ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-
-    // We may not have access to this directory since it is in the user's
-    // Documents folder. Ask for access if we don't have it.
-    if (ni_directory.exists()) {
-        auto fileInfo = mixxx::FileInfo(ni_directory);
-        Sandbox::askForAccess(&fileInfo);
-    }
 
     //Iterate over the subfolders
     QFileInfoList list = ni_directory.entryInfoList();
