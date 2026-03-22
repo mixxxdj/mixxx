@@ -53,7 +53,7 @@ class BulkReader : public QThread {
     libusb_transfer* m_in_transfer;
     libusb_context* m_context;
     libusb_device_handle* m_handle;
-    std::unique_ptr<bulk_transfer_cb_data> m_cb_data;
+    bulk_transfer_cb_data m_cb_data;
     std::uint8_t m_in_epaddr;
     int m_in_length;
 };

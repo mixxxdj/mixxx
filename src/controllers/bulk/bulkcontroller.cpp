@@ -74,9 +74,7 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
         return nullptr;
     }
 
-    if (m_cb_data == nullptr) {
-        m_cb_data = std::make_unique<bulk_transfer_cb_data>(this);
-    }
+    m_cb_data.reader = this;
 
     unsigned char* buffer = (unsigned char*)calloc(length, sizeof(unsigned char));
     if (buffer == nullptr) {
@@ -89,7 +87,7 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
             buffer,
             length,
             transferFinishedCb,
-            m_cb_data.get(),
+            &m_cb_data,
             timeout);
 
     // Automatically free the transfer buffer on exit
@@ -114,15 +112,11 @@ void BulkReader::transfer_destroy(libusb_transfer** transfer) {
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(m_cb_data != nullptr) {
-        return;
-    }
-
-    std::unique_lock<std::mutex> lock(m_cb_data->mutex);
+    std::unique_lock<std::mutex> lock(m_cb_data.mutex);
 
     // Wait for last transfer to complete
-    m_cb_data->cv.wait(lock, [&] {
-        return m_cb_data->completed != 0;
+    m_cb_data.cv.wait(lock, [&] {
+        return m_cb_data.completed != 0;
     });
 
     libusb_free_transfer(*transfer);
@@ -148,9 +142,9 @@ void BulkReader::run() {
     }
 
     while (m_stop.loadAcquire() == 0) {
-        m_cb_data->completed = 0;
+        m_cb_data.completed = 0;
         struct timeval tv{0, 500000}; // 500ms timeout
-        libusb_handle_events_timeout_completed(m_context, &tv, &m_cb_data->completed);
+        libusb_handle_events_timeout_completed(m_context, &tv, &m_cb_data.completed);
     }
 
     qDebug() << "Stopped Reader";
