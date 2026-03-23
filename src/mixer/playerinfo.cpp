@@ -247,12 +247,6 @@ double PlayerInfo::getPregainThreshold() const {
 }
 void PlayerInfo::setPregainThreshold(double threshold) {
     const auto locker = lockMutex(&m_mutex);
-
-    if (threshold < 0.0) {
-        threshold = 0.0;
-    }
-    if (threshold > 1.0) {
-        threshold = 1.0;
-    }
+    //no hard boundary checks needed because the logic in its only call will handle that
     pregain_threshold = threshold;
 }

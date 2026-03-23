@@ -28,6 +28,7 @@ using namespace QKeychain;
 #include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 #include "util/xml.h"
+#include "mixer/playerinfo.h"
 
 namespace {
 constexpr const char* kBroadcastPregainThreshold = "BroadcastPregainThreshold";
@@ -896,5 +897,7 @@ void BroadcastProfile::setBroadcastPregainThreshold(double value) {
     if (value > 1.0) {
         value = 1.0;
     }
+    PlayerInfo::instance().setPregainThreshold(value);
     m_broadcastPregainThreshold = value;
+
 }
