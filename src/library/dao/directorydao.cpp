@@ -226,13 +226,19 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
         // mysterious ways for example if a track in the oldDirectory also has a zombie
         // track location in newDirectory then the replace query will fail because the
         // location column becomes non-unique.
-        query.prepare("UPDATE " % kTable % " SET " % kLocationColumn %
-                "=:newDirectory WHERE " % kLocationColumn % "=:oldDirectory");
-        query.bindValue(":newDirectory", newDirectory);
-        query.bindValue(":oldDirectory", oldDirectory);
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << "could not relocate directory"
-                                    << oldDirectory << "to" << newDirectory;
+        const auto swapStatement =
+                QStringLiteral(
+                        "UPDATE %1 SET %2=:newDirectory "
+                        "WHERE %2=:oldDirectory")
+                        .arg(
+                                kTable,
+                                kLocationColumn);
+        FwdSqlQuery swapQuery(m_database, swapStatement);
+        swapQuery.bindValue(":newDirectory", newDirectory);
+        swapQuery.bindValue(":oldDirectory", oldDirectory);
+        if (!swapQuery.execPrepared()) {
+            LOG_FAILED_QUERY(swapQuery) << "could not relocate directory"
+                                        << oldDirectory << "to" << newDirectory;
             return {RelocateResult::SqlError, {}};
         }
     }
@@ -242,26 +248,27 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
     // match both instead of only files in the parent directory "a/b/".
     DEBUG_ASSERT(!oldDirectory.endsWith('/'));
     const QString oldDirectoryPrefix = oldDirectory + '/';
-    query.prepare(QStringLiteral(
+    const auto collectTracksStatement = QStringLiteral(
             "SELECT library.id,track_locations.id,track_locations.location "
             "FROM library INNER JOIN track_locations ON "
             "track_locations.id=library.location WHERE "
-            "INSTR(track_locations.location,:oldDirectoryPrefix)=1"));
-    query.bindValue(":oldDirectoryPrefix", oldDirectoryPrefix);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
+            "INSTR(track_locations.location,:oldDirectoryPrefix)=1");
+    FwdSqlQuery collectTracksQuery(m_database, collectTracksStatement);
+    collectTracksQuery.bindValue(":oldDirectoryPrefix", oldDirectoryPrefix);
+    if (!collectTracksQuery.execPrepared()) {
+        LOG_FAILED_QUERY(collectTracksQuery) << "could not relocate path of tracks";
         return {RelocateResult::SqlError, {}};
     }
 
     QList<DbId> loc_ids;
     QList<RelocatedTrack> relocatedTracks;
-    while (query.next()) {
-        const auto oldLocation = query.value(2).toString();
+    while (collectTracksQuery.next()) {
+        const auto oldLocation = collectTracksQuery.fieldValue(2).toString();
         const int oldSuffixLen = oldLocation.size() - oldDirectory.size();
         QString newLocation = newDirectory + oldLocation.right(oldSuffixLen);
         DEBUG_ASSERT(oldLocation.startsWith(oldDirectoryPrefix));
-        loc_ids.append(DbId(query.value(1)));
-        const auto trackId = TrackId(query.value(0));
+        loc_ids.append(DbId(collectTracksQuery.fieldValue(1)));
+        const auto trackId = TrackId(collectTracksQuery.fieldValue(0));
         auto missingTrackRef = TrackRef::fromFilePath(
                 oldLocation,
                 std::move(trackId));
@@ -274,15 +281,15 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
 
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track.
-    const QString replacement =
-            "UPDATE track_locations SET location=:newloc, directory=:newdir WHERE id=:id";
-    query.prepare(replacement);
+    const auto relocateTracksStatement = QStringLiteral(
+            "UPDATE track_locations SET location=:newloc, directory=:newdir WHERE id=:id");
+    FwdSqlQuery relocateTracksQuery(m_database, relocateTracksStatement);
     for (int i = 0; i < loc_ids.size(); ++i) {
-        query.bindValue(QStringLiteral(":newloc"),
+        relocateTracksQuery.bindValue(QStringLiteral(":newloc"),
                 relocatedTracks.at(i).updatedTrackRef().getLocation());
-        query.bindValue(QStringLiteral(":newdir"), newDirectory);
-        query.bindValue(QStringLiteral(":id"), loc_ids.at(i).toVariant());
-        if (!query.exec()) {
+        relocateTracksQuery.bindValue(QStringLiteral(":newdir"), newDirectory);
+        relocateTracksQuery.bindValue(QStringLiteral(":id"), loc_ids.at(i).toVariant());
+        if (!relocateTracksQuery.execPrepared()) {
             LOG_FAILED_QUERY(query) << "could not relocate path of track";
             return {RelocateResult::SqlError, relocatedTracks};
         }
