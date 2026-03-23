@@ -303,7 +303,7 @@ ca,es*,fr,sl	Triplet
 ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
 *	MESA vblank_mode = 1
 ca,de,fr,it,nl,pl,sv,es*	Intro
-cs,de,fr,sl	Formant
+cs,de,fr,sl,sv	Formant
 da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL	Auto DJ
 da,fr,nb,nl,nn	Type
 de,nl,pl,sv	Status
@@ -332,7 +332,7 @@ fr,it	Bypass Fr.
 fr,sv	Gain 1
 fr,sv	Gain 2
 fr,it,ru,es*	Queen Mary University London
-fr,nl	Distortion
+fr,nl,sv	Distortion
 fr,de	Ratio (:1)
 fr,de	Ratio
 fr	Variance
@@ -382,7 +382,7 @@ de,es*,fr,gl	Balance
 de,fr	Phase
 de,it,nl,es*	Drive
 de,fr,it,pl	Passthrough
-de,it,nl	Glitch
+de,it,nl,sv	Glitch
 de,it	Beatgrids
 de,nl,pt_BR,pt_PT,ro,vi	Sampler
 de,es*,it,nl,pt_BR,ro,vi	Hotcue
@@ -406,7 +406,7 @@ de,pt,pt_BR,vi	Looping
 de,hu,it,nl,sk	Stop
 de,fr,ru,sn	Dry/Wet
 de,el,it,nl,pt_BR,pt_PT	Skin
-de,it,nl	Controller
+de,it,nl,sv	Controller
 de,nl,pl,it	BPM / Beatgrid
 de,nl	Loop Beats
 de,fr	Navigation
@@ -469,3 +469,4 @@ fr,sl	Stem
 fr	Gain (dB)
 sl,sv	AGC
 ar	Space
+fr	bytes
