@@ -138,6 +138,12 @@ void EngineBufferScaleBungee::setScaleParameters(double base_rate,
     m_dTempoRatio = speed_abs;
     m_dPitchRatio = *pPitchRatio;
 
+    // Update effective rate for return value calculation.
+    // This matches the pattern used by RubberBand and SoundTouch scalers.
+    // Using m_effectiveRate instead of m_dBaseRate * m_dTempoRatio directly
+    // prevents compiler optimization issues with -ffast-math -O3.
+    m_effectiveRate = m_dBaseRate * m_dTempoRatio;
+
     // Calculate effective pitch scale (base_rate * pitch_ratio)
     // Bungee expects pitch as frequency multiplier (1.0 = no change)
     double pitchScale = fabs(base_rate * *pPitchRatio);
@@ -341,7 +347,9 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
         if (framesProduced > 0) {
             remainingFrames -= framesProduced;
             pOutput += getOutputSignal().frames2samples(framesProduced);
-            readFramesProcessed += m_dBaseRate * m_dTempoRatio * framesProduced;
+            // Use m_effectiveRate instead of m_dBaseRate * m_dTempoRatio to avoid
+            // floating-point reassociation issues with -ffast-math -O3.
+            readFramesProcessed += m_effectiveRate * framesProduced;
             lastReadFailed = false;
         } else {
             // No frames produced - we may be at EOF or need more input
@@ -417,6 +425,10 @@ void EngineBufferScaleBungee::clear() {
     m_request.reset = true;
     m_request.resampleMode = resampleMode_autoOut;
     m_grainPosition = 0.0;
+
+    // Reset effective rate to ensure consistent state after clear.
+    // This matches the pattern in EngineBufferScaleST.
+    m_effectiveRate = m_dBaseRate * m_dTempoRatio;
 
     // Reset output chunk state to prevent use of stale data
     m_outputChunk.data = nullptr;
