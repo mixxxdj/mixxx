@@ -382,7 +382,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="233"/>
         <source>Last Played</source>
-        <translation type="unfinished"/>
+        <translation>تاريخ اخر تشغيل</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="237"/>
@@ -12089,7 +12089,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="973"/>
         <source>Tracks</source>
-        <translation type="unfinished"/>
+        <translation>مسارات</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="974"/>
@@ -15333,7 +15333,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/weffectparameternamebase.cpp" line="85"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>لم يتم تحميل أي تأثير.</translation>
     </message>
 </context>
 <context>
@@ -15341,7 +15341,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/weffectselector.cpp" line="62"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>لم يتم تحميل أي تأثير.</translation>
     </message>
 </context>
 <context>
@@ -15349,7 +15349,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wfindonwebmenu.cpp" line="11"/>
         <source>Find on Web</source>
-        <translation type="unfinished"/>
+        <translation>البحث على الويب</translation>
     </message>
 </context>
 <context>
@@ -15357,462 +15357,472 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="88"/>
         <source>&amp;File</source>
-        <translation type="unfinished"/>
+        <translation> ملف&amp;</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="93"/>
         <source>Load Track to Deck &amp;%1</source>
-        <translation type="unfinished"/>
+        <translation>تحميل المسار إلى المشغل &amp;%1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="94"/>
         <source>Loads a track in deck %1</source>
-        <translation type="unfinished"/>
+        <translation>يحمّل مسارًا في المشغل %1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="95"/>
         <source>Open</source>
-        <translation type="unfinished"/>
+        <translation>فتح</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="123"/>
         <source>&amp;Exit</source>
-        <translation type="unfinished"/>
+        <translation>خرو&amp;ج</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="124"/>
         <source>Quits Mixxx</source>
-        <translation type="unfinished"/>
+        <translation>إغلاق Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="128"/>
         <source>Ctrl+q</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+q</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="139"/>
         <source>&amp;Library</source>
-        <translation type="unfinished"/>
+        <translation>المك&amp;تبة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="144"/>
         <source>&amp;Rescan Library</source>
-        <translation type="unfinished"/>
+        <translation>إعادة &amp;فحص المكتبة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="145"/>
         <source>Rescans library folders for changes to tracks.</source>
-        <translation type="unfinished"/>
+        <translation>يعيد فحص مجلدات المكتبة بحثًا عن تغييرات في المسارات.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
         <source>Ctrl+Shift+L</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Shift+L</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="159"/>
         <source>E&amp;xport Library to Engine Prime</source>
-        <translation type="unfinished"/>
+        <translation>ت&amp;صدير المكتبة إلى Engine Prime</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="160"/>
         <source>Export the library to the Engine Prime format</source>
-        <translation type="unfinished"/>
+        <translation>تصدير المكتبة بصيغة Engine Prime</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="171"/>
         <source>Create &amp;New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>إنشاء قائمة تشغيل &amp;جديدة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
         <source>Create a new playlist</source>
-        <translation type="unfinished"/>
+        <translation>إنشاء قائمة تشغيل جديدة</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
+        <source>Search in Current View...</source>
+        <translation>البحث في العرض الحالي...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="177"/>
         <source>Ctrl+n</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+n</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="184"/>
+        <source>Search in Tracks Library...</source>
+        <translation>البحث في مكتبة المسارات...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="184"/>
         <source>Create New &amp;Crate</source>
-        <translation type="unfinished"/>
+        <translation>إنشاء صندوق &amp;جديد</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="185"/>
         <source>Create a new crate</source>
-        <translation type="unfinished"/>
+        <translation>إنشاء صندوق جديد</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="190"/>
         <source>Ctrl+Shift+N</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Shift+N</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="205"/>
         <location filename="../../src/widget/wmainmenubar.cpp" line="207"/>
         <source>&amp;View</source>
-        <translation type="unfinished"/>
+        <translation>&amp;عرض</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
         <source>Auto-hide menu bar</source>
-        <translation type="unfinished"/>
+        <translation>إخفاء شريط القائمة تلقائيًا</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="214"/>
         <source>Auto-hide the main menu bar when it&apos;s not used.</source>
-        <translation type="unfinished"/>
+        <translation>إخفاء شريط القائمة الرئيسي تلقائيًا عند عدم استخدامه.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="238"/>
         <source>May not be supported on all skins.</source>
-        <translation type="unfinished"/>
+        <translation>قد لا يكون مدعومًا في كل السمات.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="239"/>
         <source>Show Skin Settings Menu</source>
-        <translation type="unfinished"/>
+        <translation>إظهار قائمة إعدادات السمة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="240"/>
         <source>Show the Skin Settings Menu of the currently selected Skin</source>
-        <translation type="unfinished"/>
+        <translation>إظهار قائمة إعدادات السمة المحددة حاليًا</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="247"/>
         <source>Ctrl+1</source>
         <comment>Menubar|View|Show Skin Settings</comment>
-        <translation type="unfinished"/>
+        <translation>Ctrl+1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="255"/>
         <source>Show Microphone Section</source>
-        <translation type="unfinished"/>
+        <translation>إظهار قسم الميكروفون</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="256"/>
         <source>Show the microphone section of the Mixxx interface.</source>
-        <translation type="unfinished"/>
+        <translation>إظهار قسم الميكروفون في واجهة Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="263"/>
         <source>Ctrl+2</source>
         <comment>Menubar|View|Show Microphone Section</comment>
-        <translation type="unfinished"/>
+        <translation>Ctrl+2</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="271"/>
         <source>Show Vinyl Control Section</source>
-        <translation type="unfinished"/>
+        <translation>إظهار قسم التحكم بالفينيل</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="272"/>
         <source>Show the vinyl control section of the Mixxx interface.</source>
-        <translation type="unfinished"/>
+        <translation>إظهار قسم التحكم بالفينيل في واجهة Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="279"/>
         <source>Ctrl+3</source>
         <comment>Menubar|View|Show Vinyl Control Section</comment>
-        <translation type="unfinished"/>
+        <translation>Ctrl+3</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="287"/>
         <source>Show Preview Deck</source>
-        <translation type="unfinished"/>
+        <translation>إظهار مشغل المعاينة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="288"/>
         <source>Show the preview deck in the Mixxx interface.</source>
-        <translation type="unfinished"/>
+        <translation>إظهار مشغل المعاينة في واجهة Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="295"/>
         <source>Ctrl+4</source>
         <comment>Menubar|View|Show Preview Deck</comment>
-        <translation type="unfinished"/>
+        <translation>Ctrl+4</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="303"/>
         <source>Show Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>إظهار صورة الغلاف</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="304"/>
         <source>Show cover art in the Mixxx interface.</source>
-        <translation type="unfinished"/>
+        <translation>إظهار صورة الغلاف في واجهة Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="311"/>
         <source>Ctrl+6</source>
         <comment>Menubar|View|Show Cover Art</comment>
-        <translation type="unfinished"/>
+        <translation>Ctrl+6</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="334"/>
         <source>Maximize Library</source>
-        <translation type="unfinished"/>
+        <translation>تكبير المكتبة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="335"/>
         <source>Maximize the track library to take up all the available screen space.</source>
-        <translation type="unfinished"/>
+        <translation>تكبير مكتبة المسارات لتشغل كل مساحة الشاشة المتاحة.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="342"/>
         <source>Space</source>
         <comment>Menubar|View|Maximize Library</comment>
-        <translation type="unfinished"/>
+        <translation>Space</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="351"/>
         <source>&amp;Full Screen</source>
-        <translation type="unfinished"/>
+        <translation>ملء ال&amp;شاشة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="352"/>
         <source>Display Mixxx using the full screen</source>
-        <translation type="unfinished"/>
+        <translation>عرض Mixxx في وضع ملء الشاشة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="388"/>
         <source>&amp;Options</source>
-        <translation type="unfinished"/>
+        <translation>ال&amp;خيارات</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="394"/>
         <source>&amp;Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>التحكم بال&amp;فينيل</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="395"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
-        <translation type="unfinished"/>
+        <translation>استخدام أسطوانات فينيل مُرمّزة زمنيًا على مشغلات خارجية للتحكم في Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="399"/>
         <source>Enable Vinyl Control &amp;%1</source>
-        <translation type="unfinished"/>
+        <translation>تفعيل التحكم بالفينيل &amp;%1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="430"/>
         <source>&amp;Record Mix</source>
-        <translation type="unfinished"/>
+        <translation>ت&amp;سجيل الميكس</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="431"/>
         <source>Record your mix to a file</source>
-        <translation type="unfinished"/>
+        <translation>تسجيل الميكس في ملف</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="436"/>
         <source>Ctrl+R</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+R</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="449"/>
         <source>Enable Live &amp;Broadcasting</source>
-        <translation type="unfinished"/>
+        <translation>تفعيل البث الم&amp;باشر</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="450"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
-        <translation type="unfinished"/>
+        <translation>بث الميكس إلى خادم Shoutcast أو Icecast</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="456"/>
         <source>Ctrl+L</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+L</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="472"/>
         <source>Enable &amp;Keyboard Shortcuts</source>
-        <translation type="unfinished"/>
+        <translation>تفعيل اختصارات لوحة ال&amp;مفاتيح</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="473"/>
         <source>Toggles keyboard shortcuts on or off</source>
-        <translation type="unfinished"/>
+        <translation>تبديل اختصارات لوحة المفاتيح بين التفعيل والتعطيل</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="480"/>
         <source>Ctrl+`</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+`</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="492"/>
         <source>&amp;Preferences</source>
-        <translation type="unfinished"/>
+        <translation>الت&amp;فضيلات</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="493"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
-        <translation type="unfinished"/>
+        <translation>تغيير إعدادات Mixxx (مثل التشغيل وMIDI وعناصر التحكم)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="510"/>
         <source>&amp;Developer</source>
-        <translation type="unfinished"/>
+        <translation>الم&amp;طوّر</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="515"/>
         <source>&amp;Reload Skin</source>
-        <translation type="unfinished"/>
+        <translation>إعادة تحميل ال&amp;سمة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="516"/>
         <source>Reload the skin</source>
-        <translation type="unfinished"/>
+        <translation>إعادة تحميل السمة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="521"/>
         <source>Ctrl+Shift+R</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Shift+R</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="528"/>
         <source>Developer &amp;Tools</source>
-        <translation type="unfinished"/>
+        <translation>أدوات الم&amp;طوّر</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="529"/>
         <source>Opens the developer tools dialog</source>
-        <translation type="unfinished"/>
+        <translation>فتح نافذة أدوات المطوّر</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="534"/>
         <source>Ctrl+Shift+T</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Shift+T</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="547"/>
         <source>Stats: &amp;Experiment Bucket</source>
-        <translation type="unfinished"/>
+        <translation>الإحصاءات: حاوية الت&amp;جربة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="548"/>
         <source>Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.</source>
-        <translation type="unfinished"/>
+        <translation>تفعيل وضع التجربة. يجمع الإحصاءات في حاوية تتبع EXPERIMENT.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="554"/>
         <source>Ctrl+Shift+E</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Shift+E</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="567"/>
         <source>Stats: &amp;Base Bucket</source>
-        <translation type="unfinished"/>
+        <translation>الإحصاءات: حاوية الأ&amp;ساس</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="568"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
-        <translation type="unfinished"/>
+        <translation>تفعيل الوضع الأساسي. يجمع الإحصاءات في حاوية تتبع BASE.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="574"/>
         <source>Ctrl+Shift+B</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Shift+B</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="588"/>
         <source>Deb&amp;ugger Enabled</source>
-        <translation type="unfinished"/>
+        <translation>تفعيل المُن&amp;قّح</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="589"/>
         <source>Enables the debugger during skin parsing</source>
-        <translation type="unfinished"/>
+        <translation>تفعيل المنقّح أثناء تحليل السمة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="596"/>
         <source>Ctrl+Shift+D</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl+Shift+D</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="614"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"/>
+        <translation>م&amp;ساعدة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="319"/>
         <source>Show Keywheel</source>
         <extracomment>menu title</extracomment>
-        <translation type="unfinished"/>
+        <translation>إظهار عجلة المفاتيح</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="321"/>
         <source>Show keywheel</source>
         <extracomment>tooltip text</extracomment>
-        <translation type="unfinished"/>
+        <translation>إظهار عجلة المفاتيح</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="327"/>
         <source>F12</source>
         <comment>Menubar|View|Show Keywheel</comment>
-        <translation type="unfinished"/>
+        <translation>F12</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="628"/>
         <source>&amp;Community Support</source>
-        <translation type="unfinished"/>
+        <translation>دعم ال&amp;مجتمع</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="629"/>
         <source>Get help with Mixxx</source>
-        <translation type="unfinished"/>
+        <translation>احصل على مساعدة بشأن Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="644"/>
         <source>&amp;User Manual</source>
-        <translation type="unfinished"/>
+        <translation>دليل ال&amp;مستخدم</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="645"/>
         <source>Read the Mixxx user manual.</source>
-        <translation type="unfinished"/>
+        <translation>قراءة دليل مستخدم Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="661"/>
         <source>&amp;Keyboard Shortcuts</source>
-        <translation type="unfinished"/>
+        <translation>اختصارات لوحة ال&amp;مفاتيح</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="662"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
-        <translation type="unfinished"/>
+        <translation>سرّع سير عملك باستخدام اختصارات لوحة المفاتيح.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="676"/>
         <source>&amp;Settings directory</source>
-        <translation type="unfinished"/>
+        <translation>مجلد الإ&amp;عدادات</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="677"/>
         <source>Open the Mixxx user settings directory.</source>
-        <translation type="unfinished"/>
+        <translation>فتح مجلد إعدادات مستخدم Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="688"/>
         <source>&amp;Translate This Application</source>
-        <translation type="unfinished"/>
+        <translation>ت&amp;رجمة هذا التطبيق</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="689"/>
         <source>Help translate this application into your language.</source>
-        <translation type="unfinished"/>
+        <translation>ساعد في ترجمة هذا التطبيق إلى لغتك.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="700"/>
         <source>&amp;About</source>
-        <translation type="unfinished"/>
+        <translation>&amp;حول</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="701"/>
         <source>About the application</source>
-        <translation type="unfinished"/>
+        <translation>حول التطبيق</translation>
     </message>
 </context>
 <context>
@@ -15983,7 +15993,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="173"/>
         <source>BPM</source>
-        <translation>عدد البتات في الدقيقة</translation>
+        <translation>عدد النبضات في الدقيقة</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="174"/>
@@ -16832,9 +16842,10 @@ Click OK to exit.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="167"/>
-        <source>Export Library To</source>
-        <translation type="unfinished"/>
+ <location filename="../../src/library/export/dlglibraryexport.cpp" line="168"/>
+        <source>Export Library to Engine DJ</source>
+        <extracomment>&quot;Engine DJ&quot; must not be translated</extracomment>
+        <translation>تصدير المكتبة الي в Engine DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="184"/>
