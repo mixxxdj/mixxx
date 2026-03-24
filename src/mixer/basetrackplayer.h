@@ -154,6 +154,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotShiftCuesMillis(double milliseconds);
     void slotShiftCuesMillisButton(double value, double milliseconds);
     void slotUpdateReplayGainFromPregain(double pressed);
+    void slotVolumeChanged(double value);
 
   private:
     void setReplayGain(double value);
@@ -248,4 +249,5 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pPreGain;
     parented_ptr<ControlProxy> m_pRateRatio;
     parented_ptr<ControlProxy> m_pPitchAdjust;
+    parented_ptr<ControlProxy> m_pVolume;
 };

@@ -329,6 +329,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
 
+    m_pVolume = make_parented<ControlProxy>(getGroup(), "volume", this);
+    m_pVolume->connectValueChanged(this, &BaseTrackPlayerImpl::slotVolumeChanged);
+
     m_pUpdateReplayGainFromPregain = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "update_replaygain_from_pregain"));
     m_pUpdateReplayGainFromPregain->connectValueChangeRequest(this,
@@ -1026,6 +1029,14 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+    }
+}
+
+void BaseTrackPlayerImpl::slotVolumeChanged(double value) {
+    if (value > 0.0) {
+        std::cout << "Play and Volume = " << value << std::endl;
+    } else {
+        std::cout << "Pause and Volume = " << value << std::endl;
     }
 }
 
