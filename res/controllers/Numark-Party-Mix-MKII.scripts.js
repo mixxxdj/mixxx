@@ -148,6 +148,14 @@ NumarkPartyMix.PadSection = function(deckNumber) {
         this.setMode(control);
     };
 
+    this.shiftButtonPress = function(channel, control, value, status) {
+        if (status === 0x8F) {
+            this.currentMode.unshift();
+        } else {
+            this.currentMode.shift();
+        }
+    };
+
     this.padPress = function(channel, control, value, status, group) {
         const i = (control - 0x14) % 8;
         this.currentMode.connections[i].input(channel, control, value, status, group);
@@ -208,9 +216,6 @@ NumarkPartyMix.ModeLoop = function(deckNumber) {
 };
 NumarkPartyMix.ModeLoop.prototype = Object.create(components.ComponentContainer.prototype);
 
-// this device doesn't have a shift button,
-// therefore we do not want it to depend on
-// a shift switch to stop a sample
 // Deck1: samplers 1-4
 // Deck2: samplers 5-8
 NumarkPartyMix.ModeSampler = function(deckNumber) {
@@ -223,21 +228,6 @@ NumarkPartyMix.ModeSampler = function(deckNumber) {
             midi: [0x93 + deckNumber, 0x14 + i],
             number: 1 + i + sampleoffset,
             outConnect: false,
-            unshift: null,
-            outKey: "play_indicator",
-            input: function(channel, control, value, status, _group) {
-                if (this.isPress(channel, control, value, status)) {
-                    if (engine.getValue(this.group, "track_loaded") === 0) {
-                        engine.setValue(this.group, "LoadSelectedTrack", 1);
-                    } else {
-                        if (engine.getValue(this.group, "play") === 1) {
-                            engine.setValue(this.group, "start_stop", 1);
-                        } else {
-                            engine.setValue(this.group, "start_play", 1);
-                        }
-                    }
-                }
-            }
         });
     }
 };
