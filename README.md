@@ -110,10 +110,9 @@ license.
 [visualstudio2022]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2022
 [easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
-[help translate content]: https://www.transifex.com/projects/p/mixxxdj
+[help translate content]: https://explore.transifex.com/mixxx-dj-software/
 [Mixxx i18n wiki]: https://github.com/mixxxdj/mixxx/wiki/Internationalization
 [Mixxx localization forum]: https://mixxx.discourse.group/c/translation/13
-[Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: https://manual.mixxx.org/2.3/en/hardware/manuals.html
 [zulip]: https://mixxx.zulipchat.com/
 [discourse]: https://mixxx.discourse.group/
