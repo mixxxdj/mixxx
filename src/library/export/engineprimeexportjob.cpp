@@ -25,7 +25,7 @@ namespace {
 const std::string kMixxxRootCrateName = "Mixxx Crates";
 const std::string kMixxxRootPlaylistName = "Mixxx Playlists";
 
-constexpr int kMaxHotCues = 8;
+constexpr int kMaxHotCuesOrLoops = 8;
 
 constexpr uint8_t kDefaultWaveformOpacity = 127;
 
@@ -234,50 +234,63 @@ void exportMetadata(
                 << "(" << pTrack->getFileInfo().fileName() << ")";
     }
 
-    // Note that any existing hot cues on the track are kept in place, if Mixxx
-    // does not have a hot cue at that location.
     const auto cues = pTrack->getCuePoints();
-    snapshot.hot_cues.resize(kMaxHotCues);
+    snapshot.hot_cues.resize(kMaxHotCuesOrLoops);
+    snapshot.loops.resize(kMaxHotCuesOrLoops);
     for (const CuePointer& pCue : cues) {
-        // We are only interested in hot cues.
-        if (pCue->getType() != CueType::HotCue) {
+        // We are only interested in hot cues and loops.
+        if (pCue->getType() != CueType::HotCue && pCue->getType() != CueType::Loop) {
             continue;
         }
 
-        int hotCueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
-        if (hotCueIndex < 0 || hotCueIndex >= kMaxHotCues) {
-            qInfo() << "Skipping hot cue" << hotCueIndex
+        int cueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
+        if (cueIndex < 0 || cueIndex >= kMaxHotCuesOrLoops) {
+            qInfo() << "Skipping cue" << cueIndex
                     << "as the Engine DJ format only supports at most"
-                    << kMaxHotCues << "hot cues.";
+                    << kMaxHotCuesOrLoops << "hot cues or loops.";
             continue;
         }
 
         if (!pCue->getPosition().isValid()) {
-            qWarning() << "Hot cue" << hotCueIndex << "exists but is invalid for track"
+            qWarning() << "Hot cue" << cueIndex << "exists but is invalid for track"
                        << pTrack->getId() << "(" << pTrack->getFileInfo().fileName() << ")";
             continue;
         }
 
         QString label = pCue->getLabel();
-        if (label == "") {
-            label = QString("Cue %1").arg(hotCueIndex + 1);
+        const auto color = RgbColor::toQColor(pCue->getColor());
+        djinterop::pad_color padColor{
+            static_cast<uint_least8_t>(color.red()),
+            static_cast<uint_least8_t>(color.green()),
+            static_cast<uint_least8_t>(color.blue()),
+            255};
+
+        if (pCue->getType() == CueType::HotCue) {
+            djinterop::hot_cue hotCue{};
+
+            if (label == "") {
+                label = QString("Cue %1").arg(cueIndex + 1);
+            }
+            hotCue.label = label.toStdString();
+            hotCue.sample_offset = pCue->getPosition().value();
+            hotCue.color = padColor;
+
+            snapshot.hot_cues[cueIndex] = hotCue;
         }
+        else if (pCue->getType() == CueType::Loop) {
+            djinterop::loop loop{};
 
-        djinterop::hot_cue hotCue{};
-        hotCue.label = label.toStdString();
-        hotCue.sample_offset = pCue->getPosition().value();
+            if (label == "") {
+                label = QString("Loop %1").arg(cueIndex + 1);
+            }
+            loop.label = label.toStdString();
+            loop.start_sample_offset = pCue->getPosition().value();
+            loop.end_sample_offset = pCue->getEndPosition().value();
+            loop.color = padColor;
 
-        auto color = mixxx::RgbColor::toQColor(pCue->getColor());
-        hotCue.color = djinterop::pad_color{
-                static_cast<uint_least8_t>(color.red()),
-                static_cast<uint_least8_t>(color.green()),
-                static_cast<uint_least8_t>(color.blue()),
-                255};
-
-        snapshot.hot_cues[hotCueIndex] = hotCue;
+            snapshot.loops[cueIndex] = loop;
+        }
     }
-
-    // TODO (mr-smidge): Export saved loops.
 
     // Write waveform.
     if (pWaveform) {
