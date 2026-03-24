@@ -370,6 +370,25 @@
         </options>
       </control>
       <!-- Pad modes (press) -->
+      <!-- Shift button -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.shiftButtonPress</key>
+        <status>0x9F</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.shiftButtonPress</key>
+        <status>0x8F</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
       <!-- Hotcue -->
       <control>
         <group>[Channel1]</group>
@@ -457,6 +476,15 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x95</status>
@@ -466,6 +494,15 @@
         </options>
       </control>
       <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel1]</group>
         <key>NumarkPartyMix.deck[0].padSection.padPress</key>
         <status>0x94</status>
@@ -475,10 +512,28 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x95</status>
         <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1D</midino>
         <options>
           <script-binding />
         </options>
@@ -493,10 +548,28 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x95</status>
         <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1E</midino>
         <options>
           <script-binding />
         </options>
@@ -511,10 +584,28 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x94</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x95</status>
         <midino>0x17</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x95</status>
+        <midino>0x1F</midino>
         <options>
           <script-binding />
         </options>
@@ -530,6 +621,15 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x85</status>
@@ -539,6 +639,15 @@
         </options>
       </control>
       <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel1]</group>
         <key>NumarkPartyMix.deck[0].padSection.padPress</key>
         <status>0x84</status>
@@ -548,10 +657,28 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x85</status>
         <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1D</midino>
         <options>
           <script-binding />
         </options>
@@ -566,10 +693,28 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x85</status>
         <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1E</midino>
         <options>
           <script-binding />
         </options>
@@ -584,10 +729,28 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>NumarkPartyMix.deck[0].padSection.padPress</key>
+        <status>0x84</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
         <group>[Channel2]</group>
         <key>NumarkPartyMix.deck[1].padSection.padPress</key>
         <status>0x85</status>
         <midino>0x17</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkPartyMix.deck[1].padSection.padPress</key>
+        <status>0x85</status>
+        <midino>0x1F</midino>
         <options>
           <script-binding />
         </options>
