@@ -1,3 +1,5 @@
+
+#include "util/assert.h"
 #if defined(_MSC_VER)
 #pragma warning(push)
 // https://github.com/taglib/taglib/issues/1185
@@ -12,6 +14,10 @@
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
+#ifdef __STEM__
+#include "track/steminfo.h"
+#include "track/steminfoimporter.h"
+#endif
 
 namespace mixxx {
 
@@ -40,7 +46,9 @@ const TagLib::String kAtomKeyReplayGainAlbumPeak = "----:com.apple.iTunes:replay
 const TagLib::String kAtomKeySeratoBeatGrid = "----:com.serato.dj:beatgrid";
 const TagLib::String kAtomKeySeratoMarkers = "----:com.serato.dj:markers";
 const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
-
+#ifdef __STEM__
+const TagLib::String kAtomKeyNIStem = "stem";
+#endif
 
 bool readAtom(
         const TagLib::MP4::Tag& tag,
@@ -382,6 +390,27 @@ void importTrackMetadataFromTag(
     }
 }
 
+#ifdef __STEM__
+void importStemInfo(TrackMetadata* pTrackMetadata,
+        const TagLib::MP4::Tag& tag) {
+    if (!pTrackMetadata) {
+        return; // nothing to do
+    }
+    auto stems = tag.complexProperties(kAtomKeyNIStem);
+    if (!stems.isEmpty()) {
+        DEBUG_ASSERT(stems.size() == 1);
+        VERIFY_OR_DEBUG_ASSERT(stems.front().contains("manifest") &&
+                stems.front().find("manifest")->second.type() ==
+                        TagLib::Variant::Type::ByteVector) {
+            return;
+        }
+        auto stemDetail = mixxx::StemInfoImporter::importStemInfos(
+                toQByteArray(stems.front().find("manifest")->second.toByteVector()));
+        pTrackMetadata->setStemInfo(stemDetail);
+    }
+}
+#endif
+
 bool exportTrackMetadataIntoTag(
         TagLib::MP4::Tag* pTag,
         const TrackMetadata& trackMetadata) {
@@ -511,6 +540,26 @@ bool exportTrackMetadataIntoTag(
 
     return true;
 }
+
+#ifdef __STEM__
+bool exportStemInfo(
+        TagLib::MP4::Tag* pTag,
+        const TrackMetadata& trackMetadata) {
+    if (!pTag) {
+        return false;
+    }
+    auto stems = trackMetadata.getStemInfo();
+    if (!stems.isValid()) {
+        pTag->setComplexProperties(kAtomKeyNIStem, {});
+    } else {
+        auto manifest = mixxx::StemInfoImporter::exportStemInfos(stems);
+        pTag->setComplexProperties(kAtomKeyNIStem,
+                TagLib::List<TagLib::VariantMap>({{{"manifest",
+                        mixxx::taglib::toTByteVector(manifest)}}}));
+    }
+    return true;
+}
+#endif
 
 } // namespace mp4
 

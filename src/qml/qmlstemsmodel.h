@@ -17,7 +17,7 @@ class QmlStemsModel : public QAbstractListModel {
     Q_ENUM(Roles)
     explicit QmlStemsModel(QObject* pParent = nullptr);
 
-    void setStems(QList<StemInfo> stems);
+    void setStems(mixxx::StemInfo stems);
 
     QVariant data(const QModelIndex& index, int role) const override;
     int rowCount(const QModelIndex& parent) const override;
@@ -25,7 +25,7 @@ class QmlStemsModel : public QAbstractListModel {
     Q_INVOKABLE QVariant get(int row) const;
 
   private:
-    QList<StemInfo> m_stems;
+    mixxx::StemInfo m_stems;
 };
 
 } // namespace qml
