@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.5" type="development" date="2026-03-05" timestamp="1772747251">
+    <release version="2.5.6" type="development" date="2026-03-24" timestamp="1774391063">
       <description>
  <p>
   Library
@@ -301,6 +301,13 @@
    #16009
   </li>
  </ul>
+</description>
+    </release>
+    <release version="2.5.5" type="development" date="2026-03-24" timestamp="1774391063">
+      <description>
+ <p>
+  Note: Version 2.5.5 hase been skipped following an issue in the release workflow.
+ </p>
 </description>
     </release>
     <release version="2.5.4" type="stable" date="2025-12-14" timestamp="1765670400">
