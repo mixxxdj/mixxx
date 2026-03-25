@@ -53,6 +53,18 @@ std::pair<QString, Quoted> consumeQuotedArgument(QString argument,
     return {argument, Quoted::Complete};
 }
 
+bool hasClosingParenthesis(const QString& token, const QStringList& tokens) {
+    if (token.contains(")")) {
+        return true;
+    }
+    for (const QString& t : tokens) {
+        if (t.contains(")")) {
+            return true;
+        }
+    }
+    return false;
+}
+
 } // anonymous namespace
 
 constexpr char kNegatePrefix[] = "-";
@@ -64,8 +76,9 @@ constexpr char kFuzzyPrefix[] = "~";
 const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
         QStringLiteral(" " QUOTED_STRING_LOOKAHEAD));
 
+// Matches ' OR ' (case-sensitive) or the '|' character
 const QRegularExpression kSplitOnOrOperatorRegexp = QRegularExpression(
-        QStringLiteral("(?:\\||\\bOR\\b)" QUOTED_STRING_LOOKAHEAD));
+        QStringLiteral("(?:\\||\\bOR\\b)"));
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
         : m_pTrackCollection(pTrackCollection),
@@ -192,6 +205,22 @@ SearchQueryParser::TextArgumentResult SearchQueryParser::getTextArgument(QString
 
 void SearchQueryParser::parseTokens(QStringList tokens,
                                     AndNode* pQuery) const {
+    // This lambda avoids duplication in the branches for
+    // 1) nested OR (invalid query or literal '(||)') and
+    // 2) plain text/crate queries.
+    auto createUntaggedNode = [&](const QString& arg) {
+        if (m_searchCrates) {
+            auto gNode = std::make_unique<OrNode>();
+            gNode->addNode(std::make_unique<CrateFilterNode>(
+                    &m_pTrackCollection->crates(), arg));
+            gNode->addNode(std::make_unique<TextFilterNode>(
+                    m_pTrackCollection->database(), m_queryColumns, arg));
+            return std::unique_ptr<QueryNode>(std::move(gNode));
+        }
+        return std::unique_ptr<QueryNode>(std::make_unique<TextFilterNode>(
+                m_pTrackCollection->database(), m_queryColumns, arg));
+    };
+
     while (tokens.size() > 0) {
         QString token = tokens.takeFirst().trimmed();
         if (token.length() == 0) {
@@ -290,6 +319,37 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                             m_pTrackCollection->database());
                 }
             }
+        } else if (token.startsWith("(") && hasClosingParenthesis(token, tokens)) {
+            QString nestedQuery = token.mid(1);
+
+            // We found an opening ( and a closing ) somewhere.
+            // Now we collect tokens until we find the one containing the closing ')'
+            while (!nestedQuery.contains(")") && !tokens.isEmpty()) {
+                nestedQuery += " " + tokens.takeFirst();
+            }
+
+            // If there is text AFTER the ')', put it back in the tokens list
+            int closingIdx = nestedQuery.lastIndexOf(")");
+            DEBUG_ASSERT(closingIdx != -1);
+            qWarning() << "   > isolate parenthesis content";
+            if (closingIdx < nestedQuery.length()) {
+                const QString trailing = nestedQuery.mid(closingIdx + 1).trimmed();
+                if (!trailing.isEmpty()) {
+                    tokens.prepend(trailing);
+                }
+            }
+            nestedQuery = nestedQuery.left(closingIdx);
+
+            const QString trimmedNested = nestedQuery.trimmed();
+            if (trimmedNested.isEmpty() ||
+                    trimmedNested == QStringLiteral("OR") ||
+                    trimmedNested == QStringLiteral("|")) {
+                // Safeguard: If the parenthesis is empty or just an operator,
+                // we call our lambda to treat the whole thing as a literal term.
+                pNode = createUntaggedNode("(" + nestedQuery + ")");
+            } else {
+                pNode = parseOrNode(nestedQuery);
+            }
         } else {
             // If no advanced search feature matched, treat it as a search term.
             if (negate) {
@@ -297,21 +357,8 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             }
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
-                QString argument = getTextArgument(token, &tokens).argument;
-                // For untagged strings we search the track fields as well
-                // as the crate names the track is in. This allows the user
-                // to use crates like tags
-                if (m_searchCrates) {
-                    auto gNode = std::make_unique<OrNode>();
-                    gNode->addNode(std::make_unique<CrateFilterNode>(
-                                    &m_pTrackCollection->crates(), argument));
-                    gNode->addNode(std::make_unique<TextFilterNode>(
-                            m_pTrackCollection->database(), m_queryColumns, argument));
-                    pNode = std::move(gNode);
-                } else {
-                    pNode = std::make_unique<TextFilterNode>(
-                            m_pTrackCollection->database(), m_queryColumns, argument);
-                }
+                const QString argument = getTextArgument(token, &tokens).argument;
+                pNode = createUntaggedNode(argument);
             }
         }
         if (pNode) {
@@ -335,12 +382,8 @@ std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(const QString& query) c
 std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(const QString& query) const {
     auto pQuery = std::make_unique<OrNode>();
 
-    const QStringList rawAndNodes = query.split(kSplitOnOrOperatorRegexp,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-            Qt::SkipEmptyParts);
-#else
-            QString::SkipEmptyParts);
-#endif
+    const QStringList rawAndNodes = splitTopLevelOr(query);
+
     for (const QString& rawAndNode : rawAndNodes) {
         if (!rawAndNode.isEmpty()) {
             pQuery->addNode(parseAndNode(rawAndNode));
@@ -374,6 +417,58 @@ QStringList SearchQueryParser::splitQueryIntoWords(const QString& query) {
             QString::SkipEmptyParts);
 #endif
     return queryWordList;
+}
+
+QStringList SearchQueryParser::splitTopLevelOr(const QString& query) const {
+    QStringList parts;
+    int lastSplitPos = 0;  // start of the current segment
+    int scanPos = 0;       // count of chars we've checked for quotes/parenthesis
+    int parenthLevel = 0;  //
+    bool inQuotes = false; // is the current OR/| in quotes or not
+
+    QRegularExpressionMatchIterator it = kSplitOnOrOperatorRegexp.globalMatch(query);
+
+    while (it.hasNext()) {
+        // Nth occurrence of OR/|
+        QRegularExpressionMatch match = it.next();
+        // position of 'O'/'|'
+        int matchPos = match.capturedStart();
+
+        // scan characters since the last match (pos after last 'R'/'|')
+        // for quotes.
+        for (; scanPos < matchPos; ++scanPos) {
+            const QChar c = query[scanPos];
+            if (c == '\"') {
+                // toggle quote state
+                inQuotes = !inQuotes;
+            } else if (!inQuotes) {
+                // sount parenthesis if we aren't inside a quoted string
+                if (c == '(') {
+                    parenthLevel++;
+                } else if (c == ')') {
+                    parenthLevel--;
+                }
+            }
+        }
+
+        // split if we are at the top level AND not in quotes
+        if (!inQuotes && parenthLevel == 0) {
+            parts << query.mid(lastSplitPos, matchPos - lastSplitPos).trimmed();
+            lastSplitPos = match.capturedEnd();
+        }
+
+        // advance the scan position past the operator so we have a start
+        // position for the next scan
+        scanPos = match.capturedEnd();
+    }
+
+    // capture the final segment
+    const QString finalPart = query.mid(lastSplitPos).trimmed();
+    if (!finalPart.isEmpty()) {
+        parts << finalPart;
+    }
+
+    return parts;
 }
 
 bool SearchQueryParser::queryIsLessSpecific(const QString& original, const QString& changed) {
