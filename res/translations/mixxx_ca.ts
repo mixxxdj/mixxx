@@ -11468,7 +11468,7 @@ Valors més alts atenuaran menys les freqüències altes.</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="46"/>
         <source>Ctrl+Shift+O</source>
-        <translation>Ctrl+Majús+O</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="53"/>
@@ -15827,7 +15827,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
         <source>Ctrl+Shift+L</source>
-        <translation>Ctrl+Majúscules+L</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
@@ -15857,7 +15857,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
         <source>Ctrl+Shift+N</source>
-        <translation>Ctrl+Majús+N</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="206"/>
@@ -16079,7 +16079,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="522"/>
         <source>Ctrl+Shift+R</source>
-        <translation>Ctrl+Majús+R</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="529"/>
@@ -16094,7 +16094,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="535"/>
         <source>Ctrl+Shift+T</source>
-        <translation>Ctrl+Majús+T</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="548"/>
@@ -16109,7 +16109,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="555"/>
         <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Majús+E</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="568"/>
@@ -16124,7 +16124,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="575"/>
         <source>Ctrl+Shift+B</source>
-        <translation>Ctrl+Majús+B</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="589"/>
@@ -16139,7 +16139,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="597"/>
         <source>Ctrl+Shift+D</source>
-        <translation>Ctrl+Majús+D</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="615"/>
@@ -16334,7 +16334,7 @@ Això no es pot desfer!</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="223"/>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="237"/>
         <source>Ctrl+Backspace</source>
-        <translation>Ctrl+Tecla de retrocés</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="230"/>
@@ -16354,7 +16354,7 @@ Això no es pot desfer!</translation>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="239"/>
         <source>Ctrl+Space</source>
-        <translation>Ctrl+Espai</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="240"/>

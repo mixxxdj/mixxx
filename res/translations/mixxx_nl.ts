@@ -16386,7 +16386,7 @@ Dit kan niet ongedaan gemaakt worden!</translation>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="239"/>
         <source>Ctrl+Space</source>
-        <translation>Ctrl+Spatie</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="240"/>

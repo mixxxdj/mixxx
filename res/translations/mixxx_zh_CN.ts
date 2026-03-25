@@ -15818,7 +15818,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
         <source>Ctrl+Shift+L</source>
-        <translation>Ctrl+Shift+L 组合键</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
@@ -16325,7 +16325,7 @@ This can not be undone!</source>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="223"/>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="237"/>
         <source>Ctrl+Backspace</source>
-        <translation>Ctrl+退格键</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="230"/>
@@ -16345,7 +16345,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="239"/>
         <source>Ctrl+Space</source>
-        <translation>Ctrl + 空格键</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="240"/>

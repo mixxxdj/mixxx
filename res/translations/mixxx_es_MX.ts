@@ -15850,7 +15850,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
         <source>Ctrl+Shift+L</source>
-        <translation>Ctrl+Mayús+L</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
@@ -15880,7 +15880,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
         <source>Ctrl+Shift+N</source>
-        <translation>Ctrl+Mayús+N</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="206"/>
@@ -16102,7 +16102,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="522"/>
         <source>Ctrl+Shift+R</source>
-        <translation>Ctrl+Mayús+R</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="529"/>
@@ -16117,7 +16117,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="535"/>
         <source>Ctrl+Shift+T</source>
-        <translation>Ctrl+Mayús+T</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="548"/>
@@ -16132,7 +16132,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="555"/>
         <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Mayús+E</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="568"/>
@@ -16147,7 +16147,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="575"/>
         <source>Ctrl+Shift+B</source>
-        <translation>Ctrl+Mayús+B</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="589"/>
@@ -16162,7 +16162,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="597"/>
         <source>Ctrl+Shift+D</source>
-        <translation>Ctrl+Mayús+D</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="615"/>
@@ -16357,7 +16357,7 @@ Carpeta: %2
         <location filename="../../src/widget/wsearchlineedit.cpp" line="223"/>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="237"/>
         <source>Ctrl+Backspace</source>
-        <translation>Ctrl+Tecla de retroceso</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="230"/>
@@ -16377,7 +16377,7 @@ Carpeta: %2
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="239"/>
         <source>Ctrl+Space</source>
-        <translation>Ctrl+Espacio</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="240"/>

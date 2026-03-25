@@ -4642,7 +4642,7 @@ Sie haben versucht anzulernen: %1,%2</translation>
     <message>
         <location filename="../../src/library/missing_hidden/dlghidden.ui" line="91"/>
         <source>Ctrl+S</source>
-        <translation>Strg+S</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/missing_hidden/dlghidden.ui" line="104"/>
@@ -11439,42 +11439,42 @@ Höhere Werte führen zu weniger Dämpfung der hohen Frequenzen.</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="34"/>
         <source>Ctrl+t</source>
-        <translation>Strg+T</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="35"/>
         <source>Ctrl+y</source>
-        <translation>Strg+Y</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="36"/>
         <source>Ctrl+u</source>
-        <translation>Strg+U</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="37"/>
         <source>Ctrl+i</source>
-        <translation>Strg+I</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="45"/>
         <source>Ctrl+o</source>
-        <translation>Strg+O</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="46"/>
         <source>Ctrl+Shift+O</source>
-        <translation>Strg+Umschalt+O</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="53"/>
         <source>Ctrl+,</source>
-        <translation>Strg+,</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="55"/>
         <source>Ctrl+P</source>
-        <translation>Strg+P</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/bessel8lvmixeqeffect.cpp" line="17"/>
@@ -15806,7 +15806,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="128"/>
         <source>Ctrl+q</source>
-        <translation>Strg+Q</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="139"/>
@@ -15826,7 +15826,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
         <source>Ctrl+Shift+L</source>
-        <translation>Strg+Umschalt+L</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
@@ -15841,7 +15841,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="178"/>
         <source>Ctrl+n</source>
-        <translation>Strg+N</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="185"/>
@@ -15856,7 +15856,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
         <source>Ctrl+Shift+N</source>
-        <translation>Strg+Umschalt+N</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="206"/>
@@ -15893,7 +15893,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="248"/>
         <source>Ctrl+1</source>
         <comment>Menubar|View|Show Skin Settings</comment>
-        <translation>Strg+1</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="256"/>
@@ -15909,7 +15909,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="264"/>
         <source>Ctrl+2</source>
         <comment>Menubar|View|Show Microphone Section</comment>
-        <translation>Strg+2</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="272"/>
@@ -15925,7 +15925,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="280"/>
         <source>Ctrl+3</source>
         <comment>Menubar|View|Show Vinyl Control Section</comment>
-        <translation>Strg+3</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="288"/>
@@ -15941,7 +15941,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="296"/>
         <source>Ctrl+4</source>
         <comment>Menubar|View|Show Preview Deck</comment>
-        <translation>Strg+4</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="304"/>
@@ -15957,7 +15957,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
         <location filename="../../src/widget/wmainmenubar.cpp" line="312"/>
         <source>Ctrl+6</source>
         <comment>Menubar|View|Show Cover Art</comment>
-        <translation>Strg+6</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="335"/>
@@ -16018,7 +16018,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="437"/>
         <source>Ctrl+R</source>
-        <translation>Strg+R</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="450"/>
@@ -16033,7 +16033,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="457"/>
         <source>Ctrl+L</source>
-        <translation>Strg+L</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="473"/>
@@ -16048,7 +16048,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="481"/>
         <source>Ctrl+`</source>
-        <translation>Strg+`</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="493"/>
@@ -16078,7 +16078,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="522"/>
         <source>Ctrl+Shift+R</source>
-        <translation>Strg+Umschalt+R</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="529"/>
@@ -16093,7 +16093,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="535"/>
         <source>Ctrl+Shift+T</source>
-        <translation>Strg+Umschalt+T</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="548"/>
@@ -16108,7 +16108,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="555"/>
         <source>Ctrl+Shift+E</source>
-        <translation>Strg+Umschalt+E</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="568"/>
@@ -16123,7 +16123,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="575"/>
         <source>Ctrl+Shift+B</source>
-        <translation>Strg+Umschalt+B</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="589"/>
@@ -16138,7 +16138,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="597"/>
         <source>Ctrl+Shift+D</source>
-        <translation>Strg+Umschalt+D</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="615"/>
@@ -16274,7 +16274,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="125"/>
         <source>Ctrl+F</source>
         <comment>Search|Focus</comment>
-        <translation>Strg+F</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="225"/>
@@ -16321,7 +16321,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="231"/>
         <source>Ctrl+F</source>
-        <translation>Strg+F</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="232"/>
@@ -16333,7 +16333,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="223"/>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="237"/>
         <source>Ctrl+Backspace</source>
-        <translation>Strg+Rücktaste</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="230"/>
@@ -16353,7 +16353,7 @@ Dies kann nicht rückgängig gemacht werden!</translation>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="239"/>
         <source>Ctrl+Space</source>
-        <translation>Strg+Leertaste</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="240"/>

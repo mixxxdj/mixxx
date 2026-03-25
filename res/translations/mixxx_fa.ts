@@ -15536,7 +15536,7 @@ This can not be undone!</source>
         <location filename="../../src/widget/wmainmenubar.cpp" line="295"/>
         <source>Ctrl+4</source>
         <comment>Menubar|View|Show Preview Deck</comment>
-        <translation>Ctrl+5</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="303"/>
