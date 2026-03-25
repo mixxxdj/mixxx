@@ -4556,7 +4556,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/library/missing_hidden/dlghidden.ui" line="91"/>
         <source>Ctrl+S</source>
-        <translation>컨트롤+S</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/missing_hidden/dlghidden.ui" line="104"/>
