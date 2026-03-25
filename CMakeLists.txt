@@ -2996,6 +2996,10 @@ if(BUILD_TESTING)
     )
   endif()
 
+  if(AU_EFFECTS)
+    target_sources(mixxx-test PRIVATE src/test/audiounitmanager_test.mm)
+  endif()
+
   set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
   target_link_libraries(
     mixxx-test
