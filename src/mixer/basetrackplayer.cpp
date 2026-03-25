@@ -20,6 +20,9 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
+// Uncomment to toggle off the fader start feature. Toggle Mechanism TBD
+// #define FADER_START_FEATURE_AVAILABLE
+
 namespace {
 
 constexpr double kNoTrackColor = -1;
@@ -329,6 +332,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
 
+    // Fader Start feature: Toggle Mechanism TBD
+    m_pFaderStart = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "fader_start"));
+    m_pFaderStart->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pVolume = make_parented<ControlProxy>(getGroup(), "volume", this);
     m_pVolume->connectValueChanged(this, &BaseTrackPlayerImpl::slotVolumeChanged);
 
@@ -1032,7 +1038,13 @@ void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     }
 }
 
+// Fader Start slot
 void BaseTrackPlayerImpl::slotVolumeChanged(double value) {
+#ifdef FADER_START_FEATURE_AVAILABLE
+    if (!m_pFaderStart->toBool()) {
+        return;
+    }
+#endif
     if (value > 0.0) {
         std::cout << "Play and Volume = " << value << std::endl;
         m_pPlay->set(1.0);
