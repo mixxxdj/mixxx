@@ -20,6 +20,10 @@
 #include "controllers/midi/portmidienumerator.h"
 #endif
 
+#ifdef __LIBREMIDI__
+#include "controllers/midi/libremidienumerator.h"
+#endif
+
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
 #endif
@@ -144,6 +148,23 @@ ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilt
     return m_pControllerLearningEventFilter;
 }
 
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+void ControllerManager::loadMidiBackend() {
+    QString api = m_pConfig->getValue(kMidiAPI, kDefaultMidiAPI);
+
+#ifdef __PORTMIDI__
+    if (api == "PortMidi") {
+        m_enumerators.append(new PortMidiEnumerator(m_pConfig));
+    }
+#endif
+#ifdef __LIBREMIDI__
+    if (api == "Libremidi") {
+        m_enumerators.append(new LibremidiEnumerator(m_pConfig));
+    }
+#endif
+}
+#endif
+
 void ControllerManager::slotInitialize() {
     qDebug() << "ControllerManager:slotInitialize";
 
@@ -156,9 +177,10 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
-#ifdef __PORTMIDI__
-    m_enumerators.append(new PortMidiEnumerator(m_pConfig));
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+    loadMidiBackend();
 #endif
+
 #ifdef __HSS1394__
     m_enumerators.append(new Hss1394Enumerator());
 #endif

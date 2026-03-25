@@ -2911,8 +2911,6 @@ if(BUILD_TESTING)
     src/test/playcountertest.cpp
     src/test/playermanagertest.cpp
     src/test/playlisttest.cpp
-    src/test/portmidicontroller_test.cpp
-    src/test/portmidienumeratortest.cpp
     src/test/queryutiltest.cpp
     src/test/rangelist_test.cpp
     src/test/readaheadmanager_test.cpp
@@ -3683,6 +3681,12 @@ target_link_libraries(mixxx-lib PRIVATE PortAudioRingBuffer)
 # PortMidi
 default_option(PORTMIDI "Enable the PortMidi backend for MIDI controllers" "NOT ANDROID")
 if(PORTMIDI)
+  list(
+    APPEND
+    src-mixxx-test
+    src/test/portmidicontroller_test.cpp
+    src/test/portmidienumeratortest.cpp
+  )
   target_compile_definitions(mixxx-lib PUBLIC __PORTMIDI__)
   find_package(PortMidi REQUIRED)
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
@@ -3692,6 +3696,24 @@ if(PORTMIDI)
     PRIVATE
       src/controllers/midi/portmidicontroller.cpp
       src/controllers/midi/portmidienumerator.cpp
+  )
+endif()
+
+default_option(LIBREMIDI "Enable the Libremidi backend for MIDI controllers" "NOT ANDROID")
+if(LIBREMIDI)
+  if(APPLE)
+    set(LIBREMIDI_NO_JACK ON)
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __LIBREMIDI__)
+  add_subdirectory(lib/readerwriterqueue-1.0.7)
+  add_subdirectory(lib/libremidi-5.4.3)
+  target_link_libraries(libremidi PUBLIC readerwriterqueue)
+  target_link_libraries(mixxx-lib PUBLIC libremidi)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/controllers/midi/libremidicontroller.cpp
+      src/controllers/midi/libremidienumerator.cpp
   )
 endif()
 

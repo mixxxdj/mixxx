@@ -1,5 +1,8 @@
 #include "controllers/dlgprefcontrollers.h"
 
+#include <qcombobox.h>
+#include <qlogging.h>
+
 #include "control/controlproxy.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
@@ -44,8 +47,23 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::rescanControllers);
 
+    comboBox_midiAPI->addItem("None", "None");
+
 #ifdef __PORTMIDI__
+    comboBox_midiAPI->addItem("PortMidi", "PortMidi");
+#endif
+
+#ifdef __LIBREMIDI__
+    comboBox_midiAPI->addItem("Libremidi", "Libremidi");
+#endif
+
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
     checkBox_midithrough->setChecked(m_pConfig->getValue(kMidiThroughCfgKey, false));
+    comboBox_midiAPI->setCurrentText(m_pConfig->getValue(kMidiAPI, kDefaultMidiAPI));
+    connect(comboBox_midiAPI,
+            &QComboBox::currentTextChanged,
+            this,
+            &DlgPrefControllers::slotMidiAPIChanged);
     connect(checkBox_midithrough,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
             &QCheckBox::checkStateChanged,
@@ -55,6 +73,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::slotMidiThroughChanged);
     txt_midithrough->setTextFormat(Qt::RichText);
+
     //: text enclosed in <b> is bold, <br/> is a linebreak
     //: %1 is the placehodler for 'MIDI Through Port'
     txt_midithrough->setText(tr(
@@ -68,6 +87,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     line_midithrough->hide();
     checkBox_midithrough->hide();
     txt_midithrough->hide();
+    groupBox_midiAPI->hide();
 #endif
 
     // Setting the description text here instead of in the ui file allows to paste
@@ -276,7 +296,10 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, 
     pControllerTreeItem->setFont(0, temp);
 }
 
-#ifdef __PORTMIDI__
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+void DlgPrefControllers::slotMidiAPIChanged(const QString& api) {
+    m_pConfig->setValue(kMidiAPI, api);
+}
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 void DlgPrefControllers::slotMidiThroughChanged(Qt::CheckState state) {
     m_pConfig->setValue(kMidiThroughCfgKey, state != Qt::Unchecked);

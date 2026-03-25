@@ -1,0 +1,123 @@
+name: Python
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        header_only: [0, 1]
+        config:
+        - {
+            name: "Windows (MSVC)",
+            os: windows-latest,
+            generator: "",
+            cmakeflags: "-DLIBREMIDI_NO_WINUWP=0 -DBOOST_ROOT=$PWD/boost_1_86_0",
+            environment: ""
+          }
+        - {
+            name: "Ubuntu (gcc)",
+            os: ubuntu-latest,
+            generator: "",
+            cmakeflags: "-DCMAKE_CXX_FLAGS='-Werror=return-type -fsanitize=address -fsanitize=undefined -D_GLIBCXX_DEBUG=1 -D_GLIBCXX_DEBUG_PEDANTIC=1 -D_GLIBCXX_ASSERTIONS=1 -D_GLIBCXX_SANITIZE_VECTOR=1'",
+            environment: "LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/13/libasan.so:/usr/lib/gcc/x86_64-linux-gnu/13/libubsan.so"
+          }
+        - {
+            name: "Ubuntu (clang, libstdc++)",
+            os: ubuntu-latest,
+            generator: "",
+            cmakeflags: "-DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS='-Werror=return-type'",
+            environment: ""
+          }
+        - {
+            name: "Ubuntu (clang, libc++)",
+            os: ubuntu-latest,
+            generator: "",
+            cmakeflags: "-DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS='-stdlib=libc++ -Werror=return-type'",
+            environment: ""
+          }
+        - {
+            name: "macOS",
+            os: macos-14,
+            generator: "",
+            cmakeflags: "-DCMAKE_CXX_FLAGS=-Werror=return-type -DBOOST_ROOT=$PWD/boost_1_86_0",
+            environment: ""
+          }
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Get latest release version number
+      id: get_version
+      uses: dhkatz/get-version-action@main
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      if: runner.os == 'macOS'
+      with:
+        xcode-version: latest-stable
+
+    - name: Install dependencies
+      run:  |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+          sudo apt update
+          sudo apt install cmake libboost-dev libasound-dev libjack-jackd2-dev clang libc++-dev
+        else
+          curl -L https://github.com/ossia/sdk/releases/download/sdk31/boost_1_86_0.tar.gz > boost.tar.gz
+          tar -xzf boost.tar.gz
+          rm boost.tar.gz
+        fi
+      shell: bash
+
+    - name: Configure
+      shell: bash
+      run: |
+        cmake -S ./bindings/python -B build \
+          ${{ matrix.config.generator }} \
+          ${{ matrix.config.cmakeflags }} \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DLIBREMIDI_FIND_BOOST=1 \
+          -DLIBREMIDI_HEADER_ONLY=${{ matrix.header_only }} \
+          -DLIBREMIDI_CI=1
+
+    - name: Build
+      shell: bash
+      run: |
+        export ASAN_OPTIONS=detect_leaks=0
+        ${{matrix.config.environment}} cmake --build build --config Debug
+
+    - name: Test
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        export PYTHONPATH=$PWD/build/Debug
+        find . -name '*.pyd'
+        # ${{matrix.config.environment}} python tests/python/list_apis.py
+
+    - name: Test
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        export PYTHONPATH=$PWD/build
+        export ASAN_OPTIONS=detect_leaks=0
+        ${{matrix.config.environment}} python tests/python/list_apis.py
+

@@ -1,0 +1,89 @@
+name: MSYS2 build
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mingw:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        sys:
+          - mingw64
+          - ucrt64
+          - clang64
+#          - clangarm64
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Setup msys2 and mingw-w64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{matrix.sys}}
+          update: true
+          pacboy: >-
+            cmake:p
+            ninja:p
+            toolchain:p
+            cppwinrt:p
+            boost:p
+
+      - name: Build debug
+        shell: msys2 {0}
+        run: |
+          cmake -S . -B build-debug \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DBUILD_TESTING=1 \
+            -DLIBREMIDI_EXAMPLES=1 \
+            -DLIBREMIDI_TESTS=1 \
+            -DLIBREMIDI_CI=1 \
+            -DCMAKE_CTEST_ARGUMENTS="--rerun-failed;--output-on-failure" \
+            -DCMAKE_INSTALL_PREFIX=install
+
+          cmake --build build-debug
+          cmake --build build-debug --target install
+
+      - name: Test debug
+        shell: msys2 {0}
+        run: |
+          cmake --build build-debug --target test
+
+      - name: Build release
+        shell: msys2 {0}
+        run: |
+          cmake -S . -B build-release \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=1 \
+            -DLIBREMIDI_EXAMPLES=1 \
+            -DLIBREMIDI_TESTS=1 \
+            -DLIBREMIDI_CI=1 \
+            -DCMAKE_CTEST_ARGUMENTS="--rerun-failed;--output-on-failure" \
+            -DCMAKE_INSTALL_PREFIX=install
+
+          cmake --build build-release
+          cmake --build build-release --target install
+
+      - name: Test release
+        shell: msys2 {0}
+        run: |
+          cmake --build build-release --target test
+
