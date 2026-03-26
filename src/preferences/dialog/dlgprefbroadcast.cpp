@@ -1,11 +1,11 @@
 #include "preferences/dialog/dlgprefbroadcast.h"
 
+#include <QComboBox>
 #include <QHeaderView>
 #include <QInputDialog>
+#include <QLineEdit>
 #include <QMessageBox>
-
-// this is needed to define SHOUT_META_* macros used in version guard
-#include <shoutidjc/shout.h>
+#include <QTableWidgetItem>
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
@@ -41,20 +41,14 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
     groupPasswordStorage->setVisible(false);
 #endif
 
-#ifndef SHOUT_META_IRC
-    stream_IRC_label->setVisible(false);
-    stream_IRC->setVisible(false);
-#endif
+    // Connect the Add button for Custom Metadata
+    connect(btnAddSocialLink,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnAddSocialLinkClicked);
 
-#ifndef SHOUT_META_AIM
-    stream_AIM_label->setVisible(false);
-    stream_AIM->setVisible(false);
-#endif
-
-#ifndef SHOUT_META_ICQ
-    stream_ICQ_label->setVisible(false);
-    stream_ICQ->setVisible(false);
-#endif
+    // Remove table-specific initialization
+    // ... no longer needed since we use a QVBoxLayout ...
 
     connect(connectionList->horizontalHeader(),
             &QHeaderView::sectionResized,
@@ -492,14 +486,17 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     // Stream website
     stream_website->setText(profile->getStreamWebsite());
 
-    // Stream IRC
-    stream_IRC->setText(profile->getStreamIRC());
-
-    // Stream AIM
-    stream_AIM->setText(profile->getStreamAIM());
-
-    // Stream ICQ
-    stream_ICQ->setText(profile->getStreamICQ());
+    for (int i = layoutCustomMetadata->count() - 1; i >= 0; --i) {
+        QWidget* widget = layoutCustomMetadata->itemAt(i)->widget();
+        if (widget && widget != btnAddSocialLink) {
+            layoutCustomMetadata->removeWidget(widget);
+            delete widget;
+        }
+    }
+    const QMap<QString, QString> extraMeta = profile->getStreamExtraMetadata();
+    for (auto it = extraMeta.constBegin(); it != extraMeta.constEnd(); ++it) {
+        addSocialLinkRow(it.key(), it.value());
+    }
 
     // Stream description
     stream_desc->setText(profile->getStreamDesc());
@@ -584,9 +581,26 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setMaximumRetries(spinBoxMaximumRetries->value());
     profile->setStreamName(stream_name->text());
     profile->setStreamWebsite(stream_website->text());
-    profile->setStreamIRC(stream_IRC->text());
-    profile->setStreamAIM(stream_AIM->text());
-    profile->setStreamICQ(stream_ICQ->text());
+
+    // Custom Metadata Links — read layout rows into a map
+    QMap<QString, QString> extraMeta;
+    for (int i = 0; i < layoutCustomMetadata->count(); ++i) {
+        QWidget* rowWidget = layoutCustomMetadata->itemAt(i)->widget();
+        if (rowWidget && rowWidget != btnAddSocialLink) {
+            QComboBox* keyCombo = rowWidget->findChild<QComboBox*>();
+            QLineEdit* valueEdit = rowWidget->findChild<QLineEdit*>();
+            if (!keyCombo || !valueEdit) {
+                continue;
+            }
+            QString key = keyCombo->currentText().trimmed();
+            QString value = valueEdit->text().trimmed();
+            if (!key.isEmpty() && !value.isEmpty()) {
+                extraMeta.insert(key, value);
+            }
+        }
+    }
+    profile->setStreamExtraMetadata(extraMeta);
+
     profile->setStreamDesc(stream_desc->toPlainText());
     profile->setStreamGenre(stream_genre->text());
     profile->setStreamPublic(stream_public->isChecked());
@@ -682,4 +696,50 @@ void DlgPrefBroadcast::onSectionResized() {
 
 bool DlgPrefBroadcast::okayToClose() const {
     return m_allProfilesValid;
+}
+
+void DlgPrefBroadcast::addSocialLinkRow(const QString& key, const QString& value) {
+    QWidget* rowWidget = new QWidget(this);
+    QHBoxLayout* rowLayout = new QHBoxLayout(rowWidget);
+    rowLayout->setContentsMargins(0, 0, 0, 0);
+
+    // Column 0: QComboBox (editable, no default items)
+    QComboBox* keyCombo = new QComboBox(rowWidget);
+    keyCombo->setEditable(true);
+    // As per review feedback, no default social platforms
+
+    if (!key.isEmpty()) {
+        keyCombo->setCurrentText(key);
+    }
+    rowLayout->addWidget(keyCombo);
+
+    // Column 1: QLineEdit for the value
+    QLineEdit* valueEdit = new QLineEdit(rowWidget);
+    valueEdit->setPlaceholderText(tr("Value"));
+    if (!value.isEmpty()) {
+        valueEdit->setText(value);
+    }
+    // Allow expanding horizontally
+    valueEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    rowLayout->addWidget(valueEdit);
+
+    // Column 2: Remove button
+    QPushButton* btnRemove = new QPushButton(tr("Remove"), rowWidget);
+    connect(btnRemove, &QPushButton::clicked, this, [this, rowWidget]() {
+        layoutCustomMetadata->removeWidget(rowWidget);
+        delete rowWidget;
+    });
+    rowLayout->addWidget(btnRemove);
+
+    // Insert the row widget into the dynamic layout, just above the "Add" button
+    int insertIndex = layoutCustomMetadata->count() - 1;
+    // ensure we don't insert below zero if add button somehow is missing
+    if (insertIndex < 0) {
+        insertIndex = 0;
+    }
+    layoutCustomMetadata->insertWidget(insertIndex, rowWidget);
+}
+
+void DlgPrefBroadcast::btnAddSocialLinkClicked() {
+    addSocialLinkRow();
 }

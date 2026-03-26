@@ -483,20 +483,6 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <layout class="QGridLayout">
-           <item row="7" column="0">
-            <widget class="QLabel" name="stream_ICQ_label">
-             <property name="text">
-              <string>ICQ</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="stream_AIM_label">
-             <property name="text">
-              <string>AIM</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="1">
             <widget class="QLineEdit" name="stream_name">
              <property name="sizePolicy">
@@ -633,28 +619,45 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
+           <item row="5" column="0" alignment="Qt::AlignTop">
+            <widget class="QLabel" name="label_custom_metadata">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Custom Metadata</string>
+             </property>
+             <property name="buddy">
+              <cstring>btnAddSocialLink</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <layout class="QVBoxLayout" name="layoutCustomMetadata">
+             <item>
+              <widget class="QPushButton" name="btnAddSocialLink">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item row="0" column="0" colspan="2">
             <widget class="QCheckBox" name="stream_public">
              <property name="text">
               <string>Public stream</string>
              </property>
             </widget>
-           </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="stream_IRC_label">
-             <property name="text">
-              <string>IRC</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="1">
-            <widget class="QLineEdit" name="stream_IRC"/>
-           </item>
-           <item row="6" column="1">
-            <widget class="QLineEdit" name="stream_AIM"/>
-           </item>
-           <item row="7" column="1">
-            <widget class="QLineEdit" name="stream_ICQ"/>
            </item>
           </layout>
          </item>
@@ -893,9 +896,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>stream_website</tabstop>
   <tabstop>stream_desc</tabstop>
   <tabstop>stream_genre</tabstop>
-  <tabstop>stream_IRC</tabstop>
-  <tabstop>stream_AIM</tabstop>
-  <tabstop>stream_ICQ</tabstop>
 
   <tabstop>metadata_format</tabstop>
   <tabstop>enableCustomMetadata</tabstop>
