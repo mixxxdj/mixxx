@@ -126,7 +126,7 @@ repos:
       - id: prettier
         files: \.(d\.ts|ya?ml)$
   - repo: https://github.com/qarmin/qml_formatter.git
-    rev: 37c2513b1b8275a475a160ed2f5b044910335d5f # No release tag yet including #6 fix
+    rev: a9cfa4f6a643da8bdf5a4f5615c104c799fb3bc2 # No release tag yet including #0.2.0 fix
     hooks:
       - id: qml_formatter
   - repo: https://github.com/BlankSpruce/gersemi
