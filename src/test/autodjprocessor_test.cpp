@@ -1855,6 +1855,85 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekBeforeTransition) {
     EXPECT_DOUBLE_EQ(0, deck2.playposition.get());
 }
 
+// Verify that the toDeck is started ~1 second before the fade threshold so it
+// is already spinning when the crossfader begins to move, eliminating the
+// cold-start gap.
+//
+// With a 100-second track and 10-second transition time in FixedFullTrack mode:
+//   fadeBeginPos  = 0.9  (90 s / 100 s)
+//   earlyPlayPos  = 0.89 (fadeBeginPos - 1s/100s)
+//   earlyStartPos = -0.01 (startPos 0.0 - 1s/100s)
+TEST_F(AutoDJProcessorTest, FadeToDeck2_EarlyPlay_PreRoll) {
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedFullTrack);
+
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    // Crossfader starts on the left.
+    mixer.crossfader.set(-1.0);
+    // Use a 100-second track so positions are simple round numbers.
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setDuration(100);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Pretend the track load succeeds; deck2 is cued to startPos = 0.0.
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    EXPECT_DOUBLE_EQ(0.0, deck2.playposition.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, mixer.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+
+    // Seek deck1 to just before the early-play window (< 0.89). Deck2 should
+    // not start playing yet.
+    deck1.playposition.set(0.88);
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Seek deck1 to the early-play trigger point (fadeBeginPos - 1s = 0.89).
+    // Deck2 should now be playing and seeked 1 second before its startPos,
+    // i.e. at -0.01.  State remains IDLE – the crossfader has not moved yet.
+    deck1.playposition.set(0.89);
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+    EXPECT_NEAR(-0.01, deck2.playposition.get(), 1e-9);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, mixer.crossfader.get());
+
+    // Advance deck1 to fadeBeginPos (0.9). The transition starts; deck2 was
+    // already playing so no redundant play() call is made.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
+    deck1.playposition.set(0.9);
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+
+    // Advance deck1 further into the fade; crossfader should have moved toward
+    // the right.
+    deck1.playposition.set(0.95);
+    EXPECT_LT(-1.0, mixer.crossfader.get());
+}
+
 TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     TrackId testId = addTrackToCollection(kTrackLocationTest);
     ASSERT_TRUE(testId.isValid());
