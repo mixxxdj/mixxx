@@ -40,6 +40,9 @@
 /// why the constructor takes both arguments pertaining to both input and output ports.
 class LibremidiController : public MidiController {
     Q_OBJECT
+
+    friend class LibremidiEnumerator;
+
   public:
     LibremidiController(const libremidi::input_port* inputDevicePort,
             const libremidi::output_port* outputDevicePort);

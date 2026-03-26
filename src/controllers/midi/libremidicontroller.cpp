@@ -56,7 +56,7 @@ LibremidiController::LibremidiController(const libremidi::input_port* inputPort,
                 }};
     }
     if (outputPort) {
-        m_pOutputPort.emplace(*inputPort);
+        m_pOutputPort.emplace(*outputPort);
         setOutputDevice(true);
         m_pOutputDevice = libremidi::midi_out{};
     }

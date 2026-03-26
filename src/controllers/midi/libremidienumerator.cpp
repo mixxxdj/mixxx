@@ -4,10 +4,12 @@
 #include <libremidi/libremidi.hpp>
 #include <libremidi/port_information.hpp>
 
+#include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/libremidicontroller.h"
 #include "moc_libremidienumerator.cpp"
 #include "util/cmdlineargs.h"
+#include "util/compatibility/qmutex.h"
 
 namespace {
 
@@ -99,20 +101,148 @@ bool namesMatchAllowableEdgeCases(const QString& input_name,
 
 } // namespace
 
-void input_removed(const libremidi::input_port& port) {
-    qWarning() << "Input removed: " << port.port_name.c_str() << "\n";
+void LibremidiEnumerator::addDevice(const libremidi::input_port* inputPort,
+        const libremidi::output_port* outputPort) {
+    auto pCurrentDevice = std::make_unique<LibremidiController>(inputPort, outputPort);
+    pCurrentDevice->moveToThread(m_pControllerManager->thread());
+    pCurrentDevice->setParent(m_pControllerManager);
+
+    // Is this better than manually triggering the slot?
+    // connect(pCurrentDevice, QObject::destroyed, manager, &ControllerManager::slotRemoveDevice);
+
+    emit deviceAdded(pCurrentDevice.get());
+    auto locker = lockMutex(&m_mutex);
+    m_devices.push_back(std::move(pCurrentDevice));
+    locker.unlock();
 }
 
-void output_removed(const libremidi::output_port& port) {
-    qWarning() << "Input removed: " << port.port_name.c_str() << "\n";
+void LibremidiEnumerator::inputAdded(const libremidi::input_port& inputPort) {
+    if (!recognizeDevice(inputPort, m_pConfig)) {
+        return;
+    }
+    qWarning() << "Input added: " << inputPort.port_name.c_str();
+
+    QString inputName = inputPort.port_name.c_str();
+    const libremidi::output_port* outputPort = nullptr;
+
+    auto locker = lockMutex(&m_mutex);
+
+    for (auto it = m_devices.begin(); it != m_devices.end(); it++) {
+        const auto* device = it->get();
+        if (!device->m_pOutputPort.has_value()) {
+            continue;
+        }
+
+        QString outputName = device->m_pOutputPort->port_name.c_str();
+        if (libremidiShouldLinkInputToOutput(inputName, outputName)) {
+            // Currently simply removing previous device, and creating new one
+            outputPort = &device->m_pOutputPort.value();
+            auto ptr = std::move(*it);
+            emit deviceRemoved(ptr.get());
+            m_devices.erase(it);
+            ptr.release()->deleteLater();
+            break;
+        }
+    }
+    locker.unlock();
+
+    addDevice(&inputPort, outputPort);
+
+    // qDebug() << "Linking to output device: " << outputName;
 }
 
-LibremidiEnumerator::LibremidiEnumerator(UserSettingsPointer pConfig)
-        : m_observer(libremidi::observer{
-                  libremidi::observer_configuration{
-                          .input_removed = input_removed,
-                          .output_removed = output_removed}}),
-          m_pConfig(pConfig) {
+// Check mutex locking for multiple callbacks at once
+void LibremidiEnumerator::inputRemoved(const libremidi::input_port& inputPort) {
+    qWarning() << "Input removed: " << inputPort.port_name.c_str();
+
+    auto locker = lockMutex(&m_mutex);
+    for (auto it = m_devices.begin(); it != m_devices.end(); it++) {
+        auto* const device = it->get();
+
+        if (device->m_pInputPort.has_value() &&
+                device->m_pInputPort.value().port != inputPort.port) {
+            auto ptr = std::move(*it);
+            emit deviceRemoved(ptr.get());
+            m_devices.erase(it);
+            ptr.release()->deleteLater();
+            // emit deviceRemoved(device);
+            // m_devices.erase(it);
+            break;
+        }
+    }
+    locker.unlock();
+}
+
+void LibremidiEnumerator::outputAdded(const libremidi::output_port& outputPort) {
+    if (!recognizeDevice(outputPort, m_pConfig)) {
+        return;
+    }
+    qWarning() << "Output added: " << outputPort.port_name.c_str();
+
+    QString outputName = outputPort.port_name.c_str();
+    const libremidi::input_port* inputPort = nullptr;
+    auto locker = lockMutex(&m_mutex);
+
+    for (auto it = m_devices.begin(); it != m_devices.end(); it++) {
+        auto* const controller = it->get();
+        if (!controller->m_pInputPort.has_value()) {
+            continue;
+        } else {
+        }
+
+        QString inputName = controller->m_pInputPort->port_name.c_str();
+        if (libremidiShouldLinkInputToOutput(inputName, outputName)) {
+            inputPort = &controller->m_pInputPort.value();
+            // Currently simply removing previous device, and creating new one
+            auto ptr = std::move(*it);
+            emit deviceRemoved(ptr.get());
+            m_devices.erase(it);
+            ptr.release()->deleteLater();
+            return;
+        }
+    }
+
+    locker.unlock();
+    addDevice(inputPort, &outputPort);
+}
+
+void LibremidiEnumerator::outputRemoved(const libremidi::output_port& outputPort) {
+    qWarning() << "Output removed: " << outputPort.port_name.c_str();
+
+    auto locker = lockMutex(&m_mutex);
+    for (auto it = m_devices.begin(); it != m_devices.end(); it++) {
+        const auto& device = it->get();
+
+        if (device->m_pOutputPort.has_value() &&
+                device->m_pOutputPort.value().port == outputPort.port) {
+            auto ptr = std::move(*it);
+            emit deviceRemoved(device);
+            m_devices.erase(it);
+            ptr.release()->deleteLater();
+            break;
+        }
+    }
+}
+
+LibremidiEnumerator::LibremidiEnumerator(UserSettingsPointer pConfig, ControllerManager* manager)
+        : m_pConfig(pConfig),
+          m_pControllerManager(manager) {
+    connect(this, &LibremidiEnumerator::deviceAdded, manager, &ControllerManager::slotAddDevice);
+    connect(this,
+            &LibremidiEnumerator::deviceRemoved,
+            manager,
+            &ControllerManager::slotRemoveDevice);
+
+    m_observer = libremidi::observer{libremidi::observer_configuration{
+            .input_added =
+                    [this](const libremidi::input_port& port) {
+                        inputAdded(port);
+                    },
+            .input_removed =
+                    [this](const libremidi::input_port& port) {
+                        inputRemoved(port);
+                    },
+    }};
 }
 
 bool libremidiShouldLinkInputToOutput(const QString& input_name,
@@ -163,96 +293,4 @@ bool libremidiShouldLinkInputToOutput(const QString& input_name,
     }
 
     return false;
-}
-
-/// Enumerate the MIDI devices
-/// This method needs a bit of intelligence because Libremidi (and the underlying
-/// MIDI APIs) like to split output and input into separate devices. Eg.
-/// Libremidi would tell us the Hercules is two half-duplex devices. To help
-/// simplify a lot of code, we're going to aggregate these two streams into a
-/// single full-duplex device.
-QList<Controller*> LibremidiEnumerator::queryDevices() {
-    qDebug() << "Scanning PortMIDI devices:";
-
-    const auto in_ports = m_observer.get_input_ports();
-    const auto out_ports = m_observer.get_output_ports();
-
-    for (const libremidi::input_port& port : in_ports) {
-        qWarning() << port.port_name.c_str() << "\n";
-    }
-
-    for (const libremidi::output_port& port : out_ports) {
-        qWarning() << port.port_name.c_str() << "\n";
-    }
-
-    m_devices.clear();
-
-    const libremidi::input_port* pInputPort = nullptr;
-    const libremidi::output_port* pOutputPort = nullptr;
-    size_t outputDevIndex = -1;
-
-    QMap<size_t, QString> unassignedOutputDevices;
-    QList<Controller*> devices;
-
-    // Build a complete list of output devices for later pairing
-    for (size_t i = 0; i < out_ports.size(); i++) {
-        const auto& out_port = out_ports[i];
-        if (!recognizeDevice(out_port, m_pConfig)) {
-            continue;
-        }
-        qDebug() << " Found output device"
-                 << "#" << i << out_port.port_name.c_str();
-        QString deviceName = out_port.port_name.c_str();
-        unassignedOutputDevices[i] = deviceName;
-    }
-
-    // Search for input devices and pair them with output devices if applicable
-    for (size_t i = 0; i < in_ports.size(); i++) {
-        auto in_port = in_ports[i];
-        if (!recognizeDevice(in_port, m_pConfig)) {
-            // Is there a use case for output-only devices such as message
-            // displays? Then this condition has to be split and
-            // deviceInfo->output also needs to be checked and handled.
-            continue;
-        }
-
-        qDebug() << " Found input device"
-                 << "#" << i << in_port.port_name.c_str();
-        pInputPort = &in_port;
-
-        // Reset our output device variables before we look for one in case we find none.
-        pOutputPort = nullptr;
-        outputDevIndex = -1;
-
-        // Search for a corresponding output device
-        QMapIterator<size_t, QString> j(unassignedOutputDevices);
-        while (j.hasNext()) {
-            j.next();
-
-            QString deviceName = pInputPort->port_name.c_str();
-            QString outputName = QString(j.value());
-
-            if (libremidiShouldLinkInputToOutput(deviceName, outputName)) {
-                outputDevIndex = j.key();
-                pOutputPort = &out_ports[outputDevIndex];
-
-                unassignedOutputDevices.remove(outputDevIndex);
-
-                qDebug() << "    Linking to output device #" << outputDevIndex << outputName;
-                break;
-            }
-        }
-
-        // So at this point, we either have an input-only MIDI device
-        // (outputPort == NULL) or we've found a matching output MIDI
-        // device (outputPort != NULL).
-
-        //.... so create our (aggregate) MIDI device!
-        auto pCurrentDevice =
-                std::make_unique<LibremidiController>(pInputPort, pOutputPort);
-        devices.push_back(pCurrentDevice.get());
-        m_devices.push_back(std::move(pCurrentDevice));
-    }
-
-    return devices;
 }

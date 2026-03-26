@@ -2,6 +2,7 @@
 
 #include <qcombobox.h>
 #include <qlogging.h>
+#include <qtreewidget.h>
 
 #include "control/controlproxy.h"
 #include "controllers/controller.h"
@@ -46,6 +47,16 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             &ControllerManager::devicesChanged,
             this,
             &DlgPrefControllers::rescanControllers);
+
+    connect(m_pControllerManager.get(),
+            &ControllerManager::deviceAdded,
+            this,
+            &DlgPrefControllers::slotSetupControllerWidget);
+
+    connect(m_pControllerManager.get(),
+            &ControllerManager::deviceRemoved,
+            this,
+            &DlgPrefControllers::slotDestroyControllerWidget);
 
     comboBox_midiAPI->addItem("None", "None");
 
@@ -186,6 +197,87 @@ void DlgPrefControllers::rescanControllers() {
     setupControllerWidgets();
 }
 
+void DlgPrefControllers::slotSetupControllerWidget(Controller* pController) {
+    QList<Controller*> controllerList =
+            m_pControllerManager->getControllerList(false, true);
+    std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
+
+    size_t index = controllerList.indexOf(pController);
+    setupControllerWidget(pController, index);
+}
+
+void DlgPrefControllers::slotDestroyControllerWidget(size_t index) {
+    destroyControllerWidget(index);
+}
+
+void DlgPrefControllers::setupControllerWidget(Controller* pController, size_t index) {
+    auto pControllerDlg = make_parented<DlgPrefController>(
+            this, pController, m_pControllerManager, m_pConfig);
+    connect(pControllerDlg,
+            &DlgPrefController::mappingStarted,
+            m_pDlgPreferences,
+            &DlgPreferences::hide);
+    connect(pControllerDlg,
+            &DlgPrefController::mappingEnded,
+            m_pDlgPreferences,
+            &DlgPreferences::show);
+    // Recreate the control picker menus when decks or samplers are added
+    m_pNumDecks->connectValueChanged(pControllerDlg.get(),
+            &DlgPrefController::slotRecreateControlPickerMenu);
+    m_pNumSamplers->connectValueChanged(pControllerDlg.get(),
+            &DlgPrefController::slotRecreateControlPickerMenu);
+
+    m_controllerPages.insert(index, pControllerDlg);
+
+    connect(pController,
+            &Controller::openChanged,
+            this,
+            [this, pDlg = pControllerDlg.get()](bool bOpen) {
+                slotHighlightDevice(pDlg, bOpen);
+            });
+
+    QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
+            QTreeWidgetItem::Type);
+
+    const QString treeImage = [protocol = pController->getDataRepresentationProtocol()] {
+        switch (protocol) {
+        case DataRepresentationProtocol::USB_BULK_TRANSFER:
+            return QStringLiteral("ic_preferences_bulk.svg");
+        case DataRepresentationProtocol::HID:
+            return QStringLiteral("ic_preferences_hid.svg");
+        case DataRepresentationProtocol::MIDI:
+            return QStringLiteral("ic_preferences_midi.svg");
+        default:
+            return QStringLiteral("ic_preferences_controllers.svg");
+        }
+    }();
+
+    m_pDlgPreferences->addPageWidget(
+            DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
+            pController->getName(),
+            treeImage);
+
+    m_pControllersRootItem->addChild(pControllerTreeItem);
+    m_controllerTreeItems.insert(index, pControllerTreeItem);
+
+    // If controller is open make controller label bold
+    QFont temp = pControllerTreeItem->font(0);
+    temp.setBold(pController->isOpen());
+    pControllerTreeItem->setFont(0, temp);
+}
+
+void DlgPrefControllers::destroyControllerWidget(size_t index) {
+    // pController->disconnect(this);
+
+    DlgPrefController* pControllerDlg = m_controllerPages.takeAt(index);
+    m_pDlgPreferences->removePageWidget(pControllerDlg);
+    delete pControllerDlg;
+
+    QTreeWidgetItem* pControllerTreeItem = m_controllerTreeItems.takeAt(index);
+    m_pControllersRootItem->removeChild(pControllerTreeItem);
+    delete pControllerTreeItem;
+}
+
 void DlgPrefControllers::destroyControllerWidgets() {
     // NOTE: this assumes that the list of controllers does not change during the lifetime of Mixxx.
     // This is currently true, but once we support hotplug, we will need better lifecycle management
@@ -222,60 +314,10 @@ void DlgPrefControllers::setupControllerWidgets() {
 
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
+    int index = 0;
     for (auto* pController : std::as_const(controllerList)) {
-        auto pControllerDlg = make_parented<DlgPrefController>(
-                this, pController, m_pControllerManager, m_pConfig);
-        connect(pControllerDlg,
-                &DlgPrefController::mappingStarted,
-                m_pDlgPreferences,
-                &DlgPreferences::hide);
-        connect(pControllerDlg,
-                &DlgPrefController::mappingEnded,
-                m_pDlgPreferences,
-                &DlgPreferences::show);
-        // Recreate the control picker menus when decks or samplers are added
-        m_pNumDecks->connectValueChanged(pControllerDlg.get(),
-                &DlgPrefController::slotRecreateControlPickerMenu);
-        m_pNumSamplers->connectValueChanged(pControllerDlg.get(),
-                &DlgPrefController::slotRecreateControlPickerMenu);
-
-        m_controllerPages.append(pControllerDlg);
-
-        connect(pController,
-                &Controller::openChanged,
-                this,
-                [this, pDlg = pControllerDlg.get()](bool bOpen) {
-                    slotHighlightDevice(pDlg, bOpen);
-                });
-
-        QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
-                QTreeWidgetItem::Type);
-
-        const QString treeImage = [protocol = pController->getDataRepresentationProtocol()] {
-            switch (protocol) {
-            case DataRepresentationProtocol::USB_BULK_TRANSFER:
-                return QStringLiteral("ic_preferences_bulk.svg");
-            case DataRepresentationProtocol::HID:
-                return QStringLiteral("ic_preferences_hid.svg");
-            case DataRepresentationProtocol::MIDI:
-                return QStringLiteral("ic_preferences_midi.svg");
-            default:
-                return QStringLiteral("ic_preferences_controllers.svg");
-            }
-        }();
-
-        m_pDlgPreferences->addPageWidget(
-                DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
-                pController->getName(),
-                treeImage);
-
-        m_pControllersRootItem->addChild(pControllerTreeItem);
-        m_controllerTreeItems.append(pControllerTreeItem);
-
-        // If controller is open make controller label bold
-        QFont temp = pControllerTreeItem->font(0);
-        temp.setBold(pController->isOpen());
-        pControllerTreeItem->setFont(0, temp);
+        setupControllerWidget(pController, index);
+        index++;
     }
 }
 

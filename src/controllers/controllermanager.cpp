@@ -159,7 +159,7 @@ void ControllerManager::loadMidiBackend() {
 #endif
 #ifdef __LIBREMIDI__
     if (api == "Libremidi") {
-        m_enumerators.append(new LibremidiEnumerator(m_pConfig));
+        m_enumerators.append(new LibremidiEnumerator(m_pConfig, this));
     }
 #endif
 }
@@ -193,6 +193,24 @@ void ControllerManager::slotInitialize() {
     emit initialized();
 }
 
+void ControllerManager::slotAddDevice(Controller* pController) {
+    auto locker = lockMutex(&m_mutex);
+    m_controllers.append(pController);
+    locker.unlock();
+    emit deviceAdded(pController);
+
+    if (pController->isInputDevice()) {
+        setUpDevice(pController);
+    }
+}
+
+void ControllerManager::slotRemoveDevice(Controller* pController) {
+    emit deviceRemoved(m_controllers.indexOf(pController));
+    auto locker = lockMutex(&m_mutex);
+    m_controllers.removeAll(pController);
+    locker.unlock();
+}
+
 void ControllerManager::slotShutdown() {
     stopPolling();
 
@@ -213,9 +231,6 @@ void ControllerManager::slotShutdown() {
 }
 
 void ControllerManager::updateControllerList() {
-    // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
-    // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
-    // and possible crashes.
     auto locker = lockMutex(&m_mutex);
     if (m_enumerators.isEmpty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
@@ -266,67 +281,72 @@ QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name
     return m_pConfig->getValueString(ConfigKey(kSettingsGroup, sanitizeDeviceName(name)));
 }
 
+void ControllerManager::setUpDevice(Controller* pController) {
+    QStringList mappingPaths(getMappingPaths(m_pConfig));
+    QString name = pController->getName();
+
+    if (pController->isOpen()) {
+        pController->close();
+    }
+
+    // The filename for this device name.
+    QString deviceName = sanitizeDeviceName(name);
+
+    // Check if device is enabled
+    if (!m_pConfig->getValue(ConfigKey("[Controller]", deviceName), 0)) {
+        return;
+    }
+
+    // Check if device has a configured mapping
+    QString mappingFilePath = getConfiguredMappingFileForDevice(deviceName);
+    if (mappingFilePath.isEmpty()) {
+        return;
+    }
+
+    qDebug() << "Searching for controller mapping" << mappingFilePath
+             << "in paths:" << mappingPaths.join(",");
+    QFileInfo mappingFile = findMappingFile(mappingFilePath, mappingPaths);
+    if (!mappingFile.exists()) {
+        qDebug() << "Could not find" << mappingFilePath << "in any mapping path.";
+        return;
+    }
+
+    std::shared_ptr<LegacyControllerMapping> pMapping =
+            LegacyControllerMappingFileHandler::loadMapping(
+                    mappingFile, resourceMappingsPath(m_pConfig));
+
+    if (!pMapping) {
+        return;
+    }
+    pMapping->loadSettings(m_pConfig, pController->getName());
+
+    // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+    pController->setMapping(std::move(pMapping));
+
+    // If we are in safe mode, skip opening controllers.
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        qDebug() << "We are in safe mode -- skipping opening controller.";
+        return;
+    }
+
+    qDebug() << "Opening controller:" << name;
+
+    int value = pController->open(m_pConfig->getResourcePath());
+    if (value != 0) {
+        qWarning() << "There was a problem opening" << name;
+        return;
+    }
+}
+
 void ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
     const QList<Controller*> deviceList = getControllerList(false, true);
-    QStringList mappingPaths(getMappingPaths(m_pConfig));
+    // QStringList mappingPaths(getMappingPaths(m_pConfig));
 
     for (Controller* pController : deviceList) {
-        QString name = pController->getName();
-
-        if (pController->isOpen()) {
-            pController->close();
-        }
-
-        // The filename for this device name.
-        QString deviceName = sanitizeDeviceName(name);
-
-        // Check if device is enabled
-        if (!m_pConfig->getValue(ConfigKey("[Controller]", deviceName), 0)) {
-            continue;
-        }
-
-        // Check if device has a configured mapping
-        QString mappingFilePath = getConfiguredMappingFileForDevice(deviceName);
-        if (mappingFilePath.isEmpty()) {
-            continue;
-        }
-
-        qDebug() << "Searching for controller mapping" << mappingFilePath
-                 << "in paths:" << mappingPaths.join(",");
-        QFileInfo mappingFile = findMappingFile(mappingFilePath, mappingPaths);
-        if (!mappingFile.exists()) {
-            qDebug() << "Could not find" << mappingFilePath << "in any mapping path.";
-            continue;
-        }
-
-        std::shared_ptr<LegacyControllerMapping> pMapping =
-                LegacyControllerMappingFileHandler::loadMapping(
-                        mappingFile, resourceMappingsPath(m_pConfig));
-
-        if (!pMapping) {
-            continue;
-        }
-        pMapping->loadSettings(m_pConfig, pController->getName());
-
-        // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-        pController->setMapping(std::move(pMapping));
-
-        // If we are in safe mode, skip opening controllers.
-        if (CmdlineArgs::Instance().getSafeMode()) {
-            qDebug() << "We are in safe mode -- skipping opening controller.";
-            continue;
-        }
-
-        qDebug() << "Opening controller:" << name;
-
-        int value = pController->open(m_pConfig->getResourcePath());
-        if (value != 0) {
-            qWarning() << "There was a problem opening" << name;
-            continue;
-        }
+        setUpDevice(pController);
     }
 
     pollIfAnyControllersOpen();

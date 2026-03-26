@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
+#include "controllers/controller.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
@@ -41,6 +43,8 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
   private slots:
     void rescanControllers();
+    void slotSetupControllerWidget(Controller* pController);
+    void slotDestroyControllerWidget(size_t index);
 #if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
     void slotMidiAPIChanged(const QString& api);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -52,6 +56,8 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 
   private:
+    void destroyControllerWidget(size_t index);
+    void setupControllerWidget(Controller* pController, size_t index);
     void destroyControllerWidgets();
     void setupControllerWidgets();
     void openLocalFile(const QString& file);
