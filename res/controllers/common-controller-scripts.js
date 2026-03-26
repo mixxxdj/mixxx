@@ -212,6 +212,8 @@ script.deckFromGroup = function(group) {
 
 /* -------- ------------------------------------------------------
      script.bindConnections
+   Note:    **Deprecated** because it uses deprecated engine.connectControl.
+            See script.makeConnections below for updated behaviour.
    Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
    Input:   The group whose controls are to be bound and an object
             (controlstToFunctions) where the properties' names are
@@ -228,6 +230,24 @@ script.bindConnections = function(group, controlsToFunctions, remove) {
         if (!remove) {
             engine.trigger(group, control);
         }
+    }
+};
+
+/* -------- ------------------------------------------------------
+     script.makeConnections
+   Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
+   Input:   The group whose controls are to be bound and an object
+            (controlstToFunctions) where the properties' names are
+            controls names and the values are the functions those
+            controls will be bound to.
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.makeConnections = function(group, controlsToFunctions) {
+    var control;
+
+    for (control in controlsToFunctions) {
+        engine.makeConnection(group, control, controlsToFunctions[control]);
+        engine.trigger(group, control);
     }
 };
 
