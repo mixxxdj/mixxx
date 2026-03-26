@@ -3,6 +3,7 @@
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "library/autodj/track/fadeabletrackordeckattributes.h"
+#include "util/parented_ptr.h"
 
 class BaseTrackPlayer;
 
