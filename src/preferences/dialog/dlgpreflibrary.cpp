@@ -469,9 +469,11 @@ void DlgPrefLibrary::resetLibraryFont() {
 }
 
 void DlgPrefLibrary::slotAddDir() {
-    QString fd = QFileDialog::getExistingDirectory(this,
+    QString fd = QFileDialog::getExistingDirectory(
+            this,
             tr("Choose a music directory"),
-            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation),
+            QFileDialog::ShowDirsOnly);
     if (!fd.isEmpty()) {
         if (m_pLibrary->requestAddDir(fd)) {
             populateDirList();
@@ -553,7 +555,10 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Relink music directory to new location"), startDir);
+            this,
+            tr("Relink music directory to new location"),
+            startDir,
+            QFileDialog::ShowDirsOnly);
 
     if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
         populateDirList();
