@@ -4,6 +4,7 @@
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
 
+#include <QFileDialog>
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
@@ -11,7 +12,7 @@
 #include <QTextCodec>
 #include <QtDebug>
 
-#include "engine/engine.h"
+#include "library/dao/settingsdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
@@ -24,11 +25,9 @@
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/track.h"
-#include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/sandbox.h"
-#include "waveform/waveform.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -165,7 +164,8 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 // The returned list owns the pointers, but we can't use a unique_ptr because
 // the result is passed by a const reference inside QFuture and than copied
 // to the main thread requiring a copy-able object.
-QList<TreeItem*> findRekordboxDevices() {
+QList<TreeItem*> findRekordboxDevices(const QString& manualDevicePath = QString()) {
+    Q_UNUSED(manualDevicePath);
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
@@ -231,6 +231,19 @@ QList<TreeItem*> findRekordboxDevices() {
     }
 #else // __APPLE__
     QFileInfoList devices = QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    if (!manualDevicePath.isEmpty()) {
+        bool alreadyInList = false;
+        foreach (QFileInfo device, devices) {
+            if (device.filePath() == manualDevicePath) {
+                alreadyInList = true;
+                break;
+            }
+        }
+        if (!alreadyInList) {
+            devices.append(QFileInfo(manualDevicePath));
+        }
+    }
 
     foreach (QFileInfo device, devices) {
         QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
@@ -1486,8 +1499,49 @@ void RekordboxFeature::refreshLibraryModels() {
 void RekordboxFeature::activate() {
     qDebug() << "RekordboxFeature::activate()";
 
+    QString manualDevicePath;
+
+#if defined(Q_OS_MACOS)
+    if (Sandbox::enabled()) {
+        SettingsDAO settings(m_pTrackCollection->database());
+        QString savedDbFile(settings.getValue("mixxx.rekordboxfeature.dbpath"));
+
+        bool hasValidDbFile = false;
+
+        if (!savedDbFile.isEmpty()) {
+            mixxx::FileInfo dbFileInfo(savedDbFile);
+            if (Sandbox::canAccess(&dbFileInfo) && dbFileInfo.checkFileExists()) {
+                hasValidDbFile = true;
+            }
+        }
+
+        if (!hasValidDbFile) {
+            QString defaultPath = QDir::homePath();
+            QString newDbFile = QFileDialog::getOpenFileName(nullptr,
+                    tr("Select your Rekordbox external database"),
+                    defaultPath,
+                    "Rekordbox Database (export.pdb)");
+
+            if (!newDbFile.isEmpty()) {
+                mixxx::FileInfo newFileInfo(newDbFile);
+                Sandbox::createSecurityToken(&newFileInfo);
+                settings.setValue("mixxx.rekordboxfeature.dbpath", newDbFile);
+                savedDbFile = newDbFile;
+                hasValidDbFile = true;
+            }
+        }
+
+        if (hasValidDbFile) {
+            QDir dir(savedDbFile);
+            dir.cdUp(); // Up from export.pdb to PIONEER containing folder
+            dir.cdUp(); // Up from PIONEER to root volume folder
+            manualDevicePath = dir.absolutePath();
+        }
+    }
+#endif
+
     // Let a worker thread do the XML parsing
-    m_devicesFuture = QtConcurrent::run(findRekordboxDevices);
+    m_devicesFuture = QtConcurrent::run(findRekordboxDevices, manualDevicePath);
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
     m_title = tr("(loading) Rekordbox");
     //calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.
