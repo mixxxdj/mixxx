@@ -1,0 +1,31 @@
+<CPackWiXPatch>
+  <!--
+    Cross-scope upgrade detection for Mixxx.
+
+    Old Mixxx (<=2.5.5) installers had InstallScope=NONE (mixture of per-user and per-machine)
+    due to a CPack bug (see CMake policy CMP0172). New installers (>= 2.6.0) are per-machine.
+    The standard FindRelatedProducts skips per-user products when the current
+    install is per-machine, leaving the old version behind.
+
+    This custom action DLL calls MsiEnumRelatedProducts() which is
+    scope-agnostic, and sets WIX_UPGRADE_DETECTED so RemoveExistingProducts
+    can clean up the old installation.
+  -->
+  <CPackWiXFragment Id="#PRODUCT">
+    <Binary Id="mixxxupgradecustomaction"
+            SourceFile="$<TARGET_FILE:mixxxupgradecustomaction>" />
+
+    <CustomAction Id="FindAllRelatedMixxxInstallations"
+                  BinaryRef="mixxxupgradecustomaction"
+                  DllEntry="FindAllRelatedMixxxInstallations"
+                  Execute="firstSequence" />
+
+    <InstallExecuteSequence>
+      <Custom Action="FindAllRelatedMixxxInstallations" Before="FindRelatedProducts" />
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <Custom Action="FindAllRelatedMixxxInstallations" Before="FindRelatedProducts" />
+    </InstallUISequence>
+  </CPackWiXFragment>
+</CPackWiXPatch>

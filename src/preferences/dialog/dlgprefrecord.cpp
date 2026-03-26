@@ -252,10 +252,12 @@ void DlgPrefRecord::slotResetToDefaults() {
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
-    QString fd = QFileDialog::getExistingDirectory(this,
+    QString fd = QFileDialog::getExistingDirectory(
+            this,
             tr("Choose recordings directory"),
             m_pConfig->getValueString(
-                    ConfigKey(RECORDING_PREF_KEY, "Directory")));
+                    ConfigKey(RECORDING_PREF_KEY, "Directory")),
+            QFileDialog::ShowDirsOnly);
 
     if (fd != "") {
         // The user has picked a new directory via a file dialog. This means the
