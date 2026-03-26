@@ -1046,11 +1046,9 @@ void BaseTrackPlayerImpl::slotVolumeChanged(double value) {
     }
 #endif
     if (value > 0.0) {
-        std::cout << "Play and Volume = " << value << std::endl;
         m_pPlay->set(1.0);
 
     } else {
-        std::cout << "Pause and Volume = " << value << std::endl;
         m_pPlay->set(0.0);
     }
 }
