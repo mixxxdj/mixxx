@@ -235,7 +235,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pStarsThree;
     std::unique_ptr<ControlPushButton> m_pStarsFour;
     std::unique_ptr<ControlPushButton> m_pStarsFive;
-    // Fader Start Control Push button
     std::unique_ptr<ControlPushButton> m_pFaderStart;
 
     std::unique_ptr<ControlObject> m_pUpdateReplayGainFromPregain;
