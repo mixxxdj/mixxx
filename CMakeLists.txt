@@ -1259,6 +1259,7 @@ add_library(
   src/effects/backends/builtin/echoeffect.cpp
   src/effects/backends/builtin/filtereffect.cpp
   src/effects/backends/builtin/flangereffect.cpp
+  src/effects/backends/builtin/gaineffect.cpp
   src/effects/backends/builtin/glitcheffect.cpp
   src/effects/backends/builtin/graphiceqeffect.cpp
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
