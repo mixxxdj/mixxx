@@ -71,6 +71,20 @@
       </item>
 
       <item>
+       <widget class="QCheckBox" name="checkBox_hideDisabled">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Hide disabled controllers</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
        <widget class="Line" name="line_midithrough">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -224,6 +238,7 @@
   </layout>
  </widget>
  <tabstops>
+  checkBox_hideDisabled
   checkBox_midithrough
   btnOpenUserMappings
  </tabstops>
