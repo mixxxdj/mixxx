@@ -4,8 +4,8 @@ import "Theme"
 Rectangle {
     id: root
 
-    border.width: 2
     border.color: Theme.deckBackgroundColor
-    radius: 5
+    border.width: 2
     color: Theme.embeddedBackgroundColor
+    radius: 8
 }

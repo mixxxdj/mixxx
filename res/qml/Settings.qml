@@ -17,6 +17,9 @@ Popup {
     // FIXME change to `final` when supported
     readonly property real smallScreenWidth: 1200
 
+    horizontalPadding: 20
+    verticalPadding: 20
+
     background: Rectangle {
         anchors.fill: parent
         color: Theme.darkGray4

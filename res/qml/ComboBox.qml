@@ -8,118 +8,223 @@ import "Theme"
 ComboBox {
     id: root
 
-    property alias popupWidth: popup.width
     property bool clip: false
-    property int popupMaxItem: 3
+    property list<var> footerItems: []
+    property int popupMaxItem: 6
+    property alias popupWidth: popupItem.width
 
-    background: Skin.EmbeddedBackground {
+    signal activateFooter(int index)
+
+    indicator.width: 20
+
+    background: Item {
+        Rectangle {
+            id: background
+
+            anchors.fill: parent
+            anchors.margins: 4
+            border.color: '#000000'
+            border.width: 1
+            color: '#232323'
+            radius: 4
+        }
+        InnerShadow {
+            id: bottomInnerEffect
+
+            anchors.fill: parent
+            color: "#40000000"
+            horizontalOffset: -2
+            radius: 4
+            samples: 16
+            source: background
+            spread: 0.3
+            verticalOffset: -2
+        }
+        InnerShadow {
+            id: topInnerEffect
+
+            anchors.fill: parent
+            color: "#40000000"
+            horizontalOffset: 2
+            radius: 4
+            samples: 16
+            source: bottomInnerEffect
+            spread: 0.3
+            verticalOffset: 2
+        }
+        DropShadow {
+            anchors.fill: parent
+            color: "#40000000"
+            horizontalOffset: 0
+            radius: 4.0
+            source: topInnerEffect
+            verticalOffset: 0
+        }
     }
-
+    contentItem: Text {
+        clip: root.clip
+        color: Theme.deckTextColor
+        elide: root.clip ? Text.ElideNone : Text.ElideRight
+        font: root.font
+        leftPadding: 5
+        text: root.displayText
+        verticalAlignment: Text.AlignVCenter
+    }
     delegate: ItemDelegate {
         id: itemDlgt
 
         required property int index
 
         highlighted: root.highlightedIndex === this.index
-        text: root.textAt(this.index)
         padding: 4
+        text: root.textAt(this.index)
         verticalPadding: 8
-
-        contentItem: Text {
-            text: itemDlgt.text
-            font: root.font
-            color: Theme.deckTextColor
-            elide: Text.ElideRight
-            verticalAlignment: Text.AlignVCenter
-        }
+        width: root.width
 
         background: Rectangle {
-            radius: 5
-            border.width: 1
             border.color: itemDlgt.highlighted ? Theme.deckLineColor : "transparent"
+            border.width: 1
             color: "transparent"
+            radius: 5
+        }
+        contentItem: Text {
+            color: Theme.deckTextColor
+            elide: Text.ElideRight
+            font: root.font
+            text: itemDlgt.text
+            verticalAlignment: Text.AlignVCenter
         }
     }
-
-    indicator.width: 20
-
-    contentItem: Text {
-        leftPadding: 5
-        text: root.displayText
-        font: root.font
-        color: Theme.deckTextColor
-        verticalAlignment: Text.AlignVCenter
-        elide: root.clip ? Text.ElideNone : Text.ElideRight
-        clip: root.clip
-    }
-
     popup: Popup {
-        id: popup
-        y: root.height/2
-        width: root.width - root.indicator.width / 2
-        x: root.indicator.width / 2
-        height: root.indicator.implicitHeight*Math.min(root.popupMaxItem, root.count) + root.indicator.width
+        id: popupItem
 
+        height: root.contentItem.height * Math.min(root.popupMaxItem, Math.max(root.count, 1)) + 20
         padding: 0
+        width: root.width
+        x: root.width - width
+        y: root.height - 4
 
+        background: Item {
+        }
         contentItem: Item {
             Item {
                 id: content
+
                 anchors.fill: parent
+
                 Shape {
-                    id: arrow
-                    anchors.top: parent.top
+                    id: listIndicator
+
                     anchors.right: parent.right
                     anchors.rightMargin: 3
-                    width: root.indicator.width-4
-                    height: width
+                    anchors.top: parent.top
                     antialiasing: true
+                    height: 20
                     layer.enabled: true
                     layer.samples: 4
+                    width: 20
+
                     ShapePath {
-                        fillColor: Theme.embeddedBackgroundColor
-                        strokeColor: Theme.deckBackgroundColor
-                        strokeWidth: 2
-                        startX: arrow.width/2; startY: 0
-                        fillRule: ShapePath.WindingFill
                         capStyle: ShapePath.RoundCap
-                        PathLine { x: root.indicator.width; y: root.indicator.width }
-                        PathLine { x: 0; y: root.indicator.width }
-                        PathLine { x: (root.indicator.width) / 2; y: 0 }
+                        fillColor: Theme.embeddedBackgroundColor
+                        fillRule: ShapePath.WindingFill
+                        startX: listIndicator.width / 2
+                        startY: 0
+                        strokeColor: Theme.embeddedBackgroundColor
+                        strokeWidth: 2
+
+                        PathLine {
+                            x: listIndicator.width
+                            y: listIndicator.height
+                        }
+                        PathLine {
+                            x: 0
+                            y: listIndicator.height
+                        }
+                        PathLine {
+                            x: listIndicator.width / 2
+                            y: 0
+                        }
                     }
                 }
                 Skin.EmbeddedBackground {
-                    anchors.topMargin: root.indicator.width-6
-                    anchors.fill: parent
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: listIndicator.bottom
+                    clip: true
+
                     ListView {
-                        clip: true
-
                         anchors.fill: parent
-
                         bottomMargin: 0
+                        clip: true
+                        currentIndex: root.highlightedIndex
                         leftMargin: 0
+                        model: root.popup.visible ? root.delegateModel : null
                         rightMargin: 0
                         topMargin: 0
 
-                        model: root.popup.visible ? root.delegateModel : null
-                        currentIndex: root.highlightedIndex
+                        ScrollIndicator.vertical: ScrollIndicator {
+                        }
+                        footer: Item {
+                            anchors.left: parent.left
+                            anchors.right: parent.right
 
-                        ScrollBar.vertical: ScrollBar {
-                            policy: ScrollBar.AlwaysOn
+                            Repeater {
+                                model: root.footerItems
+
+                                Rectangle {
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    color: "transparent"
+                                    height: root.contentItem.height
+
+                                    Item {
+                                        anchors.fill: parent
+                                        anchors.margins: 6
+
+                                        Text {
+                                            anchors.bottom: parent.bottom
+                                            anchors.top: parent.top
+                                            color: Theme.deckTextColor
+                                            elide: Text.ElideRight
+                                            font: root.font
+                                            text: modelData.text
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                        Text {
+                                            anchors.bottom: parent.bottom
+                                            anchors.right: parent.right
+                                            anchors.top: parent.top
+                                            color: Theme.deckTextColor
+                                            font.pixelSize: 16
+                                            text: modelData?.suffix || ''
+                                        }
+                                    }
+                                    MouseArea {
+                                        id: footerItemMouseArea
+
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+
+                                        onPressed: {
+                                            root.activateFooter(index);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
             DropShadow {
                 anchors.fill: parent
-                horizontalOffset: 0
-                verticalOffset: 0
-                radius: 8.0
                 color: "#000000"
+                horizontalOffset: 0
+                radius: 8.0
                 source: content
+                verticalOffset: 0
             }
         }
-
-        background: Item {}
     }
 }
