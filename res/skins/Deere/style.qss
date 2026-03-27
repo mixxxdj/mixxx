@@ -1101,6 +1101,14 @@ WBeatSpinBox,
 
 /* End spacing for toolbar */
 
+#AbletonLinkWidget {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#AbletonLinkPeers {
+  color: #D2D2D2;
+}
+
 #Time {
   font: bold 13px;
 }

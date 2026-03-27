@@ -765,10 +765,11 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::onDeviceOutputCallback(const SINT iFramesPerBuffer) {
+void SoundManager::onDeviceOutputCallback(const SINT iFramesPerBuffer,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachsDac) {
     // Produce a block of samples for output. EngineMixer expects stereo
     // samples so multiply iFramesPerBuffer by 2.
-    m_pEngineMixer->process(iFramesPerBuffer * 2);
+    m_pEngineMixer->process(iFramesPerBuffer * 2, absTimeWhenPrevOutputBufferReachsDac);
 }
 
 void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
