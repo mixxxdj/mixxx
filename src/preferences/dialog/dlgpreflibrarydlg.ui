@@ -156,12 +156,50 @@
       </item>
 
       <item row="2" column="0" colspan="2">
-       <widget class="QCheckBox" name="checkBox_use_relative_path">
+       <widget class="QLabel" name="label_playlistTrackFilePaths">
         <property name="text">
-         <string>Use relative paths for playlist export if possible</string>
+         <string>Playlist Export:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
+
+      <item row="3" column="0" colspan="2">
+       <widget class="QRadioButton" name="radioButton_absolutePaths">
+        <property name="text">
+         <string>Absolute file paths</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">playlist_filepath_mode</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QRadioButton" name="radioButton_relativePaths">
+        <property name="text">
+         <string>Relative file paths, if possible</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">playlist_filepath_mode</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QRadioButton" name="radioButton_noPaths">
+        <property name="text">
+         <string>File names only</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">playlist_filepath_mode</string>
+        </attribute>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item>
@@ -200,6 +238,9 @@
         <property name="checked">
          <bool>true</bool>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">dblclick_options</string>
+        </attribute>
        </widget>
       </item>
       <item row="4" column="0" colspan="4">
@@ -207,6 +248,9 @@
         <property name="text">
          <string>Add track to Auto DJ queue (bottom)</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">dblclick_options</string>
+        </attribute>
        </widget>
       </item>
       <item row="5" column="0" colspan="4">
@@ -214,6 +258,9 @@
         <property name="text">
          <string>Add track to Auto DJ queue (top)</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">dblclick_options</string>
+        </attribute>
        </widget>
       </item>
       <item row="6" column="0" colspan="4">
@@ -221,6 +268,9 @@
         <property name="text">
          <string>Ignore</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">dblclick_options</string>
+        </attribute>
        </widget>
       </item>
 
@@ -729,7 +779,9 @@
   <tabstop>checkBox_library_scan_summary</tabstop>
   <tabstop>checkBox_sync_track_metadata</tabstop>
   <tabstop>checkBox_serato_metadata_export</tabstop>
-  <tabstop>checkBox_use_relative_path</tabstop>
+  <tabstop>radioButton_absolutePaths</tabstop>
+  <tabstop>radioButton_relativePaths</tabstop>
+  <tabstop>radioButton_noPaths</tabstop>
   <tabstop>checkBox_edit_metadata_selected_clicked</tabstop>
   <tabstop>radioButton_dbclick_deck</tabstop>
   <tabstop>radioButton_dbclick_bottom</tabstop>
@@ -758,6 +810,10 @@
   <tabstop>radioButton_cover_art_fetcher_lowest</tabstop>
   <tabstop>pushButton_open_settings_dir</tabstop>
  </tabstops>
+ <buttongroups>
+  <buttongroup name="playlist_filepath_mode"/>
+  <buttongroup name="dblclick_options"/>
+ </buttongroups>
  <resources/>
  <connections/>
 </ui>

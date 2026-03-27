@@ -20,6 +20,12 @@ enum class FocusWidget {
                  // m_pFocusedWidget in librarycontrol.cpp
 };
 
+enum class PlaylistExportFilePathMode {
+    AbsolutePaths,
+    RelativePaths,
+    NoPaths
+};
+
 struct LibraryScanResultSummary {
     LibraryScanResultSummary()
             : autoscan(false),
