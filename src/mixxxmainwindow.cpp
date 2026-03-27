@@ -993,6 +993,17 @@ void MixxxMainWindow::connectMenuBar() {
                 Qt::UniqueConnection);
     }
 
+    QString startRecord = CmdlineArgs::Instance().getStartRecording();
+    if (!startRecord.isNull()) {
+        auto pRecordingManager = m_pCoreServices->getRecordingManager();
+        if (pRecordingManager) {
+            pRecordingManager->startRecording(startRecord);
+            qInfo() << "Auto start recording to" << pRecordingManager->getRecordingLocation();
+        } else {
+            DEBUG_ASSERT(!"No RecordManager is available");
+        }
+    }
+
 #ifdef __ENGINEPRIME__
     DEBUG_ASSERT(m_pLibraryExporter);
     connect(m_pMenuBar,

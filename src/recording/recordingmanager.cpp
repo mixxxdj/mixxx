@@ -2,6 +2,7 @@
 
 #include <QDateTime>
 #include <QDir>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QMutex>
 #include <QStorageInfo>
@@ -98,7 +99,7 @@ qint64 RecordingManager::getFreeSpace() {
     return rv;
 }
 
-void RecordingManager::startRecording() {
+void RecordingManager::startRecording(const QString& recordingLocation) {
     QString encodingType = m_pConfig->getValueString(
             ConfigKey(RECORDING_PREF_KEY, "Encoding"));
     QString fileExtension = EncoderFactory::getFactory()
@@ -121,14 +122,33 @@ void RecordingManager::startRecording() {
     }
 
     m_iNumberSplits = 1;
-    // Append file extension.
-    QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
-    m_recordingFile = QString("%1.%2")
-                              .arg(date_time_str, fileExtension);
 
-    // Storing the absolutePath of the recording file without file extension.
-    m_recording_base_file = getRecordingDir();
-    m_recording_base_file.append("/").append(date_time_str);
+    if (recordingLocation.isEmpty()) {
+        // Append file extension.
+        QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
+        m_recordingFile = QStringLiteral("%1.%2")
+                                  .arg(date_time_str, fileExtension);
+
+        // Storing the absolutePath of the recording file without file extension.
+        m_recording_base_file = getRecordingDir();
+        m_recording_base_file.append("/").append(date_time_str);
+    } else {
+        auto fileInfo = QFileInfo(recordingLocation);
+
+        if (!fileInfo.absoluteDir().exists()) {
+            qWarning() << "Recoding directory is not found. Aborting.";
+            return;
+        }
+        m_recordingFile = QStringLiteral("%1.%2")
+                                  .arg(fileInfo.baseName(), fileExtension);
+        if (m_recordingFile != fileInfo.fileName()) {
+            qWarning() << "Requested filename doesn't match with the "
+                          "configured recording encoder. Using"
+                       << m_recordingFile << "instead";
+        }
+        m_recording_base_file = fileInfo.absoluteDir().filePath(fileInfo.baseName());
+    }
+
     // Appending file extension to get the filelocation.
     m_recordingLocation = m_recording_base_file + QChar('.') + fileExtension;
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
