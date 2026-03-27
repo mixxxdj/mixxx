@@ -1419,6 +1419,9 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     format.setRenderableType(QSurfaceFormat::OpenGLES);
     format.setVersion(3, 0);
     QSurfaceFormat::setDefaultFormat(format);
+#else
+    format.setProfile(QSurfaceFormat::CompatibilityProfile);
+    format.setRenderableType(QSurfaceFormat::OpenGL);
 #endif
 
     return format;
