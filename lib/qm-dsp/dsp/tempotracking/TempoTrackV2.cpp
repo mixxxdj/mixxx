@@ -224,19 +224,44 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
         }
     }
 
-    // apply adaptive threshold to rcf
-    MathUtilities::adaptiveThreshold(rcf);
+    // Apply a threshold to rcf to remove the noise floor which is in the wv shape.
 
-    double rcfsum =0.;
+    // Significant phases with percussion instruments have values in the 1000 - 10000 region
+    // Tracks with piano or guitar only have short regions we can use in the range of 20 - 35
+    // vocal and ambient beatless regions are < 5 and considered as detection noise.
+    // An artificial offset of 100 makes these low value peaks less significant in the
+    // following normalization step. They do no longer stand out, so that the following viterbi step
+    // keeps the tempo from a previous more significant region until another significant
+    // region is reached. This also avoids to get hooked to a different harmonics phase (int multiplier)
+    // after a bridge in electronic tracks.
+
+    double rcfsum1 = 0.;
     for (int i = 0; i < rcf_len; i++) {
-        rcf[i] += EPS ;
-        rcfsum += rcf[i];
+        rcfsum1 += rcf[i];
+    }
+
+    for (int i = 0; i < rcf_len; i++) {
+        rcf[i] -= wv[i] * rcfsum1;
+        if (rcf[i] < 0) {
+            rcf[i] = 0;
+        }
+        rcf[i] += 100; // determined experimentally (see above)
     }
 
     // normalise rcf to sum to unity
+    double rcfsum =0.;
     for (int i = 0; i < rcf_len; i++) {
-        rcf[i] /= (rcfsum + EPS);
+        rcfsum += rcf[i];
     }
+
+    for (int i = 0; i < rcf_len; i++) {
+        rcf[i] /= rcfsum;
+    }
+
+    // for (int i = 0; i < rcf_len; i++) {
+    //     std::cerr << " " << rcf[i];
+    //}
+    //std::cerr << std::endl;
 }
 
 void
