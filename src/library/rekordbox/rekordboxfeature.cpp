@@ -4,6 +4,7 @@
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
 
+#include <QFileDialog>
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
@@ -11,7 +12,7 @@
 #include <QTextCodec>
 #include <QtDebug>
 
-#include "engine/engine.h"
+#include "library/dao/settingsdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
@@ -24,11 +25,9 @@
 #include "track/cue.h"
 #include "track/keyfactory.h"
 #include "track/track.h"
-#include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/sandbox.h"
-#include "waveform/waveform.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -165,7 +164,8 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 // The returned list owns the pointers, but we can't use a unique_ptr because
 // the result is passed by a const reference inside QFuture and than copied
 // to the main thread requiring a copy-able object.
-QList<TreeItem*> findRekordboxDevices() {
+QList<TreeItem*> findRekordboxDevices(
+        [[maybe_unused]] const QStringList& manualDevicePaths = QStringList()) {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
@@ -231,6 +231,22 @@ QList<TreeItem*> findRekordboxDevices() {
     }
 #else // __APPLE__
     QFileInfoList devices = QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    for (const QString& manualPath : manualDevicePaths) {
+        if (manualPath.isEmpty()) {
+            continue;
+        }
+        bool alreadyInList = false;
+        foreach (QFileInfo device, devices) {
+            if (device.filePath() == manualPath) {
+                alreadyInList = true;
+                break;
+            }
+        }
+        if (!alreadyInList) {
+            devices.append(QFileInfo(manualPath));
+        }
+    }
 
     foreach (QFileInfo device, devices) {
         QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
@@ -1486,8 +1502,62 @@ void RekordboxFeature::refreshLibraryModels() {
 void RekordboxFeature::activate() {
     qDebug() << "RekordboxFeature::activate()";
 
+    QStringList manualDevicePaths;
+
+#if defined(Q_OS_MACOS)
+    if (Sandbox::enabled()) {
+        SettingsDAO settings(m_pTrackCollection->database());
+        const QString kSettingsKey =
+                QStringLiteral("mixxx.rekordboxfeature.sandboxed_usb_paths");
+        QString savedPaths(settings.getValue(kSettingsKey));
+        QStringList storedDbFiles = savedPaths.isEmpty()
+                ? QStringList()
+                : savedPaths.split(QStringLiteral(";"),
+                          Qt::SkipEmptyParts);
+
+        // Validate previously stored paths and collect accessible ones
+        QStringList validDbFiles;
+        for (const QString& dbFile : std::as_const(storedDbFiles)) {
+            mixxx::FileInfo dbFileInfo(dbFile);
+            if (Sandbox::canAccess(&dbFileInfo) &&
+                    dbFileInfo.checkFileExists()) {
+                validDbFiles.append(dbFile);
+            }
+        }
+
+        // If no valid paths remain, prompt the user to select at least one
+        if (validDbFiles.isEmpty()) {
+            QString defaultPath = QDir::homePath();
+            QString newDbFile = QFileDialog::getOpenFileName(nullptr,
+                    tr("Select your Rekordbox external database"),
+                    defaultPath,
+                    tr("Rekordbox Database (export.pdb)"));
+
+            if (!newDbFile.isEmpty()) {
+                mixxx::FileInfo newFileInfo(newDbFile);
+                Sandbox::createSecurityToken(&newFileInfo);
+                validDbFiles.append(newDbFile);
+            }
+        }
+
+        // Persist the updated list of valid paths
+        if (!validDbFiles.isEmpty()) {
+            settings.setValue(kSettingsKey,
+                    validDbFiles.join(QStringLiteral(";")));
+        }
+
+        // Derive volume root paths from each stored db file
+        for (const QString& dbFile : std::as_const(validDbFiles)) {
+            QDir dir(dbFile);
+            dir.cdUp(); // Up from export.pdb to PIONEER folder
+            dir.cdUp(); // Up from PIONEER to volume root
+            manualDevicePaths.append(dir.absolutePath());
+        }
+    }
+#endif
+
     // Let a worker thread do the XML parsing
-    m_devicesFuture = QtConcurrent::run(findRekordboxDevices);
+    m_devicesFuture = QtConcurrent::run(findRekordboxDevices, manualDevicePaths);
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
     m_title = tr("(loading) Rekordbox");
     //calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.
