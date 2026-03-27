@@ -88,12 +88,14 @@ const LibrarySortableColumns = [
     engine.getSetting("librarySortableColumns6Value"),
 ].map(c => parseInt(c)).filter(c => c); // Filter '0' column, equivalent to '---' value in the UI or disabled
 
+const JogwheelAdjustFactor = engine.getSetting("jogwheelAdjustFactor") || 1.0;
 const LoopWheelMoveFactor = engine.getSetting("loopWheelMoveFactor") || 50;
 const LoopEncoderMoveFactor = engine.getSetting("loopEncoderMoveFactor") || 500;
 const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor") || 2500;
 
 const TempoFaderSoftTakeoverColorLow = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorLow")] || LedColors.white;
 const TempoFaderSoftTakeoverColorHigh = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorHigh")] || LedColors.green;
+const TempoFaderRelativeMove = LedColors[engine.getSetting("tempoFaderRelativeMove")] || LedColors.blue;
 
 // Tempo fader center snap range
 // Transform user value (mm) into upper/lower values
@@ -199,6 +201,15 @@ const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 
 // Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
 const DefaultPadLayout = engine.getSetting("defaultPadLayout");
+
+// Use alternative movemode instead of default.
+const AlternativeMoveMode = engine.getSetting("alternativeMoveMode") || false;
+
+// Relative tempo slider mode -- the tempo slider does not care about its absolute position,
+// only changes in position.  Use Shift to adjust slider without changing tempo (for recentering, etc).
+const DefaultRelativeTempoMode = engine.getSetting("defaultRelativeTempoMode") || false;
+// Only adjust tempo if shift is held.
+const ShiftTempoMode = engine.getSetting("shiftTempoMode") || false;
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
 // the normal 2 for Button.prototype.brightnessOn changes the color
@@ -587,8 +598,10 @@ class Deck extends ComponentContainer {
             this.color = colors[0];
         }
         this.settings = settings;
+        this.moveMode = moveModes.beat;
         this.secondDeckModes = null;
         this.selectedHotcue = null;
+        this.relativeTempoMode = DefaultRelativeTempoMode;
 
         updateRuntimeData({
             selectedHotcue: {
@@ -1984,6 +1997,7 @@ class S4Mk3Deck extends Deck {
         this.mixer = mixer;
 
         this.syncMasterButton = new Button({
+            deck: this,
             key: "sync_leader",
             defaultRange: 0.08,
             shift: UseKeylockOnMaster ? function() {
@@ -1996,13 +2010,18 @@ class S4Mk3Deck extends Deck {
                 script.toggleControl(this.group, this.inKey);
             },
             onLongPress: function() {
-                const currentRange = engine.getValue(this.group, "rateRange");
-                if (currentRange < 1.0) {
-                    engine.setValue(this.group, "rateRange", 1.0);
-                    this.indicator(true);
+                if (this.shifted) {
+                    this.deck.relativeTempoMode = !this.deck.relativeTempoMode;
+                    this.deck.tempoFader.resync();
                 } else {
-                    engine.setValue(this.group, "rateRange", this.defaultRange);
-                    this.indicator(false);
+                    const currentRange = engine.getValue(this.group, "rateRange");
+                    if (currentRange < 1.0) {
+                        engine.setValue(this.group, "rateRange", 1.0);
+                        this.indicator(true);
+                    } else {
+                        engine.setValue(this.group, "rateRange", this.defaultRange);
+                        this.indicator(false);
+                    }
                 }
             },
         });
@@ -2034,10 +2053,21 @@ class S4Mk3Deck extends Deck {
             inKey: "rate",
             outKey: "rate",
             appliedValue: null,
+            lastHardwareValue: 0,
+            lastRelativeValue: null,
             tempoCenterUpper: this.settings.tempoCenterUpper,
             tempoCenterLower: this.settings.tempoCenterLower,
+            resync: function() {
+                this.appliedValue = null;
+                if (!this.deck.relativeTempoMode) {
+                    this.input(this.lastHardwareValue);
+                } else {
+                    this.send(TempoFaderRelativeMove + Button.prototype.brightnessOn);
+                }
+            },
             input: function(value) {
                 const receivingFirstValue = this.appliedValue === null;
+                this.lastHardwareValue = value;
 
                 if (value < this.tempoCenterLower) {
                     // scale input for lower range
@@ -2049,18 +2079,35 @@ class S4Mk3Deck extends Deck {
                     // reset rate in center region
                     this.appliedValue = 0;
                 }
+
+                if (this.deck.relativeTempoMode) {
+                    const lastVal = this.lastRelativeValue;
+                    this.lastRelativeValue = this.appliedValue;
+                    // We do want to  reset the slider to the physical position when receiving the
+                    // first value.
+                    if (!receivingFirstValue) {
+                        if (this.shifted ^ ShiftTempoMode) {
+                            return;
+                        }
+
+                        let relVal = engine.getValue(this.group, "rate");
+                        relVal += this.appliedValue - lastVal;
+                        this.appliedValue = Math.max(Math.min(relVal, 10.0), -10.0);
+                    }
+                }
                 engine.setValue(this.group, this.inKey, this.appliedValue);
 
                 if (receivingFirstValue) {
                     engine.softTakeover(this.group, this.inKey, true);
-                    // Forec-update LED.
+                    // Force-update LED.
                     // Output connection is made and updated before input() can set this.appliedValue
                     // (doesn't happen until getInputReport())
                     this.outTrigger();
                 }
             },
             output: function(value) {
-                if (this.appliedValue === null) {
+                if (this.deck.relativeTempoMode || this.appliedValue === null) {
+                    this.send(TempoFaderRelativeMove + Button.prototype.brightnessOn);
                     return;
                 }
 
@@ -2384,28 +2431,29 @@ class S4Mk3Deck extends Deck {
                     engine.setValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`, Object.keys(LedColorMap)[currentColorIdx]);
                     break;
                 }
+                case moveModes.beat:
                 default:
-                    if (!this.shifted) {
-                        if (!this.deck.leftEncoderPress.pressed) {
-                            if (right) {
-                                script.triggerControl(this.group, "beatjump_forward");
-                            } else {
-                                script.triggerControl(this.group, "beatjump_backward");
-                            }
+                    if (AlternativeMoveMode) {
+                        if (this.shifted) {
+                            script.triggerControl(this.group, right ? "beatjump_forward" : "beatjump_backward");
                         } else {
-                            let beatjumpSize = engine.getValue(this.group, "beatjump_size");
-                            if (right) {
-                                beatjumpSize *= 2;
+                            if (this.deck.leftEncoderPress.pressed) {
+                                script.triggerControl(this.group, right ? "pitch_up_small" : "pitch_down_small");
                             } else {
-                                beatjumpSize /= 2;
+                                const beatjumpSize = engine.getValue(this.group, "beatjump_size");
+                                engine.setValue(this.group, "beatjump_size", beatjumpSize * (right ? 2 : 1/2));
                             }
-                            engine.setValue(this.group, "beatjump_size", beatjumpSize);
                         }
+                        break;
+                    }
+                    if (this.shifted) {
+                        script.triggerControl(this.group, right ? "pitch_up_small" : "pitch_down_small");
                     } else {
-                        if (right) {
-                            script.triggerControl(this.group, "pitch_up_small");
+                        if (this.deck.leftEncoderPress.pressed) {
+                            const beatjumpSize = engine.getValue(this.group, "beatjump_size");
+                            engine.setValue(this.group, "beatjump_size", beatjumpSize * (right ? 2 : 1/2));
                         } else {
-                            script.triggerControl(this.group, "pitch_down_small");
+                            script.triggerControl(this.group, right ? "beatjump_forward" : "beatjump_backward");
                         }
                     }
                     break;
@@ -3108,11 +3156,11 @@ class S4Mk3Deck extends Deck {
                     if (this.deck.wheelTouch.touched || engine.getValue(this.group, "scratch2") !== 0) {
                         engine.setValue(this.group, "scratch2", this.speed);
                     } else {
-                        engine.setValue(this.group, "jog", this.speed);
+                        engine.setValue(this.group, "jog", this.speed * JogwheelAdjustFactor);
                     }
                     break;
                 default:
-                    engine.setValue(this.group, "jog", this.speed);
+                    engine.setValue(this.group, "jog", this.speed * JogwheelAdjustFactor);
                 }
             },
         });
