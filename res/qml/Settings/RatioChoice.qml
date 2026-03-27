@@ -16,23 +16,14 @@ Item {
     property color inactiveColor: Theme.darkGray2
     property real maxWidth: 0
     property alias metric: fontMetrics
-    property bool normalizedWidth: false
+    property bool normalizedWidth: true
     required property list<string> options
-    property string selected: options.length ? options[0] : null
+    property var selected: options.length ? options[0] : null
     property real spacing: 9
     property list<var> tooltips: []
 
-    implicitHeight: (contentList.visible ? contentList.height : contentSpin.height)
-    implicitWidth: {
-        let minimumSize = options.reduce((acc, option) => acc + fontMetrics.advanceWidth(option) + root.spacing * 2, 0);
-        let normalizedSize = root.cellSize * root.options.length;
-        let size = root.normalizedWidth ? normalizedSize : minimumSize;
-        if (root.maxWidth > size) {
-            return size + root.spacing;
-        } else {
-            return contentSpin.implicitWidth;
-        }
-    }
+    implicitHeight: (contentList.visible ? contentList.height : contentSpin.height) + dropRatio.radius * 2
+    implicitWidth: (contentList.visible ? contentList.width : contentSpin.width) + dropRatio.radius * 2
 
     onTooltipsChanged: {
         popup.close();
@@ -169,7 +160,7 @@ Item {
             radius: parent.height / 2
         }
         contentItem: Item {
-            width: contentSpin.textWidth + 2 * contentSpin.spacing
+            width: contentSpin.textWidth + 2 * contentSpin.spacing + 20
 
             Rectangle {
                 id: content
@@ -224,6 +215,8 @@ Item {
         }
 
         onValueChanged: {
+            if (!contentSpin.visible)
+                return;
             root.selected = contentSpin.textFromValue(value) ?? "";
             popup.tooltip = root.tooltips[contentSpin.value] ?? "";
             popup.x = contentSpin.width / 2 - popup.width / 2;
@@ -250,8 +243,8 @@ Item {
     DropShadow {
         id: dropRatio
 
-        anchors.fill: contentList.visible ? contentList : contentSpin
-        anchors.margins: 0
+        anchors.fill: root
+        anchors.margins: dropRatio.radius
         color: "#80000000"
         horizontalOffset: 0
         radius: 4.0
