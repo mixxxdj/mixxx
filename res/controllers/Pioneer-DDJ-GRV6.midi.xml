@@ -1,0 +1,1481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.5">
+    <info>
+        <name>Pioneer DDJ-GRV6</name>
+        <author>Jörg Beyer</author>
+        <description>Midi Mapping for the Pioneer DDJ-GRV6, 2025-12-28 18:52</description>
+        <forums>TBD</forums>
+    </info>
+    <controller id="DDJ-GRV6">
+        <scriptfiles>
+            <file filename="common-controller-scripts.js"/>
+            <file functionprefix="PioneerDDJGRV6" filename="Pioneer-DDJ-GRV6-scripts.js"/>
+        </scriptfiles>
+
+        <controls>
+        <!--
+        **
+        ** Browsing functionality: top middle section with the jogwhhel
+        **
+        -->
+            <control>
+                <description>B1 BROWSE - rotate - Scroll tracklist/tree view</description>
+                <group>[Library]</group>
+                <key>MoveVertical</key>
+                <status>0xB6</status>
+                <midino>0x40</midino>
+                <options><SelectKnob/></options>
+            </control>
+            <control>
+                <description>B1 BROWSE - press - Move cursor between track list and tree view</description>
+                <group>[Library]</group>
+                <key>MoveFocusForward</key>
+                <status>0x96</status>
+                <midino>0x41</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>B1 BROWSE +SHIFT - press - Move cursor between track list and tree view</description>
+                <group>[Library]</group>
+                <key>MoveFocusBackward</key>
+                <status>0x96</status>
+                <midino>0x42</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>B6 LOAD - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x46</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>B6 LOAD - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>B6 LOAD - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>B6 LOAD - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x49</midino>
+                <options><Normal/></options>
+            </control>
+        <!-- not mapped: tilt in all 4 directions. B2-B5 -->
+        <!--
+        **
+        ** the decks
+        **
+        -->
+            <control>
+                <description>D3 SHIFT - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.shiftPressed</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D3 SHIFT - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.shiftPressed</key>
+                <status>0x91</status>
+                <midino>0x3F</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D3 SHIFT - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.shiftPressed</key>
+                <status>0x92</status>
+                <midino>0x3F</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D3 SHIFT - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.shiftPressed</key>
+                <status>0x93</status>
+                <midino>0x3F</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D1 Play/Pause - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options><Toggled/></options>
+            </control>
+            <control>
+                <description>D1 Play/Pause - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <options><Toggled/></options>
+            </control>
+            <control>
+                <description>D1 Play/Pause - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>play</key>
+                <status>0x92</status>
+                <midino>0x0B</midino>
+                <options><Toggled/></options>
+            </control>
+            <control>
+                <description>D1 Play/Pause - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>play</key>
+                <status>0x93</status>
+                <midino>0x0B</midino>
+                <options><Toggled/></options>
+            </control>
+            <control>
+                <description>D1 shift Play/Pause - Deck 1 - reverse playback</description>
+                <group>[Channel1]</group>
+                <key>reverseroll</key>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D1 shift Play/Pause - Deck 2 - reverse playback</description>
+                <group>[Channel2]</group>
+                <key>reverseroll</key>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D1 shift Play/Pause - Deck 3 - reverse playback</description>
+                <group>[Channel3]</group>
+                <key>reverseroll</key>
+                <status>0x92</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D1 shift Play/Pause - Deck 4 - reverse playback</description>
+                <group>[Channel4]</group>
+                <key>reverseroll</key>
+                <status>0x93</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 set/call cue, back cue - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 set/call cue, back cue - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 set/call cue, back cue - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 set/call cue, back cue - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <status>0x93</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 jump to track start - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>start_play</key>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 jump to track start - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>start_play</key>
+                <status>0x91</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 jump to track start - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>start_play</key>
+                <status>0x92</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>D2 jump to track start - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>start_play</key>
+                <status>0x93</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+            </control>
+        <!-- jog dial start -->
+            <control>
+                <description>D4 Jog Platter Vinyl mode ON - Deck 1 - scratch</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB0</status>
+                <midino>0x22</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter Vinyl mode ON - Deck 2 - scratch</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB1</status>
+                <midino>0x22</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter Vinyl mode ON - Deck 3 - scratch</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB2</status>
+                <midino>0x22</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter Vinyl mode ON - Deck 4 - scratch</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB3</status>
+                <midino>0x22</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 1 - pitch bend</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB0</status>
+                <midino>0x21</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 2 - pitch bend</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB1</status>
+                <midino>0x21</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 3 - pitch bend</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB2</status>
+                <midino>0x21</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 4 - pitch bend</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB3</status>
+                <midino>0x21</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter Vinyl mode OFF - Deck 1 - pitch bend</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB0</status>
+                <midino>0x23</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter Vinyl mode OFF - Deck 2 - pitch bend</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB1</status>
+                <midino>0x23</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter Vinyl mode OFF - Deck 3 - pitch bend</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB2</status>
+                <midino>0x23</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter Vinyl mode OFF - Deck 4 - pitch bend</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.jogTurn</key>
+                <status>0xB3</status>
+                <midino>0x23</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 1 - search</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.jogSearch</key>
+                <status>0xB0</status>
+                <midino>0x29</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 2 - search</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.jogSearch</key>
+                <status>0xB1</status>
+                <midino>0x29</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 3 - search</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.jogSearch</key>
+                <status>0xB2</status>
+                <midino>0x29</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter - Deck 4 - search</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.jogSearch</key>
+                <status>0xB3</status>
+                <midino>0x29</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch - Deck 1 - enable on touch / disable on release</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch - Deck 2 - enable on touch / disable on release</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x91</status>
+                <midino>0x36</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch - Deck 3 - enable on touch / disable on release</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x92</status>
+                <midino>0x36</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch - Deck 4 - enable on touch / disable on release</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x93</status>
+                <midino>0x36</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch scratch / pitch bend - Deck 1 - enable on touch / disable on release high speed</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x90</status>
+                <midino>0x67</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch scratch / pitch bend - Deck 2 - enable on touch / disable on release high speed</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x91</status>
+                <midino>0x67</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch scratch / pitch bend - Deck 3 - enable on touch / disable on release high speed</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x92</status>
+                <midino>0x67</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D4 Jog Platter touch scratch / pitch bend - Deck 4 - enable on touch / disable on release high speed</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.jogTouch</key>
+                <status>0x93</status>
+                <midino>0x67</midino>
+                <options><Script-Binding/></options>
+            </control>
+        <!-- jog dial end -->
+        <!-- tempo slider start -->
+            <control>
+                <description>D18 Tempo Slider - Deck 1 - fade MSB</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.tempoSliderMSB</key>
+                <status>0xB0</status>
+                <midino>0x00</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D18 Tempo Slider - Deck 2 - fade MSB</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.tempoSliderMSB</key>
+                <status>0xB1</status>
+                <midino>0x00</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D18 Tempo Slider - Deck 3 - fade MSB</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.tempoSliderMSB</key>
+                <status>0xB2</status>
+                <midino>0x00</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D18 Tempo Slider - Deck 4 - fade MSB</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.tempoSliderMSB</key>
+                <status>0xB3</status>
+                <midino>0x00</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D18 Tempo Slider - Deck 1 - fade LSB</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.tempoSliderLSB</key>
+                <status>0xB0</status>
+                <midino>0x20</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D18 Tempo Slider - Deck 2 - fade LSB</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.tempoSliderLSB</key>
+                <status>0xB1</status>
+                <midino>0x20</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D18 Tempo Slider - Deck 3 - fade LSB</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.tempoSliderLSB</key>
+                <status>0xB2</status>
+                <midino>0x20</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D18 Tempo Slider - Deck 4 - fade LSB</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.tempoSliderLSB</key>
+                <status>0xB3</status>
+                <midino>0x20</midino>
+                <options><Script-Binding/></options>
+            </control>
+        <!-- tempo slider end -->
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 1 - press, set loop in</description>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 2 - press, set loop in</description>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <status>0x91</status>
+                <midino>0x10</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 3 - press, set loop in</description>
+                <group>[Channel3]</group>
+                <key>loop_in</key>
+                <status>0x92</status>
+                <midino>0x10</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 4 - press, set loop in</description>
+                <group>[Channel4]</group>
+                <key>loop_in</key>
+                <status>0x93</status>
+                <midino>0x10</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 1 - press, set loop out</description>
+                <group>[Channel1]</group>
+                <key>loop_out</key>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 2 - press, set loop out</description>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <status>0x91</status>
+                <midino>0x11</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 3 - press, set loop out</description>
+                <group>[Channel3]</group>
+                <key>loop_out</key>
+                <status>0x92</status>
+                <midino>0x11</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 LOOP IN/4 BEAT - Deck 4 - press, set loop out</description>
+                <group>[Channel4]</group>
+                <key>loop_out</key>
+                <status>0x93</status>
+                <midino>0x11</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT - Deck 1 - loop off, loop on</description>
+                <group>[Channel1]</group>
+                <key>reloop_toggle</key>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT - Deck 2 - loop off, loop on</description>
+                <group>[Channel2]</group>
+                <key>reloop_toggle</key>
+                <status>0x91</status>
+                <midino>0x4D</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT - Deck 3 - loop off, loop on</description>
+                <group>[Channel3]</group>
+                <key>reloop_toggle</key>
+                <status>0x92</status>
+                <midino>0x4D</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT - Deck 4 - loop off, loop on</description>
+                <group>[Channel4]</group>
+                <key>reloop_toggle</key>
+                <status>0x93</status>
+                <midino>0x4D</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT + shift - Deck 1 - reloop and  stop</description>
+                <group>[Channel1]</group>
+                <key>reloop_andstop</key>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT + shift - Deck 2 - reloop and  stop</description>
+                <group>[Channel2]</group>
+                <key>reloop_andstop</key>
+                <status>0x91</status>
+                <midino>0x50</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT + shift - Deck 3 - reloop and  stop</description>
+                <group>[Channel3]</group>
+                <key>reloop_andstop</key>
+                <status>0x92</status>
+                <midino>0x50</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 RELOOP/EXIT + shift - Deck 4 - reloop and  stop</description>
+                <group>[Channel4]</group>
+                <key>reloop_andstop</key>
+                <status>0x93</status>
+                <midino>0x50</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP in - Deck 1 - adjust loop in</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustIn</key>
+                <status>0x90</status>
+                <midino>0x4C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP in - Deck 2 - adjust loop in</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustIn</key>
+                <status>0x91</status>
+                <midino>0x4C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP in - Deck 3 - adjust loop in</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustIn</key>
+                <status>0x92</status>
+                <midino>0x4C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP in - Deck 4 - adjust loop in</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustIn</key>
+                <status>0x93</status>
+                <midino>0x4C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP out - Deck 1 - adjust loop out</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustOut</key>
+                <status>0x90</status>
+                <midino>0x4E</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP out - Deck 2 - adjust loop out</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustOut</key>
+                <status>0x91</status>
+                <midino>0x4E</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP out - Deck 3 - adjust loop out</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustOut</key>
+                <status>0x92</status>
+                <midino>0x4E</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D7 shift LOOP out - Deck 4 - adjust loop out</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.toggleLoopAdjustOut</key>
+                <status>0x93</status>
+                <midino>0x4E</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 1 - beat sync</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x90</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 2 - beat sync</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x91</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 3 - beat sync</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x92</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 4 - beat sync</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x93</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 1 - beat sync off</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x90</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 2 - beat sync off</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x91</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 3 - beat sync off</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x92</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>D19 Deck  - Deck 4 - beat sync off</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJGRV6.beatSyncHandler</key>
+                <status>0x93</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+            </control>
+        <!--
+        **
+        ** the Mixxer
+        **
+        -->
+            <control>
+                <description>Crossfader - slider M1</description>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB6</status>
+                <midino>0x1F</midino>
+                <options><FourteenBitCC/><soft_takeover/></options>
+            </control>
+            <control>
+                <description>M2 CH Fader - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options><FourteenBitCC/><soft_takeover/></options>
+            </control>
+            <control>
+                <description>M2 CH Fader - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <status>0xB1</status>
+                <midino>0x13</midino>
+                <options><FourteenBitCC/><soft_takeover/></options>
+            </control>
+            <control>
+                <description>M2 CH Fader - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>volume</key>
+                <status>0xB2</status>
+                <midino>0x13</midino>
+                <options><FourteenBitCC/><soft_takeover/></options>
+            </control>
+            <control>
+                <description>M2 CH Fader - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>volume</key>
+                <status>0xB3</status>
+                <midino>0x13</midino>
+                <options><FourteenBitCC/><soft_takeover/></options>
+            </control>
+            <control>
+                <description>M7 CH CUE - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>M7 CH CUE - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x91</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>M7 CH CUE - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <status>0x92</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>M7 CH CUE - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x93</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+            </control>
+            <control>
+                <description>M3 TRIM - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M3 TRIM - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M3 TRIM - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>pregain</key>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M3 TRIM - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>pregain</key>
+                <status>0xB3</status>
+                <midino>0x04</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M4 EQ Hi - Deck 1 - normal</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB0</status>
+                <midino>0x07</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M4 EQ Hi - Deck 2 - normal</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB1</status>
+                <midino>0x07</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M4 EQ Hi - Deck 3 - normal</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB2</status>
+                <midino>0x07</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M4 EQ Hi - Deck 4 - normal</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB3</status>
+                <midino>0x07</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 1 - normal</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 2 - normal</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 3 - normal</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB2</status>
+                <midino>0x0B</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 4 - normal</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB3</status>
+                <midino>0x0B</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 1 - normal</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB0</status>
+                <midino>0x0F</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 2 - normal</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB1</status>
+                <midino>0x0F</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 3 - normal</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB2</status>
+                <midino>0x0F</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M5 EQ Mid - Deck 4 - normal</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB3</status>
+                <midino>0x0F</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M12 HEADPHONES MIXING - rotate - Monitor Balance</description>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB6</status>
+                <midino>0x0C</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>M13 HEADPHONES Level - rotate - Monitor Balance</description>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <status>0xB6</status>
+                <midino>0x0D</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>Effect Color FX (CH {i+1})</description>
+                <group>[QuickEffectRack1_{i+1}]</group>
+                <key>super1</key>
+                <status>0xB6</status>
+                <midino>0x0D</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>Effect Color FX (CH {i+1})</description>
+                <group>[QuickEffectRack1_{i+1}]</group>
+                <key>super1</key>
+                <status>0xB6</status>
+                <midino>0x0D</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>Effect Color FX (CH {i+1})</description>
+                <group>[QuickEffectRack1_{i+1}]</group>
+                <key>super1</key>
+                <status>0xB6</status>
+                <midino>0x0D</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>Effect Color FX (CH {i+1})</description>
+                <group>[QuickEffectRack1_{i+1}]</group>
+                <key>super1</key>
+                <status>0xB6</status>
+                <midino>0x0D</midino>
+                <options><FourteenBitCC/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x20</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x21</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x22</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x23</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x24</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x25</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x26</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x27</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x28</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x29</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x2A</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x2B</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x2C</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F5 BEAT FX SELECT - rotate to change effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxSelectAbsolute</key>
+                <status>0x94</status>
+                <midino>0x2D</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x10</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x11</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x12</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x13</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x14</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x15</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x16</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x17</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x18</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x19</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x1A</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F6 BEAT FX CH SELECT - Select target deck, samplers (SP) or master</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.fxChannelAbsolute</key>
+                <status>0x94</status>
+                <midino>0x1B</midino>
+                <options><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F7 BEAT FX LEVEL/DEPTH (Hi/Res)</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.levelDepthDirect</key>
+                <status>0xB4</status>
+                <midino>0x02</midino>
+                <options><FourteenBitCC/><Script-Binding/></options>
+            </control>
+            <control>
+                <description>F8 BEAT FX ON/OFF - Toggle effect on/off</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJGRV6.beatFxOnOff</key>
+                <status>0x94</status>
+                <midino>0x47</midino>
+                <options><Script-Binding/></options>
+            </control>
+        </controls>
+        <outputs>
+            <output>
+                <description>D1 shift Play/Pause - Deck 1 - reverse playback</description>
+                <group>[Channel1]</group>
+                <key>reverseroll</key>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D1 shift Play/Pause - Deck 2 - reverse playback</description>
+                <group>[Channel2]</group>
+                <key>reverseroll</key>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D1 shift Play/Pause - Deck 3 - reverse playback</description>
+                <group>[Channel3]</group>
+                <key>reverseroll</key>
+                <status>0x92</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D1 shift Play/Pause - Deck 4 - reverse playback</description>
+                <group>[Channel4]</group>
+                <key>reverseroll</key>
+                <status>0x93</status>
+                <midino>0x47</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 set/call cue, back cue - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 set/call cue, back cue - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 set/call cue, back cue - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 set/call cue, back cue - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <status>0x93</status>
+                <midino>0x0C</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 jump to track start - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>start_play</key>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 jump to track start - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>start_play</key>
+                <status>0x91</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 jump to track start - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>start_play</key>
+                <status>0x92</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D2 jump to track start - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>start_play</key>
+                <status>0x93</status>
+                <midino>0x48</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 1 - beat sync</description>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 2 - beat sync</description>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x91</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 3 - beat sync</description>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <status>0x92</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 4 - beat sync</description>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <status>0x93</status>
+                <midino>0x58</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 1 - beat sync off</description>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 2 - beat sync off</description>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x91</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 3 - beat sync off</description>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <status>0x92</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>D19 Deck  - Deck 4 - beat sync off</description>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <status>0x93</status>
+                <midino>0x5C</midino>
+                <options><Script-Binding/></options>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <description>M7 CH CUE - Deck 1 - normal</description>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <description>M7 CH CUE - Deck 2 - normal</description>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x91</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <description>M7 CH CUE - Deck 3 - normal</description>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <status>0x92</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+            <output>
+                <description>M7 CH CUE - Deck 4 - normal</description>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x93</status>
+                <midino>0x54</midino>
+                <options><Normal/></options>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+            </output>
+        </outputs>
+    </controller>
+</MixxxMIDIPreset>
+
