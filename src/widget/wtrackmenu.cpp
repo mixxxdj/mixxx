@@ -428,6 +428,9 @@ void WTrackMenu::createActions() {
         m_pClearBeatsAction = make_parented<QAction>(tr("BPM and Beatgrid"), m_pClearMetadataMenu);
         connect(m_pClearBeatsAction, &QAction::triggered, this, &WTrackMenu::slotClearBeats);
 
+        m_pClearPlayedAction = make_parented<QAction>(tr("Played"), m_pClearMetadataMenu);
+        connect(m_pClearPlayedAction, &QAction::triggered, this, &WTrackMenu::slotResetPlayedState);
+
         m_pClearPlayCountAction = make_parented<QAction>(tr("Play Count"), m_pClearMetadataMenu);
         connect(m_pClearPlayCountAction, &QAction::triggered, this, &WTrackMenu::slotClearPlayCount);
 
@@ -724,6 +727,7 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
+        m_pClearMetadataMenu->addAction(m_pClearPlayedAction);
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
         m_pClearMetadataMenu->addAction(m_pClearRatingAction);
         m_pClearMetadataMenu->addAction(m_pClearCommentAction);
@@ -2035,6 +2039,28 @@ void WTrackMenu::loadSelectionToGroup(const QString& group,
 #else
     emit loadTrackToPlayer(pTrack, group, play);
 #endif
+}
+
+namespace {
+
+class ResetPlayedStateTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(const TrackPointer& pTrack) const override {
+        pTrack->updatePlayedStatusKeepPlayCount(false);
+    }
+};
+
+} // anonymous namespace
+
+// slot for reset played, sets played to 0 and keeps played count
+void WTrackMenu::slotResetPlayedState() {
+    const auto progressLabelText =
+            tr("Resetting played state of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ResetPlayedStateTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 namespace {
