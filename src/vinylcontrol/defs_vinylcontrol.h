@@ -69,7 +69,7 @@ constexpr int VINYL_STATUS_ERROR = 3;
 
 #define MIXXX_VC_DEFAULT_LEADINTIME 0
 
-#define MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS 66
+#define MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS 33
 #define MIXXX_VINYL_SCOPE_SIZE 100
 
 constexpr int kMaximumVinylControlInputs = 4;

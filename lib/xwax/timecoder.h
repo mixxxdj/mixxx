@@ -54,23 +54,22 @@ struct timecode_def {
     struct lut_mk2 lut_mk2; /* MK2 version */
 };
 
-struct timecoder_channel_mk2 {
-    int rms, rms_deriv; /* RMS values for the signal and its derivative */
-    signed int deriv, deriv_scaled; /* Derivative and its scaled version */
-
-    struct ringbuffer *delayline; /* needed for the Traktor MK2 demodulation */
-    struct ema_filter ema_filter;
-    struct differentiator differentiator;
-    struct root_mean_square rms_filter, rms_deriv_filter;
-};
-
 struct timecoder_channel {
     bool positive, /* wave is in positive part of cycle */
 	swapped; /* wave recently swapped polarity */
     signed int zero;
     unsigned int crossing_ticker; /* samples since we last crossed zero */
 
-    struct timecoder_channel_mk2 mk2;
+    int rms, rms_deriv; /* RMS values for the signal and its derivative */
+    signed int deriv, deriv_decoder; /* Derivative */
+
+    struct ringbuffer *delayline; /* needed for the pitch detection*/
+    struct ringbuffer *delayline_deriv; /* needed for the pitch detection*/
+    struct ewma_filter ewma_filter;
+    struct differentiator differentiator;
+    struct root_mean_square rms_filter, rms_deriv_filter;
+    struct savitzky_golay *savgol_filter;
+    struct rumble_filter rumble_filter;
 };
 
 struct mk2_subcode {
@@ -84,13 +83,15 @@ struct mk2_subcode {
     bool recent_bit_flip;
 
     struct ringbuffer *readings;
-    struct ema_filter ema_reading;
-    struct ema_filter ema_slope;
+    struct ewma_filter ewma_reading;
+    struct ewma_filter ewma_slope;
 };
 
 struct timecoder {
+    struct timecoder_channel primary, secondary;
     struct timecode_def *def;
-    double speed;
+
+    double speed; /* 33 or 45 rpm */
 
     /* Precomputed values */
 
@@ -100,14 +101,16 @@ struct timecoder {
 
     /* Pitch information */
 
-    bool forwards;
-    struct timecoder_channel primary, secondary;
+    double dphi; /* Phase difference */
+    double freq; /* Current carrier frequency */
+    double pitch; /* Current pitch */
 
+    bool forwards;
     bool use_legacy_pitch_filter;
-    struct pitch pitch;
-    struct pitch_kalman pitch_kalman;
-    unsigned quadrant, last_quadrant;
     bool direction_changed;
+
+    struct pitch_filter pitch_filter;
+    struct pitch_kalman_filter pitch_kalman_filter;
 
     /* Numerical timecode */
 
@@ -126,7 +129,6 @@ struct timecoder {
     int mon_size, mon_counter;
 
     struct mk2_subcode upper_bitstream, lower_bitstream;
-    double gain_compensation; /* Scaling factor for the derivative */
 };
 
 struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path);
@@ -158,10 +160,7 @@ static inline struct timecode_def* timecoder_get_definition(struct timecoder *tc
 
 static inline double timecoder_get_pitch(struct timecoder *tc)
 {
-    if (tc->use_legacy_pitch_filter)
-        return pitch_current(&tc->pitch) / tc->speed;
-    else
-        return pitch_kalman_current(&tc->pitch_kalman) / tc->speed;
+        return tc->pitch / tc->speed;
 }
 
 /*
