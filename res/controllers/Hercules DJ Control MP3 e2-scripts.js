@@ -486,12 +486,12 @@ HerculesMP3e2.pitch = function(midino, control, value, status, group) {
         sign = (value == 0x01) ? 1 : -1;
 
         if (group == "[Channel1]") {
-            newValue = HerculesMP3e2.knobIncrement("[Master]", "headVolume", 0, 5, 1, 30, sign);
-            engine.setValue("[Master]", "headVolume", newValue);
+            newValue = HerculesMP3e2.knobIncrement("[Mixer]", "headphone_gain", 0, 5, 1, 30, sign);
+            engine.setValue("[Mixer]", "headphone_gain", newValue);
         }
         if (group == "[Channel2]") {
-            newValue = HerculesMP3e2.knobIncrement("[Master]", "headMix", -1, 1, 0, 20, sign);
-            engine.setValue("[Master]", "headMix", newValue);
+            newValue = HerculesMP3e2.knobIncrement("[Mixer]", "headphone_mix", -1, 1, 0, 20, sign);
+            engine.setValue("[Mixer]", "headphone_mix", newValue);
         }
     } else {
         var deck = HerculesMP3e2.switchDeck(group);
@@ -733,10 +733,10 @@ HerculesMP3e2.jogWheel = function(midino, control, value, status, group) {
 HerculesMP3e2.syncmode = function(value, group, control) {
     // Following code was used for sync_leader control.
     // Deactivated for now due to https://github.com/mixxxdj/mixxx/issues/8039
-    // currently (2015-05-20) explicit master mode is not supported.
+    // currently (2015-05-20) explicit leader mode is not supported.
     // Switched to sync_enabled (binary) control
 
-    /*    if (value == 2) //Master => Blink
+    /*    if (value == 2) // Leader => Blink
         {
             if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3)))
             {

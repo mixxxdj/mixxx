@@ -2644,7 +2644,7 @@
              </control>
              <!--
              ******************
-             * Master Section *
+             * Mixer Section *
              ******************
              -->
             <control>
@@ -2658,7 +2658,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description>CROSSFADER</description>
                 <status>0xB5</status>
@@ -2668,8 +2668,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>volume</key>
+                <group>[Mixer]</group>
+                <key>main_gain</key>
                 <description>MASTERVOL</description>
                 <status>0xB5</status>
                 <midino>0x00</midino>
@@ -2678,8 +2678,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <description>CUE MIX</description>
                 <status>0xB5</status>
                 <midino>0x02</midino>

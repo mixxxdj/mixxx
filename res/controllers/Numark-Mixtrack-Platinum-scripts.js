@@ -1279,8 +1279,8 @@ MixtrackPlatinum.HeadGain = function(sampler) {
     });
 };
 MixtrackPlatinum.HeadGain.prototype = new components.Pot({
-    group: '[Master]',
-    inKey: 'headGain',
+    group: "[Mixer]",
+    inKey: "headphone_gain",
     input: function(channel, control, value, status, group) {
         // we call softTakeoverIgnoreNextValue() here on the non-targeted
         // control only if the control was moved when focus was switched. This

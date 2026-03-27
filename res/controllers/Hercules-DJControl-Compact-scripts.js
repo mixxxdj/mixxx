@@ -2,11 +2,11 @@
 // controller -- no control over which mode is selected for instance.
 
 HercDJCompact = function() {
-   this.group = "[Master]";
+    this.group = "[Mixer]";
 };
 
 HercDJCompact.init = function(id) {
-    engine.setValue("[Master]", "num_samplers", 8);
+    engine.setValue("[App]", "num_samplers", 8);
 
     scratch = false;
     scratch_timer = [];
