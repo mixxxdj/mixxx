@@ -983,15 +983,14 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         }
     }
 
-    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
+    CuePointer pCue(new Cue(
             cueType,
             hotcueIndex,
             cueStartPosition,
             cueEndPosition,
-            color);
-
-    // TODO(XXX) deal with spurious signals
+            color));
     attachCue(pCue, pControl);
+    m_pLoadedTrack->addCue(pCue);
 
     if (cueType == mixxx::CueType::Loop) {
         setCurrentSavedLoopControlAndActivate(pControl);
