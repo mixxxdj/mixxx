@@ -2,6 +2,8 @@
 
 #ifndef QT_OPENGL_ES_2
 
+#include <QSize>
+
 #include "rendergraph/openglnode.h"
 #include "track/track_decl.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
@@ -69,6 +71,8 @@ class allshader::WaveformRendererTextured final : public allshader::WaveformRend
 
     // Frame buffer for two pass rendering.
     std::unique_ptr<QOpenGLFramebufferObject> m_framebuffer;
+    QSize m_framebufferSize;
+    bool m_pendingResize;
 
     // shaders
     bool m_isSlipRenderer;
