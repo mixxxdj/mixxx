@@ -14,6 +14,7 @@
 #include <GLES3/gl3.h>
 #endif
 
+#include <QGuiApplication>
 #include <QOpenGLFunctions>
 #include <QRegularExpression>
 #include <QStringList>
@@ -1379,6 +1380,22 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     // The first call should pass the config to set the vsync mode. Subsequent
     // calls will use the value as set on the first call.
     static const auto vsyncMode = config->getValue(kVSyncKey, 0);
+
+#ifdef MIXXX_USE_QOPENGL
+    // QOpenGLWindow inside createWindowContainer causes synchronous Wayland
+    // compositor buffer reallocation on every resize event, making splitter
+    // drag and UI resizing extremely slow. This affects both waveforms and spinny
+    // widgets. Running under XWayland (QT_QPA_PLATFORM=xcb) avoids this issue.
+    // See https://github.com/mixxxdj/mixxx/issues/16013 and #14492
+    if (QGuiApplication::platformName() == QLatin1String("wayland")) {
+        qWarning() << "Wayland detected with OpenGL waveforms and spinny widgets: UI resize"
+                      " will be extremely slow and may cause sticky mouse issues (mouse key not releasing)."
+                      " To fix this, run Mixxx with XWayland by setting QT_QPA_PLATFORM=xcb in your"
+                      " environment or .desktop launcher file."
+                      " See https://github.com/mixxxdj/mixxx/issues/16013 and"
+                      " https://github.com/mixxxdj/mixxx/issues/14492 for details.";
+    }
+#endif
 
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
