@@ -16,10 +16,17 @@ class WEffectChainPresetSelector : public QComboBox, public WBaseWidget {
 
     void setup(const QDomNode& node, const SkinContext& context);
 
+    void showPopup() override;
+    void hidePopup() override;
+
+  signals:
+    void presetListVisibleChanged(bool visible);
+
   private slots:
     void populate();
     void slotEffectChainPresetSelected(int index);
     void slotChainPresetChanged(const QString& name);
+    void slotPresetListShowRequest(bool show);
     bool event(QEvent* pEvent) override;
     void paintEvent(QPaintEvent* e) override;
 

@@ -67,6 +67,16 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
             QOverload<int>::of(&QComboBox::activated),
             this,
             &WEffectChainPresetSelector::slotEffectChainPresetSelected);
+    // Show/hide the chains list
+    connect(m_pChain.data(),
+            &EffectChain::presetListShowRequest,
+            this,
+            &WEffectChainPresetSelector::slotPresetListShowRequest);
+    // Callback when list is shown/hidden
+    connect(this,
+            &WEffectChainPresetSelector::presetListVisibleChanged,
+            m_pChain.data(),
+            &EffectChain::slotPresetListVisibleChanged);
 
     populate();
 }
@@ -126,6 +136,33 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {
     setCurrentIndex(findData(name));
     setBaseTooltip(itemData(currentIndex(), Qt::ToolTipRole).toString());
+}
+
+void WEffectChainPresetSelector::slotPresetListShowRequest(bool show) {
+    if (!isVisible()) {
+        return;
+    }
+    if (show) {
+        showPopup();
+    } else {
+        hidePopup();
+    }
+}
+
+/// This opens the popup. Overrides showPopup() so we can set the visibility control,
+/// both when clicking the down arrow and when triggering the control.
+void WEffectChainPresetSelector::showPopup() {
+    if (count() > 0) {
+        QComboBox::showPopup();
+        emit presetListVisibleChanged(true);
+    }
+}
+
+/// Same as showPopup(), override to set the visibility control for both GUI and
+/// control changes
+void WEffectChainPresetSelector::hidePopup() {
+    QComboBox::hidePopup();
+    emit presetListVisibleChanged(false);
 }
 
 bool WEffectChainPresetSelector::event(QEvent* pEvent) {

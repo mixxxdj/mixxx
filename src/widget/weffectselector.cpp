@@ -40,6 +40,16 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
                 QOverload<int>::of(&QComboBox::activated),
                 this,
                 &WEffectSelector::slotEffectSelected);
+        // Show/hide the effects list
+        connect(m_pEffectSlot.data(),
+                &EffectSlot::presetListShowRequest,
+                this,
+                &WEffectSelector::slotPresetListShowRequest);
+        // Callback when list is shown/hidden
+        connect(this,
+                &WEffectSelector::presetListVisibleChanged,
+                m_pEffectSlot.data(),
+                &EffectSlot::slotPresetListVisibleChanged);
     } else {
         SKIN_WARNING(node,
                 context,
@@ -52,7 +62,7 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
 
 void WEffectSelector::populate() {
     blockSignals(true);
-    clear();
+    clear(); // Should hide popup
 
     const QList<EffectManifestPointer> visibleEffectManifests = m_pVisibleEffectsList->getList();
     QFontMetrics metrics(font());
@@ -119,6 +129,33 @@ void WEffectSelector::slotEffectUpdated() {
         setCurrentIndex(newIndex);
         setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
     }
+}
+
+void WEffectSelector::slotPresetListShowRequest(bool show) {
+    if (!isVisible()) {
+        return;
+    }
+    if (show) {
+        showPopup();
+    } else {
+        hidePopup();
+    }
+}
+
+/// This opens the popup. Overrides showPopup() so we can set the visibility control,
+/// both when clicking the down arrow and when triggering the control.
+void WEffectSelector::showPopup() {
+    if (count() > 0) {
+        QComboBox::showPopup();
+        emit presetListVisibleChanged(true);
+    }
+}
+
+/// Same as showPopup(), override to set the visibility control for both GUI and
+/// control changes
+void WEffectSelector::hidePopup() {
+    QComboBox::hidePopup();
+    emit presetListVisibleChanged(false);
 }
 
 bool WEffectSelector::event(QEvent* pEvent) {
