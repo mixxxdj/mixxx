@@ -628,33 +628,48 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 }
 
 // static
-mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
+KeyChange KeyUtils::calculateGlobalKey(
         const KeyChangeList& key_changes, SINT totalFrames, mixxx::audio::SampleRate sampleRate) {
     if (key_changes.size() == 1) {
-        qDebug() << keyDebugName(key_changes[0].first);
-        return key_changes[0].first;
+        qDebug() << keyDebugName(key_changes[0].key);
+        return key_changes[0];
     }
-    QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
+    QMap<mixxx::track::io::key::ChromaticKey, KeyChange> key_histogram;
 
     for (int i = 0; i < key_changes.size(); ++i) {
-        mixxx::track::io::key::ChromaticKey key = key_changes[i].first;
-        const double start_frame = key_changes[i].second;
+        mixxx::track::io::key::ChromaticKey key = key_changes[i].key;
+        const double start_frame = key_changes[i].framePos.value();
         const double next_frame = (i == key_changes.size() - 1)
                 ? totalFrames
-                : key_changes[i + 1].second;
-        key_histogram[key] += (next_frame - start_frame);
+                : key_changes[i + 1].framePos.value();
+        const double duration_frames = next_frame - start_frame;
+        if (key_histogram.contains(key)) {
+            key_histogram[key].tuningFrequencyHz +=
+                    duration_frames * key_changes[i].tuningFrequencyHz;
+            key_histogram[key].framePos += duration_frames;
+        } else {
+            // qDebug() << key_changes[i].key << ": " << key_changes[i].tuningFrequencyHz;
+            key_histogram[key] = {key_changes[i].key,
+                    duration_frames * key_changes[i].tuningFrequencyHz,
+                    mixxx::audio::FramePos(duration_frames)};
+        }
     }
 
-
     double max_delta = 0;
-    mixxx::track::io::key::ChromaticKey max_key = mixxx::track::io::key::INVALID;
+    KeyChange max_key = {mixxx::track::io::key::INVALID, 0.0, mixxx::audio::FramePos()};
     qDebug() << "Key Histogram";
     for (auto it = key_histogram.constBegin();
          it != key_histogram.constEnd(); ++it) {
-        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / sampleRate;
-        if (it.value() > max_delta) {
-            max_key = it.key();
-            max_delta = it.value();
+        qDebug() << it.key() << ":" << keyDebugName(it.key())
+                 << it.value().tuningFrequencyHz / it.value().framePos.value()
+                 << "Hz"
+                 << it.value().framePos.value() / sampleRate
+                 << "s";
+        if (it.value().framePos.value() > max_delta) {
+            max_key = it.value();
+            max_delta = it.value().framePos.value();
+            // Calculate the average Tunig Frequency weighted by duration
+            max_key.tuningFrequencyHz /= max_delta;
         }
     }
     return max_key;

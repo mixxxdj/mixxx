@@ -51,7 +51,7 @@ public:
      * Return a key index in the range 0-24, where 0 indicates no key
      * detected, 1 is C major, and 13 is C minor.
      */
-    int process(double *pcmData);
+    double process(double *pcmData);
 
     /**
      * Return a pointer to an internal 24-element array containing the
@@ -101,13 +101,14 @@ protected:
     double* m_decimatedBuffer;
     double* m_chromaBuffer;
     double* m_meanHPCP;
+    double* m_meanNormHPCP;
 
     double* m_majProfileNorm;
     double* m_minProfileNorm;
     double* m_majCorr;
     double* m_minCorr;
-    int* m_medianFilterBuffer;
-    int* m_sortedBuffer;
+    double* m_medianFilterBuffer;
+    double* m_sortedBuffer;
 
     double *m_keyStrengths;
 };
