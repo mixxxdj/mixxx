@@ -576,13 +576,20 @@ void WTrackMenu::createActions() {
     // This action is only usable when m_deckGroup is set. That is true only
     // for WTrackmenu instantiated by WTrackProperty and other deck widgets, thus
     // don't create it if a track model is set.
-    if (!m_pTrackModel && featureIsEnabled(Feature::UpdateReplayGainFromPregain)) {
+    if (!m_pTrackModel && featureIsEnabled(Feature::UpdateReplayGain)) {
         m_pUpdateReplayGainAct = make_parented<QAction>(
                 tr("Update ReplayGain from Deck Gain"), m_pClearMetadataMenu);
         connect(m_pUpdateReplayGainAct,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotUpdateReplayGainFromPregain);
+
+        m_pNormalizeReplayGainAct = make_parented<QAction>(
+                tr("Apply Average ReplayGain to Selection (e.g. Album)"), this);
+        connect(m_pNormalizeReplayGainAct,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotNormalizeReplayGain);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -750,9 +757,12 @@ void WTrackMenu::setupActions() {
     }
 
     // This action is created only for menus instantiated by deck widgets (e.g.
-    // WTrackProperty) and if UpdateReplayGainFromPregain is supported.
+    // WTrackProperty) and if UpdateReplayGain is supported.
     if (m_pUpdateReplayGainAct) {
         addAction(m_pUpdateReplayGainAct);
+    }
+    if (m_pNormalizeReplayGainAct) {
+        addAction(m_pNormalizeReplayGainAct);
     }
 
     addSeparator();
@@ -1175,10 +1185,15 @@ void WTrackMenu::updateMenus() {
     }
 
     // This action is created only for menus instantiated by deck widgets (e.g.
-    // WTrackProperty) and if UpdateReplayGainFromPregain is supported.
+    // WTrackProperty) and if UpdateReplayGain is supported.
     // Disable it if no deck group was set.
     if (m_pUpdateReplayGainAct) {
         m_pUpdateReplayGainAct->setEnabled(!m_deckGroup.isEmpty());
+    }
+
+    // Enable normalize action only when 2+ tracks are selected
+    if (m_pNormalizeReplayGainAct) {
+        m_pNormalizeReplayGainAct->setEnabled(getTrackCount() > 1);
     }
 
     if (m_pTranslateBeatsHalf) {
@@ -1484,6 +1499,48 @@ void WTrackMenu::slotUpdateReplayGainFromPregain() {
         return;
     }
     m_pTrack->adjustReplayGainFromPregain(gain, m_deckGroup);
+}
+
+void WTrackMenu::slotNormalizeReplayGain() {
+    const auto tracks = getTrackPointers();
+    if (tracks.size() < 2) {
+        return;
+    }
+
+    // Compute acoustically correct weighted average ReplayGain.
+    // Weight each track's linear ratio by its duration, then convert back.
+    double totalWeightedRatio = 0.0;
+    double totalDuration = 0.0;
+    int tracksWithGain = 0;
+
+    for (const auto& pTrack : tracks) {
+        const mixxx::ReplayGain rg = pTrack->getReplayGain();
+        const double ratio = rg.getRatio();
+        if (!mixxx::ReplayGain::isValidRatio(ratio)) {
+            continue;
+        }
+        const double duration = pTrack->getDuration();
+        if (duration <= 0.0) {
+            continue;
+        }
+        totalWeightedRatio += duration * ratio;
+        totalDuration += duration;
+        ++tracksWithGain;
+    }
+
+    if (tracksWithGain < 2 || totalDuration <= 0.0) {
+        return;
+    }
+
+    const double averageRatio = totalWeightedRatio / totalDuration;
+
+    // Apply the averaged ratio to all selected tracks, preserving each
+    // track's existing peak value.
+    for (const auto& pTrack : tracks) {
+        mixxx::ReplayGain rg = pTrack->getReplayGain();
+        rg.setRatio(averageRatio);
+        pTrack->setReplayGain(rg);
+    }
 }
 
 void WTrackMenu::slotTranslateBeatsHalf() {
