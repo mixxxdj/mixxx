@@ -21,6 +21,8 @@
 #include "widget/winitialglwidget.h"
 #endif
 
+#include "controllers/controller.h"
+#include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "coreservices.h"
 #include "defs_urls.h"
@@ -947,6 +949,28 @@ void MixxxMainWindow::connectMenuBar() {
         m_pMenuBar->onNumberOfDecksChanged(pPlayerManager->numberOfDecks());
     }
 
+    // Controller learning wizard menu
+    if (m_pCoreServices->getControllerManager()) {
+        connect(m_pCoreServices->getControllerManager().get(),
+                &ControllerManager::devicesChanged,
+                this,
+                &MixxxMainWindow::slotControllersChanged,
+                Qt::UniqueConnection);
+        // mappingApplied fires after a controller is opened post-startup
+        // (devicesChanged is only emitted once, on startup)
+        connect(m_pCoreServices->getControllerManager().get(),
+                &ControllerManager::mappingApplied,
+                this,
+                &MixxxMainWindow::slotUpdateControllerLearningMenu,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::openControllerLearningWizard,
+                this,
+                &MixxxMainWindow::slotOpenControllerLearningWizard,
+                Qt::UniqueConnection);
+        slotControllersChanged();
+    }
+
     if (m_pCoreServices->getTrackCollectionManager()) {
         connect(m_pMenuBar,
                 &WMainMenuBar::rescanLibrary,
@@ -1145,6 +1169,61 @@ void MixxxMainWindow::slotNoVinylControlInputConfigured() {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
     }
+}
+
+void MixxxMainWindow::slotControllersChanged() {
+    if (!m_pCoreServices->getControllerManager()) {
+        return;
+    }
+
+    QList<Controller*> allControllers =
+            m_pCoreServices->getControllerManager()->getControllerList(
+                    false, true);
+
+    QList<Controller*> trackedControllers = m_controllerConnections.keys();
+    for (Controller* pController : std::as_const(trackedControllers)) {
+        if (!allControllers.contains(pController)) {
+            disconnect(m_controllerConnections.value(pController));
+            m_controllerConnections.remove(pController);
+        }
+    }
+
+    for (Controller* pController : std::as_const(allControllers)) {
+        if (pController && !m_controllerConnections.contains(pController)) {
+            QMetaObject::Connection conn = connect(pController,
+                    &Controller::openChanged,
+                    this,
+                    &MixxxMainWindow::slotUpdateControllerLearningMenu);
+            m_controllerConnections.insert(pController, conn);
+        }
+    }
+
+    slotUpdateControllerLearningMenu();
+}
+
+void MixxxMainWindow::slotUpdateControllerLearningMenu() {
+    if (!m_pCoreServices->getControllerManager()) {
+        return;
+    }
+
+    QList<Controller*> allControllers =
+            m_pCoreServices->getControllerManager()->getControllerList(
+                    false, true);
+    QList<Controller*> enabledControllers;
+    for (Controller* pController : std::as_const(allControllers)) {
+        if (pController && pController->isOpen()) {
+            enabledControllers.append(pController);
+        }
+    }
+    m_pMenuBar->onControllersChanged(enabledControllers);
+}
+
+void MixxxMainWindow::slotOpenControllerLearningWizard(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+    // Open the learning wizard directly for this controller
+    m_pPrefDlg->openControllerLearningWizard(pController);
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
