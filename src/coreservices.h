@@ -22,6 +22,9 @@ class TrackCollectionManager;
 class Library;
 class SkinControls;
 class ControlPushButton;
+#ifdef __HTTPAPI__
+class ApiServer;
+#endif
 struct LibraryScanResultSummary;
 
 namespace mixxx {
@@ -150,6 +153,9 @@ class CoreServices : public QObject {
 
     std::unique_ptr<SkinControls> m_pSkinControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
+#ifdef __HTTPAPI__
+    std::unique_ptr<ApiServer> m_pApiServer;
+#endif
 
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;

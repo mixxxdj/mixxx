@@ -4961,6 +4961,25 @@ if(BROADCAST)
   endif()
 endif()
 
+# HTTP REST API for remote control and automation
+option(HTTPAPI "HTTP REST API for remote control" OFF)
+if(HTTPAPI)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/api/apiserver.cpp
+  )
+  target_include_directories(
+    mixxx-lib
+    SYSTEM
+    PUBLIC lib/httplib
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __HTTPAPI__)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __HTTPAPI__)
+  endif()
+endif()
+
 # Opus (RFC 6716)
 find_package(OpusFile)
 find_package(Opus)

@@ -1,5 +1,9 @@
 #include "coreservices.h"
 
+#ifdef __HTTPAPI__
+#include "api/apiserver.h"
+#endif
+
 #include <QApplication>
 #include <QFileDialog>
 #include <QProcess>
@@ -765,6 +769,20 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
     }
+
+#ifdef __HTTPAPI__
+    // Start HTTP API server for remote control and automation.
+    // Default: localhost:8080, configurable via [Api] Port in mixxx.cfg
+    {
+        int apiPort = m_pSettingsManager->settings()->getValue(
+                ConfigKey("[Api]", "Port"), 8080);
+        QString apiAddress = m_pSettingsManager->settings()->getValue(
+                ConfigKey("[Api]", "Address"), QString("127.0.0.1"));
+        m_pApiServer = std::make_unique<ApiServer>(
+                apiPort, apiAddress, m_pPlayerManager.get());
+        m_pApiServer->start();
+    }
+#endif
 
     m_isInitialized = true;
 
