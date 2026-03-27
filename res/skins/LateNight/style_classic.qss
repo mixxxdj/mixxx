@@ -72,6 +72,8 @@ WLibrary,
 #PreviewDeck,
 #LibExpandBox,
 #LibrarySplitter::handle,
+#HorizontalScreenSplitter::handle,
+#HorizontalScreenSplitter_Swapped::handle,
 #SearchLineBox {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
@@ -2621,6 +2623,7 @@ WSearchLineEdit {
   Used to split
   - Waveforms & Decks/FX/etc
   - Library feature & Coverart */
+#WaveformSplitter_Swapped,
 #WaveformSplitter,
 #SidebarCoverSplitter {
   padding: 0px;
@@ -2628,14 +2631,17 @@ WSearchLineEdit {
 }
 
 #WaveformSplitter::handle,
+#WaveformSplitter_Swapped::handle,
 #SidebarCoverSplitter::handle {
     image: url(skins:LateNight/classic/style/splitter_handle_horizontal.png);
   }
   #WaveformSplitter::handle:pressed,
+  #WaveformSplitter_Swapped:handle:pressed,
   #SidebarCoverSplitter::handle:pressed {
     image: url(skins:LateNight/classic/style/splitter_handle_horizontal_pressed.png);
   }
   #WaveformSplitter::handle:vertical,
+  #WaveformSplitter_Swapped:handle:pressed,
   #SidebarCoverSplitter::handle:vertical {
     height: 9px;
   }

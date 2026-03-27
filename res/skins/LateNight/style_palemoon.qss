@@ -76,6 +76,8 @@
 #SidebarBox,
 #PreviewDeck,
 #SidebarCoverSplitter,
+#HorizontalScreenSplitter::handle,
+#HorizontalScreenSplitter_Swapped::handle,
 #SidebarCoverSplitter:handle,
 #LibrarySplitter::handle,
 #LibraryFeatureControls,
@@ -3288,11 +3290,13 @@ WSearchLineEdit {
   - Waveforms / Decks/FX/etc
   - Library sidebar / Lib Coverart */
 #WaveformSplitter,
+#WaveformSplitter_Swapped,
 #SidebarCoverSplitter {
   padding: 0px;
   margin: 0px;
   }
   #WaveformSplitter::handle,
+  #WaveformSplitter_Swapped::handle,
   #SidebarCoverSplitter::handle {
       image: url(skins:LateNight/palemoon/style/splitter_handle_horizontal.svg);
       height: 9px;
