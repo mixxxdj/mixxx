@@ -15,8 +15,10 @@ class ControlPushButton;
 class Library;
 class LibraryControl;
 class WLibrary;
+class WLibraryPreparationWindow;
 class WLibrarySidebar;
 class WSearchLineEdit;
+class WTrackTableView;
 class KeyboardEventFilter;
 
 class LoadToGroupController : public QObject {
@@ -56,6 +58,9 @@ class LibraryControl : public QObject {
     virtual ~LibraryControl();
 
     void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* pLibraryPreparationWindow,
+            KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
     /// Give the keyboard focus to one of the library widgets
@@ -80,6 +85,7 @@ class LibraryControl : public QObject {
 
   private slots:
     void libraryWidgetDeleted();
+    void libraryPreparationWindowWidgetDeleted();
     void sidebarWidgetDeleted();
     void searchboxWidgetDeleted();
 
@@ -100,6 +106,8 @@ class LibraryControl : public QObject {
     void slotMoveFocusForward(double);
     void slotMoveFocusBackward(double);
     void slotMoveFocus(double);
+    void slotFocusOnPreparationWindow(double);
+    void slotFocusOnLibraryWindow(double);
     void slotMoveTrackUp(double);
     void slotMoveTrackDown(double);
     void slotMoveTrack(double);
@@ -140,6 +148,7 @@ class LibraryControl : public QObject {
 
     // Simulate pressing a key on the keyboard
     void emitKeyEvent(QKeyEvent&& event);
+    WTrackTableView* getFocusedTrackTableView() const;
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
@@ -164,6 +173,10 @@ class LibraryControl : public QObject {
     FocusWidget m_focusedWidget;
     std::unique_ptr<ControlPushButton> m_pRefocusPrevWidgetCO;
     FocusWidget m_prevFocusedWidget;
+
+    // Controls to focus directly on the desired window
+    std::unique_ptr<ControlPushButton> m_pFocusOnPreparationWindow;
+    std::unique_ptr<ControlPushButton> m_pFocusOnLibraryWindow;
 
     // Controls to move tracks (alt+up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveTrackUp;
@@ -218,6 +231,7 @@ class LibraryControl : public QObject {
 
     // Library widgets
     WLibrary* m_pLibraryWidget;
+    WLibraryPreparationWindow* m_pLibraryPreparationWindowWidget;
     WLibrarySidebar* m_pSidebarWidget;
     WSearchLineEdit* m_pSearchbox;
 

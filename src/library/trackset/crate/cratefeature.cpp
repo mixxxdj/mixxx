@@ -8,6 +8,9 @@
 #include <vector>
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -25,10 +28,12 @@
 #include "util/dnd.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
+const bool sDebugCrateFeature = false;
 
 QString formatLabel(
         const CrateSummary& crateSummary) {
@@ -63,6 +68,13 @@ CrateFeature::CrateFeature(Library* pLibrary,
 }
 
 void CrateFeature::initActions() {
+    m_pShowTrackModelInPreparationWindowAction =
+            make_parented<QAction>(tr("Show in Preparation Window"), this);
+    connect(m_pShowTrackModelInPreparationWindowAction,
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotShowInPreparationWindow);
+
     m_pCreateCrateAction = make_parented<QAction>(tr("Create New Crate"), this);
     connect(m_pCreateCrateAction.get(),
             &QAction::triggered,
@@ -286,6 +298,19 @@ void CrateFeature::bindLibraryWidget(
     libraryWidget->registerView(m_rootViewName, edit);
 }
 
+void CrateFeature::bindLibraryPreparationWindowWidget(
+        WLibraryPreparationWindow* libraryPreparationWindowWidget, KeyboardEventFilter* keyboard) {
+    Q_UNUSED(keyboard);
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryPreparationWindowWidget);
+    edit->setHtml(formatRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit,
+            &WLibraryTextBrowser::anchorClicked,
+            this,
+            &CrateFeature::htmlLinkClicked);
+    libraryPreparationWindowWidget->registerView(m_rootViewName, edit);
+}
+
 void CrateFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     // store the sidebar widget pointer for later use in onRightClickChild
     m_pSidebarWidget = pSidebarWidget;
@@ -339,6 +364,24 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     // Update selection
     emit featureSelect(this, m_lastClickedIndex);
     return true;
+}
+
+void CrateFeature::slotShowInPreparationWindow() {
+    CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+    if (sDebugCrateFeature) {
+        qDebug() << "   CrateFeature::slotShowInPreparationWindow()" << crateId;
+    }
+
+    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
+        auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
+        proxy->set(1);
+    }
+
+    emit saveModelState();
+    m_crateTableModel.selectCrate(crateId);
+    emit showTrackModelInPreparationWindow(&m_crateTableModel);
+    emit enableCoverArtDisplay(true);
+    emit featureSelect(this, m_lastClickedIndex);
 }
 
 bool CrateFeature::readLastRightClickedCrate(Crate* pCrate) const {
@@ -395,6 +438,8 @@ void CrateFeature::onRightClickChild(
     m_pLockCrateAction->setText(crate.isLocked() ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pShowTrackModelInPreparationWindowAction);
+    menu.addSeparator();
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction.get());

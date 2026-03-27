@@ -16,109 +16,145 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-
-          <Splitter>
-            <ObjectName>LibrarySplitter</ObjectName>
+          <Splitter><!-- LibraryMainSplitter = PrepWin -->
+            <ObjectName>LibraryMainSplitter</ObjectName>
+            <Orientation>vertical</Orientation>
             <SizePolicy>me,me</SizePolicy>
-            <SplitSizes>1,10</SplitSizes>
-            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
-            <Collapsible>1,0</Collapsible>
+            <SplitSizes>1,4</SplitSizes>
+            <SplitSizesConfigKey>[Skin],prepwin_splitSize</SplitSizesConfigKey>
+            <Collapsible>0,0</Collapsible>
             <Children>
-
-              <WidgetGroup>
-                <ObjectName>LibSidebarContainer</ObjectName>
+              <!-- PrepWin -->
+              <WidgetGroup trigger="[Skin],show_preparation_window">
+                <ObjectName>LibraryPreparationWindow</ObjectName>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <MinimumSize>100,</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <MinimumSize>200,100</MinimumSize>
                 <Children>
+                  <LibraryPreparationWindow>
+                    <Label>
+                      <Text>Preparation Window</Text>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Alignment>center</Alignment>
+                    </Label>
+                  </LibraryPreparationWindow>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_preparation_window</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
-                  <Template src="skins:LateNight/decks/preview_deck.xml"/>
-
-                  <WidgetGroup><!--SearchBox + Library expand toggle -->
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,max</SizePolicy>
+              <Splitter>
+                <ObjectName>LibrarySplitter</ObjectName>
+                <SizePolicy>me,me</SizePolicy>
+                <SplitSizes>1,10</SplitSizes>
+                <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
+                <Collapsible>1,0</Collapsible>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>LibSidebarContainer</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MinimumSize>100,</MinimumSize>
                     <Children>
+                      <Template src="skins:LateNight/decks/preview_deck.xml"/>
 
                       <WidgetGroup>
-                        <ObjectName>SearchLineBox</ObjectName>
+                        <!--SearchBox + Library expand toggle -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>min,max</SizePolicy>
                         <Children>
-                          <SearchBox></SearchBox>
+
+                          <WidgetGroup>
+                            <ObjectName>SearchLineBox</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>min,max</SizePolicy>
+                            <Children>
+                              <SearchBox></SearchBox>
+                            </Children>
+                          </WidgetGroup>
+
+                          <WidgetGroup>
+                            <ObjectName>LibExpandBox</ObjectName>
+                            <Layout>vertical</Layout>
+                            <Children>
+                              <Template src="skins:LateNight/controls/button_2state.xml">
+                                <SetVariable name="TooltipId">maximize_library</SetVariable>
+                                <SetVariable name="ObjectName">LibExpand</SetVariable>
+                                <SetVariable name="Size">18f,18me</SetVariable>
+                                <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
+                              </Template>
+                            </Children>
+                          </WidgetGroup>
+                          <!-- LibExpandBox -->
                         </Children>
                       </WidgetGroup>
+                      <!--SearchBox + Library expand toggle -->
 
                       <WidgetGroup>
-                        <ObjectName>LibExpandBox</ObjectName>
-                        <Layout>vertical</Layout>
-                        <Children>
-                          <Template src="skins:LateNight/controls/button_2state.xml">
-                            <SetVariable name="TooltipId">maximize_library</SetVariable>
-                            <SetVariable name="ObjectName">LibExpand</SetVariable>
-                            <SetVariable name="Size">18f,18me</SetVariable>
-                            <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup><!-- LibExpandBox -->
-                    </Children>
-                  </WidgetGroup><!--SearchBox + Library expand toggle -->
+                        <ObjectName>SearchTreeSpacer</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children/>
+                      </WidgetGroup>
 
-                  <WidgetGroup>
-                    <ObjectName>SearchTreeSpacer</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <Children/>
+                      <Splitter>
+                        <ObjectName>SidebarCoverSplitter</ObjectName>
+                        <Size>me,me</Size>
+                        <SplitSizes>1,1</SplitSizes>
+                        <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
+                        <Orientation>vertical</Orientation>
+                        <Collapsible>0,0</Collapsible>
+                        <Children>
+                          <!--Library Tree View-->
+                          <WidgetGroup>
+                            <ObjectName>SidebarBox</ObjectName>
+                            <Layout>vertical</Layout>
+                            <Children>
+                              <LibrarySidebar></LibrarySidebar>
+                            </Children>
+                          </WidgetGroup>
+                          <!--Cover Art-->
+                          <WidgetGroup>
+                            <ObjectName>AlignCenter</ObjectName>
+                            <Layout>vertical</Layout>
+                            <Children>
+                              <CoverArt>
+                                <SizePolicy>me,me</SizePolicy>
+                                <MinimumSize>40,40</MinimumSize>
+                              </CoverArt>
+                            </Children>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </WidgetGroup>
+                          <!--Cover Art-->
+                        </Children>
+                      </Splitter>
+                      <!-- SidebarCoverSplitter -->
+
+                    </Children>
                   </WidgetGroup>
+                  <!-- LibSidebarContainer -->
 
-                  <Splitter>
-                    <ObjectName>SidebarCoverSplitter</ObjectName>
-                    <Size>me,me</Size>
-                    <SplitSizes>1,1</SplitSizes>
-                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
-                    <Orientation>vertical</Orientation>
-                    <Collapsible>0,0</Collapsible>
-                    <Children>
-                      <!--Library Tree View-->
-                      <WidgetGroup>
-                        <ObjectName>SidebarBox</ObjectName>
-                        <Layout>vertical</Layout>
-                        <Children>
-                          <LibrarySidebar></LibrarySidebar>
-                        </Children>
-                      </WidgetGroup>
-                      <!--Cover Art-->
-                      <WidgetGroup>
-                        <ObjectName>AlignCenter</ObjectName>
-                        <Layout>vertical</Layout>
-                        <Children>
-                          <CoverArt>
-                            <SizePolicy>me,me</SizePolicy>
-                            <MinimumSize>40,40</MinimumSize>
-                          </CoverArt>
-                        </Children>
-                        <Connection>
-                          <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup><!--Cover Art-->
-                    </Children>
-                  </Splitter><!-- SidebarCoverSplitter -->
+                  <!-- Library Table-->
+                  <Library>
+                    <ShowButtonText>false</ShowButtonText>
+                    <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                    <!-- Colors for the render modes of the Overview column -->
+                    <!-- For the overview column we only set the signal color,
+                         other colors are the defaults. -->
+                    <SignalColor>
+                      <Variable name="SignalColor_12"/>
+                    </SignalColor>
+                  </Library>
 
                 </Children>
-              </WidgetGroup><!-- LibSidebarContainer -->
-
-              <!-- Library Table-->
-              <Library>
-                <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
-                <!-- Colors for the render modes of the Overview column -->
-                <!-- For the overview column we only set the signal color,
-                     other colors are the defaults. -->
-                <SignalColor><Variable name="SignalColor_12"/></SignalColor>
-              </Library>
+              </Splitter><!-- LibrarySplitter -->
 
             </Children>
-          </Splitter><!-- LibrarySplitter -->
-
+          </Splitter><!-- LibraryMainSplitter = PrepWin -->
         </Children>
       </WidgetGroup><!-- LibraryContainer -->
     </Children>

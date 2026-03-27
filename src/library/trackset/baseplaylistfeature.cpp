@@ -7,6 +7,9 @@
 #include <QSqlTableModel>
 #include <QStandardPaths>
 
+#include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -24,6 +27,7 @@
 #include "util/defs.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarypreparationwindow.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -69,6 +73,13 @@ BasePlaylistFeature::BasePlaylistFeature(
 }
 
 void BasePlaylistFeature::initActions() {
+    m_pShowTrackModelInPreparationWindowAction =
+            make_parented<QAction>(tr("Show in Preparation Window"), this);
+    connect(m_pShowTrackModelInPreparationWindowAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotShowInPreparationWindow);
+
     m_pCreatePlaylistAction = make_parented<QAction>(tr("Create New Playlist"), this);
     connect(m_pCreatePlaylistAction,
             &QAction::triggered,
@@ -250,6 +261,24 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     emit enableCoverArtDisplay(true);
     // Update selection
     emit featureSelect(this, m_lastClickedIndex);
+}
+
+void BasePlaylistFeature::slotShowInPreparationWindow() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+
+    if (playlistId == kInvalidPlaylistId) {
+        // may happen during initialization
+        return;
+    }
+
+    if (ControlObject::exists(ConfigKey("[Skin]", "show_preparation_window"))) {
+        auto proxy = std::make_unique<PollingControlProxy>("[Skin]", "show_preparation_window");
+        proxy->set(1);
+    }
+    emit saveModelState();
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
+    emit showTrackModelInPreparationWindow(m_pPlaylistTableModel);
+    emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::renameItem(const QModelIndex& index) {
@@ -731,6 +760,20 @@ void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &BasePlaylistFeature::htmlLinkClicked);
     m_pLibraryWidget = QPointer(pLibraryWidget);
     m_pLibraryWidget->registerView(m_rootViewName, pEdit);
+}
+
+void BasePlaylistFeature::bindLibraryPreparationWindowWidget(
+        WLibraryPreparationWindow* pLibraryPreparationWindowWidget,
+        KeyboardEventFilter* pKeyboard) {
+    Q_UNUSED(pKeyboard);
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pLibraryPreparationWindowWidget);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->setOpenLinks(false);
+    connect(pEdit,
+            &WLibraryTextBrowser::anchorClicked,
+            this,
+            &BasePlaylistFeature::htmlLinkClicked);
+    m_pLibraryPreparationWindowWidget = QPointer(pLibraryPreparationWindowWidget);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
