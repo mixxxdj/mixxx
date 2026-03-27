@@ -316,6 +316,7 @@ class AutoDJProcessor : public QObject {
     ControlPushButton m_addRandomTrack;
     ControlPushButton m_fadeNow;
     ControlPushButton m_enabledAutoDJ;
+    ControlPushButton m_idleState;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
