@@ -466,13 +466,13 @@ class TraktorMX2Class {
             this.outputHandler(0, field.group, "loops");
             // Light LEDs (blue for all enabled hotcues, dimmed white for disabled)
             for (let padIdx = 1; padIdx <= 8; ++padIdx) {
-                const active = engine.getValue(field.group, `hotcue_${i}_status`);
+                const active = engine.getValue(field.group, `hotcue_${padIdx}_status`);
                 if (active) {
-                    const color = engine.getValue(field.group, `hotcue_${i}_color`);
+                    const color = engine.getValue(field.group, `hotcue_${padIdx}_color`);
                     const colorValue = this.padColorMap.getValueForNearestColor(color);
-                    this.outputHandler(colorValue, field.group, `pad_${i}`);
+                    this.outputHandler(colorValue, field.group, `pad_${padIdx}`);
                 } else {
-                    this.outputHandler(this.baseColors.dimmedWhite, field.group, `pad_${i}`);
+                    this.outputHandler(this.baseColors.dimmedWhite, field.group, `pad_${padIdx}`);
                 }
             }
             break;
