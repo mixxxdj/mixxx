@@ -493,7 +493,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     playMarkerPositionSlider->setValue(50);
 }
 
-// Revert all preferences to the set of preferences which were there by default or the last time when user clicks 'Apply', if user clicks 'Cancel'
+// Revert all preferences to the set of preferences which were there by default 
+// or the last time when user clicks 'Apply', if user clicks 'Cancel'
 void DlgPrefWaveform::slotCancel() {
     waveformTypeComboBox->setCurrentIndex(m_savedWaveformTypeIndex);
     if (useAccelerationCheckBox->isChecked() != m_savedAccelerationCheckBox) {
