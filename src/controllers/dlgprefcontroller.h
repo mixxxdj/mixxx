@@ -42,6 +42,9 @@ class DlgPrefController : public DlgPreferencePage {
     QUrl helpUrl() const override;
     void keyPressEvent(QKeyEvent* pEvent) override;
 
+    void enumerateMappings(const QString& selectedMappingPath);
+    void updateMappingIconsAndColoredLinkTexts();
+
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
@@ -102,7 +105,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFilePathFromIndex(int index) const;
-    QString askForMappingName(const QString& prefilledName = QString()) const;
+    QString askForMappingName(const QString& prefilledName = QString());
     void applyMappingChanges();
     bool saveMapping();
     void initTableView(QTableView* pTable);
@@ -128,9 +131,6 @@ class DlgPrefController : public DlgPreferencePage {
     bool isDirty() const {
         return m_bDirty;
     }
-
-    /// Reload the mappings in the dropdown dialog
-    void enumerateMappings(const QString& selectedMappingPath);
     MappingInfo enumerateMappingsFromEnumerator(
             QSharedPointer<MappingInfoEnumerator> pMappingEnumerator,
             const QIcon& icon = QIcon());

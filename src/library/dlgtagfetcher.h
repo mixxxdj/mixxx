@@ -25,7 +25,9 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   public:
     // TODO: Remove dependency on TrackModel
     explicit DlgTagFetcher(
-            UserSettingsPointer pConfig, const TrackModel* pTrackModel = nullptr);
+            QWidget* pParent,
+            UserSettingsPointer pConfig,
+            const TrackModel* pTrackModel = nullptr);
     ~DlgTagFetcher() override = default;
 
     void init();

@@ -290,50 +290,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
-
-    if (RLimit::isRtPrioAllowed()) {
-        realtimeHint->setText(tr("Realtime scheduling is enabled."));
-    } else {
-        realtimeHint->setText(
-                tr("To enable Realtime scheduling (currently disabled), see the %1.")
-                        .arg(coloredLinkString(
-                                m_pLinkColor,
-                                QStringLiteral("Mixxx Wiki"),
-                                MIXXX_WIKI_AUDIO_LATENCY_URL)));
-    }
 #else
     // the limits warning is a Linux only thing
     realtimeHint->hide();
 #endif // __LINUX__
 
+    updateColoredLinkTexts();
+
     setScrollSafeGuardForAllInputWidgets(this);
-
-    micMonitorModeLabel->setText(micMonitorModeLabel->text() + QChar(' ') +
-            coloredLinkString(
-                    m_pLinkColor,
-                    QStringLiteral("(?)"),
-                    MIXXX_MANUAL_MIC_MONITOR_MODES_URL));
-
-    latencyCompensationLabel->setText(latencyCompensationLabel->text() + QChar(' ') +
-            coloredLinkString(
-                    m_pLinkColor,
-                    QStringLiteral("(?)"),
-                    MIXXX_MANUAL_MIC_LATENCY_URL));
-
-    hardwareGuide->setText(
-            tr("The %1 lists sound cards and controllers you may want to "
-               "consider for using Mixxx.")
-                    .arg(coloredLinkString(
-                            m_pLinkColor,
-                            tr("Mixxx DJ Hardware Guide"),
-                            MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
-
-    QString deckBusHintStr = deckBusHint->text();
-    deckBusHintStr += " " +
-            coloredLinkString(m_pLinkColor,
-                    tr("Find details in the Mixxx user manual"),
-                    MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES);
-    deckBusHint->setText(deckBusHintStr);
 }
 
 /// Slot called when the preferences dialog is opened.
@@ -391,7 +355,7 @@ void DlgPrefSound::slotApply() {
     }
     if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
-        QMessageBox::warning(nullptr, tr("Configuration error"), error);
+        QMessageBox::warning(this, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
         m_bLatencyChanged = false;
@@ -419,6 +383,54 @@ void DlgPrefSound::selectIOTab(mixxx::preferences::SoundHardwareTab tab) {
         return;
     }
 }
+
+void DlgPrefSound::updateColoredLinkTexts() {
+    createLinkColor();
+
+#ifdef __LINUX__
+    qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
+    qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
+
+    if (RLimit::isRtPrioAllowed()) {
+        realtimeHint->setText(tr("Realtime scheduling is enabled."));
+    } else {
+        realtimeHint->setText(
+                tr("To enable Realtime scheduling (currently disabled), see the %1.")
+                        .arg(coloredLinkString(
+                                m_pLinkColor,
+                                QStringLiteral("Mixxx Wiki"),
+                                MIXXX_WIKI_AUDIO_LATENCY_URL)));
+    }
+#endif // __LINUX__
+
+    micMonitorModeLabel->setText(micMonitorModeLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_MONITOR_MODES_URL));
+
+    latencyCompensationLabel->setText(latencyCompensationLabel->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_MIC_LATENCY_URL));
+
+    hardwareGuide->setText(
+            tr("The %1 lists sound cards and controllers you may want to "
+               "consider for using Mixxx.")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            tr("Mixxx DJ Hardware Guide"),
+                            MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
+
+    QString deckBusHintStr = deckBusHint->text();
+    deckBusHintStr += " " +
+            coloredLinkString(m_pLinkColor,
+                    tr("Find details in the Mixxx user manual"),
+                    MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES);
+    deckBusHint->setText(deckBusHintStr);
+}
+
 /// Initializes (and creates) all the path items. Each path item widget allows
 /// the user to input a sound device name and channel number given a description
 /// of what will be done with that info. Inputs and outputs are grouped by tab,
@@ -816,7 +828,7 @@ void DlgPrefSound::updateKeylockMultithreading(bool enabled) {
     if (!enabled) {
         return;
     }
-    QMessageBox msg;
+    QMessageBox msg(this);
     msg.setIcon(QMessageBox::Warning);
     msg.setWindowTitle(tr("Are you sure?"));
     msg.setText(

@@ -24,6 +24,7 @@
 #include "util/defs.h"
 #include "util/dnd.h"
 #include "util/file.h"
+#include "util/widgethelper.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -445,7 +446,8 @@ void CrateFeature::slotDeleteCrate() {
             storePrevSiblingCrateId(crateId);
         }
 
-        QMessageBox::StandardButton btn = QMessageBox::question(nullptr,
+        QMessageBox::StandardButton btn = QMessageBox::question(
+                mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
                 tr("Confirm Deletion"),
                 tr("Do you really want to delete crate <b>%1</b>?")
                         .arg(crate.getName()),
@@ -476,7 +478,8 @@ void CrateFeature::slotRenameCrate() {
         for (;;) {
             bool ok = false;
             auto newName =
-                    QInputDialog::getText(nullptr,
+                    QInputDialog::getText(
+                            mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
                             tr("Rename Crate"),
                             tr("Enter new name for crate:"),
                             QLineEdit::Normal,
@@ -487,13 +490,15 @@ void CrateFeature::slotRenameCrate() {
                 return;
             }
             if (newName.isEmpty()) {
-                QMessageBox::warning(nullptr,
+                QMessageBox::warning(
+                        mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
                         tr("Renaming Crate Failed"),
                         tr("A crate cannot have a blank name."));
                 continue;
             }
             if (m_pTrackCollection->crates().readCrateByName(newName)) {
-                QMessageBox::warning(nullptr,
+                QMessageBox::warning(
+                        mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
                         tr("Renaming Crate Failed"),
                         tr("A crate by that name already exists."));
                 continue;
@@ -738,7 +743,8 @@ void CrateFeature::slotCreateImportCrate() {
         }
 
         if (!m_pTrackCollection->insertCrate(crate, &lastCrateId)) {
-            QMessageBox::warning(nullptr,
+            QMessageBox::warning(
+                    mixxx::widgethelper::getSkinWidget(), // parent to apply skin styles
                     tr("Crate Creation Failed"),
                     tr("An unknown error occurred while creating crate: ") +
                             crate.getName());
@@ -864,7 +870,7 @@ void CrateFeature::slotExportTrackFiles() {
         return;
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
+    TrackExportWizard track_export(m_pConfig, trackpointers);
     track_export.exportTracks();
 }
 
