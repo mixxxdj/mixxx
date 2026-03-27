@@ -102,12 +102,16 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
         return;
     }
 
+    // We only upscale the memory allocation to reduce the likelihood of
+    // impacting the real-time thread. This way, on first load of a STEM (8
+    // channels), we reallocate the right size and keep it allocated till the
+    // scaler is destroyed.
     uint8_t channelCount = getOutputSignal().getChannelCount();
-    if (m_buffers.size() != channelCount) {
+    if (m_buffers.size() < channelCount) {
         m_buffers.resize(channelCount);
     }
 
-    if (m_bufferPtrs.size() != channelCount) {
+    if (m_bufferPtrs.size() < channelCount) {
         m_bufferPtrs.resize(channelCount);
     }
 
