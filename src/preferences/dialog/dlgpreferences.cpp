@@ -206,11 +206,17 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_broadcast.svg");
 #endif // __BROADCAST__
 
-    addPageWidget(PreferencesPage(
-                          new DlgPrefRecord(this, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+    m_pRecordingDlg = std::make_unique<DlgPrefRecord>(this, m_pConfig);
+    m_recordingPage = PreferencesPage(
+            m_pRecordingDlg.get(),
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type));
+    addPageWidget(m_recordingPage,
             tr("Recording"),
             "ic_preferences_recording.svg");
+    connect(pLibrary.get(),
+            &Library::showRecordingSettings,
+            this,
+            &DlgPreferences::showRecordingPage);
 
     addPageWidget(PreferencesPage(
                           new DlgPrefBeats(this, m_pConfig),
@@ -308,6 +314,17 @@ void DlgPreferences::showSoundHardwarePage(
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
     if (tab.has_value()) {
         m_pSoundDlg->selectIOTab(*tab);
+    }
+    if (!isVisible()) {
+        show();
+    }
+}
+
+void DlgPreferences::showRecordingPage() {
+    switchToPage(m_recordingPage.pTreeItem->text(0), m_recordingPage.pDlg);
+    contentsTreeWidget->setCurrentItem(m_recordingPage.pTreeItem);
+    if (!isVisible()) {
+        show();
     }
 }
 

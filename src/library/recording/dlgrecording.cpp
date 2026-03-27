@@ -89,6 +89,11 @@ DlgRecording::DlgRecording(
             this,
             &DlgRecording::slotRecButtonClicked);
 
+    connect(pushButtonSettings,
+            &QPushButton::clicked,
+            pLibrary,
+            &Library::showRecordingSettings);
+
     labelRecPrefix->hide();
     labelRecFilename->hide();
     labelRecStatistics->hide();
