@@ -235,12 +235,12 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
     emit analysisActive(false);
 }
 
-bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
+bool AnalysisFeature::dropAccept(const QList<QUrl>& urls) {
     const QList<mixxx::FileInfo> fileInfos =
             // collect all tracks, accept playlist files
             DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
     QList<AnalyzerScheduledTrack> tracks;
     for (auto trackId : trackIds) {
         tracks.append(trackId);
