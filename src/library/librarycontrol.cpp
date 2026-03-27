@@ -373,6 +373,13 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 &LibraryControl::slotIncrementFontSize);
     }
 
+    // Set BPM lock (button state does not reflect track(s) state)
+    m_pBpmLock = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "set_bpmlock"));
+    connect(m_pBpmLock.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotToggleBpmLock);
+
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
     m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
@@ -384,6 +391,26 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotTrackColorNext);
+
+    // Track Rating controls
+    m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "stars_up"));
+    m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "stars_down"));
+    connect(m_pStarsUp.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequestRelative(1);
+                }
+            });
+    connect(m_pStarsDown.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequestRelative(-1);
+                }
+            });
 
     // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
@@ -1186,6 +1213,17 @@ void LibraryControl::slotDecrementFontSize(double v) {
     }
 }
 
+void LibraryControl::slotToggleBpmLock(double v) {
+    if (!m_pLibraryWidget || v < 0) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->toggleBpmLock(v > 0);
+    }
+}
+
 void LibraryControl::slotTrackColorPrev(double v) {
     if (!m_pLibraryWidget || v <= 0) {
         return;
@@ -1205,5 +1243,16 @@ void LibraryControl::slotTrackColorNext(double v) {
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
         pTrackTableView->assignNextTrackColor();
+    }
+}
+
+void LibraryControl::slotTrackRatingChangeRequestRelative(int change) {
+    if (!m_pLibraryWidget || change == 0) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->trackRatingChangeRequestRelative(change);
     }
 }
