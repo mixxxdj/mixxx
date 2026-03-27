@@ -8,6 +8,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "dialog/dlgstemselect.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -1252,6 +1253,39 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             slotDeleteTracksFromDisk();
         }
         return;
+    }
+    case Qt::Key_Right: {
+#ifdef __STEM__
+        TrackModel* pTrackModel = getTrackModel();
+        if (!pTrackModel) {
+            break;
+        }
+        const QModelIndexList indices = getSelectedRows();
+        if (indices.isEmpty()) {
+            break;
+        }
+        TrackPointer pTrack = pTrackModel->getTrack(indices.first());
+        if (!pTrack) {
+            break;
+        }
+
+        if (!pTrack->hasStreamInfoFromSource()) {
+            // The stem metadata are loaded on stream info refresh, which occurs
+            // when the file gets loaded for the time in the session. If there is no
+            // stream info from source, when open the file, which lead to loading
+            // the stem manifest.
+            mixxx::AudioSource::OpenParams config;
+            config.setChannelCount(mixxx::kMaxEngineChannelInputCount);
+            SoundSourceProxy(pTrack).openAudioSource(config);
+        }
+        if (pTrack->hasStem()) {
+            if (!m_pDlgStemSelect) {
+                m_pDlgStemSelect = make_parented<DlgStemSelect>(this);
+            }
+            m_pDlgStemSelect->show(pTrack);
+        }
+        break;
+#endif // __STEM__
     }
     default:
         break;

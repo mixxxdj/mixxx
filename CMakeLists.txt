@@ -1248,6 +1248,8 @@ add_library(
   src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
+  src/dialog/dlgstemselect.cpp
+  src/dialog/dlgstemselect.ui
   src/effects/backends/builtin/autopaneffect.cpp
   src/effects/backends/builtin/balanceeffect.cpp
   src/effects/backends/builtin/bessel4lvmixeqeffect.cpp
