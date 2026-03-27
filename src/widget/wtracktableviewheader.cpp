@@ -143,18 +143,35 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
     }
 }
 
-WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
-        QWidget* pParent)
-        : QHeaderView(orientation, pParent),
-          m_menu(tr("Show or hide columns."), this),
+WTrackTableViewHeader::WTrackTableViewHeader(QWidget* pParent)
+        : QHeaderView(Qt::Horizontal, pParent),
+          m_pMenu(make_parented<QMenu>(tr("Show or hide columns."), this)),
           m_preferredHeight(-1),
           m_hoveredSection(-1),
           m_previousHoveredSection(-1) {
+    // Here we can override values to prevent restoring corrupt values from database
+    setSectionsMovable(true);
+
+    // Setting true in the next line causes https://github.com/mixxxdj/mixxx/issues/6265
+    // at least with Qt 4.6.1
+    setCascadingSectionResizes(false);
+
+    setSectionsClickable(true);
+
+    // Setting this to true would render all column labels BOLD as soon as the
+    // tableview is focused -- and would not restore the previous style when
+    // it's unfocused. This can not be overwritten with qss, so it can screw up
+    // the skin design. Also, it wouldn't even be useful since WLibraryTableView's
+    // setSelectionBehavior is QAbstractItemView::SelectRows = all columns
+    // would be highlighted.
+    setHighlightSections(false);
+
+    setDefaultAlignment(Qt::AlignLeft);
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* pEvent) {
     pEvent->accept();
-    m_menu.popup(pEvent->globalPos());
+    m_pMenu->popup(pEvent->globalPos());
 }
 
 void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
@@ -166,14 +183,13 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         return;
     }
 
-    // Won't happen in practice since the WTrackTableView new's a new
-    // WTrackTableViewHeader each time a new TrackModel is loaded.
-    // if (pOldTrackModel) {
-    //     saveHeaderState();
-    // }
+    // Save state of the old model's header
+    if (pOldTrackModel) {
+        saveHeaderState();
+    }
 
-    // First clear all the context menu actions for the old model.
-    clearActions();
+    // Clear the menu of the old model (actions, checkbox list, hidden sizes)
+    clearMenu();
 
     // Now set the header view to show the new model
     QHeaderView::setModel(pModel);
@@ -186,14 +202,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
     }
 
     // Restore saved header state to get sizes, column positioning, etc. back.
-    m_hiddenColumnSizes.clear();
     restoreHeaderState();
-
-    // Here we can override values to prevent restoring corrupt values from database
-    setSectionsMovable(true);
-
-    // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
-    setCascadingSectionResizes(false);
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
 
@@ -214,7 +223,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         const QString title = pModel->headerData(i, orientation()).toString();
 
         // Custom QCheckBox with fixed hover behavior
-        auto pCheckBox = make_parented<WMenuCheckBox>(title, &m_menu);
+        auto pCheckBox = make_parented<WMenuCheckBox>(title, m_pMenu);
         // Keep a map of checkboxes and columns
         m_columnCheckBoxes.insert(i, pCheckBox.get());
         connect(pCheckBox.get(),
@@ -243,21 +252,20 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
                 [pCheckBox{pCheckBox.get()}] {
                     pCheckBox->toggle();
                 });
-        m_menu.addAction(pAction);
-
+        m_pMenu->addAction(pAction);
     }
 
-    m_menu.addSeparator();
+    m_pMenu->addSeparator();
 
     // Only show the shuffle action in models that allow sorting.
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Sorting)) {
-        auto pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), &m_menu);
+        auto pShuffleAction = make_parented<QAction>(tr("Shuffle Tracks"), m_pMenu);
         connect(pShuffleAction,
                 &QAction::triggered,
                 this,
                 &WTrackTableViewHeader::shuffle,
                 /*signal-to-signal*/ Qt::DirectConnection);
-        m_menu.addAction(pShuffleAction);
+        m_pMenu->addAction(pShuffleAction);
     }
 
     // Safety check against someone getting stuck with all columns hidden
@@ -325,12 +333,16 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     return !headerStateString.isNull();
 }
 
-void WTrackTableViewHeader::clearActions() {
+void WTrackTableViewHeader::clearMenu() {
+    if (m_pMenu->isVisible()) {
+        m_pMenu->hide();
+    }
     // The QActions are parented to the menu, so clearing deletes them. Since
     // they are deleted we don't have to disconnect their signals from the
     // mapper.
     m_columnCheckBoxes.clear();
-    m_menu.clear();
+    m_hiddenColumnSizes.clear();
+    m_pMenu->clear();
 }
 
 void WTrackTableViewHeader::showOrHideColumn(int column) {
