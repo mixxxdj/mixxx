@@ -53,6 +53,12 @@ jobs:
     with:
       branch: ${{ github.head_ref || github.ref_name }}
 
+  analyzer_report:
+    uses: ./.github/workflows/beat_analyzer.yml
+    with:
+      branch: ${{ github.head_ref || github.ref_name }}
+      publish_report: true
+
   sync:
     if: ${{ github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
     uses: ./.github/workflows/sync_branches.yml
