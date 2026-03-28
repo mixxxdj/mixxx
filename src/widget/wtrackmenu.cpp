@@ -253,7 +253,23 @@ void WTrackMenu::createMenus() {
                         VERIFY_OR_DEBUG_ASSERT(m_pSearchRelatedMenu->isEnabled()) {
                             m_pSearchRelatedMenu->setEnabled(true);
                         }
-                        m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
+                        QStringList crateNames;
+                        if (m_pLibrary) {
+                            auto& crates = m_pLibrary->trackCollectionManager()
+                                                   ->internalCollection()
+                                                   ->crates();
+
+                            CrateTrackSelectResult trackCrates =
+                                    crates.selectTrackCratesSorted(pTrack->getId());
+
+                            while (trackCrates.next()) {
+                                class Crate crate;
+                                if (crates.readCrateById(trackCrates.crateId(), &crate)) {
+                                    crateNames.append(crate.getName());
+                                }
+                            }
+                        }
+                        m_pSearchRelatedMenu->addActionsForTrack(*pTrack, crateNames);
                     }
                     m_pSearchRelatedMenu->setEnabled(
                             !m_pSearchRelatedMenu->isEmpty());
