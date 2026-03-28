@@ -175,6 +175,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
     m_pRepeat->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_playposition_samples = new ControlObject<double>(ConfigKey(m_group, "playposition_samples"));
 
     m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
 
@@ -313,6 +314,7 @@ EngineBuffer::~EngineBuffer() {
 
     delete m_pReadAheadManager;
     delete m_pReader;
+    delete m_playposition_samples;
 
     delete m_playButton;
     delete m_playStartButton;
@@ -481,6 +483,7 @@ void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "setNewPlaypos" << m_group << position;
     }
+    m_playposition_samples->set(m_playPos.toEngineSamplePos());
 
     m_playPos = position;
 
@@ -735,12 +738,16 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 void EngineBuffer::seekAbs(mixxx::audio::FramePos position) {
     DEBUG_ASSERT(position.isValid());
     doSeekPlayPos(position, SEEK_STANDARD);
+    m_playposition_samples->set(position.toEngineSamplePos());
+
 }
 
 // WARNING: This method is called by EngineControl and runs in the engine thread
 void EngineBuffer::seekExact(mixxx::audio::FramePos position) {
     DEBUG_ASSERT(position.isValid());
     doSeekPlayPos(position, SEEK_EXACT);
+    m_playposition_samples->set(position.toEngineSamplePos());
+
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(mixxx::audio::FramePos absolutePlaypos) {
@@ -1489,6 +1496,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
         // called yet.
         return;
     }
+    m_playposition_samples->set(m_playPos.toEngineSamplePos());
 
     // Increase samplesCalculated by the buffer size
     m_samplesSinceLastIndicatorUpdate += bufferSize;
