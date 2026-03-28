@@ -1,4 +1,4 @@
-#include "engine/controls/cuecontrol.h"
+﻿#include "engine/controls/cuecontrol.h"
 
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
@@ -2169,9 +2169,32 @@ void CueControl::outroEndActivate(double value) {
     }
 }
 
+
+
 // This is also called from the engine thread. No locking allowed.
 bool CueControl::updateIndicatorsAndModifyPlay(
         bool newPlay, bool oldPlay, bool playPossible) {
+    qWarning() << "=== CUE CONTROL ===";
+    qWarning() << "newPlay:" << newPlay;
+    qWarning() << "oldPlay:" << oldPlay;
+    qWarning() << "playPossible:" << playPossible;
+
+    qWarning() << "previewIndex:" << m_currentlyPreviewingIndex;
+
+    // PLAY
+    if (newPlay) {
+        qWarning() << "PLAY detected";
+    }
+
+    // STOP
+    if (!newPlay && oldPlay) {
+        qWarning() << "STOP detected";
+    }
+
+    // CUE
+    if (!newPlay && !oldPlay) {
+        qWarning() << "CUE detected";
+    }
     // qDebug() << "updateIndicatorsAndModifyPlay" << newPlay << playPossible
     //        << m_currentlyPreviewingIndex;
     CueMode cueMode = static_cast<CueMode>(static_cast<int>(m_pCueMode->get()));

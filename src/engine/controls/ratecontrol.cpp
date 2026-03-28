@@ -109,8 +109,13 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_jumpPos(mixxx::audio::FramePos()),
           m_targetPos(mixxx::audio::FramePos()),
           m_bTempStarted(false),
+          m_prevPaused(true),
           m_tempRateRatio(0.0),
-          m_dRateTempRampChange(0.0) {
+          m_dRateTempRampChange(0.0),
+          m_spinupRateLimit(1.0) {
+          m_pRampStartEnabled = new ControlProxy(getGroup(), "ramped_start_enabled");
+          m_pRampStartEnabled->set(1.0);
+
     // Vinyl control COs are only created for main decks
     if (PlayerManager::isDeckGroup(getGroup())) {
         m_pVCEnabled = ControlObject::getControl(
@@ -406,8 +411,47 @@ double RateControl::calculateSpeed(double baserate,
     *pReportScratching = false;
     *pReportReverse = false;
 
+  /*  qWarning() << "paused:" << paused;
+    qWarning() << "prevPaused:" << m_prevPaused;
+    qWarning() << "scratching:" << *pReportScratching;*/
+
+    // Detect play pressed from pause → start physical spin-up
+   /* if (!paused && m_prevPaused && !*pReportScratching) {
+        qWarning() << "🔥 SPINUP 🔥";
+        m_spinupRateLimit = 0.0;
+    }
+
+    m_prevPaused = paused;*/
+    // Physical spin-up ramp
+    if (m_spinupRateLimit < 1.0) {
+        const double dt =
+                static_cast<double>(samplesPerBuffer) / m_pSampleRate.get();
+
+        const double rampSpeed = 6.0;
+
+        m_spinupRateLimit += (1.0 - m_spinupRateLimit) * rampSpeed * dt;
+
+        if (m_spinupRateLimit > 0.999) {
+            m_spinupRateLimit = 1.0;
+        }
+    }
+
     processTempRate(samplesPerBuffer);
 
+    // Physical spin-up ramp: gradually increase allowed rate
+    if (m_spinupRateLimit < 1.0) {
+        const double dt =
+                static_cast<double>(samplesPerBuffer) / m_pSampleRate.get();
+
+        // Exponential spin-up curve (physical feel)
+        const double rampSpeed = 6.0; // higher = faster acceleration
+
+        m_spinupRateLimit += (1.0 - m_spinupRateLimit) * rampSpeed * dt;
+
+        if (m_spinupRateLimit > 0.999) {
+            m_spinupRateLimit = 1.0;
+        }
+    }
     double rate;
     const double searching = m_pRateSearch->get();
     if (searching != 0) {
@@ -512,6 +556,9 @@ double RateControl::calculateSpeed(double baserate,
             }
         }
     }
+    rate = math_min(rate, m_spinupRateLimit);
+
+    m_prevPaused = paused;
     return rate;
 }
 
