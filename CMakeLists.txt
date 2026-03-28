@@ -4478,8 +4478,7 @@ elseif(WIN32)
 endif()
 
 if(APPLE OR WIN32)
-  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
-  # there is no particular reason to look for this file versus any other one in the directory.
+  # Compute Qt translations directory directly from cached Qt variables
   if(QT6)
     find_file(
       QT_TRANSLATION_FILE
@@ -4489,6 +4488,7 @@ if(APPLE OR WIN32)
       NO_DEFAULT_PATH
     )
   else()
+    # Qt5: Try multiple possible locations
     find_file(
       QT_TRANSLATION_FILE
       qt_de.qm
@@ -4499,16 +4499,33 @@ if(APPLE OR WIN32)
       NO_DEFAULT_PATH
     )
   endif()
-  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
-  install(
-    DIRECTORY "${QT_TRANSLATIONS}/"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}/translations"
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-    FILES_MATCHING
-    REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-  )
+
+  get_filename_component(QT_TRANSLATIONS "${QT_TRANSLATION_FILE}" DIRECTORY)
+  if(EXISTS "${QT_TRANSLATIONS}")
+    # Copy at configure time (runs once when CMake configures)
+    file(
+      COPY "${QT_TRANSLATIONS}/"
+      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/translations/Qt6"
+      PATTERN "qt_*.qm"
+      PATTERN "qtbase_*.qm"
+      PATTERN "qtmultimedia_*.qm"
+      PATTERN "qtscript_*.qm"
+      PATTERN "qtxmlpatterns_*.qm"
+    )
+  endif()
+
+  # Install translations
+  if(EXISTS "${QT_TRANSLATIONS}")
+    install(
+      DIRECTORY "${QT_TRANSLATIONS}/"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/translations"
+      # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+      # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+      FILES_MATCHING
+      REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+    )
+  endif()
 endif()
 
 add_library(
