@@ -334,6 +334,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     tr("Find details in the Mixxx user manual"),
                     MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES);
     deckBusHint->setText(deckBusHintStr);
+
+    // Append a ':' to separate latency/underflow labels from values.
+    // (append here to keep existing tr strings)
+    latencyLabel->setText(latencyLabel->text() + ':');
+    underflowLabel->setText(underflowLabel->text() + ':');
 }
 
 /// Slot called when the preferences dialog is opened.
