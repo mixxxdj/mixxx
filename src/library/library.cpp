@@ -10,6 +10,7 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#include "library/dateformatbroadcaster.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -75,6 +76,8 @@ Library::Library(
           m_pKeyNotation(std::make_unique<ControlObject>(
                   mixxx::library::prefs::kKeyNotationConfigKey)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
+
+    DateFormatChangedBroadcaster::createInstance();
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
@@ -269,7 +272,9 @@ Library::Library(
             kEditMetadataSelectedClickDefault);
 }
 
-Library::~Library() = default;
+Library::~Library() {
+    DateFormatChangedBroadcaster::destroy();
+}
 
 TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
