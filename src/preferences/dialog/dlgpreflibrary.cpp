@@ -25,6 +25,9 @@
 
 namespace {
 constexpr int kDefaultFuzzyRateRangePercent = 75;
+const ConfigKey kGreyOutColumnsCfgkey(
+        QStringLiteral("[Library]"), QStringLiteral("dim_columns"));
+const char* kColumnIdPropName = "colId";
 } // namespace
 
 using namespace mixxx::library::prefs;
@@ -133,6 +136,56 @@ DlgPrefLibrary::DlgPrefLibrary(
             &DlgPrefLibrary::slotDateFormatChanged);
 
     connect(btn_library_font, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
+
+    // grey out columns ////////////////////////////////////////////////////////
+    // FIXME keep number of checkboxes minimal, keep UI compact
+    // 1. put ALL possible columns in a grid layout
+    // 2. use WCollapsibleGroupBox
+    //    accessibility?
+    // 3. use a QScrollArea
+    //    QScrollArea inside QScrollArea (dialog) ??
+    // 4. show only some columns (default 5) + those enabled in config.
+    //    plus a QComboBox with an 'Add' button to add more columns on demand.
+    const QList<ColumnCache::Column> columns{
+            ColumnCache::COLUMN_LIBRARYTABLE_ALBUM,
+            ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST,
+            ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER,
+            ColumnCache::COLUMN_LIBRARYTABLE_COMMENT,
+            ColumnCache::COLUMN_LIBRARYTABLE_GENRE,
+            ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE,
+            ColumnCache::COLUMN_LIBRARYTABLE_GROUPING,
+            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION,
+            ColumnCache::COLUMN_LIBRARYTABLE_BPM,
+            ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
+            ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED,
+            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
+            ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
+            ColumnCache::COLUMN_LIBRARYTABLE_YEAR,
+            ColumnCache::COLUMN_LIBRARYTABLE_KEY,
+            ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY,
+            ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER,
+            ColumnCache::COLUMN_LIBRARYTABLE_BITRATE,
+            ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED,
+            ColumnCache::COLUMN_LIBRARYTABLE_RATING,
+            ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN};
+    // we need to adjust the Tab stops, ie. squeeze new checkboxes in between
+    // the Played Color checkbox and the Search Timeout spinbox
+    QWidget* pPrevWidget = checkbox_played_track_color;
+    // track item number so we can correctly put the checkboxes in a grid layout
+    int num = 0;
+    for (auto col : columns) {
+        const QString title = m_pLibrary->columnTitle(col);
+        // set this as parent, else the setting the tabstop will not work
+        auto pCheckBox = std::make_unique<QCheckBox>(title, this);
+        pCheckBox->setProperty(kColumnIdPropName, col);
+        auto* pBoxPtr = pCheckBox.get();
+        setTabOrder(pPrevWidget, pBoxPtr);
+        pPrevWidget = pBoxPtr;
+        // layout takes ownership
+        layout_dimColumns->addWidget(pCheckBox.release(), num / 2, num % 2);
+        num++;
+    }
+    setTabOrder(pPrevWidget, spinBox_search_debouncing_timeout);
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVE, AIFF";
@@ -299,6 +352,15 @@ void DlgPrefLibrary::slotResetToDefaults() {
         comboBox_dateFormat->setCurrentIndex(0);
     }
 
+    // By default no column is greyed out
+    for (int i = 0; i < layout_dimColumns->count(); i++) {
+        auto* pItem = layout_dimColumns->itemAt(i);
+        auto* pBox = qobject_cast<QCheckBox*>(pItem->widget());
+        if (pBox) {
+            pBox->setChecked(false);
+        }
+    }
+
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
@@ -371,9 +433,41 @@ void DlgPrefLibrary::slotUpdate() {
     }
 
     updateDateFormatPreview(dateFormat);
-
     // Ensure the static member is updated on startup/load
     BaseTrackTableModel::setDateFormat(dateFormat);
+
+    // use 'played' color
+    // create int and Column lists from config string
+    const QString columnIdsStr = m_pConfig->getValue(kGreyOutColumnsCfgkey, QString());
+    const auto idStrList = columnIdsStr.tokenize(QLatin1Char(','));
+    QList<int> columnIds;
+    QList<ColumnCache::Column> columns;
+    for (const auto& id : idStrList) {
+        bool isInt = false;
+        int colId = id.toInt(&isInt);
+        if (isInt) {
+            columnIds.append(colId);
+            columns.append(static_cast<ColumnCache::Column>(colId));
+        }
+    }
+    // update checkboxes
+    for (int i = 0; i < layout_dimColumns->count(); i++) {
+        auto* pItem = layout_dimColumns->itemAt(i);
+        auto* pBox = qobject_cast<QCheckBox*>(pItem->widget());
+        if (pBox) {
+            const QVariant colIdVar = pBox->property(kColumnIdPropName);
+            bool isInt = false;
+            int colId = colIdVar.toInt(&isInt);
+            DEBUG_ASSERT(isInt);
+            if (columnIds.contains(colId)) {
+                pBox->setChecked(true);
+            } else {
+                pBox->setChecked(false);
+            }
+        }
+    }
+    // apply to table models immediately
+    BaseTrackTableModel::setDimColumns(columns);
 
     switch (m_pConfig->getValue<int>(
             kTrackDoubleClickActionConfigKey,
@@ -674,6 +768,25 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(
             mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
             ConfigValue(checkbox_played_track_color->isChecked()));
+
+    // grey out columns
+    QStringList columnIds;
+    QList<ColumnCache::Column> columns;
+    for (int i = 0; i < layout_dimColumns->count(); i++) {
+        auto* pItem = layout_dimColumns->itemAt(i);
+        auto* pBox = qobject_cast<QCheckBox*>(pItem->widget());
+        if (pBox && pBox->isChecked()) {
+            const QVariant colIdVar = pBox->property(kColumnIdPropName);
+            bool isInt = false;
+            int colId = colIdVar.toInt(&isInt);
+            DEBUG_ASSERT(isInt);
+            columnIds.append(QString::number(colId));
+            columns.append(static_cast<ColumnCache::Column>(colId));
+        }
+    }
+    const QString columnIdsJoint = columnIds.join(',');
+    m_pConfig->set(kGreyOutColumnsCfgkey, columnIdsJoint);
+    BaseTrackTableModel::setDimColumns(columns);
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();
