@@ -13,6 +13,9 @@ class ControlObject;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
+#ifdef __STEM_CONVERSION__
+class DlgStemConversion;
+#endif
 class GuiTick;
 class LaunchImage;
 class VisualsManager;
@@ -62,6 +65,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotFileLoadSongPlayer(int deck);
     /// show the preferences dialog
     void slotOptionsPreferences();
+#ifdef __STEM_CONVERSION__
+    void slotShowStemConversionDialog();
+#endif
     /// show the about dialog
     void slotHelpAbout();
     /// show popup with library scan results
@@ -151,6 +157,10 @@ class MixxxMainWindow : public QMainWindow {
 
     DlgPreferences* m_pPrefDlg;
     parented_ptr<DlgKeywheel> m_pKeywheel;
+
+#ifdef __STEM_CONVERSION__
+    parented_ptr<DlgStemConversion> m_pStemConversionDlg;
+#endif
 
 #ifdef __ENGINEPRIME__
     // Library exporter

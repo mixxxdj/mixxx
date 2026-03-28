@@ -23,6 +23,9 @@ class Library;
 class SkinControls;
 class ControlPushButton;
 struct LibraryScanResultSummary;
+#ifdef __STEM_CONVERSION__
+class StemConversionManager;
+#endif
 
 namespace mixxx {
 
@@ -102,6 +105,12 @@ class CoreServices : public QObject {
         return m_pScreensaverManager;
     }
 
+#ifdef __STEM_CONVERSION__
+    std::shared_ptr<StemConversionManager> getStemConversionManager() const {
+        return m_pStemConversionManager;
+    }
+#endif
+
     std::shared_ptr<QDialog> makeDlgPreferences() const;
 
   signals:
@@ -147,6 +156,10 @@ class CoreServices : public QObject {
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfigEmpty;
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
+
+#ifdef __STEM_CONVERSION__
+    std::shared_ptr<StemConversionManager> m_pStemConversionManager;
+#endif
 
     std::unique_ptr<SkinControls> m_pSkinControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
