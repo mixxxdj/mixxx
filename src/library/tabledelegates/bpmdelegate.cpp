@@ -34,11 +34,13 @@ BPMDelegate::BPMDelegate(QTableView* pTableView)
         : CheckboxDelegate(pTableView, QStringLiteral("LibraryBPMButton")) {
     // Register a custom QItemEditorFactory to override the default
     // QDoubleSpinBox editor.
-    m_pFactory = new QItemEditorFactory();
+    m_pFactory = std::make_unique<QItemEditorFactory>();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     m_pFactory->registerEditor(QMetaType::Double, new BpmEditorCreator());
 #else
     m_pFactory->registerEditor(QVariant::Double, new BpmEditorCreator());
 #endif
-    setItemEditorFactory(m_pFactory);
+    setItemEditorFactory(m_pFactory.get());
 }
+
+BPMDelegate::~BPMDelegate() = default;
