@@ -3,8 +3,10 @@
 #include <QObject>
 #include <QSurfaceFormat>
 #include <QVector>
+#include <memory>
 #include <vector>
 
+#include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
@@ -368,4 +370,5 @@ class WaveformWidgetFactory : public QObject,
     double m_actualFrameRate;
     int m_vSyncType;
     double m_playMarkerPosition;
+    std::unique_ptr<ControlPotmeter> m_pPlayMarkerPositionCO;
 };
