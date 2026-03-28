@@ -1876,7 +1876,7 @@ ExportTrackMetadataResult Track::exportMetadata(
                 << getLocation();
         return ExportTrackMetadataResult::Failed;
     }
-    DEBUG_ASSERT(!"unhandled case in switch statement");
+    DEBUG_ASSERT_UNREACHABLE(!"unhandled case in switch statement");
     return ExportTrackMetadataResult::Skipped;
 }
 

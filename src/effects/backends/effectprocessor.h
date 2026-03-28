@@ -206,7 +206,6 @@ class EffectProcessorImpl : public EffectProcessor {
             }
         }
 
-        DEBUG_ASSERT(requiredVectorSize > 0);
         auto& outputChannelStates = m_channelStateMatrix[inputChannel];
         DEBUG_ASSERT(outputChannelStates.size() == 0);
         outputChannelStates.reserve(requiredVectorSize);

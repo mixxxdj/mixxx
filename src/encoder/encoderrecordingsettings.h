@@ -19,13 +19,13 @@ class EncoderRecordingSettings : public EncoderSettings {
 
     virtual void setQualityByIndex(int qualityIndex) {
         Q_UNUSED(qualityIndex);
-        DEBUG_ASSERT(!"unimplemented");
+        DEBUG_ASSERT_UNREACHABLE(!"unimplemented");
     }
 
     // Sets the compression level
     void setCompression(int compression) override {
         Q_UNUSED(compression);
-        DEBUG_ASSERT(!"unimplemented");
+        DEBUG_ASSERT_UNREACHABLE(!"unimplemented");
     }
 
     // Selects the option by its index. If it is a single-element option,
@@ -33,7 +33,7 @@ class EncoderRecordingSettings : public EncoderSettings {
     virtual void setGroupOption(const QString& groupCode, int optionIndex) {
         Q_UNUSED(groupCode);
         Q_UNUSED(optionIndex);
-        DEBUG_ASSERT(!"unimplemented");
+        DEBUG_ASSERT_UNREACHABLE(!"unimplemented");
     }
 
     // Override getChannelMode to read from recording preferences but making it

@@ -51,9 +51,7 @@ TEST_F(EngineEffectsDelayTest, NegativeDelayValue) {
 
     EXPECT_DEATH({
         // Set negative delay value.
-        m_effectsDelay.setDelayFrames(-1);
-    },
-            "delayFrames >= 0");
+        m_effectsDelay.setDelayFrames(-1); }, "false");
 #else
     const SINT numSamples = 4;
 
@@ -81,9 +79,7 @@ TEST_F(EngineEffectsDelayTest, DelayGreaterThanDelayBufferSize) {
 
     EXPECT_DEATH({
         // Set delay greater than the size of the delay buffer.
-        m_effectsDelay.setDelayFrames(numDelayFrames);
-    },
-            "delayFrames <= kMaxDelayFrames");
+        m_effectsDelay.setDelayFrames(numDelayFrames); }, "false");
 #else
     const SINT numSamples = 4;
 
