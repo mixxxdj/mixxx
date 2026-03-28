@@ -77,7 +77,7 @@ repos:
           - pre-commit
           - manual
         additional_dependencies:
-          - eslint@^9.14.0
+          - eslint@^10.1.0
           - "@eslint/js"
           - typescript-eslint
           - eslint-plugin-jsdoc@^v50.4.3
