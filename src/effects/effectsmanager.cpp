@@ -19,13 +19,20 @@
 namespace {
 const unsigned int kEffectMessagePipeFifoSize = 2048;
 const QString kEffectsXmlFile = QStringLiteral("effects.xml");
+static constexpr double kMixedQuickEffectsSelected = -1.0;
 } // anonymous namespace
 
-EffectsManager::EffectsManager(
-        UserSettingsPointer pConfig,
+EffectsManager::EffectsManager(UserSettingsPointer pConfig,
         std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
+          m_unifiedQuickEffectPresetIndex(
+                  ConfigKey(QStringLiteral("[QuickEffectRack1]"),
+                          QStringLiteral("loaded_chain_preset")),
+                  true,
+                  false,
+                  false,
+                  kMixedQuickEffectsSelected),
           m_loEqFreq(ConfigKey(kMixerProfile, kLowEqFrequency), 0., 22040),
           m_hiEqFreq(ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040),
           m_initializedFromEffectsXml(false) {
@@ -47,6 +54,20 @@ EffectsManager::EffectsManager(
             new EffectChainPresetManager(pConfig, m_pBackendManager));
 
     m_pVisibleEffectsList = VisibleEffectsListPointer(new VisibleEffectsList());
+
+    QObject::connect(&m_unifiedQuickEffectPresetIndex,
+            &ControlObject::valueChanged,
+            &m_unifiedQuickEffectPresetIndex,
+            [this](double index) {
+                if (index < 0) {
+                    return;
+                }
+                for (QuickEffectChainPointer quickEffect :
+                        std::as_const(m_quickEffectChains)) {
+                    quickEffect->loadChainPreset(quickEffect->presetAtIndex(
+                            static_cast<int>(index)));
+                }
+            });
 }
 
 EffectsManager::~EffectsManager() {
@@ -201,6 +222,24 @@ void EffectsManager::addQuickEffectChain(const ChannelHandleAndGroup& deckHandle
 
     m_quickEffectChains.insert(deckHandleGroup.name(), pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
+
+    QObject::connect(pChainSlot.get(),
+            &QuickEffectChain::presetIndexChanged,
+            pChainSlot.get(),
+            [this](int presetIndex) {
+                const bool allQuickEffectChainsHaveSameIndex =
+                        std::all_of(m_quickEffectChains.cbegin(),
+                                m_quickEffectChains.cend(),
+                                [presetIndex](const QuickEffectChainPointer
+                                                quickEffectChain) {
+                                    return presetIndex ==
+                                            quickEffectChain->presetIndex();
+                                });
+                m_unifiedQuickEffectPresetIndex.set(
+                        allQuickEffectChainsHaveSameIndex
+                                ? presetIndex
+                                : kMixedQuickEffectsSelected);
+            });
 }
 
 void EffectsManager::loadDefaultEqsAndQuickEffects() {
