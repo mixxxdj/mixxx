@@ -73,9 +73,20 @@ jobs:
           RUN_ID: ${{ inputs.run_id }}
         shell: bash
         run: |
-          gh --repo mixxxdj/mixxx run download $RUN_ID --pattern 'Flatpak *' -D bundles
-          find bundles/ -name *.flatpak -exec mv {} bundles/ \;
-          find bundles/ -mindepth 1 -type d -delete
+          mkdir -p bundles
+          # Work around https://github.com/cli/cli/issues/13012
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "/repos/mixxxdj/mixxx/actions/runs/$RUN_ID/artifacts" | jq -r '.artifacts[] | select(.name | test("\\.flatpak$")) | [.name, .archive_download_url] | @tsv' |
+              while IFS=$'\t' read -r name url; do
+                url=$(echo "$url" | cut -d/ -f 4-)
+                echo "Downloading artifact $name from $url"
+                gh api \
+                  -H "Accept: application/vnd.github+json" \
+                  -H "X-GitHub-Api-Version: 2026-03-10" \
+                  "$url" > "bundles/$name"
+              done
           if [ ! `find bundles/ -name '*x86_64.flatpak' | wc -l` -eq 1 ]; then
             echo "At least a x86_64 build is expected. Current bundles:"
             find bundles/ -type f
