@@ -228,5 +228,6 @@ void FlangerEffect::processChannel(
         pState->previousPeriodFrames = -1;
         pState->prev_regen = 0;
         pState->prev_mix = 0;
+        pState->lfoFrames = 0;
     }
 }
