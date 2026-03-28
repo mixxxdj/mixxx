@@ -27,11 +27,15 @@ class PlayerInfo : public QObject {
     int numDecks() const;
     int numPreviewDecks() const;
     int numSamplers() const;
+    double getPregainThreshold() const;
+    void setPregainThreshold(double threshold);
 
   signals:
     void currentPlayingDeckChanged(int deck);
     void currentPlayingTrackChanged(TrackPointer pTrack);
     void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
+
+    void failedDecksChanged(std::vector<int> failedDecks);
 
   private:
     class DeckControls {
@@ -70,4 +74,6 @@ class PlayerInfo : public QObject {
     QList<DeckControls*> m_deckControlList;
 
     static PlayerInfo* m_pPlayerinfo;
+    double pregain_threshold = 0.25;
+    std::vector<int> previouslyFailedDecks;
 };

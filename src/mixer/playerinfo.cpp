@@ -11,7 +11,6 @@
 namespace {
 
 constexpr int kPlayingDeckUpdateIntervalMillis = 2000;
-
 PlayerInfo* s_pPlayerInfo = nullptr;
 
 const QString kAppGroup = QStringLiteral("[App]");
@@ -149,6 +148,11 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             &xfl,
             &xfr);
 
+    // Below is a list of failed decks that will be excluded from being selected
+    // as the currently playing deck and alert the user as to which decks will
+    // not be able to be played.
+    std::vector<int> failedDecks;
+
     for (int i = 0; i < numDecks(); ++i) {
         DeckControls* pDc = getDeckControls(i);
 
@@ -156,7 +160,8 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             continue;
         }
 
-        if (pDc->m_pregain.get() <= 0.25) {
+        if (pDc->m_pregain.get() <= pregain_threshold) {
+            failedDecks.push_back(i);
             continue;
         }
 
@@ -181,7 +186,12 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             maxVolume = dvol;
         }
     }
+
     locker.unlock();
+    if (failedDecks != previouslyFailedDecks) {
+        previouslyFailedDecks = failedDecks;
+        emit failedDecksChanged(failedDecks);
+    }
 
     int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
     if (maxDeck != oldDeck) {
@@ -230,4 +240,13 @@ int PlayerInfo::numPreviewDecks() const {
 
 int PlayerInfo::numSamplers() const {
     return static_cast<int>(m_numSamplers.get());
+}
+
+double PlayerInfo::getPregainThreshold() const {
+    return pregain_threshold;
+}
+void PlayerInfo::setPregainThreshold(double threshold) {
+    const auto locker = lockMutex(&m_mutex);
+    //no hard boundary checks needed because the logic in its only call will handle that
+    pregain_threshold = threshold;
 }
