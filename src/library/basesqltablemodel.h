@@ -178,6 +178,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
+    QHash<TrackId, int> m_sortedTracksIndexes;
+    bool m_bSaveSortedTracks;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

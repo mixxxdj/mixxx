@@ -286,6 +286,63 @@ void BaseSqlTableModel::select() {
         qDebug() << "Rows actually received:" << rowInfos.size();
     }
 
+    if (!m_sortedTracksIndexes.isEmpty()) {
+        if (trackIds.size() < m_sortedTracksIndexes.size()) {
+            // Some tracks have been removed.
+
+            std::vector<int> removedTracksIndexes;
+            QHash<TrackId, int>::iterator tracksIterator = m_sortedTracksIndexes.begin();
+
+            // Find out which tracks have been removed.
+            while (tracksIterator != m_sortedTracksIndexes.end()) {
+                if (!trackIds.contains(tracksIterator.key())) {
+                    // Save the index of the removed track.
+                    removedTracksIndexes.push_back(tracksIterator.value());
+
+                    tracksIterator = m_sortedTracksIndexes.erase(tracksIterator);
+                } else {
+                    ++tracksIterator;
+                }
+            }
+
+            tracksIterator = m_sortedTracksIndexes.begin();
+
+            // Update indexes of tracks.
+            int newTrackIndex;
+
+            while (tracksIterator != m_sortedTracksIndexes.end()) {
+                newTrackIndex = tracksIterator.value();
+
+                for (int removedTrackIndex : removedTracksIndexes) {
+                    if (tracksIterator.value() > removedTrackIndex) {
+                        --newTrackIndex;
+                    }
+                }
+
+                tracksIterator.value() = newTrackIndex;
+
+                ++tracksIterator;
+            }
+        } else if (trackIds.size() > m_sortedTracksIndexes.size()) {
+            // Some tracks have been added.
+
+            QSet<TrackId>::iterator pTrackIdsIterator = trackIds.begin();
+
+            // Insert indexes of added tracks.
+            // New tracks are added at the end of the tracks table.
+            int nextTrackIndex;
+
+            while (pTrackIdsIterator != trackIds.end()) {
+                if (!m_sortedTracksIndexes.contains(*pTrackIdsIterator)) {
+                    nextTrackIndex = m_sortedTracksIndexes.size();
+                    m_sortedTracksIndexes.insert(*pTrackIdsIterator, nextTrackIndex);
+                }
+
+                ++pTrackIdsIterator;
+            }
+        }
+    }
+
     if (m_trackSource) {
         m_trackSource->filterAndSort(trackIds,
                 m_currentSearch,
@@ -293,6 +350,7 @@ void BaseSqlTableModel::select() {
                 m_trackSourceOrderBy,
                 m_sortColumns,
                 m_tableColumns.size() - 1, // exclude the 1st column with the id
+                &m_sortedTracksIndexes,
                 &m_trackSortOrder);
 
         // Re-sort the track IDs since filterAndSort can change their order or mark
@@ -306,6 +364,14 @@ void BaseSqlTableModel::select() {
             } else {
                 rowInfo.row = m_trackSortOrder.value(rowInfo.trackId, -1);
             }
+
+            if (m_bSaveSortedTracks) {
+                m_sortedTracksIndexes.insert(rowInfo.trackId, rowInfo.order);
+            }
+        }
+
+        if (m_bSaveSortedTracks) {
+            m_bSaveSortedTracks = false;
         }
     }
 
@@ -393,6 +459,9 @@ void BaseSqlTableModel::setTable(QString tableName,
     initSortColumnMapping();
 
     m_bInitialized = true;
+
+    // Initialization to disable saving tracks before first sorting.
+    m_bSaveSortedTracks = false;
 }
 
 int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) const {
@@ -569,6 +638,12 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             first = false;
         }
     }
+
+    // Clear previous sort indexes.
+    m_sortedTracksIndexes.clear();
+
+    // Enable saving sorted tracks positions.
+    m_bSaveSortedTracks = true;
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
