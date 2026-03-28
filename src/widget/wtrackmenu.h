@@ -114,6 +114,8 @@ class WTrackMenu : public QMenu {
     void slotRemoveFromDisk();
     const QString getDeckGroup() const;
 
+    bool eventFilter(QObject* pObj, QEvent* e) override;
+
   signals:
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
@@ -179,6 +181,7 @@ class WTrackMenu : public QMenu {
     void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
 
     // Playlist and crate
+    void slotPopulateSearchRelatedMenu();
     void slotPopulatePlaylistMenu();
     void slotPopulateCrateMenu();
     void addSelectionToNewCrate();
@@ -393,6 +396,7 @@ class WTrackMenu : public QMenu {
 
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
+    bool m_bSearchRelatedMenuLoaded;
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 
