@@ -206,7 +206,7 @@ class WaveformWidgetFactory : public QObject,
     static int toUntilMarkTextHeightLimitIndex(float value);
 
     /// Returns the desired surface format for the OpenGLWindow
-    static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
+    static QSurfaceFormat getSurfaceFormat(UserSettingsPointer pConfig = nullptr);
 
   protected:
     bool setWidgetType(

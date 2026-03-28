@@ -3,6 +3,7 @@
 #include "waveform/waveform.h"
 
 #ifdef MIXXX_USE_QOPENGL
+#include <QGuiApplication>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
 #else
@@ -185,17 +186,30 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
             m_openGLShaderAvailable = QOpenGLShaderProgram::hasOpenGLShaderPrograms(pContext);
 
-            m_openGLVersion = pContext->isOpenGLES() ? "ES " : "";
+            // With EGLFS there is always exactly one native window and one EGL window surface
+            // OpenGL windows cannot be embedded into our QWidgets main window we already have.
+            // That's why m_openGlesAvailable is not set to true. TODO: use GL Widgets for all
+            // https://doc.qt.io/qt-6/embedded-linux.html
+            bool isEglfs = QGuiApplication::platformName() == "eglfs";
+
+            if (isEglfs) {
+                m_openGLVersion = "EGLFS ";
+            } else if (pContext->isOpenGLES()) {
+                m_openGLVersion = "ES ";
+            }
+
             m_openGLVersion += majorVersion == 0 ? QString("None") : versionString;
 
-            // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
-            if (pContext->isOpenGLES()) {
-                if (majorVersion * 100 + minorVersion >= 200) {
-                    m_openGlesAvailable = true;
-                }
-            } else {
-                if (majorVersion * 100 + minorVersion >= 201) {
-                    m_openGlAvailable = true;
+            if (!isEglfs) {
+                // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
+                if (pContext->isOpenGLES()) {
+                    if (majorVersion * 100 + minorVersion >= 200) {
+                        m_openGlesAvailable = true;
+                    }
+                } else {
+                    if (majorVersion * 100 + minorVersion >= 201) {
+                        m_openGlAvailable = true;
+                    }
                 }
             }
 
@@ -1365,10 +1379,12 @@ QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type ty
 }
 
 // static
-QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer config) {
+QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConfig) {
     // The first call should pass the config to set the vsync mode. Subsequent
     // calls will use the value as set on the first call.
-    static const auto vsyncMode = config->getValue(kVSyncKey, 0);
+    static const VSyncThread::VSyncMode vsyncMode = pConfig
+            ? pConfig->getValue(kVSyncKey, VSyncThread::ST_DEFAULT)
+            : VSyncThread::ST_DEFAULT;
 
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
