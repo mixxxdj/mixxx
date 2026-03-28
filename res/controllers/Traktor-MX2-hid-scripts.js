@@ -119,16 +119,13 @@ class TraktorMX2Class {
     registerInputPackets() {
 
         // 0x01 = Buttons, Encoders -> packet is 64+15=79 bytes long; last 15 Bytes are data, first is report ID 0x01
-        //eslint-disable-next-line no-undef
         const inputReportButton = new HIDPacket("inputReportButton", 0x01, this.messageCallback.bind(this));
 
         // 0x02 = Knobs, Fader -> packet is 64+53=117 bytes long; last 53 Bytes are data, first is report ID 0x02
-        //eslint-disable-next-line no-undef
         const inputReportKnob = new HIDPacket("inputReportKnob", 0x02, this.messageCallback.bind(this));
 
         // 0x03 = Jog timer, Jog wheel -> packet is 64+20=84 Bytes long; last 20 Bytes are data, first is report ID 0x03
         // In contrary to the two other report types, the MX2 sends this continuously to provide the clock and not only when the jogwheels are turned
-        //eslint-disable-next-line no-undef
         const inputReportJog = new HIDPacket("inputReportJog", 0x03, this.messageCallback.bind(this));
 
         // Channel 1
