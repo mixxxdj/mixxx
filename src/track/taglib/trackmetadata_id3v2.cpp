@@ -3,10 +3,12 @@
 #include <attachedpictureframe.h>
 #include <commentsframe.h>
 #include <generalencapsulatedobjectframe.h>
+#include <popularimeterframe.h>
 #include <textidentificationframe.h>
 #include <unknownframe.h>
 
 #include <array>
+#include <optional>
 #if defined(__EXTRA_METADATA__)
 #include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
@@ -74,6 +76,10 @@ const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 const QString kFrameDescriptionSeratoBeatGrid = QStringLiteral("Serato BeatGrid");
 const QString kFrameDescriptionSeratoMarkers = QStringLiteral("Serato Markers_");
 const QString kFrameDescriptionSeratoMarkers2 = QStringLiteral("Serato Markers2");
+
+// FMPS Rating - TXXX frame description for cross-application rating compatibility
+// https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
+const QString kFMPSRatingDescription = QStringLiteral("FMPS_Rating");
 
 // Returns the text of an ID3v2 frame as a string.
 inline QString frameToQString(
@@ -462,6 +468,68 @@ int removeUserTextIdentificationFrames(
     return count;
 }
 
+// Rating conversion functions
+// FMPS uses 0.0-1.0 scale, Mixxx uses 0-5 (with 0 meaning unrated)
+// POPM uses 0-255 scale with specific thresholds for 1-5 star ratings
+
+/// Convert Mixxx rating (0-5) to FMPS rating (0.0-1.0)
+/// Returns 0.0 for unrated (0), maps 1-5 to 0.2, 0.4, 0.6, 0.8, 1.0
+double mixxxRatingToFMPS(int rating) {
+    if (rating <= 0 || rating > 5) {
+        return 0.0;
+    }
+    return rating / 5.0;
+}
+
+/// Convert FMPS rating (0.0-1.0) to Mixxx rating (0-5)
+/// Uses symmetric thresholds: 0.1, 0.3, 0.5, 0.7, 0.9
+int fmpsRatingToMixxx(double fmps) {
+    if (fmps < 0.1) {
+        return 0; // Unrated
+    } else if (fmps < 0.3) {
+        return 1;
+    } else if (fmps < 0.5) {
+        return 2;
+    } else if (fmps < 0.7) {
+        return 3;
+    } else if (fmps < 0.9) {
+        return 4;
+    } else {
+        return 5;
+    }
+}
+
+/// Convert POPM rating (0-255) to Mixxx rating (0-5)
+/// Based on common POPM thresholds used by media players
+int popmRatingToMixxx(int popm) {
+    if (popm == 0) {
+        return 0; // Unrated
+    } else if (popm <= 31) {
+        return 1; // 1 star: 1-31
+    } else if (popm <= 95) {
+        return 2; // 2 stars: 32-95
+    } else if (popm <= 159) {
+        return 3; // 3 stars: 96-159
+    } else if (popm <= 223) {
+        return 4; // 4 stars: 160-223
+    } else {
+        return 5; // 5 stars: 224-255
+    }
+}
+
+/// Find the first POPM (Popularimeter) frame in the tag
+TagLib::ID3v2::PopularimeterFrame* findFirstPopularimeterFrame(
+        const TagLib::ID3v2::Tag& tag) {
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["POPM"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* const pPopmFrame = downcastFrame<TagLib::ID3v2::PopularimeterFrame>(pFrame);
+        if (pPopmFrame) {
+            return pPopmFrame;
+        }
+    }
+    return nullptr;
+}
+
 void writeCommentsFrame(
         TagLib::ID3v2::Tag* pTag,
         const TagLib::String& text,
@@ -598,6 +666,76 @@ inline QString formatBpmInteger(
 } // anonymous namespace
 
 namespace id3v2 {
+
+std::optional<int> importRatingFromTag(const TagLib::ID3v2::Tag& tag) {
+    // First try FMPS_Rating TXXX frame (preferred, more precise)
+    const QString fmpsRatingStr = readFirstUserTextIdentificationFrame(
+            tag, kFMPSRatingDescription);
+    if (!fmpsRatingStr.isEmpty()) {
+        bool ok = false;
+        double fmpsValue = fmpsRatingStr.toDouble(&ok);
+        if (ok && fmpsValue >= 0.0 && fmpsValue <= 1.0) {
+            int rating = fmpsRatingToMixxx(fmpsValue);
+            kLogger.debug()
+                    << "Imported FMPS_Rating from TXXX frame:"
+                    << fmpsValue << "->" << rating;
+            return rating;
+        } else {
+            kLogger.warning()
+                    << "Invalid FMPS_Rating value in TXXX frame:"
+                    << fmpsRatingStr;
+        }
+    }
+
+    // Fallback: try POPM frame
+    const TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(tag);
+    if (pPopmFrame) {
+        int popmRating = pPopmFrame->rating();
+        int rating = popmRatingToMixxx(popmRating);
+        kLogger.debug()
+                << "Imported rating from POPM frame:"
+                << popmRating << "->" << rating;
+        return rating;
+    }
+
+    // No rating found
+    return std::nullopt;
+}
+
+bool exportRatingIntoTag(
+        TagLib::ID3v2::Tag* pTag,
+        int rating) {
+    DEBUG_ASSERT(pTag);
+
+    // Convert rating to FMPS format and write as TXXX frame
+    if (rating > 0 && rating <= 5) {
+        double fmpsRating = mixxxRatingToFMPS(rating);
+        QString fmpsRatingStr = QString::number(fmpsRating, 'f', 1);
+        writeUserTextIdentificationFrame(
+                pTag,
+                kFMPSRatingDescription,
+                fmpsRatingStr,
+                true); // isNumericOrURL = true
+        kLogger.debug()
+                << "Exported rating to FMPS_Rating TXXX frame:"
+                << rating << "->" << fmpsRatingStr;
+        return true;
+    } else if (rating == 0) {
+        // Remove existing FMPS_Rating frame if rating is cleared
+        int removed = removeUserTextIdentificationFrames(pTag, kFMPSRatingDescription);
+        if (removed > 0) {
+            kLogger.debug()
+                    << "Removed FMPS_Rating TXXX frame (rating cleared)";
+        }
+        return true;
+    }
+
+    // Invalid rating
+    kLogger.warning()
+            << "Invalid rating value for export:" << rating;
+    return false;
+}
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

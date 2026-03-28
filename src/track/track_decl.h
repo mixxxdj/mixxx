@@ -17,6 +17,8 @@ typedef QList<TrackPointer> TrackPointerList;
 struct SyncTrackMetadataParams {
     bool resetMissingTagMetadataOnImport = false;
     bool syncSeratoMetadata = false;
+    bool syncRating = false;           // export rating to file tags
+    bool importRatingFromFile = false; // import rating from file tags
 
     static SyncTrackMetadataParams readFromUserSettings(
             const UserSettings& userSettings);

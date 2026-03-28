@@ -80,6 +80,10 @@ SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
                             mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey),
             .syncSeratoMetadata = userSettings.getValue<bool>(
                     mixxx::library::prefs::kSyncSeratoMetadataConfigKey),
+            .syncRating = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kExportRatingToFileTagsConfigKey),
+            .importRatingFromFile = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kImportRatingFromFileTagsConfigKey),
     };
 }
 
@@ -1773,7 +1777,10 @@ ExportTrackMetadataResult Track::exportMetadata(
         // updated as expected! In these edge cases users need to explicitly
         // trigger the re-export of file tags or they could modify other metadata
         // properties.
+        // Check if rating needs to be exported (rating is not part of TrackMetadata)
+        const bool ratingNeedsExport = syncParams.syncRating && m_record.hasRating();
         if (!m_bMarkedForMetadataExport &&
+                !ratingNeedsExport &&
                 !normalizedFromRecord.anyFileTagsModified(
                         importedFromFile,
                         mixxx::Bpm::Comparison::Integer)) {
@@ -1828,6 +1835,14 @@ ExportTrackMetadataResult Track::exportMetadata(
             kLogger.debug()
                     << "Exported track metadata:"
                     << getLocation();
+        }
+        // Export rating if enabled
+        if (syncParams.syncRating && m_record.hasRating()) {
+            if (!metadataSource.exportRating(m_record.getRating())) {
+                kLogger.warning()
+                        << "Failed to export rating to file:"
+                        << getLocation();
+            }
         }
         return ExportTrackMetadataResult::Succeeded;
     case mixxx::MetadataSource::ExportResult::Unsupported:
