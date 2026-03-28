@@ -4,6 +4,7 @@
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
 
+#include <QFile>
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
@@ -12,8 +13,10 @@
 #include <QtDebug>
 
 #include "engine/engine.h"
+#include "library/dao/settingsdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
+#include "library/coverart.h"
 #include "library/queryutil.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "library/trackcollection.h"
@@ -23,6 +26,7 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
@@ -38,6 +42,7 @@
 namespace {
 
 const QString kRekordboxLibraryTable = QStringLiteral("rekordbox_library");
+const QString kRekordboxLibraryView = QStringLiteral("rekordbox_library_view");
 const QString kRekordboxPlaylistsTable = QStringLiteral("rekordbox_playlists");
 const QString kRekordboxPlaylistTracksTable = QStringLiteral("rekordbox_playlist_tracks");
 
@@ -93,10 +98,18 @@ bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
             "    bitrate TEXT,"
             "    bpm FLOAT,"
             "    key TEXT,"
+            "    key_id INTEGER,"
+            "    tuning_frequency_hz REAL,"
             "    rating INTEGER,"
             "    analyze_path TEXT UNIQUE,"
             "    device TEXT,"
-            "    color INTEGER"
+            "    color INTEGER,"
+            "    coverart_type INTEGER,"
+            "    coverart_source INTEGER,"
+            "    coverart_location TEXT,"
+            "    coverart_color INTEGER,"
+            "    coverart_digest BLOB,"
+            "    coverart_hash INTEGER"
             ");");
 
     if (!query.exec()) {
@@ -144,6 +157,21 @@ bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName)
         return false;
     }
 
+    return true;
+}
+
+bool createLibraryView(QSqlDatabase& database,
+        const QString& tableName,
+        const QString& viewName) {
+    QSqlQuery query(database);
+    query.prepare(QStringLiteral("CREATE TEMPORARY VIEW IF NOT EXISTS ") + viewName +
+            QStringLiteral(" AS SELECT *, ") +
+            LIBRARYTABLE_COVERART_DIGEST + QStringLiteral(" AS ") + LIBRARYTABLE_COVERART +
+            QStringLiteral(" FROM ") + tableName);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
     return true;
 }
 
@@ -358,6 +386,7 @@ void insertTrack(
         QMap<uint32_t, QString>& albumsMap,
         QMap<uint32_t, QString>& genresMap,
         QMap<uint32_t, QString>& keysMap,
+        const QMap<uint32_t, QString>& artworkMap,
         const QString& devicePath,
         const QString& device,
         int audioFilesCount) {
@@ -371,6 +400,12 @@ void insertTrack(
     float bpm = static_cast<float>(track->tempo() / 100.0);
     int bitrate = static_cast<int>(track->bitrate());
     QString key = keysMap[track->key_id()];
+    const auto chromaticKey = KeyUtils::guessKeyFromText(key);
+    QVariant keyIdVariant;
+    if (chromaticKey != mixxx::track::io::key::INVALID) {
+        keyIdVariant = static_cast<int>(KeyUtils::keyToNumericValue(chromaticKey));
+    }
+    constexpr double kDefaultTuningHz = 440.0;
     int playtime = static_cast<int>(track->duration());
     int rating = static_cast<int>(track->rating());
     QString comment = getText(track->comment());
@@ -389,6 +424,8 @@ void insertTrack(
     query.bindValue(":comment", comment);
     query.bindValue(":tracknumber", tracknumber);
     query.bindValue(":key", key);
+    query.bindValue(":key_id", keyIdVariant);
+    query.bindValue(":tuning_frequency_hz", kDefaultTuningHz);
     query.bindValue(":bpm", bpm);
     query.bindValue(":bitrate", bitrate);
     query.bindValue(":analyze_path", anlzPath);
@@ -396,6 +433,44 @@ void insertTrack(
     query.bindValue(":color",
             mixxx::RgbColor::toQVariant(
                     colorFromID(static_cast<int>(track->color_id()))));
+
+    QVariant coverartType;
+    QVariant coverartSource;
+    QVariant coverartLocation;
+    QVariant coverartColor;
+    QVariant coverartDigest;
+    QVariant coverartHash;
+
+    const auto artworkIt = artworkMap.constFind(static_cast<uint32_t>(track->artwork_id()));
+    if (artworkIt != artworkMap.constEnd()) {
+        const QString artworkRelPath = *artworkIt;
+        const QString artworkPath = devicePath + artworkRelPath;
+
+        if (QFile::exists(artworkPath)) {
+            QImage image(artworkPath);
+            if (!image.isNull()) {
+                CoverInfoRelative coverInfo;
+                coverInfo.type = CoverInfoRelative::FILE;
+                coverInfo.source = CoverInfoRelative::GUESSED;
+                coverInfo.coverLocation = artworkPath;
+                coverInfo.setImageDigest(image);
+
+                coverartType = static_cast<int>(coverInfo.type);
+                coverartSource = static_cast<int>(coverInfo.source);
+                coverartLocation = coverInfo.coverLocation;
+                coverartColor = mixxx::RgbColor::toQVariant(coverInfo.color);
+                coverartDigest = coverInfo.imageDigest();
+                coverartHash = coverInfo.legacyHash();
+            }
+        }
+    }
+
+    query.bindValue(":coverart_type", coverartType);
+    query.bindValue(":coverart_source", coverartSource);
+    query.bindValue(":coverart_location", coverartLocation);
+    query.bindValue(":coverart_color", coverartColor);
+    query.bindValue(":coverart_digest", coverartDigest);
+    query.bindValue(":coverart_hash", coverartHash);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -473,10 +548,15 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     query.prepare("INSERT INTO " + kRekordboxLibraryTable +
             " (rb_id, artist, title, album, year,"
             "genre,comment,tracknumber,bpm, bitrate,duration, location,"
-            "rating,key,analyze_path,device,color) VALUES (:rb_id, :artist, "
-            ":title, :album, :year,:genre,"
+            "rating,key,key_id,tuning_frequency_hz,analyze_path,device,color,"
+            "coverart_type,coverart_source,coverart_location,coverart_color,"
+            "coverart_digest,coverart_hash) "
+            "VALUES (:rb_id, :artist, :title, :album, :year,:genre,"
             ":comment, :tracknumber,:bpm, :bitrate,:duration, :location,"
-            ":rating,:key,:analyze_path,:device,:color)");
+            ":rating,:key,:key_id,:tuning_frequency_hz,:analyze_path,"
+            ":device,:color,"
+            ":coverart_type,:coverart_source,:coverart_location,"
+            ":coverart_color,:coverart_digest,:coverart_hash)");
 
     int audioFilesCount = 0;
 
@@ -507,13 +587,14 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     // Attempt was made to also recover HISTORY
     // playlists (which are found on removable Rekordbox devices), however
     // they didn't appear to contain valid row_ref_t structures.
-    constexpr int totalTables = 8;
+    constexpr int totalTables = 9;
 
     rekordbox_pdb_t::page_type_t tableOrder[totalTables] = {
             rekordbox_pdb_t::PAGE_TYPE_KEYS,
             rekordbox_pdb_t::PAGE_TYPE_GENRES,
             rekordbox_pdb_t::PAGE_TYPE_ARTISTS,
             rekordbox_pdb_t::PAGE_TYPE_ALBUMS,
+            rekordbox_pdb_t::PAGE_TYPE_ARTWORK,
             rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES,
             rekordbox_pdb_t::PAGE_TYPE_TRACKS,
             rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_TREE,
@@ -523,6 +604,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     QMap<uint32_t, QString> genresMap;
     QMap<uint32_t, QString> artistsMap;
     QMap<uint32_t, QString> albumsMap;
+    QMap<uint32_t, QString> artworkMap;
     QMap<uint32_t, QString> playlistNameMap;
     QMap<uint32_t, bool> playlistIsFolderMap;
     QMap<uint32_t, QMap<uint32_t, uint32_t>> playlistTreeMap;
@@ -568,6 +650,12 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                                         rowRef->body());
                                         albumsMap[album->id()] = getText(album->name());
                                     } break;
+                                    case rekordbox_pdb_t::PAGE_TYPE_ARTWORK: {
+                                        auto* artwork =
+                                                static_cast<rekordbox_pdb_t::artwork_row_t*>(
+                                                        rowRef->body());
+                                        artworkMap[artwork->id()] = getText(artwork->path());
+                                    } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_PLAYLIST_ENTRIES: {
                                         auto* playlistEntry =
                                                 static_cast<rekordbox_pdb_t::playlist_entry_row_t*>(
@@ -588,6 +676,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                                 albumsMap,
                                                 genresMap,
                                                 keysMap,
+                                                artworkMap,
                                                 devicePath,
                                                 device,
                                                 audioFilesCount);
@@ -1105,6 +1194,25 @@ RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
                   trackSource) {
 }
 
+QString RekordboxPlaylistModel::getModelSetting(const QString& name) {
+    if (name == QStringLiteral("header_state_pb")) {
+        SettingsDAO settings(m_database);
+        return settings.getValue(
+                mixxx::rekordboxconstants::kRekordboxHeaderStateKey);
+    }
+    return BaseExternalPlaylistModel::getModelSetting(name);
+}
+
+bool RekordboxPlaylistModel::setModelSetting(
+        const QString& name, const QVariant& value) {
+    if (name == QStringLiteral("header_state_pb")) {
+        SettingsDAO settings(m_database);
+        return settings.setValue(
+                mixxx::rekordboxconstants::kRekordboxHeaderStateKey, value);
+    }
+    return BaseExternalPlaylistModel::setModelSetting(name, value);
+}
+
 void RekordboxPlaylistModel::initSortColumnMapping() {
     // Add a bijective mapping between the SortColumnIds and column indices
     for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::IdMax); ++i) {
@@ -1277,23 +1385,66 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
         readAnalyze(track, sampleRate, timingOffset, false, anlzPath);
     }
 
-    // Assume that the key of the file the has been analyzed in Recordbox is correct
-    // and prevent the AnalyzerKey from re-analyzing.
-    // Form 5.4.3 Key format depends on the preferences option:
-    // Classic: Abm,B,Ebm,F#,Bbm,Db,Fm,Ab,…,F#m,A,Dbm,E
-    // Alphanumeric (Camelot): 1A,1B,2A,2B,3A,3B,4A,4B,…,11A,11B,12A,12B
-    // Not reckognized: 1m, 01A
-    // Earlier versions allow any format
-    // Decision: We normalize the KeyText here to not write garbage to the
-    // file metadata and it is unlikely to loose extra info.
-    track->setKeys(KeyFactory::makeBasicKeysNormalized(
-            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_KEY).toString(),
-            mixxx::track::io::key::USER));
+    const QVariant keyIdVariant =
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+    if (keyIdVariant.isNull() || !keyIdVariant.isValid()) {
+        track->setKeys(KeyFactory::makeBasicKeysNormalized(
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_KEY)
+                        .toString(),
+                mixxx::track::io::key::USER));
+    } else {
+        bool ok;
+        const int keyCode = keyIdVariant.toInt(&ok);
+        if (ok) {
+            const auto chromaticKey = KeyUtils::keyFromNumericValue(keyCode);
+            if (chromaticKey != mixxx::track::io::key::INVALID) {
+                track->setKeys(KeyFactory::makeBasicKeys(
+                        chromaticKey, mixxx::track::io::key::USER));
+            } else {
+                track->setKeys(KeyFactory::makeBasicKeysNormalized(
+                        getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_KEY)
+                                .toString(),
+                        mixxx::track::io::key::USER));
+            }
+        } else {
+            track->setKeys(KeyFactory::makeBasicKeysNormalized(
+                    getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_KEY)
+                            .toString(),
+                    mixxx::track::io::key::USER));
+        }
+    }
 
     track->setColor(mixxx::RgbColor::fromQVariant(
             getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COLOR)));
 
+    if (track->getCoverInfo().source != CoverInfo::USER_SELECTED) {
+        const QVariant coverLocation =
+                getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION);
+        if (!coverLocation.toString().isEmpty()) {
+            CoverInfoRelative coverInfo;
+            coverInfo.source = static_cast<CoverInfo::Source>(
+                    getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE)
+                            .toInt());
+            coverInfo.type = static_cast<CoverInfo::Type>(
+                    getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE)
+                            .toInt());
+            coverInfo.coverLocation = coverLocation.toString();
+            coverInfo.color = mixxx::RgbColor::fromQVariant(
+                    getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR));
+            coverInfo.setImageDigest(
+                    getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST)
+                            .toByteArray(),
+                    getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)
+                            .toUInt());
+            track->setCoverInfo(coverInfo);
+        }
+    }
+
     return track;
+}
+
+TrackModel::Capabilities RekordboxPlaylistModel::getCapabilities() const {
+    return BaseExternalPlaylistModel::getCapabilities() | Capability::EditMetadata;
 }
 
 bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
@@ -1305,6 +1456,14 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
 
 bool RekordboxPlaylistModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) ||
             BaseExternalPlaylistModel::isColumnInternal(column);
 }
 
@@ -1313,7 +1472,7 @@ RekordboxFeature::RekordboxFeature(
         UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rekordbox")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
-    QString tableName = kRekordboxLibraryTable;
+    QString tableName = kRekordboxLibraryView;
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {
             LIBRARYTABLE_ID,
@@ -1330,7 +1489,16 @@ RekordboxFeature::RekordboxFeature(
             LIBRARYTABLE_BITRATE,
             LIBRARYTABLE_BPM,
             LIBRARYTABLE_KEY,
+            LIBRARYTABLE_KEY_ID,
+            LIBRARYTABLE_TUNING_FREQUENCY,
             LIBRARYTABLE_COLOR,
+            LIBRARYTABLE_COVERART_SOURCE,
+            LIBRARYTABLE_COVERART_TYPE,
+            LIBRARYTABLE_COVERART_LOCATION,
+            LIBRARYTABLE_COVERART_COLOR,
+            LIBRARYTABLE_COVERART_DIGEST,
+            LIBRARYTABLE_COVERART_HASH,
+            LIBRARYTABLE_COVERART,
             REKORDBOX_ANALYZE_PATH};
 
     const QStringList searchColumns = {
@@ -1363,6 +1531,7 @@ RekordboxFeature::RekordboxFeature(
 
     // Create new temporary Rekordbox database tables
     createLibraryTable(database, kRekordboxLibraryTable);
+    createLibraryView(database, kRekordboxLibraryTable, kRekordboxLibraryView);
     createPlaylistsTable(database, kRekordboxPlaylistsTable);
     createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
     transaction.commit();
@@ -1559,6 +1728,7 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
         // Create new temporary Rekordbox database tables
         createLibraryTable(database, kRekordboxLibraryTable);
+        createLibraryView(database, kRekordboxLibraryTable, kRekordboxLibraryView);
         createPlaylistsTable(database, kRekordboxPlaylistsTable);
         createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
 
