@@ -73,6 +73,14 @@ void JavascriptPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
             &Track::trackTotalChanged,
             this,
             &JavascriptPlayerProxy::trackTotalChanged);
+    connect(pTrack.get(), 
+            &Track::bpmChanged,
+            this,
+            &JavascriptPlayerProxy::slotBpmChanged);
+    connect(pTrack.get(),
+            &Track::keyChanged,
+            this,
+            &JavascriptPlayerProxy::slotKeyChanged);
 
     emit artistChanged(m_pCurrentTrack->getArtist());
     emit titleChanged(m_pCurrentTrack->getTitle());
@@ -84,6 +92,8 @@ void JavascriptPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
     emit yearChanged(m_pCurrentTrack->getYear());
     emit trackNumberChanged(m_pCurrentTrack->getTrackNumber());
     emit trackTotalChanged(m_pCurrentTrack->getTrackTotal());
+    emit bpmChanged(m_pCurrentTrack->getBpmText());
+    emit keyChanged(m_pCurrentTrack->getKeyText());
 }
 
 void JavascriptPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -107,6 +117,18 @@ void JavascriptPlayerProxy::disconnectTrack() {
     }
 }
 
+void JavascriptPlayerProxy::slotBpmChanged() {
+    if (m_pCurrentTrack != nullptr) {
+        emit bpmChanged(m_pCurrentTrack->getBpmText());
+    }
+}
+
+void JavascriptPlayerProxy::slotKeyChanged() {
+    if (m_pCurrentTrack != nullptr) {
+        emit keyChanged(m_pCurrentTrack->getKeyText());
+    }
+}
+
 PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, artist, getArtist)
 PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, title, getTitle)
 PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, album, getAlbum)
@@ -117,3 +139,5 @@ PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, grouping, getGrouping)
 PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, year, getYear)
 PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, trackNumber, getTrackNumber)
 PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, trackTotal, getTrackTotal)
+PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, bpm, getBpmText)
+PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, key, getKeyText)
