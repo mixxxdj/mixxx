@@ -71,6 +71,13 @@ QList<std::shared_ptr<AbstractLegacyControllerSetting>> HidController::getMappin
     return m_pMapping->getSettings();
 }
 
+QString HidController::getSharedDataNamespace() {
+    if (!m_pMapping) {
+        return {};
+    }
+    return m_pMapping->sharedDataNamespace();
+}
+
 #ifdef MIXXX_USE_QML
 QList<LegacyControllerMapping::QMLModuleInfo> HidController::getMappingModules() {
     if (!m_pMapping) {

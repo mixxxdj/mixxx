@@ -6,8 +6,10 @@
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "control/controlpotmeter.h"
+#include "controllers/controllershareddata.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
+#include "controllers/scripting/legacy/shareddataconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
 #include "util/cmdlineargs.h"
@@ -51,6 +53,13 @@ ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
         m_brakeActive[i] = false;
         m_spinbackActive[i] = false;
         m_softStartActive[i] = false;
+    }
+
+    if (m_pScriptEngineLegacy->getSharedData()) {
+        connect(m_pScriptEngineLegacy->getSharedData(),
+                &ControllerNamespacedSharedData::updated,
+                this,
+                &ControllerScriptInterfaceLegacy::onSharedDataUpdated);
     }
 }
 
@@ -169,6 +178,184 @@ void ControllerScriptInterfaceLegacy::setValue(
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
             coScript->set(newValue);
+        }
+    }
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getSharedValue(
+        const QString& entity, const QString& key) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+    auto* pSharedData = m_pScriptEngineLegacy->getSharedData();
+    if (!pSharedData) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("No shared data available. Make sure a valid "
+                               "namespace is defined in the mapping."));
+        return QJSValue();
+    }
+
+    QVariant val = pSharedData->get(entity, key);
+    if (!val.isValid()) {
+        return QJSValue(QJSValue::UndefinedValue);
+    }
+    return pJsEngine->toScriptValue(val);
+}
+
+namespace {
+
+/// Returns true if a QVariant holds one of the SafePrimitive types
+/// allowed by the engine API: string, number, boolean, or null.
+bool isSafePrimitive(const QVariant& v) {
+    if (v.isNull()) {
+        return true;
+    }
+    switch (v.typeId()) {
+    case QMetaType::Bool:
+    case QMetaType::Int:
+    case QMetaType::UInt:
+    case QMetaType::LongLong:
+    case QMetaType::ULongLong:
+    case QMetaType::Double:
+    case QMetaType::Float:
+    case QMetaType::QString:
+        return true;
+    default:
+        return false;
+    }
+}
+
+/// Returns true if a QVariant holds a SafeValue type:
+/// a SafePrimitive or an array of SafePrimitives.
+bool isSafeValue(const QVariant& v) {
+    if (isSafePrimitive(v)) {
+        return true;
+    }
+    if (v.typeId() == QMetaType::QVariantList) {
+        const QVariantList list = v.toList();
+        return std::all_of(list.cbegin(), list.cend(), isSafePrimitive);
+    }
+    return false;
+}
+
+} // anonymous namespace
+
+void ControllerScriptInterfaceLegacy::setSharedValue(
+        const QString& entity,
+        const QString& key,
+        const QJSValue& value) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return;
+    }
+    auto* pSharedData = m_pScriptEngineLegacy->getSharedData();
+    if (!pSharedData) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("No shared data available. Make sure a valid "
+                               "namespace is defined in the mapping."));
+        return;
+    }
+
+    QVariant variant = value.toVariant();
+    if (!isSafeValue(variant)) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("setSharedValue: value must be a SafeValue "
+                               "type (string, number, boolean, null, or an "
+                               "array of these). Got type: ") +
+                QString::fromLatin1(variant.typeName()));
+        return;
+    }
+
+    // Pass "this" as sender so we can suppress self-notifications.
+    pSharedData->set(entity, key, variant, this);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::makeSharedValueConnection(
+        const QString& entity,
+        const QString& key,
+        const QJSValue& callback) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+    auto* pSharedData = m_pScriptEngineLegacy->getSharedData();
+    if (!pSharedData) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral("No shared data available. Make sure a valid "
+                               "namespace is defined in the mapping."));
+        return QJSValue();
+    }
+
+    if (!callback.isCallable()) {
+        m_pScriptEngineLegacy->throwJSError(
+                QStringLiteral(
+                        "Tried to connect shared data (%1, %2) to an invalid "
+                        "callback. Make sure that your code contains no "
+                        "syntax errors.")
+                        .arg(entity, key));
+        return QJSValue();
+    }
+
+    SharedDataConnection connection;
+    connection.entity = entity;
+    connection.key = key;
+    connection.engineJSProxy = this;
+    connection.controllerEngine = m_pScriptEngineLegacy;
+    connection.callback = callback;
+    connection.id = QUuid::createUuid();
+
+    m_sharedDataConnections.append(connection);
+
+    return pJsEngine->newQObject(
+            new SharedDataConnectionJSProxy(m_sharedDataConnections.last()));
+}
+
+void ControllerScriptInterfaceLegacy::removeSharedDataConnection(
+        const SharedDataConnection& conn) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
+        return;
+    }
+    m_sharedDataConnections.removeAll(conn);
+}
+
+void ControllerScriptInterfaceLegacy::triggerSharedDataConnection(
+        const SharedDataConnection& conn) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
+        return;
+    }
+    auto* pSharedData = m_pScriptEngineLegacy->getSharedData();
+    if (!pSharedData) {
+        return;
+    }
+
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    QVariant val = pSharedData->get(conn.entity, conn.key);
+    QJSValue jsVal = val.isValid()
+            ? pJsEngine->toScriptValue(val)
+            : QJSValue(QJSValue::UndefinedValue);
+    conn.executeCallback(jsVal);
+}
+
+void ControllerScriptInterfaceLegacy::onSharedDataUpdated(
+        const QString& entity,
+        const QString& key,
+        const QVariant& value,
+        QObject* sender) {
+    // Suppress self-notifications to prevent circular signal loops.
+    if (sender == this) {
+        return;
+    }
+
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return;
+    }
+    QJSValue jsVal = pJsEngine->toScriptValue(value);
+
+    for (auto& connection : m_sharedDataConnections) {
+        if (connection.entity == entity && connection.key == key) {
+            connection.executeCallback(jsVal);
         }
     }
 }

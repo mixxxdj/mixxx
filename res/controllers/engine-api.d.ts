@@ -34,6 +34,66 @@ declare interface ScriptConnection {
     readonly isConnected: boolean;
 }
 
+/**
+ * Entity types for the controller shared data system.
+ *
+ * Entities are logical components defined by controller mappings.
+ * They bear no direct relation to Mixxx groups, but follow similar conventions.
+ */
+declare namespace Entities {
+    type Mixer = 'mixer';
+    type Main = 'main';
+    type Library = 'library';
+    type Decks = 'deck1' | 'deck2';
+    type Channels = 'channel1' | 'channel2' | 'channel3' | 'channel4';
+    type Controller = 'controller';
+}
+
+/**
+ * Union of all valid entity values for the shared data system.
+ */
+type Entity = Entities.Mixer | Entities.Main | Entities.Library | Entities.Decks | Entities.Channels | Entities.Controller;
+
+/**
+ * Primitive types allowed in shared data values.
+ */
+type SafePrimitive = string | number | boolean | null;
+
+/**
+ * Value types allowed in shared data — primitives or arrays of primitives.
+ */
+type SafeValue = SafePrimitive | SafePrimitive[];
+
+/** SharedDataConnectionJSProxy */
+
+declare interface SharedDataConnection {
+    /**
+     * Disconnect the shared data connection, established by
+     * {@link engine.makeSharedValueConnection}.
+     *
+     * @returns Returns true if the connection has been disconnected successfully
+     */
+    disconnect(): boolean;
+
+    /**
+     * Triggers the execution of the callback function of the shared data
+     * connection with the current value.
+     */
+    trigger(): void;
+
+    /**
+     * String representation of the unique UUID of this connection instance
+     */
+    readonly id: string;
+
+    /**
+     * Whether this connection is currently active.
+     * This is always true for a newly created instance and usually false
+     * after calling {@link disconnect}.
+     */
+    readonly isConnected: boolean;
+}
+
 /** JavascriptPlayerProxy */
 
 declare interface Player {
@@ -153,6 +213,51 @@ declare namespace engine {
      *                 https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html)
      */
     function setValue<TGroup extends MixxxControls.Group>(group: TGroup, name: MixxxControls.CtrlRW<TGroup>, newValue: number): void;
+
+    // ---- Shared Data API ----
+
+    /**
+     * Gets a shared data value for the given entity and key.
+     * The namespace is automatically set by the engine based on the controller mapping.
+     *
+     * @param entity The entity name, e.g. "deck1", "mixer", "controller"
+     * @param key The key name, e.g. "shift", "brightness"
+     * @returns The stored value, or undefined if the value does not exist
+     */
+    function getSharedValue(entity: Entity, key: string): SafeValue | undefined;
+
+    /**
+     * Sets a shared data value for the given entity and key.
+     * The namespace is automatically set by the engine based on the controller mapping.
+     *
+     * Setting a value triggers "updated" signals to all subscribers across
+     * the engine, QML, and other controllers. The controller that initiated
+     * the change does NOT receive a notification for its own update.
+     *
+     * @param entity The entity name, e.g. "deck1", "mixer", "controller"
+     * @param key The key name, e.g. "shift", "brightness"
+     * @param value The value to store (must be a SafeValue type)
+     */
+    function setSharedValue(entity: Entity, key: string, value: SafeValue): void;
+
+    type SharedDataCallback = (value: SafeValue, entity: Entity, key: string) => void;
+
+    /**
+     * Subscribes to changes of a shared data value.
+     * The namespace is automatically set by the engine based on the controller mapping.
+     *
+     * The callback receives (value, entity, key) when the specified data changes.
+     * Note: The controller that initiated a change does NOT receive a
+     * notification for that change, to prevent circular signal loops.
+     *
+     * @param entity The entity name, e.g. "deck1", "mixer", "controller"
+     * @param key The key name, e.g. "shift", "brightness"
+     * @param callback Function called when the value changes
+     * @returns A SharedDataConnection object on success, otherwise undefined
+     */
+    function makeSharedValueConnection(entity: Entity, key: string, callback: SharedDataCallback): SharedDataConnection | undefined;
+
+    // ---- End Shared Data API ----
 
     /**
      * Gets the control value normalized to a range of 0..1
