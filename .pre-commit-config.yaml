@@ -81,7 +81,7 @@ repos:
           - "@eslint/js"
           - typescript-eslint
           - eslint-plugin-jsdoc@^v50.4.3
-          - eslint-plugin-diff@^2.0.3
+          - eslint-plugin-diff@^2.1.7
         exclude: ^res/translations/.*\.ts$
   - repo: local
     hooks:
