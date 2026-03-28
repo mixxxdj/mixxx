@@ -180,11 +180,16 @@ DlgPreferences::DlgPreferences(
             tr("Decks"),
             "ic_preferences_decks.svg");
 
+    auto* pDlgPrefMixer = new DlgPrefMixer(this, pEffectsManager, m_pConfig);
     addPageWidget(PreferencesPage(
-                          new DlgPrefMixer(this, pEffectsManager, m_pConfig),
+                          pDlgPrefMixer,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Mixer"),
             "ic_preferences_crossfader.svg");
+    connect(this,
+            &DlgPreferences::showXfaderPopupPersist,
+            pDlgPrefMixer,
+            &DlgPrefMixer::slotShowXfaderPopupPersist);
 
     addPageWidget(PreferencesPage(
                           new DlgPrefEffects(this, m_pConfig, pEffectsManager),
