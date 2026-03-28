@@ -960,12 +960,12 @@ class TraktorMX2Class {
 
         let tickDelta = tickval - prevTick;
         // Check if we looped around
-        if (tickDelta > 512) {
+        if (tickDelta > TICKS_PER_REV / 2) {
             // Looped around from 0 to max
-            tickDelta -= 1024;
-        } else if (tickDelta < -512) {
+            tickDelta -= TICKS_PER_REV;
+        } else if (tickDelta < -TICKS_PER_REV / 2) {
             // Looped around from max to 0
-            tickDelta += 1024;
+            tickDelta += TICKS_PER_REV;
         }
 
         // Velocity smoothing
