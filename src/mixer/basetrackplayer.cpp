@@ -20,6 +20,11 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
+// Fader Start feature enabled by default
+// Goal: Global Toggle in the Deck Preferences
+// Uncomment to turn off Fader Start
+// #define FADER_START_TOGGLE_AVAILABLE
+
 namespace {
 
 constexpr double kNoTrackColor = -1;
@@ -328,6 +333,12 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
+
+    // Fader Start feature: Starts or stops playback based on the volume fader position.
+    m_pFaderStart = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "fader_start"));
+    m_pFaderStart->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pVolume = make_parented<ControlProxy>(getGroup(), "volume", this);
+    m_pVolume->connectValueChanged(this, &BaseTrackPlayerImpl::slotVolumeChanged);
 
     m_pUpdateReplayGainFromPregain = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "update_replaygain_from_pregain"));
@@ -1026,6 +1037,20 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+    }
+}
+
+/// Fader Start slot to start and stop playback based on volume
+void BaseTrackPlayerImpl::slotVolumeChanged(double value) {
+#ifdef FADER_START_TOGGLE_AVAILABLE
+    if (!m_pFaderStart->toBool()) {
+        return;
+    }
+#endif
+    if (value > 0.0) {
+        m_pPlay->set(1.0);
+    } else {
+        m_pPlay->set(0.0);
     }
 }
 
