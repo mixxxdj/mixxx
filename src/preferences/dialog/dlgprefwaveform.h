@@ -24,9 +24,11 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     virtual ~DlgPrefWaveform();
 
   public slots:
+    void storeUiSettingsSnapshot();
     void slotUpdate() override;
     void slotApply() override;
     void slotResetToDefaults() override;
+    void slotCancel() override;
     void slotSetWaveformEndRender(int endTime);
 
   private slots:
@@ -89,4 +91,31 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
+
+    int m_savedWaveformTypeIndex;
+    bool m_savedAccelerationCheckBox;
+    bool m_savedSplitLeftRight;
+    bool m_savedHighDetail;
+    int m_savedFrameRate;
+    int m_savedEndOfTrackWarning;
+    int m_savedBeatGridAlpha;
+    int m_savedPlayMarkerPositionSlider;
+    int m_savedDefaultZoomIndex;
+    bool m_savedZoomSync;
+    double m_savedAllVisualGain;
+    double m_savedLowVisualGain;
+    double m_savedMidVisualGain;
+    double m_savedHighVisualGain;
+    bool m_savedUntilShowBeats;
+    bool m_savedUntilShowTime;
+    int m_savedUntilMarkAlign;
+    int m_savedUntilMarkTextPointSize;
+    int m_savedUntilMarkTextHeightLimit;
+    double m_savedStemOpacity;
+    double m_savedStemOutlineOpacity;
+    bool m_savedStemReorderOnChange;
+    int m_savedOverviewTypeIndex;
+    bool m_savedOverviewStereo;
+    bool m_savedDrawOverviewMinuteMarkers;
+    bool m_savedIsOverviewNormalized;
 };
