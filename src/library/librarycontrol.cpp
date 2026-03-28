@@ -1,6 +1,7 @@
 #include "library/librarycontrol.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QWindow>
@@ -17,6 +18,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wsearchrelatedtracksmenu.h"
 #include "widget/wtracktableview.h"
 
 namespace {
@@ -719,7 +721,8 @@ void LibraryControl::slotMoveVertical(double v) {
                 QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
         return;
     }
-    case FocusWidget::ContextMenu: {
+    case FocusWidget::ContextMenu:
+    case FocusWidget::SearchRelatedMenu: {
         // To navigate menus (and activate menus that were just opened) send the
         // keyEvent to focusWindow() (not focusWidget() like emitKeyEvent() does)
         const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
@@ -876,7 +879,15 @@ FocusWidget LibraryControl::getFocusedWidget() {
         // qt_edit_menuWindow    = QLineEdit/QCombobox context menu
         // QComboBoxPrivateContainerClassWindow
         //    = QComboBoxListView of WEffectSelector, WSearchLineEdit, ...
-        return FocusWidget::ContextMenu;
+        auto* pFocusWidget = QApplication::focusWidget();
+        if (pFocusWidget &&
+                qobject_cast<QCheckBox*>(pFocusWidget) &&
+                qobject_cast<WSearchRelatedTracksMenu*>(pFocusWidget->parent())) {
+            // TODO Also use this for the Crates menu?
+            return FocusWidget::SearchRelatedMenu;
+        } else {
+            return FocusWidget::ContextMenu;
+        }
     } else if (focusWindow->type() == Qt::Dialog) {
         // DlgPreferencesDlgWindow
         // DlgDeveloperToolsWindow
@@ -1035,8 +1046,11 @@ void LibraryControl::slotGoToItem(double v) {
         }
         return;
     }
-    case FocusWidget::Dialog: {
-        // press & release Space (QAbstractButton::clicked() is emitted on release)
+    case FocusWidget::Dialog:
+    case FocusWidget::SearchRelatedMenu: {
+        // Press Space to click dialog buttons. In SearchRelatedMenu this toggles
+        // individual search checkboxes and triggers the Search Selected action.
+        // Press & release Space because QAbstractButton::clicked() is emitted on release.
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
         QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
         auto* pWindow = QApplication::focusWindow();
