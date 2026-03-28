@@ -24,6 +24,9 @@ class JavascriptPlayerProxy : public QObject {
     Q_PROPERTY(QString year READ getYear NOTIFY yearChanged)
     Q_PROPERTY(QString trackNumber READ getTrackNumber NOTIFY trackNumberChanged)
     Q_PROPERTY(QString trackTotal READ getTrackTotal NOTIFY trackTotalChanged)
+    Q_PROPERTY(QString bpm READ getBpmText NOTIFY bpmChanged)
+    Q_PROPERTY(QString key READ getKeyText NOTIFY keyChanged)
+
   public:
     explicit JavascriptPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent);
 
@@ -37,6 +40,8 @@ class JavascriptPlayerProxy : public QObject {
     QString getYear() const;
     QString getTrackNumber() const;
     QString getTrackTotal() const;
+    QString getBpmText() const;
+    QString getKeyText() const;
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
@@ -54,6 +59,14 @@ class JavascriptPlayerProxy : public QObject {
     void yearChanged(QString newYear);
     void trackNumberChanged(QString newTrackNumber);
     void trackTotalChanged(QString newTrackTotal);
+    void bpmChanged(QString newBpm);
+    void keyChanged(QString newKey);
+
+  private slots:
+    // Track::bpmChanged and Track::keyChanged carry no arguments,
+    // so we bridge them with dedicated slots that re-read the value.
+    void slotBpmChanged();
+    void slotKeyChanged();
 
   protected:
     void disconnectTrack();
