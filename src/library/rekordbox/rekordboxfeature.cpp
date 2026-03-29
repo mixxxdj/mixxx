@@ -554,7 +554,7 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
                                         auto* genre =
                                                 static_cast<rekordbox_pdb_t::genre_row_t*>(
                                                         rowRef->body());
-                                        genresMap[genre->id()] = getText(genre->name());
+                                        genresMap[genre->id()] = getText(genre->name()).trimmed();
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ARTISTS: {
                                         auto* artist =

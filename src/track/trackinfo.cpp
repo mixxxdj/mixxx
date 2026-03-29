@@ -56,7 +56,7 @@ bool TrackInfo::compareEq(
             (getEncoder() == trackInfo.getEncoder()) &&
             (getEncoderSettings() == trackInfo.getEncoderSettings()) &&
 #endif // __EXTRA_METADATA__
-            (getGenre() == trackInfo.getGenre()) &&
+            (getGenre().trimmed() == trackInfo.getGenre().trimmed()) &&
             (getGrouping() == trackInfo.getGrouping()) &&
 #if defined(__EXTRA_METADATA__)
             (getISRC() == trackInfo.getISRC()) &&

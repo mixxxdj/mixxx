@@ -325,7 +325,7 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         return QVariant{pTrack->getLastPlayedAt()};
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
-        return QVariant{pTrack->getGenre()};
+        return QVariant{pTrack->getGenre().trimmed()};
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
         return QVariant{pTrack->getComposer()};

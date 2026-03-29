@@ -435,7 +435,7 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtAlbumArtist->setText(
             m_trackRecord.getMetadata().getAlbumInfo().getArtist());
     txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
+            m_trackRecord.getMetadata().getTrackInfo().getGenre().trimmed());
     txtComposer->setText(
             m_trackRecord.getMetadata().getTrackInfo().getComposer());
     txtGrouping->setText(

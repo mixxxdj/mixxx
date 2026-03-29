@@ -207,7 +207,7 @@ bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
             && getMountpoint() == other->getMountpoint()
             && getStreamName() == other->getStreamName()
             && getStreamDesc() == other->getStreamDesc()
-            && getStreamGenre() == other->getStreamGenre()
+            && getStreamGenre().trimmed() == other->getStreamGenre().trimmed()
             && getStreamPublic() == other->getStreamPublic()
             && getStreamWebsite() == other->getStreamWebsite()
             && getStreamIRC() == other->getStreamIRC()
@@ -258,7 +258,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setMountPoint(this->getMountpoint());
     other->setStreamName(this->getStreamName());
     other->setStreamDesc(this->getStreamDesc());
-    other->setStreamGenre(this->getStreamGenre());
+    other->setStreamGenre(this->getStreamGenre().trimmed());
     other->setStreamPublic(this->getStreamPublic());
     other->setStreamWebsite(this->getStreamWebsite());
     other->setStreamIRC(this->getStreamIRC());
@@ -291,7 +291,7 @@ void BroadcastProfile::adoptDefaultValues() {
 
     m_mountpoint = QString();
     m_streamDesc = kDefaultStreamDesc;
-    m_streamGenre = kDefaultStreamGenre;
+    m_streamGenre = kDefaultStreamGenre.trimmed();
     m_streamName = kDefaultStreamName;
     m_streamPublic = kDefaultStreamPublic;
     m_streamWebsite = MIXXX_WEBSITE_URL;
@@ -751,7 +751,7 @@ void BroadcastProfile::setStreamDesc(const QString& value) {
 }
 
 QString BroadcastProfile::getStreamGenre() const {
-    return m_streamGenre;
+    return m_streamGenre.trimmed();
 }
 
 void BroadcastProfile::setStreamGenre(const QString& value) {

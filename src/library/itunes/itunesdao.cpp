@@ -17,7 +17,7 @@ std::ostream& operator<<(std::ostream& os, const ITunesTrack& track) {
        << ".album = \"" << track.album.toStdString() << "\", "
        << ".albumArtist = \"" << track.albumArtist.toStdString() << "\", "
        << ".composer = \"" << track.composer.toStdString() << "\", "
-       << ".genre = \"" << track.genre.toStdString() << "\", "
+       << ".genre = \"" << track.genre.trimmed().toStdString() << "\", "
        << ".grouping = \"" << track.grouping.toStdString() << "\", "
        << ".year = " << track.year << ", "
        << ".duration = " << track.duration << ", "
@@ -76,7 +76,7 @@ bool ITunesDAO::importTrack(const ITunesTrack& track) {
         query.bindValue(":title", track.title);
         query.bindValue(":album", track.album);
         query.bindValue(":album_artist", track.albumArtist);
-        query.bindValue(":genre", track.genre);
+        query.bindValue(":genre", track.genre.trimmed());
         query.bindValue(":grouping", track.grouping);
         query.bindValue(":year", track.year > 0 ? QVariant(track.year) : QVariant());
         query.bindValue(":duration", track.duration);

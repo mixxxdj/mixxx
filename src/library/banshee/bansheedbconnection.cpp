@@ -172,7 +172,7 @@ QList<BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylistEntrie
             int albumArtistId = query.value(20).toInt();
             m_artistMap[albumArtistId].name = query.value(21).toString();
             m_trackMap[entry.trackId].rating = query.value(10).toInt();
-            m_trackMap[entry.trackId].genre = query.value(11).toString();
+            m_trackMap[entry.trackId].genre = query.value(11).toString().trimmed();
             m_trackMap[entry.trackId].grouping = query.value(19).toString();
             m_trackMap[entry.trackId].tracknumber = query.value(12).toInt();
             m_trackMap[entry.trackId].dateadded = query.value(13).toInt();

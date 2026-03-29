@@ -182,7 +182,7 @@ class ImporterImpl {
                 .album = qStringFrom(item.album.title),
                 .albumArtist = qStringFrom(item.album.albumArtist),
                 .composer = qStringFrom(item.composer),
-                .genre = qStringFrom(item.genre),
+                .genre = qStringFrom(item.genre.trimmed()),
                 .grouping = qStringFrom(item.grouping),
                 .year = static_cast<int>(item.year),
                 .duration = static_cast<int>(item.totalTime / 1000),

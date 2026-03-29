@@ -314,8 +314,8 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 artist = xml.readElementText();
                 continue;
             }
-            if (xml.name() == QLatin1String("genre")) {
-                genre = xml.readElementText();
+            if (xml.name().trimmed() == QLatin1String("genre")) {
+                genre = xml.readElementText().trimmed();
                 continue;
             }
             if (xml.name() == QLatin1String("album")) {

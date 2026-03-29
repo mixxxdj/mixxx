@@ -194,7 +194,7 @@ void exportMetadata(
     snapshot.title = pTrack->getTitle().toStdString();
     snapshot.artist = pTrack->getArtist().toStdString();
     snapshot.album = pTrack->getAlbum().toStdString();
-    snapshot.genre = pTrack->getGenre().toStdString();
+    snapshot.genre = pTrack->getGenre().trimmed().toStdString();
     snapshot.comment = pTrack->getComment().toStdString();
     snapshot.composer = pTrack->getComposer().toStdString();
     snapshot.key = toDjinteropKey(pTrack->getKey());

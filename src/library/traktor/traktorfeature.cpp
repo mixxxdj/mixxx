@@ -347,7 +347,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 key = attr.value("KEY").toString();
                 bitrate = attr.value("BITRATE").toString().toInt() / 1000;
                 playtime = attr.value("PLAYTIME").toString().toInt();
-                genre = attr.value("GENRE").toString();
+                genre = attr.value("GENRE").toString().trimmed();
                 year = attr.value("RELEASE_DATE").toString();
                 comment = attr.value("COMMENT").toString();
                 QString ranking_str = attr.value("RANKING").toString();
@@ -390,7 +390,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
     query.bindValue(":album", album);
-    query.bindValue(":genre", genre);
+    query.bindValue(":genre", genre.trimmed());
     query.bindValue(":year", year);
     query.bindValue(":duration", playtime);
     query.bindValue(":location", location);

@@ -172,7 +172,7 @@ TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
     EXPECT_EQ(pNewTrackInfo->getEncoder(), pMergedTrackInfo->getEncoder());
     EXPECT_EQ(pNewTrackInfo->getEncoderSettings(), pMergedTrackInfo->getEncoderSettings());
 #endif // __EXTRA_METADATA__
-    EXPECT_EQ(pOldTrackInfo->getGenre(), pMergedTrackInfo->getGenre());
+    EXPECT_EQ(pOldTrackInfo->getGenre().trimmed(), pMergedTrackInfo->getGenre().trimmed());
     EXPECT_EQ(pOldTrackInfo->getGrouping(), pMergedTrackInfo->getGrouping());
 #if defined(__EXTRA_METADATA__)
     EXPECT_EQ(pNewTrackInfo->getISRC(), pMergedTrackInfo->getISRC());

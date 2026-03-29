@@ -73,7 +73,7 @@ QString ITunesIOSAssetExporter::exportAsset(const QUrl& url) {
         AVMutableMetadataItem* genreItem = [[AVMutableMetadataItem alloc] init];
         genreItem.keySpace = AVMetadataKeySpaceiTunes;
         genreItem.key = AVMetadataiTunesMetadataKeyUserGenre;
-        genreItem.value = item.genre;
+        genreItem.value = item.genre.trimmed();
         [metadata addObject:genreItem];
 
         AVMutableMetadataItem* releaseDateItem =

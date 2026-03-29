@@ -428,7 +428,7 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         artists.insert(rec.getMetadata().getTrackInfo().getArtist());
         aTitles.insert(rec.getMetadata().getAlbumInfo().getTitle());
         aArtists.insert(rec.getMetadata().getAlbumInfo().getArtist());
-        genres.insert(rec.getMetadata().getTrackInfo().getGenre());
+        genres.insert(rec.getMetadata().getTrackInfo().getGenre().trimmed());
         composers.insert(rec.getMetadata().getTrackInfo().getComposer());
         grouping.insert(rec.getMetadata().getTrackInfo().getGrouping());
         years.insert(rec.getMetadata().getTrackInfo().getYear());

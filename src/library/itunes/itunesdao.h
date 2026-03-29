@@ -48,7 +48,7 @@ struct ITunesTrack {
                 album == other.album &&
                 albumArtist == other.albumArtist &&
                 composer == other.composer &&
-                genre == other.genre &&
+                genre.trimmed() == other.genre.trimmed() &&
                 grouping == other.grouping &&
                 year == other.year &&
                 duration == other.duration &&

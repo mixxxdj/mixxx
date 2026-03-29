@@ -588,7 +588,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setStreamAIM(stream_AIM->text());
     profile->setStreamICQ(stream_ICQ->text());
     profile->setStreamDesc(stream_desc->toPlainText());
-    profile->setStreamGenre(stream_genre->text());
+    profile->setStreamGenre(stream_genre->text().trimmed());
     profile->setStreamPublic(stream_public->isChecked());
     profile->setOggDynamicUpdate(ogg_dynamicupdate->isChecked());
 

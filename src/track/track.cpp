@@ -1986,7 +1986,7 @@ void Track::updateStreamInfoFromSource(
 
 QString Track::getGenre() const {
     const auto locked = lockMutex(&m_qMutex);
-    return m_record.getMetadata().getTrackInfo().getGenre();
+    return m_record.getMetadata().getTrackInfo().getGenre().trimmed();
 }
 
 void Track::setGenreFromTrackDAO(
@@ -2004,11 +2004,11 @@ bool Track::updateGenre(
     auto locked = lockMutex(&m_qMutex);
     if (!compareAndSet(
                 m_record.refMetadata().refTrackInfo().ptrGenre(),
-                genre)) {
+                genre.trimmed())) {
         return false;
     }
     const auto newGenre =
-            m_record.getMetadata().getTrackInfo().getGenre();
+            m_record.getMetadata().getTrackInfo().getGenre().trimmed();
     markDirtyAndUnlock(&locked);
     emit genreChanged(newGenre);
     return true;

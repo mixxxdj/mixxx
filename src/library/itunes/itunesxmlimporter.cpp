@@ -311,7 +311,7 @@ void ITunesXMLImporter::parseTrack() {
                     continue;
                 }
                 if (key == kGenre) {
-                    genre = content;
+                    genre = content.trimmed();
                     continue;
                 }
                 if (key == kGrouping) {
@@ -402,7 +402,7 @@ void ITunesXMLImporter::parseTrack() {
             .album = album,
             .albumArtist = albumArtist,
             .composer = composer,
-            .genre = genre,
+            .genre = genre.trimmed(),
             .grouping = grouping,
             .year = year.toInt(),
             .duration = playtime,
