@@ -1,0 +1,88 @@
+# CMake command definition stubs for gersemi formatting.
+# gersemi fails to parse the entire CMAKE_PREFIX_PATH because does not support
+# parsing the entire CMake language
+
+function(qt6_policy mode policy behaviorOrVariable)
+endfunction()
+
+function(qt_add_executable target)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "MANUAL_FINALIZATION" "" "")
+endfunction()
+
+function(qt_add_library target)
+    cmake_parse_arguments(PARSE_ARGV 1 arg "MANUAL_FINALIZATION" "" "")
+endfunction()
+
+function(qt_add_qml_module target)
+    set(args_option
+        STATIC
+        SHARED
+        DESIGNER_SUPPORTED
+        FOLLOW_FOREIGN_VERSIONING
+        AUTO_RESOURCE_PREFIX
+        NO_PLUGIN
+        NO_PLUGIN_OPTIONAL
+        NO_CREATE_PLUGIN_TARGET
+        NO_GENERATE_PLUGIN_SOURCE
+        NO_GENERATE_QMLTYPES
+        NO_GENERATE_QMLDIR
+        NO_GENERATE_EXTRA_QMLDIRS
+        NO_LINT
+        NO_CACHEGEN
+        NO_RESOURCE_TARGET_PATH
+        NO_IMPORT_SCAN
+        ENABLE_TYPE_COMPILER
+
+        # Used to mark modules as having static side effects (i.e. if they install an image provider)
+        __QT_INTERNAL_STATIC_MODULE
+        # Used to mark modules as being a system module that provides all builtins
+        __QT_INTERNAL_SYSTEM_MODULE
+        # Give the resource for the qmldir a unique name; TODO: Remove once we can
+        __QT_INTERNAL_DISAMBIGUATE_QMLDIR_RESOURCE
+    )
+    set(args_single
+        PLUGIN_TARGET
+        INSTALLED_PLUGIN_TARGET  # Internal option only, it may be removed
+        OUTPUT_TARGETS
+        RESOURCE_PREFIX
+        URI
+        TARGET_PATH   # Internal option only, it may be removed
+        VERSION
+        OUTPUT_DIRECTORY
+        CLASS_NAME
+        TYPEINFO
+        NAMESPACE
+        # TODO: We don't handle installation, warn if callers used these with the old
+        #       API and eventually remove them once we have updated all other repos
+        RESOURCE_EXPORT
+                   INSTALL_DIRECTORY
+        INSTALL_LOCATION
+        TYPE_COMPILER_NAMESPACE
+        QMLTC_EXPORT_DIRECTIVE
+        QMLTC_EXPORT_FILE_NAME
+    )
+    set(args_multi
+        SOURCES
+
+
+
+        QML_FILES
+        RESOURCES
+        IMPORTS
+        IMPORT_PATH
+        OPTIONAL_IMPORTS
+        DEFAULT_IMPORTS
+        DEPENDENCIES
+        PAST_MAJOR_VERSIONS
+    )
+
+    cmake_parse_arguments(PARSE_ARGV 1 arg
+       "${args_option}"
+       "${args_single}"
+       "${args_multi}"
+    )
+endfunction()
+
+
+function(qt_finalize_target target)
+endfunction()
