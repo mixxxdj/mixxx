@@ -700,7 +700,7 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refAlbumInfo().setArtist(albumArtist);
         }
         if (!genre.isNull()) {
-            rec.refMetadata().refTrackInfo().setGenre(genre);
+            rec.refMetadata().refTrackInfo().setGenre(genre.trimmed());
         }
         if (!composer.isNull()) {
             rec.refMetadata().refTrackInfo().setComposer(composer);

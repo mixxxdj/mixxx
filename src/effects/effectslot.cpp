@@ -196,11 +196,11 @@ void EffectSlot::updateEngineState() {
     }
 }
 
-void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
+void EffectSlot::initializeInputChannel(ChannelHandle inputChannel) {
     if (!m_pEngineEffect) {
         return;
     }
-    m_pEngineEffect->initalizeInputChannel(inputChannel);
+    m_pEngineEffect->initializeInputChannel(inputChannel);
 };
 
 EffectManifestPointer EffectSlot::getManifest() const {

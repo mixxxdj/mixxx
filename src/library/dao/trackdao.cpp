@@ -2524,7 +2524,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
 //static
 void TrackDAO::setTrackGenreInternal(Track* pTrack, const QString& genre) {
     DEBUG_ASSERT(pTrack);
-    pTrack->setGenreFromTrackDAO(genre);
+    pTrack->setGenreFromTrackDAO(genre.trimmed());
 }
 
 //static

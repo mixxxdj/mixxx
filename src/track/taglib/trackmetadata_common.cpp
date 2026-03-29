@@ -250,7 +250,7 @@ void importTrackMetadataFromTag(
 
     pTrackMetadata->refTrackInfo().setTitle(toQString(tag.title()));
     pTrackMetadata->refTrackInfo().setArtist(toQString(tag.artist()));
-    pTrackMetadata->refTrackInfo().setGenre(toQString(tag.genre()));
+    pTrackMetadata->refTrackInfo().setGenre(toQString(tag.genre()).trimmed());
     pTrackMetadata->refAlbumInfo().setTitle(toQString(tag.album()));
 
     if ((readMask & ReadTagFlag::OmitComment) == 0) {
@@ -296,8 +296,8 @@ void exportTrackMetadataIntoTag(
     if (!isMultiValueTagEqual(pTag->artist(), trackMetadata.getTrackInfo().getArtist())) {
         pTag->setArtist(toTString(trackMetadata.getTrackInfo().getArtist()));
     }
-    if (!isMultiValueTagEqual(pTag->genre(), trackMetadata.getTrackInfo().getGenre())) {
-        pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre()));
+    if (!isMultiValueTagEqual(pTag->genre(), trackMetadata.getTrackInfo().getGenre().trimmed())) {
+        pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre().trimmed()));
     }
 
     // Using setComment() from TagLib::Tag might have undesirable

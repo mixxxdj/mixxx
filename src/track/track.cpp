@@ -1994,7 +1994,7 @@ void Track::setGenreFromTrackDAO(
     auto locked = lockMutex(&m_qMutex);
     if (compareAndSet(
                 m_record.refMetadata().refTrackInfo().ptrGenre(),
-                genre)) {
+                genre.trimmed())) {
         markDirtyAndUnlock(&locked);
     }
 }

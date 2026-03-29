@@ -422,7 +422,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
     // avoid allocating memory in the realtime audio callback thread.
 
     for (int i = 0; i < m_effectSlots.size(); ++i) {
-        m_effectSlots[i]->initalizeInputChannel(handleGroup.handle());
+        m_effectSlots[i]->initializeInputChannel(handleGroup.handle());
     }
 
     m_pMessenger->writeRequest(request);
