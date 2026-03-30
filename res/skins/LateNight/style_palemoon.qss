@@ -1606,7 +1606,6 @@ WPushButton#CueDeck[displayValue="0"],
 WPushButton#LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
-WPushButton#StemMuteButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
@@ -1631,6 +1630,7 @@ WBeatSpinBox::down-button {
   }
   /* make Fx parameter buttons brighter so they stand out in 'fx focus' mode
     (parameters row of focused effect is marked = dark bg, colored border) */
+  WPushButton#StemMuteButton[displayValue="0"],
   WPushButton#FxParameterButton[displayValue="0"] {
     background-color: #2a2a2c;
   }
@@ -2256,13 +2256,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
   }
 
-#StemMuteButton[displayValue="0"] {
-  image: url(skins:LateNight/palemoon/buttons/btn__stem_mute.svg) no-repeat center center;
-}
-
 #QuickEffectButton[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__star.svg) no-repeat center center;
-}
+  }
+  #QuickEffectButton[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__star_active.svg) no-repeat center center;
+  }
 
 /* EQ Kill button icons H / M / L */
 #EQKillButton_High[displayValue="0"] {

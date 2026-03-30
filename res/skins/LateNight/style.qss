@@ -657,7 +657,7 @@ WEffectChainPresetSelector {
   /* QuickEffect selector of left-hand decks and in 4-decks mixer
     has it's down arrow on the left side, below the QuickEffect toggle */
   WEffectChainPresetSelector#QuickEffectSelectorLeft {
-    padding: 0px -5px 0px -1px;
+    padding: 0px -3px 0px -1px;
     margin: 0px;
     text-align: left;
     }
@@ -666,7 +666,7 @@ WEffectChainPresetSelector {
       subcontrol-position: left center;
     }
   WEffectChainPresetSelector#QuickEffectSelectorRight {
-    padding: 0px -1px 0px -5px;
+    padding: 0px -1px 0px -3px;
     margin: 0px;
     text-align: right;
   }
