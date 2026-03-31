@@ -42,7 +42,8 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
           m_currentFrame(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
-          m_bPreferencesReanalyzeEnabled(false) {
+          m_bPreferencesReanalyzeEnabled(false),
+          m_bHasSignal(false) {
 }
 
 bool AnalyzerKey::initialize(const AnalyzerTrack& track,
@@ -90,6 +91,9 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& track,
         m_maxFramesToProcess = frameLength;
     }
     m_currentFrame = 0;
+
+    // Reset signal detection for this track
+    m_bHasSignal = false;
 
     // if we can't load a stored track reanalyze it
     bool bShouldAnalyze = shouldAnalyze(track.getTrack());
@@ -201,6 +205,11 @@ bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
         return false;
     }
 
+    // Track whether any non-silent audio has been seen across all blocks
+    if (SampleUtil::maxAbsAmplitude(pKeyInput, count) >= 1e-6f) {
+        m_bHasSignal = true;
+    }
+
     bool ret = m_pPlugin->processSamples(pKeyInput, count);
     if (pHarmonicMixedChannel) {
         SampleUtil::free(pHarmonicMixedChannel);
@@ -214,6 +223,12 @@ void AnalyzerKey::cleanup() {
 
 void AnalyzerKey::storeResults(TrackPointer tio) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
+        return;
+    }
+
+    // Do not store a key result if the track had no audio signal
+    if (!m_bHasSignal) {
+        qDebug() << "AnalyzerKey: skipping key storage - track is silent";
         return;
     }
 

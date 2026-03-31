@@ -44,4 +44,5 @@ class AnalyzerKey : public Analyzer {
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
+    bool m_bHasSignal;
 };
