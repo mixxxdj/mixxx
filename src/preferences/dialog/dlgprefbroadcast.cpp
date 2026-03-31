@@ -221,8 +221,8 @@ void DlgPrefBroadcast::slotApply() {
     QMap<QString, QString> mountpoints;
     const QList<BroadcastProfilePtr> broadcastProfiles = m_pSettingsModel->profiles();
     for (const auto& profile : broadcastProfiles) {
-        QString profileName = profile->getProfileName();
-        qWarning() << "--> slotApply()" << profileName;
+        const QString profileName = profile->getProfileName();
+        kLogger.debug() << "saving settings for profile" << profileName;
         if (!profile->validPassword()) {
             m_allProfilesValid = false;
             QMessageBox::warning(this,
@@ -239,9 +239,8 @@ void DlgPrefBroadcast::slotApply() {
             continue;
         }
 
-        QString profileMountpoint = profile->getMountpoint();
+        const QString profileMountpoint = profile->getMountpoint();
         bool profileEnabled = profile->getEnabled();
-
         for (auto it = mountpoints.constBegin(); it != mountpoints.constEnd(); ++it) {
             if (it.value() == profileMountpoint) {
                 QString profileNameWithSameMountpoint = it.key();
