@@ -2189,6 +2189,11 @@ QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skins:LateNight/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
   }
 
+QPushButton#pushButtonAddStopMarker {
+  qproperty-text: "⏹";
+  font-size: 16px;
+  }
+
 QPushButton#pushButtonRepeatPlaylist:!checked {
   image: url(skins:LateNight/classic/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
   }

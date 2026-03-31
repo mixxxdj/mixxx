@@ -54,6 +54,7 @@ const QString LIBRARYTABLE_COVERART_COLOR = QStringLiteral("coverart_color");
 const QString LIBRARYTABLE_COVERART_DIGEST = QStringLiteral("coverart_digest");
 const QString LIBRARYTABLE_COVERART_HASH = QStringLiteral("coverart_hash");
 const QString LIBRARYTABLE_CRATE = QStringLiteral("crate");
+const QString LIBRARYTABLE_IS_AUTODJ_STOP_MARKER = QStringLiteral("is_autodj_stop_marker");
 
 const QString TRACKLOCATIONSTABLE_ID = QStringLiteral("id");
 const QString TRACKLOCATIONSTABLE_LOCATION = QStringLiteral("location");

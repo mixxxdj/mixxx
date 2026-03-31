@@ -957,6 +957,35 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
     return numTracksAdded;
 }
 
+TrackId PlaylistDAO::getOrCreateAutoDJStopMarker() {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT id FROM library WHERE is_autodj_stop_marker = 1 LIMIT 1"));
+    if (query.exec() && query.next()) {
+        transaction.commit();
+        return TrackId(query.value(0));
+    }
+    // Create a new stop marker entry
+    query.prepare(QStringLiteral(
+            "INSERT INTO library (is_autodj_stop_marker, mixxx_deleted) VALUES (1, 0)"));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return TrackId();
+    }
+    TrackId id(query.lastInsertId());
+    transaction.commit();
+    return id;
+}
+
+bool PlaylistDAO::insertStopMarkerIntoPlaylist(int playlistId, int position) {
+    TrackId stopMarkerId = getOrCreateAutoDJStopMarker();
+    if (!stopMarkerId.isValid()) {
+        return false;
+    }
+    return insertTrackIntoPlaylist(stopMarkerId, playlistId, position);
+}
+
 void PlaylistDAO::clearAutoDJQueue() {
     const int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
     // If the first track is already loaded to the player,

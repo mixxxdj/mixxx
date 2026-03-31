@@ -98,7 +98,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     QString queryString = QString(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
             "SELECT %2 FROM library "
-            "INNER JOIN track_locations ON library.location = track_locations.id")
+            "LEFT JOIN track_locations ON library.location = track_locations.id "
+            "WHERE track_locations.id IS NOT NULL OR library.is_autodj_stop_marker = 1")
                                   .arg(tableName, qualifiedTableColumns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {

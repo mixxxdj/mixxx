@@ -1896,3 +1896,45 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
 }
+
+// Stop marker tests
+
+TEST_F(AutoDJProcessorTest, StopMarker_OnlyInQueue_ReturnsQueueEmpty) {
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    // Insert a stop marker as the only item in the queue.
+    pAutoDJTableModel->insertStopMarker(-1);
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
+}
+
+TEST_F(AutoDJProcessorTest, StopMarker_AtHead_RealTrackAfter_ReturnsQueueEmpty) {
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    // Insert stop marker first (queue empty → goes to position 1, row 0).
+    pAutoDJTableModel->insertStopMarker(-1);
+    // Append a real track (goes to position 2, row 1).
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    // getNextTrackFromQueue() sees the stop marker at row 0 and returns null.
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
+}
+
+TEST_F(AutoDJProcessorTest, StopMarker_NeverEmitsLoadTrackToPlayer) {
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->insertStopMarker(-1);
+
+    // emitLoadTrackToPlayer must never be called with the stop marker.
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    pProcessor->toggleAutoDJ(true);
+    // AutoDJ should be back in disabled state.
+    EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+}

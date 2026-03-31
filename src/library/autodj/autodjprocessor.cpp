@@ -430,6 +430,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
 
         TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
+            // Queue is empty or a stop marker is at the head of the queue.
+            // Both cases are treated the same: AutoDJ is disabled.
             qDebug() << "Queue is empty now, disable Auto DJ";
             m_enabledAutoDJ.setAndConfirm(0.0);
             emitAutoDJStateChanged(m_eState);
@@ -899,8 +901,18 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 
     while (true) {
-        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(
-                m_pAutoDJTableModel->index(0, 0));
+        QModelIndex topIndex = m_pAutoDJTableModel->index(0, 0);
+
+        // Check for stop marker before attempting to load the track.
+        if (m_pAutoDJTableModel->isStopMarker(topIndex)) {
+            // Stop marker reached: return null to signal AutoDJ to stop.
+            // Stop markers are persistent — they are not removed from the
+            // queue when triggered. Re-enabling AutoDJ will stop again at
+            // the same marker until the user manually removes it.
+            return TrackPointer();
+        }
+
+        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(topIndex);
 
         if (pNextTrack) {
             if (pNextTrack->getFileInfo().checkFileExists()) {
