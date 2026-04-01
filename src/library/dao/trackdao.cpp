@@ -2542,6 +2542,7 @@ void TrackDAO::setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed) {
 bool TrackDAO::getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord) {
     return trackRecord.m_headerParsed;
 }
+
 QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
     if (!trackId.isValid()) {
         return {};
