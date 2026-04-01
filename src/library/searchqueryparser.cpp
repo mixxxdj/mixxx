@@ -250,6 +250,20 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         if (textFilterMatch.hasMatch()) {
             const QString field = resolveFilter(textFilterMatch.captured(1));
             qWarning().noquote() << "-> parseTokens -> text filter:" << token;
+            // TODO/NiceToHave
+            // allow 'cm:(one|two|three)
+            // * check if token is '(...)'
+            // * try split OR
+            // * if parts > 1
+            //     -> create node from each part
+            //     -> wrap in OrNode
+            //   else
+            //     -> proceed with entire token
+            //
+            // alternative:
+            // * check if token is '(...)'
+            // * split OR
+            // * prepend each part with field: cm:one|cm:two|cm:three
             auto [argument, matchMode] = getTextArgument(textFilterMatch.captured(2), &tokens);
 
             if (argument == kMissingFieldSearchTerm) {
