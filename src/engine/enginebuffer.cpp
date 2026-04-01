@@ -1234,8 +1234,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
 #endif
 
-    bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
-    if (hasStableTrack && m_pause.tryLock()) {
+    if (isTrackLoaded() && m_pause.tryLock()) {
         processTrackLocked(pOutput, bufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
@@ -1614,10 +1613,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 }
 
 bool EngineBuffer::isTrackLoaded() const {
-    if (m_pCurrentTrack) {
-        return true;
-    }
-    return false;
+    return (m_pCurrentTrack && atomicLoadAcquire(m_iTrackLoading) == 0);
 }
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
