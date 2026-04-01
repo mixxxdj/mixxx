@@ -258,7 +258,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setMountPoint(this->getMountpoint());
     other->setStreamName(this->getStreamName());
     other->setStreamDesc(this->getStreamDesc());
-    other->setStreamGenre(this->getStreamGenre().trimmed());
+    other->setStreamGenre(this->getStreamGenre());
     other->setStreamPublic(this->getStreamPublic());
     other->setStreamWebsite(this->getStreamWebsite());
     other->setStreamIRC(this->getStreamIRC());
@@ -751,7 +751,7 @@ void BroadcastProfile::setStreamDesc(const QString& value) {
 }
 
 QString BroadcastProfile::getStreamGenre() const {
-    return m_streamGenre.trimmed();
+    return m_streamGenre;
 }
 
 void BroadcastProfile::setStreamGenre(const QString& value) {

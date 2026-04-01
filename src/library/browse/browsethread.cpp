@@ -215,7 +215,7 @@ void BrowseThread::populateModel() {
             item->setData(mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
             row_data.insert(COLUMN_YEAR, item);
 
-            item = new QStandardItem(trackMetadata.getTrackInfo().getGenre().trimmed());
+            item = new QStandardItem(trackMetadata.getTrackInfo().getGenre());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_GENRE, item);

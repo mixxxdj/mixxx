@@ -428,7 +428,7 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         artists.insert(rec.getMetadata().getTrackInfo().getArtist());
         aTitles.insert(rec.getMetadata().getAlbumInfo().getTitle());
         aArtists.insert(rec.getMetadata().getAlbumInfo().getArtist());
-        genres.insert(rec.getMetadata().getTrackInfo().getGenre().trimmed());
+        genres.insert(rec.getMetadata().getTrackInfo().getGenre());
         composers.insert(rec.getMetadata().getTrackInfo().getComposer());
         grouping.insert(rec.getMetadata().getTrackInfo().getGrouping());
         years.insert(rec.getMetadata().getTrackInfo().getYear());
@@ -700,7 +700,7 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refAlbumInfo().setArtist(albumArtist);
         }
         if (!genre.isNull()) {
-            rec.refMetadata().refTrackInfo().setGenre(genre.trimmed());
+            rec.refMetadata().refTrackInfo().setGenre(genre);
         }
         if (!composer.isNull()) {
             rec.refMetadata().refTrackInfo().setComposer(composer);

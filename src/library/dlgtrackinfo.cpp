@@ -231,7 +231,7 @@ void DlgTrackInfo::init() {
             [this]() {
                 txtGenre->setText(txtGenre->text().trimmed());
                 m_trackRecord.refMetadata().refTrackInfo().setGenre(
-                        txtGenre->text().trimmed());
+                        txtGenre->text());
             });
     connect(txtComposer,
             &QLineEdit::editingFinished,
