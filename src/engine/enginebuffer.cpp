@@ -758,10 +758,9 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     VERIFY_OR_DEBUG_ASSERT(!util_isnan(fractionalPos)) {
         return;
     }
-
-    // FIXME: Use maybe invalid here
     const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
-    VERIFY_OR_DEBUG_ASSERT(trackEndPosition.isValid()) {
+    if (!trackEndPosition.isValid()) {
+        // happens if no track is loaded
         return;
     }
     const auto seekPosition = trackEndPosition * fractionalPos;
