@@ -171,8 +171,9 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
             << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
-            << "library." + LIBRARYTABLE_IS_AUTODJ_STOP_MARKER + " AS " +
-                    LIBRARYTABLE_IS_AUTODJ_STOP_MARKER;
+            << QStringLiteral("CASE WHEN library.location = '%1' THEN 1 ELSE 0 END AS %2")
+                       .arg(LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION,
+                               LIBRARYTABLE_IS_AUTODJ_STOP_MARKER);
 
     QString queryString = QString(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "

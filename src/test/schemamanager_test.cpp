@@ -72,28 +72,6 @@ TEST_F(SchemaManagerTest, NonExistentSchema) {
     EXPECT_EQ(SchemaManager::Result::SchemaError, result);
 }
 
-TEST_F(SchemaManagerTest, SchemaV41_AddsIsAutoDJStopMarkerColumn) {
-    SchemaManager schemaManager(dbConnection());
-    // Upgrade to v40 first, then to v41, and verify the new column exists.
-    ASSERT_EQ(SchemaManager::Result::UpgradeSucceeded,
-            schemaManager.upgradeToSchemaVersion(40, MixxxDb::kDefaultSchemaFile));
-    ASSERT_EQ(SchemaManager::Result::UpgradeSucceeded,
-            schemaManager.upgradeToSchemaVersion(41, MixxxDb::kDefaultSchemaFile));
-
-    QSqlQuery query(dbConnection());
-    ASSERT_TRUE(query.exec("PRAGMA table_info(library)"));
-
-    bool found = false;
-    while (query.next()) {
-        if (query.value("name").toString() == QStringLiteral("is_autodj_stop_marker")) {
-            found = true;
-            // Verify the column has DEFAULT 0
-            EXPECT_EQ(QStringLiteral("0"), query.value("dflt_value").toString());
-            break;
-        }
-    }
-    EXPECT_TRUE(found) << "is_autodj_stop_marker column not found in library table after v41 upgrade";
-}
 
 TEST_F(SchemaManagerTest, UpgradeFailed) {
     // Establish preconditions for test

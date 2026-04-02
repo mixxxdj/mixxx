@@ -2912,6 +2912,7 @@ if(BUILD_TESTING)
     src/test/playcountertest.cpp
     src/test/playermanagertest.cpp
     src/test/playlisttest.cpp
+    src/test/playlistdao_stopmarker_test.cpp
     src/test/portmidicontroller_test.cpp
     src/test/portmidienumeratortest.cpp
     src/test/queryutiltest.cpp
@@ -2938,7 +2939,6 @@ if(BUILD_TESTING)
     src/test/synctrackmetadatatest.cpp
     src/test/tableview_test.cpp
     src/test/taglibtest.cpp
-    src/test/playlistdao_stopmarker_test.cpp
     src/test/trackdao_test.cpp
     src/test/trackexport_test.cpp
     src/test/trackmetadata_test.cpp

@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 
 #include "library/dao/playlistdao.h"
+#include "library/dao/trackschema.h"
 #include "test/librarytest.h"
 #include "track/trackid.h"
 
@@ -23,8 +24,8 @@ class PlaylistDAOStopMarkerTest : public LibraryTest {
 
     int countStopMarkerRows() {
         QSqlQuery q(dbConnection());
-        q.prepare(QStringLiteral(
-                "SELECT COUNT(*) FROM library WHERE is_autodj_stop_marker = 1"));
+        q.prepare(QStringLiteral("SELECT COUNT(*) FROM library WHERE location = :loc"));
+        q.bindValue(":loc", LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION);
         if (!q.exec() || !q.next()) {
             return -1;
         }
@@ -74,7 +75,9 @@ TEST_F(PlaylistDAOStopMarkerTest, StopMarkerNotReturnedByLocationJoin) {
     ASSERT_TRUE(id.isValid());
 
     // A query that joins on track_locations (as the normal library view does)
-    // must NOT return the stop marker, since it has no location.
+    // must NOT return the stop marker. library.location holds the sentinel text
+    // 'mixxx://autodj/stop', which is TEXT and never equals any INTEGER
+    // track_locations.id in SQLite's type-based comparison.
     QSqlQuery q(dbConnection());
     q.prepare(QStringLiteral(
             "SELECT library.id FROM library "

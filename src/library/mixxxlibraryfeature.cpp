@@ -99,8 +99,10 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
             "SELECT %2 FROM library "
             "LEFT JOIN track_locations ON library.location = track_locations.id "
-            "WHERE track_locations.id IS NOT NULL OR library.is_autodj_stop_marker = 1")
-                                  .arg(tableName, qualifiedTableColumns.join(","));
+            "WHERE track_locations.id IS NOT NULL OR library.location = '%3'")
+                                  .arg(tableName,
+                                          qualifiedTableColumns.join(","),
+                                          LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION);
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

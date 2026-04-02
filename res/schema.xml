@@ -593,14 +593,4 @@ reapplying those migrations.
       ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 0.0;
     </sql>
   </revision>
-  <revision version="41" min_compatible="3">
-    <description>
-      Add is_autodj_stop_marker column to library table.
-      Tracks with this flag set to 1 act as stop markers in the AutoDJ queue,
-      causing AutoDJ to stop playback when they reach the top of the queue.
-    </description>
-    <sql>
-      ALTER TABLE library ADD COLUMN is_autodj_stop_marker INTEGER DEFAULT 0;
-    </sql>
-  </revision>
 </schema>

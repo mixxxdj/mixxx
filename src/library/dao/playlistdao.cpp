@@ -960,15 +960,15 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
 TrackId PlaylistDAO::getOrCreateAutoDJStopMarker() {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
-    query.prepare(QStringLiteral(
-            "SELECT id FROM library WHERE is_autodj_stop_marker = 1 LIMIT 1"));
+    query.prepare(QStringLiteral("SELECT id FROM library WHERE location = :loc LIMIT 1"));
+    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION);
     if (query.exec() && query.next()) {
         transaction.commit();
         return TrackId(query.value(0));
     }
-    // Create a new stop marker entry
     query.prepare(QStringLiteral(
-            "INSERT INTO library (is_autodj_stop_marker, mixxx_deleted) VALUES (1, 0)"));
+            "INSERT INTO library (location, mixxx_deleted) VALUES (:loc, 0)"));
+    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return TrackId();

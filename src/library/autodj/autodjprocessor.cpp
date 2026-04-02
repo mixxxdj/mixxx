@@ -903,12 +903,8 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     while (true) {
         QModelIndex topIndex = m_pAutoDJTableModel->index(0, 0);
 
-        // Check for stop marker before attempting to load the track.
         if (m_pAutoDJTableModel->isStopMarker(topIndex)) {
-            // Stop marker reached: return null to signal AutoDJ to stop.
-            // Stop markers are persistent — they are not removed from the
-            // queue when triggered. Re-enabling AutoDJ will stop again at
-            // the same marker until the user manually removes it.
+            m_pAutoDJTableModel->removeTrack(topIndex);
             return TrackPointer();
         }
 

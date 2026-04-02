@@ -92,7 +92,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
     setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton, tr("Shuffle"));
     setupActionButton(pushButtonAddRandomTrack, &DlgAutoDJ::addRandomTrackButton, tr("Random"));
-    setupActionButton(pushButtonAddStopMarker, &DlgAutoDJ::slotAddStopMarker, tr("\u23F9 Add Stop"));
+    setupActionButton(pushButtonAddStopMarker, &DlgAutoDJ::slotAddStopMarker, tr("Add Stop"));
 
     m_enableBtnTooltip = tr(
             "Enable Auto DJ\n"
