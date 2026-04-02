@@ -816,6 +816,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                             otherDeck->startPos - (secondsUntilFade / toDeckDurationSec);
                     otherDeck->setPlayPosition(earlyStartPos);
                     otherDeck->play();
+                    m_eState = ADJ_PREROLLING;
+
                     if constexpr (sDebug) {
                         qDebug() << this << "playerPositionChanged"
                                  << "early play toDeck at" << earlyStartPos
@@ -832,7 +834,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // - check if fading is done and stop the deck
     // - update the crossfader
     if (thisPlayPosition >= thisDeck->fadeBeginPos && thisDeck->isFromDeck && !otherDeck->loading) {
-        if (m_eState == ADJ_IDLE) {
+        if (m_eState == ADJ_PREROLLING || m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
                 // Set the state as FADING.
                 m_eState = thisDeck->isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
@@ -853,6 +855,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
 
+                // There's a chance the user loaded a track during the preroll -- just start it now,
+                // it's not worth trying to recover the correct preroll position.
                 if (!otherDeckPlaying) {
                     otherDeck->play();
                 }
@@ -1659,6 +1663,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
             pDeck->play();
         }
     }
+    // If the state is prerolling, playerPositionChanged will tell the other deck to start playing
+    // at the correct fade time.
 }
 
 void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
