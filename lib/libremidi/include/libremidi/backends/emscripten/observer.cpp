@@ -19,8 +19,7 @@ LIBREMIDI_INLINE observer_emscripten::observer_emscripten(
   // Trigger an initial notification
   webmidi.load_current_infos();
 
-  if (configuration.notify_in_constructor)
-    update(webmidi.inputs(), webmidi.outputs());
+  update(webmidi.inputs(), webmidi.outputs(), configuration.notify_in_constructor);
 }
 
 LIBREMIDI_INLINE observer_emscripten::~observer_emscripten()
@@ -83,7 +82,7 @@ std::vector<libremidi::output_port> observer_emscripten::get_output_ports() cons
 
 LIBREMIDI_INLINE void observer_emscripten::update(
     const std::vector<observer_emscripten::device>& current_inputs,
-    const std::vector<observer_emscripten::device>& current_outputs)
+    const std::vector<observer_emscripten::device>& current_outputs, bool notify)
 {
   // WebMIDI never remove inputs, it just marks them as disconnected.
   // At least in known browsers...
@@ -93,13 +92,15 @@ LIBREMIDI_INLINE void observer_emscripten::update(
   for (std::size_t i = m_known_inputs.size(); i < current_inputs.size(); i++)
   {
     m_known_inputs.push_back(current_inputs[i]);
-    configuration.input_added(to_port_info<true>(i, m_known_inputs[i]));
+    if (notify)
+      configuration.input_added(to_port_info<true>(i, m_known_inputs[i]));
   }
 
   for (std::size_t i = m_known_outputs.size(); i < current_outputs.size(); i++)
   {
     m_known_outputs.push_back(current_outputs[i]);
-    configuration.output_added(to_port_info<false>(i, m_known_outputs[i]));
+    if (notify)
+      configuration.output_added(to_port_info<false>(i, m_known_outputs[i]));
   }
 }
 }

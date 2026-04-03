@@ -65,8 +65,7 @@ public:
       return;
 
     // Init with the existing ports
-    if (configuration.notify_in_constructor)
-      init_all_ports();
+    init_all_ports();
 
     // Create the port to listen on the server events
     {
@@ -222,7 +221,7 @@ public:
         snd, this->seq, [this](snd_seq_client_info_t& client, snd_seq_port_info_t& port) {
       int clt = snd.seq.client_info_get_client(&client);
       int pt = snd.seq.port_info_get_port(&port);
-      register_port(clt, pt);
+      register_port(clt, pt, configuration.notify_in_constructor);
     });
   }
 
@@ -262,7 +261,7 @@ public:
     return ret;
   }
 
-  void register_port(int client, int port)
+  void register_port(int client, int port, bool notify)
   {
     auto pp = get_info(client, port);
     if (!pp)
@@ -272,14 +271,17 @@ public:
       return;
 
     m_knownClients[{p.client, p.port}] = p;
-    if (p.is_input && configuration.input_added)
+    if (notify)
     {
-      configuration.input_added(to_port_info<true>(p));
-    }
+      if (p.is_input && configuration.input_added)
+      {
+        configuration.input_added(to_port_info<true>(p));
+      }
 
-    if (p.is_output && configuration.output_added)
-    {
-      configuration.output_added(to_port_info<false>(p));
+      if (p.is_output && configuration.output_added)
+      {
+        configuration.output_added(to_port_info<false>(p));
+      }
     }
   }
 
@@ -330,7 +332,7 @@ public:
       }
 #endif
       case SND_SEQ_EVENT_PORT_START: {
-        this->register_port(ev.data.addr.client, ev.data.addr.port);
+        this->register_port(ev.data.addr.client, ev.data.addr.port, true);
         break;
       }
       case SND_SEQ_EVENT_PORT_EXIT: {

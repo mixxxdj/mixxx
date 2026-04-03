@@ -54,8 +54,7 @@ public:
 #endif
 
     // Set-up initial state
-    if (configuration.notify_in_constructor)
-      this->check_devices();
+    this->check_devices(configuration.notify_in_constructor);
 
 #if LIBREMIDI_HAS_UDEV
     // Start thread
@@ -139,7 +138,7 @@ public:
           this->m_timer_fd.cancel();
         m_fds[2].revents = 0;
 
-        check_devices();
+        check_devices(true);
       }
     }
   }
@@ -185,7 +184,7 @@ public:
          .type = type}};
   }
 
-  void check_devices()
+  void check_devices(bool notify)
   {
     Enumerator new_devs{*this};
 
@@ -203,18 +202,6 @@ public:
       }
     }
 
-    for (auto& in_next : new_devs.inputs)
-    {
-      if (auto it = std::find(m_current_inputs.begin(), m_current_inputs.end(), in_next);
-          it == m_current_inputs.end())
-      {
-        if (auto& cb = this->configuration.input_added)
-        {
-          cb(to_port_info<true>(in_next));
-        }
-      }
-    }
-
     for (auto& out_prev : m_current_outputs)
     {
       if (auto it = std::find(new_devs.outputs.begin(), new_devs.outputs.end(), out_prev);
@@ -227,14 +214,29 @@ public:
       }
     }
 
-    for (auto& out_next : new_devs.outputs)
+    if (notify)
     {
-      if (auto it = std::find(m_current_outputs.begin(), m_current_outputs.end(), out_next);
-          it == m_current_outputs.end())
+      if (auto& cb = this->configuration.input_added)
       {
-        if (auto& cb = this->configuration.output_added)
+        for (auto& in_next : new_devs.inputs)
         {
-          cb(to_port_info<false>(out_next));
+          if (auto it = std::find(m_current_inputs.begin(), m_current_inputs.end(), in_next);
+              it == m_current_inputs.end())
+          {
+            cb(to_port_info<true>(in_next));
+          }
+        }
+      }
+
+      if (auto& cb = this->configuration.output_added)
+      {
+        for (auto& out_next : new_devs.outputs)
+        {
+          if (auto it = std::find(m_current_outputs.begin(), m_current_outputs.end(), out_next);
+              it == m_current_outputs.end())
+          {
+            cb(to_port_info<false>(out_next));
+          }
         }
       }
     }
