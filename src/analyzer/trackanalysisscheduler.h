@@ -90,6 +90,8 @@ class TrackAnalysisScheduler : public QObject {
         ~Worker() {
             if (m_pThread) {
                 m_pThread->stop();
+                bool success = m_pThread->wait(5000); // 5 s
+                DEBUG_ASSERT(success);
                 m_pThread->wait();
                 delete m_pThread.release();
             }
