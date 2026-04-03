@@ -923,7 +923,7 @@ const ConstWaveformPointer& Track::getWaveform() const {
 }
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
-    m_waveform = pWaveform;
+    m_waveform = std::move(pWaveform);
     emit waveformUpdated();
 }
 
