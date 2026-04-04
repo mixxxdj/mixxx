@@ -41,7 +41,6 @@ ControlObject::ControlObject(const ConfigKey& key,
 ControlObject::~ControlObject() {
     DEBUG_ASSERT(m_pControl);
     const bool success = m_pControl->resetCreatorCO(this);
-    Q_UNUSED(success);
     DEBUG_ASSERT(success);
 }
 
