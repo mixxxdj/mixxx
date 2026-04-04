@@ -76,7 +76,7 @@ TEST_F(PlaylistDAOStopMarkerTest, StopMarkerNotReturnedByLocationJoin) {
 
     // A query that joins on track_locations (as the normal library view does)
     // must NOT return the stop marker. library.location holds the sentinel text
-    // 'mixxx://autodj/stop', which is TEXT and never equals any INTEGER
+    // 'mixxx://autodj/transition', which is TEXT and never equals any INTEGER
     // track_locations.id in SQLite's type-based comparison.
     QSqlQuery q(dbConnection());
     q.prepare(QStringLiteral(

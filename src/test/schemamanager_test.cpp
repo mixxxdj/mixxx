@@ -72,7 +72,6 @@ TEST_F(SchemaManagerTest, NonExistentSchema) {
     EXPECT_EQ(SchemaManager::Result::SchemaError, result);
 }
 
-
 TEST_F(SchemaManagerTest, UpgradeFailed) {
     // Establish preconditions for test
     {

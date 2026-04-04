@@ -409,8 +409,7 @@ void PlaylistTableModel::insertStopMarker(int afterRow) {
     } else {
         position = rowCount() + 1;
     }
-    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO()
-            .insertStopMarkerIntoPlaylist(m_iPlaylistId, position);
+    m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().insertStopMarkerIntoPlaylist(m_iPlaylistId, position);
 }
 
 QVariant PlaylistTableModel::rawValue(const QModelIndex& index) const {

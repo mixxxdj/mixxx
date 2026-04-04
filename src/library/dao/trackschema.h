@@ -58,7 +58,7 @@ const QString LIBRARYTABLE_IS_AUTODJ_STOP_MARKER = QStringLiteral("is_autodj_sto
 // Sentinel value stored in library.location to identify AutoDJ stop marker rows.
 // library.location is nominally an INTEGER FK to track_locations.id; SQLite's dynamic
 // typing allows storing this TEXT sentinel, which never matches any INTEGER id in JOIN queries.
-const QString LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION = QStringLiteral("mixxx://autodj/stop");
+const QString LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION = QStringLiteral("mixxx://autodj/transition");
 
 const QString TRACKLOCATIONSTABLE_ID = QStringLiteral("id");
 const QString TRACKLOCATIONSTABLE_LOCATION = QStringLiteral("location");
