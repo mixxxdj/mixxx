@@ -3786,7 +3786,11 @@ if(QML)
     # For using NEW, we need to back-port:
     # https://github.com/qt/qtdeclarative/commit/6314d305ee0d9064ca848980ef2dab1793c191b8
     # until Qt 6.8 lands in all supported distros
-    qt6_policy(SET QTP0004 OLD)
+    if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
+      qt6_policy(SET QTP0004 NEW)
+    else()
+      qt6_policy(SET QTP0004 OLD)
+    endif()
   endif()
 
   add_subdirectory(res/shaders)
