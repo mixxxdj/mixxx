@@ -25,7 +25,7 @@ void StarDelegate::paintItem(
 
     paintItemBackground(painter, option, index);
 
-    if (isStopMarkerRow(index)) {
+    if (isEndMarkerRow(index)) {
         return;
     }
 

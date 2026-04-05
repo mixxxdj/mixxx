@@ -957,18 +957,18 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
     return numTracksAdded;
 }
 
-TrackId PlaylistDAO::getOrCreateAutoDJStopMarker() {
+TrackId PlaylistDAO::getOrCreateAutoDJEndMarker() {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral("SELECT id FROM library WHERE location = :loc LIMIT 1"));
-    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION);
+    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION);
     if (query.exec() && query.next()) {
         transaction.commit();
         return TrackId(query.value(0));
     }
     query.prepare(QStringLiteral(
             "INSERT INTO library (location, mixxx_deleted) VALUES (:loc, 0)"));
-    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_STOP_MARKER_LOCATION);
+    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return TrackId();
@@ -978,12 +978,12 @@ TrackId PlaylistDAO::getOrCreateAutoDJStopMarker() {
     return id;
 }
 
-bool PlaylistDAO::insertStopMarkerIntoPlaylist(int playlistId, int position) {
-    TrackId stopMarkerId = getOrCreateAutoDJStopMarker();
-    if (!stopMarkerId.isValid()) {
+bool PlaylistDAO::insertEndMarkerIntoPlaylist(int playlistId, int position) {
+    TrackId endMarkerId = getOrCreateAutoDJEndMarker();
+    if (!endMarkerId.isValid()) {
         return false;
     }
-    return insertTrackIntoPlaylist(stopMarkerId, playlistId, position);
+    return insertTrackIntoPlaylist(endMarkerId, playlistId, position);
 }
 
 void PlaylistDAO::clearAutoDJQueue() {

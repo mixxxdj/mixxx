@@ -1897,11 +1897,11 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     deck1.fakeTrackLoadedEvent(pTrack);
 }
 
-// Stop marker tests
+// End marker tests
 
-TEST_F(AutoDJProcessorTest, StopMarker_OnlyInQueue_ReturnsQueueEmpty) {
+TEST_F(AutoDJProcessorTest, EndMarker_OnlyInQueue_ReturnsQueueEmpty) {
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
-    pAutoDJTableModel->insertStopMarker(-1);
+    pAutoDJTableModel->insertEndMarker(-1);
     EXPECT_EQ(1, pAutoDJTableModel->rowCount());
 
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
@@ -1911,12 +1911,12 @@ TEST_F(AutoDJProcessorTest, StopMarker_OnlyInQueue_ReturnsQueueEmpty) {
     EXPECT_EQ(0, pAutoDJTableModel->rowCount());
 }
 
-TEST_F(AutoDJProcessorTest, StopMarker_AtHead_RealTrackAfter_ReturnsQueueEmpty) {
+TEST_F(AutoDJProcessorTest, EndMarker_AtHead_RealTrackAfter_ReturnsQueueEmpty) {
     TrackId testId = addTrackToCollection(kTrackLocationTest);
     ASSERT_TRUE(testId.isValid());
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
-    pAutoDJTableModel->insertStopMarker(-1);
+    pAutoDJTableModel->insertEndMarker(-1);
     pAutoDJTableModel->appendTrack(testId);
     EXPECT_EQ(2, pAutoDJTableModel->rowCount());
 
@@ -1925,12 +1925,12 @@ TEST_F(AutoDJProcessorTest, StopMarker_AtHead_RealTrackAfter_ReturnsQueueEmpty) 
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
     EXPECT_EQ(1, pAutoDJTableModel->rowCount());
-    EXPECT_FALSE(pAutoDJTableModel->isStopMarker(pAutoDJTableModel->index(0, 0)));
+    EXPECT_FALSE(pAutoDJTableModel->isEndMarker(pAutoDJTableModel->index(0, 0)));
 }
 
-TEST_F(AutoDJProcessorTest, StopMarker_NeverEmitsLoadTrackToPlayer) {
+TEST_F(AutoDJProcessorTest, EndMarker_NeverEmitsLoadTrackToPlayer) {
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
-    pAutoDJTableModel->insertStopMarker(-1);
+    pAutoDJTableModel->insertEndMarker(-1);
 
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
 

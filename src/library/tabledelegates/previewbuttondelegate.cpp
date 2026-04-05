@@ -144,7 +144,7 @@ void PreviewButtonDelegate::paintItem(QPainter* painter,
         return;
     }
 
-    if (isStopMarkerRow(index)) {
+    if (isEndMarkerRow(index)) {
         return;
     }
 

@@ -200,7 +200,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButtonAddStopMarker">
+       <widget class="QPushButton" name="pushButtonAddEndMarker">
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>

@@ -19,8 +19,8 @@ class PlaylistTableModel final : public TrackSetTableModel {
     }
 
     bool appendTrack(TrackId trackId);
-    bool isStopMarker(const QModelIndex& index) const;
-    void insertStopMarker(int afterRow);
+    bool isEndMarker(const QModelIndex& index) const;
+    void insertEndMarker(int afterRow);
     void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
     void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle = QModelIndexList(),

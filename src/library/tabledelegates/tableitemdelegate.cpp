@@ -118,12 +118,12 @@ void TableItemDelegate::drawBorder(
 }
 
 // static
-bool TableItemDelegate::isStopMarkerRow(const QModelIndex& index) {
+bool TableItemDelegate::isEndMarkerRow(const QModelIndex& index) {
     const auto* pModel = qobject_cast<const BaseTrackTableModel*>(index.model());
     if (!pModel) {
         return false;
     }
-    int col = pModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_IS_AUTODJ_STOP_MARKER);
+    int col = pModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_IS_AUTODJ_END_MARKER);
     return col >= 0 && index.sibling(index.row(), col).data().toInt() == 1;
 }
 

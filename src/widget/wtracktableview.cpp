@@ -605,12 +605,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
 }
 
 // static
-QModelIndexList WTrackTableView::filterStopMarkers(QModelIndexList indices) {
+QModelIndexList WTrackTableView::filterEndMarkers(QModelIndexList indices) {
     indices.erase(
             std::remove_if(indices.begin(),
                     indices.end(),
                     [](const QModelIndex& idx) {
-                        return TableItemDelegate::isStopMarkerRow(idx);
+                        return TableItemDelegate::isEndMarkerRow(idx);
                     }),
             indices.end());
     return indices;
@@ -621,7 +621,7 @@ void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) 
         return;
     }
     // Update track indices in context menu
-    QModelIndexList indices = filterStopMarkers(getSelectedRows());
+    QModelIndexList indices = filterEndMarkers(getSelectedRows());
     if (indices.isEmpty()) {
         auto pMenu = make_parented<QMenu>(this);
         pMenu->addAction(tr("Remove"), this, &WTrackTableView::removeSelectedTracks);
@@ -1245,7 +1245,7 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                             TrackModel::Capability::EditMetadata)) {
                 return;
             }
-            const QModelIndexList indices = filterStopMarkers(getSelectedRows());
+            const QModelIndexList indices = filterEndMarkers(getSelectedRows());
             if (indices.isEmpty()) {
                 return;
             }

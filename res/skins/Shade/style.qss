@@ -1073,7 +1073,7 @@ QPushButton#pushButtonShuffle {
 QPushButton#pushButtonAddRandomTrack {
   image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
 }
-QPushButton#pushButtonAddStopMarker {
+QPushButton#pushButtonAddEndMarker {
   image: url(skin:/btn/btn_autodj_stop_marker.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {

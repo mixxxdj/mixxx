@@ -92,7 +92,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
     setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton, tr("Shuffle"));
     setupActionButton(pushButtonAddRandomTrack, &DlgAutoDJ::addRandomTrackButton, tr("Random"));
-    setupActionButton(pushButtonAddStopMarker, &DlgAutoDJ::slotAddStopMarker, tr("Add Stop"));
+    setupActionButton(pushButtonAddEndMarker, &DlgAutoDJ::slotAddEndMarker, tr("Add End"));
 
     m_enableBtnTooltip = tr(
             "Enable Auto DJ\n"
@@ -117,9 +117,9 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     QString addRandomTrackBtnTooltip = tr(
             "Adds a random track from track sources (crates) to the Auto DJ queue.\n"
             "If no track sources are configured, the track is added from the library instead.");
-    QString addStopMarkerBtnTooltip = tr(
-            "Inserts a stop marker below the selected track.\n"
-            "Auto DJ will stop playback when the marker reaches the top of the queue.");
+    QString addEndMarkerBtnTooltip = tr(
+            "Inserts an end marker below the selected track.\n"
+            "Auto DJ will be disabled when the marker reaches the top of the queue.");
     QString repeatBtnTooltip = tr(
             "Repeat the playlist");
     QString spinBoxTransitionTooltip = tr(
@@ -159,7 +159,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
     pushButtonShuffle->setToolTip(shuffleBtnTooltip);
     pushButtonAddRandomTrack->setToolTip(addRandomTrackBtnTooltip);
-    pushButtonAddStopMarker->setToolTip(addStopMarkerBtnTooltip);
+    pushButtonAddEndMarker->setToolTip(addEndMarkerBtnTooltip);
     pushButtonRepeatPlaylist->setToolTip(repeatBtnTooltip);
     spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
     labelTransitionAppendix->setToolTip(labelTransitionTooltip);
@@ -413,11 +413,11 @@ bool DlgAutoDJ::restoreCurrentViewState() {
     return m_pTrackTableView->restoreCurrentViewState();
 }
 
-void DlgAutoDJ::slotAddStopMarker(bool) {
+void DlgAutoDJ::slotAddEndMarker(bool) {
     QModelIndexList selection = m_pTrackTableView->selectionModel()->selectedRows();
     int afterRow = -1;
     if (!selection.isEmpty()) {
         afterRow = selection.last().row();
     }
-    m_pAutoDJTableModel->insertStopMarker(afterRow);
+    m_pAutoDJTableModel->insertEndMarker(afterRow);
 }
