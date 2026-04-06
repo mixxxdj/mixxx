@@ -1399,6 +1399,7 @@ add_library(
   src/library/dao/playlistdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
+  src/library/dao/tracklinkdao.cpp
   src/library/dao/trackschema.cpp
   src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
@@ -2939,6 +2940,7 @@ if(BUILD_TESTING)
     src/test/tableview_test.cpp
     src/test/taglibtest.cpp
     src/test/trackdao_test.cpp
+    src/test/tracklinkdao_test.cpp
     src/test/trackexport_test.cpp
     src/test/trackmetadata_test.cpp
     src/test/trackmetadataexport_test.cpp

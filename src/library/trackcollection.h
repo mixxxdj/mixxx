@@ -12,6 +12,7 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "library/dao/tracklinkdao.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "preferences/usersettings.h"
 #include "util/thread_affinity.h"
@@ -59,6 +60,10 @@ class TrackCollection : public QObject,
     PlaylistDAO& getPlaylistDAO() {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_playlistDao;
+    }
+    TrackLinkDao& getTrackLinkDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_trackLinkDao;
     }
     const DirectoryDAO& getDirectoryDAO() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -176,6 +181,7 @@ class TrackCollection : public QObject,
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
+    TrackLinkDao m_trackLinkDao;
 
     QSharedPointer<BaseTrackCache> m_pTrackSource;
 };
