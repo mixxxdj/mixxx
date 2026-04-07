@@ -26,45 +26,67 @@ LibremidiController::LibremidiController(const libremidi::input_port* inputPort,
         const libremidi::output_port* outputPort)
         : MidiController(getDeviceName(inputPort, outputPort)) {
     if (inputPort) {
-        m_pInputPort.emplace(*inputPort);
-        setInputDevice(true);
-        auto on_message = [this](const libremidi::message& m) {
-            auto status = m.bytes[0];
-            auto timestamp = mixxx::Duration::fromMillis(m.timestamp);
-
-            if ((status & 0xF8) == 0xF8) {
-                // Handle real-time MIDI messages at any time
-                receivedShortMessage(status, 0, 0, timestamp);
-                return;
-            }
-
-            bool is_sysex = status == 0xF0;
-            if (is_sysex) {
-                const auto* data = reinterpret_cast<const char*>(m.bytes.data());
-                receive(QByteArray::fromRawData(data, m.size()), timestamp);
-            } else {
-                // unsigned char channel = status & 0x0F;
-                unsigned char note = m.bytes[1];
-                unsigned char velocity = m.bytes[2];
-                receivedShortMessage(status, note, velocity, timestamp);
-            }
-        };
-
-        m_pInputDevice = libremidi::midi_in{
-                libremidi::input_configuration{
-                        .on_message = on_message,
-                }};
+        setInputPort(*inputPort);
     }
+
     if (outputPort) {
-        m_pOutputPort.emplace(*outputPort);
-        setOutputDevice(true);
-        m_pOutputDevice = libremidi::midi_out{};
+        setOutputPort(*outputPort);
     }
 }
 
 LibremidiController::~LibremidiController() {
     if (isOpen()) {
         close();
+    }
+}
+
+void LibremidiController::setInputPort(std::optional<libremidi::input_port> port) {
+    m_pInputPort = port;
+
+    if (m_pInputPort) {
+        setInputDevice(true);
+        m_pInputDevice = libremidi::midi_in{
+                libremidi::input_configuration{
+                        .on_message = [this](const libremidi::message& m) {
+                            this->onMessage(m);
+                        },
+                }};
+    } else {
+        m_pInputDevice.reset();
+        setInputDevice(false);
+    }
+}
+
+void LibremidiController::setOutputPort(std::optional<libremidi::output_port> port) {
+    m_pOutputPort = std::move(port);
+    if (port) {
+        m_pOutputDevice.emplace();
+        setOutputDevice(true);
+    } else {
+        m_pOutputDevice.reset();
+        setOutputDevice(false);
+    }
+}
+
+void LibremidiController::onMessage(const libremidi::message& m) {
+    auto status = m.bytes[0];
+    auto timestamp = mixxx::Duration::fromMillis(m.timestamp);
+
+    if ((status & 0xF8) == 0xF8) {
+        // Handle real-time MIDI messages at any time
+        receivedShortMessage(status, 0, 0, timestamp);
+        return;
+    }
+
+    bool is_sysex = status == 0xF0;
+    if (is_sysex) {
+        const auto* data = reinterpret_cast<const char*>(m.bytes.data());
+        receive(QByteArray::fromRawData(data, m.size()), timestamp);
+    } else {
+        // unsigned char channel = status & 0x0F;
+        unsigned char note = m.bytes[1];
+        unsigned char velocity = m.bytes[2];
+        receivedShortMessage(status, note, velocity, timestamp);
     }
 }
 

@@ -48,6 +48,9 @@ class LibremidiController : public MidiController {
             const libremidi::output_port* outputDevicePort);
     ~LibremidiController() override;
 
+    void setInputPort(std::optional<libremidi::input_port> port);
+    void setOutputPort(std::optional<libremidi::output_port> port);
+
     PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
         return PhysicalTransportProtocol::UNKNOWN;
     }
@@ -90,6 +93,8 @@ class LibremidiController : public MidiController {
     bool isPolling() const override {
         return false;
     }
+
+    void onMessage(const libremidi::message& m);
 
     std::optional<libremidi::midi_in> m_pInputDevice;
     std::optional<libremidi::midi_out> m_pOutputDevice;
