@@ -37,6 +37,7 @@
 #include "engine/enginemixer.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
@@ -47,6 +48,8 @@
 #include "test/mixxxdbtest.h"
 #include "test/mixxxtest.h"
 #include "test/soundsourceproviderregistration.h"
+#include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
@@ -958,7 +961,8 @@ TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy) {
             std::pair("grouping", ""),
             std::pair("year", "2011"),
             std::pair("trackNumber", "07"),
-            std::pair("trackTotal", "60")};
+            std::pair("trackTotal", "60"),
+            std::pair("key", "")};
 
     m_pJSEngine->globalObject().setProperty(
             "testedValues", m_pJSEngine->toScriptValue(expectedValues.keys()));
@@ -993,6 +997,322 @@ TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy) {
                 "expected value (expected: %2, actual: %3)")
                                                            .arg(property, expected, playerActual)
                                                            .toStdString();
+    }
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy_KeyNotation_keyChanged) {
+    ControlProxy keyNotationProxy(mixxx::library::prefs::kKeyNotationConfigKey);
+    loadTrackSync("id3-test-data/all.mp3");
+    TrackPointer pTrack = m_pPlayerManager->getDeck(0)->getLoadedTrack();
+    ASSERT_NE(pTrack, nullptr);
+
+    // Set a known key before connecting the signal.
+    Keys keys = KeyFactory::makeBasicKeys(
+            mixxx::track::io::key::ChromaticKey::C_MAJOR,
+            mixxx::track::io::key::Source::USER);
+    pTrack->setKeys(keys);
+    processEvents();
+
+    const auto* code =
+            "var key = undefined;"
+            "var player = engine.getPlayer('[Channel1]');"
+            "player.keyChanged.connect(newKey => {"
+            "    key = newKey;"
+            "});";
+    ASSERT_TRUE(evaluateAndAssert(code)) << "Evaluation error in test code";
+
+    const QMap<KeyUtils::KeyNotation, QString> expectedValues = {
+            {KeyUtils::KeyNotation::Custom, "C_MAJOR"},
+            {KeyUtils::KeyNotation::OpenKey, "1d"},
+            {KeyUtils::KeyNotation::Lancelot, "8B"},
+            {KeyUtils::KeyNotation::Traditional, "C"},
+            {KeyUtils::KeyNotation::ID3v2, "C"},
+    };
+    const QMap<mixxx::track::io::key::ChromaticKey, QString> customNotation = {
+            {mixxx::track::io::key::ChromaticKey::C_MAJOR, "C_MAJOR"},
+    };
+    KeyUtils::setNotation(customNotation);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    for (auto [keyNotation, expected] : expectedValues.asKeyValueRange()) {
+#else
+    for (auto it = expectedValues.constBegin(); it != expectedValues.constEnd(); ++it) {
+        const auto keyNotation = it.key();
+        const QString& expected = it.value();
+#endif
+        // Reset result so we can detect if the signal didn't fire
+        ASSERT_TRUE(evaluateAndAssert("key = undefined;"));
+
+        // Set the key notation and process events which
+        // should call the connected keyChanged handler.
+        keyNotationProxy.set(static_cast<double>(keyNotation));
+        processEvents();
+
+        QJSValue jsKey = evaluate("key");
+        EXPECT_FALSE(jsKey.isUndefined())
+                << "keyChanged signal was not fired when key notation changed to "
+                << static_cast<int>(keyNotation);
+
+        EXPECT_QSTRING_EQ(expected, jsKey.toString())
+                << QString("keyChanged signal wrong. KeyNotation=%1 expected=%2 actual=%3")
+                           .arg(static_cast<int>(keyNotation))
+                           .arg(expected, jsKey.toString())
+                           .toStdString();
+    }
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy_KeyNotation_Custom_keyChanged) {
+    // Test that changing the Custom key notation strings calls the connected slots.
+    //
+    // On OK/Apply, DlgPrefKey calls KeyUtils::setNotation and sets the key_notation CO.
+    // We test that calling both methods correctly updates the key in the proxy without
+    // ever changing the key notation away from KeyNotation::Custom.
+
+    ControlProxy keyNotationProxy(mixxx::library::prefs::kKeyNotationConfigKey);
+    loadTrackSync("id3-test-data/all.mp3");
+    TrackPointer pTrack = m_pPlayerManager->getDeck(0)->getLoadedTrack();
+    ASSERT_NE(pTrack, nullptr);
+
+    // Set a known key before connecting the signal.
+    Keys keys = KeyFactory::makeBasicKeys(
+            mixxx::track::io::key::ChromaticKey::C_MAJOR,
+            mixxx::track::io::key::Source::USER);
+    pTrack->setKeys(keys);
+    processEvents();
+
+    const auto* code =
+            "var key = undefined;"
+            "var player = engine.getPlayer('[Channel1]');"
+            "player.keyChanged.connect(newKey => {"
+            "    key = newKey;"
+            "});";
+    ASSERT_TRUE(evaluateAndAssert(code)) << "Evaluation error in test code";
+
+    // First update of Custom notation
+    const QMap<mixxx::track::io::key::ChromaticKey, QString> customNotationA = {
+            {mixxx::track::io::key::ChromaticKey::C_MAJOR, "CUSTOM_A"},
+    };
+    KeyUtils::setNotation(customNotationA);
+    keyNotationProxy.set(static_cast<double>(KeyUtils::KeyNotation::Custom));
+    processEvents();
+    EXPECT_QSTRING_EQ(evaluate("key").toString(), "CUSTOM_A");
+
+    // Reset the key so we can detect a failure in the second update
+    ASSERT_TRUE(evaluateAndAssert("key = undefined;"));
+
+    // Second update of Custom notation
+    const QMap<mixxx::track::io::key::ChromaticKey, QString> customNotationB = {
+            {mixxx::track::io::key::ChromaticKey::C_MAJOR, "CUSTOM_B"},
+    };
+    KeyUtils::setNotation(customNotationB);
+    keyNotationProxy.set(static_cast<double>(KeyUtils::KeyNotation::Custom));
+    processEvents();
+    EXPECT_QSTRING_EQ(evaluate("key").toString(), "CUSTOM_B");
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, JavascriptPlayerProxy_KeyNotation) {
+    // Test that all keys in all key notations are passed correctly
+    // through the JavascriptPlayerProxy into the JavaScript context.
+
+    ControlProxy keyNotationProxy(mixxx::library::prefs::kKeyNotationConfigKey);
+    loadTrackSync("id3-test-data/all.mp3");
+
+    // Get player reference. We'll repeatedly check player.key.
+    ASSERT_TRUE(evaluateAndAssert("var player = engine.getPlayer('[Channel1]');"));
+
+    using ChromaticKey = mixxx::track::io::key::ChromaticKey;
+    using KeyNotation = KeyUtils::KeyNotation;
+
+    struct TestCase {
+        ChromaticKey key;
+        KeyNotation notation;
+        QString expected;
+    };
+
+    // Prepare custom notation for the KeyNotation::Custom test cases
+    const QMap<ChromaticKey, QString> customNotation = {
+            {ChromaticKey::C_MAJOR, "C_MAJOR"},
+            {ChromaticKey::D_FLAT_MAJOR, "D_FLAT_MAJOR"},
+            {ChromaticKey::D_MAJOR, "D_MAJOR"},
+            {ChromaticKey::E_FLAT_MAJOR, "E_FLAT_MAJOR"},
+            {ChromaticKey::E_MAJOR, "E_MAJOR"},
+            {ChromaticKey::F_MAJOR, "F_MAJOR"},
+            {ChromaticKey::F_SHARP_MAJOR, "F_SHARP_MAJOR"},
+            {ChromaticKey::G_MAJOR, "G_MAJOR"},
+            {ChromaticKey::A_FLAT_MAJOR, "A_FLAT_MAJOR"},
+            {ChromaticKey::A_MAJOR, "A_MAJOR"},
+            {ChromaticKey::B_FLAT_MAJOR, "B_FLAT_MAJOR"},
+            {ChromaticKey::B_MAJOR, "B_MAJOR"},
+            {ChromaticKey::C_MINOR, "C_MINOR"},
+            {ChromaticKey::C_SHARP_MINOR, "C_SHARP_MINOR"},
+            {ChromaticKey::D_MINOR, "D_MINOR"},
+            {ChromaticKey::E_FLAT_MINOR, "E_FLAT_MINOR"},
+            {ChromaticKey::E_MINOR, "E_MINOR"},
+            {ChromaticKey::F_MINOR, "F_MINOR"},
+            {ChromaticKey::F_SHARP_MINOR, "F_SHARP_MINOR"},
+            {ChromaticKey::G_MINOR, "G_MINOR"},
+            {ChromaticKey::G_SHARP_MINOR, "G_SHARP_MINOR"},
+            {ChromaticKey::A_MINOR, "A_MINOR"},
+            {ChromaticKey::B_FLAT_MINOR, "B_FLAT_MINOR"},
+            {ChromaticKey::B_MINOR, "B_MINOR"},
+    };
+    KeyUtils::setNotation(customNotation);
+
+    const QList<TestCase> testCases = {
+            // Custom
+            {ChromaticKey::C_MAJOR, KeyNotation::Custom, "C_MAJOR"},
+            {ChromaticKey::D_FLAT_MAJOR, KeyNotation::Custom, "D_FLAT_MAJOR"},
+            {ChromaticKey::D_MAJOR, KeyNotation::Custom, "D_MAJOR"},
+            {ChromaticKey::E_FLAT_MAJOR, KeyNotation::Custom, "E_FLAT_MAJOR"},
+            {ChromaticKey::E_MAJOR, KeyNotation::Custom, "E_MAJOR"},
+            {ChromaticKey::F_MAJOR, KeyNotation::Custom, "F_MAJOR"},
+            {ChromaticKey::F_SHARP_MAJOR, KeyNotation::Custom, "F_SHARP_MAJOR"},
+            {ChromaticKey::G_MAJOR, KeyNotation::Custom, "G_MAJOR"},
+            {ChromaticKey::A_FLAT_MAJOR, KeyNotation::Custom, "A_FLAT_MAJOR"},
+            {ChromaticKey::A_MAJOR, KeyNotation::Custom, "A_MAJOR"},
+            {ChromaticKey::B_FLAT_MAJOR, KeyNotation::Custom, "B_FLAT_MAJOR"},
+            {ChromaticKey::B_MAJOR, KeyNotation::Custom, "B_MAJOR"},
+            {ChromaticKey::C_MINOR, KeyNotation::Custom, "C_MINOR"},
+            {ChromaticKey::C_SHARP_MINOR, KeyNotation::Custom, "C_SHARP_MINOR"},
+            {ChromaticKey::D_MINOR, KeyNotation::Custom, "D_MINOR"},
+            {ChromaticKey::E_FLAT_MINOR, KeyNotation::Custom, "E_FLAT_MINOR"},
+            {ChromaticKey::E_MINOR, KeyNotation::Custom, "E_MINOR"},
+            {ChromaticKey::F_MINOR, KeyNotation::Custom, "F_MINOR"},
+            {ChromaticKey::F_SHARP_MINOR, KeyNotation::Custom, "F_SHARP_MINOR"},
+            {ChromaticKey::G_MINOR, KeyNotation::Custom, "G_MINOR"},
+            {ChromaticKey::G_SHARP_MINOR, KeyNotation::Custom, "G_SHARP_MINOR"},
+            {ChromaticKey::A_MINOR, KeyNotation::Custom, "A_MINOR"},
+            {ChromaticKey::B_FLAT_MINOR, KeyNotation::Custom, "B_FLAT_MINOR"},
+            {ChromaticKey::B_MINOR, KeyNotation::Custom, "B_MINOR"},
+
+            // Lancelot
+            {ChromaticKey::G_SHARP_MINOR, KeyNotation::Lancelot, "1A"},
+            {ChromaticKey::B_MAJOR, KeyNotation::Lancelot, "1B"},
+            {ChromaticKey::E_FLAT_MINOR, KeyNotation::Lancelot, "2A"},
+            {ChromaticKey::F_SHARP_MAJOR, KeyNotation::Lancelot, "2B"},
+            {ChromaticKey::B_FLAT_MINOR, KeyNotation::Lancelot, "3A"},
+            {ChromaticKey::D_FLAT_MAJOR, KeyNotation::Lancelot, "3B"},
+            {ChromaticKey::F_MINOR, KeyNotation::Lancelot, "4A"},
+            {ChromaticKey::A_FLAT_MAJOR, KeyNotation::Lancelot, "4B"},
+            {ChromaticKey::C_MINOR, KeyNotation::Lancelot, "5A"},
+            {ChromaticKey::E_FLAT_MAJOR, KeyNotation::Lancelot, "5B"},
+            {ChromaticKey::G_MINOR, KeyNotation::Lancelot, "6A"},
+            {ChromaticKey::B_FLAT_MAJOR, KeyNotation::Lancelot, "6B"},
+            {ChromaticKey::D_MINOR, KeyNotation::Lancelot, "7A"},
+            {ChromaticKey::F_MAJOR, KeyNotation::Lancelot, "7B"},
+            {ChromaticKey::A_MINOR, KeyNotation::Lancelot, "8A"},
+            {ChromaticKey::C_MAJOR, KeyNotation::Lancelot, "8B"},
+            {ChromaticKey::E_MINOR, KeyNotation::Lancelot, "9A"},
+            {ChromaticKey::G_MAJOR, KeyNotation::Lancelot, "9B"},
+            {ChromaticKey::B_MINOR, KeyNotation::Lancelot, "10A"},
+            {ChromaticKey::D_MAJOR, KeyNotation::Lancelot, "10B"},
+            {ChromaticKey::F_SHARP_MINOR, KeyNotation::Lancelot, "11A"},
+            {ChromaticKey::A_MAJOR, KeyNotation::Lancelot, "11B"},
+            {ChromaticKey::C_SHARP_MINOR, KeyNotation::Lancelot, "12A"},
+            {ChromaticKey::E_MAJOR, KeyNotation::Lancelot, "12B"},
+
+            // OpenKey
+            {ChromaticKey::A_MINOR, KeyNotation::OpenKey, "1m"},
+            {ChromaticKey::G_MAJOR, KeyNotation::OpenKey, "2d"},
+            {ChromaticKey::E_MINOR, KeyNotation::OpenKey, "2m"},
+            {ChromaticKey::D_MAJOR, KeyNotation::OpenKey, "3d"},
+            {ChromaticKey::B_MINOR, KeyNotation::OpenKey, "3m"},
+            {ChromaticKey::A_MAJOR, KeyNotation::OpenKey, "4d"},
+            {ChromaticKey::F_SHARP_MINOR, KeyNotation::OpenKey, "4m"},
+            {ChromaticKey::E_MAJOR, KeyNotation::OpenKey, "5d"},
+            {ChromaticKey::C_SHARP_MINOR, KeyNotation::OpenKey, "5m"},
+            {ChromaticKey::B_MAJOR, KeyNotation::OpenKey, "6d"},
+            {ChromaticKey::G_SHARP_MINOR, KeyNotation::OpenKey, "6m"},
+            {ChromaticKey::F_SHARP_MAJOR, KeyNotation::OpenKey, "7d"},
+            {ChromaticKey::E_FLAT_MINOR, KeyNotation::OpenKey, "7m"},
+            {ChromaticKey::D_FLAT_MAJOR, KeyNotation::OpenKey, "8d"},
+            {ChromaticKey::B_FLAT_MINOR, KeyNotation::OpenKey, "8m"},
+            {ChromaticKey::A_FLAT_MAJOR, KeyNotation::OpenKey, "9d"},
+            {ChromaticKey::F_MINOR, KeyNotation::OpenKey, "9m"},
+            {ChromaticKey::E_FLAT_MAJOR, KeyNotation::OpenKey, "10d"},
+            {ChromaticKey::C_MINOR, KeyNotation::OpenKey, "10m"},
+            {ChromaticKey::B_FLAT_MAJOR, KeyNotation::OpenKey, "11d"},
+            {ChromaticKey::G_MINOR, KeyNotation::OpenKey, "11m"},
+            {ChromaticKey::F_MAJOR, KeyNotation::OpenKey, "12d"},
+            {ChromaticKey::D_MINOR, KeyNotation::OpenKey, "12m"},
+
+            // Traditional; these are the UTF-8-sensitive ones
+            {ChromaticKey::C_MAJOR, KeyNotation::Traditional, "C"},
+            {ChromaticKey::D_FLAT_MAJOR, KeyNotation::Traditional, "D♭"},
+            {ChromaticKey::D_MAJOR, KeyNotation::Traditional, "D"},
+            {ChromaticKey::E_FLAT_MAJOR, KeyNotation::Traditional, "E♭"},
+            {ChromaticKey::E_MAJOR, KeyNotation::Traditional, "E"},
+            {ChromaticKey::F_MAJOR, KeyNotation::Traditional, "F"},
+            {ChromaticKey::F_SHARP_MAJOR, KeyNotation::Traditional, "F♯/G♭"},
+            {ChromaticKey::G_MAJOR, KeyNotation::Traditional, "G"},
+            {ChromaticKey::A_FLAT_MAJOR, KeyNotation::Traditional, "A♭"},
+            {ChromaticKey::A_MAJOR, KeyNotation::Traditional, "A"},
+            {ChromaticKey::B_FLAT_MAJOR, KeyNotation::Traditional, "B♭"},
+            {ChromaticKey::B_MAJOR, KeyNotation::Traditional, "B"},
+            {ChromaticKey::C_MINOR, KeyNotation::Traditional, "Cm"},
+            {ChromaticKey::C_SHARP_MINOR, KeyNotation::Traditional, "C♯m"},
+            {ChromaticKey::D_MINOR, KeyNotation::Traditional, "Dm"},
+            {ChromaticKey::E_FLAT_MINOR, KeyNotation::Traditional, "D♯m/E♭m"},
+            {ChromaticKey::E_MINOR, KeyNotation::Traditional, "Em"},
+            {ChromaticKey::F_MINOR, KeyNotation::Traditional, "Fm"},
+            {ChromaticKey::F_SHARP_MINOR, KeyNotation::Traditional, "F♯m"},
+            {ChromaticKey::G_MINOR, KeyNotation::Traditional, "Gm"},
+            {ChromaticKey::G_SHARP_MINOR, KeyNotation::Traditional, "G♯m"},
+            {ChromaticKey::A_MINOR, KeyNotation::Traditional, "Am"},
+            {ChromaticKey::B_FLAT_MINOR, KeyNotation::Traditional, "B♭m"},
+            {ChromaticKey::B_MINOR, KeyNotation::Traditional, "Bm"},
+
+            // ID3v2
+            {ChromaticKey::C_MAJOR, KeyNotation::ID3v2, "C"},
+            {ChromaticKey::D_FLAT_MAJOR, KeyNotation::ID3v2, "Db"},
+            {ChromaticKey::D_MAJOR, KeyNotation::ID3v2, "D"},
+            {ChromaticKey::E_FLAT_MAJOR, KeyNotation::ID3v2, "Eb"},
+            {ChromaticKey::E_MAJOR, KeyNotation::ID3v2, "E"},
+            {ChromaticKey::F_MAJOR, KeyNotation::ID3v2, "F"},
+            {ChromaticKey::F_SHARP_MAJOR, KeyNotation::ID3v2, "F#"},
+            {ChromaticKey::G_MAJOR, KeyNotation::ID3v2, "G"},
+            {ChromaticKey::A_FLAT_MAJOR, KeyNotation::ID3v2, "Ab"},
+            {ChromaticKey::A_MAJOR, KeyNotation::ID3v2, "A"},
+            {ChromaticKey::B_FLAT_MAJOR, KeyNotation::ID3v2, "Bb"},
+            {ChromaticKey::B_MAJOR, KeyNotation::ID3v2, "B"},
+            {ChromaticKey::C_MINOR, KeyNotation::ID3v2, "Cm"},
+            {ChromaticKey::C_SHARP_MINOR, KeyNotation::ID3v2, "C#m"},
+            {ChromaticKey::D_MINOR, KeyNotation::ID3v2, "Dm"},
+            {ChromaticKey::E_FLAT_MINOR, KeyNotation::ID3v2, "Ebm"},
+            {ChromaticKey::E_MINOR, KeyNotation::ID3v2, "Em"},
+            {ChromaticKey::F_MINOR, KeyNotation::ID3v2, "Fm"},
+            {ChromaticKey::F_SHARP_MINOR, KeyNotation::ID3v2, "F#m"},
+            {ChromaticKey::G_MINOR, KeyNotation::ID3v2, "Gm"},
+            {ChromaticKey::G_SHARP_MINOR, KeyNotation::ID3v2, "G#m"},
+            {ChromaticKey::A_MINOR, KeyNotation::ID3v2, "Am"},
+            {ChromaticKey::B_FLAT_MINOR, KeyNotation::ID3v2, "Bbm"},
+            {ChromaticKey::B_MINOR, KeyNotation::ID3v2, "Bm"},
+    };
+
+    TrackPointer pTrack = m_pPlayerManager->getDeck(0)->getLoadedTrack();
+    ASSERT_NE(pTrack, nullptr);
+
+    for (const TestCase& testCase : testCases) {
+        // Update '[Library]key_notation'
+        keyNotationProxy.set(static_cast<double>(testCase.notation));
+
+        // Set the tracks keys to trigger Track::keyChanged
+        // which updates the JavascriptPlayerProxy.
+        Keys keys = KeyFactory::makeBasicKeys(testCase.key, mixxx::track::io::key::Source::USER);
+        pTrack->setKeys(keys);
+        processEvents();
+
+        QJSValue jsKey = evaluate("player.key");
+        ASSERT_FALSE(jsKey.isUndefined())
+                << "JS error evaluating player.key: "
+                << jsKey.toString().toStdString();
+
+        EXPECT_QSTRING_EQ(jsKey.toString(), testCase.expected)
+                << QString("ChromaticKey=%1 KeyNotation=%2 expected=%3 actual=%4")
+                           .arg(static_cast<int>(testCase.key))
+                           .arg(static_cast<int>(testCase.notation))
+                           .arg(testCase.expected, jsKey.toString())
+                           .toStdString();
     }
 }
 

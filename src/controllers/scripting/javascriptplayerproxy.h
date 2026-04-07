@@ -1,7 +1,7 @@
 #pragma once
 
+#include "control/controlproxy.h"
 #include "mixer/basetrackplayer.h"
-#include "track/track.h"
 
 #define PROPERTY_IMPL_GETTER(NAMESPACE, TYPE, NAME, GETTER) \
     TYPE NAMESPACE::GETTER() const {                        \
@@ -24,6 +24,8 @@ class JavascriptPlayerProxy : public QObject {
     Q_PROPERTY(QString year READ getYear NOTIFY yearChanged)
     Q_PROPERTY(QString trackNumber READ getTrackNumber NOTIFY trackNumberChanged)
     Q_PROPERTY(QString trackTotal READ getTrackTotal NOTIFY trackTotalChanged)
+    Q_PROPERTY(QString key READ getKeyText NOTIFY keyChanged)
+
   public:
     explicit JavascriptPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent);
 
@@ -37,6 +39,7 @@ class JavascriptPlayerProxy : public QObject {
     QString getYear() const;
     QString getTrackNumber() const;
     QString getTrackTotal() const;
+    QString getKeyText() const;
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
@@ -54,9 +57,16 @@ class JavascriptPlayerProxy : public QObject {
     void yearChanged(QString newYear);
     void trackNumberChanged(QString newTrackNumber);
     void trackTotalChanged(QString newTrackTotal);
+    void keyChanged(QString newKey);
+
+  private slots:
+    // Track::keyChanged has no arguments,
+    // so we bridge them with dedicated slots that re-read the value.
+    void slotKeyChanged();
 
   protected:
     void disconnectTrack();
     QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
+    ControlProxy m_keyNotation;
 };

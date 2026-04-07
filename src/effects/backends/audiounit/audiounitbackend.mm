@@ -99,6 +99,14 @@ class AudioUnitBackend : public EffectsBackend {
 
         dispatch_group_t group = dispatch_group_create();
 
+        // Limit concurrent manifest loads to avoid exhausting the GCD thread
+        // pool. Each manifest load blocks its thread in waitForAudioUnit for
+        // up to 2 seconds, so without a limit, having 64+ AUs would hit
+        // the macOS dispatch thread soft limit and crash the process.
+        const long MAX_CONCURRENT_LOADS = 8;
+        dispatch_semaphore_t semaphore =
+                dispatch_semaphore_create(MAX_CONCURRENT_LOADS);
+
         for (AVAudioUnitComponent* component in components) {
             qDebug() << "Found audio unit" << [component name];
 
@@ -116,6 +124,8 @@ class AudioUnitBackend : public EffectsBackend {
                     DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
             dispatch_group_async(group, queue, ^{
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
                 // Load manifest (potentially slow blocking operation)
                 auto manifest = EffectManifestPointer(
                         new AudioUnitManifest(effectId, component));
@@ -123,6 +133,9 @@ class AudioUnitBackend : public EffectsBackend {
                 // Register manifest
                 auto locker = lockMutex(&m_mutex);
                 m_manifestsById[effectId] = manifest;
+                locker.unlock();
+
+                dispatch_semaphore_signal(semaphore);
             });
         }
 

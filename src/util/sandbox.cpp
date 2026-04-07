@@ -138,7 +138,11 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
         if (pFileInfo->isFile()) {
             result = QFileDialog::getOpenFileName(nullptr, title, location);
         } else if (pFileInfo->isDir()) {
-            result = QFileDialog::getExistingDirectory(nullptr, title, location);
+            result = QFileDialog::getExistingDirectory(
+                    nullptr,
+                    title,
+                    location,
+                    QFileDialog::ShowDirsOnly);
         }
 
         if (result.isNull()) {
@@ -483,7 +487,8 @@ QString Sandbox::migrateOldSettings() {
     QString result = QFileDialog::getExistingDirectory(
             nullptr,
             title,
-            legacySettingsPath);
+            legacySettingsPath,
+            QFileDialog::ShowDirsOnly);
     if (result != legacySettingsPath) {
         qInfo() << "Sandbox::migrateOldSettings: User declined to migrate old settings from"
                 << legacySettingsPath << "User selected" << result;

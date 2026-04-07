@@ -640,15 +640,23 @@
 * Fix "dataChanged() called with an invalid index range" warning
   [#15937](https://github.com/mixxxdj/mixxx/pull/15937)
   [#14610](https://github.com/mixxxdj/mixxx/issues/14610)
+* History: allow track file export [#16074](https://github.com/mixxxdj/mixxx/pull/16074)
+* History: prevent deletion of current history after purging tracks [#15991](https://github.com/mixxxdj/mixxx/pull/15991)
+* Tracks: improve performance when restoring large track selections [#15973](https://github.com/mixxxdj/mixxx/pull/15973)
 
 ### Effects
 
 * White Noise: remove DC offset  [#15979](https://github.com/mixxxdj/mixxx/pull/15979)
 * White Noise: improve gain responds [#15949](https://github.com/mixxxdj/mixxx/pull/15949)
-* Echo: fix out of bounds read [#15985](https://github.com/mixxxdj/mixxx/pull/15985)
+* Echo: fix distortion bug
+  [#15985](https://github.com/mixxxdj/mixxx/pull/15985)
+  [#15835](https://github.com/mixxxdj/mixxx/issues/15835)
+* Echo: fix ramping of the send and feedback parameters [#16006](https://github.com/mixxxdj/mixxx/pull/16006)
 * QuickEffect: fix crackling noise when switching
   [#15796](https://github.com/mixxxdj/mixxx/pull/15796)
   [#15794](https://github.com/mixxxdj/mixxx/issues/15794)
+* Glitch: remove unnecessary cast to integer [#16068](https://github.com/mixxxdj/mixxx/pull/16068)
+* Reverb: fix ramping of the send parameter [#16001](https://github.com/mixxxdj/mixxx/pull/16001)
 
 ### Controller Mappings
 
@@ -663,16 +671,18 @@
   [#15945](https://github.com/mixxxdj/mixxx/pull/15945)
 * Traktor S4Mk2: check for deck undefined [#14445](https://github.com/mixxxdj/mixxx/pull/14445)
 
-### Controller Backend
-
-* Restore common-hid-packet-parser global symbol exceptions for eslint [#15961](https://github.com/mixxxdj/mixxx/pull/15961)
-
 ### Engine
 
-* Fix scratching with keylock enabled and mapping using scracht2 [#15845](https://github.com/mixxxdj/mixxx/pull/15845)
+* Fix scratching with keylock enabled and mapping using scratch2 [#15845](https://github.com/mixxxdj/mixxx/pull/15845)
 * AudioUnit: fix crash due to off-by-one error in parameter syncing [#15919](https://github.com/mixxxdj/mixxx/pull/15919)
-* FX units: resolve issue preventing use on all samplers [#15971](https://github.com/mixxxdj/mixxx/pull/15971)
-* AutoDJ: fix wrong use of [Auto DJ] -> [AutoDJ] [#16009](https://github.com/mixxxdj/mixxx/pull/16009)
+* AudioUnit: fix startup crash by loading out-of-process [#16106](https://github.com/mixxxdj/mixxx/pull/16106)
+* FX units: resolve issue preventing use on all samplers
+  [#15971](https://github.com/mixxxdj/mixxx/pull/15971)
+  [#15799](https://github.com/mixxxdj/mixxx/issues/15799)
+* Fix false positive "First sound has been moved!" warnings log message [#16054](https://github.com/mixxxdj/mixxx/pull/16054)
+* Beats: fix rare off-by-one beat issue with quantize and sync
+  [#13262](https://github.com/mixxxdj/mixxx/pull/13262)
+  [#16086](https://github.com/mixxxdj/mixxx/pull/16086)
 
 ### Preferences
 
@@ -693,23 +703,18 @@
 * Add Flatpak packaging files
   [#15695](https://github.com/mixxxdj/mixxx/pull/15695)
   [#15922](https://github.com/mixxxdj/mixxx/pull/15922)
+  [#15935](https://github.com/mixxxdj/mixxx/pull/15935)
 * Fail early if not running from Visual Studio environment [#14623](https://github.com/mixxxdj/mixxx/pull/14623)
 * Make Debian non-free optional [#15895](https://github.com/mixxxdj/mixxx/pull/15895)
 * Debian: remove 'qml6-module-qtquick-nativestyle [#15771](https://github.com/mixxxdj/mixxx/pull/15771)
+* Ubuntu: retire Plucky Puffin 25.04 [#15926](https://github.com/mixxxdj/mixxx/pull/15926)
 
 ### Miscellaneous
 
-* Bump actions/cache from 4 to 5 [#15756](https://github.com/mixxxdj/mixxx/pull/15756)
-* Bump actions/upload-artifact from 5.0.0 to 6.0.0 [#15755](https://github.com/mixxxdj/mixxx/pull/15755)
-* Bump azure/trusted-signing-action from 0.5.10 to 1.0.0 [#15884](https://github.com/mixxxdj/mixxx/pull/15884)
-* Bump jwlawson/actions-setup-cmake from 2.0 to 2.1 [#15907](https://github.com/mixxxdj/mixxx/pull/15907)
 * Fix `mixxx-test` build to find `mad.h` [#15803](https://github.com/mixxxdj/mixxx/pull/15803)
-* Disable GitHub cache for VCPKG buildenv to save buildtime [#15981](https://github.com/mixxxdj/mixxx/pull/15981)
-* CI: fix issues related to workflow refactor into modular actions [#15750](https://github.com/mixxxdj/mixxx/pull/15750)
-* (Belated) Happy New Year 2026! [#15852](https://github.com/mixxxdj/mixxx/pull/15852)
-* Retire Ubuntu Plucky Puffin 25.04 [#15926](https://github.com/mixxxdj/mixxx/pull/15926)
-* chore(deps): bump azure/trusted-signing-action from 1.0.0 to 1.1.0 [#15990](https://github.com/mixxxdj/mixxx/pull/15990)
-* Num deck streamline [#14112](https://github.com/mixxxdj/mixxx/pull/14112)
+* Num deck streamline
+  [#14112](https://github.com/mixxxdj/mixxx/pull/14112)
+  [#16009](https://github.com/mixxxdj/mixxx/pull/16009)
 
 ## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (2025-12-14)
 

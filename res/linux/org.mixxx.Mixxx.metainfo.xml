@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.7.0" type="development" date="2026-02-23" timestamp="1771867075">
+    <release version="2.7.0" type="development" date="2026-03-07" timestamp="1772924004">
       <description>
 </description>
     </release>
-    <release version="2.6.0" type="development" date="2026-02-23" timestamp="1771867075">
+    <release version="2.6.0" type="development" date="2026-03-07" timestamp="1772924004">
       <description>
  <p>
   STEM file support
@@ -1747,7 +1747,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-02-23" timestamp="1771867075">
+    <release version="2.5.5" type="development" date="2026-03-07" timestamp="1772924004">
       <description>
  <p>
   Library
@@ -1773,6 +1773,18 @@
    #15937
    #14610
   </li>
+  <li>
+   History: allow track file export
+   #16074
+  </li>
+  <li>
+   History: prevent deletion of current history after purging tracks
+   #15991
+  </li>
+  <li>
+   Tracks: improve performance when restoring large track selections
+   #15973
+  </li>
  </ul>
  <p>
   Effects
@@ -1787,13 +1799,26 @@
    #15949
   </li>
   <li>
-   Echo: fix out of bounds read
+   Echo: fix distortion bug
    #15985
+   #15835
+  </li>
+  <li>
+   Echo: fix ramping of the send and feedback parameters
+   #16006
   </li>
   <li>
    QuickEffect: fix crackling noise when switching
    #15796
    #15794
+  </li>
+  <li>
+   Glitch: remove unnecessary cast to integer
+   #16068
+  </li>
+  <li>
+   Reverb: fix ramping of the send parameter
+   #16001
   </li>
  </ul>
  <p>
@@ -1825,20 +1850,11 @@
   </li>
  </ul>
  <p>
-  Controller Backend
- </p>
- <ul>
-  <li>
-   Restore common-hid-packet-parser global symbol exceptions for eslint
-   #15961
-  </li>
- </ul>
- <p>
   Engine
  </p>
  <ul>
   <li>
-   Fix scratching with keylock enabled and mapping using scracht2
+   Fix scratching with keylock enabled and mapping using scratch2
    #15845
   </li>
   <li>
@@ -1846,12 +1862,22 @@
    #15919
   </li>
   <li>
-   FX units: resolve issue preventing use on all samplers
-   #15971
+   AudioUnit: fix startup crash by loading out-of-process
+   #16106
   </li>
   <li>
-   AutoDJ: fix wrong use of [Auto DJ] -&gt; [AutoDJ]
-   #16009
+   FX units: resolve issue preventing use on all samplers
+   #15971
+   #15799
+  </li>
+  <li>
+   Fix false positive "First sound has been moved!" warnings log message
+   #16054
+  </li>
+  <li>
+   Beats: fix rare off-by-one beat issue with quantize and sync
+   #13262
+   #16086
   </li>
  </ul>
  <p>
@@ -1890,6 +1916,7 @@
    Add Flatpak packaging files
    #15695
    #15922
+   #15935
   </li>
   <li>
    Fail early if not running from Visual Studio environment
@@ -1903,27 +1930,15 @@
    Debian: remove 'qml6-module-qtquick-nativestyle
    #15771
   </li>
+  <li>
+   Ubuntu: retire Plucky Puffin 25.04
+   #15926
+  </li>
  </ul>
  <p>
   Miscellaneous
  </p>
  <ul>
-  <li>
-   Bump actions/cache from 4 to 5
-   #15756
-  </li>
-  <li>
-   Bump actions/upload-artifact from 5.0.0 to 6.0.0
-   #15755
-  </li>
-  <li>
-   Bump azure/trusted-signing-action from 0.5.10 to 1.0.0
-   #15884
-  </li>
-  <li>
-   Bump jwlawson/actions-setup-cmake from 2.0 to 2.1
-   #15907
-  </li>
   <li>
    Fix
    mixxx-test
@@ -1932,28 +1947,9 @@
    #15803
   </li>
   <li>
-   Disable GitHub cache for VCPKG buildenv to save buildtime
-   #15981
-  </li>
-  <li>
-   CI: fix issues related to workflow refactor into modular actions
-   #15750
-  </li>
-  <li>
-   (Belated) Happy New Year 2026!
-   #15852
-  </li>
-  <li>
-   Retire Ubuntu Plucky Puffin 25.04
-   #15926
-  </li>
-  <li>
-   chore(deps): bump azure/trusted-signing-action from 1.0.0 to 1.1.0
-   #15990
-  </li>
-  <li>
    Num deck streamline
    #14112
+   #16009
   </li>
  </ul>
 </description>
