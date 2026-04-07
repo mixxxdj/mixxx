@@ -4,30 +4,6 @@
 
 #include "controllers/midi/midicontroller.h"
 
-// Note:
-// A standard Midi device runs at 31.25 kbps, with 10 bits / byte
-// 1 byte / 320 microseconds
-// a usual Midi message has 3 byte which results to
-// 1042.6 messages per second
-//
-// The MIDI over IEEE-1394:
-// http://www.midi.org/techspecs/rp27v10spec%281394%29.pdf
-// which is also used for USB defines 3 speeds:
-// 1 byte / 320 microseconds
-// 2 bytes / 320 microseconds
-// 3 bytes / 320 microseconds
-// which results in up to 3125 messages per second
-// if we assume normal 3 Byte messages.
-//
-// For instants the SCS.1d, uses the 3 x speed
-//
-// Due to a bug Mixxx completely stops responding to the controller
-// if more than this number of messages queue up. Don't lower this (much.)
-// The SCS.1d a 3x Speed device
-// accumulated 500 messages in a single poll during stress-testing.
-// A midi message contains 1 .. 4 bytes.
-// a 1024 messages buffer will buffer ~327 ms Midi-Stream
-
 // String to display for no MIDI devices present
 #define MIXXX_LIBREMIDI_NO_DEVICE_STRING "None"
 
