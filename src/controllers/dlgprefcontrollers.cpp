@@ -1,9 +1,5 @@
 #include "controllers/dlgprefcontrollers.h"
 
-#include <qcombobox.h>
-#include <qlogging.h>
-#include <qtreewidget.h>
-
 #include "control/controlproxy.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
@@ -172,24 +168,24 @@ QUrl DlgPrefControllers::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
-bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
+bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* pClickedItem) {
     DlgPrefController* pControllerDlg = nullptr;
 
     for (const auto& [_, pair] : m_controllerMap) {
-        if (pair.second == clickedItem) {
+        if (pair.second == pClickedItem) {
             pControllerDlg = pair.first;
         }
     }
 
     if (pControllerDlg) {
         const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
-                clickedItem->text(0);
+                pClickedItem->text(0);
         m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
         return true;
-    } else if (clickedItem == m_pControllersRootItem) {
+    } else if (pClickedItem == m_pControllersRootItem) {
         // Switch to the root page and expand the controllers tree item.
-        m_pDlgPreferences->expandTreeItem(clickedItem);
-        const QString pageTitle = clickedItem->text(0);
+        m_pDlgPreferences->expandTreeItem(pClickedItem);
+        const QString pageTitle = pClickedItem->text(0);
         m_pDlgPreferences->switchToPage(pageTitle, this);
         return true;
     }

@@ -12,18 +12,18 @@
 class LibremidiEnumerator : public MidiEnumerator {
     Q_OBJECT
   public:
-    LibremidiEnumerator(UserSettingsPointer pConfig, ControllerManager* manager);
+    LibremidiEnumerator(UserSettingsPointer pConfig, ControllerManager* pControllerManager);
 
     QList<Controller*> queryDevices() override;
 
   signals:
-    void deviceAdded(Controller* controller);
-    void deviceRemoved(Controller* controller);
-    void deviceInputAdded(Controller* controller);
+    void deviceAdded(Controller* pController);
+    void deviceRemoved(Controller* pController);
+    void deviceInputAdded(Controller* pController);
 
   private:
-    Controller* addDevice(const libremidi::input_port* inputPort,
-            const libremidi::output_port* outputPort);
+    Controller* addDevice(const libremidi::input_port* pInputPort,
+            const libremidi::output_port* pOutputPort);
     void inputAdded(const libremidi::input_port& port, bool notify);
     void inputRemoved(const libremidi::input_port& port);
     void outputAdded(const libremidi::output_port& port, bool notify);
@@ -33,7 +33,7 @@ class LibremidiEnumerator : public MidiEnumerator {
     std::vector<std::unique_ptr<LibremidiController>> m_devices;
     UserSettingsPointer m_pConfig;
     ControllerManager* m_pControllerManager;
-    mutable QMutex m_mutex;
+    std::mutex m_mutex;
 };
 
 // For testing.

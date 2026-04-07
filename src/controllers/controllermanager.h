@@ -60,7 +60,7 @@ class ControllerManager : public QObject {
             bool bEnabled);
     void slotAddDevice(Controller* pController);
     void slotRemoveDevice(Controller* pController);
-    void slotSetUpDevice(Controller* controller);
+    void slotSetUpDevice(Controller* pController);
 
   private slots:
     /// Perform initialization that should be delayed until the ControllerManager

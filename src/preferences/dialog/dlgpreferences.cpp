@@ -1,7 +1,5 @@
 #include "preferences/dialog/dlgpreferences.h"
 
-#include <qwidget.h>
-
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
@@ -517,9 +515,9 @@ DlgPreferencePage* DlgPreferences::currentPage() {
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
-    QWidget* scrollArea = pWidget->parentWidget()->parentWidget();
-    m_allPages.removeAt(pagesWidget->indexOf(scrollArea));
-    pagesWidget->removeWidget(scrollArea);
+    QWidget* pScrollArea = pWidget->parentWidget()->parentWidget();
+    m_allPages.removeAt(pagesWidget->indexOf(pScrollArea));
+    pagesWidget->removeWidget(pScrollArea);
 }
 
 void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {

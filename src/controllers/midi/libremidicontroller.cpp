@@ -1,7 +1,5 @@
 #include "controllers/midi/libremidicontroller.h"
 
-#include <qstringview.h>
-
 #include <libremidi/libremidi.hpp>
 
 #include "controllers/midi/midiutils.h"
@@ -10,27 +8,27 @@
 
 namespace {
 const QString kUnknownControllerName = QStringLiteral("Unknown LibremidiController");
-const QString getDeviceName(const libremidi::input_port* input,
-        const libremidi::output_port* output) {
-    if (input) {
-        return QString::fromLocal8Bit(input->port_name);
+const QString getDeviceName(const libremidi::input_port* pInput,
+        const libremidi::output_port* pOutput) {
+    if (pInput) {
+        return QString::fromLocal8Bit(pInput->port_name);
     }
-    if (output) {
-        return QString::fromLocal8Bit(output->port_name);
+    if (pOutput) {
+        return QString::fromLocal8Bit(pOutput->port_name);
     }
     return kUnknownControllerName;
 }
 } // namespace
 
-LibremidiController::LibremidiController(const libremidi::input_port* inputPort,
-        const libremidi::output_port* outputPort)
-        : MidiController(getDeviceName(inputPort, outputPort)) {
-    if (inputPort) {
-        setInputPort(*inputPort);
+LibremidiController::LibremidiController(const libremidi::input_port* pInputPort,
+        const libremidi::output_port* pOutputPort)
+        : MidiController(getDeviceName(pInputPort, pOutputPort)) {
+    if (pInputPort) {
+        setInputPort(*pInputPort);
     }
 
-    if (outputPort) {
-        setOutputPort(*outputPort);
+    if (pOutputPort) {
+        setOutputPort(*pOutputPort);
     }
 }
 
@@ -80,8 +78,8 @@ void LibremidiController::onMessage(const libremidi::message& m) {
 
     bool is_sysex = status == 0xF0;
     if (is_sysex) {
-        const auto* data = reinterpret_cast<const char*>(m.bytes.data());
-        receive(QByteArray::fromRawData(data, m.size()), timestamp);
+        const auto* pData = reinterpret_cast<const char*>(m.bytes.data());
+        receive(QByteArray::fromRawData(pData, m.size()), timestamp);
     } else {
         // unsigned char channel = status & 0x0F;
         unsigned char note = m.bytes[1];

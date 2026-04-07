@@ -20,8 +20,8 @@ class LibremidiController : public MidiController {
     friend class LibremidiEnumerator;
 
   public:
-    LibremidiController(const libremidi::input_port* inputDevicePort,
-            const libremidi::output_port* outputDevicePort);
+    LibremidiController(const libremidi::input_port* pInputPort,
+            const libremidi::output_port* pOutputPort);
     ~LibremidiController() override;
 
     void setInputPort(std::optional<libremidi::input_port> port);
