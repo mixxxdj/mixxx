@@ -137,6 +137,7 @@ void LibremidiEnumerator::inputAdded(const libremidi::input_port& inputPort, boo
         QString outputName = device->m_pOutputPort->port_name.c_str();
         if (libremidiShouldLinkInputToOutput(inputName, outputName)) {
             device->setInputPort(inputPort);
+            emit deviceInputAdded(device);
             return;
         }
     }
@@ -247,6 +248,10 @@ LibremidiEnumerator::LibremidiEnumerator(UserSettingsPointer pConfig, Controller
             &LibremidiEnumerator::deviceRemoved,
             manager,
             &ControllerManager::slotRemoveDevice);
+    connect(this,
+            &LibremidiEnumerator::deviceInputAdded,
+            manager,
+            &ControllerManager::slotSetUpDevice);
 
     m_observer = libremidi::observer{libremidi::observer_configuration{
             .input_added =

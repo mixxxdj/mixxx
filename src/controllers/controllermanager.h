@@ -52,7 +52,7 @@ class ControllerManager : public QObject {
     void requestInitialize();
     void mappingApplied(bool applied);
     void deviceAdded(Controller* pController);
-    void deviceRemoved(size_t index);
+    void deviceRemoved(Controller* pController);
 
   public slots:
     void slotApplyMapping(Controller* pController,
@@ -60,6 +60,7 @@ class ControllerManager : public QObject {
             bool bEnabled);
     void slotAddDevice(Controller* pController);
     void slotRemoveDevice(Controller* pController);
+    void slotSetUpDevice(Controller* controller);
 
   private slots:
     /// Perform initialization that should be delayed until the ControllerManager
@@ -74,7 +75,6 @@ class ControllerManager : public QObject {
     void slotPollDevices();
 
   private:
-    void setUpDevice(Controller* controller);
     void updateControllerList();
     void startPolling();
     void stopPolling();

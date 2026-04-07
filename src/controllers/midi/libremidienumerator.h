@@ -19,6 +19,7 @@ class LibremidiEnumerator : public MidiEnumerator {
   signals:
     void deviceAdded(Controller* controller);
     void deviceRemoved(Controller* controller);
+    void deviceInputAdded(Controller* controller);
 
   private:
     Controller* addDevice(const libremidi::input_port* inputPort,

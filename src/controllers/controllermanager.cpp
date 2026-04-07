@@ -194,21 +194,17 @@ void ControllerManager::slotInitialize() {
 }
 
 void ControllerManager::slotAddDevice(Controller* pController) {
-    auto locker = lockMutex(&m_mutex);
     m_controllers.append(pController);
-    locker.unlock();
     emit deviceAdded(pController);
 
     if (pController->isInputDevice()) {
-        setUpDevice(pController);
+        slotSetUpDevice(pController);
     }
 }
 
 void ControllerManager::slotRemoveDevice(Controller* pController) {
-    emit deviceRemoved(m_controllers.indexOf(pController));
-    auto locker = lockMutex(&m_mutex);
+    emit deviceRemoved(pController);
     m_controllers.removeAll(pController);
-    locker.unlock();
 }
 
 void ControllerManager::slotShutdown() {
@@ -281,7 +277,7 @@ QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name
     return m_pConfig->getValueString(ConfigKey(kSettingsGroup, sanitizeDeviceName(name)));
 }
 
-void ControllerManager::setUpDevice(Controller* pController) {
+void ControllerManager::slotSetUpDevice(Controller* pController) {
     QStringList mappingPaths(getMappingPaths(m_pConfig));
     QString name = pController->getName();
 
@@ -346,7 +342,7 @@ void ControllerManager::slotSetUpDevices() {
     // QStringList mappingPaths(getMappingPaths(m_pConfig));
 
     for (Controller* pController : deviceList) {
-        setUpDevice(pController);
+        slotSetUpDevice(pController);
     }
 
     pollIfAnyControllersOpen();

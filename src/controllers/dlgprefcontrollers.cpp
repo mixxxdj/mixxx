@@ -151,20 +151,20 @@ void DlgPrefControllers::slotUpdate() {
 }
 
 void DlgPrefControllers::slotCancel() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
-        pControllerDlg->slotCancel();
+    for (const auto& [_, pair] : std::as_const(m_controllerMap)) {
+        pair.first->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
-        pControllerDlg->slotApply();
+    for (const auto& [_, pair] : std::as_const(m_controllerMap)) {
+        pair.first->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
-        pControllerDlg->slotResetToDefaults();
+    for (const auto& [_, pair] : std::as_const(m_controllerMap)) {
+        pair.first->slotResetToDefaults();
     }
 }
 
@@ -173,14 +173,18 @@ QUrl DlgPrefControllers::helpUrl() const {
 }
 
 bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
-    int controllerIndex = m_controllerTreeItems.indexOf(clickedItem);
-    if (controllerIndex >= 0) {
-        DlgPrefController* pControllerDlg = m_controllerPages.value(controllerIndex);
-        if (pControllerDlg) {
-            const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
-                    clickedItem->text(0);
-            m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
+    DlgPrefController* pControllerDlg = nullptr;
+
+    for (const auto& [_, pair] : m_controllerMap) {
+        if (pair.second == clickedItem) {
+            pControllerDlg = pair.first;
         }
+    }
+
+    if (pControllerDlg) {
+        const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
+                clickedItem->text(0);
+        m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
         return true;
     } else if (clickedItem == m_pControllersRootItem) {
         // Switch to the root page and expand the controllers tree item.
@@ -198,19 +202,14 @@ void DlgPrefControllers::rescanControllers() {
 }
 
 void DlgPrefControllers::slotSetupControllerWidget(Controller* pController) {
-    QList<Controller*> controllerList =
-            m_pControllerManager->getControllerList(false, true);
-    std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
-
-    size_t index = controllerList.indexOf(pController);
-    setupControllerWidget(pController, index);
+    setupControllerWidget(pController);
 }
 
-void DlgPrefControllers::slotDestroyControllerWidget(size_t index) {
-    destroyControllerWidget(index);
+void DlgPrefControllers::slotDestroyControllerWidget(Controller* pController) {
+    destroyControllerWidget(pController);
 }
 
-void DlgPrefControllers::setupControllerWidget(Controller* pController, size_t index) {
+void DlgPrefControllers::setupControllerWidget(Controller* pController) {
     auto pControllerDlg = make_parented<DlgPrefController>(
             this, pController, m_pControllerManager, m_pConfig);
     connect(pControllerDlg,
@@ -227,13 +226,11 @@ void DlgPrefControllers::setupControllerWidget(Controller* pController, size_t i
     m_pNumSamplers->connectValueChanged(pControllerDlg.get(),
             &DlgPrefController::slotRecreateControlPickerMenu);
 
-    m_controllerPages.insert(index, pControllerDlg);
-
     connect(pController,
             &Controller::openChanged,
             this,
-            [this, pDlg = pControllerDlg.get()](bool bOpen) {
-                slotHighlightDevice(pDlg, bOpen);
+            [this, pController](bool bOpen) {
+                slotHighlightDevice(pController, bOpen);
             });
 
     QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
@@ -258,7 +255,7 @@ void DlgPrefControllers::setupControllerWidget(Controller* pController, size_t i
             treeImage);
 
     m_pControllersRootItem->addChild(pControllerTreeItem);
-    m_controllerTreeItems.insert(index, pControllerTreeItem);
+    m_controllerMap.emplace(pController, std::pair(pControllerDlg.get(), pControllerTreeItem));
 
     // If controller is open make controller label bold
     QFont temp = pControllerTreeItem->font(0);
@@ -266,14 +263,17 @@ void DlgPrefControllers::setupControllerWidget(Controller* pController, size_t i
     pControllerTreeItem->setFont(0, temp);
 }
 
-void DlgPrefControllers::destroyControllerWidget(size_t index) {
+void DlgPrefControllers::destroyControllerWidget(Controller* pController) {
     // pController->disconnect(this);
+    const auto& value = m_controllerMap.extract(pController);
 
-    DlgPrefController* pControllerDlg = m_controllerPages.takeAt(index);
+    DEBUG_ASSERT(!value.empty());
+
+    DlgPrefController* pControllerDlg = value.mapped().first;
     m_pDlgPreferences->removePageWidget(pControllerDlg);
     delete pControllerDlg;
 
-    QTreeWidgetItem* pControllerTreeItem = m_controllerTreeItems.takeAt(index);
+    QTreeWidgetItem* pControllerTreeItem = value.mapped().second;
     m_pControllersRootItem->removeChild(pControllerTreeItem);
     delete pControllerTreeItem;
 }
@@ -287,13 +287,15 @@ void DlgPrefControllers::destroyControllerWidgets() {
     for (auto* pController : std::as_const(controllerList)) {
         pController->disconnect(this);
     }
-    while (!m_controllerPages.isEmpty()) {
-        DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
+
+    for (auto& [key, value] : m_controllerMap) {
+        DlgPrefController* pControllerDlg = value.first;
         m_pDlgPreferences->removePageWidget(pControllerDlg);
         delete pControllerDlg;
     }
 
-    m_controllerTreeItems.clear();
+    m_controllerMap.clear();
+
     while (m_pControllersRootItem->childCount() > 0) {
         QTreeWidgetItem* pControllerTreeItem = m_pControllersRootItem->takeChild(0);
         delete pControllerTreeItem;
@@ -312,23 +314,18 @@ void DlgPrefControllers::setupControllerWidgets() {
     }
     txtNoControllersAvailable->setVisible(false);
 
-    std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
-
-    int index = 0;
     for (auto* pController : std::as_const(controllerList)) {
-        setupControllerWidget(pController, index);
-        index++;
+        setupControllerWidget(pController);
     }
 }
 
-void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, bool enabled) {
-    int controllerPageIndex = m_controllerPages.indexOf(pControllerDlg);
-    if (controllerPageIndex < 0) {
+void DlgPrefControllers::slotHighlightDevice(Controller* pController, bool enabled) {
+    if (!m_controllerMap.contains(pController)) {
         return;
     }
 
-    QTreeWidgetItem* pControllerTreeItem =
-            m_controllerTreeItems.at(controllerPageIndex);
+    QTreeWidgetItem* pControllerTreeItem = m_controllerMap.at(pController).second;
+
     if (!pControllerTreeItem) {
         return;
     }

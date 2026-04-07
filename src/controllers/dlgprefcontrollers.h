@@ -44,7 +44,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   private slots:
     void rescanControllers();
     void slotSetupControllerWidget(Controller* pController);
-    void slotDestroyControllerWidget(size_t index);
+    void slotDestroyControllerWidget(Controller* pController);
 #if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
     void slotMidiAPIChanged(const QString& api);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -53,11 +53,11 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     void slotMidiThroughChanged(bool checked);
 #endif
 #endif
-    void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
+    void slotHighlightDevice(Controller* pController, bool enabled);
 
   private:
-    void destroyControllerWidget(size_t index);
-    void setupControllerWidget(Controller* pController, size_t index);
+    void destroyControllerWidget(Controller* pController);
+    void setupControllerWidget(Controller* pController);
     void destroyControllerWidgets();
     void setupControllerWidgets();
     void openLocalFile(const QString& file);
@@ -66,8 +66,9 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     UserSettingsPointer m_pConfig;
     std::shared_ptr<ControllerManager> m_pControllerManager;
     QTreeWidgetItem* m_pControllersRootItem;
-    QList<DlgPrefController*> m_controllerPages;
-    QList<QTreeWidgetItem*> m_controllerTreeItems;
+    std::unordered_map<Controller*,
+            std::pair<DlgPrefController*, QTreeWidgetItem*>>
+            m_controllerMap;
 
     const parented_ptr<ControlProxy> m_pNumDecks;
     const parented_ptr<ControlProxy> m_pNumSamplers;
