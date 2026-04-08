@@ -22,6 +22,7 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
 void RecursiveScanDirectoryTask::run() {
     ScopedTimer timer(u"RecursiveScanDirectoryTask::run");
     if (m_scannerGlobal->shouldCancel()) {
+        qWarning() << "--- RecursiveScanDirectoryTask cancel, setSuccess FALSE";
         setSuccess(false);
         return;
     }
@@ -106,12 +107,15 @@ void RecursiveScanDirectoryTask::run() {
                         possibleCovers,
                         m_dirAccess.token()));
             } else {
+                qWarning() << "*** RecursiveScanDirectoryTask emit directoryHashedAndScanned"
+                           << dirLocation;
                 emit directoryHashedAndScanned(dirLocation, !prevHashExists, newHash);
             }
         } else {
             emit directoryUnchanged(dirLocation);
         }
     } else {
+        qWarning() << "*** RecursiveScanDirectoryTask addUnhashedDir" << dirLocation;
         m_scannerGlobal->addUnhashedDir(m_dirAccess);
     }
 

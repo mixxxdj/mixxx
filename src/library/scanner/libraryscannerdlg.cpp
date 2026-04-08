@@ -64,7 +64,7 @@ void LibraryScannerDlg::slotUpdateCover(const QString& path) {
 }
 
 void LibraryScannerDlg::slotCancel() {
-    qDebug() << "Cancelling library scan...";
+    qWarning() << "----------------------- Scanner Dlg: Cancelling library scan...";
     m_bCancelled = true;
     emit scanCancelled();
     hide();
