@@ -23,7 +23,6 @@
 #include "widget/wlibrarysidebar.h"
 #endif
 
-
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
@@ -33,7 +32,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibraryTableModel(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
-          m_pHiddenView(nullptr) {
+          m_pHiddenView(nullptr),
+          m_trackCount{0} {
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {
             LIBRARYTABLE_ID,
@@ -114,6 +114,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             pLibrary->trackCollectionManager(),
             "mixxx.db.model.library");
 
+    connect(m_pLibraryTableModel,
+            &LibraryTableModel::updateTrackCount,
+            this,
+            &MixxxLibraryFeature::slotUpdateTrackCount);
+
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
@@ -149,7 +154,8 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Tracks");
+    const QString title = tr("Tracks") + QStringLiteral(" (%1)").arg(m_trackCount);
+    return title;
 }
 
 TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
@@ -182,6 +188,14 @@ void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pSidebarWidget = pSidebarWidget;
 }
 #endif
+
+void MixxxLibraryFeature::slotUpdateTrackCount() {
+    m_trackCount = m_pLibraryTableModel->rowCount();
+
+    // Force updating the Tracks sidebar item.
+    // `select` must be false as we don't want to select again
+    emit featureIsLoading(this, false);
+}
 
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
