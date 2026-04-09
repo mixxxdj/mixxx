@@ -12,7 +12,7 @@
     <scriptfiles>
       <file filename="midi-components-0.0.js" />
       <file filename="Behringer-Extension-scripts.js" />
-      <file filename="Reloop-Terminal-Mix-2-4.js" functionprefix="TerminalMix"/>
+      <file filename="Reloop-Terminal-Mix-2-4-scripts.js" functionprefix="TerminalMix"/>
     </scriptfiles>
     <controls>
       <control>

@@ -1786,7 +1786,7 @@
      *     |     |  +- feedback: As described for equalizer unit
      *     |     |  +- feedbackOnRelease: As described for equalizer unit
      *     |     |  +- output: As described for equalizer unit
-     *     |     +- jogWheel: Jog wheel definition (optional)
+     *     |     +- jogWheelUnit: Jog wheel unit definition (optional)
      *     |        +- type: (function, optional) Constructor; default: `JogWheelUnit`
      *     |        +- options:
      *     |           +- midi: An object of component definitions for the jog wheel.
