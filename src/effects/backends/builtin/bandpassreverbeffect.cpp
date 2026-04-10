@@ -5,15 +5,9 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 #include <QDebug>
+#include <vector>
 
-// ================================
-// Reverb Band-Pass Experiment
-// Author: Tanu
-// Goal: Understand where and how a band-pass filter
-// can be integrated into the reverb signal path.
-// ================================
 
-// static
 QString BandpassReverbEffect::getId() {
     return "org.mixxx.effects.bandpassreverb";
 }
@@ -21,7 +15,7 @@ QString BandpassReverbEffect::getId() {
 // static
 EffectManifestPointer BandpassReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
-    pManifest->setAddDryToWet(true);
+    pManifest->setAddDryToWet(false);
     pManifest->setEffectRampsFromDry(true);
 
     pManifest->setId(getId());
@@ -91,7 +85,7 @@ EffectManifestPointer BandpassReverbEffect::getManifest() {
     bpQ->setDescription(QObject::tr("Q factor of band-pass filter"));
     bpQ->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     bpQ->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    bpQ->setRange(0.1, 0.707, 5);
+    bpQ->setRange(0.1, 0.707, 10);
 
     return pManifest;
 }
@@ -126,15 +120,30 @@ void BandpassReverbEffect::processChannel(
     if (pState->sampleRate != engineParameters.sampleRate()) {
         pState->reverb.setSamplerate(engineParameters.sampleRate());
         pState->sampleRate = engineParameters.sampleRate();
+        pState->bandPass.init(engineParameters.sampleRate());
     }
 
-    // Reinitialize the effect when turning it on to prevent replaying the old buffer
-    // from the last time the effect was enabled..
+
     if (enableState == EffectEnableState::Enabling) {
         pState->reverb.activate();
     }
 
-    pState->reverb.processBuffer(pInput,
+    // --- Bandpass parameters ---
+    sample_t freq = static_cast<sample_t>(m_pBPFreqParameter->value());
+    sample_t q = static_cast<sample_t>(m_pBPQParameter->value());
+    pState->bandPass.setParameters(freq, q);
+
+    // --- Temporary buffer for filtered signal ---
+    std::vector<CSAMPLE> filteredBuffer(engineParameters.samplesPerBuffer());
+
+    // --- Apply bandpass to input ---
+    for (int i = 0; i < engineParameters.samplesPerBuffer(); ++i) {
+        filteredBuffer[i] = pState->bandPass.process(pInput[i]);
+    }
+
+    // --- Send filtered signal into reverb ---
+    pState->reverb.processBuffer(
+            filteredBuffer.data(),
             pOutput,
             engineParameters.samplesPerBuffer(),
             bandwidth,
@@ -142,16 +151,6 @@ void BandpassReverbEffect::processChannel(
             damping,
             sendCurrent,
             pState->sendPrevious);
-
-    sample_t freq = static_cast<sample_t>(m_pBPFreqParameter->value());
-    sample_t q = static_cast<sample_t>(m_pBPQParameter->value());
-
-    pState->bandPass.setParameters(freq, q);
-    qDebug() << "BP Filter freq:" << freq << " Q:" << q;
-
-    for (int i = 0; i < engineParameters.samplesPerBuffer(); ++i) {
-        pOutput[i] = pState->bandPass.process(pOutput[i]);
-    }
 
     // The ramping of the send parameter handles ramping when enabling, so
     // this effect must handle ramping to dry when disabling itself (instead
