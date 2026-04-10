@@ -464,8 +464,69 @@
             this.isLongPressed = false;
         },
         onShortPress: function(_value) {},
-        onLongPress: function(_value)  {},
-        onRelease: function(_value)  {},
+        onLongPress: function(_value) {},
+        onRelease: function(value) {
+            if (this.isLongPressed) {
+                this.onLongRelease(value);
+            } else {
+                this.onShortRelease(value);
+            }
+        },
+        onShortRelease: function(_value) {},
+        onLongRelease: function(_value) {},
+    });
+
+    /**
+     * A button for key controls.
+     *
+     * Short press: Toggle keylock
+     * Long press: Reset key
+     *
+     * @constructor
+     * @extends {LongPressButton}
+     * @param {object} options Options object
+     * @public
+     */
+    const KeyButton = function(options) {
+        options = options || {};
+        options.key = options.key || "keylock";
+        LongPressButton.call(this, options);
+    };
+    KeyButton.prototype = deriveFrom(LongPressButton, {
+        onShortRelease: function() {
+            this.inToggle();
+        },
+        onLongPress: function() {
+            script.triggerControl(this.group, "reset_key");
+        },
+    });
+
+    /**
+     * A button for track load controls.
+     *
+     * Short press: Load selected track
+     * Long press: Eject
+     *
+     * @constructor
+     * @extends {LongPressButton}
+     * @param {object} options Options object
+     * @public
+     */
+    const TrackLoadButton = function(options) {
+        options = options || {};
+        if (!options.key) {
+            options.inKey = options.inKey || "LoadSelectedTrack";
+            options.outKey = options.outKey || "track_loaded";
+        }
+        LongPressButton.call(this, options);
+    };
+    TrackLoadButton.prototype = deriveFrom(LongPressButton, {
+        onShortRelease: function() {
+            script.triggerControl(this.group, this.inKey);
+        },
+        onLongPress: function() {
+            script.triggerControl(this.group, "eject");
+        },
     });
 
     /**
@@ -894,7 +955,7 @@
     });
 
     /**
-     * A button that triggers a brake effect.
+     * A button that triggers an effect.
      *
      * Button release is ignored by default;
      * the effect can be stopped by shortly tapping the jog wheel in touch mode.
@@ -902,17 +963,28 @@
      * @constructor
      * @extends {components.Button}
      * @param {object} options Options object
+     * @param {string} options.effect Name of the effect, one of: `brake`, `softStart`, `spinback`
+     * @param {number} options.factor Factor for the effect; optional, default: 1
+     * @param {number} options.rate Rate for the effect; optional, default: -10 for spinback
      * @param {boolean} options.stopOnRelease Stop effect on button release? optional; default: `false`
-     * @param {number} options.factor Factor for the effect
      * @public
      */
-    const BrakeButton = function(options) {
-        components.Button.call(this, options);
+    const EffectButton = function(options) {
+        const defaultOptions = {factor: 1};
+        if (options.effect === "spinback") {
+            defaultOptions.rate = -10;
+            defaultOptions.factor += defaultOptions.rate; // workaround for broken spinback in 2.6
+        }
+        components.Button.call(this, Object.assign(defaultOptions, options));
+        if (!this.effect || !typeof(engine[this.effect]) === "function") {
+            log.error("Missing required `effect` option.");
+            return;
+        }
     };
-    BrakeButton.prototype = deriveFrom(components.Button, {
+    EffectButton.prototype = deriveFrom(components.Button, {
         input: function(channel, control, value, status, group) {
             if (this.stopOnRelease || value > 0) {
-                script.brake(channel, control, value, status, group, this.factor);
+                engine[this.effect].call(this, script.deckFromGroup(group), value, this.factor, this.rate);
             }
         }
     });
@@ -2184,6 +2256,8 @@
     exports.CustomButton = CustomButton;
     exports.Timer = Timer;
     exports.LongPressButton = LongPressButton;
+    exports.KeyButton = KeyButton;
+    exports.TrackLoadButton = TrackLoadButton;
     exports.BlinkingButton = BlinkingButton;
     exports.BlinkingSamplerButton = BlinkingSamplerButton;
     exports.DirectionEncoder = DirectionEncoder;
@@ -2196,7 +2270,7 @@
     exports.LoopEncoder = LoopEncoder;
     exports.LoopMoveEncoder = LoopMoveEncoder;
     exports.FaderStartToggleButton = FaderStartToggleButton;
-    exports.BrakeButton = BrakeButton;
+    exports.EffectButton = EffectButton;
     exports.SuperPot = SuperPot;
     exports.BackLoopButton = BackLoopButton;
     exports.CrossfaderCurvePot = CrossfaderCurvePot;

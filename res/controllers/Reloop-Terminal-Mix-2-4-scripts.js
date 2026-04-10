@@ -22,6 +22,8 @@
     const $note = Symbol();
     const $deckNumber = Symbol();
     const $brake = Symbol();
+    const $softStart = Symbol();
+    const $spinback = Symbol();
     const $unitNumbers = Symbol();
     const $group = Symbol();
     const $left = Symbol();
@@ -52,10 +54,10 @@
                 },
                 decks: [{
                     bindings: [
-                        { [$deckNumber]: 1, [$cc]: 0xB0, [$note]: 0x90, [$brake]: 0x68 },
-                        { [$deckNumber]: 2, [$cc]: 0xB1, [$note]: 0x91, [$brake]: 0x6B },
-                        { [$deckNumber]: 3, [$cc]: 0xB2, [$note]: 0x92, [$brake]: 0x68 },
-                        { [$deckNumber]: 4, [$cc]: 0xB3, [$note]: 0x93, [$brake]: 0x6B },
+                        { [$deckNumber]: 1, [$cc]: 0xB0, [$note]: 0x90, [$brake]: 0x68, [$softStart]: 0x69, [$spinback]: 0x6A },
+                        { [$deckNumber]: 2, [$cc]: 0xB1, [$note]: 0x91, [$brake]: 0x6B, [$softStart]: 0x6A, [$spinback]: 0x69 },
+                        { [$deckNumber]: 3, [$cc]: 0xB2, [$note]: 0x92, [$brake]: 0x68, [$softStart]: 0x69, [$spinback]: 0x6A },
+                        { [$deckNumber]: 4, [$cc]: 0xB3, [$note]: 0x93, [$brake]: 0x6B, [$softStart]: 0x6A, [$spinback]: 0x69 },
                     ],
                     init: function() {
                         engine.softTakeover(this.currentDeck, "rate", true);
@@ -79,7 +81,7 @@
                             type: e.EnumToggleButton,
                             options: {midi: [$note, 0x01], inKey: "rateRange", values: [ 0.08, 0.12, 0.25, 0.5, 1.0 ], feedback: true}
                         },                                                                                                                                 // RANGE
-                        { options: {midi: [$note, 0x02], key: "keylock", type: toggle}},                                                                   // KEYLOCK
+                        { options: {midi: [$note, 0x02], key: "keylock"}, type: e.KeyButton },                                                             // KEYLOCK
                         { options: {midi: [$note, 0x0B], inKey: "beatloop_activate", inKeyOff: "reloop_toggle", type: toggle}, type: e.TriggerButton },    // LOOP: LENGTH Button
                         { options: {midi: [$note, 0x51], inKey: "reloop_toggle", type: toggle}, type: e.TriggerButton },                                   // LOOP: LENGTH Button + SHIFT/DEL
                         { options: {midi: [$cc,   0x0B], on: 0x41, off: 0x3F, inKey: "loop_double", inKeyOff: "loop_halve"}, type: e.TriggerButton},       // LOOP: LENGTH Encoder
@@ -116,15 +118,16 @@
                         { options: {midi: [$note, 0x54], key: "quantize", type: toggle} },                  // LOOP MOVE + SHIFT/DEL
                         { options: {midi: [$note, 0x06], key: "bpm_tap"} },                                 // BEATS KNOB
                         { options: {midi: [$note, 0x4C], key: "beats_translate_curpos"} },                  // BEATS KNOB + SHIFT/DEL
-                        { options: {midi: [$note, $brake]}, type: e.BrakeButton },                          // ▶◀ or ▶⏸ + SHIFT/DEL
+                        { options: {midi: [$note, $brake], effect: "brake"}, type: e.EffectButton },        // ▶◀ or ▶⏸ + SHIFT/DEL
+                        { options: {midi: [$note, $softStart], effect: "softStart"}, type: e.EffectButton },// ⛾ CUP or Q Cue + SHIFT/DEL
+                        { options: {midi: [$note, $spinback], effect: "spinback"}, type: e.EffectButton },  // Q Cue or ⛾ CUP + SHIFT/DEL
                         { options: {midi: [$note, 0x22]}, type: c.SyncButton },                             // ▶◀ SYNC
                         { options: {midi: [$note, 0x23], key: "cue_gotoandplay"} },                         // ⛾ CUP
                         { options: {midi: [$note, 0x24], outKey: "cue_default"}, type: c.CueButton },       // Q Cue
-                        { options: {midi: [$note, 0x6A], outKey: "cue_default"}, type: c.CueButton, shift: true }, // Q Cue + SHIFT/DEL
                         { options: {midi: [$note, 0x25], outKey: "play"}, type: c.PlayButton},              // ▶⏸ Play/Pause
                         //{ options: {midi: [$note, 0x26], type: toggle}},                                  // DECK
                         { options: {midi: [$cc,   0x31], inKey: "volume"}, type: c.Pot },                   // Linefader
-                        { options: {midi: [$note, 0x32], inKey: "LoadSelectedTrack", outKey: "track_loaded", type: toggle} }, // F. START
+                        { options: {midi: [$note, 0x32]}, type: e.TrackLoadButton },                        // 1/2/3/4
                         { options: {midi: [$note, 0x30], key: "pfl", type: toggle} },                       // PFL
                         { options: {midi: [$cc,   0x2B], inKey: "pregain" }, type: c.Pot },                 // GAIN
                         { options: {midi: [$note, 0x0A], outKey: "beat_active"} },                          // TAP
