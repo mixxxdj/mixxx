@@ -122,6 +122,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_fieldToSqlColumns["bpm"] << "bpm";
     m_fieldToSqlColumns["br"] << "bitrate";
     m_fieldToSqlColumns["bitrate"] << "bitrate";
+    m_fieldToSqlColumns["c"] << "crate";
+    m_fieldToSqlColumns["crate"] << "crate";
     m_fieldToSqlColumns["du"] << "duration";
     m_fieldToSqlColumns["duration"] << "duration";
     m_fieldToSqlColumns["k"] << "key";
@@ -139,6 +141,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_fieldToSqlColumns["directory"] << "directory";
     m_fieldToSqlColumns["type"] << "filetype";
     m_fieldToSqlColumns["ad"] << "datetime_added";
+    m_fieldToSqlColumns["added"] << "datetime_added";
+    m_fieldToSqlColumns["dateadded"] << "datetime_added";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";
     m_fieldToSqlColumns["id"] << "id";
 
@@ -198,6 +202,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             continue;
         }
 
+        // this resolves the filter shortcuts
+        auto resolveFilter = [&](const QString& filter) {
+            auto columns = m_fieldToSqlColumns[filter];
+            DEBUG_ASSERT(!columns.isEmpty());
+            return columns.first();
+        };
+
         bool negate = token.startsWith(kNegatePrefix);
         std::unique_ptr<QueryNode> pNode;
 
@@ -205,7 +216,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         const QRegularExpressionMatch numericFilterMatch = m_numericFilterMatcher.match(token);
         const QRegularExpressionMatch specialFilterMatch = m_specialFilterMatcher.match(token);
         if (textFilterMatch.hasMatch()) {
-            QString field = textFilterMatch.captured(1);
+            QString field = resolveFilter(textFilterMatch.captured(1));
             auto [argument, matchMode] = getTextArgument(textFilterMatch.captured(2), &tokens);
 
             if (argument == kMissingFieldSearchTerm) {
@@ -247,7 +258,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         } else if (specialFilterMatch.hasMatch()) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);
             bool negate = token.startsWith(kNegatePrefix);
-            QString field = specialFilterMatch.captured(1);
+            QString field = resolveFilter(specialFilterMatch.captured(1));
             auto [argument, matchMode] = getTextArgument(
                     specialFilterMatch.captured(2), &tokens);
 
@@ -272,11 +283,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else if (field == "year") {
                     pNode = std::make_unique<YearFilterNode>(
                             m_fieldToSqlColumns[field], argument);
-                } else if (field == "date_added" ||
-                        field == "datetime_added" ||
-                        field == "added" ||
-                        field == "dateadded") {
-                    field = "datetime_added";
+                } else if (field == "datetime_added") {
                     pNode = std::make_unique<DateAddedFilterNode>(argument);
                 } else if (field == "bpm") {
                     if (matchMode == StringMatch::Equals) {
