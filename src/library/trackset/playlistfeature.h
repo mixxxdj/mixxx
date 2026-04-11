@@ -12,8 +12,7 @@
 class TreeItem;
 class QPoint;
 
-enum class PlaylistSortColumn { // adding enum classes for Sorting Playlists by
-                                // different columns in the playlist sidebar
+enum class PlaylistSortColumn {
     Name,
     DateCreated,
 };
@@ -72,6 +71,6 @@ class PlaylistFeature : public BasePlaylistFeature {
     // Helper methods for sorting
     QString getSortColumnName() const;
     QString getSortOrderClause() const;
-    void saveSortSettings();
-    void loadSortSettings();
+    void saveSidebarSortSettings();
+    void loadSidebarSortSettings();
 };

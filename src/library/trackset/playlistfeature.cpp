@@ -1,6 +1,6 @@
 #include "library/trackset/playlistfeature.h"
 
-#include <QActionGroup> //added to help create sort menu
+#include <QActionGroup>
 #include <QMenu>
 #include <QSqlTableModel>
 #include <QtDebug>
@@ -34,7 +34,7 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
 
-    loadSortSettings(); // To load Sorting settings for Playlists in the sidebar
+    loadSidebarSortSettings();
     constructChildModel(kInvalidPlaylistId);
 
     m_pShufflePlaylistAction = make_parented<QAction>(tr("Shuffle Playlist"), this);
@@ -69,29 +69,29 @@ QVariant PlaylistFeature::title() {
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
+    qDebug() << "onRightClick called";
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
 
-    // adding sort menu items
-    QMenu* pSortMenu = new QMenu(tr("Sort playlists"), &menu);
+    auto pSortMenu = make_parented<QMenu>(tr("Sort playlists"), &menu);
 
     // Sort by submenu
-    QMenu* pSortByMenu = new QMenu(tr("Sort by"), pSortMenu);
+    auto pSortByMenu = make_parented<QMenu>(tr("Sort by"), pSortMenu.get());
 
     // Create action group for exclusive selection
-    QActionGroup* pSortByGroup = new QActionGroup(pSortByMenu);
+    auto pSortByGroup = make_parented<QActionGroup>(pSortByMenu.get());
     pSortByGroup->setExclusive(true);
 
     QAction* pSortByName = pSortByMenu->addAction(tr("Name"));
     pSortByName->setCheckable(true);
     pSortByName->setChecked(m_sortColumn == PlaylistSortColumn::Name);
-    pSortByName->setActionGroup(pSortByGroup);
+    pSortByName->setActionGroup(pSortByGroup.get());
     connect(pSortByName, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: Name";
         m_sortColumn = PlaylistSortColumn::Name;
-        saveSortSettings();
+        saveSidebarSortSettings();
         clearChildModel();
         constructChildModel(kInvalidPlaylistId);
     });
@@ -99,30 +99,30 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     QAction* pSortByDateCreated = pSortByMenu->addAction(tr("Date created"));
     pSortByDateCreated->setCheckable(true);
     pSortByDateCreated->setChecked(m_sortColumn == PlaylistSortColumn::DateCreated);
-    pSortByDateCreated->setActionGroup(pSortByGroup);
+    pSortByDateCreated->setActionGroup(pSortByGroup.get());
     connect(pSortByDateCreated, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: Date Created";
         m_sortColumn = PlaylistSortColumn::DateCreated;
-        saveSortSettings();
+        saveSidebarSortSettings();
         clearChildModel();
         constructChildModel(kInvalidPlaylistId);
     });
 
-    pSortMenu->addMenu(pSortByMenu);
+    pSortMenu->addMenu(pSortByMenu.get());
     pSortMenu->addSeparator();
 
     // Sort order (Ascending/Descending)
-    QActionGroup* pSortOrderGroup = new QActionGroup(pSortMenu);
+    auto pSortOrderGroup = make_parented<QActionGroup>(pSortMenu.get());
     pSortOrderGroup->setExclusive(true);
 
     QAction* pSortAscending = pSortMenu->addAction(tr("Ascending"));
     pSortAscending->setCheckable(true);
     pSortAscending->setChecked(m_sortOrder == PlaylistSortOrder::Ascending);
-    pSortAscending->setActionGroup(pSortOrderGroup);
+    pSortAscending->setActionGroup(pSortOrderGroup.get());
     connect(pSortAscending, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: sort ascending";
         m_sortOrder = PlaylistSortOrder::Ascending;
-        saveSortSettings();
+        saveSidebarSortSettings();
         clearChildModel();
         constructChildModel(kInvalidPlaylistId);
     });
@@ -130,16 +130,16 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     QAction* pSortDescending = pSortMenu->addAction(tr("Descending"));
     pSortDescending->setCheckable(true);
     pSortDescending->setChecked(m_sortOrder == PlaylistSortOrder::Descending);
-    pSortDescending->setActionGroup(pSortOrderGroup);
+    pSortDescending->setActionGroup(pSortOrderGroup.get());
     connect(pSortDescending, &QAction::triggered, this, [this]() {
         qDebug() << "Clicked: sort descending";
         m_sortOrder = PlaylistSortOrder::Descending;
-        saveSortSettings();
+        saveSidebarSortSettings();
         clearChildModel();
         constructChildModel(kInvalidPlaylistId);
     });
 
-    menu.addMenu(pSortMenu);
+    menu.addMenu(pSortMenu.get());
     menu.addSeparator();
 
     menu.addAction(m_pUnlockPlaylistsAction);
@@ -532,7 +532,7 @@ QString PlaylistFeature::getRootViewHtml() const {
     return html;
 }
 
-void PlaylistFeature::loadSortSettings() {
+void PlaylistFeature::loadSidebarSortSettings() {
     // Load sort column (default: Name)
     int sortColumnInt = m_pConfig->getValue(
             ConfigKey("[Library]", "PlaylistSortColumn"),
@@ -548,7 +548,7 @@ void PlaylistFeature::loadSortSettings() {
              << "Order:" << sortOrderInt;
 }
 
-void PlaylistFeature::saveSortSettings() {
+void PlaylistFeature::saveSidebarSortSettings() {
     m_pConfig->setValue(
             ConfigKey("[Library]", "PlaylistSortColumn"),
             static_cast<int>(m_sortColumn));
