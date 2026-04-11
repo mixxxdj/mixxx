@@ -72,7 +72,8 @@
      *
      * @param {object} definition Definition of a component container with MIDI addresses
      * @param {components.ComponentContainer} implementation Corresponding component container object
-     * @param {function} action Function that performs the processing of a single MIDI address
+     * @param {Function} action Function that performs the processing of a single MIDI address
+     * @param {string} path Path to the container definition
      * @public
      */
     const processMidiAddresses = function(definition, implementation, action, path = "") {
@@ -96,7 +97,7 @@
         const groupFactory = function(type, countControl, index) {
             index = index || function(i) { return i+1; };
             const count = engine.getValue("[App]", countControl);
-            return [...Array(count).keys()].map(function(i) { return "[" + type + index.call(null, i) + "]"; });
+            return [...Array(count).keys()].map(function(i) { return `[${type}${index(i)}]`; });
         };
         return [
             ["Channel", "num_decks"],
@@ -104,8 +105,8 @@
             ["Auxiliary", "num_auxiliaries"],
             ["Microphone", "num_microphones", function(i) { return i === 0 ? "" : (i+1); }]
         ]
-        .filter(type => !channelType || type[0] === channelType)
-        .reduce(function(items, args) { return items.concat(groupFactory.apply(null, args)); }, []);
+            .filter(type => !channelType || type[0] === channelType)
+            .reduce(function(items, args) { return items.concat(groupFactory.apply(null, args)); }, []);
     };
 
     /**
@@ -275,8 +276,9 @@
     /**
      * A button that triggers a Mixxx control.
      *
-     * @constructor
-     * @extends {components.Button}
+     * @class
+     * @augments {components.Button}
+     * @param {object} options Options object
      * @param {string} options.inKey Control to trigger when `on`
      * @param {string} options.inKeyOff Control to trigger when `off`; optional, default: `inKey`
      * @public
@@ -482,8 +484,8 @@
      * Short press: Toggle keylock
      * Long press: Reset key
      *
-     * @constructor
-     * @extends {LongPressButton}
+     * @class
+     * @augments {LongPressButton}
      * @param {object} options Options object
      * @public
      */
@@ -507,8 +509,8 @@
      * Short press: Load selected track
      * Long press: Eject
      *
-     * @constructor
-     * @extends {LongPressButton}
+     * @class
+     * @augments {LongPressButton}
      * @param {object} options Options object
      * @public
      */
@@ -559,8 +561,9 @@
     /**
      * A sampler button that blinks when playing.
      *
-     * @constructor
-     * @extends {components.SamplerButton}
+     * @class
+     * @param {object} options Options object
+     * @augments {components.SamplerButton}
      * @param {number} options.blinkDuration Blink duration in ms; optional, default: 500
      * @public
      */
@@ -637,14 +640,14 @@
      * Turning the encoder to the right will add one step;
      * turning it to the left will subtract one step.
      *
-     * @constructor
-     * @extends {DirectionEncoder}
+     * @class
+     * @augments {DirectionEncoder}
      * @param {object} options Options object
      * @param {number} options.step A positive number defining the step size; optional, default: 0.05
      * @public
      */
     const SteppingEncoder = function(options) {
-        DirectionEncoder.call(this, Object.assign({ step: 0.05 }, options));
+        DirectionEncoder.call(this, Object.assign({step: 0.05}, options));
     };
     SteppingEncoder.prototype = deriveFrom(DirectionEncoder, {
         inValueScale: function(value) {
@@ -792,8 +795,8 @@
      * - Values greater than 65 increment the control by (value - 64).
      * - Values lower than 63 decrement the control by (64 - value).
      *
-     * @constructor
-     * @extends {components.Encoder}
+     * @class
+     * @augments {components.Encoder}
      * @param {object} options Options object
      * @param {boolean} options.inverse If set, the value is inverted
      * @param {boolean} options.fast (optional) If set, the value is multiplied by 1.5
@@ -851,7 +854,7 @@
      *  `sizeNoQuantize` when `quantize` is disabled.
      *
      * @constructor
-     * @extends {DirectionEncoder}
+     * @augments {DirectionEncoder}
      * @param {object} options Options object
      * @param {number} options.size (optional) Size given in number of beats; default: 0.5
      * @param {number} options.sizeNoQuantize (optional) Size given in number of beats
@@ -901,8 +904,9 @@
      * If crossfader is moved from full left (right), start any decks assigned to R (L).
      * If crossfader is moved to full left (right) and decks assigned to R (L) are playing, cue them.
      *
-     * @constructor
-     * @extends {BlinkingButton}
+     * @param {object} options Options object
+     * @class
+     * @augments {BlinkingButton}
      * @public
      */
     const FaderStartToggleButton = function(options) {
@@ -931,19 +935,19 @@
                 return;
             }
 
-            if (control == "volume" && value != this.previous.volume) {
-                if (this.previous.volume == 0 && value != 0) {
+            if (control === "volume" && value !== this.previous.volume) {
+                if (this.previous.volume === 0 && value !== 0) {
                     engine.setValue(this.group, "play", 1);
-                } else if (this.previous.volume != 0 && value == 0) {
+                } else if (this.previous.volume !== 0 && value === 0) {
                     script.triggerControl(group, "cue_default");
                 }
                 this.previous.volume = value;
             }
 
-            if (control == "crossfader" && value != this.previous.crossfader) {
+            if (control === "crossfader" && value !== this.previous.crossfader) {
                 const orientation = engine.getValue(this.group, "orientation") - 1; // -1 (L) / 0 (C) / 1 (R)
-                const isOpposite  = 2 == Math.abs(orientation - value);
-                const wasOpposite = 2 == Math.abs(orientation - this.previous.crossfader);
+                const isOpposite  = Math.abs(orientation - value) === 2;
+                const wasOpposite = Math.abs(orientation - this.previous.crossfader) === 2;
                 if (isOpposite) {
                     script.triggerControl(this.group, "cue_default");
                 } else if (wasOpposite) {
@@ -960,8 +964,8 @@
      * Button release is ignored by default;
      * the effect can be stopped by shortly tapping the jog wheel in touch mode.
      *
-     * @constructor
-     * @extends {components.Button}
+     * @class
+     * @augments {components.Button}
      * @param {object} options Options object
      * @param {string} options.effect Name of the effect, one of: `brake`, `softStart`, `spinback`
      * @param {number} options.factor Factor for the effect; optional, default: 1
@@ -976,13 +980,12 @@
             defaultOptions.factor += defaultOptions.rate; // workaround for broken spinback in 2.6
         }
         components.Button.call(this, Object.assign(defaultOptions, options));
-        if (!this.effect || !typeof(engine[this.effect]) === "function") {
+        if (!this.effect || typeof(engine[this.effect]) !== "function") {
             log.error("Missing required `effect` option.");
-            return;
         }
     };
     EffectButton.prototype = deriveFrom(components.Button, {
-        input: function(channel, control, value, status, group) {
+        input: function(_channel, _control, value, _status, group) {
             if (this.stopOnRelease || value > 0) {
                 engine[this.effect].call(this, script.deckFromGroup(group), value, this.factor, this.rate);
             }
@@ -1011,7 +1014,7 @@
                 const action = () => {
                     script.triggerControl(group, "beatloop_activate");
                     engine.setValue(group, "beatjump_size", beatjumpSize);
-                }
+                };
                 const loopSize = engine.getValue(group, "beatloop_size");
                 engine.setValue(group, "beatjump_size", loopSize);
                 script.triggerControl(group, "beatjump_backward");
@@ -1026,8 +1029,9 @@
     /**
      * A pot controlling a component on all channels of a certain type.
      *
-     * @constructor
-     * @extends {components.Pot}
+     * @class
+     * @augments {components.Pot}
+     * @param {object} options Options object
      * @param {string} options.channelType Channel type: one of [`Channel`, `Sampler`, `Auxiliary`, `Microphone`]
      * @param {string} options.inKey Mixxx control; optional, default: `pregain`
      * @public
@@ -1221,6 +1225,7 @@
      *
      * @property {components.Button} touch Touch Button
      * @property {components.Encoder} jog Jog Encoder
+     * @property {object} vinylMode Vinyl mode options
      * @property {components.Button} vinylMode.toggle Button to toggle vinyl mode
      * @property {components.Button} vinylMode.touch Touch button in vinyl mode
      * @property {components.Encoder} vinylMode.jog Jog encoder in vinyl mode
@@ -1229,8 +1234,8 @@
     /**
      * A component container for jog wheel controls.
      *
-     * @constructor
-     * @extends {components.ComponentContainer}
+     * @class
+     * @augments {components.ComponentContainer}
      * @param {object} options Options object
      * @yields {JogWheelUnit}
      * @public
@@ -1240,7 +1245,7 @@
 
         /* JogWheelBasic (core component) */
         const JogWheelBasic = function(jogWheelBasicOptions) {
-            jogWheelBasicOptions = Object.assign({ group: options.group }, jogWheelBasicOptions);
+            jogWheelBasicOptions = Object.assign({group: options.group}, jogWheelBasicOptions);
             components.JogWheelBasic.call(this, jogWheelBasicOptions);
         };
         JogWheelBasic.prototype = deriveFrom(components.JogWheelBasic, options.overrides || {});
@@ -1267,7 +1272,7 @@
             components.Button.call(this, vinylModeButtonOptions);
         };
         VinylModeButton.prototype = deriveFrom(components.Button, {
-            input: function (_channel, _control, value, _status, _group) {
+            input: function(_channel, _control, value, _status, _group) {
                 jogWheelBasic.vinylMode = value;
             }
         });
@@ -1290,8 +1295,8 @@
      * a) turn encoder to jump X beats back or forth, or move any active loop by Y beats
      * b) press & turn to adjust the beatjump/loopmove size
      *
-     * @constructor
-     * @extends {components.ComponentContainer}
+     * @class
+     * @augments {components.ComponentContainer}
      * @param {object} options Options object
      * @param {object} options.shiftButton Option object for the button that toggles between layers
      * @param {object} options.encoder Option object for the loop move encoder
@@ -1616,7 +1621,7 @@
          * Register a component with all its child components.
          *
          * @param {object} definition Definition of a component
-         * @param {components.Component|components.ComponentContainer} Implementation of a component
+         * @param {components.Component|components.ComponentContainer} implementation Implementation of a component
          * @private
          */
         registerComponents: function(definition, implementation) {
@@ -1689,7 +1694,7 @@
          * @param {number} status Status byte of the MIDI message
          * @public
          */
-        input: function(channel, control, value, status /* ignored: ,group */) {
+        input: function(channel, control, value, status, _group) {
             const component = this.findComponent(status, control);
             if (component === undefined) {
                 return;
@@ -1697,8 +1702,7 @@
             if (component.input !== undefined && typeof this.input === "function") {
                 component.input(channel, control, value, status, component.group);
             } else {
-                log.error("Component without input function: "
-                    + global.stringifyObject(component));
+                log.error(`Component without input function: ${global.stringifyObject(component)}`);
             }
         },
     });
@@ -1724,7 +1728,7 @@
      *    { components: [{ type: Button, options: {group: "[Channel2]", midi: [0x90, 0x02], key: "foo"} }] }
      *  ]
      *
-     * @constructor
+     * @class
      * @private
      */
     const TemplateResolver = function() {};
@@ -1740,9 +1744,9 @@
          */
         resolveTemplates: function(parent, name) {
             const templateDefinitions = parent[name] || [];
-            const nested = templateDefinitions.map((def, index) => this.resolveTemplate(def, name + "." + index));
+            const nested = templateDefinitions.map((def, index) => this.resolveTemplate(def, `${name}.${index}`));
             const containerDefinitions = [].concat(...nested);
-            log.debug("Resolved " + containerDefinitions.length + " definitions for " + name);
+            log.debug(`Resolved ${containerDefinitions.length} definitions for ${name}`);
             return containerDefinitions;
         },
 
@@ -1750,6 +1754,7 @@
          * Resolve a single template definition to an array of ComponentContainer definitions.
          *
          * @param {object} templateDefinition A template definition
+         * @param {string} name Name of the template definition (for debugging only)
          * @returns {object} An array of ComponentContainer definitions.
          *                   If the template definition does not contain a `bindings` configuration,
          *                   the output array contains exactly the input object.
@@ -1762,7 +1767,7 @@
             return templateDefinition.bindings.map((binding, index) => {
                 const containerDefinition = mergeDefinitions({}, templateDefinition);
                 delete containerDefinition.bindings;
-                this.resolveVariables(containerDefinition, binding, name + "." + index);
+                this.resolveVariables(containerDefinition, binding, `${name}.${index}`);
                 return containerDefinition;
             });
         },
@@ -1785,11 +1790,11 @@
                 if (typeof child === "symbol") {
                     const value = values[child];
                     parent[name] = value;
-                    log.debug(childPath + " = " + value);
+                    log.debug(`${childPath} = ${value}`);
                 } else {
                     /* Avoid endless recursion on object references (e.g. ShiftButton) */
                     if (child instanceof components.ComponentContainer || child instanceof components.Component) {
-                        log.debug("Skipping reference to " + path + "." + name);
+                        log.debug(`Skipping reference to ${path}.${name}`);
                     } else {
                         this.resolveVariables(child, values, childPath);
                     }
@@ -2054,7 +2059,7 @@
             const deckDefaultDefinition = Object.assign({}, deckDefinition.defaultDefinition);
             const deckFactory = function(options) {
                 const deck = new components.Deck(options);
-                Object.assign(deckDefaultDefinition, { options: { group: deck.currentDeck } });
+                Object.assign(deckDefaultDefinition, {options: {group: deck.currentDeck}});
                 return deck;
             }
             const options = Object.assign({}, deckDefinition, {
@@ -2064,12 +2069,12 @@
             });
             const deck = this.createComponentContainer(options);
 
-            const jogWheelUnitOptions = Object.assign({ group: deck.currentDeck }, (deckDefinition.jogWheelUnit || {}).options);
+            const jogWheelUnitOptions = Object.assign({group: deck.currentDeck}, (deckDefinition.jogWheelUnit || {}).options);
 
             [
-                { property: "equalizerUnit",   type: EqualizerUnit,   options: deck.currentDeck },
-                { property: "quickEffectUnit", type: QuickEffectUnit, options: deck.currentDeck },
-                { property: "jogWheelUnit",    type: JogWheelUnit,    options: jogWheelUnitOptions },
+                {property: "equalizerUnit",   type: EqualizerUnit,   options: deck.currentDeck},
+                {property: "quickEffectUnit", type: QuickEffectUnit, options: deck.currentDeck},
+                {property: "jogWheelUnit",    type: JogWheelUnit,    options: jogWheelUnitOptions},
             ].forEach(function(context) {
                 const definition = deckDefinition[context.property];
                 if (definition) {
@@ -2077,7 +2082,7 @@
                     deck[context.property] = this.setupMidi(
                         definition,
                         new type(context.options),
-                        componentStorage)
+                        componentStorage);
                 }
             }, this);
 
@@ -2173,7 +2178,7 @@
          */
         createEffectUnit: function(effectUnitDefinition, componentStorage) {
             const controller = this;
-            const effectUnitFactory = function(options) {
+            const effectUnitFactory = function() {
                 const effectUnit = controller.setupMidi(
                     effectUnitDefinition,
                     new components.EffectUnit(effectUnitDefinition.unitNumbers, true),
@@ -2194,7 +2199,7 @@
                 }
                 return effectUnit;
             };
-            const options = mergeDefinitions({}, effectUnitDefinition, { type: effectUnitFactory });
+            const options = mergeDefinitions({}, effectUnitDefinition, {type: effectUnitFactory});
             const effectUnit = this.createComponentContainer(options);
             effectUnit.init();
             return effectUnit;
