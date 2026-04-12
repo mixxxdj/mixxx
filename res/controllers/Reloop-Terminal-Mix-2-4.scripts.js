@@ -81,7 +81,9 @@
                             type: e.EnumToggleButton,
                             options: {midi: [$note, 0x01], inKey: "rateRange", values: [0.08, 0.12, 0.25, 0.5, 1.0], feedback: true}
                         },                                                                                                                              // RANGE
+                        {options: {midi: [$note, 0x47], effectUnit: 1}, type: c.EffectAssignmentButton},                                                // RANGE + SHIFT/DEL
                         {options: {midi: [$note, 0x02], key: "keylock"}, type: e.KeyButton},                                                            // KEYLOCK
+                        {options: {midi: [$note, 0x48], effectUnit: 2}, type: c.EffectAssignmentButton},                                                // KEYLOCK + SHIFT/DEL
                         {options: {midi: [$note, 0x0B], inKey: "beatloop_activate", inKeyOff: "reloop_toggle", type: toggle}, type: e.TriggerButton},   // LOOP: LENGTH Button
                         {options: {midi: [$note, 0x51], inKey: "reloop_toggle", type: toggle}, type: e.TriggerButton},                                  // LOOP: LENGTH Button + SHIFT/DEL
                         {options: {midi: [$cc,   0x0B], on: 0x41, off: 0x3F, inKey: "loop_double", inKeyOff: "loop_halve"}, type: e.TriggerButton},     // LOOP: LENGTH Encoder
