@@ -223,13 +223,16 @@
                     { // Library
                         defaultDefinition: {type: c.Button, options: {group: "[Library]"}},
                         components: [
+                            {options: {midi: [0x90, 0x35], group: "[Playlist]", key: "ToggleSelectedSidebarItem"}},                                // CRATES
+                            {options: {midi: [0x90, 0x36], key: "show_track_menu", type: toggle}},                                                 // VIEW
+                            /* Move focus right between tracks table and side panel. Shift moves the focus to the left. */
+                            {options: {midi: [0x90, 0x37], inKey: "MoveFocusForward"}},                                                            // BACK
+                            {options: {midi: [0x90, 0x37], inKey: "MoveFocusBackward"}, shift: true},                                              // BACK + SHIFT/DEL
+                            {options: {midi: [0x90, 0x38], group: "[Skin]", key: "show_maximized_library", type: toggle}},                         // PREP
                             /* Move cursor vertically with Trax knob, scroll with Shift pressed */
                             {options: {midi: [0xB0, 0x39], inKey: "MoveVertical", min: 0x3F, max: 0x41}, type: e.DirectionEncoder},                // TRAX Knob
                             {options: {midi: [0xB0, 0x39], inKey: "ScrollVertical", min: 0x3F, max: 0x41}, type: e.DirectionEncoder, shift: true}, // TRAX Knob
                             {options: {midi: [0x90, 0x39], inKey: "GoToItem"}},                                                                    // TRAX Button
-                            /* Move focus right between tracks table and side panel. Shift moves the focus to the left. */
-                            {options: {midi: [0x90, 0x37], inKey: "MoveFocusForward"}},                                                            // BACK
-                            {options: {midi: [0x90, 0x37], inKey: "MoveFocusBackward"}, shift: true},                                              // BACK + SHIFT/DEL
                         ],
                     },
                     { // Crossfader
