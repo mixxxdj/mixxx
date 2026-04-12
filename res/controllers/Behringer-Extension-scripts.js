@@ -790,7 +790,7 @@
      * A rotational encoder.
      *
      * This component resembles the behavior of the MIDI options `Rot64`, `Rot64Inv` and `Rot64Fast`:
-     * - A value of 65 (0x3F) increments the control by 1/16.
+     * - A value of 65 (0x41) increments the control by 1/16.
      * - A value of 63 (0x3F) decrements the control by 1/16.
      * - Values greater than 65 increment the control by (value - 64).
      * - Values lower than 63 decrement the control by (64 - value).
@@ -798,7 +798,7 @@
      * @class
      * @augments {components.Encoder}
      * @param {object} options Options object
-     * @param {boolean} options.inverse If set, the value is inverted
+     * @param {boolean} options.inverse (optional) If set, the value is inverted
      * @param {boolean} options.fast (optional) If set, the value is multiplied by 1.5
      * @public
      */
