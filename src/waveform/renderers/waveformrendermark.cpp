@@ -28,6 +28,8 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->setWorldMatrixEnabled(false);
 
+    m_marks.updateSafe();
+
     for (const auto& pMark : std::as_const(m_marks)) {
         const QImage& image = static_cast<ImageGraphics*>(pMark->m_pGraphics.get())->image();
 

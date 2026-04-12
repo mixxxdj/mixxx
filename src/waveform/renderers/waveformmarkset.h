@@ -61,16 +61,16 @@ class WaveformMarkSet {
     }
 
     inline QList<WaveformMarkPointer>::const_iterator begin() const {
-        return m_marksToRender.begin();
+        return m_marksToRenderSafe.begin();
     }
     inline QList<WaveformMarkPointer>::const_iterator end() const {
-        return m_marksToRender.end();
+        return m_marksToRenderSafe.end();
     }
     inline QList<WaveformMarkPointer>::const_iterator cbegin() const {
-        return m_marksToRender.cbegin();
+        return m_marksToRenderSafe.cbegin();
     }
     inline QList<WaveformMarkPointer>::const_iterator cend() const {
-        return m_marksToRender.cend();
+        return m_marksToRenderSafe.cend();
     }
 
     // hotCue must be valid (>= 0 and < kMaxNumberOfHotcues)
@@ -80,10 +80,13 @@ class WaveformMarkSet {
 
     void update();
 
+    void updateSafe();
+
     void setBreadth(float breadth);
 
     void clear() {
         m_marks.clear();
+        const auto locker = lockMutex(&m_mutex);
         m_marksToRender.clear();
     }
 
@@ -98,8 +101,12 @@ class WaveformMarkSet {
   private:
     WaveformMarkPointer m_pDefaultMark;
     QList<WaveformMarkPointer> m_marks;
+
+    QMutex m_mutex;
     // List of visible WaveformMarks sorted by the order they appear in the track
     QList<WaveformMarkPointer> m_marksToRender;
+    // Copy of m_marksToRender, guaranteed to not change during rendering
+    QList<WaveformMarkPointer> m_marksToRenderSafe;
 
     QMap<int, WaveformMarkPointer> m_hotCueMarks;
 
