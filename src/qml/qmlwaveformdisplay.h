@@ -102,6 +102,8 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
   private:
     void setCurrentTrack(TrackPointer pTrack);
+    const QmlWaveformRendererFactory::Renderer& createOrCached(
+            QmlWaveformRendererFactory* pQmlRenderer);
 
     // Properties
     QPointer<QmlPlayerProxy> m_pPlayer;
@@ -120,6 +122,8 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     DirtyFlags m_dirtyFlag{DirtyFlag::None};
     QList<QmlWaveformRendererFactory*> m_waveformRenderers;
+
+    std::map<std::string, QmlWaveformRendererFactory::Renderer> m_rendererCache;
 };
 
 } // namespace qml
