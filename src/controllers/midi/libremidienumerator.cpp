@@ -275,7 +275,7 @@ LibremidiEnumerator::LibremidiEnumerator(
     }};
 
     qWarning() << "Using libremidi backend: "
-               << libremidi::get_api_display_name(m_observer.get_current_api());
+               << libremidi::get_api_display_name(m_observer.get_current_api()).data();
 }
 
 QList<Controller*> LibremidiEnumerator::queryDevices() {
