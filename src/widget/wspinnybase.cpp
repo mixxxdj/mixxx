@@ -490,6 +490,7 @@ void WSpinnyBase::updateSlipEnabled(double enabled) {
 }
 
 void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
+    qWarning() << "WSpinnyBase::mouseMoveEvent";
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     int y = static_cast<int>(e->position().y());
     int x = static_cast<int>(e->position().x());
@@ -627,6 +628,7 @@ void WSpinnyBase::hideEvent(QHideEvent* event) {
 }
 
 bool WSpinnyBase::event(QEvent* pEvent) {
+    qWarning() << "WSpinnyBase  event:" << pEvent;
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }

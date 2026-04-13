@@ -11,6 +11,9 @@ WSpinny::WSpinny(
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
         : WSpinnyBase(pParent, group, pConfig, pVCMan, pPlayer) {
+    qWarning() << ".";
+    qWarning() << ". WSpinny" << group;
+    qWarning() << ".";
 }
 
 void WSpinny::draw() {

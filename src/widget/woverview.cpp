@@ -513,6 +513,7 @@ void WOverview::receiveCuesUpdated() {
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
+        qWarning() << "WOverview::mouseMoveEvent -> m_bLeftClickDragging" << e->pos();
         if (isPosInAllowedPosDragZone(e->pos())) {
             m_bTimeRulerActive = true;
             m_timeRulerPos = e->pos();
@@ -535,6 +536,8 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
         } else {
             m_iPickupPos = math_clamp(e->pos().y(), 0, height() - 1);
         }
+    } else {
+        qWarning() << "WOverview::mouseMoveEvent -> no button or right button" << e->pos();
     }
 
     // Do not activate cue hovering while right click is held down and the
@@ -555,6 +558,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
+    qWarning() << "WOverview::mouseReleaseEvent";
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
@@ -590,7 +594,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void WOverview::mousePressEvent(QMouseEvent* e) {
-    //qDebug() << "WOverview::mousePressEvent" << e->pos();
+    qWarning() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
@@ -668,6 +672,7 @@ void WOverview::slotCueMenuPopupAboutToHide() {
 }
 
 void WOverview::leaveEvent(QEvent* pEvent) {
+    qWarning() << "WOverview --> LEAVE";
     Q_UNUSED(pEvent);
     if (!m_pCueMenuPopup->isVisible()) {
         m_pHoveredMark.clear();
