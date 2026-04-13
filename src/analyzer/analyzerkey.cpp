@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "analyzer/analyzersilence.h"
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #if defined __KEYFINDER__
@@ -206,7 +207,7 @@ bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
     }
 
     // Track whether any non-silent audio has been seen across all blocks
-    if (SampleUtil::maxAbsAmplitude(pKeyInput, count) >= 1e-6f) {
+    if (SampleUtil::maxAbsAmplitude(pKeyInput, count) >= kSilenceThreshold) {
         m_bHasSignal = true;
     }
 

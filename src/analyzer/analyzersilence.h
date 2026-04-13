@@ -4,6 +4,8 @@
 #include "preferences/usersettings.h"
 #include "util/span.h"
 
+inline constexpr CSAMPLE kSilenceThreshold = 0.001f;
+
 class AnalyzerTrack;
 class Track;
 
