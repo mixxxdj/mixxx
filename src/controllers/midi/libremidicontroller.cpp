@@ -72,7 +72,9 @@ void LibremidiController::onMessage(const libremidi::message& m) {
 
     if ((status & 0xF8) == 0xF8) {
         // Handle real-time MIDI messages at any time
-        receivedShortMessage(status, 0, 0, timestamp);
+        QMetaObject::invokeMethod(this, [=, this] {
+            receivedShortMessage(status, 0, 0, timestamp);
+        });
         return;
     }
 
@@ -84,7 +86,9 @@ void LibremidiController::onMessage(const libremidi::message& m) {
         // unsigned char channel = status & 0x0F;
         unsigned char note = m.bytes[1];
         unsigned char velocity = m.bytes[2];
-        receivedShortMessage(status, note, velocity, timestamp);
+        QMetaObject::invokeMethod(this, [=, this] {
+            receivedShortMessage(status, note, velocity, timestamp);
+        });
     }
 }
 
