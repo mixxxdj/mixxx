@@ -1,9 +1,7 @@
 #ifndef DLGKEYWHEEL_H
 #define DLGKEYWHEEL_H
 
-#include <QDialog>
 #include <QDomDocument>
-#include <QSvgWidget>
 
 #include "dialog/ui_dlgkeywheel.h"
 #include "preferences/usersettings.h"
