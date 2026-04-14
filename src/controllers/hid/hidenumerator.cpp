@@ -88,9 +88,7 @@ bool recognizeDevice(const mixxx::hid::DeviceInfo& deviceInfo) {
                 interface_number != denylisted.interface_number) {
             continue;
         }
-#ifdef __ANDROID__
-        continue;
-#else
+#ifndef __ANDROID__
         // Denylist entry based on usage_page and usage (both required)
         if (denylisted.usage_page != kAnyValue && denylisted.usage != kAnyValue) {
             // If usage_page is different, skip.
