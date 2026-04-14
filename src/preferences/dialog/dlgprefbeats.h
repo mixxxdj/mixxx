@@ -3,7 +3,7 @@
 #include <QList>
 #include <QString>
 
-#include "analyzer/plugins/analyzerplugin.h"
+#include "analyzer/analyzer_plugin_info.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"

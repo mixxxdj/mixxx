@@ -3,7 +3,7 @@
 #include <QList>
 #include <QMap>
 
-#include "analyzer/plugins/analyzerplugin.h"
+#include "analyzer/analyzer_plugin_info.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
 #include "preferences/keydetectionsettings.h"
