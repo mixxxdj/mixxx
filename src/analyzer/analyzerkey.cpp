@@ -1,6 +1,6 @@
 #include "analyzer/analyzerkey.h"
 
-#include <QtDebug>
+#include <QDebug>
 
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
