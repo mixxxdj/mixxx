@@ -558,7 +558,21 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
-    qWarning() << "WOverview::mouseReleaseEvent";
+    qWarning() << "WOverview::mouseReleaseEvent" << e->pos() << e->button();
+    if (e->button() == Qt::NoButton) {
+        qWarning() << "--> ! no button, synth new event";
+        e = new QMouseEvent(e->type(),
+#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
+                e->pos(),
+                e->globalPosition(),
+#else
+                e->position(),
+                e->globalPosition(),
+#endif
+                Qt::LeftButton,
+                Qt::MouseButtons{Qt::LeftButton},
+                Qt::NoModifier);
+    }
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
