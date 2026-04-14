@@ -5,7 +5,7 @@
 
 #include "control/control.h"
 #include "controllers/midi/midiopcode.h"
-#include "preferences/usersettings.h"
+#include "preferences/usersettings_fwd.h"
 
 class ControlObject : public QObject {
     Q_OBJECT

@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "moc_control.cpp"
+#include "preferences/usersettings.h"
 #include "util/mutex.h"
 #include "util/stat.h"
 

@@ -5,7 +5,7 @@
 #include <QString>
 
 #include "control/control.h"
-#include "preferences/usersettings.h"
+#include "preferences/usersettings_fwd.h"
 
 //// This class is the successor of ControlObjectThread. It should be used for
 /// new code to avoid unnecessary locking during send if no slot is connected.
