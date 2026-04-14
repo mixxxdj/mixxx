@@ -2,9 +2,9 @@
 
 #include <cmath>
 #include <limits>
+#include <memory>
 
 #include "analyzer/analyzer.h"
-#include "library/dao/analysisdao.h"
 #include "util/performancetimer.h"
 #include "util/sample.h"
 #include "waveform/waveform.h"
@@ -15,6 +15,7 @@
 class QImage;
 #endif
 
+class AnalysisDao;
 class EngineFilterIIRBase;
 class QSqlDatabase;
 
@@ -159,7 +160,7 @@ class AnalyzerWaveform : public Analyzer {
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
-    mutable AnalysisDao m_analysisDao;
+    mutable std::unique_ptr<AnalysisDao> m_analysisDao;
 
     WaveformPointer m_waveform;
     WaveformPointer m_waveformSummary;
