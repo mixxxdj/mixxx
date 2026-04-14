@@ -4,7 +4,7 @@
 #include <QTimer>
 
 #include "control/controlbuttonmode.h"
-#include "controllers/midi/midimessage.h"
+#include "controllers/midi/midiopcode.h"
 
 class ControlDoublePrivate;
 

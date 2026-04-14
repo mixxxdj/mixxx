@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QObject>
 #include <QEvent>
+#include <QObject>
 
-#include "preferences/usersettings.h"
-#include "controllers/midi/midimessage.h"
 #include "control/control.h"
+#include "controllers/midi/midiopcode.h"
+#include "preferences/usersettings.h"
 
 class ControlObject : public QObject {
     Q_OBJECT
