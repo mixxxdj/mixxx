@@ -4,7 +4,8 @@
 #include <cmath>
 #include <limits>
 
-#include "engine/engine.h"
+#include "audio/enginechannelcount.h"
+#include "audio/signalinfo.h"
 #include "util/compatibility/qhash.h"
 #include "util/fpclassify.h"
 
