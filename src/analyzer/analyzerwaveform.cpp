@@ -6,6 +6,7 @@
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "engine/filters/enginefilterbessel4.h"
+#include "library/dao/analysisdao.h"
 #include "track/track.h"
 #include "util/logger.h"
 #include "waveform/waveform.h"
@@ -24,13 +25,13 @@ constexpr double kMidHighFreqHz = 4000.0;
 AnalyzerWaveform::AnalyzerWaveform(
         UserSettingsPointer pConfig,
         const QSqlDatabase& dbConnection)
-        : m_analysisDao(pConfig),
+        : m_analysisDao(std::make_unique<AnalysisDao>(pConfig)),
           m_waveformData(nullptr),
           m_waveformSummaryData(nullptr),
           m_stride(0, 0, 0),
           m_currentStride(0),
           m_currentSummaryStride(0) {
-    m_analysisDao.initialize(dbConnection);
+    m_analysisDao->initialize(dbConnection);
 }
 
 AnalyzerWaveform::~AnalyzerWaveform() {
@@ -114,7 +115,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
 
     if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
-                m_analysisDao.getAnalysesForTrack(trackId);
+                m_analysisDao->getAnalysesForTrack(trackId);
 
         QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
         while (it.hasNext()) {
@@ -129,7 +130,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
                     missingWaveform = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_analysisDao.deleteAnalysis(analysis.analysisId);
+                    m_analysisDao->deleteAnalysis(analysis.analysisId);
                 }
             }
             if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
@@ -140,7 +141,7 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
                     missingWavesummary = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_analysisDao.deleteAnalysis(analysis.analysisId);
+                    m_analysisDao->deleteAnalysis(analysis.analysisId);
                 }
             }
         }
@@ -344,7 +345,7 @@ void AnalyzerWaveform::storeResults(TrackPointer pTrack) {
     // waveforms (i.e. if the config setting was disabled in a previous scan)
     // and then it is not called. The other analyzers have signals which control
     // the update of their data.
-    m_analysisDao.saveTrackAnalyses(
+    m_analysisDao->saveTrackAnalyses(
             pTrack->getId(),
             m_waveform,
             m_waveformSummary);

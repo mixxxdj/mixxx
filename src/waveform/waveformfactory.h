@@ -1,6 +1,6 @@
 #pragma once
 
-#include "library/dao/analysisdao.h"
+#include "library/dao/analysisinfo.h"
 
 class Waveform;
 
@@ -54,7 +54,7 @@ class WaveformFactory {
     };
 
     static Waveform* loadWaveformFromAnalysis(
-            const AnalysisDao::AnalysisInfo& analysis);
+            const AnalysisInfo& analysis);
     static VersionClass waveformVersionToVersionClass(const QString& version);
     static VersionClass waveformSummaryVersionToVersionClass(const QString& version);
     static QString currentWaveformVersion();

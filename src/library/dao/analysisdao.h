@@ -2,9 +2,9 @@
 
 #include <QDir>
 
-#include "preferences/usersettings.h"
+#include "library/dao/analysisinfo.h"
 #include "library/dao/dao.h"
-#include "track/trackid.h"
+#include "preferences/usersettings.h"
 #include "waveform/waveform.h"
 
 class QSqlDatabase;
@@ -13,24 +13,13 @@ class AnalysisDao : public DAO {
   public:
     static const QString s_analysisTableName;
 
-    enum AnalysisType {
-        TYPE_UNKNOWN = 0,
-        TYPE_WAVEFORM,
-        TYPE_WAVESUMMARY
-    };
-
-    struct AnalysisInfo {
-        AnalysisInfo()
-                : analysisId(-1),
-                  type(TYPE_UNKNOWN) {
-        }
-        int analysisId;
-        TrackId trackId;
-        AnalysisType type;
-        QString description;
-        QString version;
-        QByteArray data;
-    };
+    // These aliases keep existing code that references AnalysisDao::AnalysisType,
+    // AnalysisDao::AnalysisInfo, and AnalysisDao::TYPE_* working unchanged.
+    using AnalysisType = ::AnalysisType;
+    using AnalysisInfo = ::AnalysisInfo;
+    static constexpr AnalysisType TYPE_UNKNOWN = ::TYPE_UNKNOWN;
+    static constexpr AnalysisType TYPE_WAVEFORM = ::TYPE_WAVEFORM;
+    static constexpr AnalysisType TYPE_WAVESUMMARY = ::TYPE_WAVESUMMARY;
 
     explicit AnalysisDao(UserSettingsPointer pConfig);
     ~AnalysisDao() override = default;
