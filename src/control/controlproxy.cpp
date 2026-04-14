@@ -2,6 +2,7 @@
 
 #include "control/control.h"
 #include "moc_controlproxy.cpp"
+#include "preferences/usersettings.h"
 
 ControlProxy::ControlProxy(const QString& g, const QString& i, QObject* pParent, ControlFlags flags)
         : ControlProxy(ConfigKey(g, i), pParent, flags) {

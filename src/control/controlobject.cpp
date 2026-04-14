@@ -4,6 +4,7 @@
 
 #include "control/control.h"
 #include "moc_controlobject.cpp"
+#include "preferences/usersettings.h"
 
 ControlObject::ControlObject()
         : m_pControl(ControlDoublePrivate::getDefaultControl()) {
