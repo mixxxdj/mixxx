@@ -1,6 +1,7 @@
 #pragma once
 
 #include "preferences/usersettings.h"
+#include "proto/keys.pb.h"
 
 #define VAMP_CONFIG_KEY "[Vamp]"
 
