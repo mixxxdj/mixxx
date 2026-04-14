@@ -14,7 +14,6 @@
 
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
-#include "controllers/hid/hidusagetables.h"
 #include "moc_hidenumerator.cpp"
 #include "util/cmdlineargs.h"
 
@@ -38,14 +37,17 @@ constexpr unsigned short kAppleIncVendorId = 0x004c;
 } // namespace mixxx
 
 namespace {
-bool recognizeDevice(unsigned short vendor_id,
-        unsigned short product_id,
-        int interface_number,
-        unsigned short usage_page = 0,
-        unsigned short usage = 0) {
+
+bool recognizeDevice(const mixxx::hid::DeviceInfo& deviceInfo) {
+    const unsigned short vendor_id = deviceInfo.getVendorId();
+    const unsigned short product_id = deviceInfo.getProductId();
+    const int interface_number = deviceInfo.getUsbInterfaceNumber().value_or(
+            kInvalidInterfaceNumber);
 // On Android, usage_page and usage are only accessible when permission is
 // granted to the device, so we don't use it for device detection.
 #ifndef __ANDROID__
+    const unsigned short usage_page = deviceInfo.getUsagePage();
+    const unsigned short usage = deviceInfo.getUsage();
     // Skip mice and keyboards. Users can accidentally disable their mouse
     // and/or keyboard by enabling them as HID controllers in Mixxx.
     // https://github.com/mixxxdj/mixxx/issues/10498
@@ -88,7 +90,7 @@ bool recognizeDevice(unsigned short vendor_id,
         }
 #ifdef __ANDROID__
         continue;
-#endif
+#else
         // Denylist entry based on usage_page and usage (both required)
         if (denylisted.usage_page != kAnyValue && denylisted.usage != kAnyValue) {
             // If usage_page is different, skip.
@@ -100,19 +102,13 @@ bool recognizeDevice(unsigned short vendor_id,
                 continue;
             }
         }
+#endif
         return false;
     }
     return true;
 }
-} // namespace
 
-bool HidEnumerator::recognizeDevice(const hid_device_info& device_info) const {
-    return ::recognizeDevice(device_info.vendor_id,
-            device_info.product_id,
-            device_info.interface_number,
-            device_info.usage_page,
-            device_info.usage);
-}
+} // namespace
 
 HidEnumerator::~HidEnumerator() {
     qDebug() << "Deleting HID devices...";
@@ -158,27 +154,22 @@ QList<Controller*> HidEnumerator::queryDevices() {
                     "(I)Landroid/hardware/usb/UsbInterface;",
                     ifaceIdx);
             if (usbInterface.callMethod<jint>("getInterfaceClass") == LIBUSB_CLASS_HID) {
-                auto device_info = mixxx::hid::DeviceInfo(usbDevice, usbInterface);
+                auto deviceInfo = mixxx::hid::DeviceInfo(usbDevice, usbInterface);
 
-                if (!::recognizeDevice(device_info.getVendorId(),
-                            device_info.getProductId(),
-                            device_info.getUsbInterfaceNumber().value())) {
-                    qInfo()
-                            << "Excluding HID device"
-                            << device_info;
+                if (!recognizeDevice(deviceInfo)) {
+                    qInfo() << "Excluding HID device" << deviceInfo;
                     continue;
                 }
 
-                qInfo() << "Found HID device:"
-                        << device_info;
+                qInfo() << "Found HID device:" << deviceInfo;
 
-                if (!device_info.isValid()) {
+                if (!deviceInfo.isValid()) {
                     qWarning() << "HID device permissions problem or device error."
                                << "Your account needs write access to HID controllers.";
                     continue;
                 }
 
-                HidController* newDevice = new HidController(std::move(device_info));
+                HidController* newDevice = new HidController(std::move(deviceInfo));
                 m_devices.push_back(newDevice);
             }
         }
@@ -186,11 +177,11 @@ QList<Controller*> HidEnumerator::queryDevices() {
 #else
 
     QStringList enumeratedDevices;
-    hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
-    for (const auto* device_info = device_info_list;
-            device_info;
-            device_info = device_info->next) {
-        auto deviceInfo = mixxx::hid::DeviceInfo(*device_info);
+    hid_device_info* p_device_info_list = hid_enumerate(0x0, 0x0);
+    for (const auto* p_device_info = p_device_info_list;
+            p_device_info;
+            p_device_info = p_device_info->next) {
+        auto deviceInfo = mixxx::hid::DeviceInfo(*p_device_info);
         // The hidraw backend of hidapi on Linux returns many duplicate hid_device_info's from hid_enumerate,
         // so filter them out.
         // https://github.com/libusb/hidapi/issues/298
@@ -200,14 +191,11 @@ QList<Controller*> HidEnumerator::queryDevices() {
         }
         enumeratedDevices.append(QString(deviceInfo.pathRaw()));
 
-        if (!recognizeDevice(*device_info)) {
-            qInfo()
-                    << "Excluding HID device"
-                    << deviceInfo;
+        if (!recognizeDevice(deviceInfo)) {
+            qInfo() << "Excluding HID device" << deviceInfo;
             continue;
         }
-        qInfo() << "Found HID device:"
-                << deviceInfo;
+        qInfo() << "Found HID device:" << deviceInfo;
 
         if (!deviceInfo.isValid()) {
             qWarning() << "HID device permissions problem or device error."
@@ -218,7 +206,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
         HidController* newDevice = new HidController(std::move(deviceInfo));
         m_devices.push_back(newDevice);
     }
-    hid_free_enumeration(device_info_list);
+    hid_free_enumeration(p_device_info_list);
 #endif
 
     return m_devices;
