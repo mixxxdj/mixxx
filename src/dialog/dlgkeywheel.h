@@ -6,6 +6,7 @@
 #include <QSvgWidget>
 
 #include "dialog/ui_dlgkeywheel.h"
+#include "preferences/usersettings.h"
 #include "track/keyutils.h"
 
 class DlgKeywheel : public QDialog, public Ui::DlgKeywheel {

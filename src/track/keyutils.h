@@ -5,7 +5,6 @@
 #include <QString>
 
 #include "audio/types.h"
-#include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
 #include "util/color/colorpalette.h"

@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 
+#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "mixer/sampler.h"

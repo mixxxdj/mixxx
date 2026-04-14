@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 #include "track/keyutils.h"
 
+class ControlProxy;
 class QWidget;
 
 class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {

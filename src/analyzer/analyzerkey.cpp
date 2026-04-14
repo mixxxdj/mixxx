@@ -11,6 +11,7 @@
 #include "proto/keys.pb.h"
 #include "track/keyfactory.h"
 #include "track/track.h"
+#include "util/sample.h"
 
 namespace {
 constexpr int excludeFirstChannelMask = 0x1;

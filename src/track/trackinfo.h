@@ -3,7 +3,6 @@
 #include <QString>
 #include <QUuid>
 
-#include "sources/audiosource.h"
 #include "track/bpm.h"
 #include "track/replaygain.h"
 #include "track/serato/tags.h"
