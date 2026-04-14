@@ -76,7 +76,7 @@ bool ITunesDAO::importTrack(const ITunesTrack& track) {
         query.bindValue(":title", track.title);
         query.bindValue(":album", track.album);
         query.bindValue(":album_artist", track.albumArtist);
-        query.bindValue(":genre", track.genre.trimmed());
+        query.bindValue(":genre", track.genre);
         query.bindValue(":grouping", track.grouping);
         query.bindValue(":year", track.year > 0 ? QVariant(track.year) : QVariant());
         query.bindValue(":duration", track.duration);

@@ -390,7 +390,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
     query.bindValue(":album", album);
-    query.bindValue(":genre", genre.trimmed());
+    query.bindValue(":genre", genre);
     query.bindValue(":year", year);
     query.bindValue(":duration", playtime);
     query.bindValue(":location", location);

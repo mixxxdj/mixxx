@@ -145,7 +145,7 @@ class ImporterImpl {
                 .album = QString::fromNSString(item.albumTitle),
                 .albumArtist = QString::fromNSString(item.albumArtist),
                 .composer = QString::fromNSString(item.composer),
-                .genre = QString::fromNSString(item.genre.trimmed()),
+                .genre = QString::fromNSString(item.genre),
                 .grouping = QString::fromNSString(item.userGrouping),
                 .year = 0, // TODO: Infer from releaseDate?
                 .duration = static_cast<int>(item.playbackDuration / 1000),

@@ -598,7 +598,7 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":album", albumInfo.getTitle());
     pTrackLibraryQuery->bindValue(":album_artist", albumInfo.getArtist());
     pTrackLibraryQuery->bindValue(":year", trackInfo.getYear());
-    pTrackLibraryQuery->bindValue(":genre", trackInfo.getGenre().trimmed());
+    pTrackLibraryQuery->bindValue(":genre", trackInfo.getGenre());
     pTrackLibraryQuery->bindValue(":composer", trackInfo.getComposer());
     pTrackLibraryQuery->bindValue(":grouping", trackInfo.getGrouping());
     pTrackLibraryQuery->bindValue(":tracknumber", trackInfo.getTrackNumber());

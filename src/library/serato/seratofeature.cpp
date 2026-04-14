@@ -583,7 +583,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                 query.bindValue(":title", track.title);
                 query.bindValue(":artist", track.artist);
                 query.bindValue(":album", track.album);
-                query.bindValue(":genre", track.genre.trimmed());
+                query.bindValue(":genre", track.genre);
                 query.bindValue(":comment", track.comment);
                 query.bindValue(":grouping", track.grouping);
                 query.bindValue(":year", track.year);
