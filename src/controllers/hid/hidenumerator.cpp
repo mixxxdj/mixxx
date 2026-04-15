@@ -41,8 +41,10 @@ namespace {
 bool recognizeDevice(const mixxx::hid::DeviceInfo& deviceInfo) {
     const unsigned short vendor_id = deviceInfo.getVendorId();
     const unsigned short product_id = deviceInfo.getProductId();
-    const int interface_number = deviceInfo.getUsbInterfaceNumber().value_or(
-            kInvalidInterfaceNumber);
+    const auto usbInterfaceNumber = deviceInfo.getUsbInterfaceNumber();
+    const int interface_number = usbInterfaceNumber.has_value()
+            ? static_cast<int>(*usbInterfaceNumber)
+            : kInvalidInterfaceNumber;
 // On Android, usage_page and usage are only accessible when permission is
 // granted to the device, so we don't use it for device detection.
 #ifndef __ANDROID__
