@@ -77,22 +77,22 @@ void ReverbEffect::loadEngineEffectParameters(
     m_pSendParameter = parameters.value("send_amount");
 }
 
-float averageSampleDifferenceEnergy(const SINT samplesPerBuffer,
-        const CSAMPLE* buffer_in,
-        const CSAMPLE* buffer_out,
-        const SINT tailCheckLength) {
-    if (tailCheckLength == 0) {
-        return 0;
+namespace {
+
+// -60 dB, same threshold as used in analyzersilence.cpp
+constexpr CSAMPLE kSilenceThreshold = 0.001f;
+
+bool isReverbTailSilent(const CSAMPLE* pInput,
+        const CSAMPLE* pOutput,
+        SINT numSamples) {
+    for (SINT i = 0; i < numSamples; ++i) {
+        if (std::abs(pOutput[i] - pInput[i]) >= kSilenceThreshold) {
+            return false;
+        }
     }
-    float differenceSum = 0.0f;
-    for (SINT i = samplesPerBuffer - tailCheckLength;
-            i < samplesPerBuffer;
-            ++i) {
-        differenceSum += std::abs(buffer_out[i] - buffer_in[i]);
-    }
-    // Calculate average of the differences
-    const float averageDifference = differenceSum / tailCheckLength;
-    return averageDifference;
+    return true;
+}
+
 }
 
 void ReverbEffect::processChannel(
@@ -135,14 +135,7 @@ void ReverbEffect::processChannel(
     pState->sendPrevious = sendCurrent;
 
     if (enableState == EffectEnableState::Disabling) {
-        // Calculate absolute difference between wet and dry buffers for the tail
-        const SINT tailCheckLength = engineParameters.samplesPerBuffer() / 4;
-        const float averageDifference = averageSampleDifferenceEnergy(
-                engineParameters.samplesPerBuffer(),
-                pInput,
-                pOutput,
-                tailCheckLength);
-        if (averageDifference < 0.002f) {
+        if (isReverbTailSilent(pInput, pOutput, engineParameters.samplesPerBuffer())) {
             m_isReadyForDisable = true;
         }
     }
