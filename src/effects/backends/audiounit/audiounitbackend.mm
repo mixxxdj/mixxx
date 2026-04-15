@@ -18,7 +18,7 @@
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
   public:
-    AudioUnitBackend() : m_componentsById([[NSDictionary alloc] init]) {
+    AudioUnitBackend() : m_componentsById([NSDictionary dictionary]) {
         loadAudioUnits();
     }
 
@@ -76,7 +76,7 @@ class AudioUnitBackend : public EffectsBackend {
                 [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
 
         NSMutableArray<AVAudioUnitComponent*>* allComponents =
-                [[NSMutableArray alloc] init];
+                [NSMutableArray array];
 
         for (OSType componentType :
                 {kAudioUnitType_Effect, kAudioUnitType_MusicEffect}) {
@@ -94,7 +94,7 @@ class AudioUnitBackend : public EffectsBackend {
 
         // Assign ids to the components
         NSMutableDictionary<NSString*, AVAudioUnitComponent*>* componentsById =
-                [[NSMutableDictionary alloc] init];
+                [NSMutableDictionary dictionary];
         QHash<QString, EffectManifestPointer> manifestsById;
 
         for (AVAudioUnitComponent* component in allComponents) {
