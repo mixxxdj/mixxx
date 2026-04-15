@@ -35,7 +35,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     static EffectManifestPointer getManifest();
     bool isReadyForDisable() override {
         return m_isReadyForDisable;
-    };
+    }
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;

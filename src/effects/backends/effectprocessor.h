@@ -112,7 +112,7 @@ class EffectProcessor {
     virtual SINT getGroupDelayFrames() = 0;
     virtual bool isReadyForDisable() {
         return true;
-    };
+    }
 };
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of

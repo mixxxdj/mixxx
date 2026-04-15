@@ -55,7 +55,7 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
     bool isReadyForDisable() override {
         return m_isReadyForDisable;
-    };
+    }
     void processChannel(
             EchoGroupState* pState,
             const CSAMPLE* pInput,
