@@ -132,6 +132,8 @@ void ReverbEffect::processChannel(
             sendCurrent,
             pState->sendPrevious);
 
+    pState->sendPrevious = sendCurrent;
+
     if (enableState == EffectEnableState::Disabling) {
         // Calculate absolute difference between wet and dry buffers for the tail
         const SINT tailCheckLength = engineParameters.samplesPerBuffer() / 4;
