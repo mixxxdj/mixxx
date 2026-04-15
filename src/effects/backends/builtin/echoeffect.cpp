@@ -1,5 +1,6 @@
 #include "effects/backends/builtin/echoeffect.h"
 
+#include <algorithm>
 #include <span>
 
 #include "effects/backends/effectmanifest.h"
@@ -18,6 +19,14 @@ void incrementRing(int* pIndex, int increment, int length) {
 
 void decrementRing(int* pIndex, int decrement, int length) {
     *pIndex = (*pIndex + length - decrement) % length;
+}
+
+// -60 dB, same threshold as used in analyzersilence.cpp
+constexpr CSAMPLE kSilenceThreshold = 0.001f;
+
+bool isBufferSilent(std::span<const CSAMPLE> buffer) {
+    return std::none_of(buffer.begin(), buffer.end(),
+            [](CSAMPLE s) { return std::abs(s) >= kSilenceThreshold; });
 }
 
 } // anonymous namespace
@@ -118,14 +127,6 @@ void EchoEffect::loadEngineEffectParameters(
     m_pPingPongParameter = parameters.value("pingpong_amount");
     m_pQuantizeParameter = parameters.value("quantize");
     m_pTripletParameter = parameters.value("triplet");
-}
-
-float averageSampleLevel(std::span<const CSAMPLE> delay_buffer) {
-    float differenceSum = 0.0f;
-    for (const CSAMPLE sample : delay_buffer) {
-        differenceSum += std::abs(sample);
-    }
-    return differenceSum / delay_buffer.size();
 }
 
 void EchoEffect::processChannel(
@@ -258,11 +259,8 @@ void EchoEffect::processChannel(
     pGroupState->prev_send = send_current;
     if (enableState == EffectEnableState::Disabling) {
         pGroupState->prev_send = 0;
-        const SINT delayBufferSize = pGroupState->delay_buf.size();
-        // Calculate if the delayline-buffer is approx. zero/empty.
-        const float avgSampleLevel = averageSampleLevel(pGroupState->delay_buf.span().first(engineParameters.sampleRate()));
-        // If echo tail fully faded
-        if (avgSampleLevel < (0.00001f / delayBufferSize)) {
+        // Check if the delay buffer is silent (all samples below -60 dB)
+        if (isBufferSilent(pGroupState->delay_buf.span())) {
             m_isReadyForDisable = true;
             pGroupState->delay_buf.clear();
         }
