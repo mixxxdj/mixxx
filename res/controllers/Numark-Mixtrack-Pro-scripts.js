@@ -56,7 +56,6 @@ NumarkMixTrackPro.init = function(id) {
     NumarkMixTrackPro.isPflOn = [0, 0];
     engine.makeConnection("[Channel1]", "pfl", (value) => {
         NumarkMixTrackPro.isPflOn[0] = value;
-        console.log("NumarkMixTrackPro.isPflOn[0]", NumarkMixTrackPro.isPflOn[0]);
     });
     engine.makeConnection("[Channel2]", "pfl", (value) => {
         NumarkMixTrackPro.isPflOn[1] = value;
@@ -127,13 +126,6 @@ NumarkMixTrackPro.init = function(id) {
 
     NumarkMixTrackPro.ledTimers = {};
 
-    NumarkMixTrackPro.LedTimer = function(id, led, count, state) {
-        this.id = id;
-        this.led = led;
-        this.count = count;
-        this.state = state;
-    };
-
     // Turn off all the lights
     for (let i = 0x30; i <= 0x73; i++) {
         midi.sendShortMsg(0x90, i, 0x00);
@@ -182,24 +174,24 @@ NumarkMixTrackPro.init = function(id) {
     engine.makeConnection(
         "[Channel1]",
         "peak_indicator",
-        NumarkMixTrackPro.Channel1Clip
+        NumarkMixTrackPro.clipLED
     );
     engine.makeConnection(
         "[Channel2]",
         "peak_indicator",
-        NumarkMixTrackPro.Channel2Clip
+        NumarkMixTrackPro.clipLED
     );
 
     // Stutter beat light
     engine.makeConnection(
         "[Channel1]",
         "beat_active",
-        NumarkMixTrackPro.Stutter1Beat
+        NumarkMixTrackPro.flashStutterLED
     );
     engine.makeConnection(
         "[Channel2]",
         "beat_active",
-        NumarkMixTrackPro.Stutter2Beat
+        NumarkMixTrackPro.flashStutterLED
     );
 
     // Settings
@@ -305,30 +297,16 @@ NumarkMixTrackPro.pitchFader = function(
     engine.setParameter(group, "rate", newValue);
 };
 
-NumarkMixTrackPro.setStutterBeat = function(deck, value) {
-    const secondsBlink = 30;
-    const secondsToEnd =
-        engine.getParameter(`[Channel${deck}]`, "duration") *
-        (1 - engine.getParameter(`[Channel${deck}]`, "playposition"));
-
+NumarkMixTrackPro.flashStutterLED = function(value, group) {
+    const deck = script.deckFromGroup(group);
     if (
-        secondsToEnd < secondsBlink &&
-        secondsToEnd > 1 &&
-        engine.getParameter(`[Channel${deck}]`, "play")
+        engine.getParameter(group, "end_of_track") &&
+        engine.getParameter(group, "play")
     ) {
-        // The song is going to end
         NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck].Cue, value);
     }
 
     NumarkMixTrackPro.setLED(NumarkMixTrackPro.leds[deck].stutter, value);
-};
-
-NumarkMixTrackPro.Stutter1Beat = function(value) {
-    NumarkMixTrackPro.setStutterBeat(1, value);
-};
-
-NumarkMixTrackPro.Stutter2Beat = function(value) {
-    NumarkMixTrackPro.setStutterBeat(2, value);
 };
 
 NumarkMixTrackPro.ledTimers = NumarkMixTrackPro.ledTimers || {};
@@ -360,20 +338,14 @@ NumarkMixTrackPro.flashLED = function(note, times) {
     });
 };
 
-NumarkMixTrackPro.clipLED = function(value, note) {
+NumarkMixTrackPro.clipLED = function(value, group) {
+    const deck = script.deckFromGroup(group);
+    const note = NumarkMixTrackPro.leds[deck].sync;
     if (value > 0) {
         NumarkMixTrackPro.flashLED(note, 1);
     } else {
         NumarkMixTrackPro.setLED(note, false);
     }
-};
-
-NumarkMixTrackPro.Channel1Clip = function(value) {
-    NumarkMixTrackPro.clipLED(value, NumarkMixTrackPro.leds[1].sync);
-};
-
-NumarkMixTrackPro.Channel2Clip = function(value) {
-    NumarkMixTrackPro.clipLED(value, NumarkMixTrackPro.leds[2].sync);
 };
 
 NumarkMixTrackPro.selectKnob = function(channel, control, value) {
@@ -407,10 +379,13 @@ NumarkMixTrackPro.LoadTrack = function(
     if (value) {
         script.triggerControl(group, "LoadSelectedTrack", 50);
 
-        // reset rate/pitch to 0%
-        engine.softTakeover(group, "rate", false);
-        engine.setParameter(group, "rate", 0.5);
-        engine.softTakeover(group, "rate", true);
+        // * Reset rate/pitch to 0%
+        // that can be set in:
+        // Preferences -> Decks -> Key and Speed options.
+        // Old code as reference, in case on particular custom needs:
+        // engine.softTakeover(group, "rate", false);
+        // engine.setParameter(group, "rate", 0.5);
+        // engine.softTakeover(group, "rate", true);
     }
 };
 
@@ -497,23 +472,19 @@ NumarkMixTrackPro.playbutton = function(channel, control, value, status, group) 
     const deck = script.deckFromGroup(group);
 
     if (typeof engine.isBrakeActive !== "function") {
-    // Legacy Mixxx v.2.5
-    // Play/Pause standard
-        if (engine.getValue(group, "play")) {
-            engine.setValue(group, "play", 0);
-        } else {
-            engine.setValue(group, "play", 1);
-        }
+        // Legacy Mixxx v.2.5
+        // Play/Pause standard
+        script.toggleControl(group, "play");
     } else {
-    // Mixxx v.2.6+ required
-    // Brake and Soft Start if scratch led is on and setting is enabled.
-    // Else Play/Pause standard
+        // Mixxx v.2.6+ required
+        // Brake and Soft Start if scratch led is on and setting is enabled.
+        // Else Play/Pause standard
         if (engine.getParameter(group, "play")) {
             if (
                 NumarkMixTrackPro.settings.brakeEnabled &&
-        NumarkMixTrackPro.scratchMode[deck - 1] &&
-        !engine.isScratching(deck) &&
-        engine.getParameter(group, "play_latched")
+                NumarkMixTrackPro.scratchMode[deck - 1] &&
+                !engine.isScratching(deck) &&
+                engine.getParameter(group, "play_latched")
             ) {
                 engine.brake(deck, true);
             } else {
@@ -522,9 +493,9 @@ NumarkMixTrackPro.playbutton = function(channel, control, value, status, group) 
         } else {
             if (
                 NumarkMixTrackPro.settings.softStartEnabled &&
-        NumarkMixTrackPro.scratchMode[deck - 1] &&
-        !engine.isScratching(deck) &&
-        !engine.getParameter(group, "play_latched")
+                NumarkMixTrackPro.scratchMode[deck - 1] &&
+                !engine.isScratching(deck) &&
+                !engine.getParameter(group, "play_latched")
             ) {
                 engine.softStart(deck, true);
             } else {
@@ -547,11 +518,7 @@ NumarkMixTrackPro.toggleManualLooping = function(
 
     if (NumarkMixTrackPro.shiftKey[deck - 1]) {
         // If Shift is on, toggle quantize
-        if (engine.getParameter(group, "quantize")) {
-            engine.setParameter(group, "quantize", 0);
-        } else {
-            engine.setParameter(group, "quantize", 1);
-        }
+        script.toggleControl(group, "quantize");
 
         NumarkMixTrackPro.toggleShiftKey(channel, control, value, status, group);
     } else {
