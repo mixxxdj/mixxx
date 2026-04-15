@@ -401,12 +401,16 @@ void Tooltips::addStandardTooltips() {
             << tr("Holds the gain of the low EQ to zero while active.")
             << eqKillLatch;
 
-    QString tempoDisplay = tr("Displays the tempo of the loaded track in BPM (beats per minute).");
+    const QString tempoDisplay =
+            tr("Displays the tempo of the loaded track in BPM (beats per "
+               "minute).");
     // TODO Clarify this refers to 'file BPM', not playback rate?
-    QString bpmTapButton = tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
-    QString tempoTapButton =
+    const QString bpmTapButton = tr(
+            "When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
+    const QString tempoTapButton =
             tr("When tapped repeatedly, adjusts the tempo to match the tapped "
                "BPM.");
+    const QString bpmTempoEdit = tr("Click to open the tempo/BPM editor");
     add("visual_bpm")
             << tr("Tempo")
             << tempoDisplay;
@@ -414,8 +418,13 @@ void Tooltips::addStandardTooltips() {
     add("visual_key")
             //: The musical key of a track
             << tr("Key")
-            << tr("Displays the current musical key of the loaded track after pitch shifting.");
+            << tr("Displays the current musical key of the loaded track after pitch shifting.")
+            << tr("It also shows a colored bar if Key colors are enabled in the Preferences.")
+            << tr("The bar will be split vertically if the track's key is in between full keys.");
 
+    add("visual_bpm_edit")
+            << tempoDisplay
+            << bpmTempoEdit;
     add("bpm_tap")
             << tr("BPM Tap")
             << bpmTapButton;
@@ -426,6 +435,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Rate Tap and BPM Tap")
             << QString("%1: %2").arg(leftClick, tempoTapButton)
             << QString("%1: %2").arg(rightClick, bpmTapButton);
+    add("tempo_edit")
+            << tr("Set Tempo")
+            << tr("Set the desired tempo in BPM. If the track currently has no BPM detected, "
+                  "set the desired tempo in percent.");
 
     add("beats_adjust_slower")
             << tr("Adjust BPM Down")
@@ -435,13 +448,33 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust BPM Up")
             << tr("When tapped, adjusts the average BPM up by a small amount.");
 
+    const QString beatsTranslateEarlierTitle = tr("Adjust Beats Earlier");
+    const QString beatsTranslateLaterTitle = tr("Adjust Beats Later");
+    const QString beatsTranslateEarlierDescription =
+            tr("When tapped, moves the beatgrid left by a small amount.");
+    const QString beatsTranslateLaterDescription =
+            tr("When tapped, moves the beatgrid right by a small amount.");
+    const QString moveHalfBeat =
+            tr("Adjust beatgrid by exactly one half beat. "
+               "Usable only on\ntracks with constant tempo.");
+
     add("beats_translate_earlier")
-            << tr("Adjust Beats Earlier")
-            << tr("When tapped, moves the beatgrid left by a small amount.");
+            << beatsTranslateEarlierTitle
+            << beatsTranslateEarlierDescription;
 
     add("beats_translate_later")
-            << tr("Adjust Beats Later")
-            << tr("When tapped, moves the beatgrid right by a small amount.");
+            << beatsTranslateLaterTitle
+            << beatsTranslateLaterDescription;
+
+    add("beats_translate_earlier_move_half_beat")
+            << beatsTranslateEarlierTitle
+            << QString("%1: %2").arg(leftClick, beatsTranslateEarlierDescription)
+            << QString("%1: %2").arg(rightClick, moveHalfBeat);
+
+    add("beats_translate_later_move_half_beat")
+            << beatsTranslateLaterTitle
+            << QString("%1: %2").arg(leftClick, beatsTranslateLaterDescription)
+            << QString("%1: %2").arg(rightClick, moveHalfBeat);
 
     add("beats_translate_curpos")
             << tr("Adjust Beatgrid")
@@ -534,8 +567,13 @@ void Tooltips::addStandardTooltips() {
     // Currently used for samplers
     add("play_start")
             << tr("Play/Pause")
-            << QString("%1: %2").arg(leftClick, tr("Starts playing from the beginning of the track."))
-            << QString("%1: %2").arg(rightClick, tr("Jumps to the beginning of the track and stops."));
+            << QString("%1: %2").arg(leftClick,
+                       tr("Starts playing from the beginning of the track."))
+            << QString("%1: %2").arg(rightClick,
+                       tr("Jumps to the beginning of the track and stops."))
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
@@ -552,7 +590,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
             << QString("%1 %2: %3").arg(leftClick, whilePreviewing, latchingPlay)
-            << QString("%1: %2").arg(rightClick, cueSet);
+            << QString("%1: %2").arg(rightClick, cueSet)
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
 
     // Currently used for minimal decks
     add("play_cue_default")
@@ -561,7 +602,10 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
             << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
             << cueHint
-            << quantizeSnap;
+            << quantizeSnap
+            << " " // add linebreak, '\n' would result in two linebreaks
+            << tr("Drag a Hotcue button here to continue playing after "
+                  "releasing the Hotcue.");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
             << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
@@ -674,13 +718,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Repeat")
             << tr("When active the track will repeat if you go past the end or reverse before the start.");
 
-    add("eject") << tr("Eject") << tr("Ejects track from the player.")
-                 << tr("Un-ejects when no track is loaded, i.e. reloads the "
-                       "track that was ejected last (of any deck).")
-                 << QString("%1: %2").arg(doubleClick,
-                            "Reloads the last replaced track. "
-                            "If no track is loaded reloads the second-last "
-                            "ejected track.");
+    add("eject")
+            << tr("Eject") << tr("Ejects track from the player.")
+            << tr("Un-ejects when no track is loaded, i.e. reloads the "
+                  "track that was ejected last (of any deck).")
+            << QString("%1: %2").arg(doubleClick,
+                       tr("Reloads the last replaced track. If no track is "
+                          "loaded reloads the second-last ejected track."));
 
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
@@ -703,8 +747,10 @@ void Tooltips::addStandardTooltips() {
                   << tr("Drag this button onto another Hotcue button to move it "
                         "there (change its index). If the other hotcue is set, "
                         "the two are swapped.")
+                  << tr("Drag this button onto a Play button while previewing "
+                        "to continue playback after release.")
                   << tr("Dragging with Shift key pressed will not start previewing "
-                        "the hotcue");
+                        "the hotcue.");
 
     // Status displays and toggle buttons
     add("toggle_recording")
@@ -919,7 +965,11 @@ void Tooltips::addStandardTooltips() {
             //: The musical key of a track
             << tr("Track Key")
             << tr("Displays the musical key of the loaded track.")
-            << trackTags;
+            << trackTags
+            << tr("Tuning indicators (if detected):")
+            << tr("✧ (sparkle) = 432Hz tuning")
+            << tr("↓ (arrow down) = tuning below 440Hz")
+            << tr("↑ (arrow up) = tuning above 440Hz");
 
     add("track_comment")
             << tr("Track Comment")
@@ -971,6 +1021,12 @@ void Tooltips::addStandardTooltips() {
     // Intro & outro cues
     add("show_intro_outro_cues")
             << tr("Show/hide intro & outro markers and associated buttons.");
+
+    add("keep_consistent_waveform_heights") << tr(
+            "Ensure all waveforms to have the same height across all channels. "
+            "By default, when displaying the stem controls, waveform for "
+            "channel that have no stem may render with a shorter height in "
+            "order to honor the waveform container size you have requested..");
 
     add("intro_start")
             << tr("Intro Start Marker")

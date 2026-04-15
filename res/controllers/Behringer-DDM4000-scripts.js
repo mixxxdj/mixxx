@@ -201,7 +201,6 @@ var DDM4000 = new behringer.extension.GenericMidiController({
 
             const ModeButton = function(options) {
                 options = options || {};
-                options.key = options.key || "mode";
                 options.longPressTimeout = options.longPressTimeout || DEFAULT_LONGPRESS_DURATION;
                 e.LongPressButton.call(this, options);
             };
@@ -254,8 +253,8 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                             }
                         },
                         {type: c.Button, options: {midi: [note, 0x03],  inKey: null}}, // Mode
-                        {type: c.Button, options: {midi: [cc,   0x38], outKey: null}}, // Mode: Multi
-                        {type: c.Button, options: {midi: [cc,   0x37], outKey: null}}, // Mode: Single
+                        {type: c.Button, options: {midi: [cc,   0x38], outKey: undefined}}, // Mode: Multi
+                        {type: c.Button, options: {midi: [cc,   0x37], outKey: undefined}}, // Mode: Single
                     ],
                     equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
                         midi: { // eslint-disable-next-line key-spacing
@@ -284,8 +283,8 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                             }
                         },
                         {type: c.Button, options: {midi: [note, 0x07],  inKey: null}}, // Mode
-                        {type: c.Button, options: {midi: [cc,   0x42], outKey: null}}, // Mode: Multi
-                        {type: c.Button, options: {midi: [cc,   0x41], outKey: null}}, // Mode: Single
+                        {type: c.Button, options: {midi: [cc,   0x42], outKey: undefined}}, // Mode: Multi
+                        {type: c.Button, options: {midi: [cc,   0x41], outKey: undefined}}, // Mode: Single
                     ],
                     equalizerUnit: { //        P3 / Low,        P2 / Mid,        P1 / High
                         midi: { // eslint-disable-next-line key-spacing
@@ -401,11 +400,11 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         {options: {midi: [note, 0x2A],    key: null, sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
                         {options: {midi: [note, 0x2B],  inKey: null}}, // Crossfader: Beat (Left)
                         {options: {midi: [note, 0x2C],  inKey: null}}, // Crossfader: Beat (Right)
-                        {options: {midi: [cc,   0x2B], outKey: null}}, // Crossfader: Beat 1
-                        {options: {midi: [cc,   0x2C], outKey: null}}, // Crossfader: Beat 2
-                        {options: {midi: [cc,   0x2D], outKey: null}}, // Crossfader: Beat 4
-                        {options: {midi: [cc,   0x2E], outKey: null}}, // Crossfader: Beat 8
-                        {options: {midi: [cc,   0x2F], outKey: null}}, // Crossfader: Beat 16
+                        {options: {midi: [cc,   0x2B], outKey: undefined}}, // Crossfader: Beat 1
+                        {options: {midi: [cc,   0x2C], outKey: undefined}}, // Crossfader: Beat 2
+                        {options: {midi: [cc,   0x2D], outKey: undefined}}, // Crossfader: Beat 4
+                        {options: {midi: [cc,   0x2E], outKey: undefined}}, // Crossfader: Beat 8
+                        {options: {midi: [cc,   0x2F], outKey: undefined}}, // Crossfader: Beat 16
                     ]
                 },
                 { // Sampler

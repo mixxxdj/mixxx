@@ -1,0 +1,987 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+  <info>
+    <name>DJ TechTools MIDI Fighter Spectra</name>
+    <author>Sam Whited</author>
+    <description>Multi-layer mappings for the Spectra.</description>
+    <manual>dj_techtools_midi_fighter_spectra</manual>
+    <forums>https://mixxx.discourse.group/t/dj-techtools-midi-fighter-spectra/31554</forums>
+    <devices>
+      <product protocol="midi" vendor_id="0x2580" product_id="0x0006"/>
+    </devices>
+  </info>
+  <settings>
+    <option variable="defaultLayer" type="enum" default="true" label="Default Layer">
+      <description>
+        Select the default layer.
+      </description>
+      <value label="EQ/Quick Effect Kill Switch" default="true">eq</value>
+      <value label="Hotcues">hotcues</value>
+      <value label="Samplers">samplers</value>
+      <value label="Stems">stems</value>
+    </option>
+    <option variable="groundEffectLed" type="enum" default="true" label="Ground Effect LEDs">
+      <description>
+        Allows configuring the behavior of the ground effect LEDs.
+      </description>
+      <value label="Off">off</value>
+      <value label="Pulse on Track Ending" default="true">end_of_track</value>
+      <value label="Blink on Beat">beat_active</value>
+    </option>
+    <option variable="pulseDeckSelect" type="boolean" default="true" label="Pulse Deck Select on Track Ending">
+      <description>
+        Pulse the appropriate deck selection button on the hotcue layer when the
+        track on that deck is ending.
+      </description>
+    </option>
+    <group label="Button Lighting">
+      <row orientation="vertical">
+        <option variable="deckSelectedColor" type="enum" label="Selected Deck Color">
+          <description>The color of the selected deck button.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink" default="true">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="deckUnselectedColor" type="enum" label="Inactive Deck Color">
+          <description>The color of the non-active deck selection buttons.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink" default="true">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="introOutroColor" type="enum" label="Set intro/outro">
+          <description>The color of the intro or outro buttons when set.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue" default="true">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="unsetIntroOutroColor" type="enum" label="Unset intro/outro">
+          <description>The color of the intro or outro buttons when unset.</description>
+          <value label="Off" default="true">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue" default="true">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="eqOffColor" type="enum" label="EQ Kill Switch On Color">
+          <description>The color of the activated EQ kill switch.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red" default="true">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="eqOnColor" type="enum" label="EQ Kill Switch Off Color">
+          <description>The color of the inactive EQ kill switch.</description>
+          <value label="Off" default="true">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="superOnColor" type="enum" label="Quick Effect Switch On Color">
+          <description>The color of the activated quick effect kill switch.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green" default="true">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="superOffColor" type="enum" label="Quick Effect Switch Off Color">
+          <description>The color of the inactive quick effect kill switch.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green" default="true">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="samplerLoadedColor" type="enum" label="Loaded Sampler Color">
+          <description>The color of a sampler button with a loaded sound.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple" default="true">102</value>
+          <value label="Dim Purple">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+        <option variable="samplerEmptyColor" type="enum" label="Empty Sampler Color">
+          <description>The color of a sampler button with no loaded sound.</description>
+          <value label="Off">1</value>
+          <value label="Firmware Controlled">127</value>
+          <value label="Red">18</value>
+          <value label="Dim Red">19</value>
+          <value label="Orange">30</value>
+          <value label="Dim Orange">43</value>
+          <value label="Yellow">42</value>
+          <value label="Dim Yellow">43</value>
+          <value label="Lime">54</value>
+          <value label="Dim Lime">55</value>
+          <value label="Green">66</value>
+          <value label="Dim Green">67</value>
+          <value label="Celeste">78</value>
+          <value label="Dim Celeste">79</value>
+          <value label="Blue">90</value>
+          <value label="Dim Blue">91</value>
+          <value label="Purple">102</value>
+          <value label="Dim Purple" default="true">103</value>
+          <value label="Pink">114</value>
+          <value label="Dim Pink">115</value>
+          <value label="White">121</value>
+        </option>
+      </row>
+    </group>
+  </settings>
+  <controller id="dj-techtools-midi-fighter-spectra">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js" functionprefix=""/>
+      <file functionprefix="MidiFighterSpectra" filename="DJ TechTools-MIDI Fighter Spectra-scripts.js"/>
+    </scriptfiles>
+    <controls>
+      <!-- Layer 1: EQ -->
+      <!-- High Cutoff -->
+      <control>
+        <group>[Channel3]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[0].input</key>
+        <description>High cutoff.</description>
+        <status>0x92</status>
+        <midino>0x30</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[1].input</key>
+        <description>High cutoff.</description>
+        <status>0x92</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[2].input</key>
+        <description>High cutoff.</description>
+        <status>0x92</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[3].input</key>
+        <description>High cutoff.</description>
+        <status>0x92</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Mid Cutoff -->
+      <control>
+        <group>[Channel3]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[4].input</key>
+        <description>Mid cutoff.</description>
+        <status>0x92</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[5].input</key>
+        <description>Mid cutoff.</description>
+        <status>0x92</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[6].input</key>
+        <description>Mid cutoff.</description>
+        <status>0x92</status>
+        <midino>0x2E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[7].input</key>
+        <description>Mid cutoff.</description>
+        <status>0x92</status>
+        <midino>0x2F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Low Cutoff -->
+      <control>
+        <group>[Channel3]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[8].input</key>
+        <description>Low cutoff.</description>
+        <status>0x92</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[9].input</key>
+        <description>Low cutoff.</description>
+        <status>0x92</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[10].input</key>
+        <description>Low cutoff.</description>
+        <status>0x92</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[11].input</key>
+        <description>Low cutoff.</description>
+        <status>0x92</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Super Cutoff -->
+      <control>
+        <group>[Channel3]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[12].input</key>
+        <description>Quick effect cutoff.</description>
+        <status>0x92</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[13].input</key>
+        <description>Quick effect cutoff.</description>
+        <status>0x92</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[14].input</key>
+        <description>Quick effect cutoff.</description>
+        <status>0x92</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>MidiFighterSpectra.controller.eqLayer[15].input</key>
+        <description>Quick effect cutoff.</description>
+        <status>0x92</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Layer 2: Cues -->
+      <!-- Intro/outro markers -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[0].input</key>
+        <description>Set intro start marker.</description>
+        <status>0x92</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[1].input</key>
+        <description>Set intro end marker.</description>
+        <status>0x92</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[2].input</key>
+        <description>Set outro start marker.</description>
+        <status>0x92</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[3].input</key>
+        <description>Set outro end marker.</description>
+        <status>0x92</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Hotcues -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[4].input</key>
+        <description>Set/activate hotcue 1.</description>
+        <status>0x92</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[5].input</key>
+        <description>Set/activate hotcue 2.</description>
+        <status>0x92</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[6].input</key>
+        <description>Set/activate hotcue 3.</description>
+        <status>0x92</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[7].input</key>
+        <description>Set/activate hotcue 4.</description>
+        <status>0x92</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[8].input</key>
+        <description>Set/activate hotcue 5.</description>
+        <status>0x92</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[9].input</key>
+        <description>Set/activate hotcue 6.</description>
+        <status>0x92</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[10].input</key>
+        <description>Set/activate hotcue 7.</description>
+        <status>0x92</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[11].input</key>
+        <description>Set/activate hotcue 8.</description>
+        <status>0x92</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Hotcue release -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[4].input</key>
+        <description>Release hotcue 1.</description>
+        <status>0x82</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[5].input</key>
+        <description>Release hotcue 2.</description>
+        <status>0x82</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[6].input</key>
+        <description>Release hotcue 3.</description>
+        <status>0x82</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[7].input</key>
+        <description>Release hotcue 4.</description>
+        <status>0x82</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[8].input</key>
+        <description>Release hotcue 5.</description>
+        <status>0x82</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[9].input</key>
+        <description>Release hotcue 6.</description>
+        <status>0x82</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[10].input</key>
+        <description>Release hotcue 7.</description>
+        <status>0x82</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.cueLayer[11].input</key>
+        <description>Release hotcue 8.</description>
+        <status>0x82</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Deck Selection -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[0].input</key>
+        <description>Select deck 1.</description>
+        <status>0x92</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[1].input</key>
+        <description>Select deck 2.</description>
+        <status>0x92</status>
+        <midino>0x35</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[2].input</key>
+        <description>Select deck 3.</description>
+        <status>0x92</status>
+        <midino>0x36</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[3].input</key>
+        <description>Select deck 4.</description>
+        <status>0x92</status>
+        <midino>0x37</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[4].input</key>
+        <description>Select deck 1.</description>
+        <status>0x92</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[5].input</key>
+        <description>Select deck 2.</description>
+        <status>0x92</status>
+        <midino>0x55</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[6].input</key>
+        <description>Select deck 3.</description>
+        <status>0x92</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>MidiFighterSpectra.controller.selectDeck[7].input</key>
+        <description>Select deck 4.</description>
+        <status>0x92</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Layer 3: Samplers -->
+      <control>
+        <group>[Sampler1]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[0].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x50</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler2]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[1].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler3]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[2].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x52</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler4]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[3].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x53</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler5]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[4].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x4C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler6]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[5].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x4D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler7]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[6].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x4E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler8]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[7].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x4F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler9]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[8].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x48</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler10]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[9].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x49</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler11]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[10].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler12]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[11].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x4B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler13]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[12].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler14]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[13].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler15]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[14].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler16]</group>
+        <key>MidiFighterSpectra.controller.samplerLayer[15].input</key>
+        <description>Load or play sampler.</description>
+        <status>0x92</status>
+        <midino>0x47</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Layer 4: Stems -->
+      <control>
+        <group>[Channel1_Stem1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[0].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x60</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem2]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[1].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x61</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem3]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[2].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x62</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem4]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[3].input</key>
+        <description>Activate/deactivate stem.</description>
+        <status>0x92</status>
+        <midino>0x63</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem1]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[4].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem2]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[5].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem3]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[6].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1_Stem4]</group>
+        <key>MidiFighterSpectra.controller.activeDeck.stemLayer[7].input</key>
+        <description>Activate/deactivate stem FX.</description>
+        <status>0x92</status>
+        <midino>0x5F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+    </controls>
+    <outputs/>
+  </controller>
+</MixxxControllerPreset>

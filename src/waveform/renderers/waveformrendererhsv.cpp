@@ -8,8 +8,9 @@
 #include "waveformwidgetrenderer.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 WaveformRendererHSV::~WaveformRendererHSV() {
@@ -76,13 +77,17 @@ void WaveformRendererHSV::draw(
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) / length;
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
 
-    float allGain(1.0);
-    getGains(&allGain, false, nullptr, nullptr, nullptr);
+    float allGain = 1.0;
+    float lowGain = 1.0;
+    float midGain = 1.0;
+    float highGain = 1.0;
+    getGains(&allGain, &lowGain, &midGain, &highGain);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
-    getHsvF(m_pColors->getLowColor(), &h, &s, &v);
+    getHsvF(pColors->getLowColor(), &h, &s, &v);
 
     QColor color;
     float lo, hi, total;
@@ -97,7 +102,7 @@ void WaveformRendererHSV::draw(
     const float heightFactor = allGain * halfBreadth / 255.0f;
 
     //draw reference line
-    painter->setPen(m_pColors->getAxesColor());
+    painter->setPen(pColors->getAxesColor());
     painter->drawLine(QLineF(0, halfBreadth, length, halfBreadth));
 
     for (int x = 0; x < static_cast<int>(length); ++x) {
@@ -131,27 +136,50 @@ void WaveformRendererHSV::draw(
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;
 
-        int maxLow[2] = {0, 0};
-        int maxHigh[2] = {0, 0};
-        int maxMid[2] = {0, 0};
-        int maxAll[2] = {0, 0};
+        float maxLow[2] = {0.0f, 0.0f};
+        float maxHigh[2] = {0.0f, 0.0f};
+        float maxMid[2] = {0.0f, 0.0f};
+        float maxAll[2] = {0.0f, 0.0f};
 
         for (int i = visualIndexStart;
                 i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop;
                 i += 2) {
-            const WaveformData& waveformData = *(data + i);
-            const WaveformData& waveformDataNext = *(data + i + 1);
-            maxLow[0] = math_max(maxLow[0], (int)waveformData.filtered.low);
-            maxLow[1] = math_max(maxLow[1], (int)waveformDataNext.filtered.low);
-            maxMid[0] = math_max(maxMid[0], (int)waveformData.filtered.mid);
-            maxMid[1] = math_max(maxMid[1], (int)waveformDataNext.filtered.mid);
-            maxHigh[0] = math_max(maxHigh[0], (int)waveformData.filtered.high);
-            maxHigh[1] = math_max(maxHigh[1], (int)waveformDataNext.filtered.high);
-            maxAll[0] = math_max(maxAll[0], (int)waveformData.filtered.all);
-            maxAll[1] = math_max(maxAll[1], (int)waveformDataNext.filtered.all);
+            const WaveformData& waveformDataLeft = *(data + i);
+            const WaveformData& waveformDataRight = *(data + i + 1);
+            maxLow[0] = math_max(maxLow[0],
+                    static_cast<float>(waveformDataLeft.filtered.low));
+            maxLow[1] = math_max(maxLow[1],
+                    static_cast<float>(waveformDataRight.filtered.low));
+            maxMid[0] = math_max(maxMid[0],
+                    static_cast<float>(waveformDataLeft.filtered.mid));
+            maxMid[1] = math_max(maxMid[1],
+                    static_cast<float>(waveformDataRight.filtered.mid));
+            maxHigh[0] = math_max(maxHigh[0],
+                    static_cast<float>(waveformDataLeft.filtered.high));
+            maxHigh[1] = math_max(maxHigh[1],
+                    static_cast<float>(waveformDataRight.filtered.high));
+            maxAll[0] = math_max(maxAll[0], static_cast<float>(waveformDataLeft.filtered.all));
+            maxAll[1] = math_max(maxAll[1], static_cast<float>(waveformDataRight.filtered.all));
         }
 
-        if (maxAll[0] && maxAll[1]) {
+        float allUnscaledLeft = maxLow[0] + maxMid[0] + maxHigh[0];
+        float allUnscaledRight = maxLow[1] + maxMid[1] + maxHigh[1];
+        maxLow[0] *= lowGain;
+        maxLow[1] *= lowGain;
+        maxMid[0] *= midGain;
+        maxMid[1] *= midGain;
+        maxHigh[0] *= highGain;
+        maxHigh[1] *= highGain;
+
+        float eqGain[2] = {1.0f, 1.0f};
+        if (allUnscaledLeft > 0.0f) {
+            eqGain[0] = (maxLow[0] + maxMid[0] + maxHigh[0]) / allUnscaledLeft;
+        }
+        if (allUnscaledRight > 0.0f) {
+            eqGain[1] = (maxLow[1] + maxMid[1] + maxHigh[1]) / allUnscaledRight;
+        }
+
+        if (maxAll[0] > 0.0f && maxAll[1] > 0.0f) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
             total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
@@ -176,20 +204,29 @@ void WaveformRendererHSV::draw(
             switch (m_alignment) {
                 case Qt::AlignBottom :
                 case Qt::AlignRight :
-                    painter->drawLine(
-                        x, breadth,
-                        x, breadth - (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));
+                    painter->drawLine(x,
+                            breadth,
+                            x,
+                            breadth -
+                                    static_cast<int>(heightFactor * math_max(eqGain[0], eqGain[1]) *
+                                            (float)math_max(
+                                                    maxAll[0], maxAll[1])));
                     break;
                 case Qt::AlignTop :
                 case Qt::AlignLeft :
-                    painter->drawLine(
-                        x, 0,
-                        x, (int)(heightFactor * (float)math_max(maxAll[0],maxAll[1])));
+                    painter->drawLine(x,
+                            0,
+                            x,
+                            static_cast<int>(heightFactor * math_max(eqGain[0], eqGain[1]) *
+                                    (float)math_max(maxAll[0], maxAll[1])));
                     break;
                 default :
-                    painter->drawLine(
-                        x, (int)(halfBreadth - heightFactor * (float)maxAll[0]),
-                        x, (int)(halfBreadth + heightFactor * (float)maxAll[1]));
+                    painter->drawLine(x,
+                            static_cast<int>(halfBreadth -
+                                    heightFactor * eqGain[0] * (float)maxAll[0]),
+                            x,
+                            static_cast<int>(halfBreadth +
+                                    heightFactor * eqGain[1] * (float)maxAll[1]));
             }
         }
     }

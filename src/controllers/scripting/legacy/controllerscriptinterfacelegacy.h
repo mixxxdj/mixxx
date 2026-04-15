@@ -56,6 +56,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
     virtual ~ControllerScriptInterfaceLegacy();
 
     Q_INVOKABLE QJSValue getSetting(const QString& name);
+    Q_INVOKABLE QObject* getPlayer(const QString& group);
     Q_INVOKABLE double getValue(const QString& group, const QString& name);
     Q_INVOKABLE void setValue(const QString& group, const QString& name, double newValue);
     Q_INVOKABLE double getParameter(const QString& group, const QString& name);
@@ -104,6 +105,9 @@ class ControllerScriptInterfaceLegacy : public QObject {
             double factor = 1.8,
             const double rate = -10.0);
     Q_INVOKABLE void softStart(const int deck, bool activate, double factor = 1.0);
+    Q_INVOKABLE bool isBrakeActive(int deck);
+    Q_INVOKABLE bool isSpinbackActive(int deck);
+    Q_INVOKABLE bool isSoftStartActive(int deck);
 
     Q_INVOKABLE QByteArray convertCharset(
             const ControllerScriptInterfaceLegacy::Charset

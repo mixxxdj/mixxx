@@ -92,11 +92,11 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel1]","rateRange","StantonSCS1m.pitchColor1");
     engine.connectControl("[Channel2]","rateRange","StantonSCS1m.pitchColor2");
 
-        // Virtual platter LEDs & time displays
-    engine.connectControl("[Channel1]","visual_playposition","StantonSCS1m.positionUpdates1");
-    engine.connectControl("[Channel2]","visual_playposition","StantonSCS1m.positionUpdates2");
-    engine.connectControl("[Channel1]","duration","StantonSCS1m.durationChange1");
-    engine.connectControl("[Channel2]","duration","StantonSCS1m.durationChange2");
+    // Virtual platter LEDs & time displays
+    engine.connectControl("[Channel1]", "playposition", "StantonSCS1m.positionUpdates1");
+    engine.connectControl("[Channel2]", "playposition", "StantonSCS1m.positionUpdates2");
+    engine.connectControl("[Channel1]", "duration", "StantonSCS1m.durationChange1");
+    engine.connectControl("[Channel2]", "duration", "StantonSCS1m.durationChange2");
 
         // Faders
     engine.connectControl("[Master]","crossfader","StantonSCS1m.crossFaderStart");

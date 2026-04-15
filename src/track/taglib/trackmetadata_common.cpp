@@ -268,28 +268,36 @@ void importTrackMetadataFromTag(
     }
 }
 
+bool isMultiValueTagEqual(const TagLib::String& taglibVal, QString mixxxVal) {
+    // Taglib 2 uses " / " instead of " " as a multi value separator.
+    // We may have read or write with either TagLib 1 or 2.
+    QString taglibValStripped = toQString(taglibVal).remove(" /");
+    QString mixxxValStripped = mixxxVal.remove(" /");
+    return taglibValStripped == mixxxValStripped;
+}
+
 void exportTrackMetadataIntoTag(
         TagLib::Tag* pTag,
         const TrackMetadata& trackMetadata,
         WriteTagMask writeMask) {
     DEBUG_ASSERT(pTag); // already validated before
 
-    pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
-    pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
-
     // The mapping of multi-valued fields in TagLib is not bijective.
     // We don't want to overwrite existing values if the corresponding
-    // field has not been modified in Mixxx. This workaround only covers
-    // the most common multi-valued fields.
+    // field has not been modified in Mixxx.
     //
     // See also: <https://github.com/mixxxdj/mixxx/issues/12587>
-    const auto artist = toTString(trackMetadata.getTrackInfo().getArtist());
-    if (artist != pTag->artist()) {
-        pTag->setArtist(artist);
+    if (!isMultiValueTagEqual(pTag->title(), trackMetadata.getTrackInfo().getTitle())) {
+        pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
     }
-    const auto genre = toTString(trackMetadata.getTrackInfo().getGenre());
-    if (genre != pTag->genre()) {
-        pTag->setGenre(genre);
+    if (!isMultiValueTagEqual(pTag->album(), trackMetadata.getAlbumInfo().getTitle())) {
+        pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
+    }
+    if (!isMultiValueTagEqual(pTag->artist(), trackMetadata.getTrackInfo().getArtist())) {
+        pTag->setArtist(toTString(trackMetadata.getTrackInfo().getArtist()));
+    }
+    if (!isMultiValueTagEqual(pTag->genre(), trackMetadata.getTrackInfo().getGenre())) {
+        pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre()));
     }
 
     // Using setComment() from TagLib::Tag might have undesirable
@@ -297,7 +305,9 @@ void exportTrackMetadataIntoTag(
     // different purposes, e.g. ID3v2. In this case setting the
     // comment here should be omitted.
     if (0 == (writeMask & WriteTagFlag::OmitComment)) {
-        pTag->setComment(toTString(trackMetadata.getTrackInfo().getComment()));
+        if (!isMultiValueTagEqual(pTag->comment(), trackMetadata.getTrackInfo().getComment())) {
+            pTag->setComment(toTString(trackMetadata.getTrackInfo().getComment()));
+        }
     }
 
     // Specialized write functions for tags derived from Taglib::Tag might

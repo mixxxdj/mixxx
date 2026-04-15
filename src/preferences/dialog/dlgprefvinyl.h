@@ -46,6 +46,7 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     QList<QLabel*> m_vcLabels;
     QList<QComboBox*> m_vcTypeBoxes;
     QList<QComboBox*> m_vcSpeedBoxes;
+    QList<QComboBox*> m_vcPitchEstimatorBoxes;
     QList<QSpinBox*> m_vcLeadInBoxes;
     QList<VinylControlSignalWidget*> m_signalWidgets;
 

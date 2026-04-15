@@ -22,8 +22,7 @@ DlgMissing::DlgMissing(
                           this,
                           pConfig,
                           pLibrary,
-                          parent->getTrackTableBackgroundColorOpacity(),
-                          true)) {
+                          parent->getTrackTableBackgroundColorOpacity())) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 

@@ -1240,6 +1240,11 @@
      *     |     |  |            to the hardware controller on changes. The address of the MIDI
      *     |     |  |            message is taken from the `midi` property of the affected
      *     |     |  |            component.
+     *     |     |  +- feedbackOnRelease: Enable controller feedback on button release (boolean, optional)
+     *     |     |  |            When set to `true`, values of the buttons in this unit are sent
+     *     |     |  |            to the hardware controller on release, no matter if changed or not.
+     *     |     |  |            The address of the MIDI message is taken from the `midi` property of the
+     *     |     |  |            affected component.
      *     |     |  +- output: Additional output definitions (optional).
      *     |     |             The structure of this object is the same as the structure of
      *     |     |             `midi`. Every value change of a component contained in `output`
@@ -1252,6 +1257,7 @@
      *     |        |          `enabled: [0x90, 0x02]`
      *     |        |          `super1: [0xB0, 0x06]`
      *     |        +- feedback: As described for equalizer unit
+     *     |        +- feedbackOnRelease: As described for equalizer unit
      *     |        +- output: As described for equalizer unit
      *     |
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
@@ -1262,6 +1268,7 @@
      *     |     |          `effectFocusButton: [0xB0, 0x15]`
      *     |     |          `knobs: {1: [0xB0, 0x26], 2: [0xB0, 0x25], 3: [0xB0, 0x24]}`
      *     |     +- feedback: As described for equalizer unit
+     *     |     +- feedbackOnRelease: As described for equalizer unit
      *     |     +- output: As described for equalizer unit
      *     |     +- sendShiftedFor: Type of components that send shifted MIDI messages (optional)
      *     |                        When set, all components of this type within this effect unit
@@ -1519,10 +1526,10 @@
             if (definition.feedback) {
                 const triggers = rebindTriggers || [];
                 const createPublisher = this.createPublisher; // `this` is bound to implementation
-                implementation.forEachComponent(function(effectComponent) {
-                    if (effectComponent instanceof components.Pot) {
-                        const publisher = createPublisher(effectComponent, publisherStorage);
-                        const prototype = Object.getPrototypeOf(effectComponent);
+                implementation.forEachComponent(function(source) {
+                    if (source instanceof components.Pot) {
+                        const publisher = createPublisher(source, publisherStorage);
+                        const prototype = Object.getPrototypeOf(source);
                         triggers.forEach(function(functionName) {
                             const delegate = prototype[functionName];
                             if (typeof delegate === "function") {
@@ -1545,6 +1552,16 @@
                             publisherStorage);
                     });
             }
+
+            /* Enable feedback on button release for configured components */
+            if (definition.feedbackOnRelease) {
+                implementation.forEachComponent(function(component) {
+                    if (component instanceof components.Button) {
+                        component.triggerOnRelease = true;
+                    }
+                });
+            }
+
             return implementation;
         },
 

@@ -3,6 +3,7 @@
 #include "engine/engine.h"
 #include "sources/mp3decoding.h"
 #include "util/appleosversion.h"
+#include "util/assert.h"
 #include "util/logger.h"
 #include "util/math.h"
 
@@ -114,13 +115,21 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     }
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 
+    VERIFY_OR_DEBUG_ASSERT(m_inputFormat.mChannelsPerFrame != 0) {
+        kLogger.warning()
+                << "File"
+                << fileName
+                << "appears to have no audio channels";
+        return OpenResult::Failed;
+    }
+
     // create the output format
-    const UInt32 numChannels =
+    const UInt32 maxChannels =
             params.getSignalInfo().getChannelCount().isValid()
             ? params.getSignalInfo().getChannelCount()
-            : mixxx::kEngineChannelOutputCount;
+            : mixxx::kMaxEngineChannelInputCount;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
-            numChannels,
+            std::min(m_inputFormat.mChannelsPerFrame, maxChannels),
             CAStreamBasicDescription::kPCMFormatFloat32,
             true);
 

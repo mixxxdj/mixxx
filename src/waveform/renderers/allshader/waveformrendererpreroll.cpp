@@ -2,8 +2,8 @@
 
 #include <QDomNode>
 #include <QPainterPath>
-#include <array>
 
+#include "moc_waveformrendererpreroll.cpp"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/patternmaterial.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"

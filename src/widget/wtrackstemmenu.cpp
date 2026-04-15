@@ -6,7 +6,6 @@
 
 namespace {
 const QList<mixxx::StemChannel> stemTracks = {
-
         mixxx::StemChannel::First,
         mixxx::StemChannel::Second,
         mixxx::StemChannel::Third,
@@ -67,10 +66,12 @@ WTrackStemMenu::WTrackStemMenu(const QString& label,
 
 bool WTrackStemMenu::eventFilter(QObject* pObj, QEvent* e) {
     QInputEvent* pInputEvent = dynamic_cast<QInputEvent*>(e);
-    if (pInputEvent != nullptr &&
-            (pInputEvent->modifiers() & Qt::ControlModifier) != m_selectMode) {
-        m_selectMode = pInputEvent->modifiers() & Qt::ControlModifier;
-        updateActions();
+    if (pInputEvent != nullptr) {
+        bool selectMode = pInputEvent->modifiers().testFlag(Qt::ControlModifier);
+        if (selectMode != m_selectMode) {
+            m_selectMode = selectMode;
+            updateActions();
+        }
     }
 
     if (m_selectMode && (e->type() == QEvent::MouseButtonRelease)) {

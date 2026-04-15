@@ -4,46 +4,84 @@
 #include <QThread>
 #include <optional>
 
+#ifdef Q_OS_ANDROID
+#include <QJniObject>
+#endif
+
 #include "controllers/controller.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 
 struct libusb_device_handle;
 struct libusb_context;
+struct libusb_transfer;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
     Q_OBJECT
   public:
-    BulkReader(libusb_device_handle *handle, unsigned char in_epaddr);
-    virtual ~BulkReader();
+    BulkReader(libusb_device_handle* pHandle,
+            libusb_context* pContext,
+            std::uint8_t in_epaddr,
+            int length);
+    ~BulkReader() override;
 
+    static void transferFinishedCb(libusb_transfer* pTransfer);
     void stop();
 
   signals:
     void incomingData(const QByteArray& data, mixxx::Duration timestamp);
 
   protected:
-    void run();
+    void run() override;
 
   private:
-    libusb_device_handle* m_phandle;
+    struct bulk_transfer_cb_data {
+        BulkReader* pReader;
+        int completed;
+        std::mutex mutex;
+        std::condition_variable cv;
+    };
+
+    libusb_transfer* transfer_create(libusb_device_handle* pHandle,
+            std::uint8_t epaddr,
+            int length,
+            unsigned int timeout);
+    void transfer_destroy(libusb_transfer** ppTransfer);
+    void handleTransfer(libusb_transfer* pTransfer);
+
     QAtomicInt m_stop;
-    unsigned char m_in_epaddr;
+    libusb_transfer* m_pInTransfer;
+    libusb_context* m_pContext;
+    libusb_device_handle* m_pHandle;
+    bulk_transfer_cb_data m_cb_data;
+    std::uint8_t m_in_epaddr;
+    int m_in_length;
 };
 
 class BulkController : public Controller {
     Q_OBJECT
   public:
+#ifndef Q_OS_ANDROID
     BulkController(
-            libusb_context* context,
-            libusb_device_handle* handle,
-            struct libusb_device_descriptor* desc);
+            libusb_context* pContext,
+            libusb_device_handle* pHandle,
+            struct libusb_device_descriptor* pDesc);
+#else
+    BulkController(
+            const QJniObject& usbDevice);
+#endif
     ~BulkController() override;
 
     QString mappingExtension() override;
 
-    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+
+    QList<LegacyControllerMapping::ScriptFileInfo> getMappingScriptFiles() override;
+    QList<std::shared_ptr<AbstractLegacyControllerSetting>> getMappingSettings() override;
+#ifdef MIXXX_USE_QML
+    QList<LegacyControllerMapping::QMLModuleInfo> getMappingModules() override;
+    QList<LegacyControllerMapping::ScreenInfo> getMappingInfoScreens() override;
+#endif
 
     PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
         return PhysicalTransportProtocol::USB;
@@ -72,6 +110,14 @@ class BulkController : public Controller {
         return m_interfaceNumber;
     }
 
+    uint8_t getInEndpointAddr() const {
+        return m_inEndpointAddr;
+    }
+
+    uint8_t getOutEndpointAddr() const {
+        return m_outEndpointAddr;
+    }
+
     bool isMappable() const override {
         // On raw USB transfer level, there isn't any information about mappable controls
         return false;
@@ -82,25 +128,29 @@ class BulkController : public Controller {
   protected:
     void send(const QList<int>& data, unsigned int length) override;
 
-  private slots:
-    int open() override;
+  private:
+    int open(const QString& resourcePath) override;
     int close() override;
 
-  private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     bool sendBytes(const QByteArray& data) override;
 
     bool matchProductInfo(const ProductInfo& product);
 
-    libusb_context* m_context;
-    libusb_device_handle *m_phandle;
+    libusb_context* m_pContext;
+    libusb_device_handle* m_pHandle;
+#ifdef Q_OS_ANDROID
+    QJniObject m_androidUsbDevice;
+    QJniObject m_androidConnection;
+#endif
 
     // Local copies of things we need from desc
 
     std::uint16_t m_vendorId;
     std::uint16_t m_productId;
     std::uint8_t m_inEndpointAddr;
+    int m_inLength;
     std::uint8_t m_outEndpointAddr;
     std::optional<std::uint8_t> m_interfaceNumber;
 
@@ -108,6 +158,6 @@ class BulkController : public Controller {
     QString m_product;
 
     QString m_sUID;
-    BulkReader* m_pReader;
+    std::unique_ptr<BulkReader> m_pReader;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };

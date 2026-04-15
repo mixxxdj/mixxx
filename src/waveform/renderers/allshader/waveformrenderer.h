@@ -6,7 +6,7 @@ class WaveformWidgetRenderer;
 
 namespace allshader {
 class WaveformRenderer;
-}
+} // namespace allshader
 
 class allshader::WaveformRenderer : public ::WaveformRendererAbstract {
   public:

@@ -102,7 +102,7 @@ class SoundSourceProxy {
     /// while reading.
     static std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
     importTrackMetadataAndCoverImageFromFile(
-            mixxx::FileAccess trackFileAccess,
+            const mixxx::FileAccess& trackFileAccess,
             mixxx::TrackMetadata* pTrackMetadata,
             QImage* pCoverImage,
             bool resetMissingTagMetadata);

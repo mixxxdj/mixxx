@@ -112,7 +112,7 @@ QString VersionStore::applicationName() {
 #define PLATFORM_STR "x86"
 #elif defined(IA64)
 #define PLATFORM_STR "IA64"
-#elif defined(__aarch64__)
+#elif defined(__aarch64__) || defined(ARM64)
 #define PLATFORM_STR "ARM64"
 #elif defined(__arm__) || defined(__thumb__) || defined(_ARM) || \
         defined(_M_ARM) || defined(_M_ARMT) || defined(__arm)

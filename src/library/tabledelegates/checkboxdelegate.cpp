@@ -60,16 +60,13 @@ void CheckboxDelegate::paintItem(QPainter* painter,
     // BaseTrackTableModel::data().
     // Enforce it with an explicit stylesheet. Note: the stylesheet persists so
     // we need to reset it to normal/highlighted.
+    // By now, we have already changed the palette's highlight color in
+    // TableItemDelegate::paint(), so we can pick that here.
     QColor textColor;
     if (option.state & QStyle::State_Selected) {
-        textColor = option.palette.color(QPalette::Normal, QPalette::HighlightedText);
+        textColor = option.palette.highlightedText().color();
     } else {
-        auto colorData = index.data(Qt::ForegroundRole);
-        if (colorData.canConvert<QColor>()) {
-            textColor = colorData.value<QColor>();
-        } else {
-            textColor = option.palette.color(QPalette::Normal, QPalette::Text);
-        }
+        textColor = option.palette.text().color();
     }
 
     if (textColor.isValid() && textColor != m_cachedTextColor) {

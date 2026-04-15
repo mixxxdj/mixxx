@@ -4387,9 +4387,10 @@ std::span<const CSAMPLE> clickForSampleRate(mixxx::audio::SampleRate size) {
         return kClick44100;
     case 48000:
         return kClick48000;
-    case 98000:
+    case 96000:
         return kClick96000;
     }
+    DEBUG_ASSERT(!"Metronom click for this sample rate is missing");
     // should not happen!
     return {};
 }

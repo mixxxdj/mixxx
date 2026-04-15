@@ -45,8 +45,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
         return m_pJSEngine;
     }
 
-  public slots:
-    void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
+    void setScriptFiles(QList<LegacyControllerMapping::ScriptFileInfo> scripts);
 
     /// @brief Set the list of customizable settings and their currently set
     /// value, ready to be used. This method will generate a JSValue from their

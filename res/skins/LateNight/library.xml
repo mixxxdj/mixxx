@@ -110,6 +110,10 @@
               <Library>
                 <ShowButtonText>false</ShowButtonText>
                 <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                <!-- Colors for the render modes of the Overview column -->
+                <!-- For the overview column we only set the signal color,
+                     other colors are the defaults. -->
+                <SignalColor><Variable name="SignalColor_12"/></SignalColor>
               </Library>
 
             </Children>

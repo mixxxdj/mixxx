@@ -4,7 +4,7 @@
 
 struct GroupFeatureBeatLength {
     // Beat length adjusted by the rate slider
-    double frames;
+    double seconds;
     // Rate change by temporary actions like scratching
     // and not the rate slider.
     double scratch_rate;

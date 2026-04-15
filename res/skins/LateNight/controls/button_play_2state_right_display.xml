@@ -1,0 +1,59 @@
+<!--
+Description:
+  A button that has click or display controls.
+  Left-click control is one of the play controls.
+  HotcueButtons of the same player (engine, not necessarily same player in skin)
+  can be dropped onto it in order to latch play when previewing from hotcue.
+
+  Make sure to use one of the 'play' ToolTipIDs so the dnd behavior is discoverable.
+
+Variables:
+  ObjectName        : object name
+  ToolTipID         : standard Tooltip from mixxx db
+    see: https://github.com/mixxxdj/mixxx/blob/main/src/skin/legacy/tooltips.cpp
+  Group             : BasePlayer group
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  ConfigKey         : left-click control
+  ConfigKeyRight    : right-click control
+  ConfigKeyDisp     : display control
+-->
+<Template>
+  <PlayButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <Group><Variable name="Group"/></Group>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="state_0_text"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="state_1_text"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="ConfigKeyRight"/></ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="ConfigKeyDisp"/></ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
+    </Connection>
+  </PlayButton>
+</Template>

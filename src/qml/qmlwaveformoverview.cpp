@@ -1,7 +1,9 @@
 #include "qml/qmlwaveformoverview.h"
 
-#include "mixer/basetrackplayer.h"
 #include "moc_qmlwaveformoverview.cpp"
+#include "qmlplayerproxy.h"
+#include "qmltrackproxy.h"
+#include "track/track.h"
 
 namespace {
 constexpr double kDesiredChannelHeight = 255;
@@ -12,7 +14,7 @@ namespace qml {
 
 QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
         : QQuickPaintedItem(parent),
-          m_pPlayer(nullptr),
+          m_pTrack(nullptr),
           m_channels(ChannelFlag::BothChannels),
           m_renderer(Renderer::RGB),
           m_colorHigh(0xFF0000),
@@ -20,39 +22,28 @@ QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
           m_colorLow(0x0000FF) {
 }
 
-QmlPlayerProxy* QmlWaveformOverview::getPlayer() const {
-    return m_pPlayer;
+QmlTrackProxy* QmlWaveformOverview::getTrack() const {
+    return m_pTrack;
 }
 
-void QmlWaveformOverview::setPlayer(QmlPlayerProxy* pPlayer) {
-    if (m_pPlayer == pPlayer) {
+void QmlWaveformOverview::setTrack(QmlTrackProxy* pTrack) {
+    if (m_pTrack == pTrack) {
         return;
     }
 
-    if (m_pPlayer != nullptr) {
-        m_pPlayer->internalTrackPlayer()->disconnect(this);
+    if (m_pTrack != nullptr && m_pTrack->internal() != nullptr) {
+        m_pTrack->internal()->disconnect(this);
     }
 
-    m_pPlayer = pPlayer;
+    m_pTrack = pTrack;
 
-    if (m_pPlayer != nullptr) {
-        setCurrentTrack(m_pPlayer->internalTrackPlayer()->getLoadedTrack());
-        connect(m_pPlayer->internalTrackPlayer(),
-                &BaseTrackPlayer::newTrackLoaded,
+    if (m_pTrack != nullptr && pTrack->internal() != nullptr) {
+        connect(pTrack->internal().get(),
+                &Track::waveformSummaryUpdated,
                 this,
-                &QmlWaveformOverview::slotTrackLoaded);
-        connect(m_pPlayer->internalTrackPlayer(),
-                &BaseTrackPlayer::loadingTrack,
-                this,
-                &QmlWaveformOverview::slotTrackLoading);
-        connect(m_pPlayer->internalTrackPlayer(),
-                &BaseTrackPlayer::playerEmpty,
-                this,
-                &QmlWaveformOverview::slotTrackUnloaded);
+                &QmlWaveformOverview::slotWaveformUpdated);
     }
-
-    emit playerChanged();
-    update();
+    slotWaveformUpdated();
 }
 
 QmlWaveformOverview::Channels QmlWaveformOverview::getChannels() const {
@@ -68,49 +59,15 @@ void QmlWaveformOverview::setChannels(QmlWaveformOverview::Channels channels) {
     emit channelsChanged(channels);
 }
 
-void QmlWaveformOverview::slotTrackLoaded(TrackPointer pTrack) {
-    // TODO: Investigate if it's a bug that this debug assertion fails when
-    // passing tracks on the command line
-    // DEBUG_ASSERT(m_pCurrentTrack == pTrack);
-    setCurrentTrack(pTrack);
-}
-
-void QmlWaveformOverview::slotTrackLoading(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
-    DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
-    setCurrentTrack(pNewTrack);
-}
-
-void QmlWaveformOverview::slotTrackUnloaded() {
-    setCurrentTrack(nullptr);
-}
-
-void QmlWaveformOverview::setCurrentTrack(TrackPointer pTrack) {
-    // TODO: Check if this is actually possible
-    if (m_pCurrentTrack == pTrack) {
-        return;
-    }
-
-    if (m_pCurrentTrack != nullptr) {
-        disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
-    }
-
-    m_pCurrentTrack = pTrack;
-    if (pTrack != nullptr) {
-        connect(pTrack.get(),
-                &Track::waveformSummaryUpdated,
-                this,
-                &QmlWaveformOverview::slotWaveformUpdated);
-    }
-    slotWaveformUpdated();
-}
-
 void QmlWaveformOverview::slotWaveformUpdated() {
     update();
 }
 
 void QmlWaveformOverview::paint(QPainter* pPainter) {
-    TrackPointer pTrack = m_pCurrentTrack;
+    if (!m_pTrack) {
+        return;
+    }
+    TrackPointer pTrack = m_pTrack->internal();
     if (!pTrack) {
         return;
     }

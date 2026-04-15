@@ -5,6 +5,9 @@
 #include <QVersionNumber>
 
 namespace VersionStore {
+/// Constant to store the future unreleased Mixxx 3.0
+static QString FUTURE_UNSTABLE = QStringLiteral("3.0-unstable");
+
 /// Returns the current Mixxx version string (e.g. 1.12.0-alpha)
 QString version();
 

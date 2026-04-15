@@ -7,9 +7,12 @@
 VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
         : m_pConfig(pConfig),
           m_group(group),
+          m_passthroughEnabled(PollingControlProxy(m_group, QStringLiteral("passthrough"))),
+          m_scratchPositionEnabled(PollingControlProxy(
+                  m_group, QStringLiteral("scratch_position_enable"))),
           m_iLeadInTime(m_pConfig->getValueString(
                                          ConfigKey(group, "vinylcontrol_lead_in_time"))
-                                .toInt()),
+                          .toInt()),
           m_dVinylPosition(0.0),
           m_fTimecodeQuality(0.0f) {
     // Get Control objects

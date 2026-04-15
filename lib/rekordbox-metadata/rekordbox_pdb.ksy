@@ -149,6 +149,8 @@ types:
       heap in which row data is found. At the end of the page there is
       an index which locates all rows present in the heap via their
       offsets past the end of the page header.
+    meta:
+      bit-endian: le
     seq:
       - id: gap
         contents: [0, 0, 0, 0]
@@ -173,22 +175,10 @@ types:
         doc: |
           @flesniak said: "sequence number (0->1: 8->13, 1->2: 22, 2->3: 27)"
       - size: 4
-      - id: num_rows_small
-        type: u1
-        doc: |
-          Holds the value used for `num_rows` (see below) unless
-          `num_rows_large` is larger (but not equal to `0x1fff`). This
-          seems like some strange mechanism to deal with the fact that
-          lots of tiny entries, such as are found in the
-          `playlist_entries` table, are too big to count with a single
-          byte. But why not just always use `num_rows_large`, then?
-      - type: u1
-        doc: |
-          @flesniak said: "a bitmask (1st track: 32)"
-      - type: u1
-        doc: |
-          @flesniak said: "often 0, sometimes larger, esp. for pages
-          with high real_entry_count (e.g. 12 for 101 entries)"
+      - id: num_rows
+        type: b13
+      - id: num_rows_valid
+        type: b11
       - id: page_flags
         type: u1
         doc: |
@@ -205,7 +195,7 @@ types:
       - type: u2
         doc: |
           @flesniak said: "(0->1: 2)"
-      - id: num_rows_large
+      - id: unknown_not_num_rows_large
         type: u2
         doc: |
           Holds the value used for `num_rows` (as described above)
@@ -232,14 +222,6 @@ types:
         -webide-parse-mode: eager
       heap_pos:
         value: _io.pos
-      num_rows:
-        value: |
-          (num_rows_large > num_rows_small) and (num_rows_large != 0x1fff) ? num_rows_large : num_rows_small
-        doc: |
-          The number of rows on this page (controls the number of row
-          index entries there are, but some of those may not be marked
-          as present in the table due to deletion).
-        -webide-parse-mode: eager
       num_row_groups:
         value: '(num_rows - 1) / 16 + 1'
         doc: |

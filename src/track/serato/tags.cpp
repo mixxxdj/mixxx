@@ -280,7 +280,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     }
 
     const QList<CueInfo> cueInfos = cueMap.values();
-    qDebug() << "SeratoTags::getCueInfos()";
+    // qDebug() << "SeratoTags::getCueInfos()";
     for (const CueInfo& cueInfo : cueInfos) {
         qDebug() << cueInfo;
     }

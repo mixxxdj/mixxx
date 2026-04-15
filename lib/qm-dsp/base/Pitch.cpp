@@ -32,13 +32,8 @@ Pitch::getPitchForFrequency(float frequency,
 {
     float p = 12.0 * (log(frequency / (concertA / 2.0)) / log(2.0)) + 57.0;
 
-    int midiPitch = int(p + 0.00001);
+    int midiPitch = static_cast<int>(p + 0.5);
     float centsOffset = (p - midiPitch) * 100.0;
-
-    if (centsOffset >= 50.0) {
-        midiPitch = midiPitch + 1;
-        centsOffset = -(100.0 - centsOffset);
-    }
     
     if (centsOffsetReturn) *centsOffsetReturn = centsOffset;
     return midiPitch;

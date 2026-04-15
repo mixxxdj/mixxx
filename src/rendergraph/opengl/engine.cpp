@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <cassert>
 
+#include "rendergraph/node.h"
+
 using namespace rendergraph;
 
 Engine::Engine(std::unique_ptr<BaseNode> pRootNode)
@@ -45,7 +47,7 @@ void Engine::remove(BaseNode* pNode) {
 
 void Engine::render() {
     if (!m_pInitializeNodes.empty()) {
-        for (auto pNode : m_pInitializeNodes) {
+        for (auto* pNode : m_pInitializeNodes) {
             pNode->initialize();
         }
         m_pInitializeNodes.clear();
@@ -67,7 +69,7 @@ void Engine::render(BaseNode* pNode) {
 }
 
 void Engine::preprocess() {
-    for (auto pNode : m_pPreprocessNodes) {
+    for (auto* pNode : m_pPreprocessNodes) {
         if (!pNode->isSubtreeBlocked()) {
             pNode->preprocess();
         }

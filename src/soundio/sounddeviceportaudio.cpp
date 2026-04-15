@@ -2,9 +2,14 @@
 
 #include <float.h>
 
+#if __has_include(<valgrind/valgrind.h>)
+#include <valgrind/valgrind.h>
+#endif
+
 #include <QRegularExpression>
 #include <QThread>
 #include <QtDebug>
+#include <cstddef>
 
 #include "control/controlobject.h"
 #include "sounddevicenetwork.h"
@@ -25,6 +30,11 @@
 #include <pa_linux_alsa.h>
 // for sched_getscheduler
 #include <sched.h>
+#endif
+
+#ifdef PA_USE_OBOE
+// for PaOboe_InitializeStreamInfo
+#include <pa_oboe.h>
 #endif
 
 namespace {
@@ -75,6 +85,8 @@ const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))
 
 const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
+
+void paFinishedCallback(void* soundDevice);
 
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         SoundManager* sm,
@@ -239,7 +251,24 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     m_outputParams.device = m_deviceId.portAudioIndex;
     m_outputParams.sampleFormat = paFloat32;
     m_outputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_outputParams.hostApiSpecificStreamInfo = nullptr;
+#ifdef PA_USE_OBOE
+    PaOboeStreamInfo obeoStreamInfo;
+    if (m_deviceTypeId == PaHostApiTypeId::paOboe) {
+        PaOboe_InitializeStreamInfo(&obeoStreamInfo);
+        obeoStreamInfo.androidOutputUsage = PaOboe_Usage::Media,
+        obeoStreamInfo.androidInputPreset = PaOboe_InputPreset::Generic,
+        obeoStreamInfo.performanceMode = PaOboe_PerformanceMode::LowLatency,
+        obeoStreamInfo.sharingMode = PaOboe_SharingMode::Exclusive,
+        obeoStreamInfo.contentType = PaOboe_ContentType::Music,
+        obeoStreamInfo.packageName = ANDROID_PACKAGE_NAME;
+
+        m_outputParams.hostApiSpecificStreamInfo = (void*)&obeoStreamInfo;
+    } else {
+#endif
+        m_outputParams.hostApiSpecificStreamInfo = nullptr;
+#ifdef PA_USE_OBOE
+    }
+#endif
 
     m_inputParams.device  = m_deviceId.portAudioIndex;
     m_inputParams.sampleFormat  = paFloat32;
@@ -360,12 +389,14 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 #endif
 
-    // Start stream
+    // Set the finished callback. See makeStreamInactiveAndWait()
+    m_bFinished = false;
+    Pa_SetStreamFinishedCallback(pStream, paFinishedCallback);
 
-    // Tell the callback that we are starting but not ready yet.
-    // The callback will return paContinue but not access m_pStream
-    // yet.
+    // Tell the callback to return paContinue, once running.
     m_callbackResult.store(paContinue, std::memory_order_release);
+
+    // Start stream
     err = Pa_StartStream(pStream);
     if (err != paNoError) {
         qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
@@ -407,54 +438,74 @@ bool SoundDevicePortAudio::isOpen() const {
     return m_pStream.load() != nullptr;
 }
 
+void paFinishedCallback(void* soundDevice) {
+    // This callback is called by PortAudio when Pa_IsStreamStopped becomes true.
+    // This is triggered when Mixxx sets the return value from the process callback
+    // to paAbort to indicate the stream has to finish. The return value is set in
+    // the SoundDevicePortAudio::close() method.
+    return ((SoundDevicePortAudio*)soundDevice)->finishedCallback();
+}
+
+void SoundDevicePortAudio::finishedCallback() {
+    // Called by paFinishedCallback
+    std::unique_lock lock(m_finishedMutex);
+    m_bFinished = true;
+    m_finishedCV.notify_one();
+}
+
+void SoundDevicePortAudio::makeStreamInactiveAndWait() {
+    // Tell the process callback to return paAbort, which will cause
+    // PortAudio to make the stream inactive as soon as possible. This
+    // has the advantage over calling Pa_StopStream directly, that it
+    // will not wait until all the buffers have been flushed, which
+    // can take a few (annoying) seconds when you're doing soundcard input.
+    m_callbackResult.store(paAbort, std::memory_order_release);
+
+    // We wait until the stream has become inactive, by waiting until the
+    // finishedCallback - as set with Pa_SetStreamFinishedCallback - has
+    // been called, using m_bFinished and conditional variable m_finishedCV.
+    // Without this, we can have a deadlock when we call Pa_StopStream
+    // later on.
+    {
+        std::unique_lock lock(m_finishedMutex);
+        if (!m_finishedCV.wait_for(lock, std::chrono::seconds(1), [&] { return m_bFinished; })) {
+            // The timeout should not be reached, because when the process
+            // callback returns paAbort, the stream will finish as soon as possible.
+            // We have it as a last resort in case inactivating the stream stalls.
+            qWarning() << "PortAudio: Timeout reached when waiting for PortAudio finish callback";
+        }
+    }
+}
+
 SoundDeviceStatus SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
 
-    // Tell the callback to return paAbort. This stops the stream as soon as possible.
-    // After stopping the stream using this technique, Pa_StopStream() still has to be called.
-    m_callbackResult.store(paAbort, std::memory_order_release);
     PaStream* pStream = m_pStream.load(std::memory_order_relaxed);
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(pStream);
-        // 1 means the stream is stopped. 0 means active.
+        // 1 means the stream is stopped. 0 means active, negative means error
+        // (PaUtil_ValidateStreamPointer() failing, when passing a nullptr or
+        // wrong pointer type)
+        VERIFY_OR_DEBUG_ASSERT(err >= 0) {
+            qWarning() << "PortAudio: Pa_IsStreamStopped returned error:"
+                       << Pa_GetErrorText(err) << m_deviceId;
+            return SoundDeviceStatus::Error;
+        }
         if (err == 1) {
-            //qDebug() << "PortAudio: Stream already stopped, but no error.";
-            return SoundDeviceStatus::Ok;
-        }
-        // Real PaErrors are always negative.
-        if (err < 0) {
-            qWarning() << "PortAudio: Stream already stopped:"
-                       << Pa_GetErrorText(err) << m_deviceId;
-            m_pStream.store(nullptr, std::memory_order_release);
-            return SoundDeviceStatus::Error;
-        }
+            qWarning() << "PortAudio: Stream already stopped";
+        } else {
+            // Tell the process callback to return paAbort and wait for the
+            // callback set with Pa_SetStreamFinishedCallback to be called.
+            makeStreamInactiveAndWait();
 
-        // Stop the stream. Since the start of this function we are returning
-        // paAbort from the callback. paAbort stops the stream as soon as possible.
-        // When stopping the stream using this technique, we still need to call
-        // Pa_StopStream() before starting the stream again.
-
-        err = Pa_StopStream(pStream);
-        // We should now be able to safely set m_pStream to null
-        m_pStream.store(nullptr, std::memory_order_release);
-
-        // Note: With the use of return value paAbort as described above,
-        // the comment below is not relevant anymore, but I am leaving it
-        // because of the BIG FAT WARNING, just in case.
-        //
-        // Trying Pa_AbortStream instead, because StopStream seems to wait
-        // until all the buffers have been flushed, which can take a
-        // few (annoying) seconds when you're doing soundcard input.
-        // (it flushes the input buffer, and then some, or something)
-        // BIG FAT WARNING: Pa_AbortStream() will kill threads while they're
-        // waiting on a mutex, which will leave the mutex in an screwy
-        // state. Don't use it!
-
-        if (err != paNoError) {
-            qWarning() << "PortAudio: Stop stream error:"
-                       << Pa_GetErrorText(err) << m_deviceId;
-            return SoundDeviceStatus::Error;
+            // We can now safely call Pa_StopStream, which should not block as the
+            // stream has become inactive.
+            err = Pa_StopStream(pStream);
+            if (err != paNoError) {
+                qWarning() << "PortAudio: Error while attempting to stop stream:"
+                           << Pa_GetErrorText(err) << m_deviceId;
+            }
         }
 
         // Close stream
@@ -464,6 +515,9 @@ SoundDeviceStatus SoundDevicePortAudio::close() {
                        << Pa_GetErrorText(err) << m_deviceId;
             return SoundDeviceStatus::Error;
         }
+
+        // We can now safely set m_pStream to null
+        m_pStream.store(nullptr, std::memory_order_release);
     }
 
     m_outputFifo.reset();
@@ -691,7 +745,7 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                        copyCount = qMin(readAvailable, copyCount + m_numOutputChannels);
+                        copyCount = qMin(readAvailable, copyCount + m_outputParams.channelCount);
                     } else {
                         m_outputDrift = true;
                     }
@@ -982,9 +1036,16 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
-        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
-        } else {
+#if __has_include(<valgrind/valgrind.h>)
+        if (RUNNING_ON_VALGRIND) {
+            qDebug() << "Skipping denormals to zero check: running under Valgrind";
+        } else
+#endif
+            VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
+                qWarning() << "Denormals to zero mode is not working. EQs and "
+                              "effects may suffer high CPU load";
+            }
+        else {
             qDebug() << "Denormals to zero mode is working";
         }
     }

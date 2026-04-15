@@ -86,7 +86,7 @@ void WDisplay::setPixmapBackground(const PixmapSource& source,
         double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!m_pPixmapBack || m_pPixmapBack->isNull()) {
-        qDebug() << metaObject()->className()
+        qDebug() << metaObject()->className() << objectName()
                  << "Error loading background pixmap:" << source.getPath();
     }
 }
@@ -104,8 +104,8 @@ void WDisplay::setPixmap(
     PixmapSource source(filename);
     PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!pPixmap || pPixmap->isNull()) {
-        qDebug() << metaObject()->className()
-                 << "Error loading pixmap:" << filename;
+        qDebug() << metaObject()->className() << objectName()
+                 << "Error loading pixmap:" << filename << "for" << iPos;
     } else {
         (*pPixmaps)[iPos] = pPixmap;
         if (mode == Paintable::DrawMode::Fixed) {

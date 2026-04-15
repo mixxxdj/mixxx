@@ -653,7 +653,8 @@ bool configureMediaType(
     }
     kLogger.debug() << "Number of channels in input stream" << numChannels;
     if (params.getSignalInfo().getChannelCount().isValid()) {
-        numChannels = params.getSignalInfo().getChannelCount();
+        numChannels = std::min(params.getSignalInfo().getChannelCount(),
+                mixxx::kMaxEngineChannelInputCount);
         hr = pAudioType->SetUINT32(
                 MF_MT_AUDIO_NUM_CHANNELS, numChannels);
         if (FAILED(hr)) {

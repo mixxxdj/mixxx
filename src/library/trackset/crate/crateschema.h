@@ -5,8 +5,8 @@
 #define CRATE_TABLE "crates"
 #define CRATE_TRACKS_TABLE "crate_tracks"
 
-const QString CRATETABLE_ID = "id";
-const QString CRATETABLE_NAME = "name";
+const QString CRATETABLE_ID = QStringLiteral("id");
+const QString CRATETABLE_NAME = QStringLiteral("name");
 
 // TODO(XXX): Fix AutoDJ database design.
 // Crates should have no dependency on AutoDJ stuff. Which
@@ -16,7 +16,7 @@ const QString CRATETABLE_NAME = "name";
 // redesign of the AutoDJ feature has been reached. The main
 // ideas of the new design should be documented for verification
 // before starting to code.
-const QString CRATETABLE_AUTODJ_SOURCE = "autodj_source";
+const QString CRATETABLE_AUTODJ_SOURCE = QStringLiteral("autodj_source");
 
-const QString CRATETRACKSTABLE_CRATEID = "crate_id";
-const QString CRATETRACKSTABLE_TRACKID = "track_id";
+const QString CRATETRACKSTABLE_CRATEID = QStringLiteral("crate_id");
+const QString CRATETRACKSTABLE_TRACKID = QStringLiteral("track_id");

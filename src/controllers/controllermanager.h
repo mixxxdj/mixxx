@@ -45,6 +45,7 @@ class ControllerManager : public QObject {
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
   signals:
+    void initialized();
     void devicesChanged();
     void requestSetUpDevices();
     void requestShutdown();
@@ -52,13 +53,9 @@ class ControllerManager : public QObject {
     void mappingApplied(bool applied);
 
   public slots:
-    void updateControllerList();
-
     void slotApplyMapping(Controller* pController,
             std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
-    void openController(Controller* pController);
-    void closeController(Controller* pController);
 
   private slots:
     /// Perform initialization that should be delayed until the ControllerManager
@@ -70,12 +67,16 @@ class ControllerManager : public QObject {
     void slotSetUpDevices();
     void slotShutdown();
     /// Calls poll() on all devices that have isPolling() true.
-    void pollDevices();
+    void slotPollDevices();
+
+  private:
+    void updateControllerList();
     void startPolling();
     void stopPolling();
     void pollIfAnyControllersOpen();
+    void openController(Controller* pController);
+    void closeController(Controller* pController);
 
-  private:
     UserSettingsPointer m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;

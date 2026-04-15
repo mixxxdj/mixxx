@@ -21,6 +21,7 @@ BaseNode::~BaseNode() {
 /// for a more clear transfer of ownership. pChild is considered owned by
 /// this at this point.
 void BaseNode::appendChildNode(BaseNode* pChild) {
+    DEBUG_ASSERT(pChild != nullptr);
     if (m_pLastChild) {
         pChild->m_pPreviousSibling = m_pLastChild;
         m_pLastChild->m_pNextSibling = pChild;
@@ -42,14 +43,21 @@ void BaseNode::appendChildNode(BaseNode* pChild) {
 /// for a more clear transfer of ownership. Otherwise,
 /// deleting pChild is responsibility of the caller.
 void BaseNode::removeChildNode(BaseNode* pChild) {
+    DEBUG_ASSERT(pChild);
     if (pChild == m_pFirstChild) {
+        DEBUG_ASSERT(pChild->m_pPreviousSibling == nullptr);
         m_pFirstChild = pChild->m_pNextSibling;
     } else {
+        DEBUG_ASSERT(pChild->m_pPreviousSibling != nullptr);
         pChild->m_pPreviousSibling->m_pNextSibling = pChild->m_pNextSibling;
     }
 
     if (pChild == m_pLastChild) {
-        m_pLastChild = nullptr;
+        DEBUG_ASSERT(pChild->m_pNextSibling == nullptr);
+        m_pLastChild = pChild->m_pPreviousSibling;
+    } else {
+        DEBUG_ASSERT(pChild->m_pNextSibling != nullptr);
+        pChild->m_pNextSibling->m_pPreviousSibling = pChild->m_pPreviousSibling;
     }
 
     if (pChild->m_pEngine) {

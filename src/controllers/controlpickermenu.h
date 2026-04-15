@@ -56,6 +56,9 @@ class ControlPickerMenu : public QMenu {
             const QString& helpText,
             QMenu* pMenu,
             bool deckControls,
+#ifdef __STEM__
+            bool deckStemControls,
+#endif
             bool samplerControls,
             bool previewdeckControls,
             bool addReset = false);
@@ -63,21 +66,33 @@ class ControlPickerMenu : public QMenu {
             const QString& title,
             const QString& helpText,
             QMenu* pMenu,
+#ifdef __STEM__
+            bool stemsControls = false,
+#endif
             bool addReset = false);
     void addDeckAndPreviewDeckControl(const QString& control,
             const QString& title,
             const QString& helpText,
             QMenu* pMenu,
+#ifdef __STEM__
+            bool stemsControls = false,
+#endif
             bool addReset = false);
     void addDeckAndSamplerAndPreviewDeckControl(const QString& control,
             const QString& title,
             const QString& helpText,
             QMenu* pMenu,
+#ifdef __STEM__
+            bool stemsControls = false,
+#endif
             bool addReset = false);
     void addDeckControl(const QString& control,
             const QString& title,
             const QString& helpText,
             QMenu* pMenu,
+#ifdef __STEM__
+            bool stemsControls = false,
+#endif
             bool addReset = false);
     void addSamplerControl(const QString& control,
             const QString& title,
@@ -106,6 +121,7 @@ class ControlPickerMenu : public QMenu {
     QString m_effectMainOutputStr;
     QString m_effectHeadphoneOutputStr;
     QString m_deckStr;
+    QString m_deckStemStr;
     QString m_previewdeckStr;
     QString m_samplerStr;
     QString m_resetStr;

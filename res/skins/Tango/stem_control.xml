@@ -1,0 +1,63 @@
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <!-- Active Stems -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>15f,1me</Size>
+          </WidgetGroup>
+          <Template src="skins:Tango/stem_channel.xml">
+            <SetVariable name="stemNum">1</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <Size>15f,1me</Size>
+          </WidgetGroup>
+          <Template src="skins:Tango/stem_channel.xml">
+            <SetVariable name="stemNum">2</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <Size>15f,1me</Size>
+          </WidgetGroup>
+          <Template src="skins:Tango/stem_channel.xml">
+            <SetVariable name="stemNum">3</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <Size>15f,1me</Size>
+          </WidgetGroup>
+          <Template src="skins:Tango/stem_channel.xml">
+            <SetVariable name="stemNum">4</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <Size>15f,1me</Size>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="chanNum"/>],stem_count</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- No Stems -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+          <Label>
+            <ObjectName>StemLabelEmpty</ObjectName>
+            <Text>Track has no STEMs</Text>
+            <Alignment>center</Alignment>
+          </Label>
+          <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="chanNum"/>],stem_count</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

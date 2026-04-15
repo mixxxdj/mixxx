@@ -170,7 +170,7 @@ Mixxx.ControllerScreen {
                         Layout.fillHeight: true
                         Text {
                             text: qsTr("Group")
-                            font.pixelSize: 24
+                            font.pixelSize: 18
                             font.family: "Noto Sans"
                             font.letterSpacing: -1
                             color: fontColor
@@ -183,7 +183,7 @@ Mixxx.ControllerScreen {
                         Layout.fillHeight: true
                         Text {
                             text: `${root.group}`
-                            font.pixelSize: 24
+                            font.pixelSize: 18
                             font.family: "Noto Sans"
                             font.letterSpacing: -1
                             color: fontColor
@@ -207,7 +207,7 @@ Mixxx.ControllerScreen {
                         Layout.fillHeight: true
                         Text {
                             text: qsTr("Widget")
-                            font.pixelSize: 24
+                            font.pixelSize: 18
                             font.family: "Noto Sans"
                             font.letterSpacing: -1
                             color: fontColor
@@ -258,7 +258,7 @@ Mixxx.ControllerScreen {
                         anchors.bottomMargin: 6
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        spacing: 6
+                        spacing: 4
                         required property var modelData
 
                         Mixxx.ControlProxy {
@@ -273,7 +273,7 @@ Mixxx.ControllerScreen {
                             Layout.fillHeight: true
                             Text {
                                 text: qsTr(modelData.title)
-                                font.pixelSize: 24
+                                font.pixelSize: 18
                                 font.family: "Noto Sans"
                                 font.letterSpacing: -1
                                 color: fontColor
@@ -286,10 +286,161 @@ Mixxx.ControllerScreen {
                             Layout.fillHeight: true
                             Text {
                                 text: `${mixxxValue.value}`
-                                font.pixelSize: 24
+                                font.pixelSize: 18
                                 font.family: "Noto Sans"
                                 font.letterSpacing: -1
                                 color: fontColor
+                            }
+                        }
+                    }
+                }
+                RowLayout {
+                    anchors.leftMargin: 6
+                    anchors.rightMargin: 6
+                    anchors.topMargin: 6
+                    anchors.bottomMargin: 6
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    Mixxx.ControlProxy {
+                        id: zoomControl
+
+                        group: root.group
+                        key: "waveform_zoom"
+                    }
+
+                    MixxxControls.WaveformDisplay {
+                        group: root.group
+                        x: 0
+                        width: root.width
+                        height: 100
+
+                        zoom: zoomControl.value
+                        backgroundColor: "#36000000"
+
+                        Mixxx.WaveformRendererEndOfTrack {
+                            color: 'blue'
+                            endOfTrackWarningTime: 30
+                        }
+
+                        Mixxx.WaveformRendererPreroll {
+                            color: '#998977'
+                        }
+
+                        Mixxx.WaveformRendererMarkRange {
+                            // Loop
+                            Mixxx.WaveformMarkRange {
+                                startControl: "loop_start_position"
+                                endControl: "loop_end_position"
+                                enabledControl: "loop_enabled"
+                                color: '#00b400'
+                                opacity: 0.7
+                                disabledColor: '#FFFFFF'
+                                disabledOpacity: 0.6
+                            }
+                            // Intro
+                            Mixxx.WaveformMarkRange {
+                                startControl: "intro_start_position"
+                                endControl: "intro_end_position"
+                                color: '#2c5c9a'
+                                opacity: 0.6
+                                durationTextColor: '#ffffff'
+                                durationTextLocation: 'after'
+                            }
+                            // Outro
+                            Mixxx.WaveformMarkRange {
+                                startControl: "outro_start_position"
+                                endControl: "outro_end_position"
+                                color: '#2c5c9a'
+                                opacity: 0.6
+                                durationTextColor: '#ffffff'
+                                durationTextLocation: 'before'
+                            }
+                        }
+
+                        Mixxx.WaveformRendererRGB {
+                            axesColor: '#00ffffff'
+                            lowColor: 'red'
+                            midColor: 'green'
+                            highColor: 'blue'
+
+                            gainAll: 1.0
+                            gainLow: 1.0
+                            gainMid: 1.0
+                            gainHigh: 1.0
+                        }
+
+                        Mixxx.WaveformRendererStem {
+                            gainAll: 1.0
+                        }
+
+                        Mixxx.WaveformRendererBeat {
+                            color: '#cfcfcf'
+                        }
+
+                        Mixxx.WaveformRendererMark {
+                            playMarkerColor: 'cyan'
+                            playMarkerBackground: 'transparent'
+                            defaultMark: Mixxx.WaveformMark {
+                                align: "bottom|center"
+                                color: "#FF0000"
+                                textColor: "#FFFFFF"
+                                text: " %1 "
+                            }
+
+                            untilMark.showTime: false
+                            untilMark.showBeats: false
+                            untilMark.align: Qt.AlignCenter
+                            untilMark.textSize: 14
+
+                            Mixxx.WaveformMark {
+                                control: "cue_point"
+                                text: 'CUE'
+                                align: 'top|right'
+                                color: '#FF8000'
+                                textColor: '#FFFFFF'
+                            }
+                            Mixxx.WaveformMark {
+                                control: "loop_start_position"
+                                text: '↻'
+                                align: 'top|left'
+                                color: 'green'
+                                textColor: '#FFFFFF'
+                            }
+                            Mixxx.WaveformMark {
+                                control: "loop_end_position"
+                                align: 'bottom|right'
+                                color: 'green'
+                                textColor: '#FFFFFF'
+                            }
+                            Mixxx.WaveformMark {
+                                control: "intro_start_position"
+                                text: '◢'
+                                align: 'top|right'
+                                color: 'blue'
+                                textColor: '#FFFFFF'
+                            }
+                            Mixxx.WaveformMark {
+                                control: "intro_end_position"
+                                text: '◢'
+                                align: 'top|left'
+                                color: 'blue'
+                                textColor: '#FFFFFF'
+                            }
+                            Mixxx.WaveformMark {
+                                control: "outro_start_position"
+                                text: '◣'
+                                align: 'top|right'
+                                color: 'blue'
+                                textColor: '#FFFFFF'
+                            }
+                            Mixxx.WaveformMark {
+                                control: "outro_end_position"
+                                text: '◣'
+                                align: 'top|left'
+                                color: 'blue'
+                                textColor: '#FFFFFF'
                             }
                         }
                     }

@@ -44,8 +44,12 @@ void WaveformRendererSlipMode::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
-    m_pSlipModeControl.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled")));
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        m_pSlipModeControl.reset();
+        return true;
+    }
+    m_pSlipModeControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
 
     return true;
 }
@@ -79,7 +83,8 @@ void WaveformRendererSlipMode::preprocess() {
 }
 
 bool WaveformRendererSlipMode::preprocessInner() {
-    if (!m_pSlipModeControl->toBool() || !m_waveformRenderer->isSlipActive()) {
+    if (!m_pSlipModeControl || !m_pSlipModeControl->toBool() ||
+            !m_waveformRenderer->isSlipActive()) {
         return false;
     }
 

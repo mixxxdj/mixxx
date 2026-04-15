@@ -7,6 +7,8 @@
 #include <QWaitCondition>
 #include <memory>
 
+#include "javascriptplayerproxy.h"
+#include "mixer/playermanager.h"
 #include "util/runtimeloggingcategory.h"
 #ifdef MIXXX_USE_QML
 #include "controllers/controllerenginethreadcontrol.h"
@@ -14,9 +16,7 @@
 
 class Controller;
 class QJSEngine;
-#ifdef MIXXX_USE_QML
 class TrackCollectionManager;
-#endif
 
 /// ControllerScriptEngineBase manages the JavaScript engine for controller scripts.
 /// ControllerScriptModuleEngine implements the current system using JS modules.
@@ -31,6 +31,8 @@ class ControllerScriptEngineBase : public QObject {
     virtual bool initialize();
 
     bool executeFunction(QJSValue* pFunctionObject, const QJSValueList& arguments = {});
+
+    QObject* getPlayer(const QString& group);
 
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
@@ -53,10 +55,11 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
-#ifdef MIXXX_USE_QML
+    static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager);
+
     static void registerTrackCollectionManager(
             std::shared_ptr<TrackCollectionManager> pTrackCollectionManager);
-#endif
+
   signals:
     void beforeShutdown();
 
@@ -91,10 +94,11 @@ class ControllerScriptEngineBase : public QObject {
 #endif
     bool m_bTesting;
 
-#ifdef MIXXX_USE_QML
   private:
+    static inline std::shared_ptr<PlayerManager> s_pPlayerManager;
     static inline std::shared_ptr<TrackCollectionManager> s_pTrackCollectionManager;
 
+#ifdef MIXXX_USE_QML
   protected:
     /// Pause the GUI main thread. Pause is required by rendering
     /// thread (https://doc.qt.io/qt-6/qquickrendercontrol.html#sync). This

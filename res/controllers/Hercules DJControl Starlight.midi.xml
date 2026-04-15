@@ -441,6 +441,28 @@
 
         // FX
             <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>super1</key>
+                <description>SHIFT + Filter</description>
+                <status>0xb4</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>super1</key>
+                <description>SHIFT + Bass</description>
+                <status>0xb4</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>enabled</key>
                 <description>(Pad 1)</description>
@@ -702,6 +724,28 @@
             </control>
 
         // FX
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>super1</key>
+                <description>SHIFT + Filter</description>
+                <status>0xb5</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>super1</key>
+                <description>SHIFT + Bass</description>
+                <status>0xb5</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>enabled</key>

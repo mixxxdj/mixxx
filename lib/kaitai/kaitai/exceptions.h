@@ -3,15 +3,15 @@
 
 #include <kaitai/kaitaistream.h>
 
-#include <string>
-#include <stdexcept>
+#include <stdexcept> // std::runtime_error
+#include <string> // std::string
 
 // We need to use "noexcept" in virtual destructor of our exceptions
 // subclasses. Different compilers have different ideas on how to
 // achieve that: C++98 compilers prefer `throw()`, C++11 and later
 // use `noexcept`. We define KS_NOEXCEPT macro for that.
 
-#if __cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1900)
+#ifdef KAITAI_STREAM_H_CPP11_SUPPORT
 #define KS_NOEXCEPT noexcept
 #else
 #define KS_NOEXCEPT throw()
@@ -193,6 +193,27 @@ public:
     // "not any of the list, got #{actual.inspect}"
 
     virtual ~validation_not_any_of_error() KS_NOEXCEPT {};
+
+protected:
+    const T& m_actual;
+};
+
+/**
+ * Signals validation failure: we required "actual" value to be in
+ * the enum, but it turned out that it's not.
+ */
+template<typename T>
+class validation_not_in_enum_error: public validation_failed_error {
+public:
+    validation_not_in_enum_error(const T& actual, kstream* io, const std::string src_path):
+        validation_failed_error("not in the enum", io, src_path),
+        m_actual(actual)
+    {
+    }
+
+    // "not in the enum, got #{actual.inspect}"
+
+    virtual ~validation_not_in_enum_error() KS_NOEXCEPT {};
 
 protected:
     const T& m_actual;

@@ -339,13 +339,11 @@ KANE_QuNeo.jumpHoldTimers = KANE_QuNeo.makeVar([]) // hold timers for continued 
 
 KANE_QuNeo.init = function (id) { // called when the device is opened & set up
 
-  // NOTE: the 2 following controls are called each time the music updates,
-  //       which means ~every 0.02 seconds. Everything that needs consistent updates
-  //       should branch from these functions so we don't eat the cpu.
-  //       Visual playposition is updated roughly 4x more often
-  //       than playposition.
-  engine.connectControl("[Channel1]","visual_playposition","KANE_QuNeo.time1Keeper");
-  engine.connectControl("[Channel2]","visual_playposition","KANE_QuNeo.time2Keeper");
+    // NOTE: the 2 following controls are called each time the music updates,
+    //       which means ~every 0.02 seconds. Everything that needs consistent updates
+    //       should branch from these functions so we don't eat the cpu.
+    engine.connectControl("[Channel1]", "playposition", "KANE_QuNeo.time1Keeper");
+    engine.connectControl("[Channel2]", "playposition", "KANE_QuNeo.time2Keeper");
 
   // led controls for the master / flanger channels
     engine.connectControl("[Main]", "vu_meter", "KANE_QuNeo.masterVuMeter");
@@ -509,7 +507,7 @@ KANE_QuNeo.toggleRecord = function (channel, control, value, status, group) {
     for (var deck = 1; deck <= 2; deck++) {
     var channelName = KANE_QuNeo.getChannelName(deck);
     var samples = engine.getValue(channelName,"track_samples");
-    var position = engine.getValue(channelName,"visual_playposition");
+    const position = engine.getValue(channelName, "playposition");
     var samplePosition = samples * position;
     print("Recording started with deck "+deck+ " at sample: "+samplePosition)
     }
@@ -541,7 +539,7 @@ KANE_QuNeo.jumpLoop = function (deck, numBeats) {
     var spb = samplerate * 60 * 2 / bpm // samples per beat, not sure on the 2.
 
     // calculate the new position
-    var oldPosition = engine.getValue(channelName, "visual_playposition");
+    const oldPosition = engine.getValue(channelName, "playposition");
     var direction = KANE_QuNeo.trackJump[channel];
     var beatsVector = numBeats * direction; // vectors have magnitude and direction
     var newPosition = oldPosition + (beatsVector*spb/samples);
@@ -899,8 +897,7 @@ KANE_QuNeo.deckCursor = function (deck, value) {
     var channelName = KANE_QuNeo.getChannelName(deck)
     var normalized = 1 - (value / 127);
     // adjust play positions
-    engine.setValue(channelName,"visual_playposition", normalized)
-    engine.setValue(channelName,"playposition", normalized)
+    engine.setValue(channelName, "playposition", normalized);
 }
 
 /***** (VN) Visual Nudging *****/
@@ -938,12 +935,11 @@ KANE_QuNeo.doVisualNudge = function (deck, direction) {
     var channel = deck - 1;
     var channelName = KANE_QuNeo.getChannelName(deck)
     // calculate new position
-    var newPosition = engine.getValue(channelName,"visual_playposition")
+    const newPosition = engine.getValue(channelName, "playposition")
     + (KANE_QuNeo.visualNudgeDist * direction);
 
     // now apply to both visual and actual position
-    engine.setValue(channelName,"playposition",newPosition)
-    engine.setValue(channelName,"visual_playposition",newPosition)
+    engine.setValue(channelName, "playposition", newPosition);
 }
 
 KANE_QuNeo.visualNudgeOff = function (deck, direction) {
@@ -1163,7 +1159,7 @@ KANE_QuNeo.quantizeCues = function (deck, LEDControl) {
 
     // find out our current position, assume it's on the beatgrid
     var trackSamples = engine.getValue(channelName,"track_samples")
-    var position = engine.getValue(channelName,"visual_playposition")
+    const position = engine.getValue(channelName, "playposition")
     * trackSamples; // track position in samples
 
     // determine bpm and spb
@@ -1259,7 +1255,7 @@ KANE_QuNeo.handleBeat = function (deck) {
     var lastWholeBeat = KANE_QuNeo.wholeBeat[channel];
 
     // now see which beat this one is
-    var value = engine.getValue(channelName,"visual_playposition")
+    const value = engine.getValue(channelName, "playposition");
     var samplerate = engine.getValue(channelName,"track_samplerate");
     var samples = engine.getValue(channelName,"track_samples");
     var bpm = engine.getValue(channelName,"file_bpm");
@@ -1814,7 +1810,7 @@ KANE_QuNeo.assertHotcueActivateLEDs = function (deck) {
     var channel = deck - 1;
     var channelName = KANE_QuNeo.getChannelName(deck);
     var closest = [undefined,2]; // next hotcue wrt current playpos as [control,pos]
-    var position = engine.getValue(channelName,"visual_playposition"); // song position
+    const position = engine.getValue(channelName, "playposition"); // song position
     var trackSamples = engine.getValue(channelName,"track_samples")
     var on = [], LEDs = [[0x71,0x73,0x75,0x77,
               0x61,0x63,0x65,0x67,

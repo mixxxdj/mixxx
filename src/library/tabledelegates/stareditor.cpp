@@ -73,20 +73,10 @@ void StarEditor::paintEvent(QPaintEvent*) {
         style->drawControl(QStyle::CE_ItemViewItem, &m_styleOption, &painter, m_pTableView);
     }
 
-    // Set the palette appropriately based on whether the row is selected or
-    // not. We also have to check if it is inactive or not and use the
-    // appropriate ColorGroup.
-    QPalette::ColorGroup cg = m_styleOption.state & QStyle::State_Enabled
-            ? QPalette::Normal
-            : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(m_styleOption.state & QStyle::State_Active)) {
-        cg = QPalette::Inactive;
-    }
-
     if (m_styleOption.state & QStyle::State_Selected) {
-        painter.setBrush(m_styleOption.palette.color(cg, QPalette::HighlightedText));
+        painter.setBrush(m_styleOption.palette.highlightedText().color());
     } else {
-        painter.setBrush(m_styleOption.palette.color(cg, QPalette::Text));
+        painter.setBrush(m_styleOption.palette.text().color());
     }
 
     m_starRating.paint(&painter, m_styleOption.rect);

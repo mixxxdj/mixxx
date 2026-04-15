@@ -1,13 +1,13 @@
 #include "controllers/legacycontrollersettings.h"
 
-#include <util/assert.h>
+#include <qdom.h>
+#include <qglobal.h>
 
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QColorDialog>
 #include <QComboBox>
 #include <QDoubleSpinBox>
-#include <QEvent>
 #include <QFileDialog>
 #include <QLabel>
 #include <QLayout>
@@ -16,8 +16,12 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QStringLiteral>
+#include <utility>
 
 #include "moc_legacycontrollersettings.cpp"
+#include "util/assert.h"
+#include "util/parented_ptr.h"
+#include "widget/wsettingscheckboxlabel.h"
 
 namespace {
 
@@ -67,14 +71,30 @@ LegacyControllerSettingBuilder::LegacyControllerSettingBuilder() {
 }
 
 AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
-    m_variableName = element.attribute("variable").trimmed();
-    m_label = replaceMarkupStyleStr(element.attribute("label", m_variableName).trimmed());
+    m_variableName = element.attribute(QStringLiteral("variable")).trimmed();
+    m_label = replaceMarkupStyleStr(
+            element.attribute(QStringLiteral("label"), m_variableName)
+                    .trimmed());
 
-    QDomElement description = element.firstChildElement("description");
+    QDomElement description = element.firstChildElement(QStringLiteral("description"));
     if (!description.isNull()) {
         m_description = replaceMarkupStyleStr(description.text().trimmed());
     }
 }
+
+#ifdef MIXXX_USE_QML
+void AbstractLegacyControllerSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    e->setAttribute("type", getType());
+    e->setAttribute("variable", variableName());
+    e->setAttribute("label", label());
+    if (!description().isEmpty()) {
+        auto descr = doc->createElement("description");
+        QDomText textNode = doc->createTextNode(description());
+        descr.appendChild(textNode);
+        e->appendChild(descr);
+    }
+}
+#endif
 
 QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
         LegacyControllerSettingsLayoutContainer::Disposition orientation) {
@@ -83,7 +103,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 
     pLayout->setContentsMargins(0, 0, 0, 0);
 
-    if (orientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
+    if (orientation == LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL) {
         auto* pSettingsContainer = dynamic_cast<WLegacyControllerSettingsContainer*>(pParent);
         if (pSettingsContainer) {
             connect(pSettingsContainer,
@@ -94,7 +114,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
                                     disposition) {
                         pLayout->setDirection(disposition ==
                                                 LegacyControllerSettingsLayoutContainer::
-                                                        HORIZONTAL
+                                                        Disposition::HORIZONTAL
                                         ? QBoxLayout::TopToBottom
                                         : QBoxLayout::LeftToRight);
                         pParent->layout()->invalidate();
@@ -107,7 +127,7 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
     pLabelWidget->setText(label());
 
     if (!description().isEmpty()) {
-        pRoot->setToolTip(QString("<p>%1</p>").arg(description()));
+        pRoot->setToolTip(QStringLiteral("<p>%1</p>").arg(description()));
     }
 
     pLayout->addWidget(pLabelWidget);
@@ -123,8 +143,8 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
 
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element) {
-    m_defaultValue = parseValue(element.attribute("default"));
+        : LegacyControllerSettingMixin(element) {
+    m_defaultValue = parseValue(element.attribute(QStringLiteral("default")));
     m_savedValue = m_defaultValue;
     m_editedValue = m_defaultValue;
 }
@@ -133,6 +153,13 @@ QWidget* LegacyControllerBooleanSetting::buildWidget(
         QWidget* pParent, LegacyControllerSettingsLayoutContainer::Disposition) {
     return buildInputWidget(pParent);
 }
+
+#ifdef MIXXX_USE_QML
+void LegacyControllerBooleanSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    e->setAttribute("default", m_defaultValue);
+}
+#endif
 
 QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     auto pWidget = make_parented<QWidget>(pParent);
@@ -144,7 +171,7 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     }
 
     if (!description().isEmpty()) {
-        pCheckBox->setToolTip(QString("<p>%1</p>").arg(description()));
+        pCheckBox->setToolTip(QStringLiteral("<p>%1</p>").arg(description()));
     }
 
     connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, pCheckBox]() {
@@ -161,14 +188,13 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     });
 
     // We want to format the checkbox label with html styles. This is not possible
-    // so we attach a separate QLabel and, in order to get a clickable label like
-    // with QCheckBox, we associate the label with the checkbox (buddy).
-    // When the label is clicked we toggle the checkbox in eventFilter().
-    auto pLabelWidget = make_parented<QLabel>(pWidget);
+    // so we attach a separate label. In order to get a clickable label like
+    // with QCheckBox, we use a custom QLabel that toggles its buddy QCheckBox
+    // (on left-click, like QCheckBox) and sets focus on it.
+    auto pLabelWidget = make_parented<WSettingsCheckBoxLabel>(pWidget);
     pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     pLabelWidget->setText(label());
     pLabelWidget->setBuddy(pCheckBox);
-    pLabelWidget->installEventFilter(this);
 
     QBoxLayout* pLayout = new QHBoxLayout();
 
@@ -184,22 +210,29 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
 }
 
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "boolean",
+    return element.hasAttribute(QStringLiteral("type")) &&
+            QString::compare(element.attribute(QStringLiteral("type")),
+                    QStringLiteral("boolean"),
                     Qt::CaseInsensitive) == 0;
 }
 
-bool LegacyControllerBooleanSetting::eventFilter(QObject* pObj, QEvent* pEvent) {
-    QLabel* pLabel = qobject_cast<QLabel*>(pObj);
-    if (pLabel && pEvent->type() == QEvent::MouseButtonPress) {
-        QCheckBox* pCheckBox = qobject_cast<QCheckBox*>(pLabel->buddy());
-        if (pCheckBox) {
-            pCheckBox->toggle();
-        }
-    }
-    return QObject::eventFilter(pObj, pEvent);
+#ifdef MIXXX_USE_QML
+template<class SettingType,
+        Serializer<SettingType> ValueSerializer,
+        Deserializer<SettingType> ValueDeserializer,
+        class InputWidget>
+void LegacyControllerNumberSetting<SettingType,
+        ValueSerializer,
+        ValueDeserializer,
+        InputWidget>::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin<SettingType>::serialize(doc, e);
+    e->setAttribute("type", "integer");
+    e->setAttribute("min", m_minValue);
+    e->setAttribute("max", m_maxValue);
+    e->setAttribute("step", m_stepValue);
+    e->setAttribute("default", m_defaultValue);
 }
+#endif
 
 template<class SettingType,
         Serializer<SettingType> ValueSerializer,
@@ -231,6 +264,18 @@ QWidget* LegacyControllerNumberSetting<SettingType,
     return pSpinBox;
 }
 
+#ifdef MIXXX_USE_QML
+void LegacyControllerRealSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    LegacyControllerNumberSetting<double,
+            packSettingDoubleValue,
+            extractSettingDoubleValue,
+            QDoubleSpinBox>::serialize(doc, e);
+    e->setAttribute("type", "real");
+    e->setAttribute("precision", m_precisionValue);
+}
+#endif
+
 QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
     QDoubleSpinBox* spinBox = dynamic_cast<QDoubleSpinBox*>(
             LegacyControllerNumberSetting::buildInputWidget(pParent));
@@ -246,22 +291,24 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element), m_options(), m_defaultValue(0) {
+        : LegacyControllerSettingMixin(element, 0),
+          m_options() {
     size_t pos = 0;
-    for (QDomElement value = element.firstChildElement("value");
+    for (QDomElement value = element.firstChildElement(QStringLiteral("value"));
             !value.isNull();
-            value = value.nextSiblingElement("value")) {
+            value = value.nextSiblingElement(QStringLiteral("value"))) {
         QString val = value.text();
-        QColor color = QColor(value.attribute("color"));
+        QColor color = QColor(value.attribute(QStringLiteral("color")));
         // TODO: Remove once we mandate GCC 10/Clang 16
 #if defined(__cpp_aggregate_paren_init) &&       \
         __cpp_aggregate_paren_init >= 201902L && \
         !defined(_MSC_VER) // FIXME: Bug in MSVC preventing the use of this feature
-        m_options.emplace_back(val, value.attribute("label", val), color);
+        m_options.emplace_back(val, value.attribute(QStringLiteral("label"), val), color);
 #else
-        m_options.emplace_back(Item{val, value.attribute("label", val), color});
+        m_options.emplace_back(LegacyControllerEnumOption{
+                val, value.attribute(QStringLiteral("label"), val), color});
 #endif
-        if (value.hasAttribute("default")) {
+        if (value.hasAttribute(QStringLiteral("default"))) {
             m_defaultValue = pos;
         }
         pos++;
@@ -290,6 +337,30 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
         pos++;
     }
 }
+
+#ifdef MIXXX_USE_QML
+void LegacyControllerEnumSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    qsizetype index = 0;
+    for (const auto& option : std::as_const(m_options)) {
+        auto value = doc->createElement("value");
+        if (option.color.isValid()) {
+            value.setAttribute("color", option.color.name());
+        }
+        if (!option.label.isEmpty()) {
+            value.setAttribute("label", option.label);
+        }
+        if (index && m_defaultValue == index) {
+            // No need to mark the first value as default explicitly
+            value.setAttribute("default", "true");
+        }
+        QDomText textNode = doc->createTextNode(option.value);
+        value.appendChild(textNode);
+        e->appendChild(value);
+        index++;
+    }
+}
+#endif
 
 QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     auto* pComboBox = new QComboBox(pParent);
@@ -323,12 +394,8 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerColorSetting::LegacyControllerColorSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element),
-          m_defaultValue(QColor(element.attribute("default"))),
-          m_savedValue(m_defaultValue),
-          m_editedValue(m_defaultValue) {
-    reset();
-    save();
+        : LegacyControllerSettingMixin(element,
+                  QColor(element.attribute(QStringLiteral("default")))) {
 }
 
 LegacyControllerColorSetting::~LegacyControllerColorSetting() = default;
@@ -349,6 +416,13 @@ void LegacyControllerColorSetting::parse(const QString& in, bool* ok) {
     }
     m_editedValue = m_savedValue;
 }
+
+#ifdef MIXXX_USE_QML
+void LegacyControllerColorSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    e->setAttribute("default", m_defaultValue.name());
+}
+#endif
 
 QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
     auto* pPushButton = new QPushButton(tr("Change color"), pParent);
@@ -389,13 +463,9 @@ QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
 
 LegacyControllerFileSetting::LegacyControllerFileSetting(
         const QDomElement& element)
-        : AbstractLegacyControllerSetting(element),
-          m_fileFilter(element.attribute("pattern")),
-          m_defaultValue(QFileInfo(element.attribute("default"))),
-          m_savedValue(m_defaultValue),
-          m_editedValue(m_defaultValue) {
-    reset();
-    save();
+        : LegacyControllerSettingMixin(element,
+                  QFileInfo(element.attribute(QStringLiteral("default")))),
+          m_fileFilter(element.attribute(QStringLiteral("pattern"))) {
 }
 LegacyControllerFileSetting::~LegacyControllerFileSetting() = default;
 
@@ -415,6 +485,13 @@ void LegacyControllerFileSetting::parse(const QString& in, bool* ok) {
     }
     m_savedValue = m_editedValue;
 }
+
+#ifdef MIXXX_USE_QML
+void LegacyControllerFileSetting::serialize(QDomDocument* doc, QDomElement* e) const {
+    LegacyControllerSettingMixin::serialize(doc, e);
+    e->setAttribute("pattern", m_fileFilter);
+}
+#endif
 
 QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
     auto* pWidget = new QWidget(pParent);

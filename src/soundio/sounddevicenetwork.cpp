@@ -2,6 +2,10 @@
 
 #include <QtDebug>
 
+#if __has_include(<valgrind/valgrind.h>)
+#include <valgrind/valgrind.h>
+#endif
+
 #include "control/controlobject.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
@@ -304,7 +308,8 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         // kLogger.debug() << "workerWriteProcess: buffer full"
         //                 << "outChunkSize" << outChunkSize
         //                 << "readAvailable" << readAvailable
-        //                 << "writeExpected" << writeExpected << pWorker->getStreamTimeFrames();
+        //                 << "writeExpected" << writeExpected
+        //                 << "streamTime" << pWorker->getStreamTimeFrames();
         // catch up by skipping chunk
         m_pSoundManager->underflowHappened(25);
     }
@@ -313,9 +318,11 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
     if (copyCount > 0) {
         if (writeExpected - copyCount > outChunkSize) {
             // Underflow
-            // kLogger.debug() << "workerWriteProcess: buffer empty";
+            // kLogger.debug() << "workerWriteProcess: buffer empty."
+            //                 << "Catch up with silence:" << writeExpected - copyCount
+            //                 << "streamTime" << pWorker->getStreamTimeFrames();;
             // catch up by filling buffer until we are synced
-            workerWriteSilence(pWorker, writeExpected - copyCount);
+            workerWriteSilence(pWorker, (writeExpected - copyCount) / m_numOutputChannels);
             m_pSoundManager->underflowHappened(24);
         } else if (writeExpected - copyCount > outChunkSize / 2) {
             // try to keep PAs buffer filled up to 0.5 chunks
@@ -331,7 +338,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         } else if (writeExpected < outChunkSize / 2) {
             // We will overshoot by more than a half of the new frames
             if (pWorker->outputDrift()) {
-                // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() "
+                // kLogger.debug() << "workerWriteProcess() "
                 //                    "skip one frame"
                 //                 << (float)writeAvailable / outChunkSize
                 //                 << (float)readAvailable / outChunkSize;
@@ -485,10 +492,15 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
-        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "Network Sound: Denormals to zero mode is not working. "
-                          "EQs and effects may suffer high CPU load";
-        }
+#if __has_include(<valgrind/valgrind.h>)
+        if (RUNNING_ON_VALGRIND) {
+            qDebug() << "Network Sound: Skipping denormals to zero check: running under Valgrind";
+        } else
+#endif
+            VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
+                qWarning() << "Network Sound: Denormals to zero mode is not working. "
+                              "EQs and effects may suffer high CPU load";
+            }
         else {
             qDebug() << "Network Sound: Denormals to zero mode is working";
         }
@@ -497,7 +509,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     m_pSoundManager->readProcess(framesPerBuffer);
 
     {
-        ScopedTimer t(QStringLiteral("SoundDevicePortAudio::callbackProcess prepare %1"),
+        ScopedTimer t(QStringLiteral("SoundDeviceNetwork::callbackProcess prepare %1"),
                 m_deviceId.name);
         m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
     }

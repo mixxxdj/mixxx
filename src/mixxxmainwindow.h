@@ -17,6 +17,7 @@ class GuiTick;
 class LaunchImage;
 class VisualsManager;
 class WMainMenuBar;
+struct LibraryScanResultSummary;
 
 namespace mixxx {
 
@@ -63,7 +64,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotOptionsPreferences();
     /// show the about dialog
     void slotHelpAbout();
-    // show keywheel
+    /// show popup with library scan results
+    void slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result);
+    /// show keywheel
     void slotShowKeywheel(bool toggle);
     /// toggle full screen mode
     void slotViewFullScreen(bool toggle);
@@ -128,6 +131,11 @@ class MixxxMainWindow : public QMainWindow {
 #ifndef __APPLE__
     Qt::WindowStates m_prevState;
 #endif
+
+    parented_ptr<QMessageBox> m_noVinylInputDialog;
+    parented_ptr<QMessageBox> m_noPassthroughInputDialog;
+    parented_ptr<QMessageBox> m_noMicInputDialog;
+    parented_ptr<QMessageBox> m_noAuxInputDialog;
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;

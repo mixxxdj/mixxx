@@ -77,7 +77,7 @@ void WWaveformViewer::showEvent(QShowEvent* event) {
 }
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
-    if (!m_waveformWidget) {
+    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::Empty) {
         return;
     }
 
@@ -128,7 +128,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
-    if (!m_waveformWidget) {
+    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::Empty) {
         return;
     }
 
@@ -195,9 +195,9 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
 void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
+            onZoomChange(m_waveformWidget->getZoom() / 1.05);
         } else if (event->angleDelta().y() < 0) {
-            onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
+            onZoomChange(m_waveformWidget->getZoom() * 1.05);
         }
     }
 }

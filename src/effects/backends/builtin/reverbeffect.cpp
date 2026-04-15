@@ -111,14 +111,16 @@ void ReverbEffect::processChannel(
             ? 0
             : static_cast<sample_t>(m_pSendParameter->value());
 
-    // Reinitialize the effect when turning it on to prevent replaying the old buffer
-    // from the last time the effect was enabled.
-    // Also, update the sample rate if it has changed.
-    if (enableState == EffectEnableState::Enabling ||
-            pState->sampleRate != engineParameters.sampleRate()) {
-        pState->reverb.init(engineParameters.sampleRate());
+    if (pState->sampleRate != engineParameters.sampleRate()) {
+        pState->reverb.setSamplerate(engineParameters.sampleRate());
         pState->sampleRate = engineParameters.sampleRate();
         m_isReadyForDisable = false;
+    }
+
+    // Reinitialize the effect when turning it on to prevent replaying the old buffer
+    // from the last time the effect was enabled..
+    if (enableState == EffectEnableState::Enabling) {
+        pState->reverb.activate();
     }
 
     pState->reverb.processBuffer(pInput,

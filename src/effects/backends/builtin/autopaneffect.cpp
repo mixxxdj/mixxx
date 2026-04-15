@@ -91,7 +91,7 @@ void AutoPanEffect::processChannel(
     if (groupFeatures.beat_length.has_value()) {
         // period is a number of beats
         double beats = std::max(roundToFraction(period, 2), 0.25);
-        period = beats * groupFeatures.beat_length->frames;
+        period = beats * groupFeatures.beat_length->seconds * engineParameters.sampleRate();
 
         // TODO(xxx) sync phase
         //if (groupFeatures.has_beat_fraction) {

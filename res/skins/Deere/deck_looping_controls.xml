@@ -18,7 +18,7 @@
           <BeatSpinBox>
             <ObjectName>BeatloopSizeSpinBox</ObjectName>
             <TooltipId>beatloop_size</TooltipId>
-            <Size>54f,25f</Size>
+            <Size>81f,25f</Size>
             <Value><Variable name="group"/>,beatloop_size</Value>
           </BeatSpinBox>
 
@@ -84,6 +84,24 @@
 
           <!-- Workaround for layout spacing -->
           <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">loop_anchor</SetVariable>
+            <SetVariable name="ObjectName">LoopAnchor</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_loop_anchor_start.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_loop_anchor_start.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_loop_anchor_end.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_loop_anchor_end.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,loop_anchor</SetVariable>
+          </Template>
+
+          <!-- Workaround for layout spacing -->
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
           <Template src="skin:left_right_2state_button.xml">
             <SetVariable name="TooltipId">reloop_toggle</SetVariable>

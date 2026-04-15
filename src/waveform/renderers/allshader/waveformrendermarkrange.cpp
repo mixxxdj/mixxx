@@ -40,6 +40,7 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
 void WaveformRenderMarkRange::update() {
     GeometryNode* pChild = static_cast<GeometryNode*>(firstChild());
 
+    // Add or reuse child node for the active and visible mark ranges.
     for (const auto& markRange : m_markRanges) {
         // If the mark range is not active we should not draw it.
         if (!markRange.active()) {
@@ -72,6 +73,7 @@ void WaveformRenderMarkRange::update() {
         QColor color = markRange.enabled() ? markRange.m_activeColor : markRange.m_disabledColor;
         color.setAlphaF(0.3f);
 
+        // Append a new node if none left, or reuse an existing one.
         if (!pChild) {
             auto pNode = std::make_unique<GeometryNode>();
             pChild = pNode.get();
@@ -87,9 +89,11 @@ void WaveformRenderMarkRange::update() {
 
         pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }
+    // Remove all remaining nodes
     while (pChild) {
+        auto* pNextChild = static_cast<GeometryNode*>(pChild->nextSibling());
         auto pNode = detachChildNode(pChild);
-        pChild = static_cast<GeometryNode*>(pChild->nextSibling());
+        pChild = pNextChild;
     }
 }
 

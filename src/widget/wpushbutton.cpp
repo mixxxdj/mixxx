@@ -266,7 +266,9 @@ void WPushButton::setPixmap(int iState,
     if (!pPixmap || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
         if (!source.isEmpty()) {
-            qDebug() << "WPushButton: Error loading pixmap:" << source.getPath();
+            qDebug() << metaObject()->className() << objectName()
+                     << "Error loading pixmap" << source.getPath()
+                     << "for state" << iState;
         }
     } else if (mode == Paintable::DrawMode::Fixed) {
         // Set size of widget equal to pixmap size
@@ -283,7 +285,8 @@ void WPushButton::setPixmapBackground(const PixmapSource& source,
     if (!source.isEmpty() &&
             (!m_pPixmapBack || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
-        qDebug() << "WPushButton: Error loading background pixmap:" << source.getPath();
+        qDebug() << metaObject()->className() << objectName()
+                 << "Error loading background pixmap:" << source.getPath();
     }
 }
 

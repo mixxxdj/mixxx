@@ -53,10 +53,57 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="toolTip">
-          <string>Shows tracks added to the library within the last 7 days.</string>
+          <string>Shows tracks added to the library recently.</string>
          </property>
          <property name="text">
           <string>New</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBoxRecentDays">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>55</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Number of days to filter recently added tracks.</string>
+         </property>
+         <property name="frame">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>3650</number>
+         </property>
+         <property name="value">
+          <number>7</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelRecentDaysAppendix">
+         <property name="styleSheet">
+          <string notr="true">margin-left: 5px;</string>
+         </property>
+         <property name="text">
+          <string>days</string>
+         </property>
+         <property name="toolTip">
+          <string>Days</string>
          </property>
         </widget>
        </item>

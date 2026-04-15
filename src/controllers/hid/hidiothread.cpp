@@ -1,7 +1,13 @@
 #include "controllers/hid/hidiothread.h"
 
-#include <hidapi.h>
+#include "util/assert.h"
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <hidapi_libusb.h>
+#else
+#include <hidapi.h>
+#endif
 #include "moc_hidiothread.cpp"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"
@@ -27,11 +33,13 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 }
 } // namespace
 
-HidIoThread::HidIoThread(
-        hid_device* pHidDevice, const mixxx::hid::DeviceInfo& deviceInfo)
+HidIoThread::HidIoThread(hid_device* pHidDevice,
+        const mixxx::hid::DeviceInfo& deviceInfo,
+        std::optional<bool> deviceUsesReportIds)
         : QThread(),
           m_deviceInfo(deviceInfo),
-          // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiantly
+          // Defining RuntimeLoggingCategories locally in this thread improves
+          // runtime performance significantly
           m_logBase(loggingCategoryPrefix(deviceInfo.formatName())),
           m_logInput(loggingCategoryPrefix(deviceInfo.formatName()) +
                   QStringLiteral(".input")),
@@ -41,6 +49,7 @@ HidIoThread::HidIoThread(
           m_lastPollSize(0),
           m_pollingBufferIndex(0),
           m_hidReadErrorLogged(false),
+          m_deviceUsesReportIds(deviceUsesReportIds),
           m_globalOutputReportFifo(),
           m_runLoopSemaphore(1) {
     // Initializing isn't strictly necessary but is good practice.
@@ -53,6 +62,11 @@ HidIoThread::HidIoThread(
 
 HidIoThread::~HidIoThread() {
     hid_close(m_pHidDevice);
+#ifdef Q_OS_ANDROID
+    if (m_androidConnection.isValid()) {
+        m_androidConnection.callMethod<void>("close");
+    }
+#endif
 }
 
 void HidIoThread::run() {
@@ -151,6 +165,22 @@ void HidIoThread::processInputReport(int bytesRead) {
     emit receive(QByteArray(reinterpret_cast<const char*>(pCurrentBuffer),
                          bytesRead),
             mixxx::Time::elapsed());
+
+    if (m_deviceUsesReportIds.has_value() && bytesRead > 0) {
+        if (m_deviceUsesReportIds.value()) {
+            // Extract the ReportId from the buffer
+            quint8 reportId = pCurrentBuffer[0];
+            emit reportReceived(reportId,
+                    QByteArray(
+                            reinterpret_cast<const char*>(pCurrentBuffer + 1),
+                            bytesRead - 1));
+        } else {
+            quint8 reportId = 0;
+            emit reportReceived(reportId,
+                    QByteArray(reinterpret_cast<const char*>(pCurrentBuffer),
+                            bytesRead));
+        }
+    }
 }
 
 QByteArray HidIoThread::getInputReport(quint8 reportID) {

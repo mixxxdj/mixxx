@@ -30,6 +30,8 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
                     kDefaultTrackTableBackgroundColorOpacity),
             kMinTrackTableBackgroundColorOpacity,
             kMaxTrackTableBackgroundColorOpacity);
+
+    m_overviewSignalColors.setup(node, context);
 }
 
 bool WLibrary::registerView(const QString& name, QWidget* pView) {
@@ -53,9 +55,6 @@ void WLibrary::switchToView(const QString& name) {
     const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
-    LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
-            currentWidget());
-
     QWidget* pWidget = m_viewMap.value(name, nullptr);
     if (pWidget != nullptr) {
         LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
@@ -66,8 +65,10 @@ void WLibrary::switchToView(const QString& name) {
             return;
         }
         if (currentWidget() != pWidget) {
-            if (pOldLibrartView) {
-                pOldLibrartView->saveCurrentViewState();
+            LibraryView* pOldLibraryView = dynamic_cast<LibraryView*>(
+                    currentWidget());
+            if (pOldLibraryView) {
+                pOldLibraryView->saveCurrentViewState();
             }
             //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(pWidget);
@@ -127,7 +128,7 @@ bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
 }
 
 void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
-    //qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
+    // qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
     if (!trackId.isValid()) {
         return;
     }
@@ -135,7 +136,10 @@ void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
     if (!pTracksView) {
         return;
     }
-    pTracksView->selectTrack(trackId);
+    if (pTracksView->isTrackInCurrentView(trackId)) {
+        pTracksView->selectTrack(trackId);
+        pTracksView->setFocus();
+    }
 }
 
 void WLibrary::saveCurrentViewState() const {

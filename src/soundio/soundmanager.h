@@ -74,7 +74,12 @@ class SoundManager : public QObject {
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
     SoundDeviceStatus setConfig(const SoundManagerConfig& config);
-    void closeActiveConfig();
+    // Due to a bug in in PulseAudio, we must give at least 5 seconds of cool
+    // down before performing further audio related operation. This sleep
+    // happens during the function call by default (synchronous blocking), but
+    // the caller may decide to use the async version, and must not performs any
+    // audio operation till it received the `devicesClosed` signal
+    void closeActiveConfig(bool async = false);
     void checkConfig();
 
     void onDeviceOutputCallback(const SINT iFramesPerBuffer);
@@ -107,11 +112,19 @@ class SoundManager : public QObject {
 
     void processUnderflowHappened(SINT framesPerBuffer);
 
+    UserSettingsPointer userSettings() const {
+        return m_pConfig;
+    }
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
+    void devicesClosed(); // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
+
+  private slots:
+    void completeDevicesClosing();
 
   private:
     // Closes all the devices and empties the list of devices we have.
@@ -121,7 +134,7 @@ class SoundManager : public QObject {
     // open, this method simply runs through the list of all known soundcards
     // (from PortAudio) and attempts to close them all. Closing a soundcard that
     // isn't open is safe.
-    void closeDevices(bool sleepAfterClosing);
+    void closeDevices(bool sleepAfterClosing, bool async = false);
 
     void setJACKName() const;
     bool jackApiUsed() const {

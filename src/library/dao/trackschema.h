@@ -41,7 +41,9 @@ const QString LIBRARYTABLE_PLAYED = QStringLiteral("played");
 const QString LIBRARYTABLE_RATING = QStringLiteral("rating");
 const QString LIBRARYTABLE_KEY = QStringLiteral("key");
 const QString LIBRARYTABLE_KEY_ID = QStringLiteral("key_id");
+const QString LIBRARYTABLE_TUNING_FREQUENCY = QStringLiteral("tuning_frequency_hz");
 const QString LIBRARYTABLE_BPM_LOCK = QStringLiteral("bpm_lock");
+const QString LIBRARYTABLE_BEATS_VERSION = QStringLiteral("beats_version");
 const QString LIBRARYTABLE_PREVIEW = QStringLiteral("preview");
 const QString LIBRARYTABLE_COLOR = QStringLiteral("color");
 const QString LIBRARYTABLE_COVERART = QStringLiteral("coverart");
@@ -60,6 +62,9 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = QStringLiteral("directory");
 const QString TRACKLOCATIONSTABLE_FILESIZE = QStringLiteral("filesize");
 const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
+
+const QString TRACK_ID = QStringLiteral("track_id");
+const QString LOCATION_ID = QStringLiteral("location_id");
 
 const QString PLAYLISTTABLE_ID = QStringLiteral("id");
 const QString PLAYLISTTABLE_NAME = QStringLiteral("name");

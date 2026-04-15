@@ -186,12 +186,12 @@ void allshader::DigitsRenderNode::updateTexture(rendergraph::Context* pContext,
         blur->setBlurRadius(static_cast<float>(m_penWidth) / 3);
 
         QGraphicsScene scene;
-        QGraphicsPixmapItem item;
-        item.setPixmap(QPixmap::fromImage(image));
-        item.setGraphicsEffect(blur.release());
+        auto item = std::make_unique<QGraphicsPixmapItem>();
+        item->setPixmap(QPixmap::fromImage(image));
+        item->setGraphicsEffect(blur.release());
         image.fill(Qt::transparent);
         QPainter painter(&image);
-        scene.addItem(&item);
+        scene.addItem(item.release());
         scene.render(&painter, QRectF(), QRectF(0, 0, image.width(), image.height()));
     }
 

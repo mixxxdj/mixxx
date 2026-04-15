@@ -590,9 +590,9 @@
   <tabstop>chainListView</tabstop>
   <tabstop>quickEffectListView</tabstop>
   <tabstop>visibleEffectsTableView</tabstop>
+  <tabstop>hiddenEffectsTableView</tabstop>
   <tabstop>hideButton</tabstop>
   <tabstop>unhideButton</tabstop>
-  <tabstop>hiddenEffectsTableView</tabstop>
   <tabstop>chainPresetImportButton</tabstop>
   <tabstop>chainPresetExportButton</tabstop>
   <tabstop>chainPresetRenameButton</tabstop>

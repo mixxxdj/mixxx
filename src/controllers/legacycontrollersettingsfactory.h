@@ -2,8 +2,6 @@
 
 #include <QDomElement>
 
-#include "controllers/legacycontrollersettingsfactory.h"
-
 class AbstractLegacyControllerSetting;
 
 /// @brief This class defines an interface that a controller setting type must
@@ -42,7 +40,7 @@ class LegacyControllerSettingBuilder {
     /// @param element The XML element to parse to build the new setting
     /// @return an instance if a a supported setting has been found, null
     /// otherwise
-    static AbstractLegacyControllerSetting* build(const QDomElement& element) {
+    static std::shared_ptr<AbstractLegacyControllerSetting> build(const QDomElement& element) {
         for (const auto& settingType : std::as_const(instance()->m_supportedSettings)) {
             if (settingType.matcher(element)) {
                 return settingType.builder(element);
@@ -54,8 +52,8 @@ class LegacyControllerSettingBuilder {
 
   private:
     struct SupportedSetting {
-        bool (*matcher)(const QDomElement&);
-        AbstractLegacyControllerSetting* (*builder)(const QDomElement&);
+        std::function<bool(const QDomElement&)> matcher;
+        std::function<std::shared_ptr<AbstractLegacyControllerSetting>(const QDomElement&)> builder;
     };
 
     LegacyControllerSettingBuilder();

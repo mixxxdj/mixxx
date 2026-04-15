@@ -31,11 +31,11 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void loadTracks(const QList<TrackPointer>& pTracks);
     void focusField(const QString& property);
 
+  protected:
     /// We need this to set the max width of the comment QComboBox which has
     /// issues with long lines / multi-line content. See init() for details.
+    /// Also used to set the maximum size of the cover label
     void resizeEvent(QResizeEvent* event) override;
-
-  protected:
     bool eventFilter(QObject* pObj, QEvent* pEvent) override;
 
   private slots:

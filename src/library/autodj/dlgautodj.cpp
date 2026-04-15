@@ -31,8 +31,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
           m_pTrackTableView(new WTrackTableView(this,
                   m_pConfig,
                   pLibrary,
-                  parent->getTrackTableBackgroundColorOpacity(),
-                  /*no sorting*/ false)),
+                  parent->getTrackTableBackgroundColorOpacity())),
           m_bShowButtonText(parent->getShowButtonText()),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);

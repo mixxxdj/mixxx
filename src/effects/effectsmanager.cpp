@@ -164,6 +164,19 @@ void EffectsManager::addStem(const ChannelHandleAndGroup& stemHandleGroup) {
     }
 }
 
+void EffectsManager::resetStemQuickFxKnob(const ChannelHandleAndGroup& stemHandleGroup) {
+    VERIFY_OR_DEBUG_ASSERT(m_quickStemEffectChains.contains(stemHandleGroup.name())) {
+        return;
+    }
+    auto pChainSlot = m_quickStemEffectChains[stemHandleGroup.name()];
+
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return;
+    }
+
+    pChainSlot->resetToDefault();
+}
+
 void EffectsManager::addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
     VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChains.contains(
             EqualizerEffectChain::formatEffectChainGroup(deckHandleGroup.name()))) {

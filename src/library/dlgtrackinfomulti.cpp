@@ -314,7 +314,10 @@ void DlgTrackInfoMulti::loadTracks(const QList<TrackPointer>& pTracks) {
         m_pLoadedTracks.clear();
     }
     for (const auto& pTrack : pTracks) {
-        m_pLoadedTracks.insert(pTrack.get()->getId(), pTrack);
+        if (pTrack.get()) {
+            m_pLoadedTracks.insert(pTrack.get()->getId(), pTrack);
+        }
+        // Skip unavailable tracks
     }
 
     updateFromTracks();
@@ -613,10 +616,35 @@ void DlgTrackInfoMulti::addValuesToCommentBox(QSet<QString>& comments) {
 
 void DlgTrackInfoMulti::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
+    if (!isVisible()) {
+        // Likely one of the resize events before show().
+        // Dialog & widgets don't have their final size, yet,
+        // so it makes no sense to resize the cover label.
+        return;
+    }
+
     // Limit comment popup to dialog width. This may introduce some linebreaks
     // but is still much better than letting the popup expand to screen width,
     // which it would do regrardless if it's actually necessary.
     txtCommentBox->view()->parentWidget()->setMaximumWidth(width());
+
+    // Set a maximum size on the cover label so it can use the available space
+    // but doesn't force-expand the dialog.
+    // The cover label spans across three tag rows and the two rightmost columns.
+    // Unfortunately we can't read row/column sizes directly, so we use the widgets.
+    int contHeight = txtTitle->height() + txtArtist->height() + txtAlbum->height();
+    int vSpacing = tags_layout->verticalSpacing();
+    int totalHeight = vSpacing * 2 + contHeight;
+
+    int contWidth = lblYear->width() + txtYear->width();
+    int hSpacing = tags_layout->horizontalSpacing();
+    int totalWidth = contWidth + hSpacing;
+
+    m_pWCoverArtLabel->setMaxSize(QSize(totalWidth, totalHeight));
+
+    // Also clamp height of the cover's parent widget. Keeping its height minimal
+    // can't be accomplished with QSizePolicies alone unfortunately.
+    coverWidget->setFixedHeight(totalHeight);
 }
 
 void DlgTrackInfoMulti::saveTracks() {
@@ -684,9 +712,9 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refTrackInfo().setYear(year);
         }
         if (!key.isNull()) {
-            static_cast<void>(rec.updateGlobalKeyNormalizeText(
+            rec.updateGlobalKeyNormalizeText(
                     key,
-                    mixxx::track::io::key::USER));
+                    mixxx::track::io::key::USER);
         }
         if (!num.isNull()) {
             rec.refMetadata().refTrackInfo().setTrackNumber(num);
@@ -937,13 +965,13 @@ void DlgTrackInfoMulti::slotKeyTextChanged() {
 
     const QString newTextInput = txtKey->currentText().trimmed();
     QString newKeyText;
-    mixxx::track::io::key::ChromaticKey newKey =
-            KeyUtils::guessKeyFromText(newTextInput);
-    if (newKey != mixxx::track::io::key::INVALID) {
-        newKeyText = KeyUtils::keyToString(newKey);
-    } else if (newTextInput.isEmpty()) {
-        // Empty text is not a valid key but indicates we want to clear the key.
-        newKeyText = newTextInput;
+    // Empty text is not a valid key but indicates we want to clear the key.
+    if (!newTextInput.isEmpty()) {
+        mixxx::track::io::key::ChromaticKey newKey =
+                KeyUtils::guessKeyFromText(newTextInput);
+        if (newKey != mixxx::track::io::key::INVALID) {
+            newKeyText = KeyUtils::keyToString(newKey);
+        }
     }
 
     txtKey->blockSignals(true);
@@ -1043,12 +1071,12 @@ void DlgTrackInfoMulti::updateCoverArtFromTracks() {
         // Just make sure the same track is used in slotCoverFound(): the track
         // location has to match in order to load the cover image to the label.
         auto trCover = pRefTrack->getCoverInfoWithLocation();
-        m_pWCoverArtLabel->setCoverArt(trCover, QPixmap());
+        m_pWCoverArtLabel->setCoverInfoAndPixmap(trCover, QPixmap());
         CoverArtCache::requestCover(this, trCover);
     } else {
         // Set empty cover + track location
         auto trCover = CoverInfo(CoverInfoRelative(), pRefTrack->getLocation());
-        m_pWCoverArtLabel->setCoverArt(trCover, QPixmap());
+        m_pWCoverArtLabel->setCoverInfoAndPixmap(trCover, QPixmap());
     }
 }
 
@@ -1061,7 +1089,7 @@ void DlgTrackInfoMulti::slotCoverFound(
             m_pLoadedTracks.cbegin().value()->getLocation() == coverInfo.trackLocation) {
         // Track records have already been updated in slotCoverInfoSelected,
         // now load the image to the label.
-        m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverInfoAndPixmap(coverInfo, pixmap);
     }
 }
 

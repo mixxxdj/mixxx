@@ -39,6 +39,12 @@ enum class MultiSamplingMode {
 };
 Q_ENUM_NS(MultiSamplingMode);
 
+enum class SoundHardwareTab {
+    Output,
+    Input
+};
+Q_ENUM_NS(SoundHardwareTab);
+
 } // namespace constants
 } // namespace preferences
 } // namespace mixxx

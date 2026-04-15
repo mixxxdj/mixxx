@@ -6,7 +6,7 @@
 class WaveformRendererHSV : public WaveformRendererSignalBase {
   public:
     explicit WaveformRendererHSV(
-        WaveformWidgetRenderer* waveformWidget);
+            WaveformWidgetRenderer* waveformWidget, ::WaveformRendererSignalBase::Options options);
     virtual ~WaveformRendererHSV();
 
     virtual void onSetup(const QDomNode& node);

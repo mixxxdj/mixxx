@@ -30,7 +30,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR})
 
 if (ZLIB_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE -DKS_ZLIB)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC -DKS_ZLIB)
 endif()
 
 if(Iconv_FOUND)
