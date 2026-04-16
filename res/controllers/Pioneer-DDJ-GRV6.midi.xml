@@ -4,7 +4,7 @@
         <name>Pioneer DDJ-GRV6</name>
         <author>Jörg Beyer</author>
         <description>Midi Mapping for the Pioneer DDJ-GRV6, 2025-12-28 18:52</description>
-        <forums>TBD</forums>
+        <forums>https://mixxx.discourse.group/t/working-on-a-pioneer-ddj-grv6-mapping/33114</forums>
     </info>
     <controller id="DDJ-GRV6">
         <scriptfiles>
