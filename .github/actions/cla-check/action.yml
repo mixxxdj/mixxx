@@ -6,6 +6,10 @@ inputs:
   pr-number:
     type: number
     required: true
+  dry-run:
+    type: boolean
+    required: false
+    default: false
 
 outputs:
   author:
@@ -49,7 +53,7 @@ runs:
       env:
         GOOGLE_TOKEN: ${{steps.auth.outputs.access_token}}
         GOOGLE_SHEET: https://sheets.googleapis.com/v4/spreadsheets/1xZ1U0RV7-jYIvuEFgD1QnCgTkHG3qqFgNTG4GRL1hww/values/Sheet1!
-        GH_USERNAME_COLUMN: C
+        GH_USERNAME_COLUMN: D
       shell: bash
       run: |-
         set -eo pipefail
@@ -122,6 +126,7 @@ runs:
 
     # Add or remove the label depending if the CLA is still remaining to sign or requiring ACK
     - name: Add or remove label
+      if: ${{ !inputs.dry-run }}
       env:
         ACTION: ${{ (steps.check.outputs.found != 'true' || steps.check-acknowledgement.outputs.result != 'true') && '--remove-label' || '--add-label' }}
         GH_TOKEN: ${{ github.token }}
@@ -132,7 +137,8 @@ runs:
     # Post a notice to the PR to request the author to sign the CLA. Note that it will emphasis the call to action in case the signing has been made but no ACK was given
     - name: Create a comment for new contributor
       uses: peter-evans/create-or-update-comment@v5
-      if: steps.check.outputs.found != 'true' || (steps.check-pending-cla.outputs.result == 'true' && steps.check-acknowledgement.outputs.result != 'true')
+      if: |-
+        !inputs.dry-run && (steps.check.outputs.found != 'true' || (steps.check-pending-cla.outputs.result == 'true' && steps.check-acknowledgement.outputs.result != 'true'))
       id: notice_needed
       with:
         comment-id: ${{ steps.cla-notice.outputs.comment-id }}
@@ -158,7 +164,8 @@ runs:
 
     # Post the notice to thank them for signing the CLA AND providing an ACK
     - name: Post a comment after signing and acknowledgement
-      if: steps.notice_needed.outcome == 'skipped' && steps.cla-thanks.outputs.comment-id == 0
+      if: |-
+        !inputs.dry-run && steps.notice_needed.outcome == 'skipped' && steps.cla-thanks.outputs.comment-id == 0
       uses: peter-evans/create-or-update-comment@v5
       with:
         issue-number: ${{ inputs.pr-number }}

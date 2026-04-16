@@ -18,3 +18,5 @@ jobs:
       - uses: ./.github/actions/cla-check
         with:
           pr-number: ${{ github.event.pull_request.number }}
+          # Keeping the automation silent for now (no labels or comments in PR) so we can make sure it would behave as we expect it in the action logs
+          dry-run: true
