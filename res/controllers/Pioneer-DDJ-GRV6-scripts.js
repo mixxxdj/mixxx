@@ -415,9 +415,8 @@ PioneerDDJGRV6.loopToggle = function(value, group, control) {
 
 /**
  * TODO: finish the implementation....
- * Handler für die BEAT SYNC Taste (D19)
- * - Short Press: Beatsync (1x angleichen) oder Toggle-Off (falls Sync aktiv)
- * - Long Press: Sync Lock (Dauerhaft)
+ * - Short Press: Beatsync (1x adjust) or Toggle-Off (if Sync is active)
+ * - Long Press: Sync Lock (permanent)
  */
 PioneerDDJGRV6.beatSyncHandler = function (channel, control, value, status, group) {
     var syncNote = 0x58; // D19 Note laut MIDI-Dokumentation
@@ -709,8 +708,6 @@ PioneerDDJGRV6.fxChannelSelect = function (channel, control, value, status, grou
             var shouldBeEnabled = (targetDeck === allTargets[i]) ? 1 : 0;
             engine.setParameter(group, parameterName, shouldBeEnabled);
         }
-        
-        print("F6 CH SELECT: Routing zu " + targetDeck + " aktiviert.");
     }
 };
 
