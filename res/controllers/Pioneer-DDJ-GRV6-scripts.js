@@ -155,7 +155,7 @@ PioneerDDJGRV6.toggleLight = function(midiIn, active) {
 
 PioneerDDJGRV6.LightOff = function() {
     for (var i = 0; i < 4; i++) {
-        engine.makeUnbufferedConnection("[Channel"+(i+1)+"]", "vu_meter", PioneerDDJGRV6.vuMeterUpdate);
+        engine.makeUnbufferedConnection(`[Channel${i+1}]`, "vu_meter", PioneerDDJGRV6.vuMeterUpdate);
         midi.sendShortMsg(PioneerDDJGRV6.lights.decks[i].vuMeter.status, 0x02, 0x00);
 
         // switch headphone (CUE) indicator off
