@@ -232,7 +232,7 @@ PioneerDDJGRV6.init = function() {
     }
 
     for (var i = 1; i <= 4; i++) {
-        var group = "[Channel" + i + "]";
+        var group = `[Channel${i}]`;
         var deckIdx = i - 1;
 
         // Rate & LEDs
