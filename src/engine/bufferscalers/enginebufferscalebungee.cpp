@@ -1,6 +1,5 @@
 #include "engine/bufferscalers/enginebufferscalebungee.h"
 
-#include <QtDebug>
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -8,6 +7,7 @@
 
 #include "engine/readaheadmanager.h"
 #include "moc_enginebufferscalebungee.cpp"
+#include "util/assert.h"
 #include "util/sample.h"
 #include "util/timer.h"
 
@@ -234,6 +234,37 @@ SINT EngineBufferScaleBungee::ensureInputForCurrentChunk(double signedEffectiveR
     return availableEnd - availableBegin;
 }
 
+void EngineBufferScaleBungee::copyOutputFrames(
+        CSAMPLE* pDest, SINT offsetInChunk, SINT nFrames) const {
+    DEBUG_ASSERT(m_outputChunk.data != nullptr);
+    DEBUG_ASSERT(nFrames > 0);
+    DEBUG_ASSERT(offsetInChunk + nFrames <=
+            static_cast<SINT>(m_outputChunk.frameCount));
+
+    switch (getOutputSignal().getChannelCount()) {
+    case mixxx::audio::ChannelCount::stereo():
+        // Optimised stereo path: Bungee output is planar (ch0, ch1 separated by
+        // channelStride); interleaveBuffer packs them into the output buffer.
+        SampleUtil::interleaveBuffer(
+                pDest,
+                m_outputChunk.data + offsetInChunk,
+                m_outputChunk.data + offsetInChunk + m_outputChunk.channelStride,
+                nFrames);
+        break;
+    default: {
+        const int channelCount =
+                static_cast<int>(getOutputSignal().getChannelCount());
+        for (SINT frame = 0; frame < nFrames; ++frame) {
+            for (int ch = 0; ch < channelCount; ++ch) {
+                pDest[frame * channelCount + ch] =
+                        m_outputChunk.data[offsetInChunk + frame +
+                                ch * m_outputChunk.channelStride];
+            }
+        }
+    } break;
+    }
+}
+
 SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrames) {
     if (!m_pStretcher || !getOutputSignal().isValid()) {
         return 0;
@@ -314,14 +345,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     m_outputChunkConsumed = 0;
 
     const SINT framesToCopy = std::min(static_cast<SINT>(m_outputChunk.frameCount), maxFrames);
-    const int channelCount = static_cast<int>(getOutputSignal().getChannelCount());
-    for (SINT frame = 0; frame < framesToCopy; ++frame) {
-        for (int ch = 0; ch < channelCount; ++ch) {
-            pOutputBuffer[frame * channelCount + ch] =
-                    m_outputChunk.data[frame + ch * m_outputChunk.channelStride];
-        }
-    }
-
+    copyOutputFrames(pOutputBuffer, 0, framesToCopy);
     m_outputChunkConsumed = framesToCopy;
     m_remainingOutputFrames = m_outputChunk.frameCount - framesToCopy;
     if (m_remainingOutputFrames <= 0) {

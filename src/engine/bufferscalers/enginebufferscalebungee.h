@@ -86,6 +86,10 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     // Ensure the current input chunk is covered by the buffered planar window.
     SINT ensureInputForCurrentChunk(double signedEffectiveRate);
 
+    // Copy nFrames from m_outputChunk into pDest starting at offsetInChunk.
+    // Uses SampleUtil::interleaveBuffer for the stereo fast path.
+    void copyOutputFrames(CSAMPLE* pDest, SINT offsetInChunk, SINT nFrames) const;
+
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
 
