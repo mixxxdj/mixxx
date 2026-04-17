@@ -182,7 +182,8 @@ void TraktorFeature::activate() {
         if (!dbFile.isEmpty()) {
             mixxx::FileInfo dbFileInfo(dbFile);
 #if defined(Q_OS_MACOS)
-            if (Sandbox::enabled() && Sandbox::canAccess(&dbFileInfo)) {
+            if (Sandbox::enabled() && Sandbox::canAccess(&dbFileInfo) &&
+                    dbFileInfo.checkFileExists()) {
                 hasValidDbFile = true;
             }
 #endif
@@ -201,7 +202,7 @@ void TraktorFeature::activate() {
                     if (!Sandbox::askForAccess(&dbFileInfo)) {
                         QString newDbFile = QFileDialog::getOpenFileName(nullptr,
                                 tr("Select your Traktor collection"),
-                                dbFile,
+                                QFileInfo(dbFile).absolutePath(),
                                 "Traktor Collection (*.nml)");
                         if (newDbFile.isEmpty()) {
                             m_isActivated = false;
