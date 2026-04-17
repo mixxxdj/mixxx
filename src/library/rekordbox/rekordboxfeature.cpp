@@ -1533,17 +1533,30 @@ void RekordboxFeature::activate() {
                     defaultPath,
                     tr("Rekordbox Database (export.pdb)"));
 
-            if (!newDbFile.isEmpty()) {
-                mixxx::FileInfo newFileInfo(newDbFile);
-                Sandbox::createSecurityToken(&newFileInfo);
-                validDbFiles.append(newDbFile);
+            if (!newDbFile.isEmpty() && newDbFile.endsWith(QStringLiteral("export.pdb"))) {
+                QDir dir(newDbFile);
+                if (dir.cdUp() && dir.dirName() == QStringLiteral("PIONEER")) {
+                    mixxx::FileInfo newFileInfo(newDbFile);
+                    Sandbox::createSecurityToken(&newFileInfo);
+                    validDbFiles.append(newDbFile);
+
+                    if (!storedDbFiles.contains(newDbFile)) {
+                        storedDbFiles.append(newDbFile);
+                    }
+                } else {
+                    qWarning() << "Selected Rekordbox database is not in a "
+                                  "PIONEER directory:"
+                               << newDbFile;
+                }
+            } else if (!newDbFile.isEmpty()) {
+                qWarning() << "Selected file is not export.pdb:" << newDbFile;
             }
         }
 
-        // Persist the updated list of valid paths
-        if (!validDbFiles.isEmpty()) {
+        // Persist the full list of all authorized paths
+        if (!storedDbFiles.isEmpty()) {
             settings.setValue(kSettingsKey,
-                    validDbFiles.join(QStringLiteral(";")));
+                    storedDbFiles.join(QStringLiteral(";")));
         }
 
         // Derive volume root paths from each stored db file
