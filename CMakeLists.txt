@@ -2879,6 +2879,7 @@ if(BUILD_TESTING)
     #src/test/effectchainslottest.cpp
     src/test/enginebufferscalelineartest.cpp
     $<$<BOOL:${BUNGEE}>:src/test/enginebufferscalebungeetest.cpp>
+    $<$<BOOL:${BUNGEE}>:src/test/enginebufferbungeetest.cpp>
     src/test/enginebuffertest.cpp
     src/test/enginefilterbiquadtest.cpp
     src/test/enginemixertest.cpp
@@ -4641,17 +4642,23 @@ if(BUNGEE)
     target_compile_definitions(bungee-pffft PRIVATE _USE_MATH_DEFINES)
   endif()
 
-  # Apply Mixxx-specific patches to bungee
-  find_package(Git)
-  if(Git_FOUND)
-    execute_process(
-      COMMAND
-        ${GIT_EXECUTABLE} apply --ignore-whitespace
-        ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/0001-MSVC-compatibility.patch
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee
-      ERROR_QUIET
-      OUTPUT_QUIET
-    )
+  # Apply Mixxx-specific patches to bungee.
+  # The MSVC-compatibility patch is Windows-only (removes <unistd.h>, adds
+  # Platform.h).  Do NOT apply it on other platforms: the patch path uses
+  # Mixxx-root-relative paths (lib/bungee/src/…) so it must be run from the
+  # Mixxx source root, not from inside lib/bungee.
+  if(MSVC)
+    find_package(Git)
+    if(Git_FOUND)
+      execute_process(
+        COMMAND
+          ${GIT_EXECUTABLE} apply --ignore-whitespace
+          ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/0001-MSVC-compatibility.patch
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        ERROR_QUIET
+        OUTPUT_QUIET
+      )
+    endif()
   endif()
 
   # Bungee library - built from source files in lib/bungee
