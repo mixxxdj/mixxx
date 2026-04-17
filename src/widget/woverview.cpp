@@ -2,6 +2,7 @@
 
 #include <QBrush>
 #include <QColor>
+#include <QGuiApplication>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
@@ -691,6 +692,16 @@ void WOverview::leaveEvent(QEvent* pEvent) {
     if (!m_pCueMenuPopup->isVisible()) {
         m_pHoveredMark.clear();
     }
+    // Reset our dragging only if the left button is not pressed.
+    // With Qt 6.5x and newer (TODO verify) leaveEvents are also emitted when
+    // we hover a widget that has setAcceptDrops(true) -- even if we explicitly
+    // setMouseTracking(true). That's why we may get two or more leave events
+    // when hovering WSpinny(Base) for example: 1st when we enter the spinny,
+    // 2nd when we release the mouse (anywhere)
+    if (QGuiApplication::mouseButtons() & Qt::LeftButton) {
+        return;
+    }
+
     m_bLeftClickDragging = false;
     m_bTimeRulerActive = false;
     update();
