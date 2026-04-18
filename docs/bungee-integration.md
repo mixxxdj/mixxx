@@ -26,7 +26,7 @@ EngineBuffer
 ## Rate / position semantics
 
 | Field | Meaning |
-|---|---|
+| --- | --- |
 | `m_dBaseRate` | Input-to-output sample-rate ratio. Almost always `1.0` because Bungee's `resampleMode_autoOut` handles SR conversion internally. |
 | `m_dTempoRatio` | Absolute (unsigned) tempo ratio; `1.0` = original speed. Values below `MIN_SEEK_SPEED` are clamped to `0.0` (stopped). |
 | `m_bBackwards` | `true` when the caller requested a negative tempo ratio (reverse playback). |
@@ -122,7 +122,7 @@ All buffers are **pre-allocated** in `onSignalChanged()`.  The steady-state
 `scaleBuffer()` path contains no heap allocations.
 
 | Buffer | Purpose | Size |
-|---|---|---|
+| --- | --- | --- |
 | `m_contiguousChannelBuffer` | Planar input window (all channels contiguous) | `(maxGrainFrames + headroom) × channelCount` floats |
 | `m_interleavedReadBuffer` | Temporary for `ReadAheadManager` reads | `kMaxGrainFrames × channelCount` floats |
 
@@ -146,7 +146,7 @@ dirty the `lib/bungee` working tree.
 ## What not to change casually
 
 | Boundary | Reason |
-|---|---|
+| --- | --- |
 | `lib/bungee/` source files | Treat as a maintained vendor library. The only Mixxx-owned modification is the Windows patch above. |
 | `muteHead` / `muteTail` computation | Any incorrect value here violates the `analyseGrain()` contract and causes audio corruption. |
 | `appendInputFrames()` call sites | All `ReadAheadManager` reads must be consumed by Bungee. Discarding reads silently advances the reader's position and causes playback drift. |
