@@ -515,11 +515,21 @@ DlgPreferencePage* DlgPreferences::currentPage() {
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
     QWidget* pParent = pWidget->parentWidget();
-    DEBUG_ASSERT(pParent);
-    QWidget* pScrollArea = pParent->parentWidget();
-    DEBUG_ASSERT(pScrollArea);
+    VERIFY_OR_DEBUG_ASSERT(pParent) {
+        return;
+    }
 
-    m_allPages.removeAt(pagesWidget->indexOf(pScrollArea));
+    QWidget* pScrollArea = pParent->parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pScrollArea) {
+        return;
+    }
+
+    const int index = pagesWidget->indexOf(pScrollArea);
+    VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < m_allPages.size()) {
+        return;
+    }
+
+    m_allPages.removeAt(index);
     pagesWidget->removeWidget(pScrollArea);
     delete pScrollArea;
 }
