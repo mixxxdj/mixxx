@@ -80,6 +80,12 @@ void EngineBufferScaleBungee::onSignalChanged() {
             kMaxGrainFrames;
     m_channelStride = m_inputBufferFrames;
     m_contiguousChannelBuffer = mixxx::SampleBuffer(m_inputBufferFrames * channelCount);
+    // Zero-initialise so Bungee’s Eigen map never reads uninitialised floats
+    // during the muted head/tail of the very first grain (position = 0,
+    // inputChunk.begin = −halfFrames: the active data only covers the top half
+    // of the grain).
+    SampleUtil::clear(m_contiguousChannelBuffer.data(),
+            m_inputBufferFrames * channelCount);
     for (int ch = 0; ch < channelCount; ++ch) {
         m_channelBufferPtrs[ch] =
                 m_contiguousChannelBuffer.data() + (ch * m_inputBufferFrames);
@@ -175,7 +181,15 @@ void EngineBufferScaleBungee::discardBufferedInputBefore(SINT framePosition) {
 
     m_bufferedInputBeginFrame += discardFrames;
     if (remainingFrames <= 0) {
-        m_bufferedInputEndFrame = m_bufferedInputBeginFrame;
+        // Advance all the way to framePosition, not just to the old
+        // m_bufferedInputEndFrame.  Without this, a large gap between the
+        // buffer tail and framePosition (e.g. at very high playback speeds)
+        // leaves m_bufferedInputBeginFrame too low, making dataOffset
+        // incorrectly large in processGrain and causing Bungee's Eigen map
+        // to reach past the end of m_contiguousChannelBuffer — heap
+        // corruption that is detected later by malloc in an unrelated thread.
+        m_bufferedInputBeginFrame = framePosition;
+        m_bufferedInputEndFrame = framePosition;
     }
 }
 
@@ -327,7 +341,18 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     const int muteTail = m_currentInputChunk.end - availableEnd;
     const SINT dataOffset = std::max<SINT>(0, availableBegin - m_bufferedInputBeginFrame);
 
-    DEBUG_ASSERT(m_channelBufferPtrs.empty() || dataOffset <= m_channelStride);
+    // Safety guard: dataOffset + grainSize must fit inside the per-channel
+    // buffer (capacity = m_channelStride).  If the invariant is broken (e.g.
+    // because discardBufferedInputBefore jumped the begin pointer too far),
+    // force a reset rather than letting Bungee's Eigen map read past the end
+    // of m_contiguousChannelBuffer.
+    const SINT grainSize = static_cast<SINT>(
+            m_currentInputChunk.end - m_currentInputChunk.begin);
+    if (dataOffset + grainSize > m_channelStride) {
+        m_bResetNeeded = true;
+        return 0;
+    }
+    DEBUG_ASSERT(m_channelBufferPtrs.empty() || dataOffset + grainSize <= m_channelStride);
     m_pStretcher->analyseGrain(
             m_channelBufferPtrs.empty() ? nullptr : m_channelBufferPtrs[0] + dataOffset,
             m_channelStride,
