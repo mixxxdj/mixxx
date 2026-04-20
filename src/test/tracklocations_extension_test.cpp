@@ -82,7 +82,8 @@ TEST_F(TrackLocationsExtensionTest, WriteAndReadFingerprintHash) {
     const int locId = addLocationRow(QStringLiteral("fingerprint_test.flac"));
     ASSERT_GT(locId, 0);
 
-    const QString testHash = QStringLiteral("AQAAC0kkZUqYREkS");
+    // 0x1234ABCD is just an example 32-bit SimHash value.
+    const unsigned int testHash = 0x1234ABCD;
 
     QSqlQuery update(dbConnection());
     update.prepare(QStringLiteral(
@@ -97,7 +98,7 @@ TEST_F(TrackLocationsExtensionTest, WriteAndReadFingerprintHash) {
     select.bindValue(QStringLiteral(":id"), locId);
     ASSERT_TRUE(select.exec());
     ASSERT_TRUE(select.next());
-    EXPECT_EQ(select.value(0).toString(), testHash);
+    EXPECT_EQ(select.value(0).toUInt(), testHash);
 }
 
 TEST_F(TrackLocationsExtensionTest, WriteAndReadOffsetAndQuality) {
@@ -133,7 +134,7 @@ TEST_F(TrackLocationsExtensionTest, FingerprintLookupFindsMultipleMatches) {
     // Verify that two location rows sharing the same fingerprint hash are
     // both returned by a fingerprint-based lookup (simulating CMRT duplicate
     // detection across different encodings of the same track).
-    const QString sharedHash = QStringLiteral("AQAAC0kkZUqYREkS");
+    const unsigned int sharedHash = 0xCAFEBABE;
     const int loc1 = addLocationRow(QStringLiteral("match1.flac"));
     const int loc2 = addLocationRow(QStringLiteral("match2.stem.mp4"));
     const int loc3 = addLocationRow(QStringLiteral("no_match.mp3"));

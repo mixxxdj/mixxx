@@ -600,13 +600,14 @@ reapplying those migrations.
       offset_samples (sub-sample codec offset vs the primary location, required for
       beatgrid/cue sync across different encodings of the same track),
       quality_indicator (integer rank for automatic best-quality file selection),
-      and fingerprint_hash (Chromaprint hash for CMRT duplicate detection).
+      and fingerprint_hash (32-bit SimHash from chromaprint_hash_fingerprint for
+      fast candidate lookup).
     </description>
     <sql>
       ALTER TABLE track_locations ADD COLUMN track_id INTEGER REFERENCES library(id);
       ALTER TABLE track_locations ADD COLUMN offset_samples REAL DEFAULT 0.0;
       ALTER TABLE track_locations ADD COLUMN quality_indicator INTEGER DEFAULT 0;
-      ALTER TABLE track_locations ADD COLUMN fingerprint_hash TEXT DEFAULT NULL;
+      ALTER TABLE track_locations ADD COLUMN fingerprint_hash INTEGER DEFAULT NULL;
 
       CREATE INDEX IF NOT EXISTS idx_track_locations_track_id
           ON track_locations(track_id);
