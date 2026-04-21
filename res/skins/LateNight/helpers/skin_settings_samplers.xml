@@ -86,7 +86,10 @@ Description:
                   <SetVariable name="Text">Fx controls</SetVariable>
                   <SetVariable name="Setting">[Skin],show_sampler_fx</SetVariable>
                 </Template>
-
+                <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                  <SetVariable name="Text">Show Sampler key</SetVariable>
+                  <SetVariable name="Setting">[LateNight],show_sampler_key</SetVariable>
+                </Template>
                 <WidgetGroup>
                   <ObjectName>SamplerLoadSaveBox</ObjectName>
                   <Layout>horizontal</Layout>
