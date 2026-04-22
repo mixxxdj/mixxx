@@ -69,7 +69,6 @@ QVariant PlaylistFeature::title() {
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
-    qDebug() << "onRightClick called";
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
@@ -89,7 +88,6 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortByName->setChecked(m_sortColumn == PlaylistSortColumn::Name);
     pSortByName->setActionGroup(pSortByGroup.get());
     connect(pSortByName, &QAction::triggered, this, [this]() {
-        qDebug() << "Clicked: Name";
         m_sortColumn = PlaylistSortColumn::Name;
         saveSidebarSortSettings();
         clearChildModel();
@@ -101,7 +99,6 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortByDateCreated->setChecked(m_sortColumn == PlaylistSortColumn::DateCreated);
     pSortByDateCreated->setActionGroup(pSortByGroup.get());
     connect(pSortByDateCreated, &QAction::triggered, this, [this]() {
-        qDebug() << "Clicked: Date Created";
         m_sortColumn = PlaylistSortColumn::DateCreated;
         saveSidebarSortSettings();
         clearChildModel();
@@ -120,7 +117,6 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortAscending->setChecked(m_sortOrder == PlaylistSortOrder::Ascending);
     pSortAscending->setActionGroup(pSortOrderGroup.get());
     connect(pSortAscending, &QAction::triggered, this, [this]() {
-        qDebug() << "Clicked: sort ascending";
         m_sortOrder = PlaylistSortOrder::Ascending;
         saveSidebarSortSettings();
         clearChildModel();
@@ -132,7 +128,6 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     pSortDescending->setChecked(m_sortOrder == PlaylistSortOrder::Descending);
     pSortDescending->setActionGroup(pSortOrderGroup.get());
     connect(pSortDescending, &QAction::triggered, this, [this]() {
-        qDebug() << "Clicked: sort descending";
         m_sortOrder = PlaylistSortOrder::Descending;
         saveSidebarSortSettings();
         clearChildModel();
@@ -275,8 +270,6 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     QString selectQuery = QStringLiteral("SELECT * FROM %1").arg(m_countsDurationTableName);
     selectQuery.append(getSortOrderClause()); // Add ORDER BY to SELECT, not CREATE VIEW
 
-    qDebug() << "Select query with sorting:" << selectQuery;
-
     QSqlQuery selectQueryExec(database);
     if (!selectQueryExec.exec(selectQuery)) {
         LOG_FAILED_QUERY(selectQueryExec);
@@ -306,8 +299,6 @@ void PlaylistFeature::slotShufflePlaylist() {
     }
 
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        qDebug() << "Can't shuffle locked playlist" << playlistId
-                 << m_playlistDao.getPlaylistName(playlistId);
         return;
     }
 
@@ -349,8 +340,6 @@ void PlaylistFeature::slotOrderTracksByCurrentPosition() {
     }
 
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        qDebug() << "Can't adopt current sorting for locked playlist" << playlistId
-                 << m_playlistDao.getPlaylistName(playlistId);
         return;
     }
     // Note(ronso0) I propose to proceed only if the playlist is selected and loaded.
@@ -406,7 +395,6 @@ void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
-    // qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
@@ -449,7 +437,6 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    // qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
             type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
@@ -481,7 +468,6 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "PlaylistFeature::slotPlaylistContentOrLockChanged() playlistId:" << playlistIds;
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
@@ -496,7 +482,6 @@ void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlist
 
 void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    // qDebug() << "PlaylistFeature::slotPlaylistTableRenamed() playlistId:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
         // Maybe we need to re-sort the sidebar items, so call slotPlaylistTableChanged()
         // in order to rebuild the model, not just updateChildModel()
@@ -544,8 +529,6 @@ void PlaylistFeature::loadSidebarSortSettings() {
             ConfigKey("[Library]", "PlaylistSortOrder"),
             static_cast<int>(PlaylistSortOrder::Ascending));
     m_sortOrder = static_cast<PlaylistSortOrder>(sortOrderInt);
-    qDebug() << "Loaded playlist sort settings - Column:" << sortColumnInt
-             << "Order:" << sortOrderInt;
 }
 
 void PlaylistFeature::saveSidebarSortSettings() {
@@ -568,8 +551,8 @@ QString PlaylistFeature::getSortColumnName() const {
 }
 
 QString PlaylistFeature::getSortOrderClause() const {
-    QString columnName = getSortColumnName();
-    QString order = (m_sortOrder == PlaylistSortOrder::Descending)
+    const QString columnName = getSortColumnName();
+    const QString order = (m_sortOrder == PlaylistSortOrder::Descending)
             ? QStringLiteral(" DESC")
             : QStringLiteral(" ASC"); // ← Explicitly add ASC
 
@@ -586,7 +569,5 @@ QString PlaylistFeature::getSortOrderClause() const {
         result = QStringLiteral(" ORDER BY ") + columnName + order;
     }
 
-    qDebug() << "PlaylistFeature sort - Column:" << columnName
-             << "Order:" << order << "Full clause:" << result;
     return result;
 }
