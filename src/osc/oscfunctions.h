@@ -277,6 +277,7 @@ void sendNoTrackLoadedToOscClients(const QString& oscGroup) {
     //    pConfig->set(ConfigKey("[OSC]", oscKeyArtist), oscKeyValueNoTrackLoaded);
     //    QString oscKeyTitle = QString(oscGroup + "TrackTitle");
     //    pConfig->set(ConfigKey("[OSC]", oscKeyTitle), oscKeyValueNoTrackLoaded);
+
     const QString& trackArtist = "no track loaded";
     const QString& trackTitle = "no track loaded";
     storeTrackInfo(oscGroup, trackArtist, trackTitle);
@@ -286,6 +287,9 @@ void sendTrackInfoToOscClients(
         const QString& oscGroup,
         const QString& trackArtist,
         const QString& trackTitle,
+        const QString& trackLocation,
+        const QString& trackAlbum,
+        float trackBPM,
         float track_loaded,
         float duration,
         float playposition) {
@@ -305,6 +309,30 @@ void sendTrackInfoToOscClients(
             0,
             0,
             0);
+    oscFunctionsSendPtrType(
+            oscGroup,
+            "TrackLocation",
+            DefOscBodyType::STRINGBODY,
+            escapeStringToJsonUnicode(trackLocation),
+            0,
+            0,
+            0);
+    oscFunctionsSendPtrType(
+            oscGroup,
+            "TrackAlbum",
+            DefOscBodyType::STRINGBODY,
+            escapeStringToJsonUnicode(trackAlbum),
+            0,
+            0,
+            0);
+    oscFunctionsSendPtrType(
+            oscGroup,
+            "TrackBMM",
+            DefOscBodyType::FLOATBODY,
+            "",
+            0,
+            0,
+            trackBPM);
     oscFunctionsSendPtrType(
             oscGroup,
             "track_loaded",
