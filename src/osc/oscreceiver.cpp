@@ -19,34 +19,28 @@
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "moc_oscreceiver.cpp"
-#include "oscfunctions.h"
+#include "osc/oscfunctions.h"
 
-std::atomic<bool> s_oscEnabled(false);
-int s_ckOscPortOutInt = 0;
-QList<std::pair<bool, QString>> s_receiverConfigs;
-std::atomic<bool> s_configLoaded1stTimeFromFile(false);
-static bool s_oscSendSyncTriggers(false);
-static int s_oscSendSyncTriggersInterval;
+// std::atomic<bool> s_oscEnabled(false);
+// int s_ckOscPortOutInt = 0;
+// QList<std::pair<bool, QString>> s_receiverConfigs;
+// std::atomic<bool> s_configLoaded1stTimeFromFile(false);
+// static bool s_oscSendSyncTriggers(false);
+// static int s_oscSendSyncTriggersInterval;
 // static int s_lastCheckStamp;
-inline std::atomic<qint64> s_lastTriggerTime = 0;
+// inline std::atomic<qint64> s_lastTriggerTime = 0;
+// std::array<std::tuple<QString, QString, QString>, kMaxOscTracks> g_oscTrackTable;
+//
+// QReadWriteLock g_oscTrackTableLock;
 
 namespace {
-// const bool sDebug = true;
 const bool sDebugOSC = false;
 } // namespace
-
-void oscFunctionsSendPtrType(
-        const QString& oscGroup,
-        const QString& oscKey,
-        enum DefOscBodyType oscBodyType,
-        const QString& oscMessageBodyQString,
-        int oscMessageBodyInt,
-        double oscMessageBodyDouble,
-        float oscMessageBodyFloat);
 
 OscReceiver::OscReceiver(
         UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
+          m_oscFunctions(pConfig),
           m_stopFlag(false) {};
 
 OscReceiver::~OscReceiver() {
@@ -114,18 +108,16 @@ static int messageCallback(const char* path,
 
     OscResult oscIn;
     oscIn.oscAddress = QString::fromUtf8(path);
-    // oscIn.oscAddressURL = QString("osc://localhost%1").arg(path);
     oscIn.oscAddressURL = QString("%1").arg(path);
-    oscIn.oscValue = argv[0]->f; // Assuming first argument is a float
+    oscIn.oscValue = argv[0]->f;
 
     if (sDebugOSC) {
         qDebug() << "[OSC] [OSCRECEIVER] -> Received OSC message:"
                  << oscIn.oscAddress << "Value:" << oscIn.oscValue;
     }
 
-    // oscIn.oscAddress.replace("/", "").replace("(", "[").replace(")", "]");
     if (sDebugOSC) {
-        // qDebug() << "[OSC] [OSCRECEIVER] -> Before translation " << oscIn.oscAddressURL;
+        qDebug() << "[OSC] [OSCRECEIVER] -> Callback -> Before translation " << oscIn.oscAddressURL;
     }
 
     if (s_oscSendSyncTriggers) {
@@ -144,27 +136,23 @@ void OscReceiver::determineOscAction(OscResult& oscIn) {
 
     oscIn.oscAddressURL.replace("/Get/cop", "").replace("/Get/cov", "").replace("/Get/cot", "");
 
-    oscIn.oscAddress = translatePath(oscIn.oscAddressURL);
+    oscIn.oscAddress = m_oscFunctions.translatePath(oscIn.oscAddressURL);
     if (sDebugOSC) {
-        qDebug() << "[OSC] [OSCRECEIVER] -> Before translation " << oscIn.oscAddressURL;
-        qDebug() << "[OSC] [OSCRECEIVER] -> After translation " << oscIn.oscAddress;
-        // qDebug() << "[OSC] [OSCRECEIVER] -> oscGetP " << oscGetP;
-        // qDebug() << "[OSC] [OSCRECEIVER] -> oscGetV " << oscGetV;
-        // qDebug() << "[OSC] [OSCRECEIVER] -> oscGetT " << oscGetT;
-        // qDebug() << "[OSC] [OSCRECEIVER] -> oscSet " << oscSet;
+        qDebug() << "[OSC] [OSCRECEIVER] -> Determine Action -> Before "
+                    "translation "
+                 << oscIn.oscAddressURL;
+        qDebug() << "[OSC] [OSCRECEIVER] -> Determine Action -> After "
+                    "translation "
+                 << oscIn.oscAddress;
     }
 
-    // int posDel = oscIn.oscAddress.indexOf("@", 0, Qt::CaseInsensitive);
     int posDel = oscIn.oscAddress.indexOf(",", 0, Qt::CaseInsensitive);
     if (posDel > 0) {
         if (oscSet) {
-            // translatePath(oscIn.oscAddress);
             oscIn.oscGroup = oscIn.oscAddress.mid(0, posDel);
             oscIn.oscKey = oscIn.oscAddress.mid(posDel + 1, oscIn.oscAddress.length());
 
         } else {
-            // oscIn.oscGroup = oscIn.oscAddress.mid(5, posDel - 5);
-            // oscIn.oscKey = oscIn.oscAddress.mid(posDel + 1);
             oscIn.oscGroup = oscIn.oscAddress.mid(0, posDel);
             oscIn.oscKey = oscIn.oscAddress.mid(posDel + 1);
         }
@@ -191,7 +179,7 @@ void OscReceiver::doGetP(OscResult& oscIn) {
         auto proxy = std::make_unique<PollingControlProxy>(oscIn.oscGroup, oscIn.oscKey);
         // for future use when prefix /cop is introduced in osc-messages
         // oscIn.oscGroup = QString("%1%2").arg("/cop", oscIn.oscGroup);
-        oscFunctionsSendPtrType(
+        m_oscFunctions.oscFunctionsSendPtrType(
                 oscIn.oscGroup,
                 oscIn.oscKey,
                 DefOscBodyType::FLOATBODY,
@@ -216,7 +204,7 @@ void OscReceiver::doGetV(OscResult& oscIn) {
         auto proxy = std::make_unique<PollingControlProxy>(oscIn.oscGroup, oscIn.oscKey);
         // for future use when prefix /cop is introduced in osc-messages
         // oscIn.oscGroup = QString("%1%2").arg("/cov", oscIn.oscGroup);
-        oscFunctionsSendPtrType(
+        m_oscFunctions.oscFunctionsSendPtrType(
                 oscIn.oscGroup,
                 oscIn.oscKey,
                 DefOscBodyType::FLOATBODY,
@@ -237,20 +225,19 @@ void OscReceiver::doGetT(OscResult& oscIn) {
                  << " oscIn.oscKey " << oscIn.oscKey;
     }
 
-    // QString searchOscKey = QString(oscIn.oscGroup + oscIn.oscKey);
     if (sDebugOSC) {
         qDebug() << "[OSC] [OSCRECEIVER] -> Msg Rcvd: Get Group, TrackInfo: " << oscIn.oscGroup
                  << "," << oscIn.oscKey;
     }
 
-    QString sendOscValue = getTrackInfo(oscIn.oscGroup, oscIn.oscKey);
+    QString sendOscValue = m_oscFunctions.getTrackInfo(oscIn.oscGroup, oscIn.oscKey);
 
     // Send the OSC message using the stored value
-    oscFunctionsSendPtrType(
+    m_oscFunctions.oscFunctionsSendPtrType(
             oscIn.oscGroup,
             oscIn.oscKey,
             DefOscBodyType::STRINGBODY,
-            escapeStringToJsonUnicode(sendOscValue),
+            m_oscFunctions.escapeStringToJsonUnicode(sendOscValue),
             0,
             0,
             0);
@@ -269,9 +256,8 @@ void OscReceiver::doSet(OscResult& oscIn, float value) {
     }
     if (ControlObject::exists(ConfigKey(oscIn.oscGroup, oscIn.oscKey))) {
         auto proxy = std::make_unique<PollingControlProxy>(oscIn.oscGroup, oscIn.oscKey);
-        // proxy->set(value);
         proxy->setParameter(value);
-        oscFunctionsSendPtrType(
+        m_oscFunctions.oscFunctionsSendPtrType(
                 oscIn.oscGroup,
                 oscIn.oscKey,
                 DefOscBodyType::FLOATBODY,
@@ -303,8 +289,7 @@ void OscReceiver::sendOscSyncTriggers() {
 
     // Check if enough time has passed since the last trigger, at least interval
     if (currentTime - s_lastTriggerTime >= s_oscSendSyncTriggersInterval) {
-        // Execute the OSC send function
-        oscFunctionsSendPtrType(
+        m_oscFunctions.oscFunctionsSendPtrType(
                 "[Osc]",
                 "OscSync",
                 DefOscBodyType::FLOATBODY,
@@ -344,7 +329,7 @@ int OscReceiver::startOscReceiver(int oscPortin) {
     }
 
     while (!m_stopFlag) {
-        QThread::msleep(100); // Sleep for a short period
+        QThread::msleep(100);
     }
 
     // Stop the server when done
@@ -360,7 +345,7 @@ void OscReceiver::checkResponsiveness() {
     // Check if the last response was more than 5 seconds ago
     if (m_lastResponseTime.secsTo(QDateTime::currentDateTime()) > 5) {
         qWarning() << "[OSC] [OSCRECEIVER] -> OSC server is unresponsive. Restarting...";
-        restartOscReceiver(m_oscPortIn); // Restart the OSC server
+        restartOscReceiver(m_oscPortIn);
     }
 }
 
@@ -377,40 +362,6 @@ void OscReceiver::restartOscReceiver(int oscPortin) {
     // Restart the OSC server
     startOscReceiver(oscPortin);
 }
-
-// void OscReceiver::oscReceiverMain(UserSettingsPointer pConfig) {
-//     if (pConfig->getValue<bool>(ConfigKey("[OSC]", "OscEnabled"))) {
-//         if (sDebug) {
-//             qDebug() << "[OSC] [OSCRECEIVER] -> Enabled -> Started";
-//         }
-//         loadOscConfiguration(pConfig);
-//         for (const auto& receiver : s_receiverConfigs) {
-//             int i = 1;
-//             if (receiver.first) { // Check if the receiver is active
-//                 QByteArray receiverIpBa = receiver.second.toLocal8Bit();
-//                 if (sDebug) {
-//                     qDebug() << QString(
-//                             "[OSC] [OSCRECEIVER] -> Mixxx OSC Receiver %1 with "
-//                             "ip-address: %2 Activated")
-//                                         .arg(i)
-//                                         .arg(receiverIpBa);
-//                 }
-//             } else {
-//                 if (sDebug) {
-//                     qDebug()
-//                             << QString("[OSC] [OSCRECEIVER] -> Mixxx OSC "
-//                                        "Receiver %1 Not Activated")
-//                                        .arg(i);
-//                 }
-//             }
-//             i = i++;
-//         }
-//     } else {
-//         if (sDebug) {
-//             qDebug() << "[OSC] [OSCRECEIVER] -> Mixxx OSC Service NOT Enabled";
-//         }
-//     }
-// }
 
 void OscReceiver::loadOscConfiguration(UserSettingsPointer pConfig) {
     if (!s_configLoaded1stTimeFromFile.load()) {
@@ -466,10 +417,10 @@ void OscReceiver::loadOscConfiguration(UserSettingsPointer pConfig) {
         }
         // Mark configuration as initialized
         s_configLoaded1stTimeFromFile.store(true);
-        sendNoTrackLoadedToOscClients("[Channel1]");
-        sendNoTrackLoadedToOscClients("[Channel2]");
-        sendNoTrackLoadedToOscClients("[Channel3]");
-        sendNoTrackLoadedToOscClients("[Channel4]");
+        m_oscFunctions.sendNoTrackLoadedToOscClients("[Channel1]");
+        m_oscFunctions.sendNoTrackLoadedToOscClients("[Channel2]");
+        m_oscFunctions.sendNoTrackLoadedToOscClients("[Channel3]");
+        m_oscFunctions.sendNoTrackLoadedToOscClients("[Channel4]");
         if (sDebugOSC) {
             qDebug() << "[OSC] [OSCRECEIVER] -> OSC configuration loaded.";
         }

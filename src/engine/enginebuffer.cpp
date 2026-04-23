@@ -24,6 +24,7 @@
 #include "engine/sync/synccontrol.h"
 #include "mixer/playermanager.h"
 #include "moc_enginebuffer.cpp"
+#include "osc/oscfunctions.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/assert.h"
@@ -56,17 +57,6 @@ const QString kAppGroup = QStringLiteral("[App]");
 
 // EveOSC
 extern std::atomic<bool> s_oscEnabled;
-void sendTrackInfoToOscClients(
-        const QString& oscGroup,
-        const QString& trackArtist,
-        const QString& trackTitle,
-        const QString& trackLocation,
-        const QString& trackAlbum,
-        float trackBPM,
-        float track_loaded,
-        float duration,
-        float playposition);
-void sendNoTrackLoadedToOscClients(const QString& oscGroup);
 // EveOSC
 
 EngineBuffer::EngineBuffer(const QString& group,
@@ -613,7 +603,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     //  EveOSC begin
     if (s_oscEnabled.load()) {
-        sendTrackInfoToOscClients(
+        OscFunctions oscFunctions(m_pConfig);
+        oscFunctions.sendTrackInfoToOscClients(
                 getGroup(),
                 pTrack->getArtist(),
                 pTrack->getTitle(),
@@ -697,7 +688,8 @@ void EngineBuffer::ejectTrack() {
 
     //  EveOSC begin
     if (s_oscEnabled.load()) {
-        sendNoTrackLoadedToOscClients(getGroup());
+        OscFunctions oscFunctions(m_pConfig);
+        oscFunctions.sendNoTrackLoadedToOscClients(getGroup());
     }
     //  EveOSC end
 

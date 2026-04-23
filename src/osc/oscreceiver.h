@@ -7,9 +7,11 @@
 #include <QReadWriteLock>
 #include <QString>
 #include <QThread>
+#include <atomic>
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "osc/oscfunctions.h"
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"
@@ -30,7 +32,7 @@ class OscResult {
 };
 
 class OscReceiver : public QObject {
-    Q_OBJECT // Ensure Qt meta-object system recognizes this class
+    Q_OBJECT
 
   public:
     explicit OscReceiver(UserSettingsPointer pConfig);
@@ -38,7 +40,6 @@ class OscReceiver : public QObject {
 
     int startOscReceiver(int oscPortin);
     void stop();
-    // void oscReceiverMain(UserSettingsPointer pConfig);
     void determineOscAction(OscResult& oscIn);
     void doGetP(OscResult& oscIn);
     void doGetV(OscResult& oscIn);
@@ -50,12 +51,11 @@ class OscReceiver : public QObject {
 
   private:
     UserSettingsPointer m_pConfig;
+    OscFunctions m_oscFunctions;
     bool m_stopFlag = false;
-    // QThread* m_pThread = nullptr;
     QMutex m_mutex;
     QReadWriteLock m_configLock;
 
-    //    std::atomic<bool> m_stopFlag;
     QDateTime m_lastResponseTime;
     int m_oscPortIn;
 
