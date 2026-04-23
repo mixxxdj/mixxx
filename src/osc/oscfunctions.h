@@ -36,15 +36,37 @@ enum class DefOscBodyType {
 };
 
 // function to convert and carry special characters in TrackArtist & TrackTitle to ASCII
+// QString escapeStringToJsonUnicode(const QString& input) {
+//    QString escaped;
+//    for (QChar c : input) {
+//        if (c.isPrint() && c.unicode() < 128) {
+//            // Keep printable ASCII characters as is
+//            escaped += c;
+//        } else {
+//            // Escape non-ASCII and special characters
+//            escaped += QString("\\u%1").arg(c.unicode(), 4, 16, QChar('0')).toUpper();
+//        }
+//    }
+//    return escaped;
+//}
+
 QString escapeStringToJsonUnicode(const QString& input) {
     QString escaped;
+    escaped.reserve(input.size()); // Pre-allocate for performance
+
     for (QChar c : input) {
         if (c.isPrint() && c.unicode() < 128) {
             // Keep printable ASCII characters as is
             escaped += c;
         } else {
             // Escape non-ASCII and special characters
-            escaped += QString("\\u%1").arg(c.unicode(), 4, 16, QChar('0')).toUpper();
+            // Format as 4-digit hex, zero-padded
+            escaped += QStringLiteral("\\u%1")
+                               .arg(static_cast<uint>(c.unicode()),
+                                       4,
+                                       16,
+                                       QLatin1Char('0'))
+                               .toUpper();
         }
     }
     return escaped;
