@@ -89,7 +89,6 @@
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-4">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-8">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
-      <attribute persist="true" config_key="[LateNight],show_sampler_key">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
     <!-- Library -->

@@ -147,6 +147,12 @@ QAbstractScrollArea::corner {
     margin-top: 1px;
   }
 
+
+#KeyText {
+  border: 0px;
+  color: #766b65;
+}
+
 /* recessed regions */
 #WaveformBox1,
 #WaveformBox2,
@@ -155,7 +161,7 @@ QAbstractScrollArea::corner {
 #WaveformsFrame,
 #OverviewBox,
 #OverviewBoxMini,
-#KeyText,
+#Deck #KeyText,
 WCueMenuPopup #CueLabelEdit {
   border-top: 1px solid #0d0d0d;
   border-left: 1px solid #121212;

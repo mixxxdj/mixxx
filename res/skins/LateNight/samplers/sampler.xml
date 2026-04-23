@@ -37,10 +37,10 @@
                 <Connection>
                   <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
                 </Connection>
-                <Connection>
+                <!--<Connection>
                   <ConfigKey persist="true">[LateNight],show_sampler_key</ConfigKey>
                   <BindProperty>visible</BindProperty>
-                </Connection>
+                </Connection>-->
               </Key>
               <WidgetGroup>
                 <ObjectName>SamplerTitleBpmSeparator</ObjectName>
