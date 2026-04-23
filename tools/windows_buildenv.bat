@@ -183,7 +183,8 @@ EXIT /B 0
 REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
     SET CMakeSettings=%MIXXX_ROOT%\CMakeSettings.json
     IF EXIST "%CMakeSettings%" (
-        FOR /f "delims=" %%a in ('wmic OS Get localdatetime ^| find "."') do set DateTime=%%a
+        REM Use PowerShell to generate timestamp (wmic removed on Win11 25H2)
+        for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do set DateTime=%%i
         SET CMakeSettingsBackup=CMakeSettings_!DateTime:~0,4!-!DateTime:~4,2!-!DateTime:~6,2!_!DateTime:~8,2!-!DateTime:~10,2!-!DateTime:~12,2!.json
         ECHO CMakeSettings.json already exists, creating backup at "!CMakeSettingsBackup!"...
         REN "%CMakeSettings%" "!CMakeSettingsBackup!"
