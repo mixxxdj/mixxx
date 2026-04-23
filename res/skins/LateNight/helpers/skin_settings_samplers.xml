@@ -82,11 +82,47 @@ Description:
               <Layout>vertical</Layout>
               <SizePolicy>me,min</SizePolicy>
               <Children>
+                  <Label>
+                  <Text> <Variable name="Setting"/></Text>
+                  <Alignment>left</Alignment>
+                  <Size>0me,18f</Size>
+                  <TooltipId>show_sampler_fx</TooltipId>
+                  <ObjectName>SkinSettingsText</ObjectName>
+                  <SizePolicy>me,min</SizePolicy>
+                </Label>
+              <NumberDisplay>
+                <Connection>
+                  <ConfigKey>[Skin],show_4samplers</ConfigKey>
+                </Connection>
+                <Format>%1</Format>
+              </NumberDisplay>
+                  <Label>
+                  <Text>BB</Text>
+                  <Alignment>left</Alignment>
+                  <Size>0me,18f</Size>
+                  <TooltipId>show_sampler_fx</TooltipId>
+                  <ObjectName>SkinSettingsText</ObjectName>
+                  <SizePolicy>me,min</SizePolicy>
+                </Label>
                 <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                   <SetVariable name="Text">Fx controls</SetVariable>
                   <SetVariable name="Setting">[Skin],show_sampler_fx</SetVariable>
                 </Template>
 
+
+                <WidgetGroup>
+                  <Connection>
+                    <ConfigKey>[LateNight],show_4samplers</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                      <Transform>
+                      <Not/>         <!-- invert: visible when result is 0 -->
+                    </Transform>
+                  </Connection>
+                  <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                    <SetVariable name="Text">Alternate samplers order</SetVariable>
+                    <SetVariable name="Setting">[LateNight],alternate_samplers_order</SetVariable>
+                  </Template>
+                </WidgetGroup>
                 <WidgetGroup>
                   <ObjectName>SamplerLoadSaveBox</ObjectName>
                   <Layout>horizontal</Layout>
