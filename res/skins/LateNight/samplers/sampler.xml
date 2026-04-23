@@ -18,6 +18,27 @@
             <Layout>horizontal</Layout>
             <SizePolicy>i,me</SizePolicy>
             <Children>
+              <!-- Sampler Number (based on skin setting)-->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Connection>
+                  <ConfigKey>[LateNight],show_samplers_numbers</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+                  <Label>
+                    <ObjectName>SamplerTitle</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Text><Variable name="SamplerNum"/></Text>
+                    <Alignment>center</Alignment>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                </Children>
+              </WidgetGroup>
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
                 <ObjectName>SamplerTitle</ObjectName>
