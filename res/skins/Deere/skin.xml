@@ -48,6 +48,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_6_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_7_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
+      <attribute persist="true" config_key="[Deere],show_samplers_numbers">0</attribute>
 
       <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
 
