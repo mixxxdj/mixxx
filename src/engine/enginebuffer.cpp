@@ -55,9 +55,7 @@ constexpr int kPlaypositionUpdateRate = 15; // updates per second
 const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
-// EveOSC
 extern std::atomic<bool> s_oscEnabled;
-// EveOSC
 
 EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
@@ -601,7 +599,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSampleRate->set(trackSampleRate.toDouble());
     m_pTrackLoaded->forceSet(1);
 
-    //  EveOSC begin
+    // OSC send TrackInfo PseudoCOs to OSC-Clients
     if (s_oscEnabled.load()) {
         OscFunctions oscFunctions(m_pConfig);
         oscFunctions.sendTrackInfoToOscClients(
@@ -615,7 +613,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                 (float)pTrack->getDuration(),
                 0);
     }
-    //  EveOSC end
 
     // Reset slip mode
     m_pSlipButton->set(0);
@@ -686,12 +683,11 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSampleRate->set(0);
     m_pTrackLoaded->forceSet(0);
 
-    //  EveOSC begin
+    // OSC Send message for displaying no track is loaded on COS-Clients
     if (s_oscEnabled.load()) {
         OscFunctions oscFunctions(m_pConfig);
         oscFunctions.sendNoTrackLoadedToOscClients(getGroup());
     }
-    //  EveOSC end
 
     m_playButton->set(0.0);
     m_playposSlider->set(0);

@@ -109,10 +109,8 @@ class MixxxMainWindow : public QMainWindow {
   private:
     void initializeWindow();
     void checkDirectRendering();
-    // EveOSC
     void oscEnable();
     void onOscThreadFinished();
-    // EveOSC
 
     /// Load skin to a QWidget that we set as the central widget.
     bool loadConfiguredSkin();

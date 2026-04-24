@@ -21,18 +21,6 @@
 #include "moc_oscreceiver.cpp"
 #include "osc/oscfunctions.h"
 
-// std::atomic<bool> s_oscEnabled(false);
-// int s_ckOscPortOutInt = 0;
-// QList<std::pair<bool, QString>> s_receiverConfigs;
-// std::atomic<bool> s_configLoaded1stTimeFromFile(false);
-// static bool s_oscSendSyncTriggers(false);
-// static int s_oscSendSyncTriggersInterval;
-// static int s_lastCheckStamp;
-// inline std::atomic<qint64> s_lastTriggerTime = 0;
-// std::array<std::tuple<QString, QString, QString>, kMaxOscTracks> g_oscTrackTable;
-//
-// QReadWriteLock g_oscTrackTableLock;
-
 namespace {
 const bool sDebugOSC = false;
 } // namespace

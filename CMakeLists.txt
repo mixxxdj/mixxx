@@ -2163,7 +2163,7 @@ if(MSVC)
     target_compile_definitions(
       mixxx-lib
       PUBLIC
-        # Eve: to prevent multiple instances of winsock(2) being loaded
+        # OSC: to prevent multiple instances of winsock(2) being loaded
         WIN32_LEAN_AND_MEAN
         _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
         _CRT_SECURE_NO_WARNINGS
@@ -2258,7 +2258,7 @@ if(WIN32)
   # _WIN32_WINNT_WIN7 = 0x0601
   target_compile_definitions(mixxx-lib PUBLIC WINVER=0x0601)
   target_compile_definitions(mixxx-lib PUBLIC _WIN32_WINNT=0x0601)
-  # Eve: to prevent multiple instances of winsock(2) being loaded
+  # OSC: to prevent multiple instances of winsock(2) being loaded
   target_compile_definitions(mixxx-lib PUBLIC WIN32_LEAN_AND_MEAN)
   if(MSVC)
     target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
@@ -2730,9 +2730,6 @@ endif()
 # Tests
 #
 
-# Eve: to prevent multiple instances of winsock(2) being loaded
-### add_definitions(-DWIN32_LEAN_AND_MEAN)
-
 find_package(GTest CONFIG)
 default_option(BUILD_TESTING "Build with Unittests" "GTest_FOUND")
 if(BUILD_TESTING)
@@ -3167,8 +3164,6 @@ add_custom_target(
 
 # Windows-only resource file
 if(WIN32)
-  # EVE
-  ###add_definitions(-DWIN32_LEAN_AND_MEAN)
   string(TIMESTAMP MIXXX_YEAR "%Y")
 
   set(
@@ -3607,7 +3602,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   target_compile_options(rekordbox_metadata PRIVATE /w44063)
 endif()
 
-#eve osc
 # liblo
 
 if(WIN32 OR APPLE)
