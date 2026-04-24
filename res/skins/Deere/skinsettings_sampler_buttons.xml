@@ -33,14 +33,6 @@
                 </Template>
               </Children>
             </WidgetGroup>
-            <Label>
-              <SizePolicy>min,min</SizePolicy>
-              <Text>COUCOU</Text>
-              <!--<Connection>
-                <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
-                <BindProperty>visible</BindProperty>
-              </Connection>-->
-            </Label>
           </Children>
         </WidgetStack>
 
