@@ -2151,20 +2151,6 @@ styled differently because of their importance */
     border-radius: 3px;
   }
 
-
-#TEST_GREEN {
-  background-color: green;
-}
-
-#TEST_BLUE {
-  background-color: blue;
-}
-
-#TEST_RED {
-  background-color: red;
-}
-
-
 WLabel #SamplerNumber,
 WTrackProperty#SamplerTitle {
   font-size: 14px/18px;
