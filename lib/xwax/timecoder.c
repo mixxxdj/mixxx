@@ -402,10 +402,7 @@ void mk2_subcode_init(struct mk2_subcode *sc)
     sc->bit = U128_ZERO;
 
     sc->readings = rb_alloc(3, sizeof(int));
-    if (!sc->readings) {
-        perror(__func__);
-        return;
-    }
+    assert(sc->readings);
 
     /* Initialise smoothing filters */
     ewma_init(&sc->ewma_reading, 0.01);
@@ -427,16 +424,10 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
     ch->rms_deriv = 0;
 
     ch->delayline = rb_alloc(5, sizeof(int));
-    if (!ch->delayline) {
-        perror(__func__);
-        return;
-    }
+    assert(ch->delayline);
 
     ch->delayline_deriv = rb_alloc(5, sizeof(int));
-    if (!ch->delayline_deriv) {
-        perror(__func__);
-        return;
-    }
+    assert(ch->delayline_deriv);
 
     ewma_init_adaptive(&ch->ewma_filter, 5e-2, def->resolution, sample_rate);
     derivative_init(&ch->differentiator);
@@ -452,7 +443,9 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
     size_t window = (size_t)ceil(sample_rate / def->resolution)/4;
     if (window % 2 == 0)
         window++;
+
     ch->savgol_filter = savgol_create(window, 3);
+    assert(ch->savgol_filter);
 
     rhpf_init(&ch->rumble_filter, sample_rate, 50.0 * ((double)def->resolution / 1000.0));
 }
