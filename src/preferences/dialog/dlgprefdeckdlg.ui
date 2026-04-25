@@ -643,19 +643,109 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <spacer name="verticalSpacer2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+    <item row="2" column="0">
+      <widget class="QGroupBox" name="groupBoxNowPlaying">
+        <property name="title">
+          <string>NowPlaying</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayoutNowPlaying">
+          <property name="spacing">
+            <number>10</number>
+          </property>
+          <item row="0" column="0" colspan="3">
+            <widget class="QCheckBox" name="checkBoxEnableNowPlaying">
+              <property name="text">
+                <string>Enable NowPlaying file</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="0">
+            <widget class="QLabel" name="labelNowPlayingAppend">
+              <property name="text">
+                <string>Append to file</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="1">
+            <widget class="QCheckBox" name="checkBoxNowPlayingAppend">
+              <property name="text">
+                <string/>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="2">
+            <widget class="QCheckBox" name="checkBoxNowPlayingAddTimestamp">
+              <property name="text">
+                <string>Add timestamp</string>
+              </property>
+            </widget>
+          </item>
+          <item row="2" column="0">
+            <widget class="QLabel" name="labelNowPlayingArchive">
+              <property name="text">
+                <string>Archive sessions</string>
+              </property>
+            </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+            <widget class="QCheckBox" name="checkBoxNowPlayingArchive">
+              <property name="text">
+                <string/>
+              </property>
+            </widget>
+          </item>
+          <item row="3" column="0">
+            <widget class="QLabel" name="labelNowPlayingPollInterval">
+              <property name="text">
+                <string>Poll interval (ms)</string>
+              </property>
+            </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+            <widget class="QComboBox" name="comboBoxNowPlayingPollInterval">
+              <item>
+                <property name="text">
+                  <string>500 ms (fast)</string>
+                </property>
+              </item>
+              <item>
+                <property name="text">
+                  <string>1000 ms (default)</string>
+                </property>
+              </item>
+              <item>
+                <property name="text">
+                  <string>2000 ms</string>
+                </property>
+              </item>
+              <item>
+                <property name="text">
+                  <string>5000 ms</string>
+                </property>
+              </item>
+              <item>
+                <property name="text">
+                  <string>10000 ms (slow)</string>
+                </property>
+              </item>
+            </widget>
+          </item>
+        </layout>
+      </widget>
+    </item>
+    <item row="3" column="0">
+      <spacer name="verticalSpacer2">
+        <property name="orientation">
+          <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+          <size>
+            <width>20</width>
+            <height>40</height>
+          </size>
+        </property>
+      </spacer>
+    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -685,6 +775,11 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>spinBoxTemporaryRateCoarse</tabstop>
   <tabstop>spinBoxPermanentRateFine</tabstop>
   <tabstop>spinBoxPermanentRateCoarse</tabstop>
+  <tabstop>checkBoxEnableNowPlaying</tabstop>
+  <tabstop>checkBoxNowPlayingAppend</tabstop>
+  <tabstop>checkBoxNowPlayingAddTimestamp</tabstop>
+  <tabstop>checkBoxNowPlayingArchive</tabstop>
+  <tabstop>comboBoxNowPlayingPollInterval</tabstop>
  </tabstops>
  <resources/>
  <buttongroups>

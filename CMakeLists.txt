@@ -1492,6 +1492,7 @@ add_library(
   src/mixer/basetrackplayer.cpp
   src/mixer/deck.cpp
   src/mixer/microphone.cpp
+  src/mixer/nowplaying.cpp
   src/mixer/playerinfo.cpp
   src/mixer/playermanager.cpp
   src/mixer/previewdeck.cpp
