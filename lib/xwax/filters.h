@@ -2,6 +2,10 @@
 
 #define FILTERS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ringbuffer.h"
 
 struct ewma_filter {
@@ -51,5 +55,9 @@ struct rumble_filter {
 
 void rhpf_init(struct rumble_filter *f, unsigned int fs, double fc);
 int rhpf_process(struct rumble_filter *f, int x);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* end of include guard FILTERS_H */
