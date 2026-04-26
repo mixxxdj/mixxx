@@ -949,12 +949,12 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
     }
 
     // Store the cue point as main cue
-    CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
+    CuePointer pMainCue = findCueByType(mixxx::CueType::MainCue);
     if (position.isValid()) {
-        if (pLoadCue) {
-            pLoadCue->setStartPosition(position);
+        if (pMainCue) {
+            pMainCue->setStartPosition(position);
         } else {
-            pLoadCue = CuePointer(new Cue(
+            pMainCue = CuePointer(new Cue(
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
                     position,
@@ -963,16 +963,16 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
-            pLoadCue->moveToThread(thread());
-            connect(pLoadCue.get(),
+            pMainCue->moveToThread(thread());
+            connect(pMainCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
-            m_cuePoints.push_back(pLoadCue);
+            m_cuePoints.push_back(pMainCue);
         }
-    } else if (pLoadCue) {
-        disconnect(pLoadCue.get(), nullptr, this, nullptr);
-        m_cuePoints.removeOne(pLoadCue);
+    } else if (pMainCue) {
+        disconnect(pMainCue.get(), nullptr, this, nullptr);
+        m_cuePoints.removeOne(pMainCue);
     }
 
     markDirtyAndUnlock(&locked);

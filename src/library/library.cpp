@@ -73,7 +73,7 @@ Library::Library(
           m_pLibraryControl(make_parented<LibraryControl>(this)),
           m_pLibraryWidget(nullptr),
           m_pKeyNotation(std::make_unique<ControlObject>(
-                  mixxx::library::prefs::kKeyNotationConfigKey)) {
+                  mixxx::library::prefs::kKeyNotationConfigKey, false)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
     connect(m_pTrackCollectionManager,

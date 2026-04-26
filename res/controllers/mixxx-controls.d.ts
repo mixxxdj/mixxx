@@ -1248,6 +1248,8 @@ declare namespace MixxxControls {
          * If hotcue_X_type is “Loop”, looping will be enabled and the loop controls (e.g. loop_start_position, loop_end_position and beatloop_size) will be set accordingly.
          * Just like reloop_toggle, the player seeks back to the loop start when the current play position is behind the loop, and enabled without a seek when it is in front of or inside the loop.
          * This allows a loop catching behavior on one hand and a jump back when the loop has been exit by just triggering this control.
+         * If hotcue_X_type is “Jump”, the jump will be “armed” when set to 1, meaning that the deck will perform the jump to the hotcue when the play position reaches the hotcue’s “from” position (marked with a circular arrow on the waveform).
+         * If the play position is after the saved jump positions (both “from” and “to”), it will bring the playback to the “to” position.
          * Setting the control to 1 when the track is currently not playing (i.e. play is set to 0) will start hotcue previewing.
          * After resetting the control to 0, playback will usually be stopped and the player will seek to the hotcue position.
          * If play is set to 1 while previewing is active, the playback will continue and no seek occurs.

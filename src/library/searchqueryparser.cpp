@@ -133,7 +133,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
     m_fieldToSqlColumns["lastplayed"] << "last_played_at";
     m_fieldToSqlColumns["r"] << "rating";
     m_fieldToSqlColumns["rating"] << "rating";
-    m_fieldToSqlColumns["loc"] << "location";
+    m_fieldToSqlColumns["lo"] << "location";
     m_fieldToSqlColumns["location"] << "location";
     m_fieldToSqlColumns["dir"] << "directory";
     m_fieldToSqlColumns["directory"] << "directory";

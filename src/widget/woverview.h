@@ -142,13 +142,14 @@ class WOverview : public WWidget, public TrackDropTarget {
         }
     }
 
-    // Hold the last visual sample processed to generate the pixmap
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
 
     mixxx::OverviewType m_type;
     bool m_stereo;
+
+    // Hold the last visual sample processed to generate the pixmap
     int m_actualCompletion;
     bool m_pixmapDone;
     float m_waveformPeak;

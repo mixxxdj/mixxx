@@ -237,7 +237,7 @@ nl	Waveform
 nl	Meta Knob Link
 nl	Effect Parameter
 nl	Equalizer Parameter
-nl	Vinyl Status
+nl,de	Vinyl Status
 nl	Track Album
 nl	audio interface
 nl	HID Interface %1: 
@@ -304,7 +304,7 @@ ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
 *	MESA vblank_mode = 1
 ca,de,fr,it,nl,pl,sv,es*	Intro
 cs,de,fr,sl,sv	Formant
-da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL	Auto DJ
+da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL,zh_CN	Auto DJ
 da,fr,nb,nl,nn	Type
 de,nl,pl,sv	Status
 da,de,it,nl	Computer

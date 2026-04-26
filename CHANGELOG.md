@@ -624,7 +624,7 @@
 * README: add link to OS-specific build instructions [#14779](https://github.com/mixxxdj/mixxx/pull/14779)
 * Improve debug output for missing WWidget pixmaps [#14473](https://github.com/mixxxdj/mixxx/pull/14473)
 
-## [2.5.5](https://github.com/mixxxdj/mixxx/milestone/53) (Unreleased)
+## [2.5.6](https://github.com/mixxxdj/mixxx/milestone/53) (2026-03-25)
 
 ### Library
 
@@ -715,6 +715,10 @@
 * Num deck streamline
   [#14112](https://github.com/mixxxdj/mixxx/pull/14112)
   [#16009](https://github.com/mixxxdj/mixxx/pull/16009)
+
+## [2.5.5](https://github.com/mixxxdj/mixxx/milestone/53) (skipped)
+
+Note: Version 2.5.5 has been skipped following an issue in the release workflow.
 
 ## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (2025-12-14)
 
@@ -2638,4 +2642,4 @@
 
 ## Older Changelog
 
-Find older changelog entries [here](https://github.com/mixxxdj/mixxx/blob/2.5.0/CHANGELOG.md).
+Find older changelog entries in the [2.5.0 Changelog](https://github.com/mixxxdj/mixxx/blob/2.5.0/CHANGELOG.md).

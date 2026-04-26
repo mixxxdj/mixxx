@@ -57,6 +57,8 @@ declare interface Player {
     readonly trackNumber: string;
     /** Total number of tracks in track's album or empty string if no track is loaded */
     readonly trackTotal: string;
+    /** Tracks key, formatted in the user configured key notation */
+    readonly key: string;
 
     /** Emitted when the track is unloaded from the player. */
     trackUnloaded: QtSlot<() => void>;
@@ -111,6 +113,12 @@ declare interface Player {
      * is loaded to the player or when the current track's metadata change.
      */
     trackTotalChanged: QtSlot<(newTrackTotal: string) => void>;
+    /**
+     * Emitted with the new tracks key when a new track is loaded
+     * to the player, when the current track's metadata change
+     * or when the key notation configuration is changed.
+     */
+    keyChanged: QtSlot<(newKey: string) => void>;
 }
 
 /** ControllerScriptInterfaceLegacy */
