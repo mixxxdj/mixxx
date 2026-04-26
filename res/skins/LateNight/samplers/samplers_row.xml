@@ -102,9 +102,9 @@
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
-                    <Template src="skins:LateNight/samplers/sampler.xml">
-                      <SetVariable name="SamplerNum"><Variable name="Sampler5"/></SetVariable>
-                    </Template>
+                          <Template src="skins:LateNight/samplers/sampler.xml">
+                            <SetVariable name="SamplerNum"><Variable name="Sampler5"/></SetVariable>
+                          </Template>
                         </Children>
                       </WidgetGroup>
                       <!-- Page 1 : use_alternate_order = 1 -->
@@ -112,9 +112,9 @@
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
-                    <Template src="skins:LateNight/samplers/sampler.xml">
-                      <SetVariable name="SamplerNum"><Variable name="Sampler3"/></SetVariable>
-                    </Template>
+                          <Template src="skins:LateNight/samplers/sampler.xml">
+                            <SetVariable name="SamplerNum"><Variable name="Sampler3"/></SetVariable>
+                          </Template>
                         </Children>
                       </WidgetGroup>
                     </Children>
@@ -127,9 +127,9 @@
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
-                    <Template src="skins:LateNight/samplers/sampler.xml">
-                      <SetVariable name="SamplerNum"><Variable name="Sampler6"/></SetVariable>
-                    </Template>
+                          <Template src="skins:LateNight/samplers/sampler.xml">
+                            <SetVariable name="SamplerNum"><Variable name="Sampler6"/></SetVariable>
+                          </Template>
                         </Children>
                       </WidgetGroup>
                       <!-- Page 1 : use_alternate_order = 1 -->
@@ -137,21 +137,13 @@
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
-                    <Template src="skins:LateNight/samplers/sampler.xml">
-                      <SetVariable name="SamplerNum"><Variable name="Sampler4"/></SetVariable>
-                    </Template>
+                          <Template src="skins:LateNight/samplers/sampler.xml">
+                            <SetVariable name="SamplerNum"><Variable name="Sampler4"/></SetVariable>
+                          </Template>
                         </Children>
                       </WidgetGroup>
                     </Children>
                   </WidgetStack>
-
-                  <!--<Template src="skins:LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum"><Variable name="Sampler5"/></SetVariable>
-                  </Template>
-
-                  <Template src="skins:LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum"><Variable name="Sampler6"/></SetVariable>
-                  </Template>-->
 
                 </Children>
               </WidgetGroup><!-- /First row -->
@@ -212,15 +204,6 @@
                       </WidgetGroup>
                     </Children>
                   </WidgetStack>
-
-
-                  <!-- <Template src="skins:LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum"><Variable name="Sampler3"/></SetVariable>
-                  </Template>
-
-                  <Template src="skins:LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum"><Variable name="Sampler4"/></SetVariable>
-                  </Template>-->
 
                   <WidgetGroup>
                     <ObjectName>MicAuxRackFiller</ObjectName>

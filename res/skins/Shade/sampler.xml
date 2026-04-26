@@ -20,6 +20,23 @@
             <BackPath>style/style_bg_sampler_top.png</BackPath>
             <Layout>horizontal</Layout>
             <Children>
+              <Label> <!-- Sampler number conditionally displayed based on skin setting -->
+                <Style>QLabel {
+                    font-size: 12px;
+                    line-height: 14px;
+                    font-weight: bold;
+                    background-color: transparent;
+                    color: #191F24;
+                    text-align: left;
+                    padding-left: 1px;
+                    padding-top: 6px;}
+                </Style>
+                <Text><Variable name="samplernum"/></Text>
+                <Connection>
+                  <ConfigKey>[Skin],show_samplers_numbers</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Label>
               <TrackProperty>
                 <TooltipId>text</TooltipId>
                 <Style>QLabel {
