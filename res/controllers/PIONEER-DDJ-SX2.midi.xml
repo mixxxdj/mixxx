@@ -6,6 +6,9 @@
     <description>Pioneer DDJ-SX2 mapping for Mixxx</description>
   </info>
   <settings>
+    <group label="General Settings">
+      <option variable="NeedleSearchBehaviour" type="boolean" default="0" label="Allow to use needle search when a song is playing. If disabled, you can use :hwbtn:`Shift` + :hwbtn:`NeedleSearch` to use the needle search when a song is playing." />
+    </group>
     <group label="Scratch Settings">
       <option variable="safeScratchTimeout" default="20" min="20" max="1000" step="10" type="integer" label="Safe Scratch Timeout (ms) (20ms is the minimum allowed)" />
     </group>
@@ -338,38 +341,82 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>playposition</key>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 1</description>
         <status>0xB0</status>
         <midino>0x03</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>playposition</key>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 2</description>
         <status>0xB1</status>
         <midino>0x03</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>playposition</key>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 3</description>
         <status>0xB2</status>
         <midino>0x03</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>playposition</key>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 4</description>
         <status>0xB3</status>
         <midino>0x03</midino>
         <options>
-          <normal />
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 1 when Shifting</description>
+        <status>0xB0</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 2 when Shifting</description>
+        <status>0xB1</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 3 when Shifting</description>
+        <status>0xB2</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.NeedleSearch</key>
+        <description>Needle search for Deck 4 when Shifting</description>
+        <status>0xB3</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
         </options>
       </control>
       <control>
@@ -2556,42 +2603,6 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate_temp_down</key>
-        <status>0x90</status>
-        <midino>0x24</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>rate_temp_down</key>
-        <status>0x91</status>
-        <midino>0x24</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>rate_temp_down</key>
-        <status>0x92</status>
-        <midino>0x24</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>rate_temp_down</key>
-        <status>0x93</status>
-        <midino>0x24</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
         <key>PioneerDDJSX2.BeatJump</key>
         <status>0x97</status>
         <midino>0x24</midino>
@@ -2628,42 +2639,6 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>PioneerDDJSX2.RollParam1L</key>
-        <status>0x90</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>PioneerDDJSX2.RollParam1L</key>
-        <status>0x91</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>PioneerDDJSX2.RollParam1L</key>
-        <status>0x92</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>PioneerDDJSX2.RollParam1L</key>
-        <status>0x93</status>
-        <midino>0x25</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
         <key>PioneerDDJSX2.BeatJump</key>
         <status>0x97</status>
         <midino>0x25</midino>
@@ -2694,42 +2669,6 @@
         <key>PioneerDDJSX2.BeatJump</key>
         <status>0x9A</status>
         <midino>0x25</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>PioneerDDJSX2.SlicerParam1L</key>
-        <status>0x90</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>PioneerDDJSX2.SlicerParam1L</key>
-        <status>0x91</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>PioneerDDJSX2.SlicerParam1L</key>
-        <status>0x92</status>
-        <midino>0x26</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>PioneerDDJSX2.SlicerParam1L</key>
-        <status>0x93</status>
-        <midino>0x26</midino>
         <options>
           <script-binding />
         </options>
@@ -2808,42 +2747,6 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>PioneerDDJSX2.SamplerParam1L</key>
-        <status>0x90</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>PioneerDDJSX2.SamplerParam1L</key>
-        <status>0x91</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>PioneerDDJSX2.SamplerParam1L</key>
-        <status>0x92</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>PioneerDDJSX2.SamplerParam1L</key>
-        <status>0x93</status>
-        <midino>0x27</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
         <key>PioneerDDJSX2.BeatJump</key>
         <status>0x97</status>
         <midino>0x27</midino>
@@ -2880,7 +2783,88 @@
       </control>
       <control>
         <group>[Channel1]</group>
+        <key>PioneerDDJSX2.RollParam1L</key>
+        <description>Parameter 1 Left, when pads are in ROLL mode for Deck 1</description>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.RollParam1L</key>
+        <description>Parameter 1 Left, when pads are in ROLL mode for Deck 2</description>
+        <status>0x91</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.RollParam1L</key>
+        <description>Parameter 1 Left, when pads are in ROLL mode for Deck 3</description>
+        <status>0x92</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.RollParam1L</key>
+        <description>Parameter 1 Left, when pads are in ROLL mode for Deck 4</description>
+        <status>0x93</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.SlicerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SLICER mode for Deck 1</description>
+        <status>0x90</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.SlicerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SLICER mode for Deck 2</description>
+        <status>0x91</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.SlicerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SLICER mode for Deck 3</description>
+        <status>0x92</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.SlicerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SLICER mode for Deck 4</description>
+        <status>0x93</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
         <key>PioneerDDJSX2.CueLoopParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE LOOP mode for Deck 1</description>
         <status>0x90</status>
         <midino>0x28</midino>
         <options>
@@ -2890,6 +2874,7 @@
       <control>
         <group>[Channel2]</group>
         <key>PioneerDDJSX2.CueLoopParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE LOOP mode for Deck 2</description>
         <status>0x91</status>
         <midino>0x28</midino>
         <options>
@@ -2899,6 +2884,7 @@
       <control>
         <group>[Channel3]</group>
         <key>PioneerDDJSX2.CueLoopParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE LOOP mode for Deck 3</description>
         <status>0x92</status>
         <midino>0x28</midino>
         <options>
@@ -2908,6 +2894,7 @@
       <control>
         <group>[Channel4]</group>
         <key>PioneerDDJSX2.CueLoopParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE LOOP mode for Deck 4</description>
         <status>0x93</status>
         <midino>0x28</midino>
         <options>
@@ -2917,6 +2904,7 @@
       <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSX2.SamplerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SAMPLER mode for Deck 1</description>
         <status>0x90</status>
         <midino>0x2B</midino>
         <options>
@@ -2926,6 +2914,7 @@
       <control>
         <group>[Channel2]</group>
         <key>PioneerDDJSX2.SamplerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SAMPLER mode for Deck 2</description>
         <status>0x91</status>
         <midino>0x2B</midino>
         <options>
@@ -2935,6 +2924,7 @@
       <control>
         <group>[Channel3]</group>
         <key>PioneerDDJSX2.SamplerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SAMPLER mode for Deck 3</description>
         <status>0x92</status>
         <midino>0x2B</midino>
         <options>
@@ -2944,6 +2934,7 @@
       <control>
         <group>[Channel4]</group>
         <key>PioneerDDJSX2.SamplerParam1L</key>
+        <description>Parameter 1 Left, when pads are in SAMPLER mode for Deck 4</description>
         <status>0x93</status>
         <midino>0x2B</midino>
         <options>
@@ -2952,43 +2943,48 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate_temp_up</key>
+        <key>PioneerDDJSX2.CueParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE mode for Deck 1</description>
         <status>0x90</status>
-        <midino>0x2C</midino>
+        <midino>0x24</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate_temp_up</key>
+        <key>PioneerDDJSX2.CueParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE mode for Deck 2</description>
         <status>0x91</status>
-        <midino>0x2C</midino>
+        <midino>0x24</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>rate_temp_up</key>
+        <key>PioneerDDJSX2.CueParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE mode for Deck 3</description>
         <status>0x92</status>
-        <midino>0x2C</midino>
+        <midino>0x24</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>rate_temp_up</key>
+        <key>PioneerDDJSX2.CueParam1L</key>
+        <description>Parameter 1 Left, when pads are in CUE mode for Deck 4</description>
         <status>0x93</status>
-        <midino>0x2C</midino>
+        <midino>0x24</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSX2.RollParam1R</key>
+        <description>Parameter 1 Right, when pads are in ROLL mode for Deck 1</description>
         <status>0x90</status>
         <midino>0x2D</midino>
         <options>
@@ -2998,6 +2994,7 @@
       <control>
         <group>[Channel2]</group>
         <key>PioneerDDJSX2.RollParam1R</key>
+        <description>Parameter 1 Right, when pads are in ROLL mode for Deck 2</description>
         <status>0x91</status>
         <midino>0x2D</midino>
         <options>
@@ -3007,6 +3004,7 @@
       <control>
         <group>[Channel3]</group>
         <key>PioneerDDJSX2.RollParam1R</key>
+        <description>Parameter 1 Right, when pads are in ROLL mode for Deck 3</description>
         <status>0x92</status>
         <midino>0x2D</midino>
         <options>
@@ -3016,6 +3014,7 @@
       <control>
         <group>[Channel4]</group>
         <key>PioneerDDJSX2.RollParam1R</key>
+        <description>Parameter 1 Right, when pads are in ROLL mode for Deck 4</description>
         <status>0x93</status>
         <midino>0x2D</midino>
         <options>
@@ -3025,6 +3024,7 @@
       <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSX2.SlicerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SLICER mode for Deck 1</description>
         <status>0x90</status>
         <midino>0x2E</midino>
         <options>
@@ -3034,6 +3034,7 @@
       <control>
         <group>[Channel2]</group>
         <key>PioneerDDJSX2.SlicerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SLICER mode for Deck 2</description>
         <status>0x91</status>
         <midino>0x2E</midino>
         <options>
@@ -3043,6 +3044,7 @@
       <control>
         <group>[Channel3]</group>
         <key>PioneerDDJSX2.SlicerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SLICER mode for Deck 3</description>
         <status>0x92</status>
         <midino>0x2E</midino>
         <options>
@@ -3052,6 +3054,7 @@
       <control>
         <group>[Channel4]</group>
         <key>PioneerDDJSX2.SlicerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SLICER mode for Deck 4</description>
         <status>0x93</status>
         <midino>0x2E</midino>
         <options>
@@ -3061,6 +3064,7 @@
       <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSX2.SamplerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SAMPLER mode for Deck 1</description>
         <status>0x90</status>
         <midino>0x2F</midino>
         <options>
@@ -3070,6 +3074,7 @@
       <control>
         <group>[Channel2]</group>
         <key>PioneerDDJSX2.SamplerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SAMPLER mode for Deck 2</description>
         <status>0x91</status>
         <midino>0x2F</midino>
         <options>
@@ -3079,6 +3084,7 @@
       <control>
         <group>[Channel3]</group>
         <key>PioneerDDJSX2.SamplerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SAMPLER mode for Deck 3</description>
         <status>0x92</status>
         <midino>0x2F</midino>
         <options>
@@ -3088,6 +3094,7 @@
       <control>
         <group>[Channel4]</group>
         <key>PioneerDDJSX2.SamplerParam1R</key>
+        <description>Parameter 1 Right, when pads are in SAMPLER mode for Deck 4</description>
         <status>0x93</status>
         <midino>0x2F</midino>
         <options>
@@ -3097,6 +3104,7 @@
       <control>
         <group>[Channel1]</group>
         <key>PioneerDDJSX2.CueLoopParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE LOOP mode for Deck 1</description>
         <status>0x90</status>
         <midino>0x30</midino>
         <options>
@@ -3106,6 +3114,7 @@
       <control>
         <group>[Channel2]</group>
         <key>PioneerDDJSX2.CueLoopParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE LOOP mode for Deck 2</description>
         <status>0x91</status>
         <midino>0x30</midino>
         <options>
@@ -3115,6 +3124,7 @@
       <control>
         <group>[Channel3]</group>
         <key>PioneerDDJSX2.CueLoopParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE LOOP mode for Deck 3</description>
         <status>0x92</status>
         <midino>0x30</midino>
         <options>
@@ -3124,8 +3134,49 @@
       <control>
         <group>[Channel4]</group>
         <key>PioneerDDJSX2.CueLoopParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE LOOP mode for Deck 4</description>
         <status>0x93</status>
         <midino>0x30</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.CueParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE mode for Deck 1</description>
+        <status>0x90</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.CueParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE mode for Deck 2</description>
+        <status>0x91</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.CueParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE mode for Deck 3</description>
+        <status>0x92</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.CueParam1R</key>
+        <description>Parameter 1 Right, when pads are in CUE mode for Deck 4</description>
+        <status>0x93</status>
+        <midino>0x2C</midino>
         <options>
           <script-binding />
         </options>
@@ -4604,38 +4655,242 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>pitch_adjust_set_zero</key>
+        <key>PioneerDDJSX2.FlipStart</key>
+        <description>Toggle Loop Anchor with the Flip Start button on Deck 1</description>
         <status>0x90</status>
-        <midino>0x49</midino>
+        <midino>0x4B</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>pitch_adjust_set_zero</key>
+        <key>PioneerDDJSX2.FlipStart</key>
+        <description>Toggle Loop Anchor with the Flip Start button on Deck 2</description>
         <status>0x91</status>
-        <midino>0x49</midino>
+        <midino>0x4B</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel3]</group>
-        <key>pitch_adjust_set_zero</key>
+        <key>PioneerDDJSX2.FlipStart</key>
+        <description>Toggle Loop Anchor with the Flip Start button on Deck 3</description>
         <status>0x92</status>
-        <midino>0x49</midino>
+        <midino>0x4B</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <control>
         <group>[Channel4]</group>
-        <key>pitch_adjust_set_zero</key>
+        <key>PioneerDDJSX2.FlipStart</key>
+        <description>Toggle Loop Anchor with the Flip Start button on Deck 4</description>
+        <status>0x93</status>
+        <midino>0x4B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.FlipRec</key>
+        <description>Toggle Quantize with the Flip Rec button on Deck 1</description>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.FlipRec</key>
+        <description>Toggle Quantize with the Flip Rec button on Deck 2</description>
+        <status>0x91</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.FlipRec</key>
+        <description>Toggle Quantize with the Flip Rec button on Deck 3</description>
+        <status>0x92</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.FlipRec</key>
+        <description>Toggle Quantize with the Flip Rec button on Deck 4</description>
+        <status>0x93</status>
+        <midino>0x4A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.FlipSlot</key>
+        <description>Reset current track key Flip Slot button on Deck 1</description>
+        <status>0x90</status>
+        <midino>0x49</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.FlipSlot</key>
+        <description>Reset current track key Flip Slot button on Deck 2</description>
+        <status>0x91</status>
+        <midino>0x49</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.FlipSlot</key>
+        <description>Reset current track key Flip Slot button on Deck 3</description>
+        <status>0x92</status>
+        <midino>0x49</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.FlipSlot</key>
+        <description>Reset current track key Flip Slot button on Deck 4</description>
         <status>0x93</status>
         <midino>0x49</midino>
         <options>
-          <normal />
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.FlipLoop</key>
+        <status>0x90</status>
+        <midino>0x5A</midino>
+        <description>Set the Repeat setting for the track on Deck 1 with the SHIFT + REC button</description>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.FlipLoop</key>
+        <description>Set the Repeat setting for the track on Deck 2 with the SHIFT + REC button</description>
+        <status>0x91</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.FlipLoop</key>
+        <description>Set the Repeat setting for the track on Deck 3 with the SHIFT + REC button</description>
+        <status>0x92</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.FlipLoop</key>
+        <description>Set the Repeat setting for the track on Deck 4 with the SHIFT + REC button</description>
+        <status>0x93</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.FlipOnOff</key>
+        <description>Set the Key UP for the track on Deck 1 with the SHIFT + START button</description>
+        <status>0x90</status>
+        <midino>0x5B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.FlipOnOff</key>
+        <description>Set the Key UP for the track on Deck 2 with the SHIFT + START button</description>
+        <status>0x91</status>
+        <midino>0x5B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.FlipOnOff</key>
+        <description>Set the Key UP for the track on Deck 3 with the SHIFT + START button</description>
+        <status>0x92</status>
+        <midino>0x5B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.FlipOnOff</key>
+        <description>Set the Key UP for the track on Deck 4 with the SHIFT + START button</description>
+        <status>0x93</status>
+        <midino>0x5B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>PioneerDDJSX2.FlipSave</key>
+        <description>Set the Key DOWN for the track on Deck 1 with the SHIFT + SLOT button</description>
+        <status>0x90</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>PioneerDDJSX2.FlipSave</key>
+        <description>Set the Key DOWN for the track on Deck 2 with the SHIFT + SLOT button</description>
+        <status>0x91</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>PioneerDDJSX2.FlipSave</key>
+        <description>Set the Key DOWN for the track on Deck 3 with the SHIFT + SLOT button</description>
+        <status>0x92</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>PioneerDDJSX2.FlipSave</key>
+        <description>Set the Key DOWN for the track on Deck 4 with the SHIFT + SLOT button</description>
+        <status>0x93</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding />
         </options>
       </control>
       <control>
@@ -4702,42 +4957,6 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>pitch_down</key>
-        <status>0x90</status>
-        <midino>0x4A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>pitch_down</key>
-        <status>0x91</status>
-        <midino>0x4A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>pitch_down</key>
-        <status>0x92</status>
-        <midino>0x4A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>pitch_down</key>
-        <status>0x93</status>
-        <midino>0x4A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
         <group>[OK]</group>
         <key>PioneerDDJSX2.EffectTap</key>
         <status>0x94</status>
@@ -4787,42 +5006,6 @@
         <key>hotcue_11_clear</key>
         <status>0x9A</status>
         <midino>0x4A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>pitch_up</key>
-        <status>0x90</status>
-        <midino>0x4B</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>pitch_up</key>
-        <status>0x91</status>
-        <midino>0x4B</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>pitch_up</key>
-        <status>0x92</status>
-        <midino>0x4B</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>pitch_up</key>
-        <status>0x93</status>
-        <midino>0x4B</midino>
         <options>
           <normal />
         </options>
@@ -5647,42 +5830,6 @@
         <key>hotcue_18_clear</key>
         <status>0x9A</status>
         <midino>0x59</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>repeat</key>
-        <status>0x90</status>
-        <midino>0x5A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>repeat</key>
-        <status>0x91</status>
-        <midino>0x5A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel3]</group>
-        <key>repeat</key>
-        <status>0x92</status>
-        <midino>0x5A</midino>
-        <options>
-          <normal />
-        </options>
-      </control>
-      <control>
-        <group>[Channel4]</group>
-        <key>repeat</key>
-        <status>0x93</status>
-        <midino>0x5A</midino>
         <options>
           <normal />
         </options>
