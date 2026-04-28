@@ -9,6 +9,7 @@
 #include "library/libraryview.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/parented_ptr.h"
 
 class PlaylistTableModel;
 class WLibrary;
@@ -46,9 +47,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 
     void slotTransitionModeChanged(int comboboxIndex);
     void slotRepeatPlaylistChanged(bool checked);
-    void slotAddEndMarker(bool buttonChecked);
-    void slotRecalcQueueDuration();
-    void slotUpdateQueueDuration();
+    void slotAddEndMarker(bool);
 
   signals:
     void addRandomTrackButton(bool buttonChecked);
@@ -62,6 +61,10 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void loadTrackToPlayer(TrackPointer tio, const QString& group, bool);
 #endif
     void trackSelected(TrackPointer pTrack);
+
+  private slots:
+    void slotRecalcQueueDuration();
+    void slotUpdateQueueDuration();
 
   private:
     void setupActionButton(QPushButton* pButton,
@@ -79,7 +82,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     const bool m_bShowButtonText;
 
     PlaylistTableModel* m_pAutoDJTableModel;
-    QTimer* m_pQueueDurationTimer;
+    parented_ptr<QTimer> m_pQueueDurationTimer;
     double m_queueSeconds;
     bool m_showEndTime;
     bool m_autoDJWasActive;
