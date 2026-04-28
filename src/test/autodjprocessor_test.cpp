@@ -88,7 +88,7 @@ class FakeDeck : public BaseTrackPlayer {
         return loadedTrack;
     }
 
-    void setupEqControls() override{};
+    void setupEqControls() override {};
 
     // This method emulates requesting a track load to a player and emits no
     // signals. Normally, the reader thread attempts to load the file and emits
@@ -166,12 +166,15 @@ class MockPlayerManager : public PlayerManagerInterface {
 class MockAutoDJProcessor : public AutoDJProcessor {
   public:
     MockAutoDJProcessor(QObject* pParent,
-                        UserSettingsPointer pConfig,
-                        PlayerManagerInterface* pPlayerManager,
-                        TrackCollectionManager* pTrackCollectionManager,
-                        int iAutoDJPlaylistId)
-            : AutoDJProcessor(pParent, pConfig, pPlayerManager,
-                              pTrackCollectionManager, iAutoDJPlaylistId) {
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager,
+            TrackCollectionManager* pTrackCollectionManager,
+            int iAutoDJPlaylistId)
+            : AutoDJProcessor(pParent,
+                      pConfig,
+                      pPlayerManager,
+                      pTrackCollectionManager,
+                      iAutoDJPlaylistId) {
     }
 
     virtual ~MockAutoDJProcessor() {
@@ -180,6 +183,27 @@ class MockAutoDJProcessor : public AutoDJProcessor {
     MOCK_METHOD3(emitLoadTrackToPlayer, void(TrackPointer, const QString&, bool));
     MOCK_METHOD1(emitAutoDJStateChanged, void(AutoDJProcessor::AutoDJState));
 };
+
+// class NiceMockAutoDJProcessor : public AutoDJProcessor {
+//   public:
+//     NiceMockAutoDJProcessor(QObject* pParent,
+//             UserSettingsPointer pConfig,
+//             PlayerManagerInterface* pPlayerManager,
+//             TrackCollectionManager* pTrackCollectionManager,
+//             int iAutoDJPlaylistId)
+//             : AutoDJProcessor(pParent, pConfig, pPlayerManager,
+//             pTrackCollectionManager, iAutoDJPlaylistId) {
+//     }
+//
+//     virtual ~NiceMockAutoDJProcessor() {
+//     }
+//
+//     MOCK_METHOD3(emitLoadTrackToPlayer, void(TrackPointer, const QString&,
+//     bool)); MOCK_METHOD1(emitAutoDJStateChanged,
+//     void(AutoDJProcessor::AutoDJState));
+// };
+
+using NiceMockAutoDJProcessor = testing::NiceMock<MockAutoDJProcessor>;
 
 class AutoDJProcessorTest : public LibraryTest {
   protected:
@@ -197,8 +221,8 @@ class AutoDJProcessorTest : public LibraryTest {
     AutoDJProcessorTest()
             : deck1("[Channel1]", EngineChannel::LEFT),
               deck2("[Channel2]", EngineChannel::RIGHT),
-              deck3("[Channel3]", EngineChannel::LEFT),
-              deck4("[Channel4]", EngineChannel::RIGHT) {
+              deck3("[Channel3]", EngineChannel::CENTER),
+              deck4("[Channel4]", EngineChannel::CENTER) {
         qRegisterMetaType<TrackPointer>("TrackPointer");
 
         PlaylistDAO& playlistDao = internalCollection()->getPlaylistDAO();
@@ -228,7 +252,12 @@ class AutoDJProcessorTest : public LibraryTest {
         EXPECT_CALL(*pPlayerManager, getDeckBase(2)).Times(1);
         EXPECT_CALL(*pPlayerManager, getDeckBase(3)).Times(1);
 
-        pProcessor.reset(new MockAutoDJProcessor(nullptr,
+        /*pProcessor.reset(new MockAutoDJProcessor(nullptr,
+                config(),
+                pPlayerManager.data(),
+                trackCollectionManager(),
+                m_iAutoDJPlaylistId));*/
+        pProcessor.reset(new NiceMockAutoDJProcessor(nullptr,
                 config(),
                 pPlayerManager.data(),
                 trackCollectionManager(),
@@ -237,6 +266,15 @@ class AutoDJProcessorTest : public LibraryTest {
 
     virtual ~AutoDJProcessorTest() {
         PlayerInfo::destroy();
+    }
+
+    virtual void TearDown() override {
+        if (pProcessor && pProcessor->getState() != AutoDJProcessor::ADJ_DISABLED) {
+            pProcessor->toggleAutoDJ(false);
+        }
+        pProcessor.reset();
+        pPlayerManager.reset();
+        LibraryTest::TearDown();
     }
 
     TrackId addTrackToCollection(const QString& trackLocation) {
@@ -252,7 +290,8 @@ class AutoDJProcessorTest : public LibraryTest {
     FakeDeck deck4;
     QScopedPointer<MockPlayerManager> pPlayerManager;
     int m_iAutoDJPlaylistId;
-    QScopedPointer<MockAutoDJProcessor> pProcessor;
+
+    QScopedPointer<NiceMockAutoDJProcessor> pProcessor;
 };
 
 TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
@@ -611,7 +650,7 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     // because otherwise the new object will try to create COs that already
     // exist because they were created by the previous instance.
     pProcessor.reset();
-    pProcessor.reset(new MockAutoDJProcessor(nullptr,
+    pProcessor.reset(new NiceMockAutoDJProcessor(nullptr,
             config(),
             pPlayerManager.data(),
             trackCollectionManager(),
@@ -620,21 +659,50 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
 }
 
 TEST_F(AutoDJProcessorTest, DecksPlayingWarning) {
+    // adding tracks to playlist
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+    pAutoDJTableModel->appendTrack(testId);
+
     deck1.play.set(1);
     deck2.play.set(1);
+
+    // Debug
+    // std::cerr << "Deck1 orientation: " << deck1.orientation.get() << " play:
+    // " << deck1.play.get() << std::endl; std::cerr << "Deck2 orientation: " <<
+    // deck2.orientation.get() << " play: " << deck2.play.get() << std::endl;
+    // std::cerr << "Deck3 orientation: " << deck3.orientation.get() << " play:
+    // " << deck3.play.get() << std::endl; std::cerr << "Deck4 orientation: " <<
+    // deck4.orientation.get() << " play: " << deck4.play.get() << std::endl;
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_DISABLED)).Times(1);
+
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING, err);
 }
 
 TEST_F(AutoDJProcessorTest, Decks34PlayingWarning) {
+    // Add tracks to queue
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+    pAutoDJTableModel->appendTrack(testId);
+
+    // With decks 3/4 playing but decks 1/2 empty, AutoDJ should enable
     deck3.play.set(1);
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
-    EXPECT_EQ(AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING, err);
+    // AutoDJ should enable using decks 1 & 2
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
 
+    // expectations for the state changes that will happen
+    pProcessor->toggleAutoDJ(false);
     deck3.play.set(0);
     deck4.play.set(1);
     err = pProcessor->toggleAutoDJ(true);
-    EXPECT_EQ(AutoDJProcessor::ADJ_UNUSED_DECK_PLAYING, err);
+    // AutoDJ should enable using decks 1 & 2
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
 }
 
 TEST_F(AutoDJProcessorTest, QueueEmpty) {
@@ -1540,7 +1608,6 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 }
-
 
 TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedFullTrack);

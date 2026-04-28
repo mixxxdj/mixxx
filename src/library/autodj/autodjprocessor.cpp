@@ -125,7 +125,9 @@ AutoDJProcessor::AutoDJProcessor(
           m_skipNext(ConfigKey(kControlGroup, QStringLiteral("skip_next"))),
           m_addRandomTrack(ConfigKey(kControlGroup, QStringLiteral("add_random_track"))),
           m_fadeNow(ConfigKey(kControlGroup, QStringLiteral("fade_now"))),
-          m_enabledAutoDJ(ConfigKey(kControlGroup, QStringLiteral("enabled"))) {
+          m_enabledAutoDJ(ConfigKey(kControlGroup, QStringLiteral("enabled"))),
+          m_pAutoDJLeftDeck(nullptr),
+          m_pAutoDJRightDeck(nullptr) {
     m_pAutoDJTableModel = make_parented<PlaylistTableModel>(
             this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
@@ -202,19 +204,34 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
 
 void AutoDJProcessor::fadeNow() {
     if (m_eState != ADJ_IDLE) {
-        // we cannot fade if AutoDj is disabled or already fading
+        // we cannot fade if AutoDJ is disabled or already fading
+        return;
+    }
+
+    // previously we checked and kept checking even if we already got 2 decks for AutoDJ
+    // now we check for a pair when the user wants to start AutoDJ
+    // if we don(t have a valid pair -> no AutoDJ
+    // so if we can have fadenow -> we have AutoDJ -> we have a valid pair
+    //
+    // The importance is to create the AutoDJ foolproof and accidentproof
+    // If the user changes the xfaderorientation by mistake we cna't let AutoDJ quit,
+    // We use the stored decks AND have the 'wanted' orientations (startup)
+    // to check and show a warning when eg fadenow is pushed.
+    //
+
+    // Check if xfaderorientation hasn't been changed
+    if (!checkAutoDJDecksOrientation()) {
+        return;
+    }
+
+    if (!m_pAutoDJLeftDeck || !m_pAutoDJRightDeck) {
+        qWarning() << "[AutoDJ] -> WARNING: fadeNow called but no stored AutoDJ decks!";
         return;
     }
 
     double crossfader = getCrossfader();
-    DeckAttributes* pLeftDeck = getLeftDeck();
-    DeckAttributes* pRightDeck = getRightDeck();
-    if (!pLeftDeck || !pRightDeck) {
-        // User has changed the orientation, disable Auto DJ
-        toggleAutoDJ(false);
-        emit autoDJError(ADJ_NOT_TWO_DECKS);
-        return;
-    }
+    DeckAttributes* pLeftDeck = m_pAutoDJLeftDeck;
+    DeckAttributes* pRightDeck = m_pAutoDJRightDeck;
 
     DeckAttributes* pFromDeck;
     DeckAttributes* pToDeck;
@@ -230,6 +247,12 @@ void AutoDJProcessor::fadeNow() {
         // Neither deck is playing. Fading now makes no sense.
         return;
     }
+    if constexpr (sDebug) {
+        qDebug() << "[AutoDJ] -> FadeNow: Using AutoDJ stored decks from Deck"
+                 << pFromDeck->index + 1 << " to Deck" << pToDeck->index + 1
+                 << "(Left is Deck" << pLeftDeck->index + 1
+                 << ", Right is Deck" << pRightDeck->index + 1 << ")";
+    }
 
     pFromDeck->setRepeat(false);
     pFromDeck->isFromDeck = true;
@@ -244,8 +267,17 @@ void AutoDJProcessor::fadeNow() {
     if (toDeckDuration < kMinimumTrackDurationSec) {
         // Deck is empty or track too short, disable AutoDJ
         // This happens only if the user has changed deck orientation to such deck.
-        toggleAutoDJ(false);
-        emit autoDJError(ADJ_NOT_TWO_DECKS);
+        //
+        // -> we are overruling the orientation problem now by storing the decks
+        // -> should not happen during normal AutoDJ operation
+        // -> This could occur if a track was manually ejected or failed to load
+        if constexpr (sDebug) {
+            qDebug() << "[AutoDJ] -> FadeNow: Target deck has no valid track - disabling AutoDJ";
+        }
+        if (m_eState != ADJ_DISABLED) {
+            toggleAutoDJ(false);
+            emit autoDJError(ADJ_NOT_TWO_DECKS);
+        }
         return;
     }
 
@@ -355,238 +387,470 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     return ADJ_OK;
 }
 
+void AutoDJProcessor::connectSignalsOnToggleAutoDJ() {
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::playPositionChanged,
+            this,
+            &AutoDJProcessor::playerPositionChanged);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::playPositionChanged,
+            this,
+            &AutoDJProcessor::playerPositionChanged);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::playChanged,
+            this,
+            &AutoDJProcessor::playerPlayChanged);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::playChanged,
+            this,
+            &AutoDJProcessor::playerPlayChanged);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::introStartPositionChanged,
+            this,
+            &AutoDJProcessor::playerIntroStartChanged);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::introStartPositionChanged,
+            this,
+            &AutoDJProcessor::playerIntroStartChanged);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::introEndPositionChanged,
+            this,
+            &AutoDJProcessor::playerIntroEndChanged);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::introEndPositionChanged,
+            this,
+            &AutoDJProcessor::playerIntroEndChanged);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::outroStartPositionChanged,
+            this,
+            &AutoDJProcessor::playerOutroStartChanged);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::outroStartPositionChanged,
+            this,
+            &AutoDJProcessor::playerOutroStartChanged);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::outroEndPositionChanged,
+            this,
+            &AutoDJProcessor::playerOutroEndChanged);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::outroEndPositionChanged,
+            this,
+            &AutoDJProcessor::playerOutroEndChanged);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::trackLoaded,
+            this,
+            &AutoDJProcessor::playerTrackLoaded);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::trackLoaded,
+            this,
+            &AutoDJProcessor::playerTrackLoaded);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::loadingTrack,
+            this,
+            &AutoDJProcessor::playerLoadingTrack);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::loadingTrack,
+            this,
+            &AutoDJProcessor::playerLoadingTrack);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::playerEmpty,
+            this,
+            &AutoDJProcessor::playerEmpty);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::playerEmpty,
+            this,
+            &AutoDJProcessor::playerEmpty);
+    connect(m_pAutoDJLeftDeck,
+            &DeckAttributes::rateChanged,
+            this,
+            &AutoDJProcessor::playerRateChanged);
+    connect(m_pAutoDJRightDeck,
+            &DeckAttributes::rateChanged,
+            this,
+            &AutoDJProcessor::playerRateChanged);
+    connect(m_pAutoDJTableModel,
+            &PlaylistTableModel::firstTrackChanged,
+            this,
+            &AutoDJProcessor::playlistFirstTrackChanged);
+}
+
 AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
     if (enable) { // Enable Auto DJ
-        DeckAttributes* pLeftDeck = getLeftDeck();
-        DeckAttributes* pRightDeck = getRightDeck();
-        if (!pLeftDeck || !pRightDeck) {
-            // Keep the current state.
-            emitAutoDJStateChanged(m_eState);
-            emit autoDJError(ADJ_NOT_TWO_DECKS);
-            return ADJ_NOT_TWO_DECKS;
-        }
 
-        bool leftDeckPlaying = pLeftDeck->isPlaying();
-        bool rightDeckPlaying = pRightDeck->isPlaying();
+        // Step 1: Find available left/right decks
+        DeckAttributes* pLeftDeck = nullptr;
+        DeckAttributes* pRightDeck = nullptr;
 
-        if (leftDeckPlaying && rightDeckPlaying) {
-            qDebug() << "One deck must be stopped before enabling Auto DJ mode";
-            // Keep the current state.
+        if (!findAvailableLeftRightPair(pLeftDeck, pRightDeck)) {
+            // No pair of left/right decks found of which only 1 may be playing
+            // Determine the reason -> send detailed message
+
+            bool hasLeftDeck = false;
+            bool hasRightDeck = false;
+            bool hasPlayingLeftDeck = false;
+            bool hasPlayingRightDeck = false;
+
+            for (const auto& pDeck : m_decks) {
+                const bool isLeft = pDeck->isLeft();
+                const bool isRight = pDeck->isRight();
+                const bool isPlaying = pDeck->isPlaying();
+
+                hasLeftDeck |= isLeft;
+                hasRightDeck |= isRight;
+                hasPlayingLeftDeck |= (isLeft && isPlaying);
+                hasPlayingRightDeck |= (isRight && isPlaying);
+            }
+
+            if (hasPlayingLeftDeck && hasPlayingRightDeck) {
+                // Both left and right decks exist but all are playing
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] -> Step 1 -> All left/right decks are playing";
+                }
+                emit autoDJError(ADJ_BOTH_FOUND_DECKS_ARE_PLAYING);
+            } else if (!hasLeftDeck || !hasRightDeck) {
+                // Missing left or right oriented decks
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] -> Step 1 -> Missing left or right oriented decks";
+                }
+                emit autoDJError(ADJ_NOT_TWO_DECKS);
+            } else {
+                // Some decks exist but can't form a pair (e.g., only one side
+                // has non-playing decks)
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] -> Step 1 -> Cannot form a pair of "
+                                "non-playing left/right decks";
+                }
+                emit autoDJError(ADJ_BOTH_DECKS_PLAYING);
+            }
+
             emitAutoDJStateChanged(m_eState);
-            emit autoDJError(ADJ_BOTH_DECKS_PLAYING);
             return ADJ_BOTH_DECKS_PLAYING;
         }
-        // Auto-DJ needs at least two decks
-        DEBUG_ASSERT(m_decks.size() > 1);
 
-        // TODO: This is a total band aid for making Auto DJ work with four decks.
-        // We should design a nicer way to handle this.
-        for (const auto& pDeck : m_decks) {
-            VERIFY_OR_DEBUG_ASSERT(pDeck) {
-                continue;
-            }
-            if (pDeck.get() == pLeftDeck) {
-                continue;
-            }
-            if (pDeck.get() == pRightDeck) {
-                continue;
-            }
-            if (pDeck->isPlaying()) {
-                // Keep the current state.
-                emitAutoDJStateChanged(m_eState);
-                emit autoDJError(ADJ_UNUSED_DECK_PLAYING);
-                return ADJ_UNUSED_DECK_PLAYING;
-            }
+        if (pLeftDeck->isPlaying() && pRightDeck->isPlaying()) {
+            emit autoDJError(ADJ_BOTH_DECKS_PLAYING);
+            emitAutoDJStateChanged(m_eState);
+            return ADJ_BOTH_DECKS_PLAYING;
         }
 
-        if (pLeftDeck->index > 1 || pRightDeck->index > 1) {
-            // Left and/or right deck is deck 3/4 which may not be visible.
-            // Make sure it is, if the current skin is a 4-deck skin.
+        // Step 2: Store the decks AutoDJ will use
+        m_pAutoDJLeftDeck = pLeftDeck;
+        m_pAutoDJRightDeck = pRightDeck;
+
+        if constexpr (sDebug) {
+            qDebug() << "[AutoDJ] Selected pair:"
+                     << "Left deck" << m_pAutoDJLeftDeck->index
+                     << "isPlaying:" << m_pAutoDJLeftDeck->isPlaying()
+                     << "Right deck" << m_pAutoDJRightDeck->index
+                     << "isPlaying:" << m_pAutoDJRightDeck->isPlaying();
+        }
+
+        // Make sure the decks we're using are visible if they're decks 3/4
+        if (m_pAutoDJLeftDeck->index > 1 || m_pAutoDJRightDeck->index > 1) {
             ControlObject::set(
                     ConfigKey(QStringLiteral("[Skin]"), QStringLiteral("show_4decks")), 1);
         }
 
-        // Never load the same track if it is already playing
-        if (leftDeckPlaying) {
-            removeLoadedTrackFromTopOfQueue(*pLeftDeck);
-        } else if (rightDeckPlaying) {
-            removeLoadedTrackFromTopOfQueue(*pRightDeck);
-        } else {
-            // If the first track is already cued at a position in the first
-            // 2/3 in on of the Auto DJ decks, start it.
-            // If the track is paused at a later position, it is probably too
-            // close to the end. In this case it is loaded again at the stored
-            // cue point.
-            if (pLeftDeck->playPosition() < 0.66 &&
-                    removeLoadedTrackFromTopOfQueue(*pLeftDeck)) {
-                pLeftDeck->play();
-                leftDeckPlaying = true;
-            } else if (pRightDeck->playPosition() < 0.66 &&
-                    removeLoadedTrackFromTopOfQueue(*pRightDeck)) {
-                pRightDeck->play();
-                rightDeckPlaying = true;
-            }
+        if constexpr (sDebug) {
+            qDebug() << "[AutoDJ] -> Step 2 -> Stored found pair to memory vars";
         }
+
+        // Step 3: Check if the next track (Toptrack in AutoDJ playlist) is already loaded in a deck
+        // This could happen when disabling - re-enabling Auto DJ
+        // If this track is already loaded in a deck, this deck will be started first in step 7
+        // -> we need to npw the xfaderorientation of this deck
+        // as it can cause a 'hard cut' with crossfader jump
 
         TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
-            qDebug() << "Queue is empty now, disable Auto DJ";
-            m_enabledAutoDJ.setAndConfirm(0.0);
+            if constexpr (sDebug) {
+                qDebug() << "[AutoDJ] -> Step 3 -> Queue is empty now, disable Auto DJ";
+            }
             emitAutoDJStateChanged(m_eState);
             emit autoDJError(ADJ_QUEUE_EMPTY);
             return ADJ_QUEUE_EMPTY;
         }
 
-        // Track is available so GO
+        TrackId nextTrackId = nextTrack->getId();
+        TrackPointer leftLoaded = m_pAutoDJLeftDeck->getLoadedTrack();
+        TrackPointer rightLoaded = m_pAutoDJRightDeck->getLoadedTrack();
+
+        bool leftHasNextTrack = (leftLoaded && leftLoaded->getId() == nextTrackId);
+        bool rightHasNextTrack = (rightLoaded && rightLoaded->getId() == nextTrackId);
+
+        if constexpr (sDebug) {
+            qDebug() << "[AutoDJ] -> Step 3 -> AutoDJ checks before starting";
+        }
+
+        // Step 4: Determine crossfader direction
+        // depending on step 3
+        // -> we need to npw the xfaderorientation of this deck
+        // as it can cause a 'hard cut' with crossfader jump
+
+        double crossfaderTarget = 0.0;
+
+        bool leftIsPlaying = m_pAutoDJLeftDeck->isPlaying();
+        bool rightIsPlaying = m_pAutoDJRightDeck->isPlaying();
+
+        if (leftIsPlaying != rightIsPlaying) {
+            crossfaderTarget = leftIsPlaying ? -1.0 : 1.0;
+        } else if (!leftIsPlaying) {
+            if (rightHasNextTrack && !leftHasNextTrack) {
+                crossfaderTarget = 1.0;
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] Step 4 - Right deck has preloaded "
+                                "track -> crossfader RIGHT";
+                }
+            } else if (leftHasNextTrack && !rightHasNextTrack) {
+                crossfaderTarget = -1.0;
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] Step 4 - Left deck has preloaded "
+                                "track -> crossfader LEFT";
+                }
+            } else if (rightHasNextTrack && leftHasNextTrack) {
+                crossfaderTarget = -1.0; // keep deterministic default
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] Step 4 - Both decks have preloaded track -> default LEFT";
+                }
+            } else {
+                crossfaderTarget = -1.0;
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] Step 4 - No preloaded tracks -> default LEFT";
+                }
+            }
+        } else {
+            if constexpr (sDebug) {
+                qDebug() << "[AutoDJ] Step 4 - Both playing - ERROR";
+            }
+        }
+
+        // Step 5: Check for hard cut based on the actual crossfader target
+        // Check all decks if they are playing and get their xfader orientation
+        // xfaderorientation opposite to AutoDJ starting deck will cause a 'hard
+        // cut' with crossfader jump
+
+        bool willCauseHardCut = false;
+
+        auto checkPlaying = [&](auto sideCheck) {
+            for (const auto& pDeck : m_decks) {
+                if (sideCheck(pDeck.get()) && pDeck->isPlaying()) {
+                    willCauseHardCut = true;
+                    break;
+                }
+            }
+        };
+
+        if (crossfaderTarget == -1.0) {
+            checkPlaying([](auto d) { return d->isRight(); });
+        } else if (crossfaderTarget == 1.0) {
+            checkPlaying([](auto d) { return d->isLeft(); });
+        }
+
+        if (willCauseHardCut) {
+            emit autoDJError(ADJ_HARD_CUT_ON_PLAYING_DECK);
+            emitAutoDJStateChanged(m_eState);
+            return ADJ_HARD_CUT_ON_PLAYING_DECK;
+        }
+
+        // Step 6: Enable AutoDJ
+        // we passed the 'hard cut' check, so we can enable the AutoDJ
         m_enabledAutoDJ.setAndConfirm(1.0);
-        qDebug() << "Auto DJ enabled";
 
         m_coCrossfader.connectValueChanged(this, &AutoDJProcessor::crossfaderChanged);
 
-        connect(pLeftDeck,
-                &DeckAttributes::playPositionChanged,
-                this,
-                &AutoDJProcessor::playerPositionChanged);
-        connect(pRightDeck,
-                &DeckAttributes::playPositionChanged,
-                this,
-                &AutoDJProcessor::playerPositionChanged);
+        // The connect signals for both decks are moved to a separate function
+        connectSignalsOnToggleAutoDJ();
 
-        connect(pLeftDeck,
-                &DeckAttributes::playChanged,
-                this,
-                &AutoDJProcessor::playerPlayChanged);
-        connect(pRightDeck,
-                &DeckAttributes::playChanged,
-                this,
-                &AutoDJProcessor::playerPlayChanged);
+        // Step 7: Now we start the playing of the deck that contains the AutoDJ
+        // Playlist Toptrack > we check for the special case where the AutoDJ
+        // Playlist Toptrack is already loaded in a deck / decks .
 
-        connect(pLeftDeck,
-                &DeckAttributes::introStartPositionChanged,
-                this,
-                &AutoDJProcessor::playerIntroStartChanged);
-        connect(pRightDeck,
-                &DeckAttributes::introStartPositionChanged,
-                this,
-                &AutoDJProcessor::playerIntroStartChanged);
+        bool leftDeckPlaying = m_pAutoDJLeftDeck->isPlaying();
+        bool rightDeckPlaying = m_pAutoDJRightDeck->isPlaying();
 
-        connect(pLeftDeck,
-                &DeckAttributes::introEndPositionChanged,
-                this,
-                &AutoDJProcessor::playerIntroEndChanged);
-        connect(pRightDeck,
-                &DeckAttributes::introEndPositionChanged,
-                this,
-                &AutoDJProcessor::playerIntroEndChanged);
+        auto playAndLoadNext = [&](DeckAttributes* playDeck,
+                                       DeckAttributes* loadDeck,
+                                       double xfader) {
+            removeLoadedTrackFromTopOfQueue(*playDeck);
+            playDeck->play();
 
-        connect(pLeftDeck,
-                &DeckAttributes::outroStartPositionChanged,
-                this,
-                &AutoDJProcessor::playerOutroStartChanged);
-        connect(pRightDeck,
-                &DeckAttributes::outroStartPositionChanged,
-                this,
-                &AutoDJProcessor::playerOutroStartChanged);
+            TrackPointer nextTrack2Load = getNextTrackFromQueue();
+            if (nextTrack2Load) {
+                emitLoadTrackToPlayer(nextTrack2Load, loadDeck->group, false);
+            }
 
-        connect(pLeftDeck,
-                &DeckAttributes::outroEndPositionChanged,
-                this,
-                &AutoDJProcessor::playerOutroEndChanged);
-        connect(pRightDeck,
-                &DeckAttributes::outroEndPositionChanged,
-                this,
-                &AutoDJProcessor::playerOutroEndChanged);
-
-        connect(pLeftDeck,
-                &DeckAttributes::trackLoaded,
-                this,
-                &AutoDJProcessor::playerTrackLoaded);
-        connect(pRightDeck,
-                &DeckAttributes::trackLoaded,
-                this,
-                &AutoDJProcessor::playerTrackLoaded);
-
-        connect(pLeftDeck,
-                &DeckAttributes::loadingTrack,
-                this,
-                &AutoDJProcessor::playerLoadingTrack);
-        connect(pRightDeck,
-                &DeckAttributes::loadingTrack,
-                this,
-                &AutoDJProcessor::playerLoadingTrack);
-
-        connect(pLeftDeck,
-                &DeckAttributes::playerEmpty,
-                this,
-                &AutoDJProcessor::playerEmpty);
-        connect(pRightDeck,
-                &DeckAttributes::playerEmpty,
-                this,
-                &AutoDJProcessor::playerEmpty);
-
-        connect(pLeftDeck,
-                &DeckAttributes::rateChanged,
-                this,
-                &AutoDJProcessor::playerRateChanged);
-        connect(pRightDeck,
-                &DeckAttributes::rateChanged,
-                this,
-                &AutoDJProcessor::playerRateChanged);
-        connect(m_pAutoDJTableModel,
-                &PlaylistTableModel::firstTrackChanged,
-                this,
-                &AutoDJProcessor::playlistFirstTrackChanged);
+            m_eState = ADJ_ENABLE_P1LOADED;
+            setCrossfader(xfader);
+            emitAutoDJStateChanged(m_eState);
+        };
 
         if (!leftDeckPlaying && !rightDeckPlaying) {
-            // Both decks are stopped. Load a track into deck 1 and start it
-            // playing. Instruct playerPositionChanged to wait for a
-            // playposition update from deck 1. playerPositionChanged for
-            // ADJ_ENABLE_P1LOADED will set the crossfader left and remove the
-            // loaded track from the queue and wait for the next call to
-            // playerPositionChanged for deck1 after the track is loaded.
-            m_eState = ADJ_ENABLE_P1LOADED;
-
-            // Move crossfader to the left.
-            setCrossfader(-1.0);
-
-            // Load track into the left deck and play. Once it starts playing,
-            // we will receive a playerPositionChanged update for deck 1 which
-            // will load a track into the right deck and switch to IDLE mode.
-            emitLoadTrackToPlayer(nextTrack, pLeftDeck->group, true);
-        } else {
-            // One of the two decks is playing. Switch into IDLE mode and wait
-            // until the playing deck crosses posThreshold to start fading.
-            m_eState = ADJ_IDLE;
-            if (leftDeckPlaying) {
-                // Load track into the right deck.
-                emitLoadTrackToPlayer(nextTrack, pRightDeck->group, false);
-                // Move crossfader to the left.
-                setCrossfader(-1.0);
-            } else {
-                // Load track into the left deck.
-                emitLoadTrackToPlayer(nextTrack, pLeftDeck->group, false);
-                // Move crossfader to the right.
-                setCrossfader(1.0);
+            if (rightHasNextTrack) {
+                playAndLoadNext(m_pAutoDJRightDeck, m_pAutoDJLeftDeck, 1.0);
+                return ADJ_OK;
+            } else if (leftHasNextTrack) {
+                playAndLoadNext(m_pAutoDJLeftDeck, m_pAutoDJRightDeck, -1.0);
+                return ADJ_OK;
             }
         }
+
+        // Step 8: Playstate changed, check
+        // Playstate has changed for a deck
+        // special case: detect duplicate loaded top track in 1 deck or 2 decks
+        // It can happen that eg deck 2 has already the AutoDJ Playlist Toptrack
+        // (leftover from disabling previous Auto DJ) and because the AutoDJ
+        // pair can be 2 - 3 or 1 - 3 or 2 - 4 to avoid double loading, we skip
+        // this track in the list as it's already loaded.
+        // resolve it deterministically & fallback normal state handling
+
+        if (leftLoaded && rightLoaded && leftLoaded->getId() == rightLoaded->getId()) {
+            if constexpr (sDebug) {
+                qDebug() << "[AutoDJ] -> Step 8 -> Both decks have the same track loaded"
+                         << "Track:" << leftLoaded->getLocation();
+            }
+
+            // SPECIAL CASE: same track loaded in both decks
+            if (leftDeckPlaying && !rightDeckPlaying) {
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] -> Step 8 -> Left playing, right "
+                                "duplicate - loading next into right";
+                }
+                if (nextTrack && nextTrack->getId() == leftLoaded->getId()) {
+                    removeLoadedTrackFromTopOfQueue(*m_pAutoDJLeftDeck);
+                }
+
+                TrackPointer nextTrack2Load = getNextTrackFromQueue();
+                if (nextTrack2Load) {
+                    emitLoadTrackToPlayer(nextTrack2Load, m_pAutoDJRightDeck->group, false);
+                }
+
+                m_eState = ADJ_IDLE;
+                setCrossfader(-1.0);
+                emitAutoDJStateChanged(m_eState);
+
+                return ADJ_OK;
+            }
+
+            if (rightDeckPlaying && !leftDeckPlaying) {
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] -> Step 8 -> Right playing, left "
+                                "duplicate - loading next into left";
+                }
+                if (nextTrack && nextTrack->getId() == rightLoaded->getId()) {
+                    removeLoadedTrackFromTopOfQueue(*m_pAutoDJRightDeck);
+                }
+
+                TrackPointer nextTrack2Load = getNextTrackFromQueue();
+                if (nextTrack2Load) {
+                    emitLoadTrackToPlayer(nextTrack2Load, m_pAutoDJLeftDeck->group, false);
+                }
+
+                m_eState = ADJ_IDLE;
+                setCrossfader(1.0);
+                emitAutoDJStateChanged(m_eState);
+
+                return ADJ_OK;
+            }
+
+            if (!leftDeckPlaying && !rightDeckPlaying) {
+                if constexpr (sDebug) {
+                    qDebug() << "[AutoDJ] -> Step 8 -> Both stopped with same "
+                                "track - bootstrap recovery";
+                }
+                removeLoadedTrackFromTopOfQueue(*m_pAutoDJLeftDeck);
+                m_pAutoDJLeftDeck->play();
+
+                TrackPointer nextTrack2Load = getNextTrackFromQueue();
+                if (nextTrack2Load) {
+                    emitLoadTrackToPlayer(nextTrack2Load, m_pAutoDJRightDeck->group, false);
+                }
+
+                m_eState = ADJ_ENABLE_P1LOADED;
+                setCrossfader(-1.0);
+                emitAutoDJStateChanged(m_eState);
+
+                return ADJ_OK;
+            }
+        }
+
+        // No Sspecial duplicate cases
+        if (!leftDeckPlaying && !rightDeckPlaying) {
+            if constexpr (sDebug) {
+                qDebug() << "[AutoDJ] -> Step 8 -> Bootstrap start (cold start)";
+            }
+            nextTrack = getNextTrackFromQueue();
+            if (!nextTrack) {
+                m_eState = ADJ_IDLE;
+                emitAutoDJStateChanged(m_eState);
+                return ADJ_OK;
+            }
+
+            m_eState = ADJ_ENABLE_P1LOADED;
+            setCrossfader(-1.0);
+            emitLoadTrackToPlayer(nextTrack, m_pAutoDJLeftDeck->group, true);
+
+            TrackPointer nextTrack2Load = getNextTrackFromQueue();
+            if (nextTrack2Load && nextTrack2Load->getId() != nextTrack->getId()) {
+                emitLoadTrackToPlayer(nextTrack2Load, m_pAutoDJRightDeck->group, false);
+            }
+            emitAutoDJStateChanged(m_eState);
+
+            return ADJ_OK;
+        }
+
+        // Idle mode = 1 Deck is playing
+        m_eState = ADJ_IDLE;
+
+        if (leftDeckPlaying) {
+            if constexpr (sDebug) {
+                qDebug() << "[AutoDJ] -> Step 8 -> Left playing -> standby right";
+            }
+            if (nextTrack) {
+                emitLoadTrackToPlayer(nextTrack, m_pAutoDJRightDeck->group, false);
+            }
+            setCrossfader(-1.0);
+        } else {
+            if constexpr (sDebug) {
+                qDebug() << "[AutoDJ] -> Step 8 -> Right playing -> standby left";
+            }
+            if (nextTrack) {
+                emitLoadTrackToPlayer(nextTrack, m_pAutoDJLeftDeck->group, false);
+            }
+            setCrossfader(1.0);
+        }
+
         emitAutoDJStateChanged(m_eState);
+        return ADJ_OK;
+
     } else { // Disable Auto DJ
         m_enabledAutoDJ.setAndConfirm(0.0);
-        qDebug() << "Auto DJ disabled";
+
+        if constexpr (sDebug) {
+            qDebug() << "[AutoDJ] -> Auto DJ disabled";
+        }
+
         m_eState = ADJ_DISABLED;
+
         disconnect(&m_coCrossfader,
                 &ControlProxy::valueChanged,
                 this,
                 &AutoDJProcessor::crossfaderChanged);
+
         for (const auto& pDeck : m_decks) {
             pDeck->disconnect(this);
         }
+
         if (m_pConfig->getValue<bool>(ConfigKey(kPreferenceGroup,
                     QStringLiteral("center_xfader_when_disabling")))) {
             m_coCrossfader.set(0);
         }
+
         emitAutoDJStateChanged(m_eState);
+
+        m_pAutoDJLeftDeck = nullptr;
+        m_pAutoDJRightDeck = nullptr;
     }
+
     return ADJ_OK;
 }
 
@@ -623,22 +887,45 @@ void AutoDJProcessor::crossfaderChanged(double value) {
         // The user is changing the crossfader manually. If the user has
         // moved it all the way to the other side, make the deck faded away
         // from the new "to deck" by loading the next track into it.
+        //
+        // Even when the user changes the deckorientation, we have stored the left/right decks
+        // we do show a warning  so the user can revert the accidental change and continue
+
+        // Check if xfaderorientation hasn't been changed
+        if (!checkAutoDJDecksOrientation()) {
+            return;
+        }
+
+        // Use stored AutoDJ decks if active
+        DeckAttributes* pLeftDeck = nullptr;
+        DeckAttributes* pRightDeck = nullptr;
+
+        if (m_eState != ADJ_DISABLED && m_pAutoDJLeftDeck && m_pAutoDJRightDeck) {
+            pLeftDeck = m_pAutoDJLeftDeck;
+            pRightDeck = m_pAutoDJRightDeck;
+        } else {
+            pLeftDeck = getLeftDeckDynamic(false);
+            pRightDeck = getRightDeckDynamic(false);
+        }
+
+        if (!pLeftDeck || !pRightDeck) {
+            return;
+        }
+
         DeckAttributes* pFromDeck = getFromDeck();
+        // we have always a from deck in case of state IDLE
         VERIFY_OR_DEBUG_ASSERT(pFromDeck) {
-            // we have always a from deck in case of state IDLE
             return;
         }
 
         DeckAttributes* pToDeck = getOtherDeck(pFromDeck);
         if (!pToDeck) {
-            // we have always a from deck in case of state IDLE
-            // if the user has not changed the deck orientation
             return;
         }
 
         double crossfaderPosition = value * (m_coCrossfaderReverse.toBool() ? -1 : 1);
-        if ((crossfaderPosition == 1.0 && pFromDeck->isLeft()) ||       // crossfader right
-                (crossfaderPosition == -1.0 && pFromDeck->isRight())) { // crossfader left
+        if ((crossfaderPosition == 1.0 && pFromDeck == pLeftDeck) ||
+                (crossfaderPosition == -1.0 && pFromDeck == pRightDeck)) {
             if (!pToDeck->isPlaying()) {
                 if (getEndSecond(pToDeck) >= kMinimumTrackDurationSec) {
                     // Re-cue the track if the user has seeked it to the very end
@@ -1252,8 +1539,15 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
         bool seekToStartPoint) {
     VERIFY_OR_DEBUG_ASSERT(pFromDeck && pToDeck) {
+        qWarning() << "[AutoDJ] -> Processor -> Warning calculateTransition: Null deck pointers";
         return;
     }
+
+    // Check if xfaderorientation hasn't been changed
+    if (!checkAutoDJDecksOrientation()) {
+        return;
+    }
+
     if (pFromDeck->loading || pToDeck->loading) {
         // don't use halve new halve old data during
         // changing of tracks
@@ -1579,7 +1873,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     // the track duration.
     double duration = getEndSecond(pDeck);
     if (duration < kMinimumTrackDurationSec) {
-        qWarning() << "Skip track with" << duration << "Duration"
+        qWarning() << "[AutoDJ] - > Processor -> Skip track with" << duration << "Duration"
                    << pTrack->getLocation();
         // Remove Tack with duration smaller than two callbacks
         removeTrackFromTopOfQueue(pTrack);
@@ -1593,7 +1887,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         // check if this deck has suitable alignment
         if (fromDeck && getOtherDeck(fromDeck) != pDeck) {
             if constexpr (sDebug) {
-                qDebug() << this << "playerTrackLoaded()" << pDeck->group << "but not a toDeck";
+                qDebug() << this << "[AutoDJ] - > playerTrackLoaded()"
+                         << pDeck->group << "but not a toDeck";
             }
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
@@ -1776,27 +2071,148 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 }
 
 DeckAttributes* AutoDJProcessor::getLeftDeck() {
-    // find first left deck
-    for (const auto& pDeck : m_decks) {
-        if (pDeck->isLeft()) {
-            return pDeck.get();
-        }
+    // If AutoDJ is active and has stored xfaderleft deck -> return
+    if (m_eState != ADJ_DISABLED && m_pAutoDJLeftDeck) {
+        return m_pAutoDJLeftDeck;
     }
-    return nullptr;
+    // no stored xfaderleft deck
+    return getLeftDeckDynamic(false);
 }
 
 DeckAttributes* AutoDJProcessor::getRightDeck() {
-    // find first right deck
+    // If AutoDJ is active and has stored xfaderright deck -> return
+    if (m_eState != ADJ_DISABLED && m_pAutoDJRightDeck) {
+        return m_pAutoDJRightDeck;
+    }
+    // no stored xfaderright deck
+    return getRightDeckDynamic(false);
+}
+
+DeckAttributes* AutoDJProcessor::getLeftDeckDynamic(bool skipPlaying) {
     for (const auto& pDeck : m_decks) {
-        if (pDeck->isRight()) {
+        if (pDeck->isLeft()) {
+            if (skipPlaying && pDeck->isPlaying()) {
+                continue;
+            }
             return pDeck.get();
         }
     }
     return nullptr;
 }
 
-DeckAttributes* AutoDJProcessor::getOtherDeck(
-        const DeckAttributes* pThisDeck) {
+DeckAttributes* AutoDJProcessor::getRightDeckDynamic(bool skipPlaying) {
+    for (const auto& pDeck : m_decks) {
+        if (pDeck->isRight()) {
+            if (skipPlaying && pDeck->isPlaying()) {
+                continue;
+            }
+            return pDeck.get();
+        }
+    }
+    return nullptr;
+}
+
+bool AutoDJProcessor::findAvailableLeftRightPair(
+        DeckAttributes*& pLeftDeck,
+        DeckAttributes*& pRightDeck) {
+    // We try to find a pair of decks:
+    // - opposite sides of crossfader, priority to natural pairs (1&2, 3&4)
+    // - if 1 of the pair is playing, we tahe the natural pair containing this deck
+    // - if no deck is playing and all decks have default orientation, we take 1&2
+    // - if no natural pairs are available we check crosspairs (1&3 2&4)
+
+    auto isNaturalPair = [](DeckAttributes* pLeft, DeckAttributes* pRight) {
+        // Natural pair means left index is even/odd matching
+        // Deck 1&2, 3&4
+        return (pLeft->index / 2) == (pRight->index / 2);
+    };
+
+    auto findPair = [&](
+                            auto&& condition,
+                            const char* debugMsg) -> bool {
+        for (const auto& pLeft : m_decks) {
+            if (!pLeft->isLeft()) {
+                continue;
+            }
+
+            for (const auto& pRight : m_decks) {
+                if (!pRight->isRight()) {
+                    continue;
+                }
+                if (pLeft.get() == pRight.get()) {
+                    continue;
+                }
+
+                if (!condition(pLeft.get(), pRight.get())) {
+                    continue;
+                }
+
+                pLeftDeck = pLeft.get();
+                pRightDeck = pRight.get();
+
+                qDebug() << debugMsg
+                         << "Left" << pLeftDeck->index
+                         << "Right" << pRightDeck->index;
+                return true;
+            }
+        }
+        return false;
+    };
+
+    if (findPair(
+                [&](auto l, auto r) {
+                    return isNaturalPair(l, r) &&
+                            (l->isPlaying() != r->isPlaying());
+                },
+                "[AutoDJ] -> Priority 1: Natural pair with one playing -"))
+        return true;
+
+    if (findPair(
+                [&](auto l, auto r) {
+                    return isNaturalPair(l, r) && !l->isPlaying() &&
+                            !r->isPlaying();
+                },
+                "[AutoDJ] -> Priority 2: Natural pair both stopped -"))
+        return true;
+
+    if (findPair(
+                [&](auto l, auto r) {
+                    return isNaturalPair(l, r) && l->isPlaying() &&
+                            r->isPlaying();
+                },
+                "[AutoDJ] -> Priority 3: Natural pair both playing -"))
+        return true;
+
+    if (findPair([&](auto l, auto r) { return l->isPlaying() != r->isPlaying(); },
+                "[AutoDJ] -> Priority 4: Cross-pair with one playing -"))
+        return true;
+
+    if (findPair([&](auto l, auto r) { return !l->isPlaying() && !r->isPlaying(); },
+                "[AutoDJ] -> Priority 5: Cross-pair both stopped -"))
+        return true;
+
+    if (findPair([&](auto l, auto r) { return l->isPlaying() && r->isPlaying(); },
+                "[AutoDJ] -> Priority 6: Cross-pair both playing -"))
+        return true;
+
+    pLeftDeck = nullptr;
+    pRightDeck = nullptr;
+    return false;
+}
+
+DeckAttributes* AutoDJProcessor::getOtherDeck(const DeckAttributes* pThisDeck) {
+    // When AutoDJ is active -> stored decks
+    if (m_eState != ADJ_DISABLED && m_pAutoDJLeftDeck && m_pAutoDJRightDeck) {
+        if (pThisDeck == m_pAutoDJLeftDeck) {
+            return m_pAutoDJRightDeck;
+        }
+        if (pThisDeck == m_pAutoDJRightDeck) {
+            return m_pAutoDJLeftDeck;
+        }
+        return nullptr;
+    }
+
+    // Fallback to orientation-based lookup (only when AutoDJ is disabled)
     if (pThisDeck->isLeft()) {
         return getRightDeck();
     }
@@ -1807,6 +2223,18 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
+    // When AutoDJ is active -> stored decks
+    if (m_eState != ADJ_DISABLED && m_pAutoDJLeftDeck && m_pAutoDJRightDeck) {
+        if (m_pAutoDJLeftDeck->isFromDeck) {
+            return m_pAutoDJLeftDeck;
+        }
+        if (m_pAutoDJRightDeck->isFromDeck) {
+            return m_pAutoDJRightDeck;
+        }
+        return nullptr;
+    }
+
+    // Fallback to checking all decks (only when AutoDJ is disabled)
     for (const auto& pDeck : m_decks) {
         if (pDeck->isFromDeck) {
             return pDeck.get();
@@ -1843,4 +2271,36 @@ bool AutoDJProcessor::nextTrackLoaded() {
     }
 
     return loadedTrack == getNextTrackFromQueue();
+}
+
+bool AutoDJProcessor::checkAutoDJDecksOrientation() {
+    if (m_eState == ADJ_DISABLED) {
+        return true;
+    }
+
+    bool leftOk = (m_pAutoDJLeftDeck && m_pAutoDJLeftDeck->isLeft());
+    bool rightOk = (m_pAutoDJRightDeck && m_pAutoDJRightDeck->isRight());
+
+    if (!leftOk || !rightOk) {
+        qWarning() << "[AutoDJ] -> AutoDJ Decks lost correct orientation!"
+                   << "Left Deck"
+                   << (m_pAutoDJLeftDeck ? QString::number(
+                                                   m_pAutoDJLeftDeck->index + 1)
+                                         : "null")
+                   << "isLeft:"
+                   << (m_pAutoDJLeftDeck ? m_pAutoDJLeftDeck->isLeft() : false)
+                   << "Right Deck"
+                   << (m_pAutoDJRightDeck
+                                      ? QString::number(
+                                                m_pAutoDJRightDeck->index + 1)
+                                      : "null")
+                   << "isRight:"
+                   << (m_pAutoDJRightDeck ? m_pAutoDJRightDeck->isRight()
+                                          : false);
+        emit autoDJError(ADJ_AUTODJDECKS_ORIENTATION_CHANGED);
+
+        // toggleAutoDJ(false);
+        return false;
+    }
+    return true;
 }
