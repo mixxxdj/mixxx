@@ -273,6 +273,7 @@ class AutoDJProcessor : public QObject {
     double getLastSoundSecond(DeckAttributes* pDeck);
     double getEndSecond(DeckAttributes* pDeck);
     double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck) const;
+    double calcRemainingDeckSeconds(bool activeDeckOnly) const;
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);

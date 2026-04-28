@@ -352,10 +352,13 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     return ADJ_OK;
 }
 
-double AutoDJProcessor::getRemainingDeckSeconds() const {
+double AutoDJProcessor::calcRemainingDeckSeconds(bool activeDeckOnly) const {
     double totalRemaining = 0.0;
     for (const auto& pDeck : m_decks) {
         VERIFY_OR_DEBUG_ASSERT(pDeck) {
+            continue;
+        }
+        if (activeDeckOnly && !pDeck->isPlaying()) {
             continue;
         }
         const mixxx::audio::FramePos endPos = pDeck->trackEndPosition();
@@ -368,23 +371,12 @@ double AutoDJProcessor::getRemainingDeckSeconds() const {
     return totalRemaining;
 }
 
+double AutoDJProcessor::getRemainingDeckSeconds() const {
+    return calcRemainingDeckSeconds(false);
+}
+
 double AutoDJProcessor::getActiveDeckRemainingSeconds() const {
-    double totalRemaining = 0.0;
-    for (const auto& pDeck : m_decks) {
-        VERIFY_OR_DEBUG_ASSERT(pDeck) {
-            continue;
-        }
-        if (!pDeck->isPlaying()) {
-            continue;
-        }
-        const mixxx::audio::FramePos endPos = pDeck->trackEndPosition();
-        if (!endPos.isValid() || endPos.value() <= 0.0) {
-            continue;
-        }
-        const double durationSeconds = framePositionToSeconds(endPos, pDeck.get());
-        totalRemaining += std::max(0.0, (1.0 - pDeck->playPosition()) * durationSeconds);
-    }
-    return totalRemaining;
+    return calcRemainingDeckSeconds(true);
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
