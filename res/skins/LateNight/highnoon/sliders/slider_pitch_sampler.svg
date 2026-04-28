@@ -1,0 +1,35 @@
+<svg width="30" height="65" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="m6 4.50041h6v0.999596h-6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m6 13.5004h6v0.999596h-6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m4 31.5004h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m6 22.5004h6v0.999596h-6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m6 40.5004h6v0.999596h-6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m6 58.5003h6v0.999596h-6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m6 49.5003h6v0.999596h-6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m24 4.50041h-6v0.999596h6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m24 13.5004h-6v0.999596h6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m26 31.5004h-8v0.999596h8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m24 22.5004h-6v0.999596h6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m24 40.5004h-6v0.999596h6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m24 58.5003h-6v0.999596h6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m24 49.5003h-6v0.999596h6z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <g transform="translate(2)" fill="#636363" stroke-width=".999798">
+    <path d="m2 32.0004h8v0.999596h-8z" color="#000000"/>
+    <path d="m24 32.0004h-8v0.999596h8z" color="#000000"/>
+  </g>
+  <g transform="translate(2)" fill="#404040" stroke-width=".999798">
+    <path d="m4 5.00041h6v0.999596h-6z" color="#000000"/>
+    <path d="m4 14.0004h6v0.999596h-6z" color="#000000"/>
+    <path d="m4 23.0004h6v0.999596h-6z" color="#000000"/>
+    <path d="m4 41.0004h6v0.999596h-6z" color="#000000"/>
+    <path d="m4 59.0003h6v0.999596h-6z" color="#000000"/>
+    <path d="m4 50.0003h6v0.999596h-6z" color="#000000"/>
+    <path d="m22 5.00041h-6v0.999596h6z" color="#000000"/>
+    <path d="m22 14.0004h-6v0.999596h6z" color="#000000"/>
+    <path d="m22 23.0004h-6v0.999596h6z" color="#000000"/>
+    <path d="m22 41.0004h-6v0.999596h6z" color="#000000"/>
+    <path d="m22 59.0003h-6v0.999596h6z" color="#000000"/>
+    <path d="m22 50.0003h-6v0.999596h6z" color="#000000"/>
+  </g>
+  <path d="m14.1835 4.18345h1.6331v56.6331h-1.6331z" color="#000000" stroke="#000" stroke-linejoin="round" stroke-width="1.3669"/>
+</svg>

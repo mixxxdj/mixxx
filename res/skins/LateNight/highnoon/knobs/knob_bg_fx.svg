@@ -1,0 +1,24 @@
+<svg version="1.1" viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="a" x1="16.610512" x2="35.440517" y1="16.797213" y2="25.710094" gradientTransform="matrix(.84156229 0 0 .84156229 6.1760297 -24.26716)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c5c5c5" offset="0"/>
+      <stop stop-color="#ababab" offset="1"/>
+    </linearGradient>
+    <linearGradient id="b" x1="7.9756808" x2="32.023884" y1="18.998186" y2="18.998186" gradientTransform="matrix(.13024737 .83142209 -.83142209 .13024737 30.641884 -2.1804971)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff" offset="0"/>
+      <stop stop-color="#949494" offset="1"/>
+    </linearGradient>
+    <linearGradient id="c" x1="373.39062" x2="416.78003" y1="518.01624" y2="674.26617" gradientUnits="userSpaceOnUse">
+      <stop offset="0"/>
+      <stop stop-opacity="0" offset="1"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(-4.451389,-4.6787214)">
+    <g transform="matrix(.0918738 .0247345 -.02569649 .08843437 -4.3513618 -34.478363)" opacity=".493">
+      <path d="m270.69379 536.40673c18.79626 60.43726 85.31772 92.31846 145.17067 71.75942 60.21816-19.46338 89.33556-86.34203 69.32123-146.38692-.32054-.34436-250.98009-42.69617-214.4919 74.6275z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#c)" image-rendering="auto" opacity="1" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    </g>
+    <path d="m18.300833 6.1887471c-1.388194-.0976808-2.817605.0807304-4.215238.5691534-5.6372588 1.8199547-8.7162733 7.9385105-6.8456018 13.5948855 1.87079 5.656734 7.9821298 8.688943 13.5756218 6.735274 5.637258-1.819954 8.718024-7.936759 6.847352-13.593135-1.403522-4.243848-5.194156-7.0128964-9.362134-7.3061779z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke="#000" stroke-width=".828361" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <path d="m13.937799 7.446637c-1.220666.464754-2.367458 1.1808834-3.364822 2.1484585-4.0820367 3.7748605-4.2889056 10.2004155-.463312 14.2787125 3.825838 4.078557 10.226773 4.248417 14.218763.376968 4.082036-3.774863 4.291086-10.199617.465492-14.2779142-2.870254-3.0598536-7.191129-3.9216257-10.856121-2.5262248z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#b)" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stroke-width=".841562" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <circle transform="rotate(63.732805)" cx="23.048117" cy="-8.1318922" r="9.1288471" fill="url(#a)" fill-rule="evenodd" stroke-width=".841562" style="paint-order:markers fill stroke"/>
+  </g>
+</svg>
