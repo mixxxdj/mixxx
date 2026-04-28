@@ -108,6 +108,9 @@ LoopingControl::LoopingControl(const QString& group,
             &LoopingControl::slotLoopEnabledValueChangeRequest,
             Qt::DirectConnection);
 
+    m_pCOLoopInRange = new ControlObject(ConfigKey(group, "loop_in_range"));
+    m_pCOLoopInRange->set(0.0);
+
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(group, "loop_start_position"));
     m_pCOLoopStartPosition->set(kNoTrigger);
@@ -258,6 +261,7 @@ LoopingControl::~LoopingControl() {
     delete m_pReloopToggleButton;
     delete m_pReloopAndStopButton;
     delete m_pCOLoopEnabled;
+    delete m_pCOLoopInRange;
     delete m_pCOLoopStartPosition;
     delete m_pCOLoopEndPosition;
     delete m_pCOLoopScale;
@@ -405,6 +409,25 @@ void LoopingControl::process(const double rate,
     } else if (m_bAdjustingLoopOut) {
         setLoopOutToCurrentPosition();
     }
+
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    bool inRange = false;
+    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
+        inRange = currentPosition >= loopInfo.startPosition &&
+                currentPosition < loopInfo.endPosition;
+    }
+
+    if (!inRange) {
+        SavedLoops savedLoops = m_savedLoops.getValue();
+        for (int i = 0; i < savedLoops.count; ++i) {
+            if (currentPosition >= savedLoops.loops[i].startPosition &&
+                    currentPosition < savedLoops.loops[i].endPosition) {
+                inRange = true;
+                break;
+            }
+        }
+    }
+    m_pCOLoopInRange->set(inRange ? 1.0 : 0.0);
 }
 
 mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
@@ -1242,12 +1265,43 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
+    if (m_pTrack) {
+        disconnect(m_pTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &LoopingControl::slotTrackCuesUpdated);
+    }
     m_pTrack = pNewTrack;
+    if (m_pTrack) {
+        connect(m_pTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &LoopingControl::slotTrackCuesUpdated,
+                Qt::DirectConnection);
+    }
     mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
     }
     trackBeatsUpdated(pBeats);
+    slotTrackCuesUpdated();
+}
+
+void LoopingControl::slotTrackCuesUpdated() {
+    SavedLoops savedLoops;
+    if (m_pTrack) {
+        const QList<CuePointer> cues = m_pTrack->getCuePoints();
+        for (const auto& pCue : cues) {
+            if (pCue->getType() == mixxx::CueType::Loop) {
+                if (savedLoops.count < kMaxSavedLoops) {
+                    savedLoops.loops[savedLoops.count].startPosition = pCue->getPosition();
+                    savedLoops.loops[savedLoops.count].endPosition = pCue->getEndPosition();
+                    savedLoops.count++;
+                }
+            }
+        }
+    }
+    m_savedLoops.setValue(savedLoops);
 }
 
 void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
