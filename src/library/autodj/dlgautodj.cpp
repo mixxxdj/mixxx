@@ -80,8 +80,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
-    }
-    else {
+    } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pTrackTableView);
@@ -242,7 +241,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             &DlgAutoDJ::transitionTimeChanged);
 
     // 1-second timer keeps "Ends at" clock current without requiring queue changes
-    m_pQueueDurationTimer = new QTimer(this);
+    m_pQueueDurationTimer = make_parented<QTimer>(this);
     m_pQueueDurationTimer->setInterval(1000);
     connect(m_pQueueDurationTimer,
             &QTimer::timeout,
@@ -281,6 +280,7 @@ void DlgAutoDJ::setupActionButton(QPushButton* pButton,
 void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
     slotRecalcQueueDuration();
+    m_pQueueDurationTimer->stop();
     m_pQueueDurationTimer->start();
 }
 
@@ -465,7 +465,7 @@ void DlgAutoDJ::slotUpdateQueueDuration() {
     }
     QString newText;
     if (totalSeconds <= 0.0) {
-        newText = m_showEndTime ? tr("Ends at: --:-- --") : tr("Queue: -:--:--");
+        newText = m_showEndTime ? tr("Ends: --:-- --") : tr("Queue: -:--:--");
     } else if (m_showEndTime) {
         const QDateTime endTime =
                 QDateTime::currentDateTime().addSecs(static_cast<qint64>(totalSeconds));
