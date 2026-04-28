@@ -2544,34 +2544,28 @@ bool TrackDAO::getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecor
 }
 
 QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
+    // A track ID might be invalid if the track was just added and hasn't been
+    // saved to the database yet, or if it represents a missing/deleted track.
     if (!trackId.isValid()) {
-        return {};
+        return QString();
     }
 
     QSqlQuery query(m_database);
-    query.prepare(QStringLiteral(
-            "SELECT PlaylistTracks.pl_datetime_added "
-            "FROM PlaylistTracks "
-            "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
-            "WHERE PlaylistTracks.track_id = :id "
-            "AND Playlists.hidden = :type "));
-
+    query.prepare(
+        "SELECT MAX(PlaylistTracks.pl_datetime_added) "
+        "FROM PlaylistTracks "
+        "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
+        "WHERE PlaylistTracks.track_id = :id "
+        "AND Playlists.hidden = " + QString::number(PlaylistDAO::PLHT_SET_LOG)
+    );
     query.bindValue(":id", trackId.toVariant());
-    query.bindValue(
-            ":type", PlaylistDAO::PLHT_SET_LOG); // The history feature was
-                                                 // originally named "Set log"
+    
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Failed to find last time added to history for track" << trackId;
-        return {};
+        return QString();
     }
-
     if (query.next()) {
-        QString dateTimeStr = query.value(0).toString();
-        VERIFY_OR_DEBUG_ASSERT(!dateTimeStr.isEmpty()) {
-            return {};
-        }
-        return dateTimeStr;
+        return query.value(0).toString();
     }
-
-    return {};
+    return QString();
 }
