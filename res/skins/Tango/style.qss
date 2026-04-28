@@ -3049,6 +3049,10 @@ Library features and their buttons:
   #pushButtonAutoDJ {
     width: 42px;
   }
+  QPushButton#pushButtonQueueInfo {
+    padding: 1px 8px;
+    min-width: 90px;
+  }
 
   #LibraryFeatureControls QPushButton:!enabled {
     color: #888;

@@ -1010,6 +1010,10 @@ WLibrary { margin: 2px 3px 0px 0px; }
       min-width: 40px;
       max-width: 40px;
     }
+    QPushButton#pushButtonQueueInfo {
+      padding: 0px 5px;
+      min-width: 90px;
+    }
   #spinBoxTransition,
   #spinBoxRecentDays {
     height: 20px;

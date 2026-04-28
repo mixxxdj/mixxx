@@ -590,6 +590,10 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
     QPushButton#pushButtonAutoDJ {
       width: 42px;
     }
+    QPushButton#pushButtonQueueInfo {
+      padding: 0px 5px;
+      min-width: 90px;
+    }
 
 
 #LibraryFeatureControls QPushButton:!enabled {

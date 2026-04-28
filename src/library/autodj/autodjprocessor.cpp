@@ -42,12 +42,9 @@ DeckAttributes::DeckAttributes(int index,
           m_sampleRate(group, "track_samplerate"),
           m_rateRatio(group, "rate_ratio"),
           m_pPlayer(pPlayer) {
-    connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded,
-            this, &DeckAttributes::slotTrackLoaded);
-    connect(m_pPlayer, &BaseTrackPlayer::loadingTrack,
-            this, &DeckAttributes::slotLoadingTrack);
-    connect(m_pPlayer, &BaseTrackPlayer::playerEmpty,
-            this, &DeckAttributes::slotPlayerEmpty);
+    connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &DeckAttributes::slotTrackLoaded);
+    connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &DeckAttributes::slotLoadingTrack);
+    connect(m_pPlayer, &BaseTrackPlayer::playerEmpty, this, &DeckAttributes::slotPlayerEmpty);
     m_playPos.connectValueChanged(this, &DeckAttributes::slotPlayPosChanged);
     m_play.connectValueChanged(this, &DeckAttributes::slotPlayChanged);
     m_introStartPos.connectValueChanged(this, &DeckAttributes::slotIntroStartPositionChanged);
@@ -89,7 +86,7 @@ void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    //qDebug() << "DeckAttributes::slotLoadingTrack";
+    // qDebug() << "DeckAttributes::slotLoadingTrack";
     emit loadingTrack(this, pNewTrack, pOldTrack);
 }
 
@@ -345,7 +342,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
         TrackId leftId = pLeftDeck->getLoadedTrack()->getId();
         TrackId rightId = pRightDeck->getLoadedTrack()->getId();
         if (nextId == leftId || nextId == rightId) {
-        // One of the playing tracks is still on top of playlist, remove second item
+            // One of the playing tracks is still on top of playlist, remove second item
             m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(1, 0));
         } else {
             m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
@@ -353,6 +350,41 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
         maybeFillRandomTracks();
     }
     return ADJ_OK;
+}
+
+double AutoDJProcessor::getRemainingDeckSeconds() const {
+    double totalRemaining = 0.0;
+    for (const auto& pDeck : m_decks) {
+        VERIFY_OR_DEBUG_ASSERT(pDeck) {
+            continue;
+        }
+        const mixxx::audio::FramePos endPos = pDeck->trackEndPosition();
+        if (!endPos.isValid() || endPos.value() <= 0.0) {
+            continue;
+        }
+        const double durationSeconds = framePositionToSeconds(endPos, pDeck.get());
+        totalRemaining += std::max(0.0, (1.0 - pDeck->playPosition()) * durationSeconds);
+    }
+    return totalRemaining;
+}
+
+double AutoDJProcessor::getActiveDeckRemainingSeconds() const {
+    double totalRemaining = 0.0;
+    for (const auto& pDeck : m_decks) {
+        VERIFY_OR_DEBUG_ASSERT(pDeck) {
+            continue;
+        }
+        if (!pDeck->isPlaying()) {
+            continue;
+        }
+        const mixxx::audio::FramePos endPos = pDeck->trackEndPosition();
+        if (!endPos.isValid() || endPos.value() <= 0.0) {
+            continue;
+        }
+        const double durationSeconds = framePositionToSeconds(endPos, pDeck.get());
+        totalRemaining += std::max(0.0, (1.0 - pDeck->playPosition()) * durationSeconds);
+    }
+    return totalRemaining;
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
@@ -665,7 +697,7 @@ void AutoDJProcessor::crossfaderChanged(double value) {
 }
 
 void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
-                                            double thisPlayPosition) {
+        double thisPlayPosition) {
     // qDebug() << "player" << pAttributes->group << "PositionChanged(" << value << ")";
     if (m_eState == ADJ_DISABLED) {
         // nothing to do
@@ -1247,7 +1279,7 @@ double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::framePositionToSeconds(
-        mixxx::audio::FramePos position, DeckAttributes* pDeck) {
+        mixxx::audio::FramePos position, DeckAttributes* pDeck) const {
     mixxx::audio::SampleRate sampleRate = pDeck->sampleRate();
     if (!sampleRate.isValid() || !position.isValid()) {
         return 0.0;
@@ -1503,7 +1535,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             startPoint = toDeckPositionSeconds;
         }
         useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startPoint);
-        }
+    }
     }
 
     // These are expected to be a fraction of the track length.
@@ -1634,7 +1666,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
 }
 
 void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
-        TrackPointer pNewTrack, TrackPointer pOldTrack) {
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
     if constexpr (sDebug) {
         qDebug() << this << "playerLoadingTrack" << pDeck->group
                  << "new:" << (pNewTrack ? pNewTrack->getLocation() : "(null)")

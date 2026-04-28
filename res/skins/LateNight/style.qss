@@ -905,6 +905,9 @@ WEffectChainPresetButton::menu-indicator {
     QPushButton#pushButtonAutoDJ {
       min-width: 40px;
     }
+    #DlgAutoDJ #LibraryFeatureControls QPushButton#pushButtonQueueInfo {
+      padding: 0px 10px;
+    }
 
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
    Linux with Gnome */
