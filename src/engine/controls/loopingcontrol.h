@@ -164,6 +164,7 @@ class LoopingControl : public EngineControl {
     struct SavedLoopInfo {
         mixxx::audio::FramePos startPosition;
         mixxx::audio::FramePos endPosition;
+        int hotcueIndex;
     };
     static constexpr int kMaxSavedLoops = 64;
     struct SavedLoops {

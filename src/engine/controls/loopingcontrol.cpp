@@ -411,23 +411,27 @@ void LoopingControl::process(const double rate,
     }
 
     LoopInfo loopInfo = m_loopInfo.getValue();
-    bool inRange = false;
+    double loopInRangeValue = -1.0;
     if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
-        inRange = currentPosition >= loopInfo.startPosition &&
-                currentPosition < loopInfo.endPosition;
+        if (currentPosition >= loopInfo.startPosition &&
+                currentPosition < loopInfo.endPosition) {
+            loopInRangeValue = 0.0;
+        }
     }
 
-    if (!inRange) {
-        SavedLoops savedLoops = m_savedLoops.getValue();
-        for (int i = 0; i < savedLoops.count; ++i) {
-            if (currentPosition >= savedLoops.loops[i].startPosition &&
-                    currentPosition < savedLoops.loops[i].endPosition) {
-                inRange = true;
+    SavedLoops savedLoops = m_savedLoops.getValue();
+    for (int i = 0; i < savedLoops.count; ++i) {
+        if (currentPosition >= savedLoops.loops[i].startPosition &&
+                currentPosition < savedLoops.loops[i].endPosition) {
+            if (savedLoops.loops[i].hotcueIndex != Cue::kNoHotCue) {
+                loopInRangeValue = static_cast<double>(savedLoops.loops[i].hotcueIndex + 1);
                 break;
+            } else {
+                loopInRangeValue = 0.0;
             }
         }
     }
-    m_pCOLoopInRange->set(inRange ? 1.0 : 0.0);
+    m_pCOLoopInRange->set(loopInRangeValue);
 }
 
 mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
@@ -1296,6 +1300,7 @@ void LoopingControl::slotTrackCuesUpdated() {
                 if (savedLoops.count < kMaxSavedLoops) {
                     savedLoops.loops[savedLoops.count].startPosition = pCue->getPosition();
                     savedLoops.loops[savedLoops.count].endPosition = pCue->getEndPosition();
+                    savedLoops.loops[savedLoops.count].hotcueIndex = pCue->getHotCue();
                     savedLoops.count++;
                 }
             }

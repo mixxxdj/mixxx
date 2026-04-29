@@ -1339,54 +1339,51 @@ TEST_F(LoopingControlTest, LoopInRange) {
     m_pLoopStartPoint->set(-1);
     m_pLoopEndPoint->set(-1);
     setCurrentPosition(mixxx::audio::FramePos{50});
-    EXPECT_EQ(0.0, m_pLoopInRange->get());
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
 
     // Loop set but playposition outside (before)
     m_pLoopStartPoint->set(100);
     m_pLoopEndPoint->set(200);
     setCurrentPosition(mixxx::audio::FramePos{50});
-    EXPECT_EQ(0.0, m_pLoopInRange->get());
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
 
     // Loop set and playposition inside (at start)
     setCurrentPosition(mixxx::audio::FramePos{100});
-    EXPECT_EQ(1.0, m_pLoopInRange->get());
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
 
     // Loop set and playposition inside (middle)
     setCurrentPosition(mixxx::audio::FramePos{150});
-    EXPECT_EQ(1.0, m_pLoopInRange->get());
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
 
     // Loop set and playposition inside (just before end)
     setCurrentPosition(mixxx::audio::FramePos{199});
-    EXPECT_EQ(1.0, m_pLoopInRange->get());
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
 
     // Loop set but playposition outside (at end)
     setCurrentPosition(mixxx::audio::FramePos{200});
-    EXPECT_EQ(0.0, m_pLoopInRange->get());
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
 
     // Loop set but playposition outside (after)
     setCurrentPosition(mixxx::audio::FramePos{250});
-    EXPECT_EQ(0.0, m_pLoopInRange->get());
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
 
     // Loop enabled - should still work
     m_pButtonReloopToggle->set(1);
     m_pButtonReloopToggle->set(0);
     EXPECT_TRUE(isLoopEnabled());
     setCurrentPosition(mixxx::audio::FramePos{150});
-    EXPECT_EQ(1.0, m_pLoopInRange->get());
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
     setCurrentPosition(mixxx::audio::FramePos{
             250}); // This will actually disable the loop in real engine logic
                    // if seek is notifySeeked
-    EXPECT_EQ(0.0, m_pLoopInRange->get());
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
 
-    // Test saved loops (this is a bit harder to test via COs because saved loops
-    // are read from Track's cue points which LoopingControl monitors).
-    // In MockedEngineBackendTest, we have access to m_pTrack1.
     if (m_pTrack1) {
-        m_pTrack1->createAndAddCue(mixxx::CueType::Loop, 1, 300.0, 400.0);
+        m_pTrack1->createAndAddCue(mixxx::CueType::Loop, 2, 300.0, 400.0);
         // LoopingControl should have received cuesUpdated signal
         setCurrentPosition(mixxx::audio::FramePos{350});
-        EXPECT_EQ(1.0, m_pLoopInRange->get());
+        EXPECT_EQ(3.0, m_pLoopInRange->get());
         setCurrentPosition(mixxx::audio::FramePos{450});
-        EXPECT_EQ(0.0, m_pLoopInRange->get());
+        EXPECT_EQ(-1.0, m_pLoopInRange->get());
     }
 }
