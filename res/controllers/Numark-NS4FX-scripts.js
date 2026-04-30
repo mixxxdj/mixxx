@@ -148,9 +148,7 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
                 hotcueButton.input(channel, control, value, status, group);
             } else if (isBeatJumpModeForTransport) {
                 deck.autoloop_buttons[padNumber + 4].input(channel, control, value, status, group)
-            }
-            else
-            {
+            } else {
                 if (defaultKey) {
                     if (momentary) {
                         const isPress = (value === 0x7F);
