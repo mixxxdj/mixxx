@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <memory>
 
+#include "library/browse/browselibrarytablemodel.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/library.h"
@@ -48,16 +49,20 @@ BrowseFeature::BrowseFeature(Library* pLibrary,
         : LibraryFeature(pLibrary, pConfig, QString("computer")),
           m_pTrackCollection(
                   pLibrary->trackCollectionManager()->internalCollection()),
-          m_pBrowseModel(make_parented<BrowseTableModel>(
+          m_pFileModel(make_parented<BrowseTableModel>(
                   this, pLibrary->trackCollectionManager(), pRecordingManager)),
           m_pProxyModel(std::make_unique<ProxyTrackModel>(
-                  m_pBrowseModel, true /* handle search */)),
+                  m_pFileModel, true /* handle search */)),
+          m_pLibraryModel(make_parented<BrowseLibraryTableModel>(this,
+                  pLibrary->trackCollectionManager(),
+                  "mixxx.db.model.browseLibrary")),
+          m_pCurrentTrackModel(nullptr),
           m_pSidebarModel(make_parented<FolderTreeModel>(this)) {
-    connect(m_pBrowseModel,
+    connect(m_pFileModel,
             &BrowseTableModel::saveModelState,
             this,
             &LibraryFeature::saveModelState);
-    connect(m_pBrowseModel,
+    connect(m_pFileModel,
             &BrowseTableModel::restoreModelState,
             this,
             &LibraryFeature::restoreModelState);
@@ -297,8 +302,19 @@ void BrowseFeature::activate() {
     emit enableCoverArtDisplay(false);
 }
 
-// Note: This is executed whenever you single click on an child item
-// Single clicks will not populate sub folders
+/// This is executed whenever you single-click on a child item.
+/// The track view is then populated with tracks from that directory.
+/// Two different views (models) are used, depending on whether the directory
+/// is a (child of a) library directory or not:
+/// 1. not a library dir: file view
+///    This view shows the audio tags of the track files each time the directory item
+///    is activated, regardless if individual (or all) tracks have been added to the
+///    library. Population is usually slow and doesn't have all library columns.
+/// 2. a library dir: track (library) view
+///    Displays metadata from the library (database) like in other features,
+///    has all columns and capabilities of Tracks.
+///
+/// Note: single clicks will not expand or populate sub directories.
 void BrowseFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid()) {
         return;
@@ -321,24 +337,42 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
         return;
     }
 
-    // Open a security token for this path and if we do not have access, ask
-    // for it.
-    auto dirInfo = mixxx::FileInfo(path);
-    auto dirAccess = mixxx::FileAccess(dirInfo);
-    if (!dirAccess.isReadable()) {
-        if (Sandbox::askForAccess(&dirInfo)) {
-            // Re-create to get a new token.
-            dirAccess = mixxx::FileAccess(dirInfo);
-        } else {
-            // TODO(rryan): Activate an info page about sandboxing?
-            return;
-        }
-    }
+
     emit saveModelState();
-    m_pBrowseModel->setPath(std::move(dirAccess));
-    emit showTrackModel(m_pProxyModel.get());
-    // Search is restored in Library::slotShowTrackModel, disable it where it's useless
-    emit enableCoverArtDisplay(false);
+
+    const QString currSearch = getCurrentSearch();
+    // TODO sync sort column, if possible
+    // * get sort column from current model
+    // * if we switch the model, set sort column
+    if (isPathWatched(path)) {
+        // use LibraryTableModel
+        // filter tracks by directory (recursive)
+        m_pLibraryModel->setPath(std::move(path));
+        m_pLibraryModel->search(currSearch);
+        m_pCurrentTrackModel = m_pLibraryModel;
+        emit showTrackModel(m_pLibraryModel);
+        emit enableCoverArtDisplay(true);
+    } else {
+        // use BrowseTableModel
+        // Open a security token for this path and if we do not have access, ask
+        // for it.
+        auto dirInfo = mixxx::FileInfo(path);
+        mixxx::FileAccess dirAccess = mixxx::FileAccess(dirInfo);
+        if (!dirAccess.isReadable()) {
+            if (Sandbox::askForAccess(&dirInfo)) {
+                // Re-create to get a new token.
+                dirAccess = mixxx::FileAccess(dirInfo);
+            } else {
+                // TODO(rryan): Activate an info page about sandboxing?
+                return;
+            }
+        }
+        m_pFileModel->setPath(std::move(dirAccess));
+        m_pProxyModel->search(currSearch);
+        m_pCurrentTrackModel = m_pProxyModel.get();
+        emit showTrackModel(m_pProxyModel.get());
+        emit enableCoverArtDisplay(false);
+    }
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
@@ -367,9 +401,9 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         menu.addAction(m_pAddQuickLinkAction);
     }
 
-    // TODO Check if we already watch this path or a parent and don't show or
-    // disable this action.
-    menu.addAction(m_pAddtoLibraryAction);
+    if (!isPathWatched(path)) {
+        menu.addAction(m_pAddtoLibraryAction);
+    }
     menu.addAction(m_pRefreshDirTreeAction);
     menu.exec(globalPos);
 }
@@ -519,6 +553,35 @@ std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
     return items;
 }
 
+bool BrowseFeature::isPathWatched(const QString& path) const {
+    const auto dir = mixxx::FileInfo(path);
+    VERIFY_OR_DEBUG_ASSERT(dir.exists() && dir.isDir()) {
+        qWarning() << "Failed to check" << dir.location();
+        qWarning() << "Directory does not exist, is inaccessible or is not a directory";
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(dir.isReadable()) {
+        qWarning() << "Aborting to check" << dir.location();
+        qWarning() << "Directory can not be read";
+        return false;
+    }
+    const auto newCanonicalLocation = dir.canonicalLocation();
+    DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
+    const auto rootDirs =
+            m_pTrackCollection->getDirectoryDAO().loadAllDirectories(true /* ignore missing */);
+    for (auto&& oldDir : rootDirs) {
+        const auto oldCanonicalLocation = oldDir.canonicalLocation();
+        DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
+        if (mixxx::FileInfo::isRootSubCanonicalLocation(
+                    oldCanonicalLocation,
+                    newCanonicalLocation)) {
+            // New dir is a child of an existing dir, return
+            return true;
+        }
+    }
+    return false;
+}
+
 QString BrowseFeature::getRootViewHtml() const {
     const QString browseTitle = tr("Computer");
     const QString browseSummary = tr(
@@ -625,8 +688,12 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     return result;
 }
 
+QString BrowseFeature::getCurrentSearch() const {
+    return m_pCurrentTrackModel != nullptr ? m_pCurrentTrackModel->currentSearch() : QString();
+}
+
 void BrowseFeature::releaseBrowseThread() {
-    m_pBrowseModel->releaseBrowseThread();
+    m_pFileModel->releaseBrowseThread();
 }
 
 QString BrowseFeature::getLastRightClickedPath() const {
