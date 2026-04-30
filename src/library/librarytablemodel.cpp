@@ -5,8 +5,15 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
 #include "moc_librarytablemodel.cpp"
+
+namespace {
+
+const QString kTableName = QStringLiteral("library_view");
+// Track filter: exclude hidden and missing tracks
+const QString kTrackFilter = QStringLiteral("(mixxx_deleted=0 AND fs_deleted=0)");
+
+} // anonymous namespace
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
@@ -19,8 +26,6 @@ LibraryTableModel::~LibraryTableModel() {
 }
 
 void LibraryTableModel::setTableModel() {
-    const QString tableName("library_view");
-
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
@@ -29,13 +34,17 @@ void LibraryTableModel::setTableModel() {
             << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
 
     QSqlQuery query(m_database);
-    query.prepare(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
-            " AS SELECT " + columns.join(",") +
+    const QString queryString = QStringLiteral(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1"
+            " AS SELECT %2"
             " FROM library "
             "INNER JOIN track_locations "
             "ON library.location=track_locations.id "
-            "WHERE (mixxx_deleted=0 AND fs_deleted=0)");
+            "WHERE %3")
+                                        .arg(kTableName,
+                                                columns.join(","),
+                                                kTrackFilter);
+    query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -44,7 +53,7 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
-    setTable(tableName,
+    setTable(kTableName,
             LIBRARYTABLE_ID,
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
@@ -92,6 +101,10 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
+    // Note(ronso0) When adding capabilities, also check getCapabilities() in
+    // BrowseLibraryTableModel which builds on this class.
+    // For example BrowseLibraryTableModel does not accept drops and does not
+    // allow to hide tracks (it always shows ALL tracks).
     return Capability::ReceiveDrops |
             Capability::AddToTrackSet |
             Capability::AddToAutoDJ |
