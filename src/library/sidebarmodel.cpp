@@ -8,6 +8,7 @@
 #include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
+#include "util/logger.h"
 
 namespace {
 
