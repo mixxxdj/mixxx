@@ -676,14 +676,14 @@ void SidebarModel::saveSelectionToConfig(const QModelIndex& index) {
     }
 }
 
-void SidebarModel::restoreLastSelection() {
+bool SidebarModel::restoreLastSelection() {
     if (!m_pConfig) {
-        return;
+        return false;
     }
 
     QString savedFeatureIcon = m_pConfig->getValue(kLastSelectedFeatureConfigKey);
     if (savedFeatureIcon.isEmpty()) {
-        return;
+        return false;
     }
 
     QString savedChildDataStr = m_pConfig->getValue(kLastSelectedChildConfigKey);
@@ -711,7 +711,7 @@ void SidebarModel::restoreLastSelection() {
     }
 
     if (!pTargetFeature) {
-        return;
+        return false;
     }
 
     QModelIndex targetIndex = index(featureIndex, 0);
@@ -729,7 +729,7 @@ void SidebarModel::restoreLastSelection() {
         VERIFY_OR_DEBUG_ASSERT(!matches.isEmpty() && matches.first().isValid()) {
             // Child not found, select feature root
             emit selectIndex(targetIndex, true);
-            return;
+            return true;
         }
 
         // Translate child index to sidebar index
@@ -741,4 +741,5 @@ void SidebarModel::restoreLastSelection() {
     }
 
     emit selectIndex(targetIndex, true);
+    return true;
 }
