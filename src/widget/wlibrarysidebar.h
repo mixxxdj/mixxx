@@ -5,6 +5,7 @@
 #include <QTreeView>
 
 #include "library/library_decl.h"
+#include "preferences/usersettings.h"
 #include "widget/wbasewidget.h"
 
 class LibraryFeature;
