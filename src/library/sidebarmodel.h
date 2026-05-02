@@ -5,7 +5,7 @@
 #include <QModelIndex>
 #include <QVariant>
 
-#include "util/usersettings.h"
+#include "preferences/usersettings.h"
 
 class LibraryFeature;
 class QTimer;
