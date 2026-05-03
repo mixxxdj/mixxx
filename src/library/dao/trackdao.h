@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QList>
 #include <QObject>
 #include <QSet>
@@ -130,6 +132,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class LibraryScanner;
     friend class TrackCollection;
     friend class TrackAnalysisScheduler;
+    FRIEND_TEST(TrackDAOTest, markTrackLocationsAsVerifiedRecoversPresentFilesOnly);
 
     QList<TrackId> resolveTrackIds(
             const QStringList& pathList,
@@ -179,7 +182,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     // Scanning related calls.
     void markTrackLocationsAsVerified(const QStringList& locations) const;
-    void markTracksInDirectoriesAsVerified(const QStringList& directories) const;
     void cleanupTrackLocationsDirectory() const;
     void invalidateTrackLocationsInLibrary() const;
     void markUnverifiedTracksAsDeleted();
