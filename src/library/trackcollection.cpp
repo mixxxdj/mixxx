@@ -41,7 +41,7 @@ TrackCollection::TrackCollection(
     connect(&m_trackDao,
             &TrackDAO::tracksRemoved,
             this,
-            &TrackCollection::tracksRemoved,
+            &TrackCollection::tracksRemoved, // unused
             /*signal-to-signal*/ Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::forceModelUpdate,

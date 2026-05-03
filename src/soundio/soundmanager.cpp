@@ -27,8 +27,12 @@
 #include "soundio/soundmanagerios.h"
 #elif defined(Q_OS_ANDROID)
 #include <QtCore/private/qandroidextras_p.h>
+#include <android/api-level.h>
+#include <android/log.h>
 #include <jni.h>
 #include <pa_oboe.h>
+#include <pthread.h>
+#include <sys/syscall.h>
 
 #include <QJniObject>
 #endif
@@ -350,6 +354,7 @@ void SoundManager::queryDevicesPortaudio() {
                     QString name = device->callObjectMethod("getProductName",
                                                  "()Ljava/lang/CharSequence;")
                                            .toString();
+                    int32_t id = device->callMethod<jint>("getId");
                     auto channelCounts = device->callMethod<QJniArray<jint>>("getChannelCounts");
                     int channelCount = *std::max_element(
                             channelCounts.begin(), channelCounts.end());
@@ -361,10 +366,16 @@ void SoundManager::queryDevicesPortaudio() {
                     if (!sampleRates.isEmpty()) {
                         int sampleRate = *sampleRates.cbegin();
                         qDebug() << "audioManager - SampleRates:" << sampleRate;
-                        PaOboe_RegisterDevice(name.toStdString().c_str(),
+                        auto result = PaOboe_RegisterDevice(name.toStdString().c_str(),
+                                id,
                                 direction,
                                 channelCount,
                                 sampleRate);
+                        if (result != paNoError) {
+                            qWarning()
+                                    << "Error registering device to PortAudio:"
+                                    << Pa_GetErrorText(result);
+                        }
                     }
                 }
             };
@@ -397,8 +408,23 @@ void SoundManager::queryDevicesPortaudio() {
             qDebug() << "audioManager outputFramePerBuffer:" << outputFramePerBuffer;
             PaOboe_SetNativeBufferSize(outputFramePerBuffer);
         }).waitForFinished();
-        PaOboe_SetNumberOfBuffers(1);
+        PaOboe_SetNumberOfBuffers(4);
 
+        // The following snippets pins the audio thread to a performance core
+        int32_t thread32 = gettid();
+        uint mask = 0b10000;
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        for (uint32_t i = 0; i < 32; ++i) {
+            if ((mask >> i) & 1) {
+                CPU_SET(i, &cpuset);
+            }
+        }
+        if (sched_setaffinity(thread32, sizeof(cpu_set_t), &cpuset) != 0) {
+            __android_log_print(ANDROID_LOG_WARN, "mixxx", "Error setting CPU affinity: %d", errno);
+        } else {
+            __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "CPU affinity set");
+        }
 #endif
         err = Pa_Initialize();
         m_paInitialized = true;

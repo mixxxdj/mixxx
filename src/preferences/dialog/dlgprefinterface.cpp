@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QList>
 #include <QLocale>
+#include <QMainWindow>
 #include <QScreen>
 #include <QVariant>
 #include <QtGlobal>
@@ -234,8 +235,19 @@ DlgPrefInterface::DlgPrefInterface(
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    auto* pScreen =
-            mixxx::widgethelper::getScreen(*this);
+    QScreen* pScreen = nullptr;
+    const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
+    for (QWidget* pWidget : topLevelWidgets) {
+        // Ignore other popups and hidden track menus
+        QMainWindow* pMainWindow = qobject_cast<QMainWindow*>(pWidget);
+        if (pMainWindow) {
+            pScreen = mixxx::widgethelper::getScreen(*pMainWindow);
+            break;
+        }
+    }
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        pScreen = mixxx::widgethelper::getScreen(*this);
+    }
     if (!pScreen) {
         // Obtain the primary screen. This is necessary if no window is
         // available before the widget is displayed.
@@ -425,6 +437,8 @@ void DlgPrefInterface::slotSetTooltips() {
         m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
         m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
+    } else if (radioButtonTooltipsOnlyKbdShortcuts->isChecked()) {
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyKbdShortcuts;
     }
 }
 
@@ -591,6 +605,9 @@ void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
         break;
     case mixxx::preferences::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
+        break;
+    case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+        radioButtonTooltipsOnlyKbdShortcuts->setChecked(true);
         break;
     case mixxx::preferences::Tooltips::On:
     default:

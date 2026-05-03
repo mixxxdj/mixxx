@@ -27,7 +27,7 @@
 #include "lut_mk2.h"
 #include "pitch.h"
 #include "pitch_kalman.h"
-#include "delayline.h"
+#include "ringbuffer.h"
 
 #define TIMECODER_CHANNELS 2
 
@@ -58,7 +58,7 @@ struct timecoder_channel_mk2 {
     int rms, rms_deriv; /* RMS values for the signal and its derivative */
     signed int deriv, deriv_scaled; /* Derivative and its scaled version */
 
-    struct delayline delayline; /* needed for the Traktor MK2 demodulation */
+    struct ringbuffer *delayline; /* needed for the Traktor MK2 demodulation */
     struct ema_filter ema_filter;
     struct differentiator differentiator;
     struct root_mean_square rms_filter, rms_deriv_filter;
@@ -83,7 +83,7 @@ struct mk2_subcode {
     signed int avg_slope;
     bool recent_bit_flip;
 
-    struct delayline readings;
+    struct ringbuffer *readings;
     struct ema_filter ema_reading;
     struct ema_filter ema_slope;
 };

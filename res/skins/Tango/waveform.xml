@@ -23,7 +23,7 @@ Variables:
     <Children>
       <WidgetGroup><!-- Stem -->
         <Layout>vertical</Layout>
-        <SizePolicy>15f,min</SizePolicy>
+        <Size>240f,min</Size>
         <Children>
           <Template src="skins:Tango/stem_control.xml">
           </Template>

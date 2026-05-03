@@ -11,7 +11,7 @@ import "../Theme"
 Rectangle {
     id: root
 
-    property list<string> availableData: ["none", "title", "year", "remaining", "artist", "rating"]
+    property list<string> availableData: ["none", "title", "year", "time", "artist", "rating"]
     readonly property var currentTrack: deckPlayer?.currentTrack
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
     property bool editMode: false
@@ -98,18 +98,16 @@ Rectangle {
             roleValue: "year"
 
             Cell {
-                visible: root.width > 500 && root.currentTrack?.year
                 item.text: root.currentTrack?.year
+                visible: root.width > 500 && root.currentTrack?.year
             }
         }
         DelegateChoice {
-            roleValue: "remaining"
+            roleValue: "time"
 
             Cell {
                 visible: root.width > 450
-                readonly property real remaining: durationControl.value * (1 - playPositionControl.value)
-
-                item.text: `-${parseInt(remaining / 60).toString().padStart(2, '0')}:${parseInt(remaining % 60).toString().padStart(2, '0')}.${(remaining % 1).toFixed(1)}`
+                item.text: time.text
 
                 Mixxx.ControlProxy {
                     id: durationControl
@@ -122,6 +120,15 @@ Rectangle {
 
                     group: root.group
                     key: "playposition"
+                }
+
+                TrackTime {
+                    id: time
+                    display: Mixxx.Config.controlPositionDisplay
+                    elapsed: durationControl.value * playPositionControl.value
+                    mode: Mixxx.Config.controlTimeFormat
+                    remaining: durationControl.value * (1 - playPositionControl.value)
+                    visible: false
                 }
             }
         }
@@ -262,7 +269,7 @@ Rectangle {
             type: "year"
         }
         ListElement {
-            type: "remaining"
+            type: "time"
         }
     }
     ListModel {

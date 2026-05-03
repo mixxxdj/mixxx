@@ -115,6 +115,13 @@ void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
 }
 
+const QString BaseTrackTableModel::kDateFormatDefault = QString();
+QString BaseTrackTableModel::s_dateFormat = BaseTrackTableModel::kDateFormatDefault;
+
+void BaseTrackTableModel::setDateFormat(const QString& format) {
+    s_dateFormat = format;
+}
+
 BaseTrackTableModel::BaseTrackTableModel(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
@@ -127,9 +134,9 @@ BaseTrackTableModel::BaseTrackTableModel(
           m_trackPlayedColor(QColor(WTrackTableView::kDefaultTrackPlayedColor)),
           m_trackMissingColor(QColor(WTrackTableView::kDefaultTrackMissingColor)) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
-            &TrackDAO::forceModelUpdate,
+            &TrackDAO::tracksRemoved,
             this,
-            &BaseTrackTableModel::slotRefreshAllRows);
+            &BaseTrackTableModel::slotTracksRemoved);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::trackChanged,
             this,
@@ -360,7 +367,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new BPMDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return new CheckboxDelegate(pTableView, QStringLiteral("LibraryPlayedCheckbox"));
-    } else if (PlayerManager::numPreviewDecks() > 0 &&
+    } else if (PlayerInfo::instance().numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {
@@ -689,10 +696,10 @@ QVariant BaseTrackTableModel::roleValue(
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
                 // Timestamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
-                return mixxx::displayLocalDateTime(dt);
+                return mixxx::displayLocalDateTime(dt, s_dateFormat);
             }
             // For Date Added, use just the date: "5/20/98"
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
@@ -718,7 +725,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
                 return dt;
             }
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
@@ -1138,6 +1145,10 @@ void BaseTrackTableModel::slotRefreshOverviewRows(const QList<int>& rows) {
 
 void BaseTrackTableModel::slotRefreshAllRows() {
     select();
+}
+
+void BaseTrackTableModel::slotTracksRemoved(const QSet<TrackId>& trackIds) {
+    removeTrackRows(trackIds);
 }
 
 void BaseTrackTableModel::emitDataChangedForMultipleRowsInColumn(

@@ -22,7 +22,8 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: Delete obsolete files
-        if: env.SSH_AUTH_SOCK != null
+        # if: env.SSH_AUTH_SOCK != null
+        if: false
         run: |
           mkdir empty_folder
           echo 2.5.1 >> include_file.txt
@@ -33,13 +34,22 @@ jobs:
           SSH_HOST: downloads-hostgator.mixxx.org
           SSH_USER: mixxx
 
-      - name: Move manifest
+      - name: Remove folders
         if: env.SSH_AUTH_SOCK != null
         run: |
           ssh "${SSH_USER}@${SSH_HOST}" "
             set -euo pipefail
-            mv ${DESTDIR}/releases/2.5.3-3-g7a940a8588/manifest.json ${DESTDIR}/releases/2.5.3/manifest.json
-            rm -rf ${DESTDIR}/releases/2.5.3-3-g7a940a8588
+            rm -rf \"${DESTDIR}/releases/2.5.4-3-g8d7a9c728a\"
+            rm -rf \"${DESTDIR}/releases/2.5.5\"
+            rm -rf \"${DESTDIR}/releases/2.7-alpha-215-g1666d06877\"
+            rm -rf \"${DESTDIR}/snapshots/borrowable_ptr\"
+            rm -rf \"${DESTDIR}/snapshots/ci\"
+            rm -f \"${DESTDIR}/snapshots/2.5/mixxx-2.5.5-macosarm.dmg\"
+            rm -f \"${DESTDIR}/snapshots/2.5/mixxx-2.5.5-macosarm.dmg.sha256sum\"
+            rm -f \"${DESTDIR}/snapshots/2.5/mixxx-2.5.5-macosintel.dmg\"
+            rm -f \"${DESTDIR}/snapshots/2.5/mixxx-2.5.5-macosintel.dmg.sha256sum\"
+            rm -f \"${DESTDIR}/snapshots/2.5/mixxx-2.5.5-win64.msi\"
+            rm -f \"${DESTDIR}/snapshots/2.5/mixxx-2.5.5-win64.msi.sha256sum\"
           "
         env:
           DESTDIR: public_html/downloads

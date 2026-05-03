@@ -43,4 +43,10 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     QList<int> m_qualList;
     QList<int> m_qualVBRList;
     UserSettingsPointer m_pConfig;
+
+  protected:
+    // Provide config to base class to read channel mode from recording preferences
+    UserSettingsPointer getConfig() const override {
+        return m_pConfig;
+    }
 };

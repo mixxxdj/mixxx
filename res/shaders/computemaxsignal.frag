@@ -1,24 +1,22 @@
-#version 120
 #extension GL_EXT_gpu_shader4 : enable
 
 uniform int waveformLength;
 uniform int textureSize;
 uniform int textureStride;
-uniform float playPosition;
+uniform highp float playPosition;
 uniform int zoomFactor;
 uniform int width;
 uniform int signalFrameBufferRatio;
-uniform float allGain;
-uniform float lowGain;
-uniform float midGain;
-uniform float highGain;
-uniform float firstVisualIndex;
-uniform float lastVisualIndex;
+uniform highp float allGain;
+uniform highp float lowGain;
+uniform highp float midGain;
+uniform highp float highGain;
+uniform highp float firstVisualIndex;
+uniform highp float lastVisualIndex;
 
 uniform sampler2D waveformDataTexture;
 
-vec4 getWaveformData(float index)
-{
+highp vec4 getWaveformData(highp float index) {
     vec2 uv_data;
     uv_data.y = floor(index / float(textureStride));
     uv_data.x = floor(index - uv_data.y * float(textureStride));
@@ -28,19 +26,22 @@ vec4 getWaveformData(float index)
 
 void main(void)
 {
-    vec2 uv = gl_TexCoord[0].st;
+    highp vec2 uv = gl_TexCoord[0].st;
 
-    float new_currentIndex = floor(firstVisualIndex + uv.x * (lastVisualIndex - firstVisualIndex))*2;
+    highp float new_currentIndex =
+            floor(firstVisualIndex +
+                    uv.x * (lastVisualIndex - firstVisualIndex)) *
+            2.0;
     if (uv.y > 0.5) {
         new_currentIndex += 1;
     }
 
-    if (new_currentIndex < 0 || new_currentIndex > waveformLength - 1) {
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-      return;
+    if (new_currentIndex < 0.0 || new_currentIndex > float(waveformLength - 1)) {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+        return;
     }
 
-    vec4 new_currentData = getWaveformData(new_currentIndex);
+    highp vec4 new_currentData = getWaveformData(new_currentIndex);
 
     new_currentData *= allGain;
     new_currentData.x *= lowGain;
@@ -52,9 +53,9 @@ void main(void)
 
 
     int visualSamplePerPixel = zoomFactor;
-    float visualSampleRange = float(visualSamplePerPixel * width);
+    highp float visualSampleRange = float(visualSamplePerPixel * width);
 
-    float bufferPositionRange = visualSampleRange / float(waveformLength);
+    highp float bufferPositionRange = visualSampleRange / float(waveformLength);
 
     // uv.x is percentage across the texture of this pixel. subtract 0.5 to
     // transform to [-0.5, 0.5], scale to [-1, 1].

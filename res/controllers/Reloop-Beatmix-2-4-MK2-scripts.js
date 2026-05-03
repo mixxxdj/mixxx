@@ -13,7 +13,7 @@ const JogFlashCriticalTime = 15; // number of seconds to quickly blink at the en
 
 
 /************************  GPL v2 licence  *****************************
- * Reloop Beatmix 2/4 controller script
+ * Reloop Beatmix 2/4 MK2 controller script
  * Author: Sébastien Blaisot <sebastien@blaisot.org>
  *
  **********************************************************************
@@ -39,7 +39,7 @@ const JogFlashCriticalTime = 15; // number of seconds to quickly blink at the en
  ***********************************************************************
  *                           GPL v2 licence
  *                           --------------
- * Reloop Beatmix controller script script 2.0.0 for Mixxx 2.4+
+ * Reloop Beatmix 2/4 MK2 controller script 2.0.0 for Mixxx 2.4+
  * Copyright (C) 2016 Sébastien Blaisot
  *
  * This program is free software; you can redistribute it and/or
@@ -409,9 +409,17 @@ ReloopBeatmix24.WheelTouch = function(channel, control, value, status, group) {
 ReloopBeatmix24.WheelTurn = function(channel, control, value, status, group) {
     const newValue = value - 64;
     const deck = parseInt(group.substr(8, 1), 10);
+    const isShifted = (control === 0x70);
 
-    // In either case, register the movement
-    if (engine.isScratching(deck)) {
+    if (isShifted) {
+        // Shift+jog wheel: quick seek through track
+        if (engine.getValue(group, "track_loaded")) {
+            const currentPos = engine.getValue(group, "playposition");
+            // Seek by ~0.5% of track per tick
+            const seekAmount = (newValue / 64) * 0.005;
+            engine.setValue(group, "playposition", Math.max(0, Math.min(1, currentPos + seekAmount)));
+        }
+    } else if (engine.isScratching(deck)) {
         engine.scratchTick(deck, newValue); // Scratch!
     } else {
         engine.setValue(group, "jog", newValue / 5); // Pitch bend

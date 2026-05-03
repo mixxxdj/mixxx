@@ -132,6 +132,38 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     if (!con.isNull()) {
         SKIN_WARNING(node, context, QStringLiteral("Additional Connections are not allowed"));
     }
+
+    // Create the list of ConfigKeys and translatable command strings
+    // for the keyboard shortcut tooltip and store it in WBaseWidget.
+    // KeyboardEventFilter::updateWidgetShortcuts() will fetch it to
+    // update the tooltip when the keyboard mapping is (re)loaded.
+    QList<std::pair<ConfigKey, QString>> shortcutKeys;
+    shortcutKeys.emplace_back(getLeftClickConfigKey(), tr("activate"));
+    shortcutKeys.emplace_back(getClearConfigKey(), tr("clear"));
+    // Add dedicated cue/loop cue controls
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("set")), tr("set"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("setcue")), tr("set cue"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("setloop")), tr("set loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("goto")), tr("go to"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("gotoandplay")), tr("go to and play"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("gotoandstop")), tr("go to and stop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("gotoandloop")), tr("go to and loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("cueloop")), tr("cue loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("activatecue")), tr("activat cue"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("activateloop")), tr("activate loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("activate_preview")), tr("activate preview"));
+    setShortcutControlsAndCommands(shortcutKeys);
 }
 
 bool WHotcueButton::isActive() const {

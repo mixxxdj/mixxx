@@ -226,7 +226,7 @@ QString TextFilterNode::toSql() const {
     }
     QStringList searchClauses;
     for (const auto& sqlColumn : m_sqlColumns) {
-        searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
+        searchClauses << QString("%1 IS NOT NULL AND %1 LIKE %2").arg(sqlColumn, escapedArgument);
     }
     return concatSqlClauses(searchClauses, "OR");
 }
@@ -857,6 +857,7 @@ QString YearFilterNode::toSql() const {
 // TODO Convert to DateFilterNode and allow searching for "last_played"
 DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
         : m_operatorQuery(false),
+          m_equalsQuery(false),
           m_operator("=") {
     QDateTime date;
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);

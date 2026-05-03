@@ -154,6 +154,26 @@ BpmControl::BpmControl(const QString& group,
                     slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
                 }
             });
+    m_pBeatsFourFifths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fourfifths"), false);
+    connect(m_pBeatsFourFifths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FourFifths);
+                }
+            });
+    m_pBeatsFiveFourths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fivefourths"), false);
+    connect(m_pBeatsFiveFourths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FiveFourths);
+                }
+            });
     m_pBeatsFourThirds = std::make_unique<ControlPushButton>(
             ConfigKey(group, "beats_set_fourthirds"), false);
     connect(m_pBeatsFourThirds.get(),
@@ -581,7 +601,8 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         adjustment = 1.0;
         // When updating the user offset, make sure to remove the existing offset or else it
         // will get double-applied.
-        m_dUserOffset.setValue(error + curUserOffset);
+        double offset = std::fmod(error + curUserOffset, 1.0f);
+        m_dUserOffset.setValue(offset);
     } else {
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
