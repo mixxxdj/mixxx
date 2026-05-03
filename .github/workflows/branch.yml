@@ -1,12 +1,6 @@
-name: Pull request or branch build
+name: Branch build
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - edited
   push:
     branches:
       - "*"
@@ -23,11 +17,10 @@ jobs:
     name: Check if build should be stopped
     runs-on: ubuntu-latest
     outputs:
-      result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
+      result: ${{ steps.stop-build.outputs.result }}
     steps:
       - name: Check if there is an open PR for this branch
         id: stop-build
-        if: ${{ github.event_name == 'push' }}
         uses: actions/github-script@v8
         env:
           ORGANIZATION: mixxxdj
@@ -55,17 +48,13 @@ jobs:
       - stop-build
     uses: ./.github/workflows/pre-commit.yml
     with:
-      pull_request: ${{ github.event_name == 'pull_request' }}
+      pull_request: false
 
   checks:
     if: needs.stop-build.outputs.result == 'false'
     needs:
       - stop-build
     uses: ./.github/workflows/checks.yml
-
-  git:
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/git.yml
 
   build:
     if: needs.stop-build.outputs.result == 'false'
@@ -75,17 +64,3 @@ jobs:
     with:
       branch: ${{ github.head_ref || github.ref_name }}
       ref: ${{ github.ref }}
-
-  # This task is used as a probe for auto merge
-  # In the future, it could also be used to perform a status update (e.g once the whole CI is passing + is ready for review, add a specific label such as `need review`)
-  ready:
-    name: Ready to merge
-    needs:
-      - pre-commit
-      - checks
-      - git
-      - build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ready to go
-        run: "exit 0"
