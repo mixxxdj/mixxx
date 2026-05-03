@@ -623,11 +623,15 @@ TEST_F(SoundSourceProxyTest, seekBoundaries) {
                 const SINT sampleCount =
                         pSeekReadSource->getSignalInfo().frames2samples(
                                 seekSampleFrames.frameLength());
-                expectDecodedSamplesEqual(
-                        sampleCount,
+                expectDecodedSamplesEqual(sampleCount,
                         &contReadData[0],
                         &seekReadData[0],
-                        "Decoding mismatch after seeking");
+                        QString("Decoding mismatch after seeking [%1 -> %2]")
+                                .arg(QString::number(
+                                             readFrameIndexRange.start()),
+                                        QString::number(
+                                                readFrameIndexRange.end()))
+                                .toLatin1());
             }
         }
     }
