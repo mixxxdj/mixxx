@@ -89,7 +89,17 @@ bool AbletonLink::isPlaying() const {
     }
 
     // Note, that ableton::Link::SessionState.isPlaying() is an optional Ableton
-    // Link feature (Start/Stop sync) and shouldn't be taken into account here.
+    // Link feature which is unrelated in functionality to the same named isPlaying()
+    // state of Mixxx syncables.
+
+    // If no Mixxx deck is playing, but Link is enabled and has peers,
+    // we sync the next deck with Sync enabled to BPM and phase
+    // of the running Link session when play button is pressed,
+    // to achieve this we consider the syncable AbletonLink as playing in this case.
+
+    // If Link is disabled or there is no peer connected,
+    // and a Mixxx deck is started, the deck will play with original BPM,
+    // to achieve this, we consider the syncable AbletonLink as not playing in this case
     return true;
 }
 bool AbletonLink::isAudible() const {
