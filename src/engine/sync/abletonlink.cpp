@@ -53,11 +53,9 @@ AbletonLink::~AbletonLink() {
     m_pLink->setNumPeersCallback([](std::size_t) {});
     m_pLink->enable(false);
 
-    // Destroy control objects before releasing Link.
-    m_pNumLinkPeers.reset();
-    m_pLinkButton.reset();
-
-    // Finally release Link
+    // Destroy Link first to ensure all Link-managed threads are stopped before
+    // automatically destroying m_pNumLinkPeers and m_pLinkButton afterwards,
+    // which may be accessed by in-flight callbacks otherwise.
     m_pLink.reset();
 }
 
