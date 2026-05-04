@@ -90,9 +90,7 @@ void QmlWaveformDisplay::setPosition(double value) {
     }
     m_visualPlayPosition->set(std::clamp(value, 0.0, 1.0),
             1.0,
-            static_cast<int>(1024) /
-                    (m_pTrack->internal()->getBitrate() *
-                            m_pTrack->internal()->getDuration()),
+            0,
             0.0,
             0.0,
             SlipModeState::Disabled,
@@ -102,8 +100,7 @@ void QmlWaveformDisplay::setPosition(double value) {
             0,
             0,
             m_pTrack->internal()->getDuration(),
-            1024 / mixxx::kEngineChannelOutputCount /
-                    m_pTrack->internal()->getSampleRate() * 1000000.0);
+            0);
     update();
 }
 
@@ -124,9 +121,9 @@ void QmlWaveformDisplay::setStaticTrack(QmlTrackProxy* track) {
     setVisualPlayPosition(m_visualPlayPosition);
     m_visualPlayPosition->set(0.0,
             1.0,
-            static_cast<int>(1024) /
-                    (m_pTrack->internal()->getBitrate() *
-                            m_pTrack->internal()->getDuration()),
+            1024. /
+                    static_cast<double>(m_pTrack->internal()->getBitrate()) *
+                    m_pTrack->internal()->getDuration(),
             0.0,
             0.0,
             SlipModeState::Disabled,
@@ -136,8 +133,8 @@ void QmlWaveformDisplay::setStaticTrack(QmlTrackProxy* track) {
             0,
             0,
             m_pTrack->internal()->getDuration(),
-            1024 / mixxx::kEngineChannelOutputCount /
-                    m_pTrack->internal()->getSampleRate() * 1000000.0);
+            1024. / static_cast<double>(mixxx::kEngineChannelOutputCount) /
+                    static_cast<double>(m_pTrack->internal()->getSampleRate()) * 1000000.0);
     setCurrentTrack(track->internal());
     emit trackChanged(track);
     emit groupChanged("");
@@ -220,7 +217,8 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
         m_rendererStack.clear();
         for (auto* pQmlRenderer : std::as_const(m_waveformRenderers)) {
             if (!pQmlRenderer->isSupported()) {
-                qDebug() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
+                qWarning() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
+                continue;
             }
             auto renderer = pQmlRenderer->create(this, m_options);
             // FIXME Some renderer will return nullptr till

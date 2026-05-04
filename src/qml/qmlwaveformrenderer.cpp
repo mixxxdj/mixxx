@@ -123,11 +123,13 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererRGB::create(
         // FIXME WaveformRendererTextured is currently not supported on SG (#14990)
         // pRenderer.reset(new allshader::WaveformRendererTextured(
         //     waveformWidget, ::WaveformWidgetType::RGB, m_position, options));
-    } else {
+        qWarning() << "Waveform high details option is currently not supported "
+                      "on scene graph backend. Ignoring";
+        options ^= allshader::WaveformRendererSignalBase::Option::HighDetail;
+    }
         pRenderer.reset(new allshader::WaveformRendererRGB(
                 waveformWidget, m_position, options));
         setup(dynamic_cast<allshader::WaveformRendererSignalBase*>(pRenderer.get()));
-    }
 
     return QmlWaveformRendererFactory::Renderer{
             dynamic_cast<::WaveformRendererAbstract*>(pRenderer.get()),
@@ -144,11 +146,13 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererFiltered::create(
         // (#14990) pRenderer.reset(new allshader::WaveformRendererTextured(
         //     waveformWidget, m_stacked ? ::WaveformWidgetType::Stacked :
         //     ::WaveformWidgetType::Filtered, m_position, options));
-    } else {
+        qWarning() << "Waveform high details option is currently not supported "
+                      "on scene graph backend. Ignoring";
+        options ^= allshader::WaveformRendererSignalBase::Option::HighDetail;
+    }
         pRenderer.reset(new allshader::WaveformRendererFiltered(
                 waveformWidget, m_stacked, options));
         setup(dynamic_cast<allshader::WaveformRendererSignalBase*>(pRenderer.get()));
-    }
 
     return QmlWaveformRendererFactory::Renderer{
             dynamic_cast<::WaveformRendererAbstract*>(pRenderer.get()),

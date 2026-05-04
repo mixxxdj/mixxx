@@ -23,9 +23,9 @@
                     value) {                                                \
         if (value == DEFAULT) {                                             \
             m_pConfig->remove(ConfigKey(GROUP, KEY));                       \
-            return;                                                         \
+        } else {                                                            \
+            m_pConfig->setValue(ConfigKey(GROUP, KEY), value);              \
         }                                                                   \
-        m_pConfig->setValue(ConfigKey(GROUP, KEY), value);                  \
         emit NAME##Changed();                                               \
     }
 
@@ -229,9 +229,14 @@ PROPERTY_IMPL_GETTER(kWaveformGroup,
         waveformOptions,
         QmlWaveformDisplay::Option::None);
 
-void QmlConfigProxy ::set_waveformOptions(QmlWaveformDisplay ::Options value) {
-    m_pConfig->setValue(ConfigKey(kWaveformGroup, kWaveformOptionsKey), static_cast<int>(value));
-    waveformOptionsChanged();
+void QmlConfigProxy ::set_waveformOptions(QmlWaveformDisplay::Options value) {
+    if (value == QmlWaveformDisplay::Option::None) {
+        m_pConfig->remove(ConfigKey(kWaveformGroup, kWaveformOptionsKey));
+    } else {
+        m_pConfig->setValue(ConfigKey(kWaveformGroup, kWaveformOptionsKey),
+                static_cast<int>(value));
+    }
+    emit waveformOptionsChanged();
 }
 
 PROPERTY_IMPL(kWaveformGroup, kBeatGridAlphaKey, double, waveformBeatGridAlpha, 90);
