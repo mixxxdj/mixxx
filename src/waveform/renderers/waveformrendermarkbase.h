@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <optional>
 
 #include "skin/legacy/skincontext.h"
 #include "util/class.h"

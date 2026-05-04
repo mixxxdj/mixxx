@@ -263,7 +263,7 @@ class WaveformMark {
   private:
     WaveformMark(
             const QString& group,
-            QString positionControl,
+            const QString& positionControl,
             const QString& visibilityControl,
             const QString& textColor,
             const QString& markAlign,
@@ -279,8 +279,8 @@ class WaveformMark {
             float disabledOpacity = 1.0f,
             float enabledOpacity = 1.0f);
 
-    // Check whether or not there is issues with this marker definition. If
-    // there is issues, the first one is returned
+    // Check whether or not there are issues with this marker definition. If
+    // there are issues, the first one is returned
     std::optional<WaveformMark::WaveformMarkConstructionError> validate() const;
 
     QImage performImageGeneration(float devicePixelRatio,

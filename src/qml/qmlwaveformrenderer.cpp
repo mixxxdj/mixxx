@@ -31,26 +31,26 @@ QString waveformMarkerErrorToString(
         const QString& pixmap,
         const QString& endPixmap,
         const QString& icon) {
-    QString errorMessage = QStringLiteral("Invalid marker: ");
+    QString errorMessage = QObject::tr("Invalid marker: ");
     switch (error) {
     case WaveformMark::WaveformMarkConstructionError::EndIconInvalidArgumentCount:
         errorMessage.append(
-                QStringLiteral("unexpected number of arguments in endIcon: %1")
+                QObject::tr("unexpected number of arguments in endIcon: %1")
                         .arg(endIcon));
         break;
     case WaveformMark::WaveformMarkConstructionError::PixmapNotFound:
-        errorMessage.append(QStringLiteral("path %1 for pixmap cannot be found").arg(pixmap));
+        errorMessage.append(QObject::tr("path %1 for pixmap cannot be found").arg(pixmap));
         break;
     case WaveformMark::WaveformMarkConstructionError::EndPixmapNotFound:
         errorMessage.append(
-                QStringLiteral("path %1 for end pixmap cannot be found")
+                QObject::tr("path %1 for end pixmap cannot be found")
                         .arg(endPixmap));
         break;
     case WaveformMark::WaveformMarkConstructionError::IconNotFound:
-        errorMessage.append(QStringLiteral("path %1 for icon cannot be found").arg(icon));
+        errorMessage.append(QObject::tr("path %1 for icon cannot be found").arg(icon));
         break;
     case WaveformMark::WaveformMarkConstructionError::EndIconNotFound:
-        errorMessage.append(QStringLiteral("path %1 for end icon cannot be found").arg(endIcon));
+        errorMessage.append(QObject::tr("path %1 for end icon cannot be found").arg(endIcon));
         break;
     default:
         DEBUG_ASSERT(!"unreachable");

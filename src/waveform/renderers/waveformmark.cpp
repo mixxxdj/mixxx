@@ -2,14 +2,12 @@
 
 #include <QOpenGLTexture>
 #include <QPainterPath>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringLiteral>
 #include <QSvgRenderer>
 #include <QtDebug>
 #include <algorithm>
-#include <iterator>
 #include <memory>
-#include <tuple>
 #include <vector>
 
 #include "skin/legacy/skincontext.h"
@@ -103,7 +101,7 @@ bool isShowUntilNextPositionControl(const QString& positionControl) {
 
 WaveformMark::WaveformMark(
         const QString& group,
-        QString positionControl,
+        const QString& aPositionControl,
         const QString& visibilityControl,
         const QString& textColor,
         const QString& markAlign,
@@ -133,6 +131,7 @@ WaveformMark::WaveformMark(
           m_iPriority(priority),
           m_iHotCue(hotCue),
           m_showUntilNext{} {
+    QString positionControl = aPositionControl;
     QString endPositionControl;
     QString typeControl;
     QString statusControl;
@@ -666,7 +665,7 @@ std::optional<WaveformMark::WaveformMarkConstructionError> WaveformMark::validat
         return true;
     };
 
-    std::vector<std::tuple<QString, WaveformMarkConstructionError>> pathList = {
+    std::vector<std::pair<QString, WaveformMarkConstructionError>> pathList = {
             {m_pixmapPath, WaveformMarkConstructionError::PixmapNotFound},
             {m_endPixmapPath, WaveformMarkConstructionError::EndPixmapNotFound},
             {m_iconPath, WaveformMarkConstructionError::IconNotFound},
