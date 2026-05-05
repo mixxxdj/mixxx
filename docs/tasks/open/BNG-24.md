@@ -7,7 +7,7 @@ effort: medium
 group: BNG
 package: root
 labels: [bungee, pr-readiness, trunk-driven-development]
-blocked_by: [BNG-22, BNG-23]
+blocked_by: [BNG-22, BNG-23, BNG-25, BNG-26, BNG-27, BNG-28]
 created: '2026-05-05'
 ---
 

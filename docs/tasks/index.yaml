@@ -1,9 +1,9 @@
 tasks:
   BNG-17:
     labels:
-      - "'bungee'"
-      - "'planning'"
-      - "'maintainer-feedback'"
+      - bungee
+      - planning
+      - maintainer-feedback
     blocked_by: []
     created: "2026-05-05"
     effort: small
@@ -93,24 +93,27 @@ tasks:
       - vendor-removal
       - cmake
     blocked_by:
-      - BNG-19
-      - BNG-20
+      - BNG-21
+      - BNG-26
     file: open/BNG-22.md
     created: "2026-05-05"
   BNG-23:
-    title: Update packaging and CI paths for non-vendored Bungee
+    title: Update packaging and CI paths for non-vendored Bungee (umbrella)
     status: open
-    priority: medium
-    effort: medium
+    priority: high
+    effort: large
     group: BNG
     package: root
     labels:
       - bungee
       - packaging
       - ci
+      - umbrella
     blocked_by:
-      - BNG-20
-      - BNG-22
+      - BNG-25
+      - BNG-26
+      - BNG-27
+      - BNG-28
     file: open/BNG-23.md
     created: "2026-05-05"
   BNG-24:
@@ -127,6 +130,88 @@ tasks:
     blocked_by:
       - BNG-22
       - BNG-23
+      - BNG-25
+      - BNG-26
+      - BNG-27
+      - BNG-28
     file: open/BNG-24.md
+    created: "2026-05-05"
+  BNG-25:
+    title: Add Eigen3 + pffft as ExternalProject_Add targets
+    status: open
+    priority: high
+    effort: medium
+    group: BNG
+    package: root
+    labels:
+      - bungee
+      - cmake
+      - externalproject
+      - eigen3
+      - pffft
+    blocked_by:
+      - BNG-21
+    file: open/BNG-25.md
+    created: "2026-05-05"
+  BNG-26:
+    title: Wire Eigen3 + pffft ExternalProjects into bungee_external; remove vendored fallthrough
+    status: open
+    priority: high
+    effort: medium
+    group: BNG
+    package: root
+    labels:
+      - bungee
+      - cmake
+      - externalproject
+      - vendor-removal
+    blocked_by:
+      - BNG-25
+    file: open/BNG-26.md
+    created: "2026-05-05"
+  BNG-27:
+    title: Add Bungee, Eigen3, pffft as Flatpak modules
+    status: open
+    priority: high
+    effort: medium
+    group: BNG
+    package: root
+    labels:
+      - bungee
+      - flatpak
+      - packaging
+    blocked_by:
+      - BNG-26
+    file: open/BNG-27.md
+    created: "2026-05-05"
+  BNG-28:
+    title: Update GitHub Actions workflows for non-vendored Bungee
+    status: open
+    priority: high
+    effort: small
+    group: BNG
+    package: root
+    labels:
+      - bungee
+      - ci
+      - github-actions
+    blocked_by:
+      - BNG-26
+    file: open/BNG-28.md
+    created: "2026-05-05"
+  BNG-29:
+    title: Reorganize Bungee patches to cmake/patches/ (deferred)
+    status: open
+    priority: low
+    effort: small
+    group: BNG
+    package: root
+    labels:
+      - bungee
+      - cmake
+      - deferred
+      - refactor
+    blocked_by: []
+    file: open/BNG-29.md
     created: "2026-05-05"
 features: "[]"
