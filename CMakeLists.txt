@@ -319,6 +319,15 @@ if(DEFINED MIXXX_VCPKG_ROOT)
     elseif(WIN32)
       list(APPEND VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/windows")
     endif()
+    # BNG-20: temporary in-tree overlay for the Bungee port until
+    # mixxxdj/vcpkg ships it.  Appended last so an upstream/mixxxdj/vcpkg
+    # version of the same port wins automatically once it lands.
+    # See cmake/vcpkg-overlay-ports/bungee/README.md for removal plan.
+    list(
+      APPEND
+      VCPKG_OVERLAY_PORTS
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/vcpkg-overlay-ports"
+    )
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
