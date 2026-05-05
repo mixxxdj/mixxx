@@ -65,7 +65,7 @@ tasks:
     completed: "2026-05-05"
   BNG-21:
     title: Implement approved source fallback and CMake-version selection
-    status: open
+    status: done
     priority: medium
     effort: medium
     group: BNG
@@ -78,8 +78,9 @@ tasks:
     blocked_by:
       - BNG-18
       - BNG-19
-    file: open/BNG-21.md
+    file: done/BNG-21.md
     created: "2026-05-05"
+    completed: "2026-05-05"
   BNG-22:
     title: Remove vendored Bungee source and direct-build wiring
     status: open

@@ -1,7 +1,7 @@
 ---
 id: BNG-21
 title: "Implement approved source fallback and CMake-version selection"
-status: open
+status: done
 priority: medium
 effort: medium
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, cmake, externalproject, fallback]
 blocked_by: [BNG-18, BNG-19]
 created: '2026-05-05'
+completed: '2026-05-05'
 ---
 
 ## BNG-21: Implement approved source fallback and CMake-version selection

@@ -4638,14 +4638,45 @@ option(
   "Freeze Bungee on fatal signals in Debug builds so a debugger can attach (non-Windows only)"
   OFF
 )
+option(
+  BUNGEE_FETCH_FALLBACK
+  "Fetch and build Bungee via ExternalProject_Add when no system or vcpkg package is found (BNG-21)"
+  ON
+)
+# BNG-21: Bungee version pinned for the ExternalProject_Add source-fetch path.
+# Match the version in cmake/vcpkg-overlay-ports/bungee/vcpkg.json so a future
+# Bungee bump can be coordinated across both providers in a single PR.
+set(BUNGEE_FETCH_VERSION "2.4.15")
+set(
+  BUNGEE_FETCH_URL_HASH
+  "aa94ffe8ba49bcb916f454c5221d3480ae880f199e1516de31585924398ca67a"
+)
 if(BUNGEE)
+  # BNG-21: Bungee upstream pins cmake_minimum_required(VERSION 3.30...3.31)
+  # as a policy choice (the actual CMake commands work in 3.21+).  The
+  # ExternalProject_Add fallback patches that minimum down so older host
+  # CMake can build it, but the build is unsupported by Bungee maintainers.
+  if(CMAKE_VERSION VERSION_LESS 3.30)
+    message(
+      WARNING
+      "Bungee upstream declares cmake_minimum_required(VERSION 3.30...3.31). "
+      "You are running CMake ${CMAKE_VERSION}. Mixxx will patch the Bungee "
+      "build to allow this older CMake when using the source fallback, but "
+      "the build is unsupported by the Bungee maintainers. If the Bungee "
+      "build fails, install CMake 3.30 or newer (Kitware PPA on Linux, "
+      "Homebrew on macOS) or use a system/vcpkg Bungee package instead."
+    )
+  endif()
+
   # ── Dependency discovery ───────────────────────────────────────────────────
   # All discovery paths normalize to an imported target named Bungee::Bungee so
   # the rest of the build is provider-agnostic.  Discovery order:
   #   1. Upstream Bungee CONFIG package
   #   2. vcpkg unofficial-bungee (microsoft/vcpkg PR #50120, merged 2026-03-19)
   #   3. Module discovery via cmake/modules/FindBungee.cmake (pkg-config etc.)
-  #   4. Vendored lib/bungee/ fallback (temporary — removed in BNG-22)
+  #   4. ExternalProject_Add source-fetch fallback (BNG-21, opt-out via
+  #      -DBUNGEE_FETCH_FALLBACK=OFF; requires Eigen3 + pffft CMake packages)
+  #   5. Vendored lib/bungee/ fallback (temporary — removed in BNG-22)
 
   # 1. Upstream Bungee CONFIG package (preferred; available once Bungee ships
   #    a proper BungeeConfig.cmake upstream).
@@ -4674,16 +4705,171 @@ if(BUNGEE)
     find_package(Bungee MODULE QUIET)
   endif()
 
+  # 4. ExternalProject_Add source-fetch fallback (BNG-21).
+  #    Opt-out via -DBUNGEE_FETCH_FALLBACK=OFF.  Requires the `patch` tool
+  #    and Eigen3 + pffft as CMake packages (the patches reused from the
+  #    vcpkg overlay port replace Bungee's bundled submodule includes with
+  #    proper find_package() lookups).  When the prerequisites are missing
+  #    we emit a clear status line and fall through to the vendored
+  #    fallback so this branch never breaks configure.
+  if(NOT Bungee_FOUND AND BUNGEE_FETCH_FALLBACK)
+    find_package(Eigen3 CONFIG QUIET)
+    find_package(pffft CONFIG QUIET)
+    find_program(BUNGEE_PATCH_EXECUTABLE NAMES patch)
+
+    set(_bungee_fetch_missing "")
+    if(NOT TARGET Eigen3::Eigen)
+      list(APPEND _bungee_fetch_missing "Eigen3 (CMake CONFIG package)")
+    endif()
+    if(NOT TARGET pffft::pffft)
+      list(APPEND _bungee_fetch_missing "pffft (CMake CONFIG package)")
+    endif()
+    if(NOT BUNGEE_PATCH_EXECUTABLE)
+      list(APPEND _bungee_fetch_missing "GNU patch executable")
+    endif()
+
+    if(_bungee_fetch_missing)
+      string(
+        REPLACE
+        ";"
+        ", "
+        _bungee_fetch_missing_str
+        "${_bungee_fetch_missing}"
+      )
+      message(
+        STATUS
+        "Bungee: ExternalProject_Add fallback unavailable "
+        "(missing: ${_bungee_fetch_missing_str}). Falling back to vendored "
+        "lib/bungee/. To use the source-fetch path install Eigen3 + pffft "
+        "and ensure `patch` is on PATH."
+      )
+    else()
+      message(
+        STATUS
+        "Bungee: building from upstream tarball v${BUNGEE_FETCH_VERSION} via "
+        "ExternalProject_Add (BNG-21)."
+      )
+
+      set(
+        BUNGEE_FETCH_INSTALL_DIR
+        "${CMAKE_CURRENT_BINARY_DIR}/lib/bungee-install"
+      )
+      set(
+        BUNGEE_FETCH_LIBRARY_RELATIVE
+        "lib/${CMAKE_STATIC_LIBRARY_PREFIX}bungee${CMAKE_STATIC_LIBRARY_SUFFIX}"
+      )
+      set(
+        BUNGEE_FETCH_LIBRARY
+        "${BUNGEE_FETCH_INSTALL_DIR}/${BUNGEE_FETCH_LIBRARY_RELATIVE}"
+      )
+
+      # CMake does not pass list-of-paths variables properly to external
+      # projects; pipe-delimit them to survive the boundary.
+      string(
+        REPLACE
+        ";"
+        "|"
+        BUNGEE_FETCH_PIPE_PREFIX_PATH
+        "${CMAKE_PREFIX_PATH}"
+      )
+      string(
+        REPLACE
+        ";"
+        "|"
+        BUNGEE_FETCH_PIPE_FIND_ROOT_PATH
+        "${CMAKE_FIND_ROOT_PATH}"
+      )
+      string(
+        REPLACE
+        ";"
+        "|"
+        BUNGEE_FETCH_PIPE_MODULE_PATH
+        "${CMAKE_MODULE_PATH}"
+      )
+
+      if(MSVC)
+        set(BUNGEE_FETCH_APPLY_MSVC_PATCHES TRUE)
+      else()
+        set(BUNGEE_FETCH_APPLY_MSVC_PATCHES FALSE)
+      endif()
+
+      ExternalProject_Add(
+        bungee_external
+        URL
+          "https://github.com/bungee-audio-stretch/bungee/archive/refs/tags/v${BUNGEE_FETCH_VERSION}.tar.gz"
+        URL_HASH SHA256=${BUNGEE_FETCH_URL_HASH}
+        DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+        DOWNLOAD_NAME "bungee-${BUNGEE_FETCH_VERSION}.tar.gz"
+        PREFIX "bungee-${BUNGEE_FETCH_VERSION}"
+        INSTALL_DIR "${BUNGEE_FETCH_INSTALL_DIR}"
+        LIST_SEPARATOR "|"
+        PATCH_COMMAND
+          ${CMAKE_COMMAND}
+          -DMIXXX_BUNGEE_PATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/bungee
+          -DMIXXX_BUNGEE_OVERLAY_DIR=${CMAKE_CURRENT_SOURCE_DIR}/cmake/vcpkg-overlay-ports/bungee
+          -DMIXXX_BUNGEE_PATCH_EXECUTABLE=${BUNGEE_PATCH_EXECUTABLE}
+          -DMIXXX_BUNGEE_APPLY_MSVC_PATCHES=${BUNGEE_FETCH_APPLY_MSVC_PATCHES}
+          -P
+          ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/bungee/apply-patches.cmake
+        CMAKE_ARGS
+          -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+          -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+          -DCMAKE_INSTALL_LIBDIR:PATH=lib
+          -DCMAKE_PREFIX_PATH=${BUNGEE_FETCH_PIPE_PREFIX_PATH}
+          -DCMAKE_FIND_ROOT_PATH=${BUNGEE_FETCH_PIPE_FIND_ROOT_PATH}
+          -DCMAKE_MODULE_PATH=${BUNGEE_FETCH_PIPE_MODULE_PATH}
+          -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+          -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+          -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+          -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
+          -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+          -DBUNGEE_BUILD_SHARED_LIBRARY=OFF -DBUNGEE_INSTALL_FRAMEWORK=OFF
+          -DBUNGEE_VERSION=${BUNGEE_FETCH_VERSION} -DBUNGEE_PRESET=
+        BUILD_BYPRODUCTS "${BUNGEE_FETCH_LIBRARY}"
+        EXCLUDE_FROM_ALL TRUE
+      )
+
+      # CMake checks INTERFACE_INCLUDE_DIRECTORIES at configure time, so the
+      # include directory must exist before the imported target consumes it.
+      file(MAKE_DIRECTORY "${BUNGEE_FETCH_INSTALL_DIR}/include")
+
+      if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
+        # BUILD_BYPRODUCTS only forces a re-link with the Ninja generator;
+        # for Make/Xcode mirror the libdjinterop/libkeyfinder pattern so that
+        # mixxx-lib's autogen pipeline also depends on bungee_external.
+        add_custom_command(
+          OUTPUT "${BUNGEE_FETCH_LIBRARY}"
+          DEPENDS bungee_external
+          COMMAND ${CMAKE_COMMAND} -E echo "bungee_external installed"
+          COMMENT
+            "Tell 'make' that bungee_external is required for the bungee target"
+        )
+      endif()
+
+      add_library(Bungee::Bungee STATIC IMPORTED)
+      set_target_properties(
+        Bungee::Bungee
+        PROPERTIES
+          IMPORTED_LOCATION "${BUNGEE_FETCH_LIBRARY}"
+          INTERFACE_INCLUDE_DIRECTORIES "${BUNGEE_FETCH_INSTALL_DIR}/include"
+          INTERFACE_LINK_LIBRARIES "pffft::pffft;Eigen3::Eigen"
+      )
+      add_dependencies(Bungee::Bungee bungee_external)
+      set(Bungee_FOUND TRUE)
+    endif()
+  endif()
+
   if(Bungee_FOUND)
     if(BUNGEE_PETRIFY_DEBUG)
       message(
         WARNING
         "BUNGEE_PETRIFY_DEBUG has no effect when Bungee is supplied by a "
-        "package or vcpkg port rather than the vendored source tree."
+        "package, vcpkg port, or ExternalProject_Add fetch rather than the "
+        "vendored source tree."
       )
     endif()
   else()
-    # 4. Vendored fallback — build Bungee directly from lib/bungee/.
+    # 5. Vendored fallback — build Bungee directly from lib/bungee/.
     #    Temporary: remove this block in BNG-22 once BNG-20 (vcpkg buildenv)
     #    and BNG-23 (CI / packaging) are complete on all target platforms.
     message(
