@@ -4630,121 +4630,177 @@ option(
   OFF
 )
 if(BUNGEE)
-  # pffft library (dependency of bungee)
-  add_library(
-    bungee-pffft
-    STATIC
-    EXCLUDE_FROM_ALL
-    lib/bungee/submodules/pffft/pffft.c
-    lib/bungee/submodules/pffft/fftpack.c
-  )
-  if(NOT MSVC)
-    target_compile_options(
-      bungee-pffft
-      PRIVATE -ffast-math -fno-finite-math-only -fno-exceptions
-    )
-  endif()
-  if(MSVC)
-    target_compile_definitions(bungee-pffft PRIVATE _USE_MATH_DEFINES)
-  endif()
+  # ── Dependency discovery ───────────────────────────────────────────────────
+  # All discovery paths normalize to an imported target named Bungee::Bungee so
+  # the rest of the build is provider-agnostic.  Discovery order:
+  #   1. Upstream Bungee CONFIG package
+  #   2. vcpkg unofficial-bungee (microsoft/vcpkg PR #50120, merged 2026-03-19)
+  #   3. Module discovery via cmake/modules/FindBungee.cmake (pkg-config etc.)
+  #   4. Vendored lib/bungee/ fallback (temporary — removed in BNG-22)
 
-  # Apply Mixxx-specific patches to bungee.
-  # The MSVC-compatibility patch is Windows-only (removes <unistd.h>, adds
-  # Platform.h).  Do NOT apply it on other platforms: the patch path uses
-  # Mixxx-root-relative paths (lib/bungee/src/…) so it must be run from the
-  # Mixxx source root, not from inside lib/bungee.
-  if(MSVC)
-    find_package(Git)
-    if(Git_FOUND)
-      execute_process(
-        COMMAND
-          ${GIT_EXECUTABLE} apply --ignore-whitespace
-          ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/0001-MSVC-compatibility.patch
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        ERROR_QUIET
-        OUTPUT_QUIET
-      )
+  # 1. Upstream Bungee CONFIG package (preferred; available once Bungee ships
+  #    a proper BungeeConfig.cmake upstream).
+  find_package(Bungee CONFIG QUIET)
+
+  # 2. vcpkg unofficial-bungee exposes unofficial::bungee::bungee; wrap it in
+  #    Bungee::Bungee so downstream code stays provider-agnostic.
+  if(NOT Bungee_FOUND)
+    find_package(unofficial-bungee CONFIG QUIET)
+    if(unofficial-bungee_FOUND AND TARGET unofficial::bungee::bungee)
+      if(NOT TARGET Bungee::Bungee)
+        add_library(Bungee::Bungee INTERFACE IMPORTED)
+        target_link_libraries(
+          Bungee::Bungee
+          INTERFACE unofficial::bungee::bungee
+        )
+      endif()
+      set(Bungee_FOUND TRUE)
+      message(STATUS "Found Bungee via vcpkg unofficial-bungee")
     endif()
   endif()
 
-  # Bungee library - built from source files in lib/bungee
-  # This allows easy updates: just cd lib/bungee && git pull
-  add_library(
-    bungee
-    STATIC
-    EXCLUDE_FROM_ALL
-    lib/bungee/src/Assert.cpp
-    lib/bungee/src/Fourier.cpp
-    lib/bungee/src/Grain.cpp
-    lib/bungee/src/Grains.cpp
-    lib/bungee/src/Input.cpp
-    lib/bungee/src/Instrumentation.cpp
-    lib/bungee/src/Output.cpp
-    lib/bungee/src/Partials.cpp
-    lib/bungee/src/Stretch.cpp
-    lib/bungee/src/Stretcher.cpp
-    lib/bungee/src/Synthesis.cpp
-    lib/bungee/src/Timing.cpp
-    lib/bungee/src/version.cpp
-    lib/bungee/src/Window.cpp
-  )
+  # 3. Module discovery: pkg-config and system include/library paths.
+  #    FindBungee.cmake creates Bungee::Bungee if successful.
+  if(NOT Bungee_FOUND)
+    find_package(Bungee MODULE QUIET)
+  endif()
 
-  target_compile_features(bungee PUBLIC cxx_std_20)
-
-  target_include_directories(
-    bungee
-    PUBLIC
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee>
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/bungee>
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/submodules/eigen
-  )
-
-  target_compile_definitions(
-    bungee
-    PRIVATE
-      BUNGEE_SELF_TEST=0
-      eigen_assert=BUNGEE_ASSERT1
-      EIGEN_DONT_PARALLELIZE=1
-      $<$<CONFIG:Debug>:EIGEN_RUNTIME_NO_MALLOC=1>
-  )
-
-  if(BUNGEE_PETRIFY_DEBUG)
-    if(WIN32)
+  if(Bungee_FOUND)
+    if(BUNGEE_PETRIFY_DEBUG)
       message(
         WARNING
-        "BUNGEE_PETRIFY_DEBUG was requested, but BUNGEE_PETRIFY uses POSIX "
-        "signal APIs and is disabled on Windows."
-      )
-    else()
-      target_compile_definitions(
-        bungee
-        PRIVATE $<$<CONFIG:Debug>:BUNGEE_PETRIFY>
+        "BUNGEE_PETRIFY_DEBUG has no effect when Bungee is supplied by a "
+        "package or vcpkg port rather than the vendored source tree."
       )
     endif()
-  endif()
+  else()
+    # 4. Vendored fallback — build Bungee directly from lib/bungee/.
+    #    Temporary: remove this block in BNG-22 once BNG-20 (vcpkg buildenv)
+    #    and BNG-23 (CI / packaging) are complete on all target platforms.
+    message(
+      STATUS
+      "Bungee: no package found, using vendored lib/bungee/ as fallback"
+    )
 
-  # BUNGEE_VISIBILITY needs special handling due to parentheses
-  if(NOT MSVC)
-    target_compile_options(
+    # pffft library (dependency of bungee)
+    add_library(
+      bungee-pffft
+      STATIC
+      EXCLUDE_FROM_ALL
+      lib/bungee/submodules/pffft/pffft.c
+      lib/bungee/submodules/pffft/fftpack.c
+    )
+    if(NOT MSVC)
+      target_compile_options(
+        bungee-pffft
+        PRIVATE -ffast-math -fno-finite-math-only -fno-exceptions
+      )
+    endif()
+    if(MSVC)
+      target_compile_definitions(bungee-pffft PRIVATE _USE_MATH_DEFINES)
+    endif()
+
+    # Apply Mixxx-specific patches to bungee.
+    # The MSVC-compatibility patch is Windows-only (removes <unistd.h>, adds
+    # Platform.h).  Do NOT apply it on other platforms: the patch path uses
+    # Mixxx-root-relative paths (lib/bungee/src/…) so it must be run from the
+    # Mixxx source root, not from inside lib/bungee.
+    if(MSVC)
+      find_package(Git)
+      if(Git_FOUND)
+        execute_process(
+          COMMAND
+            ${GIT_EXECUTABLE} apply --ignore-whitespace
+            ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/0001-MSVC-compatibility.patch
+          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+          ERROR_QUIET
+          OUTPUT_QUIET
+        )
+      endif()
+    endif()
+
+    # Bungee library - built from source files in lib/bungee
+    add_library(
+      bungee
+      STATIC
+      EXCLUDE_FROM_ALL
+      lib/bungee/src/Assert.cpp
+      lib/bungee/src/Fourier.cpp
+      lib/bungee/src/Grain.cpp
+      lib/bungee/src/Grains.cpp
+      lib/bungee/src/Input.cpp
+      lib/bungee/src/Instrumentation.cpp
+      lib/bungee/src/Output.cpp
+      lib/bungee/src/Partials.cpp
+      lib/bungee/src/Stretch.cpp
+      lib/bungee/src/Stretcher.cpp
+      lib/bungee/src/Synthesis.cpp
+      lib/bungee/src/Timing.cpp
+      lib/bungee/src/version.cpp
+      lib/bungee/src/Window.cpp
+    )
+
+    target_compile_features(bungee PUBLIC cxx_std_20)
+
+    target_include_directories(
+      bungee
+      PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/bungee>
+      PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib/bungee/submodules/eigen
+    )
+
+    target_compile_definitions(
       bungee
       PRIVATE
-        $<$<CXX_COMPILER_ID:GNU,Clang>:-fwrapv>
-        "-DBUNGEE_VISIBILITY=__attribute__((visibility(\"default\")))"
+        BUNGEE_SELF_TEST=0
+        eigen_assert=BUNGEE_ASSERT1
+        EIGEN_DONT_PARALLELIZE=1
+        $<$<CONFIG:Debug>:EIGEN_RUNTIME_NO_MALLOC=1>
     )
+
+    if(BUNGEE_PETRIFY_DEBUG)
+      if(WIN32)
+        message(
+          WARNING
+          "BUNGEE_PETRIFY_DEBUG was requested, but BUNGEE_PETRIFY uses POSIX "
+          "signal APIs and is disabled on Windows."
+        )
+      else()
+        target_compile_definitions(
+          bungee
+          PRIVATE $<$<CONFIG:Debug>:BUNGEE_PETRIFY>
+        )
+      endif()
+    endif()
+
+    # BUNGEE_VISIBILITY needs special handling due to parentheses
+    if(NOT MSVC)
+      target_compile_options(
+        bungee
+        PRIVATE
+          $<$<CXX_COMPILER_ID:GNU,Clang>:-fwrapv>
+          "-DBUNGEE_VISIBILITY=__attribute__((visibility(\"default\")))"
+      )
+    endif()
+
+    set_source_files_properties(
+      lib/bungee/src/version.cpp
+      PROPERTIES COMPILE_DEFINITIONS BUNGEE_VERSION=\"0.0.0\"
+    )
+
+    target_link_libraries(bungee PRIVATE bungee-pffft)
+
+    # Normalize vendored target to Bungee::Bungee so downstream is uniform.
+    add_library(Bungee::Bungee ALIAS bungee)
   endif()
 
-  set_source_files_properties(
-    lib/bungee/src/version.cpp
-    PROPERTIES COMPILE_DEFINITIONS BUNGEE_VERSION=\"0.0.0\"
-  )
-
-  target_link_libraries(bungee PRIVATE bungee-pffft)
-
-  target_link_libraries(mixxx-lib PUBLIC bungee)
+  # ── Link Bungee into Mixxx ─────────────────────────────────────────────────
+  target_link_libraries(mixxx-lib PUBLIC Bungee::Bungee)
   target_compile_definitions(mixxx-lib PUBLIC __BUNGEE__)
 
   if(QML)
-    target_link_libraries(mixxx-qml-lib PRIVATE bungee)
+    target_link_libraries(mixxx-qml-lib PRIVATE Bungee::Bungee)
     target_compile_definitions(mixxx-qml-lib PUBLIC __BUNGEE__)
   endif()
 

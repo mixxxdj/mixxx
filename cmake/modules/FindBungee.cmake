@@ -4,6 +4,20 @@ FindBungee
 
 Finds the Bungee audio stretcher library.
 
+This module is invoked via ``find_package(Bungee MODULE)``.  Before reaching
+this module the caller should already have tried CONFIG-mode packages:
+
+.. code-block:: cmake
+
+  find_package(Bungee CONFIG QUIET)         # upstream config package
+  find_package(unofficial-bungee CONFIG QUIET) # vcpkg PR #50120
+
+This module handles the remaining discovery paths:
+
+1. ``pkg-config`` module ``libbungee`` (installed by Bungee or its vcpkg port).
+2. Manual ``find_path`` / ``find_library`` search (system installs,
+  developer build directories).
+
 Imported Targets
 ^^^^^^^^^^^^^^^^
 
@@ -38,7 +52,7 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_Bungee QUIET bungee)
+  pkg_check_modules(PC_Bungee QUIET libbungee)
 endif()
 
 find_path(
@@ -54,7 +68,7 @@ mark_as_advanced(Bungee_INCLUDE_DIR)
 
 find_library(
   Bungee_LIBRARY
-  NAMES bungee bungee_library
+  NAMES bungee libbungee
   HINTS
     ${PC_Bungee_LIBRARY_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/../bungee/build
