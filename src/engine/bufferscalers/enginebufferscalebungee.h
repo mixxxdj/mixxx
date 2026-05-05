@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bungee/Bungee.h>
+#include <gtest/gtest_prod.h>
 
 #include <array>
 #include <memory>
@@ -10,6 +11,7 @@
 #include "util/samplebuffer.h"
 
 class ReadAheadManager;
+class EngineBufferScaleBungeeBufferWindowTest;
 
 // Uses Bungee's low-level grain API to perform time-stretching and pitch-shifting.
 //
@@ -44,6 +46,40 @@ class ReadAheadManager;
 //     3. muteHead / muteTail are computed from the difference between the
 //        requested range and what the window actually covers, then passed
 //        directly to analyseGrain() so Bungee can zero-pad internally.
+//
+// ## Buffer-window invariant (BNG-13)
+//
+//   The two pointers m_bufferedInputBeginFrame and m_bufferedInputEndFrame
+//   together with m_channelStride satisfy a single invariant on every grain
+//   boundary:
+//
+//     m_bufferedInputBeginFrame <= currentInputChunk.begin
+//     dataOffset = currentInputChunk.begin - m_bufferedInputBeginFrame
+//     dataOffset + grainSize <= m_channelStride
+//
+//   Where grainSize = currentInputChunk.end - currentInputChunk.begin and
+//   m_channelStride is the per-channel capacity of m_contiguousChannelBuffer.
+//   Violating this invariant causes Bungee's analyseGrain() to read past
+//   the end of m_contiguousChannelBuffer (heap corruption).
+//
+//   discardBufferedInputBefore(framePosition) preserves the invariant in
+//   two regimes:
+//     - Partial discard (framePosition inside the buffered window):
+//       memmove() shifts the unread tail left and advances
+//       m_bufferedInputBeginFrame by the discard count; m_bufferedInputEndFrame
+//       is unchanged.
+//     - Full discard (framePosition >= m_bufferedInputEndFrame, which
+//       happens when grain hops outrun the input window at very high
+//       playback rates): both pointers jump to framePosition.  Any other
+//       choice (e.g. leaving begin at the OLD end, as the pre-BNG-13 code
+//       did) produces a gap that violates the dataOffset invariant on the
+//       next grain.
+//
+//   processGrain() additionally enforces the invariant defensively: if it
+//   ever computes dataOffset + grainSize > m_channelStride, it sets
+//   m_bResetNeeded = true and returns 0 instead of calling analyseGrain().
+//   This is belt-and-braces protection — discardBufferedInputBefore() must
+//   not rely on it to be correct.
 //
 // ## Thread safety
 //   Not thread-safe; intended for single-threaded engine use only.
@@ -136,4 +172,25 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
 
     // Capacity of the buffered planar input window in frames.
     SINT m_inputBufferFrames;
+
+    // BNG-13: regression tests that pin the buffer-window invariant
+    // (m_bufferedInputBeginFrame / m_bufferedInputEndFrame must both jump
+    // to framePosition when the requested position outruns the buffered
+    // input window).  Without this invariant, processGrain() computes a
+    // dataOffset that exceeds m_channelStride, causing Bungee's Eigen map
+    // to read past m_contiguousChannelBuffer (heap corruption observed at
+    // very high playback rates).
+    // The fixture itself is friended so its protected accessor helpers
+    // (bufferBegin / bufferEnd / channelStride / currentChunkSize) compile.
+    // FRIEND_TEST alone only grants access to the generated test classes,
+    // not to the inherited fixture methods they call.
+    friend class ::EngineBufferScaleBungeeBufferWindowTest;
+    FRIEND_TEST(EngineBufferScaleBungeeBufferWindowTest,
+            DiscardWithGapBeyondEndJumpsBothPointersToFramePosition);
+    FRIEND_TEST(EngineBufferScaleBungeeBufferWindowTest,
+            DiscardWhenFramePositionInsideBufferDoesNotOverJump);
+    FRIEND_TEST(EngineBufferScaleBungeeBufferWindowTest,
+            DiscardWhenBufferEmptyJumpsToFramePosition);
+    FRIEND_TEST(EngineBufferScaleBungeeBufferWindowTest,
+            HighSpeedGrainOutrunMaintainsDataOffsetInvariant);
 };
