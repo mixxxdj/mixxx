@@ -344,6 +344,7 @@ void DlgPrefLibrary::slotUpdate() {
     m_dateFormat = m_pConfig->getValue(
             kDateFormatConfigKey,
             BaseTrackTableModel::kDateFormatDefault);
+    qWarning() << "slotUpdate, dateformat:" << m_dateFormat;
 
     // Determine the matching preset or custom
     BaseTrackTableModel::DateFormat preset = BaseTrackTableModel::DateFormat::Custom;
@@ -357,15 +358,18 @@ void DlgPrefLibrary::slotUpdate() {
         preset = BaseTrackTableModel::DateFormat::RegionalLong;
     } else {
         m_lastCustomDateFormat = m_dateFormat;
+        qWarning() << "-> type: Custom";
+        qWarning() << "-> store last custom format:" << m_lastCustomDateFormat;
     }
 
     int dateIndex = comboBox_dateFormat->findData(QVariant::fromValue(preset));
+    qWarning() << "-> idx:" << dateIndex;
     if (dateIndex != -1) {
+        qWarning() << "-> setCurrIdx";
         const QSignalBlocker signalBlocker(comboBox_dateFormat);
         comboBox_dateFormat->setCurrentIndex(dateIndex);
         slotDateFormatIndexChanged(dateIndex);
     }
-
 
     // Ensure the format is applied to the library view on startup/load
     BaseTrackTableModel::setDateFormat(m_dateFormat);
@@ -781,14 +785,17 @@ void DlgPrefLibrary::setSeratoMetadataEnabled(bool shouldSyncTrackMetadata) {
 }
 
 void DlgPrefLibrary::slotDateFormatIndexChanged(int index) {
+    qWarning() << "    slotDateFormatIndexChanged" << index;
     auto type = comboBox_dateFormat->itemData(index)
                         .value<BaseTrackTableModel::DateFormat>();
     QString format;
     if (type == BaseTrackTableModel::DateFormat::Custom) {
+        qWarning() << "    -> Custom, format:" << m_lastCustomDateFormat;
         // Enable editing for Custom and set the custom format string
         comboBox_dateFormat->setEditable(true);
         comboBox_dateFormat->setEditText(m_lastCustomDateFormat);
         format = m_lastCustomDateFormat;
+        qWarning() << "    -> box text:      " << comboBox_dateFormat->currentText();
     } else {
         // Disable editing for Presets
         comboBox_dateFormat->setEditable(false);
@@ -815,6 +822,7 @@ void DlgPrefLibrary::slotDateFormatIndexChanged(int index) {
 }
 
 void DlgPrefLibrary::slotDateFormatChanged(const QString& text) {
+    qWarning() << "    slotDateFormatChanged, text:" << text;
     m_dateFormat = text;
     // If not editable, we are in a Preset mode, but 'text' might be the Item
     // Label (e.g. "Native ...") depending on how this was called. However, our
