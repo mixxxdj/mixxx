@@ -11,14 +11,13 @@
 
 namespace {
 const mixxx::Logger kLogger("AbletonLink");
-constexpr mixxx::Bpm kDefaultBpm(9999.9);
 } // namespace
 
 AbletonLink::AbletonLink(const QString& group, EngineSync* pEngineSync)
         : m_group(group),
           m_pEngineSync(pEngineSync),
           m_syncMode(SyncMode::None),
-          m_oldTempo(kDefaultBpm),
+          m_oldTempo(),
           m_absTimeWhenPrevOutputBufferReachesDac(0),
           m_pLink(std::make_unique<ableton::BasicLink<MixxxClockRef>>(120.0)),
           m_pLinkButton(std::make_unique<ControlPushButton>(ConfigKey(group, "sync_enabled"))),
