@@ -4623,6 +4623,11 @@ endif()
 
 # Bungee
 option(BUNGEE "Enable the Bungee engine for pitch-bending" ON)
+option(
+  BUNGEE_PETRIFY_DEBUG
+  "Freeze Bungee on fatal signals in Debug builds so a debugger can attach (non-Windows only)"
+  OFF
+)
 if(BUNGEE)
   # pffft library (dependency of bungee)
   add_library(
@@ -4701,6 +4706,21 @@ if(BUNGEE)
       EIGEN_DONT_PARALLELIZE=1
       $<$<CONFIG:Debug>:EIGEN_RUNTIME_NO_MALLOC=1>
   )
+
+  if(BUNGEE_PETRIFY_DEBUG)
+    if(WIN32)
+      message(
+        WARNING
+        "BUNGEE_PETRIFY_DEBUG was requested, but BUNGEE_PETRIFY uses POSIX "
+        "signal APIs and is disabled on Windows."
+      )
+    else()
+      target_compile_definitions(
+        bungee
+        PRIVATE $<$<CONFIG:Debug>:BUNGEE_PETRIFY>
+      )
+    endif()
+  endif()
 
   # BUNGEE_VISIBILITY needs special handling due to parentheses
   if(NOT MSVC)

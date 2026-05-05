@@ -141,6 +141,27 @@ CMake only when `MSVC` is defined (`if(MSVC)` guard in `CMakeLists.txt`).
 **Do not apply this patch on Linux or macOS** — it is unnecessary and would
 dirty the `lib/bungee` working tree.
 
+## Optional Bungee petrification debugging
+
+For local crash debugging on non-Windows Debug builds, configure with:
+
+```bash
+cmake -DBUNGEE_PETRIFY_DEBUG=ON -DCMAKE_BUILD_TYPE=Debug …
+```
+
+For multi-configuration generators, build the Debug configuration explicitly
+(e.g. `cmake --build build --config Debug`).
+
+This defines `BUNGEE_PETRIFY` for the vendored `bungee` target only in the
+Debug configuration.  When Bungee catches fatal signals such as `SIGSEGV` or
+`SIGABRT`, it prints the process ID and stops the process so a debugger can be
+attached.
+
+This is intentionally **opt-in** and **non-Windows-only**.  It can hang CI or
+automated tests by design, and Bungee's current petrification implementation
+uses POSIX signal APIs (`sigaction`, `siginfo_t`, `SIGSTOP`) rather than native
+Windows crash-debugging mechanisms.
+
 ---
 
 ## What not to change casually
