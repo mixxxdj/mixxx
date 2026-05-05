@@ -85,6 +85,59 @@ Before each `analyseGrain()` call (`ensureInputForCurrentChunk`):
 This mirrors the pattern in `lib/bungee/bungee/Stream.h` (Bungee's own
 `Stream` helper class, lines 89–95).
 
+### The buffer-window invariant (the post-BNG-13 contract)
+
+On every grain boundary, `EngineBufferScaleBungee` must satisfy:
+
+```text
+m_bufferedInputBeginFrame <= currentInputChunk.begin
+dataOffset = currentInputChunk.begin - m_bufferedInputBeginFrame
+dataOffset + grainSize  <= m_channelStride
+```
+
+where `grainSize = currentInputChunk.end - currentInputChunk.begin` and
+`m_channelStride` is the per-channel capacity of
+`m_contiguousChannelBuffer`.  Any violation lets Bungee's Eigen map in
+`analyseGrain()` read past the end of the buffer for one or more channels
+— that is the heap-corruption regime the BNG-13 fixes close.
+
+`discardBufferedInputBefore(framePosition)` preserves the invariant in
+two regimes:
+
+- **Partial discard** — `framePosition` lies inside the buffered window.
+  `memmove` shifts the unread tail left, `m_bufferedInputBeginFrame` is
+  advanced by the number of discarded frames, and
+  `m_bufferedInputEndFrame` is unchanged.
+- **Full discard** — `framePosition >= m_bufferedInputEndFrame`.  This is
+  the **high-speed grain-outrun** regime: at very high playback rates
+  Bungee's grain hops jump past everything currently in the read buffer,
+  so the next grain's `inputChunk.begin` is far beyond
+  `m_bufferedInputEndFrame`.  Both pointers must jump all the way to
+  `framePosition`; any lower value (notably the OLD `m_bufferedInputEndFrame`,
+  which is what the pre-BNG-13 code wrote) leaves a gap that violates the
+  `dataOffset` invariant on the very next grain.
+
+`processGrain()` additionally enforces the invariant defensively: if it
+ever computes `dataOffset + grainSize > m_channelStride`, it sets
+`m_bResetNeeded = true` and returns 0 without calling `analyseGrain()`.
+This runtime guard is belt-and-braces — the buffer-window state machine
+in `discardBufferedInputBefore()` and `appendInputFrames()` must not rely
+on it for correctness.  The companion regression tests in
+`src/test/enginebufferscalebungeetest.cpp` (the
+`EngineBufferScaleBungeeBufferWindowTest` fixture) pin both the partial-
+and full-discard branches against the invariant so the bug class cannot
+return silently.
+
+### Why the input buffer is zero-initialised in `onSignalChanged()`
+
+On the very first grain after a reset (`request.position = 0`), Bungee's
+`InputChunk` covers `[−halfFrames, +halfFrames)`.  The scaler only supplies
+data for `[0, halfFrames)`; the lower half is muted via `muteHead`.  However
+the Eigen map that `analyseGrain()` builds spans the *entire* grain, so the
+uninitialised lower half could feed garbage floats (including `NaN`) into
+the FFT.  `onSignalChanged()` therefore zero-fills the whole
+`m_contiguousChannelBuffer` after (re)allocation.
+
 ### Why `muteHead = 0` always is wrong
 
 The original Mixxx integration always passed `muteHead = 0`.  When a grain's
@@ -171,6 +224,8 @@ Windows crash-debugging mechanisms.
 | `lib/bungee/` source files | Treat as a maintained vendor library. The only Mixxx-owned modification is the Windows patch above. |
 | `muteHead` / `muteTail` computation | Any incorrect value here violates the `analyseGrain()` contract and causes audio corruption. |
 | `appendInputFrames()` call sites | All `ReadAheadManager` reads must be consumed by Bungee. Discarding reads silently advances the reader's position and causes playback drift. |
+| `discardBufferedInputBefore()` full-discard branch | When `framePosition >= m_bufferedInputEndFrame`, both buffer-window pointers must be set to `framePosition`. Any other value reintroduces the BNG-13 high-speed grain-outrun heap-overflow class. Pinned by `EngineBufferScaleBungeeBufferWindowTest`. |
+| Zero-initialisation of `m_contiguousChannelBuffer` in `onSignalChanged()` | Prevents Bungee's Eigen map from reading uninitialised floats during the muted half of the very first post-reset grain. |
 | `scaleBuffer()` return value | `EngineBuffer` uses this to advance its frame cursor. The sign and magnitude must match `effectiveRate × framesProduced`. |
 
 ---
@@ -184,3 +239,20 @@ The keylock engine is selected at runtime from
 **Preferences → Sound → Keylock engine → Bungee (high quality)**.
 When built with `-DBUNGEE=ON`, Bungee is the compile-time default engine
 (`defaultKeylockEngine()` in `enginebuffer.h`).
+
+---
+
+## Test surface
+
+| File | Purpose |
+| --- | --- |
+| `src/test/enginebufferscalebungeetest.cpp` (`EngineBufferScaleBungeeTest`) | Per-feature unit tests against a mock `ReadAheadManager`: speed sweeps, pitch shifting, reverse playback, parameter changes, buffer reuse. |
+| `src/test/enginebufferscalebungeetest.cpp` (`EngineBufferScaleBungeeBufferWindowTest`) | BNG-13 regression tests for the buffer-window invariant (`discardBufferedInputBefore` post-conditions across partial / full / empty discard plus a high-speed grain-outrun stress test). |
+| `src/test/enginebufferbungeetest.cpp` (`EngineBufferBungeeTest`) | End-to-end integration tests through the real `EngineBuffer`: keylock toggling, engine switching, NaN/Inf detection in the mixer output. |
+
+The `.github/workflows/bungee-asan.yml` workflow rebuilds the test binary
+with `-DSANITIZE_ADDRESS=ON` on Linux/clang on every change to the Bungee
+integration files and runs `*Bungee*` under AddressSanitizer.  This is
+the regression net for the BNG-13 heap-overflow class — if a future change
+ever re-introduces an out-of-bounds read of `m_contiguousChannelBuffer`,
+ASan halts the run with `halt_on_error=1`.
