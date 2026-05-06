@@ -27,6 +27,7 @@ class PlaylistFeature : public BasePlaylistFeature {
             const QList<QUrl>& urls,
             QObject* pSource) override;
     bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
