@@ -10,6 +10,9 @@
         <file>images/library/ic_library_locked_tracklist.svg</file>
         <file>images/library/cover_default.svg</file>
       <!-- icons for library side bar -->
+        <!-- heart for Prep playlist, sidebar -->
+        <file>images/library/ic_heart_cyan.svg</file>
+        <file>images/library/ic_heart_cyan_locked.svg</file>
         <file>images/library/ic_library_autodj.svg</file>
         <file>images/library/ic_library_banshee.svg</file>
         <file>images/library/ic_library_computer.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->

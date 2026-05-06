@@ -40,6 +40,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotOrderTracksByCurrentPosition();
     void slotUnlockAllPlaylists();
     void slotDeleteAllUnlockedPlaylists();
+    void slotTogglePrepPlaylist();
 
   protected:
     void decorateChild(TreeItem* pChild, int playlistId) override;
@@ -53,4 +54,5 @@ class PlaylistFeature : public BasePlaylistFeature {
     parented_ptr<QAction> m_pOrderByCurrentPosAction;
     parented_ptr<QAction> m_pUnlockPlaylistsAction;
     parented_ptr<QAction> m_pDeleteAllUnlockedPlaylistsAction;
+    parented_ptr<QAction> m_pTogglePrepPlaylistAction;
 };

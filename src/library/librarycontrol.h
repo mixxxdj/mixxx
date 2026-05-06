@@ -8,6 +8,7 @@
 #ifdef __STEM__
 #include "engine/engine.h"
 #endif
+#include "track/trackid.h"
 
 class ControlEncoder;
 class ControlObject;
@@ -43,6 +44,7 @@ class LoadToGroupController : public QObject {
     const QString m_group;
     std::unique_ptr<ControlObject> m_pLoadControl;
     std::unique_ptr<ControlObject> m_pLoadAndPlayControl;
+    std::unique_ptr<ControlObject> m_pAppendLoadedTrackToPrepPlaylistControl;
 
 #ifdef __STEM__
     std::unique_ptr<ControlPushButton> m_loadSelectedTrackStems;
@@ -76,6 +78,10 @@ class LibraryControl : public QObject {
 #else
     void slotLoadSelectedTrackToGroup(const QString& group, bool play);
 #endif
+
+    void slotAppendDeckTrackToPrepPlaylist(double v, const QString& group);
+    void slotAppendSelectedTrackToPrepPlaylist(double v);
+
     void slotUpdateTrackMenuControl(bool visible);
 
   private slots:
@@ -137,6 +143,8 @@ class LibraryControl : public QObject {
 
   private:
     Library* m_pLibrary;
+
+    void appendTrackToPrepPlaylist(TrackId id);
 
     // Simulate pressing a key on the keyboard
     void emitKeyEvent(QKeyEvent&& event);
