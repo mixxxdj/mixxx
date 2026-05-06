@@ -1,7 +1,7 @@
 ---
 id: BNG-23
 title: "Update packaging and CI paths for non-vendored Bungee (umbrella)"
-status: open
+status: done
 priority: high
 effort: large
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, packaging, ci, umbrella]
 blocked_by: [BNG-25, BNG-26, BNG-27, BNG-28]
 created: '2026-05-05'
+completed: '2026-05-06'
 ---
 
 ## BNG-23: Umbrella ticket — packaging + CI for non-vendored Bungee

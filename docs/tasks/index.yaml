@@ -100,7 +100,7 @@ tasks:
     completed: "2026-05-06"
   BNG-23:
     title: Update packaging and CI paths for non-vendored Bungee (umbrella)
-    status: open
+    status: done
     priority: high
     effort: large
     group: BNG
@@ -115,11 +115,12 @@ tasks:
       - BNG-26
       - BNG-27
       - BNG-28
-    file: open/BNG-23.md
+    file: done/BNG-23.md
     created: "2026-05-05"
+    completed: "2026-05-06"
   BNG-24:
     title: Prepare trunk-driven PR history and per-commit validation record
-    status: open
+    status: done
     priority: high
     effort: medium
     group: BNG
@@ -135,8 +136,9 @@ tasks:
       - BNG-26
       - BNG-27
       - BNG-28
-    file: open/BNG-24.md
+    file: done/BNG-24.md
     created: "2026-05-05"
+    completed: "2026-05-06"
   BNG-25:
     title: Add Eigen3 + pffft as ExternalProject_Add targets
     status: done

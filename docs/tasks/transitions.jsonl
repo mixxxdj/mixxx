@@ -13,3 +13,6 @@
 {"ts":"2026-05-06T04:01:31.697Z","id":"BNG-27","from":"in_progress","to":"done","reason":"BNG-27 complete: added Flatpak Eigen3, pffft, and Bungee modules before mixxx with pinned hashes, Bungee patch/config fixup, YAML/pre-commit validation, and documented flatpak-builder defer-to-CI due missing local tool."}
 {"ts":"2026-05-06T04:15:39.305Z","id":"BNG-28","from":"open","to":"in_progress","reason":"Begin BNG-28 CI path/ASan wiring update in strict sequence."}
 {"ts":"2026-05-06T04:23:03.576Z","id":"BNG-28","from":"in_progress","to":"done","reason":"Updated Bungee ASan workflow paths and ASan ExternalProject environment wiring; build.yml verified no changes needed."}
+{"ts":"2026-05-06T04:25:04.151Z","id":"BNG-24","from":"open","to":"in_progress","reason":"Begin BNG-24 validation table, PR description, and spot checks after BNG-28 completion."}
+{"ts":"2026-05-06T04:37:13.955Z","id":"BNG-23","from":"open","to":"done","reason":"Umbrella complete: BNG-25, BNG-26, BNG-27, and BNG-28 are done; remaining CI evidence is tracked in BNG-24/PR draft."}
+{"ts":"2026-05-06T04:37:17.301Z","id":"BNG-24","from":"in_progress","to":"done","reason":"Prepared draft PR description, validation/commit ledger, experimental branch audit, local spot checks, and documented draft-only CI/history caveats."}

@@ -1,7 +1,7 @@
 ---
 id: BNG-24
 title: "Prepare trunk-driven PR history and per-commit validation record"
-status: open
+status: done
 priority: high
 effort: medium
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, pr-readiness, trunk-driven-development]
 blocked_by: [BNG-22, BNG-23, BNG-25, BNG-26, BNG-27, BNG-28]
 created: '2026-05-05'
+completed: '2026-05-06'
 ---
 
 ## BNG-24: Prepare trunk-driven PR history and per-commit validation record
