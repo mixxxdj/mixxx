@@ -4643,14 +4643,72 @@ endif()
 
 # Bungee
 option(BUNGEE "Enable the Bungee engine for pitch-bending" OFF)
+option(
+  BUNGEE_PETRIFY_DEBUG
+  "Freeze Bungee on fatal signals in Debug builds so a debugger can attach (non-Windows only)"
+  OFF
+)
 if(BUNGEE)
-  find_package(Bungee REQUIRED)
+  # ── Dependency discovery ───────────────────────────────────────────────────
+  # All discovery paths normalize to an imported target named Bungee::Bungee so
+  # the rest of the build is provider-agnostic.  Discovery order:
+  #   1. Upstream Bungee CONFIG package
+  #   2. vcpkg unofficial-bungee (microsoft/vcpkg PR #50120, merged 2026-03-19)
+  #   3. Module discovery via cmake/modules/FindBungee.cmake (pkg-config etc.)
+
+  # 1. Upstream Bungee CONFIG package (preferred; available once Bungee ships
+  #    a proper BungeeConfig.cmake upstream).
+  find_package(Bungee CONFIG QUIET)
+
+  # 2. vcpkg unofficial-bungee exposes unofficial::bungee::bungee; wrap it in
+  #    Bungee::Bungee so downstream code stays provider-agnostic.
+  if(NOT Bungee_FOUND)
+    find_package(unofficial-bungee CONFIG QUIET)
+    if(unofficial-bungee_FOUND AND TARGET unofficial::bungee::bungee)
+      if(NOT TARGET Bungee::Bungee)
+        add_library(Bungee::Bungee INTERFACE IMPORTED)
+        target_link_libraries(
+          Bungee::Bungee
+          INTERFACE unofficial::bungee::bungee
+        )
+      endif()
+      set(Bungee_FOUND TRUE)
+      message(STATUS "Found Bungee via vcpkg unofficial-bungee")
+    endif()
+  endif()
+
+  # 3. Module discovery: pkg-config and system include/library paths.
+  #    FindBungee.cmake creates Bungee::Bungee if successful.
+  if(NOT Bungee_FOUND)
+    find_package(Bungee MODULE QUIET)
+  endif()
+
+  if(NOT Bungee_FOUND)
+    message(
+      FATAL_ERROR
+      "Bungee was requested but no Bungee package was found. Install Bungee "
+      "or disable Bungee with -DBUNGEE=OFF."
+    )
+  endif()
+
+  if(BUNGEE_PETRIFY_DEBUG)
+    message(
+      WARNING
+      "BUNGEE_PETRIFY_DEBUG has no effect when Bungee is supplied by a "
+      "package, vcpkg port, or module discovery; it required the removed "
+      "vendored source-tree target."
+    )
+  endif()
+
+  # ── Link Bungee into Mixxx ─────────────────────────────────────────────────
   target_link_libraries(mixxx-lib PUBLIC Bungee::Bungee)
   target_compile_definitions(mixxx-lib PUBLIC __BUNGEE__)
+
   if(QML)
     target_link_libraries(mixxx-qml-lib PRIVATE Bungee::Bungee)
     target_compile_definitions(mixxx-qml-lib PUBLIC __BUNGEE__)
   endif()
+
   target_sources(
     mixxx-lib
     PRIVATE src/engine/bufferscalers/enginebufferscalebungee.cpp
