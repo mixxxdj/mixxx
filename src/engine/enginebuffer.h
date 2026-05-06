@@ -357,6 +357,9 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange);
     FRIEND_TEST(EngineSyncTest, BeatMapQuantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
+    FRIEND_TEST(EngineBufferBungeeTest, BungeeEngineSelected);
+    FRIEND_TEST(EngineBufferBungeeTest, BungeeKeylockToggleDoesNotCrash);
+    FRIEND_TEST(EngineBufferBungeeTest, BungeeKeylockEngineSwitch);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
@@ -473,6 +476,9 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineBufferTest, ReadFadeOut);
     FRIEND_TEST(EngineBufferTest, RateTempTest);
     FRIEND_TEST(EngineBufferTest, RatePermTest);
+    FRIEND_TEST(EngineBufferBungeeTest, BungeeEngineSelected);
+    FRIEND_TEST(EngineBufferBungeeTest, BungeeKeylockToggleDoesNotCrash);
+    FRIEND_TEST(EngineBufferBungeeTest, BungeeKeylockEngineSwitch);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
