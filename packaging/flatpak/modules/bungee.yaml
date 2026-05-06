@@ -1,0 +1,28 @@
+name: bungee
+buildsystem: cmake-ninja
+config-opts:
+  - -DCMAKE_BUILD_TYPE=Release
+  - -DBUNGEE_VERSION=2.4.15
+  - -DBUNGEE_PRESET=
+  - -DBUNGEE_BUILD_SHARED_LIBRARY=ON
+sources:
+  - type: archive
+    url: https://github.com/bungee-audio-stretch/bungee/archive/refs/tags/v2.4.15.tar.gz
+    sha256: aa94ffe8ba49bcb916f454c5221d3480ae880f199e1516de31585924398ca67a
+  - type: patch
+    path: ../../cmake/vcpkg-overlay-ports/bungee/cmake-use-vcpkg-deps-and-install-layout.patch
+  - type: patch
+    path: ../../cmake/vcpkg-overlay-ports/bungee/pffft-include-path.patch
+  - type: patch
+    path: ../../cmake/patches/bungee/lower-cmake-minimum.patch
+  - type: file
+    path: ../../cmake/vcpkg-overlay-ports/bungee/unofficial-bungee-config.cmake
+    dest-filename: unofficial-bungee-config.cmake
+cleanup:
+  - /include
+  - /lib/cmake
+  - /lib/pkgconfig
+post-install:
+  - install -d ${FLATPAK_DEST}/lib/cmake/unofficial-bungee
+  - sed -e '/^include(CMakeFindDependencyMacro)/d' -e '/^find_dependency(Eigen3 CONFIG)/d' -e '/^find_dependency(pffft CONFIG)/d' -e '/^check_required_components/d' unofficial-bungee-config.cmake > ${FLATPAK_DEST}/lib/cmake/unofficial-bungee/unofficial-bungee-config.cmake
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/bungee LICENSE

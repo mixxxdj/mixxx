@@ -1,0 +1,19 @@
+name: pffft
+buildsystem: cmake-ninja
+subdir: pffft-src
+config-opts:
+  - -DCMAKE_BUILD_TYPE=Release
+sources:
+  - type: archive
+    url: https://bitbucket.org/jpommier/pffft/get/02fe7715a5bf8bfd914681c53429600f94e0f536.tar.gz
+    sha256: 9adeb18ac7bb52e9fb921c31c0c6a4e9ae150cc6fcb20a899d4b3a2275176ded
+    dest: pffft-src
+  - type: file
+    path: ../../cmake/patches/pffft/CMakeLists.txt.in
+    dest: pffft-src
+    dest-filename: CMakeLists.txt
+cleanup:
+  - /include
+  - /lib/cmake
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/pffft README.txt

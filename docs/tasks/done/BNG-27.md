@@ -1,7 +1,7 @@
 ---
 id: BNG-27
 title: "Add Bungee, Eigen3, pffft as Flatpak modules"
-status: open
+status: done
 priority: high
 effort: medium
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, flatpak, packaging]
 blocked_by: [BNG-26]
 created: '2026-05-05'
+completed: '2026-05-06'
 ---
 
 ## BNG-27: Add Bungee, Eigen3, pffft as Flatpak modules

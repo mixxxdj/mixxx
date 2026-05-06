@@ -174,7 +174,7 @@ tasks:
     completed: "2026-05-06"
   BNG-27:
     title: Add Bungee, Eigen3, pffft as Flatpak modules
-    status: open
+    status: done
     priority: high
     effort: medium
     group: BNG
@@ -185,8 +185,9 @@ tasks:
       - packaging
     blocked_by:
       - BNG-26
-    file: open/BNG-27.md
+    file: done/BNG-27.md
     created: "2026-05-05"
+    completed: "2026-05-06"
   BNG-28:
     title: Update GitHub Actions workflows for non-vendored Bungee
     status: open
